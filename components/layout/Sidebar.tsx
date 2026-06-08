@@ -63,9 +63,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
             className="flex items-center justify-center w-[52px] h-full shrink-0"
             aria-label={t('logoHome')}
           >
-            <span className="font-display font-black text-lav text-[13px] tracking-[0.04em]">
-              B4K
-            </span>
+            <img src="/logo.svg" alt="B4K" width={28} height={26} className="object-contain" />
           </Link>
           <span className="lg:hidden flex-1 text-fg text-sm font-semibold pl-2">Menu</span>
           <button
