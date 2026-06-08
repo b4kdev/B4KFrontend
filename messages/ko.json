@@ -469,6 +469,47 @@
       "planBuilt": "이런 플랜은 어떠세요:"
     }
   },
+  "itinerary": {
+    "loading": "여행 경로 불러오는 중…",
+    "notFound": "여행 경로를 찾을 수 없어요",
+    "private": "비공개 여행 경로입니다",
+    "privateDesc": "이 여행 경로는 작성자가 비공개로 설정했어요.",
+    "error": { "title": "여행 경로를 불러오지 못했어요", "cta": "다시 시도" },
+    "stats": { "stops": "{count}곳", "min": "{min}분", "km": "{km}km" },
+    "transport": { "car": "자가용", "public": "대중교통" },
+    "actions": {
+      "like": "좋아요",
+      "liked": "좋아요 완료",
+      "save": "저장",
+      "saved": "저장됨",
+      "share": "공유",
+      "edit": "편집",
+      "makePrivate": "비공개로",
+      "makePublic": "공개로",
+      "likeAria": "이 여행 경로 좋아요",
+      "saveAria": "이 여행 경로 저장",
+      "shareAria": "이 여행 경로 공유",
+      "editAria": "이 여행 경로 편집",
+      "likedToast": "좋아요 목록에 추가됐어요",
+      "unlikedToast": "좋아요가 취소됐어요",
+      "savedToast": "저장됐어요!",
+      "unsavedToast": "저장이 취소됐어요"
+    },
+    "tabs": { "all": "전체", "day": "{n}일차" },
+    "stopList": { "ariaLabel": "여행 경로 목적지 목록" },
+    "stopItem": { "ariaLabel": "{n}번째 목적지: {name}", "min": "{min}분" },
+    "sponsored": "스폰서",
+    "related": {
+      "title": "다른 여행 경로",
+      "stops": "{count}곳",
+      "likes": "좋아요 {count}개"
+    },
+    "panel": { "ariaLabel": "여행 경로 상세" },
+    "sheet": { "handle": "드래그로 조절", "ariaLabel": "여행 경로 상세 패널" },
+    "copiedToast": "링크가 복사됐어요!",
+    "mapAriaLabel": "여행 경로 지도",
+    "createdBy": "{name} 작성"
+  },
   "profile": {
     "header": {
       "ariaLabel": "프로필 헤더",

@@ -469,6 +469,47 @@
       "planBuilt": "Here's a plan for you:"
     }
   },
+  "itinerary": {
+    "loading": "Loading itinerary…",
+    "notFound": "Itinerary not found",
+    "private": "This itinerary is private",
+    "privateDesc": "The creator has set this itinerary to private.",
+    "error": { "title": "Couldn't load itinerary", "cta": "Try again" },
+    "stats": { "stops": "{count} stops", "min": "{min} min", "km": "{km} km" },
+    "transport": { "car": "By car", "public": "Public transport" },
+    "actions": {
+      "like": "Like",
+      "liked": "Liked",
+      "save": "Save",
+      "saved": "Saved",
+      "share": "Share",
+      "edit": "Edit",
+      "makePrivate": "Make private",
+      "makePublic": "Make public",
+      "likeAria": "Like this itinerary",
+      "saveAria": "Save this itinerary",
+      "shareAria": "Share this itinerary",
+      "editAria": "Edit this itinerary",
+      "likedToast": "Added to liked",
+      "unlikedToast": "Removed from liked",
+      "savedToast": "Saved!",
+      "unsavedToast": "Removed from saved"
+    },
+    "tabs": { "all": "All", "day": "Day {n}" },
+    "stopList": { "ariaLabel": "Itinerary stops" },
+    "stopItem": { "ariaLabel": "Stop {n}: {name}", "min": "{min} min" },
+    "sponsored": "Sponsored",
+    "related": {
+      "title": "More itineraries",
+      "stops": "{count} stops",
+      "likes": "{count} likes"
+    },
+    "panel": { "ariaLabel": "Itinerary details" },
+    "sheet": { "handle": "Drag to resize", "ariaLabel": "Itinerary detail" },
+    "copiedToast": "Link copied!",
+    "mapAriaLabel": "Itinerary route map",
+    "createdBy": "by {name}"
+  },
   "profile": {
     "header": {
       "ariaLabel": "Profile header",
