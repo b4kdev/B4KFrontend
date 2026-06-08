@@ -1,0 +1,36 @@
+{
+  "source": [
+    "../../B4KVault/tokens/primitives.json",
+    "../../B4KVault/tokens/color.dark.json",
+    "../../B4KVault/tokens/spacing.json",
+    "../../B4KVault/tokens/typography.json"
+  ],
+  "platforms": {
+    "css-dark": {
+      "transformGroup": "css",
+      "prefix": "",
+      "buildPath": "styles/generated/",
+      "files": [
+        {
+          "destination": "tokens.dark.css",
+          "format": "css/variables",
+          "options": {
+            "outputReferences": true,
+            "selector": ":root"
+          }
+        }
+      ]
+    },
+    "js": {
+      "transformGroup": "js",
+      "prefix": "",
+      "buildPath": "styles/generated/",
+      "files": [
+        {
+          "destination": "tokens.js",
+          "format": "javascript/es6"
+        }
+      ]
+    }
+  }
+}

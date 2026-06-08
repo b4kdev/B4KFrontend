@@ -1,0 +1,589 @@
+{
+  "metadata": {
+    "title": "B4K | ท่องเที่ยวเกาหลี & วัฒนธรรม",
+    "description": "ค้นพบประสบการณ์วัฒนธรรมเกาหลีทั่วประเทศเกาหลี"
+  },
+  "nav": {
+    "home": "หน้าหลัก",
+    "map": "แผนที่",
+    "contents": "เนื้อหา",
+    "plan": "แผนการ",
+    "profile": "โปรไฟล์",
+    "help": "ช่วยเหลือ",
+    "notifications": "การแจ้งเตือน",
+    "language": "ภาษา",
+    "signIn": "เข้าสู่ระบบ",
+    "signOut": "ออกจากระบบ",
+    "menuOpen": "Open menu",
+    "menuClose": "Close menu",
+    "mainNavigation": "Main navigation",
+    "logoHome": "B4K Home",
+    "about": "About",
+    "bottomNav": "Bottom navigation",
+    "explore": "Explore",
+    "saved": "Saved"
+  },
+  "topNav": {
+    "searchPlaceholder": "ค้นหาแผนการเดินทาง สถานที่ ครีเอเตอร์…",
+    "searchPlaceholderMobile": "B4K · ค้นหา...",
+    "recentSearches": "การค้นหาล่าสุด",
+    "clearSearch": "Clear search",
+    "noRecents": "No recent searches"
+  },
+  "home": {
+    "breadcrumb": "หน้าหลัก",
+    "carousel": {
+      "ariaLabel": "Featured content",
+      "slideN": "Slide {n}",
+      "prev": "Previous slide",
+      "next": "Next slide",
+      "slides": {
+        "kCulture": {
+          "badge": "ใหม่",
+          "title": "เคเคเชอร์\nอิมเมอร์ซีฟ 2024",
+          "desc": "จากบาร์แจ๊สในฮงแดถึงพิธีชงชาส่วนตัวในอินซาดง",
+          "cta": "ค้นพบการเข้าถึงพิเศษ"
+        },
+        "boseong": {
+          "badge": "ตามฤดูกาล",
+          "title": "ไร่ชาโพซอง\nในม่านหมอก",
+          "desc": "นาขั้นบันไดสีเขียวที่ปกคลุมด้วยหมอกยามเช้า ภูมิทัศน์ที่สงบที่สุดในเกาหลี",
+          "cta": "สำรวจโพซอง"
+        },
+        "seoul": {
+          "badge": "ไนท์ไลฟ์",
+          "title": "โซลหลัง\nเที่ยงคืน",
+          "desc": "เมืองเปลี่ยนโฉมเมื่อพระอาทิตย์ตก บาร์บนดาดฟ้า ตรอกซอยแสงโคม ขอบฟ้าสีนีออน",
+          "cta": "วางแผนคืนนี้"
+        }
+      }
+    },
+    "topPlans": {
+      "title": "แผนการเดินทางยอดนิยมสัปดาห์นี้",
+      "subtitle": "คัดสรรโดยชุมชน B4K",
+      "seeAll": "ดูทั้งหมด",
+      "badge": "แผนการเดินทาง",
+      "empty": {
+        "title": "No plans yet this week",
+        "desc": "Share your Korea trip and inspire other travelers.",
+        "cta": "Create a plan"
+      }
+    },
+    "leaderboard": {
+      "title": "ครีเอเตอร์อันดับต้นสัปดาห์นี้ — สัปดาห์ที่ {week}",
+      "desc": "ผู้มีส่วนร่วมสูงสุดจะได้รับแบดจ์ การแสดงผลที่มีลำดับความสำคัญ และสิทธิ์พิเศษจากพาร์ทเนอร์",
+      "cta": "ดูอันดับ"
+    },
+    "seasonalPois": {
+      "title": "POI เกาหลีตามฤดูกาล",
+      "subtitle": "สถานที่ที่คัดสรรตามภูมิทัศน์ที่เปลี่ยนแปลงของคาบสมุทร",
+      "seeAll": "ดูทั้งหมด",
+      "empty": {
+        "title": "No seasonal picks yet",
+        "desc": "Curators are gathering this season's must-see locations.",
+        "cta": "Open the map"
+      }
+    }
+  },
+  "common": {
+    "loading": "กำลังโหลด...",
+    "error": "เกิดข้อผิดพลาด",
+    "retry": "ลองอีกครั้ง",
+    "empty": "ยังไม่มีอะไรที่นี่",
+    "back": "กลับ"
+  },
+  "routes": {
+    "map": {
+      "breadcrumb": "Map",
+      "title": "Map",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "The Korea map will land here once Naver Map canvas is wired."
+      }
+    },
+    "contents": {
+      "breadcrumb": "Contents",
+      "title": "Contents",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Four hubs: K-Pop, K-Drama, K-Beauty, K-Culture. Pick one to dive in."
+      }
+    },
+    "contentsKpop": {
+      "breadcrumb": "K-Pop",
+      "title": "K-Pop",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "K-Pop hub coming soon. Artists, venues, tours."
+      },
+      "crumb": {
+        "contents": "Contents",
+        "explore": "Explore"
+      }
+    },
+    "contentsKdrama": {
+      "breadcrumb": "K-Drama",
+      "title": "K-Drama",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "K-Drama hub coming soon. Filming locations, drama trails."
+      },
+      "crumb": {
+        "contents": "Contents",
+        "explore": "Explore"
+      }
+    },
+    "contentsKbeauty": {
+      "breadcrumb": "K-Beauty",
+      "title": "K-Beauty",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "K-Beauty hub coming soon. Skincare, treatments, brand origin stores."
+      },
+      "crumb": {
+        "contents": "Contents",
+        "explore": "Explore"
+      }
+    },
+    "contentsKculture": {
+      "breadcrumb": "K-Culture",
+      "title": "K-Culture",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "K-Culture hub coming soon. Heritage, food, traditional crafts."
+      },
+      "crumb": {
+        "contents": "Contents",
+        "explore": "Explore"
+      }
+    },
+    "profile": {
+      "breadcrumb": "Profile",
+      "title": "Profile",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Your B4K hub. Trips, saves, badges, community."
+      }
+    },
+    "profileTrips": {
+      "breadcrumb": "My Trips",
+      "title": "My Trips",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Plans you have created or saved will live here."
+      },
+      "crumb": {
+        "profile": "Profile"
+      }
+    },
+    "profileSaved": {
+      "breadcrumb": "Saved",
+      "title": "Saved",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Places and plans you have bookmarked."
+      },
+      "crumb": {
+        "profile": "Profile"
+      }
+    },
+    "profileBadges": {
+      "breadcrumb": "Badges",
+      "title": "Badges",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Badges earned through community contributions."
+      },
+      "crumb": {
+        "profile": "Profile"
+      }
+    },
+    "profileCommunity": {
+      "breadcrumb": "Community",
+      "title": "Community",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Followers, following, and creator activity."
+      },
+      "crumb": {
+        "profile": "Profile"
+      }
+    },
+    "profileSettings": {
+      "breadcrumb": "Settings",
+      "title": "Settings",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Account, language, notifications, and privacy preferences."
+      },
+      "crumb": {
+        "profile": "Profile"
+      }
+    },
+    "plan": {
+      "breadcrumb": "Plan",
+      "title": "Plan",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Choose a planning flow: manual, auto, or AI chat."
+      }
+    },
+    "planManual": {
+      "breadcrumb": "Manual Plan",
+      "title": "Manual Plan",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Drag-and-drop builder for power users."
+      },
+      "crumb": {
+        "plan": "Plan"
+      }
+    },
+    "planAuto": {
+      "breadcrumb": "Auto Plan",
+      "title": "Auto Plan",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Tell us your dates and we generate a starting itinerary."
+      },
+      "crumb": {
+        "plan": "Plan"
+      }
+    },
+    "planAi": {
+      "breadcrumb": "AI Chat Plan",
+      "title": "AI Chat Plan",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Conversational AI builds your Korea trip turn by turn."
+      },
+      "crumb": {
+        "plan": "Plan"
+      }
+    },
+    "leaderboard": {
+      "breadcrumb": "Leaderboard",
+      "title": "Leaderboard",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Weekly community ranking. Wilson score on saves + likes."
+      }
+    },
+    "badges": {
+      "breadcrumb": "Badges Gallery",
+      "title": "Badges Gallery",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Browse the full badge collection."
+      }
+    },
+    "onboarding": {
+      "breadcrumb": "Welcome to B4K",
+      "title": "Welcome to B4K",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Quick interest tags to personalise your first trip."
+      }
+    },
+    "help": {
+      "breadcrumb": "Help",
+      "title": "Help",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Guides, FAQ, contact support."
+      }
+    },
+    "notifications": {
+      "breadcrumb": "Notifications",
+      "title": "Notifications",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Platform notifications. Social pings deferred to v1.1."
+      }
+    },
+    "legalPrivacy": {
+      "breadcrumb": "Privacy Policy",
+      "title": "Privacy Policy",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "How we handle your data. PIPA compliant."
+      }
+    },
+    "legalTerms": {
+      "breadcrumb": "Terms of Service",
+      "title": "Terms of Service",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Rules for using B4K."
+      }
+    },
+    "legalCookies": {
+      "breadcrumb": "Cookie Policy",
+      "title": "Cookie Policy",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Cookies we use and why."
+      }
+    },
+    "sitemap": {
+      "breadcrumb": "About B4K",
+      "title": "About B4K",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Story, team, mission."
+      }
+    },
+    "explore": {
+      "breadcrumb": "Explore",
+      "title": "Explore",
+      "empty": {
+        "title": "Coming soon",
+        "desc": "Four hubs: K-Pop, K-Drama, K-Beauty, K-Culture. Pick one to dive in."
+      }
+    },
+    "saved": {
+      "breadcrumb": "Saved",
+      "title": "Saved",
+      "empty": {
+        "title": "Nothing saved yet",
+        "desc": "Bookmark places and itineraries to find them here."
+      }
+    }
+  },
+  "boundary": {
+    "notFound": {
+      "title": "Page not found",
+      "desc": "The page you're looking for doesn't exist or has moved.",
+      "cta": "Back to home"
+    },
+    "error": {
+      "title": "Something went wrong",
+      "desc": "Try again. If the problem persists, contact support.",
+      "cta": "Try again"
+    },
+    "offline": {
+      "title": "You're offline",
+      "desc": "Reconnect to keep planning. Your saved trips are kept locally."
+    }
+  },
+  "auth": {
+    "gate": {
+      "title": "Sign in to B4K",
+      "valueProp": "Save your plan · Unlock leaderboards · Earn badges",
+      "google": "Continue with Google",
+      "dismiss": "Continue as guest",
+      "loading": "Signing in…",
+      "error": "Sign-in failed. Try again.",
+      "ariaLabel": "Sign in modal",
+      "close": "Close sign-in modal"
+    }
+  },
+  "map": {
+    "ariaLabel": "Interactive map of Korea",
+    "loading": "Loading map…",
+    "error": "Map failed to load",
+    "retry": "Try again",
+    "noKey": "Map API key not configured",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "leftPanel": {
+      "ariaLabel": "Explore panel"
+    },
+    "regions": {
+      "title": "Explore by Region",
+      "seoul": "Seoul",
+      "busan": "Busan",
+      "jeju": "Jeju",
+      "incheon": "Incheon",
+      "gyeongju": "Gyeongju",
+      "more": "More regions"
+    },
+    "filters": {
+      "title": "Filter by Type",
+      "palaces": "Palaces",
+      "temples": "Temples",
+      "cafes": "Cafés",
+      "parks": "Parks",
+      "restaurants": "Restaurants",
+      "hotels": "Hotels",
+      "shopping": "Shopping",
+      "museums": "Museums"
+    },
+    "aiPill": {
+      "label": "AI Assistant ·",
+      "dismiss": "Dismiss AI assistant",
+      "expand": "Expand AI assistant"
+    },
+    "poiDetail": {
+      "sponsored": "Sponsored",
+      "reviews": "reviews",
+      "openNow": "Open now",
+      "closed": "Closed",
+      "addToPlan": "Add to Plan",
+      "added": "Added ✓",
+      "planFull": "Maximum 10 stops reached",
+      "save": "Save",
+      "saved": "Saved",
+      "unsave": "Remove from saved",
+      "savedToast": "Place saved!",
+      "removedSave": "Removed from saved",
+      "addedToast": "Added to plan"
+    },
+    "plan": {
+      "title": "Your Plan",
+      "stops": "stops",
+      "removeStop": "Remove stop {n}",
+      "dragHandle": "Drag to reorder stop {n}",
+      "durationLabel": "min",
+      "durationAriaLabel": "Duration for {name}",
+      "total": "total",
+      "transport": {
+        "label": "Transport mode",
+        "car": "Car",
+        "public": "Public"
+      },
+      "save": "Save Plan",
+      "savedToast": "Plan saved!"
+    },
+    "aiOverlay": {
+      "title": "AI Travel Assistant",
+      "openButton": "AI Assistant",
+      "inputPlaceholder": "Ask about Korea…",
+      "send": "Send message",
+      "minimize": "Minimize AI assistant",
+      "close": "Close AI assistant",
+      "back": "Back to map",
+      "greeting": "Ask me anything about Korea — places, plans, and K-culture.",
+      "chips": {
+        "bts": "BTS landmarks near me",
+        "kdrama": "K-Drama filming spots",
+        "food": "Best street food today"
+      },
+      "error": "Something went wrong. Check your connection.",
+      "retry": "Retry",
+      "addToPlan": "Add",
+      "added": "Added",
+      "usePlan": "Use this plan",
+      "usePlanLoaded": "Plan loaded ✓",
+      "poiFound": "Here are some places:",
+      "planBuilt": "Here's a plan for you:"
+    }
+  },
+  "profile": {
+    "header": {
+      "ariaLabel": "Profile header",
+      "breadcrumb": "Profile",
+      "avatarAlt": "Profile photo of {name}",
+      "statsLabel": "Profile stats",
+      "tripsLabel": "Trips",
+      "tripsCountAria": "{count} trips created",
+      "likesLabel": "Likes",
+      "likesAria": "{count} likes received",
+      "pinnedBadgesLabel": "Pinned badges",
+      "errorTitle": "Couldn't load profile",
+      "errorRetry": "Try again"
+    },
+    "tabs": {
+      "ariaLabel": "Profile sections",
+      "trips": "My Trips",
+      "badges": "Badges",
+      "settings": "Settings"
+    },
+    "trips": {
+      "loading": "Loading trips…",
+      "empty": {
+        "title": "No trips yet",
+        "desc": "Create your first Korea itinerary.",
+        "cta": "Open the map"
+      },
+      "error": {
+        "title": "Couldn't load trips",
+        "cta": "Try again"
+      },
+      "nudge": {
+        "title": "Or explore saved places",
+        "cta": "View saved"
+      },
+      "card": {
+        "draft": "Draft",
+        "edit": "Edit",
+        "editAria": "Edit trip {title}",
+        "delete": "Delete",
+        "deleteAria": "Delete trip {title}",
+        "likes": "likes",
+        "saves": "saves",
+        "stops": "stops",
+        "thumbnailAlt": "Thumbnail for {title}"
+      },
+      "deleteModal": {
+        "title": "Delete trip?",
+        "desc": "This will permanently delete \"{title}\". This cannot be undone.",
+        "confirm": "Delete",
+        "cancel": "Cancel",
+        "ariaLabel": "Confirm delete trip"
+      }
+    },
+    "badges": {
+      "loading": "Loading badges…",
+      "empty": {
+        "title": "No badges yet",
+        "desc": "Complete trips and contribute to the community to earn badges.",
+        "cta": "Start exploring"
+      },
+      "error": {
+        "title": "Couldn't load badges",
+        "cta": "Try again"
+      },
+      "rarity": {
+        "common": "Common",
+        "rare": "Rare",
+        "epic": "Epic",
+        "legendary": "Legendary"
+      },
+      "pinAria": "Pin {name}",
+      "unpinAria": "Unpin {name}",
+      "pinLimitError": "You can pin up to 3 badges. Unpin one to pin another.",
+      "earnedOn": "Earned on {date}",
+      "modal": {
+        "close": "Close badge detail",
+        "category": "Category",
+        "rarity": "Rarity",
+        "earned": "Earned"
+      }
+    },
+    "settings": {
+      "account": {
+        "heading": "Account",
+        "email": "Email",
+        "emailNote": "Sign-in address — cannot be changed here"
+      },
+      "preferences": {
+        "heading": "Preferences",
+        "language": "Language",
+        "transport": "Default transport",
+        "transportCar": "Car",
+        "transportPublic": "Transit",
+        "interests": "Interests",
+        "interestsNote": "Used to personalise recommendations",
+        "save": "Save changes",
+        "saving": "Saving…",
+        "saved": "Saved"
+      },
+      "interests": {
+        "kpop": "K-Pop",
+        "kdrama": "K-Drama",
+        "kbeauty": "K-Beauty",
+        "kculture": "K-Culture"
+      },
+      "languages": {
+        "en": "English",
+        "ko": "한국어",
+        "ja": "日本語",
+        "zh-CN": "简体中文",
+        "zh-TW": "繁體中文",
+        "th": "ภาษาไทย",
+        "pt-BR": "Português (BR)"
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "include": [
+    "../../B4KVault/tokens/primitives.json",
+    "../../B4KVault/tokens/color.dark.json"
+  ],
+  "source": [
+    "../../B4KVault/tokens/color.light.json"
+  ],
+  "platforms": {
+    "css-light": {
+      "transformGroup": "css",
+      "prefix": "",
+      "buildPath": "styles/generated/",
+      "files": [
+        {
+          "destination": "tokens.light.css",
+          "format": "css/variables",
+          "options": {
+            "outputReferences": false,
+            "selector": "[data-theme=\"light\"]"
+          }
+        }
+      ]
+    }
+  }
+}
