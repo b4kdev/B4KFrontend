@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
 import { Search, Bell, Globe, HelpCircle, Menu, X, ChevronLeft } from 'lucide-react';
 
 interface TopNavProps {
@@ -95,18 +94,9 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
             <HelpCircle size={17} strokeWidth={2} />
           </button>
 
-          {/* Avatar placeholder */}
-          <Link
-            href="/profile"
-            className="min-w-touch min-h-touch rounded-full flex items-center justify-center text-[11px] font-bold text-lav ml-1 shrink-0"
-            style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
-            aria-label={tNav('profile')}
-          >
-            B4
-          </Link>
         </div>
 
-        {/* Mobile action: search icon + avatar */}
+        {/* Mobile action: search icon */}
         <div className="flex lg:hidden items-center gap-1 ml-auto shrink-0">
           <button
             className="min-w-touch min-h-touch flex items-center justify-center rounded-lg text-muted"
@@ -115,14 +105,6 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
           >
             <Search size={18} strokeWidth={2} />
           </button>
-          <Link
-            href="/profile"
-            className="min-w-touch min-h-touch rounded-full flex items-center justify-center text-[11px] font-bold text-lav shrink-0"
-            style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
-            aria-label={tNav('profile')}
-          >
-            B4
-          </Link>
         </div>
       </header>
 
