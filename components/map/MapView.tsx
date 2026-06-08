@@ -62,7 +62,7 @@ export default function MapView() {
   }
 
   function handleToggleSave(poi: MapPoi) {
-    if (!session) { openAuthGate(); return }
+    if (!session) { openAuthGate('save'); return }
     setSavedPoiIds(prev => {
       const next = new Set(prev)
       if (next.has(poi.place_id)) {
@@ -85,7 +85,7 @@ export default function MapView() {
   }
 
   function handleSavePlan() {
-    if (!session) { openAuthGate(); return }
+    if (!session) { openAuthGate('plan'); return }
     // TODO: POST /api/plan/save when backend ready
     showToast(t('plan.savedToast'))
   }

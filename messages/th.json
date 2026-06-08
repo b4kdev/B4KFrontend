@@ -375,7 +375,8 @@
       "loading": "Signing in…",
       "error": "Sign-in failed. Try again.",
       "ariaLabel": "Sign in modal",
-      "close": "Close sign-in modal"
+      "close": "Close sign-in modal",
+      "planPreserved": "Your current plan is preserved — sign in to save it permanently."
     }
   },
   "map": {

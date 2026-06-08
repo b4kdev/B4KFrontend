@@ -58,14 +58,14 @@ export default function ItineraryDetailView({ id }: { id: string }) {
   }, [])
 
   const handleLike = useCallback(() => {
-    if (!session) { openAuthGate(); return }
+    if (!session) { openAuthGate('like'); return }
     const next = !isLiked
     setLikedOverride(next)
     showToast(next ? t('actions.likedToast') : t('actions.unlikedToast'))
   }, [session, isLiked, openAuthGate, showToast, t])
 
   const handleSave = useCallback(() => {
-    if (!session) { openAuthGate(); return }
+    if (!session) { openAuthGate('save'); return }
     const next = !isSaved
     setSavedOverride(next)
     showToast(next ? t('actions.savedToast') : t('actions.unsavedToast'))

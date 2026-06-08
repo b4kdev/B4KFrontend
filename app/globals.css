@@ -230,10 +230,18 @@ a { color: inherit; text-decoration: none; }
 
 /* ─── Auth Gate animation ───────────────────────────────────── */
 @keyframes authIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
 }
+@keyframes authInMobile {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+/* Desktop: fade + lift. Mobile: full slide-up from bottom (AG_02) */
 .auth-gate-panel { animation: authIn 0.22s ease-out; }
+@media (max-width: 1023px) {
+  .auth-gate-panel { animation: authInMobile 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+}
 
 /* ─── AI Overlay animation ──────────────────────────────────── */
 @keyframes aiOverlayIn {

@@ -2,22 +2,26 @@
 
 import { createContext, useContext, useState, useCallback } from 'react';
 
+export type GateReason = 'plan' | 'save' | 'like' | null;
+
 interface AuthGateContextValue {
-  isOpen: boolean;
-  open: () => void;
-  close: () => void;
+  isOpen:  boolean;
+  reason:  GateReason;
+  open:    (reason?: GateReason) => void;
+  close:   () => void;
 }
 
 const AuthGateContext = createContext<AuthGateContextValue | null>(null);
 
 export function AuthGateProvider({ children }: { children: React.ReactNode }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen]   = useState(false);
+  const [reason, setReason]   = useState<GateReason>(null);
 
-  const open = useCallback(() => setIsOpen(true), []);
-  const close = useCallback(() => setIsOpen(false), []);
+  const open  = useCallback((r: GateReason = null) => { setReason(r); setIsOpen(true); }, []);
+  const close = useCallback(() => { setIsOpen(false); setReason(null); }, []);
 
   return (
-    <AuthGateContext.Provider value={{ isOpen, open, close }}>
+    <AuthGateContext.Provider value={{ isOpen, reason, open, close }}>
       {children}
     </AuthGateContext.Provider>
   );
