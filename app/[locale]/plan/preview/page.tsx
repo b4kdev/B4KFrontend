@@ -263,7 +263,7 @@ export default function PlanPreviewPage() {
                       disabled={isSaving}
                       onChange={e => handleDurationChange(poi.place_id, Number(e.target.value) || 60)}
                       aria-label={t('durationAriaLabel', { name: displayName })}
-                      className="w-[46px] text-center text-xs text-fg bg-bg-3 rounded py-1 outline-none focus:ring-1 focus:ring-lav tabular-nums disabled:opacity-50"
+                      className="w-[46px] text-center text-xs text-fg bg-bg-3 rounded py-sp-1 outline-none focus:ring-1 focus:ring-lav tabular-nums disabled:opacity-50"
                       style={{ border: '1px solid var(--bdr)' }}
                     />
                     <span className="text-muted text-[10px]">{t('durationLabel')}</span>
@@ -337,7 +337,7 @@ export default function PlanPreviewPage() {
         {saveError && (
           <div
             className="flex items-center gap-sp-3 px-sp-4 py-sp-3 rounded-xl text-danger text-sm"
-            style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)' }}
+            style={{ background: 'color-mix(in srgb, var(--danger) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
             role="alert"
           >
             <AlertCircle size={16} strokeWidth={2} aria-hidden="true" />
