@@ -63,6 +63,11 @@
       "subtitle": "B4K 커뮤니티가 큐레이션",
       "seeAll": "전체 보기",
       "badge": "플랜",
+      "card": {
+        "ariaLabel": "{creator}의 {title}",
+        "likesLabel": "좋아요 {count}개",
+        "savesLabel": "저장 {count}개"
+      },
       "empty": {
         "title": "이번 주 플랜이 없어요",
         "desc": "당신의 한국 여행을 공유하고 다른 여행자에게 영감을 주세요.",
@@ -78,6 +83,9 @@
       "title": "시즌 한국 POI",
       "subtitle": "계절마다 변하는 한반도의 풍경을 큐레이션",
       "seeAll": "전체 보기",
+      "card": {
+        "ariaLabel": "{name}, {region} 위치"
+      },
       "empty": {
         "title": "이번 시즌 추천 장소가 아직 없어요",
         "desc": "큐레이터들이 이번 시즌 꼭 가봐야 할 곳을 모으고 있어요.",

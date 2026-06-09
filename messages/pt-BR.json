@@ -63,6 +63,11 @@
       "subtitle": "Curados pela comunidade B4K",
       "seeAll": "Ver Todos",
       "badge": "Roteiro",
+      "card": {
+        "ariaLabel": "{title} by {creator}",
+        "likesLabel": "{count} likes",
+        "savesLabel": "{count} saves"
+      },
       "empty": {
         "title": "No plans yet this week",
         "desc": "Share your Korea trip and inspire other travelers.",
@@ -78,6 +83,9 @@
       "title": "POIs Sazonais da Coreia",
       "subtitle": "Locais curados para as paisagens mutáveis da península",
       "seeAll": "Ver Todos",
+      "card": {
+        "ariaLabel": "{name}, {region}"
+      },
       "empty": {
         "title": "No seasonal picks yet",
         "desc": "Curators are gathering this season's must-see locations.",

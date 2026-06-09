@@ -63,6 +63,11 @@
       "subtitle": "由B4K社区策划",
       "seeAll": "查看全部",
       "badge": "行程",
+      "card": {
+        "ariaLabel": "{title} by {creator}",
+        "likesLabel": "{count} likes",
+        "savesLabel": "{count} saves"
+      },
       "empty": {
         "title": "No plans yet this week",
         "desc": "Share your Korea trip and inspire other travelers.",
@@ -78,6 +83,9 @@
       "title": "季节性韩国POI",
       "subtitle": "精选半岛变幻风景中的打卡地",
       "seeAll": "查看全部",
+      "card": {
+        "ariaLabel": "{name}, {region}"
+      },
       "empty": {
         "title": "No seasonal picks yet",
         "desc": "Curators are gathering this season's must-see locations.",

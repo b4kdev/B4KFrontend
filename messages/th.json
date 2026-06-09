@@ -63,6 +63,11 @@
       "subtitle": "คัดสรรโดยชุมชน B4K",
       "seeAll": "ดูทั้งหมด",
       "badge": "แผนการเดินทาง",
+      "card": {
+        "ariaLabel": "{title} by {creator}",
+        "likesLabel": "{count} likes",
+        "savesLabel": "{count} saves"
+      },
       "empty": {
         "title": "No plans yet this week",
         "desc": "Share your Korea trip and inspire other travelers.",
@@ -78,6 +83,9 @@
       "title": "POI เกาหลีตามฤดูกาล",
       "subtitle": "สถานที่ที่คัดสรรตามภูมิทัศน์ที่เปลี่ยนแปลงของคาบสมุทร",
       "seeAll": "ดูทั้งหมด",
+      "card": {
+        "ariaLabel": "{name}, {region}"
+      },
       "empty": {
         "title": "No seasonal picks yet",
         "desc": "Curators are gathering this season's must-see locations.",

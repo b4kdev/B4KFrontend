@@ -63,6 +63,11 @@
       "subtitle": "B4Kコミュニティによるキュレーション",
       "seeAll": "すべて見る",
       "badge": "旅程",
+      "card": {
+        "ariaLabel": "{title} by {creator}",
+        "likesLabel": "{count} likes",
+        "savesLabel": "{count} saves"
+      },
       "empty": {
         "title": "No plans yet this week",
         "desc": "Share your Korea trip and inspire other travelers.",
@@ -78,6 +83,9 @@
       "title": "季節の韓国POI",
       "subtitle": "半島の移ろう風景をキュレーション",
       "seeAll": "すべて見る",
+      "card": {
+        "ariaLabel": "{name}, {region}"
+      },
       "empty": {
         "title": "No seasonal picks yet",
         "desc": "Curators are gathering this season's must-see locations.",
