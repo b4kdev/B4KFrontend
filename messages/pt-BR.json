@@ -429,7 +429,8 @@
       "unsave": "Remove from saved",
       "savedToast": "Place saved!",
       "removedSave": "Removed from saved",
-      "addedToast": "Added to plan"
+      "addedToast": "Added to plan",
+      "dismiss": "Close"
     },
     "plan": {
       "title": "Your Plan",
@@ -445,7 +446,11 @@
         "public": "Public"
       },
       "save": "Save Plan",
-      "savedToast": "Plan saved!"
+      "savedToast": "Plan saved!",
+      "previewPlan": "Preview Plan",
+      "close": "Close plan sheet",
+      "stripExpand": "Expand plan panel",
+      "stripCollapse": "Collapse plan panel"
     },
     "aiOverlay": {
       "title": "AI Travel Assistant",
@@ -468,7 +473,11 @@
       "usePlan": "Use this plan",
       "usePlanLoaded": "Plan loaded ✓",
       "poiFound": "Here are some places:",
-      "planBuilt": "Here's a plan for you:"
+      "planBuilt": "Here's a plan for you:",
+      "previewPlan": "Preview Plan"
+    },
+    "planPill": {
+      "ariaLabel": "View your plan · {count} stops"
     }
   },
   "itinerary": {
@@ -766,6 +775,19 @@
       "ariaLabel": "View itinerary {title}",
       "stops": "{count, plural, one {# stop} other {# stops}}",
       "days": "{count, plural, one {# day} other {# days}}"
+    },
+    "folder": {
+      "openAriaLabel": "Open folder {name}",
+      "poiCount": "{count, plural, one {# place} other {# places}}",
+      "generatePlan": "Generate Plan",
+      "back": "Back to folders",
+      "selectHint": "Select places for your plan",
+      "selectAll": "Select All",
+      "deselectAll": "Deselect All",
+      "selectAriaLabel": "Select {name}",
+      "generate": "Generate ({count} places)",
+      "generating": "Generating…",
+      "generateError": "Couldn't generate plan. Please try again."
     }
   },
   "notifications": {
@@ -941,5 +963,43 @@
     },
     "cta": "Continue",
     "skip": "Skip for now"
+  },
+  "planPreview": {
+    "ariaLabel": "Plan preview",
+    "title": "Plan Preview",
+    "breadcrumb": "Plan Preview",
+    "defaultName": "My Plan",
+    "nameLabel": "Plan name",
+    "namePlaceholder": "Give your plan a name",
+    "nameSection": "Plan name",
+    "stopsSection": "Stops",
+    "stopsLabel": "stops",
+    "removeStop": "Remove stop {n}",
+    "dragHandle": "Drag to reorder stop {n}",
+    "durationLabel": "min",
+    "durationAriaLabel": "Duration for {name}",
+    "transportSection": "Transport",
+    "transport": {
+      "label": "Transport mode",
+      "car": "Car",
+      "public": "Public"
+    },
+    "total": "total",
+    "noStops": "No stops — go back and add places on the map",
+    "editOnMap": "Edit on Map",
+    "save": "Save Plan",
+    "savePublish": "Save & Publish",
+    "saving": "Saving…",
+    "saveError": "Failed to save. Please try again.",
+    "savedTitle": "Plan saved!",
+    "savedDesc": "Your plan is ready. Find it in your Saved tab.",
+    "viewSaved": "View Saved",
+    "backToMap": "Back to Map",
+    "back": "Go back",
+    "empty": {
+      "title": "No plan to preview",
+      "desc": "Head to the map, add some stops, then come back here.",
+      "cta": "Open Map"
+    }
   }
 }

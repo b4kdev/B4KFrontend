@@ -2,8 +2,10 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
-import { X, Minus, ArrowLeft, Send, Sparkles, Plus, Check, Loader2 } from 'lucide-react'
+import { useRouter } from '@/i18n/navigation'
+import { X, Minus, ArrowLeft, Send, Sparkles, Plus, Check, Loader2, ArrowRight } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
+import { saveDraftPlan } from '@/lib/draft-plan'
 import type { MapPoi } from '@/hooks/useMapPois'
 
 // ─── Types ──────────────────────────────────────────────────────
@@ -24,7 +26,6 @@ interface Props {
   pois:         MapPoi[]
   planStopIds:  string[]
   onAddToPlan:  (id: string) => void
-  onUsePlan:    (stops: MapPoi[]) => void
   onMinimize:   () => void
   onClose:      () => void
 }
@@ -133,18 +134,15 @@ function POICard({ poi, isInPlan, planFull, onAdd }: {
   )
 }
 
-function PlanResult({ stops, onUse, usedRef }: {
-  stops: MapPoi[]
-  onUse: () => void
-  usedRef: React.MutableRefObject<boolean>
-}) {
-  const t = useTranslations('map.aiOverlay')
-  const [used, setUsed] = useState(usedRef.current)
+function PlanResult({ stops }: { stops: MapPoi[] }) {
+  const t      = useTranslations('map.aiOverlay')
+  const router = useRouter()
 
-  function handleUse() {
-    usedRef.current = true
-    setUsed(true)
-    onUse()
+  function handlePreviewPlan() {
+    const durations: Record<string, number> = {}
+    stops.forEach(s => { durations[s.place_id] = 60 })
+    saveDraftPlan({ stops, durations, transport: 'public' })
+    router.push('/plan/preview')
   }
 
   return (
@@ -158,19 +156,11 @@ function PlanResult({ stops, onUse, usedRef }: {
         </div>
       ))}
       <button
-        onClick={handleUse}
-        disabled={used}
-        className={[
-          'mt-sp-2 w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-xl font-semibold text-sm transition-all',
-          used
-            ? 'bg-lav-dim text-lav cursor-default'
-            : 'bg-lav text-bg hover:opacity-90 active:opacity-75',
-        ].join(' ')}
+        onClick={handlePreviewPlan}
+        className="mt-sp-2 w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-xl font-semibold text-sm bg-lav text-bg hover:opacity-90 active:opacity-75 transition-opacity"
       >
-        {used
-          ? <><Check size={15} strokeWidth={2} aria-hidden="true" />{t('usePlanLoaded')}</>
-          : t('usePlan')
-        }
+        {t('previewPlan')}
+        <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
       </button>
     </div>
   )
@@ -178,7 +168,7 @@ function PlanResult({ stops, onUse, usedRef }: {
 
 // ─── Main Component ──────────────────────────────────────────────
 export default function AIOverlay({
-  open, pois, planStopIds, onAddToPlan, onUsePlan, onMinimize, onClose,
+  open, pois, planStopIds, onAddToPlan, onMinimize, onClose,
 }: Props) {
   const t = useTranslations('map.aiOverlay')
   const [messages, setMessages]     = useState<ChatMessage[]>([])
@@ -187,8 +177,6 @@ export default function AIOverlay({
   const [lastQuery, setLastQuery]   = useState('')
   const scrollRef  = useRef<HTMLDivElement>(null)
   const inputRef   = useRef<HTMLInputElement>(null)
-  const usedPlanRefs = useRef<Map<string, React.MutableRefObject<boolean>>>(new Map())
-
   // Scroll to bottom on new messages
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
@@ -225,10 +213,6 @@ export default function AIOverlay({
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input) }
-  }
-
-  function handleUsePlan(stops: MapPoi[]) {
-    onUsePlan(stops)
   }
 
   const chips = [
@@ -312,18 +296,7 @@ export default function AIOverlay({
                     className="p-sp-3 rounded-xl bg-bg-3 flex flex-col gap-sp-2"
                     style={{ border: '1px solid var(--lav-border)' }}
                   >
-                    {(() => {
-                      if (!usedPlanRefs.current.has(msg.id)) {
-                        usedPlanRefs.current.set(msg.id, { current: false })
-                      }
-                      return (
-                        <PlanResult
-                          stops={msg.planStops!}
-                          onUse={() => handleUsePlan(msg.planStops!)}
-                          usedRef={usedPlanRefs.current.get(msg.id)!}
-                        />
-                      )
-                    })()}
+                    <PlanResult stops={msg.planStops!} />
                   </div>
                 </div>
               )}

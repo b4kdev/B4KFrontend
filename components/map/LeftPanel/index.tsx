@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import LeftPanelDefault from './LeftPanelDefault'
 import LeftPanelPOIDetail from './LeftPanelPOIDetail'
 import LeftPanelPlanActive from './LeftPanelPlanActive'
+import PlanStrip from './PlanStrip'
 import type { MapPoi } from '@/hooks/useMapPois'
 
 interface Props {
@@ -24,7 +26,7 @@ interface Props {
   onRemove:         (id: string) => void
   onDurationChange: (id: string, minutes: number) => void
   onTransportChange:(mode: 'car' | 'public') => void
-  onSavePlan:       () => void
+  onPreviewPlan:    () => void
 }
 
 export default function LeftPanel({
@@ -32,47 +34,70 @@ export default function LeftPanel({
   activeRegion, activeFilters, onRegionToggle, onFilterToggle,
   planStops, stopDurations, transport,
   isSaved, isInPlan, planFull, onAddToPlan, onToggleSave,
-  onReorder, onRemove, onDurationChange, onTransportChange, onSavePlan,
+  onReorder, onRemove, onDurationChange, onTransportChange, onPreviewPlan,
 }: Props) {
-  // Priority: POI selected > plan active > default
+  const [planStripExpanded, setPlanStripExpanded] = useState(false)
+
+  const hasPlan = planStops.length > 0
+
   const selectedPoi = selectedPoiId
     ? pois.find(p => p.place_id === selectedPoiId) ?? null
     : null
 
-  if (selectedPoi) {
+  // State B: plan strip expanded → full-height plan active panel
+  if (hasPlan && planStripExpanded) {
     return (
-      <LeftPanelPOIDetail
-        poi={selectedPoi}
-        isSaved={isSaved(selectedPoi.place_id)}
-        isInPlan={isInPlan(selectedPoi.place_id)}
-        planFull={planFull}
-        onAddToPlan={() => onAddToPlan(selectedPoi.place_id)}
-        onToggleSave={() => onToggleSave(selectedPoi)}
-      />
+      <div className="flex flex-col h-full">
+        <div className="flex-1 min-h-0">
+          <LeftPanelPlanActive
+            stops={planStops}
+            stopDurations={stopDurations}
+            transport={transport}
+            onReorder={onReorder}
+            onRemove={onRemove}
+            onDurationChange={onDurationChange}
+            onTransportChange={onTransportChange}
+            onPreviewPlan={onPreviewPlan}
+          />
+        </div>
+        <PlanStrip
+          stopCount={planStops.length}
+          expanded={planStripExpanded}
+          onToggle={() => setPlanStripExpanded(false)}
+        />
+      </div>
     )
   }
 
-  if (planStops.length > 0) {
-    return (
-      <LeftPanelPlanActive
-        stops={planStops}
-        stopDurations={stopDurations}
-        transport={transport}
-        onReorder={onReorder}
-        onRemove={onRemove}
-        onDurationChange={onDurationChange}
-        onTransportChange={onTransportChange}
-        onSave={onSavePlan}
-      />
-    )
-  }
-
+  // State A: top zone (POI detail or Default) + collapsed plan strip when stops > 0
   return (
-    <LeftPanelDefault
-      activeRegion={activeRegion}
-      activeFilters={activeFilters}
-      onRegionToggle={onRegionToggle}
-      onFilterToggle={onFilterToggle}
-    />
+    <div className="flex flex-col h-full">
+      <div className="flex-1 min-h-0 overflow-hidden">
+        {selectedPoi ? (
+          <LeftPanelPOIDetail
+            poi={selectedPoi}
+            isSaved={isSaved(selectedPoi.place_id)}
+            isInPlan={isInPlan(selectedPoi.place_id)}
+            planFull={planFull}
+            onAddToPlan={() => onAddToPlan(selectedPoi.place_id)}
+            onToggleSave={() => onToggleSave(selectedPoi)}
+          />
+        ) : (
+          <LeftPanelDefault
+            activeRegion={activeRegion}
+            activeFilters={activeFilters}
+            onRegionToggle={onRegionToggle}
+            onFilterToggle={onFilterToggle}
+          />
+        )}
+      </div>
+      {hasPlan && (
+        <PlanStrip
+          stopCount={planStops.length}
+          expanded={planStripExpanded}
+          onToggle={() => setPlanStripExpanded(true)}
+        />
+      )}
+    </div>
   )
 }

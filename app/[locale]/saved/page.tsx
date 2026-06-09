@@ -2,16 +2,25 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { useRouter } from '@/i18n/navigation'
 import { Link } from '@/i18n/navigation'
-import { Bookmark, MapPin, Heart, Map, RefreshCw, AlertTriangle } from 'lucide-react'
+import {
+  Bookmark, MapPin, Heart, Map, RefreshCw, AlertTriangle,
+  ArrowLeft, Check, Sparkles, Loader2, FolderOpen,
+} from 'lucide-react'
 import { useSaved } from '@/hooks/useSaved'
 import { getDisplayName } from '@/lib/display-name'
+import { saveDraftPlan } from '@/lib/draft-plan'
+import FolderCard from '@/components/saved/FolderCard'
+import type { SavedFolder, SavedPoi } from '@/app/api/saved/route'
+import type { MapPoi } from '@/hooks/useMapPois'
 
-type Tab = 'places' | 'itineraries'
+type Tab        = 'places' | 'itineraries'
+type PlacesView = 'folders' | 'folder-detail' | 'folder-select'
 
 function RowSkeleton() {
   return (
-    <div className="flex items-center gap-sp-3 p-sp-4 animate-pulse" style={{ borderBottom: 'var(--bdr)' }}>
+    <div className="flex items-center gap-sp-3 p-sp-4 animate-pulse" style={{ borderBottom: '1px solid var(--bdr)' }}>
       <div className="w-14 h-14 rounded-lg bg-muted-3 shrink-0" />
       <div className="flex-1 space-y-sp-2">
         <div className="h-4 w-2/3 rounded bg-muted-3" />
@@ -21,9 +30,32 @@ function RowSkeleton() {
   )
 }
 
+function savedPoiToMapPoi(poi: SavedPoi): MapPoi {
+  return {
+    place_id:      poi.place_id,
+    name_ko:       poi.name_ko,
+    name_en:       poi.name_en,
+    coords_lat:    0,
+    coords_lng:    0,
+    display_domain:  '',
+    display_region:  poi.display_region,
+    is_trending:   false,
+    is_partner:    false,
+    quality_score: poi.quality_score,
+  }
+}
+
 export default function SavedPage() {
-  const t = useTranslations('saved')
-  const [tab, setTab] = useState<Tab>('places')
+  const t      = useTranslations('saved')
+  const router = useRouter()
+
+  const [tab,              setTab]              = useState<Tab>('places')
+  const [placesView,       setPlacesView]       = useState<PlacesView>('folders')
+  const [activeFolder,     setActiveFolder]     = useState<SavedFolder | null>(null)
+  const [selectedPoiIds,   setSelectedPoiIds]   = useState<Set<string>>(new Set())
+  const [generating,       setGenerating]       = useState(false)
+  const [generateError,    setGenerateError]    = useState(false)
+
   const { data, isLoading, isError, mutate } = useSaved()
 
   const tabClass = (active: boolean) => [
@@ -31,11 +63,83 @@ export default function SavedPage() {
     active ? 'text-lav border-b-2 border-lav' : 'text-muted hover:text-fg',
   ].join(' ')
 
+  function openFolder(folder: SavedFolder) {
+    setActiveFolder(folder)
+    setSelectedPoiIds(new Set())
+    setPlacesView('folder-detail')
+  }
+
+  function enterSelectMode(folder: SavedFolder) {
+    setActiveFolder(folder)
+    setSelectedPoiIds(new Set(folder.pois.map(p => p.place_id)))
+    setPlacesView('folder-select')
+  }
+
+  function togglePoi(id: string) {
+    setSelectedPoiIds(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  function toggleAll() {
+    if (!activeFolder) return
+    const allIds = activeFolder.pois.map(p => p.place_id)
+    if (selectedPoiIds.size === allIds.length) {
+      setSelectedPoiIds(new Set())
+    } else {
+      setSelectedPoiIds(new Set(allIds))
+    }
+  }
+
+  async function handleGenerate() {
+    if (!activeFolder || selectedPoiIds.size === 0) return
+    setGenerating(true)
+    setGenerateError(false)
+
+    const selectedPois = activeFolder.pois.filter(p => selectedPoiIds.has(p.place_id))
+
+    try {
+      const res = await fetch('/api/plans/generate', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ poi_ids: selectedPois.map(p => p.place_id) }),
+      })
+      if (!res.ok) throw new Error('generate_failed')
+
+      const generated = await res.json()
+      const stops = selectedPois.map(p => savedPoiToMapPoi(p))
+      const durations: Record<string, number> = {}
+      generated.stops.forEach((s: { poi_id: string; duration_min: number }) => {
+        durations[s.poi_id] = s.duration_min
+      })
+
+      saveDraftPlan({ stops, durations, transport: generated.transport ?? 'public' })
+      router.push('/plan/preview')
+    } catch {
+      setGenerateError(true)
+      setGenerating(false)
+    }
+  }
+
+  function backToFolders() {
+    setPlacesView('folders')
+    setActiveFolder(null)
+    setSelectedPoiIds(new Set())
+    setGenerateError(false)
+  }
+
+  const allSelected = activeFolder
+    ? selectedPoiIds.size === activeFolder.pois.length
+    : false
+
   return (
     <main
       className="max-w-[1200px] mx-auto px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-20"
       aria-label={t('ariaLabel')}
     >
+      {/* Breadcrumb */}
       <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
         <Link href="/" className="text-muted-2 hover:text-fg transition-colors">B4K</Link>
         <span>›</span>
@@ -46,13 +150,14 @@ export default function SavedPage() {
         {t('title')}
       </h1>
 
+      {/* Tabs */}
       <nav
         className="flex gap-sp-1 mb-sp-4"
-        style={{ borderBottom: 'var(--bdr)' }}
+        style={{ borderBottom: '1px solid var(--bdr)' }}
         aria-label={t('tabs.ariaLabel')}
       >
         <button
-          onClick={() => setTab('places')}
+          onClick={() => { setTab('places'); backToFolders() }}
           className={tabClass(tab === 'places')}
           aria-current={tab === 'places' ? 'page' : undefined}
         >
@@ -67,17 +172,14 @@ export default function SavedPage() {
         </button>
       </nav>
 
+      {/* ── Loading ── */}
       {isLoading && (
-        <div
-          aria-busy="true"
-          aria-label={t('loading')}
-          className="rounded-lg overflow-hidden"
-          style={{ border: '1px solid var(--bdr)' }}
-        >
+        <div aria-busy="true" aria-label={t('loading')} className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--bdr)' }}>
           {Array.from({ length: 3 }, (_, i) => <RowSkeleton key={i} />)}
         </div>
       )}
 
+      {/* ── Error ── */}
       {isError && !isLoading && (
         <div
           className="flex flex-col items-center justify-center text-center py-16 rounded-lg"
@@ -95,53 +197,172 @@ export default function SavedPage() {
         </div>
       )}
 
+      {/* ── Places tab ── */}
       {!isLoading && !isError && data && tab === 'places' && (
-        data.pois.length === 0 ? (
-          <div
-            className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-lg"
-            style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
-          >
-            <Bookmark size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
-            <p className="text-[16px] font-semibold text-fg mb-sp-2">{t('empty.places.title')}</p>
-            <p className="text-[13px] text-muted max-w-[320px] mb-sp-5">{t('empty.places.desc')}</p>
-            <Link
-              href="/map"
-              className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-lg text-[13px] font-semibold text-bg min-h-touch"
-              style={{ background: 'var(--lav)' }}
+
+        // Folders list
+        placesView === 'folders' ? (
+          data.folders.length === 0 ? (
+            <div
+              className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-lg"
+              style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
             >
-              <Map size={15} strokeWidth={2} />{t('empty.places.cta')}
-            </Link>
-          </div>
-        ) : (
-          <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--bdr)' }}>
-            {data.pois.map((poi, idx) => {
-              const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
-              return (
-                <Link
-                  key={poi.place_id}
-                  href={`/map?poi=${poi.place_id}`}
-                  className="flex items-center gap-sp-3 p-sp-4 hover:bg-muted-3 transition-colors min-h-touch"
-                  style={idx < data.pois.length - 1 ? { borderBottom: 'var(--bdr)' } : {}}
-                  aria-label={t('place.ariaLabel', { name })}
-                >
+              <FolderOpen size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
+              <p className="text-[16px] font-semibold text-fg mb-sp-2">{t('empty.places.title')}</p>
+              <p className="text-[13px] text-muted max-w-[320px] mb-sp-5">{t('empty.places.desc')}</p>
+              <Link
+                href="/map"
+                className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-lg text-[13px] font-semibold text-bg min-h-touch"
+                style={{ background: 'var(--lav)' }}
+              >
+                <Map size={15} strokeWidth={2} />{t('empty.places.cta')}
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-sp-4">
+              {data.folders.map(folder => (
+                <FolderCard
+                  key={folder.id}
+                  folder={folder}
+                  onOpen={() => openFolder(folder)}
+                  onGeneratePlan={() => enterSelectMode(folder)}
+                />
+              ))}
+            </div>
+          )
+
+        // Folder detail — POI list + Generate Plan button
+        ) : placesView === 'folder-detail' && activeFolder ? (
+          <div>
+            <button
+              onClick={backToFolders}
+              className="flex items-center gap-sp-2 text-muted hover:text-fg transition-colors text-sm mb-sp-4 min-h-touch"
+            >
+              <ArrowLeft size={14} strokeWidth={2} />
+              {t('folder.back')}
+            </button>
+
+            <div className="flex items-center justify-between mb-sp-4">
+              <h2 className="font-display font-bold text-fg text-lg">{activeFolder.name}</h2>
+              <span className="text-xs text-muted">
+                {t('folder.poiCount', { count: activeFolder.pois.length })}
+              </span>
+            </div>
+
+            <div className="rounded-xl overflow-hidden mb-sp-4" style={{ border: '1px solid var(--bdr)' }}>
+              {activeFolder.pois.map((poi, idx) => {
+                const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
+                return (
                   <div
-                    className="w-14 h-14 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ background: 'var(--bg-3)' }}
+                    key={poi.place_id}
+                    className="flex items-center gap-sp-3 p-sp-4"
+                    style={idx < activeFolder.pois.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}
                   >
-                    <MapPin size={20} strokeWidth={2} className="text-muted-2" />
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
+                      <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[14px] font-semibold text-fg truncate">{name}</p>
+                      <p className="text-[12px] text-muted mt-[2px]">{poi.display_region}</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-semibold text-fg truncate">{name}</p>
-                    <p className="text-[12px] text-muted mt-[2px]">{poi.display_region}</p>
-                  </div>
-                  <Bookmark size={16} strokeWidth={2} className="text-lav shrink-0" />
-                </Link>
-              )
-            })}
+                )
+              })}
+            </div>
+
+            <button
+              onClick={() => enterSelectMode(activeFolder)}
+              className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-xl font-semibold text-sm hover:opacity-90 active:opacity-75 transition-opacity"
+            >
+              <Sparkles size={16} strokeWidth={2} aria-hidden="true" />
+              {t('folder.generatePlan')}
+            </button>
           </div>
-        )
+
+        // Folder select — checkbox mode
+        ) : placesView === 'folder-select' && activeFolder ? (
+          <div>
+            <button
+              onClick={() => setPlacesView('folder-detail')}
+              className="flex items-center gap-sp-2 text-muted hover:text-fg transition-colors text-sm mb-sp-4 min-h-touch"
+            >
+              <ArrowLeft size={14} strokeWidth={2} />
+              {activeFolder.name}
+            </button>
+
+            <div className="flex items-center justify-between mb-sp-3">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-muted">
+                {t('folder.selectHint')}
+              </p>
+              <button
+                onClick={toggleAll}
+                className="text-xs font-semibold text-lav hover:text-fg transition-colors min-h-touch px-sp-2"
+              >
+                {allSelected ? t('folder.deselectAll') : t('folder.selectAll')}
+              </button>
+            </div>
+
+            <div className="rounded-xl overflow-hidden mb-sp-4" style={{ border: '1px solid var(--bdr)' }}>
+              {activeFolder.pois.map((poi, idx) => {
+                const name     = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
+                const selected = selectedPoiIds.has(poi.place_id)
+                return (
+                  <button
+                    key={poi.place_id}
+                    onClick={() => togglePoi(poi.place_id)}
+                    aria-pressed={selected}
+                    aria-label={t('folder.selectAriaLabel', { name })}
+                    className="w-full flex items-center gap-sp-3 p-sp-4 text-left hover:bg-bg-3 transition-colors"
+                    style={idx < activeFolder.pois.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}
+                  >
+                    <div
+                      className={[
+                        'w-5 h-5 rounded flex items-center justify-center shrink-0 transition-colors',
+                        selected ? 'bg-lav' : 'bg-muted-3',
+                      ].join(' ')}
+                      style={selected ? undefined : { border: '1px solid var(--bdr)' }}
+                      aria-hidden="true"
+                    >
+                      {selected && <Check size={12} strokeWidth={2} className="text-bg" />}
+                    </div>
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
+                      <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[14px] font-semibold text-fg truncate">{name}</p>
+                      <p className="text-[12px] text-muted mt-[2px]">{poi.display_region}</p>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+
+            {generateError && (
+              <div
+                className="flex items-center gap-sp-3 px-sp-4 py-sp-3 rounded-xl text-danger text-sm mb-sp-3"
+                style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)' }}
+                role="alert"
+              >
+                <AlertTriangle size={16} strokeWidth={2} aria-hidden="true" />
+                {t('folder.generateError')}
+              </div>
+            )}
+
+            <button
+              onClick={handleGenerate}
+              disabled={generating || selectedPoiIds.size === 0}
+              className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-xl font-semibold text-sm hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40"
+            >
+              {generating
+                ? <><Loader2 size={16} strokeWidth={2} className="animate-spin" aria-hidden="true" />{t('folder.generating')}</>
+                : <><Sparkles size={16} strokeWidth={2} aria-hidden="true" />{t('folder.generate', { count: selectedPoiIds.size })}</>
+              }
+            </button>
+          </div>
+        ) : null
       )}
 
+      {/* ── Itineraries tab ── */}
       {!isLoading && !isError && data && tab === 'itineraries' && (
         data.plans.length === 0 ? (
           <div

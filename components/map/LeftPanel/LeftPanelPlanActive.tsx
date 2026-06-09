@@ -14,12 +14,12 @@ interface Props {
   onRemove:         (id: string) => void
   onDurationChange: (id: string, minutes: number) => void
   onTransportChange:(mode: 'car' | 'public') => void
-  onSave:           () => void
+  onPreviewPlan:    () => void
 }
 
 export default function LeftPanelPlanActive({
   stops, stopDurations, transport,
-  onReorder, onRemove, onDurationChange, onTransportChange, onSave,
+  onReorder, onRemove, onDurationChange, onTransportChange, onPreviewPlan,
 }: Props) {
   const t = useTranslations('map.plan')
   const dragItem = useRef<number | null>(null)
@@ -167,12 +167,12 @@ export default function LeftPanelPlanActive({
           ))}
         </div>
 
-        {/* LP_15 — Save plan */}
+        {/* LP_15 — Preview plan */}
         <button
-          onClick={onSave}
+          onClick={onPreviewPlan}
           className="w-full min-h-touch flex items-center justify-center bg-lav text-bg rounded-xl font-body font-semibold text-sm hover:opacity-90 active:opacity-75 transition-opacity"
         >
-          {t('save')}
+          {t('previewPlan')}
         </button>
       </div>
     </div>

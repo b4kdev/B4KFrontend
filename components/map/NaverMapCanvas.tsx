@@ -210,9 +210,9 @@ export default function NaverMapCanvas({
         </div>
       )}
 
-      {/* Zoom controls — MP_07, MP_08 */}
+      {/* Zoom controls — MP_07, MP_08 — desktop only */}
       {mapReady && (
-        <div className="absolute bottom-sp-8 right-sp-4 flex flex-col z-10" style={{ filter: 'drop-shadow(0 2px 4px var(--backdrop-50))' }}>
+        <div className="hidden lg:flex absolute bottom-sp-8 right-sp-4 flex-col z-10" style={{ filter: 'drop-shadow(0 2px 4px var(--backdrop-50))' }}>
           <button onClick={zoomIn} aria-label={t('zoomIn')} className="w-touch h-touch flex items-center justify-center bg-bg-2 text-fg rounded-t-lg hover:bg-bg-3 transition-colors" style={{ border: '1px solid var(--bdr)' }}>
             <Plus size={16} strokeWidth={2} />
           </button>

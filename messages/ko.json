@@ -277,6 +277,44 @@
         "plan": "플랜"
       }
     },
+    "planPreview": {
+      "ariaLabel": "플랜 미리보기",
+      "title": "플랜 미리보기",
+      "breadcrumb": "플랜 미리보기",
+      "defaultName": "내 플랜",
+      "nameLabel": "플랜 이름",
+      "namePlaceholder": "플랜 이름을 입력하세요",
+      "nameSection": "플랜 이름",
+      "stopsSection": "방문지",
+      "stopsLabel": "개 장소",
+      "removeStop": "{n}번 장소 삭제",
+      "dragHandle": "{n}번 장소 순서 변경",
+      "durationLabel": "분",
+      "durationAriaLabel": "{name} 체류 시간",
+      "transportSection": "이동 수단",
+      "transport": {
+        "label": "이동 수단 선택",
+        "car": "자동차",
+        "public": "대중교통"
+      },
+      "total": "총 예상 시간",
+      "noStops": "장소가 없습니다 — 지도로 돌아가 장소를 추가하세요",
+      "editOnMap": "지도에서 편집",
+      "save": "플랜 저장",
+      "savePublish": "저장 후 공개",
+      "saving": "저장 중…",
+      "saveError": "저장에 실패했습니다. 다시 시도해 주세요.",
+      "savedTitle": "플랜이 저장되었습니다!",
+      "savedDesc": "저장된 탭에서 확인할 수 있습니다.",
+      "viewSaved": "저장 목록 보기",
+      "backToMap": "지도로 돌아가기",
+      "back": "뒤로",
+      "empty": {
+        "title": "미리볼 플랜이 없습니다",
+        "desc": "지도에서 장소를 추가한 후 다시 방문하세요.",
+        "cta": "지도 열기"
+      }
+    },
     "leaderboard": {
       "breadcrumb": "리더보드",
       "title": "리더보드",
@@ -429,7 +467,8 @@
       "unsave": "저장 취소",
       "savedToast": "장소가 저장되었습니다!",
       "removedSave": "저장이 취소되었습니다",
-      "addedToast": "플랜에 추가되었습니다"
+      "addedToast": "플랜에 추가되었습니다",
+      "dismiss": "닫기"
     },
     "plan": {
       "title": "내 플랜",
@@ -445,7 +484,11 @@
         "public": "대중교통"
       },
       "save": "플랜 저장",
-      "savedToast": "플랜이 저장되었습니다!"
+      "savedToast": "플랜이 저장되었습니다!",
+      "previewPlan": "플랜 미리보기",
+      "close": "플랜 시트 닫기",
+      "stripExpand": "플랜 패널 펼치기",
+      "stripCollapse": "플랜 패널 접기"
     },
     "aiOverlay": {
       "title": "AI 여행 어시스턴트",
@@ -468,7 +511,11 @@
       "usePlan": "이 플랜 사용하기",
       "usePlanLoaded": "플랜 불러옴 ✓",
       "poiFound": "관련 장소를 찾았어요:",
-      "planBuilt": "이런 플랜은 어떠세요:"
+      "planBuilt": "이런 플랜은 어떠세요:",
+      "previewPlan": "플랜 미리보기"
+    },
+    "planPill": {
+      "ariaLabel": "플랜 보기 · {count}개 장소"
     }
   },
   "itinerary": {
@@ -766,6 +813,19 @@
       "ariaLabel": "일정 {title} 보기",
       "stops": "{count}개 정류장",
       "days": "{count}일"
+    },
+    "folder": {
+      "openAriaLabel": "{name} 폴더 열기",
+      "poiCount": "{count}개 장소",
+      "generatePlan": "플랜 생성",
+      "back": "폴더 목록으로",
+      "selectHint": "플랜에 넣을 장소를 선택하세요",
+      "selectAll": "전체 선택",
+      "deselectAll": "전체 해제",
+      "selectAriaLabel": "{name} 선택",
+      "generate": "생성하기 ({count}개)",
+      "generating": "생성 중…",
+      "generateError": "플랜 생성에 실패했습니다. 다시 시도해 주세요."
     }
   },
   "notifications": {
