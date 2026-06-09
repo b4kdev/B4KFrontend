@@ -363,7 +363,8 @@
     },
     "offline": {
       "title": "You're offline",
-      "desc": "Reconnect to keep planning. Your saved trips are kept locally."
+      "desc": "Reconnect to keep planning. Your saved trips are kept locally.",
+      "retry": "Try again"
     }
   },
   "auth": {
@@ -650,5 +651,295 @@
         "pt-BR": "Português (BR)"
       }
     }
+  },
+  "explore": {
+    "title": "Explore",
+    "breadcrumb": "Explore",
+    "loading": "Loading…",
+    "sectionEmpty": "No places yet",
+    "sidebar": {
+      "ariaLabel": "Content category navigation"
+    },
+    "pills": {
+      "ariaLabel": "Content category tabs"
+    },
+    "error": {
+      "title": "Failed to load",
+      "retry": "Try again"
+    },
+    "card": {
+      "trending": "Trending",
+      "ariaLabel": "View {name} on map"
+    },
+    "hub": {
+      "title": "Explore Korea",
+      "subtitle": "Dive into K-Pop, K-Drama, K-Beauty, and K-Culture",
+      "kpop": {
+        "desc": "Artists, concert venues, agency tours, and merchandise"
+      },
+      "kdrama": {
+        "desc": "Filming locations, drama trails, and iconic sets"
+      },
+      "kbeauty": {
+        "desc": "Skincare districts, clinics, and brand flagship stores"
+      },
+      "kculture": {
+        "desc": "Cuisine, traditional markets, and heritage experiences"
+      }
+    },
+    "kpop": {
+      "title": "K-Pop",
+      "empty": {
+        "title": "No K-Pop spots yet",
+        "desc": "K-Pop content is coming soon."
+      }
+    },
+    "kdrama": {
+      "title": "K-Drama",
+      "empty": {
+        "title": "No K-Drama spots yet",
+        "desc": "K-Drama content is coming soon."
+      }
+    },
+    "kbeauty": {
+      "title": "K-Beauty",
+      "empty": {
+        "title": "No K-Beauty spots yet",
+        "desc": "K-Beauty content is coming soon."
+      }
+    },
+    "kculture": {
+      "title": "K-Culture",
+      "empty": {
+        "title": "No K-Culture spots yet",
+        "desc": "K-Culture content is coming soon."
+      }
+    },
+    "sections": {
+      "concerts": "Concerts",
+      "tours": "Tours",
+      "agencies": "Agencies",
+      "merchandise": "Merchandise",
+      "filming": "Filming Locations",
+      "historical": "Historical Sets",
+      "ostCafes": "OST Cafés",
+      "skincare": "Skincare",
+      "makeup": "Makeup",
+      "spa": "Spa & Wellness",
+      "salon": "Salon Experiences",
+      "cuisine": "Korean Cuisine",
+      "markets": "Traditional Markets",
+      "historic": "Historic Places",
+      "experiences": "Traditional Experiences"
+    }
+  },
+  "saved": {
+    "ariaLabel": "Saved page",
+    "breadcrumb": "Saved",
+    "title": "Saved",
+    "tabs": {
+      "ariaLabel": "Content tabs",
+      "places": "Places",
+      "itineraries": "Itineraries"
+    },
+    "loading": "Loading saved items…",
+    "error": {
+      "title": "Couldn't load saved items",
+      "retry": "Try again"
+    },
+    "empty": {
+      "places": {
+        "title": "No saved places yet",
+        "desc": "Tap the bookmark icon on any place to save it here.",
+        "cta": "Explore the map"
+      },
+      "itineraries": {
+        "title": "No saved itineraries yet",
+        "desc": "Save itineraries you love to revisit them anytime.",
+        "cta": "Explore the map"
+      }
+    },
+    "place": {
+      "ariaLabel": "View {name} on map"
+    },
+    "plan": {
+      "ariaLabel": "View itinerary {title}",
+      "stops": "{count, plural, one {# stop} other {# stops}}",
+      "days": "{count, plural, one {# day} other {# days}}"
+    }
+  },
+  "notifications": {
+    "ariaLabel": "Notifications page",
+    "breadcrumb": "Notifications",
+    "title": "Notifications",
+    "unread": "{count, plural, one {# unread} other {# unread}}",
+    "loading": "Loading notifications…",
+    "error": {
+      "title": "Couldn't load notifications",
+      "retry": "Try again"
+    },
+    "empty": {
+      "title": "You're all caught up",
+      "desc": "Notifications about events, deals, and badges will appear here."
+    },
+    "groups": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "earlier": "Earlier"
+    }
+  },
+  "badges": {
+    "ariaLabel": "Badges page",
+    "breadcrumb": "Badges",
+    "title": "Badges",
+    "stats": "{earned} / {total} earned",
+    "filter": {
+      "ariaLabel": "Filter by rarity",
+      "all": "All",
+      "common": "Common",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    },
+    "loading": "Loading badges…",
+    "error": {
+      "title": "Couldn't load badges",
+      "retry": "Try again"
+    },
+    "empty": {
+      "title": "No badges found",
+      "desc": "Explore Korea and complete challenges to earn badges."
+    },
+    "badge": {
+      "ariaLabel": "{name} — {rarity}",
+      "pinned": "Pinned badge",
+      "earnedOn": "Earned {date}",
+      "locked": "Locked"
+    }
+  },
+  "leaderboard": {
+    "ariaLabel": "Leaderboard page",
+    "breadcrumb": "Leaderboard",
+    "title": "Leaderboard",
+    "windows": {
+      "ariaLabel": "Time window",
+      "weekly": "Weekly",
+      "rising": "Rising",
+      "annual": "Annual"
+    },
+    "loading": "Loading leaderboard…",
+    "error": {
+      "title": "Couldn't load leaderboard",
+      "retry": "Try again"
+    },
+    "empty": {
+      "title": "No entries yet",
+      "desc": "Start saving places and creating itineraries to earn points."
+    },
+    "rank": "Rank {rank}",
+    "plans": "{count, plural, one {# plan} other {# plans}}",
+    "scoreUnit": "pts",
+    "computedAt": "Updated {date}"
+  },
+  "help": {
+    "ariaLabel": "Help page",
+    "breadcrumb": "Help",
+    "title": "Help & FAQ",
+    "expandAriaLabel": "Expand: {question}",
+    "collapseAriaLabel": "Collapse: {question}",
+    "sections": {
+      "gettingStarted": {
+        "title": "Getting started",
+        "items": {
+          "q1": {
+            "q": "What is B4K?",
+            "a": "B4K is a K-culture travel discovery platform for foreign tourists visiting Korea. Find K-Pop venues, K-Drama filming locations, beauty spots, and more — then build your own itinerary."
+          },
+          "q2": {
+            "q": "Do I need an account to use B4K?",
+            "a": "You can explore the map without an account. Saving places, creating itineraries, and joining the leaderboard require signing in with Google."
+          },
+          "q3": {
+            "q": "Which languages does B4K support?",
+            "a": "B4K is available in Korean, English, Japanese, Chinese (Simplified & Traditional), Thai, and Portuguese (Brazil)."
+          }
+        }
+      },
+      "map": {
+        "title": "Using the map",
+        "items": {
+          "q1": {
+            "q": "How do I save a place?",
+            "a": "Tap any pin on the map to open the place panel, then tap the bookmark icon to save it. Saved places appear in your Saved tab."
+          },
+          "q2": {
+            "q": "How do I build an itinerary?",
+            "a": "Open a place on the map and tap 'Add to plan' in the panel. You can add multiple stops, reorder them, and let B4K calculate the best route."
+          }
+        }
+      },
+      "account": {
+        "title": "Account",
+        "items": {
+          "q1": {
+            "q": "How do I change my profile?",
+            "a": "Go to your profile (the icon at the bottom of the sidebar), then tap the edit icon to update your display name and language preference."
+          },
+          "q2": {
+            "q": "How do I delete my account?",
+            "a": "In Profile → Settings, tap 'Delete account'. Your data is held for 30 days before permanent deletion, in line with Korean privacy law (PIPA)."
+          }
+        }
+      },
+      "contact": {
+        "title": "Contact",
+        "desc": "Can't find what you're looking for? Reach out and we'll get back to you.",
+        "ctaEmail": "Email support",
+        "ctaEmailHref": "mailto:support@b4k.app"
+      }
+    }
+  },
+  "onboarding": {
+    "ariaLabel": "Onboarding — choose your interests",
+    "title": "What brings you to Korea?",
+    "subtitle": "Personalise your B4K experience.",
+    "desc": "Select the things you're most excited about. You can change this later.",
+    "interests": {
+      "label": "Pick your interests",
+      "kpop": {
+        "label": "K-Pop",
+        "desc": "Concerts, venues & fandom"
+      },
+      "kdrama": {
+        "label": "K-Drama",
+        "desc": "Filming locations & tours"
+      },
+      "kbeauty": {
+        "label": "K-Beauty",
+        "desc": "Skincare, makeup & spas"
+      },
+      "kculture": {
+        "label": "K-Culture",
+        "desc": "Food, markets & traditions"
+      },
+      "food": {
+        "label": "Food",
+        "desc": "Street food & local dining"
+      },
+      "nature": {
+        "label": "Nature",
+        "desc": "Parks, trails & outdoors"
+      },
+      "nightlife": {
+        "label": "Nightlife",
+        "desc": "Bars, clubs & late nights"
+      },
+      "history": {
+        "label": "History",
+        "desc": "Palaces, temples & heritage"
+      }
+    },
+    "cta": "Continue",
+    "skip": "Skip for now"
   }
 }

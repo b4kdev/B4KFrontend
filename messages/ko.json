@@ -363,7 +363,8 @@
     },
     "offline": {
       "title": "오프라인 상태입니다",
-      "desc": "연결을 다시 시도해 주세요. 저장된 여행은 로컬에 보관됩니다."
+      "desc": "연결을 다시 시도해 주세요. 저장된 여행은 로컬에 보관됩니다.",
+      "retry": "다시 시도"
     }
   },
   "auth": {
@@ -475,9 +476,19 @@
     "notFound": "여행 경로를 찾을 수 없어요",
     "private": "비공개 여행 경로입니다",
     "privateDesc": "이 여행 경로는 작성자가 비공개로 설정했어요.",
-    "error": { "title": "여행 경로를 불러오지 못했어요", "cta": "다시 시도" },
-    "stats": { "stops": "{count}곳", "min": "{min}분", "km": "{km}km" },
-    "transport": { "car": "자가용", "public": "대중교통" },
+    "error": {
+      "title": "여행 경로를 불러오지 못했어요",
+      "cta": "다시 시도"
+    },
+    "stats": {
+      "stops": "{count}곳",
+      "min": "{min}분",
+      "km": "{km}km"
+    },
+    "transport": {
+      "car": "자가용",
+      "public": "대중교통"
+    },
     "actions": {
       "like": "좋아요",
       "liked": "좋아요 완료",
@@ -496,17 +507,30 @@
       "savedToast": "저장됐어요!",
       "unsavedToast": "저장이 취소됐어요"
     },
-    "tabs": { "all": "전체", "day": "{n}일차" },
-    "stopList": { "ariaLabel": "여행 경로 목적지 목록" },
-    "stopItem": { "ariaLabel": "{n}번째 목적지: {name}", "min": "{min}분" },
+    "tabs": {
+      "all": "전체",
+      "day": "{n}일차"
+    },
+    "stopList": {
+      "ariaLabel": "여행 경로 목적지 목록"
+    },
+    "stopItem": {
+      "ariaLabel": "{n}번째 목적지: {name}",
+      "min": "{min}분"
+    },
     "sponsored": "스폰서",
     "related": {
       "title": "다른 여행 경로",
       "stops": "{count}곳",
       "likes": "좋아요 {count}개"
     },
-    "panel": { "ariaLabel": "여행 경로 상세" },
-    "sheet": { "handle": "드래그로 조절", "ariaLabel": "여행 경로 상세 패널" },
+    "panel": {
+      "ariaLabel": "여행 경로 상세"
+    },
+    "sheet": {
+      "handle": "드래그로 조절",
+      "ariaLabel": "여행 경로 상세 패널"
+    },
     "copiedToast": "링크가 복사됐어요!",
     "mapAriaLabel": "여행 경로 지도",
     "createdBy": "{name} 작성"
@@ -627,5 +651,295 @@
         "pt-BR": "Português (BR)"
       }
     }
+  },
+  "explore": {
+    "title": "탐험하기",
+    "breadcrumb": "탐험",
+    "loading": "로딩 중…",
+    "sectionEmpty": "아직 등록된 장소가 없습니다",
+    "sidebar": {
+      "ariaLabel": "콘텐츠 카테고리 탐색"
+    },
+    "pills": {
+      "ariaLabel": "콘텐츠 카테고리 탭"
+    },
+    "error": {
+      "title": "불러오기 실패",
+      "retry": "다시 시도"
+    },
+    "card": {
+      "trending": "트렌딩",
+      "ariaLabel": "지도에서 {name} 보기"
+    },
+    "hub": {
+      "title": "한국 탐험",
+      "subtitle": "K-팝, K-드라마, K-뷰티, K-컬처를 탐험해보세요",
+      "kpop": {
+        "desc": "아티스트, 공연장, 기획사 투어, 굿즈 매장"
+      },
+      "kdrama": {
+        "desc": "촬영지, 드라마 코스, 역사적 세트장"
+      },
+      "kbeauty": {
+        "desc": "스킨케어 명소, 클리닉, 브랜드 플래그십 스토어"
+      },
+      "kculture": {
+        "desc": "한식, 전통시장, 문화유산 체험"
+      }
+    },
+    "kpop": {
+      "title": "K-팝",
+      "empty": {
+        "title": "K-팝 장소가 아직 없습니다",
+        "desc": "K-팝 콘텐츠를 준비 중입니다."
+      }
+    },
+    "kdrama": {
+      "title": "K-드라마",
+      "empty": {
+        "title": "K-드라마 장소가 아직 없습니다",
+        "desc": "K-드라마 콘텐츠를 준비 중입니다."
+      }
+    },
+    "kbeauty": {
+      "title": "K-뷰티",
+      "empty": {
+        "title": "K-뷰티 장소가 아직 없습니다",
+        "desc": "K-뷰티 콘텐츠를 준비 중입니다."
+      }
+    },
+    "kculture": {
+      "title": "K-컬처",
+      "empty": {
+        "title": "K-컬처 장소가 아직 없습니다",
+        "desc": "K-컬처 콘텐츠를 준비 중입니다."
+      }
+    },
+    "sections": {
+      "concerts": "콘서트",
+      "tours": "투어",
+      "agencies": "기획사",
+      "merchandise": "굿즈",
+      "filming": "촬영지",
+      "historical": "역사적 세트장",
+      "ostCafes": "OST 카페",
+      "skincare": "스킨케어",
+      "makeup": "메이크업",
+      "spa": "스파 & 웰니스",
+      "salon": "살롱 체험",
+      "cuisine": "한국 음식",
+      "markets": "전통시장",
+      "historic": "역사 유적지",
+      "experiences": "전통 체험"
+    }
+  },
+  "saved": {
+    "ariaLabel": "저장된 항목",
+    "breadcrumb": "저장됨",
+    "title": "저장됨",
+    "tabs": {
+      "ariaLabel": "콘텐츠 탭",
+      "places": "장소",
+      "itineraries": "일정"
+    },
+    "loading": "저장된 항목을 불러오는 중…",
+    "error": {
+      "title": "저장된 항목을 불러올 수 없습니다",
+      "retry": "다시 시도"
+    },
+    "empty": {
+      "places": {
+        "title": "저장된 장소가 없습니다",
+        "desc": "장소의 북마크 아이콘을 눌러 저장하세요.",
+        "cta": "지도 둘러보기"
+      },
+      "itineraries": {
+        "title": "저장된 일정이 없습니다",
+        "desc": "마음에 드는 일정을 저장하면 언제든지 다시 볼 수 있습니다.",
+        "cta": "지도 둘러보기"
+      }
+    },
+    "place": {
+      "ariaLabel": "지도에서 {name} 보기"
+    },
+    "plan": {
+      "ariaLabel": "일정 {title} 보기",
+      "stops": "{count}개 정류장",
+      "days": "{count}일"
+    }
+  },
+  "notifications": {
+    "ariaLabel": "알림 페이지",
+    "breadcrumb": "알림",
+    "title": "알림",
+    "unread": "읽지 않은 알림 {count}개",
+    "loading": "알림을 불러오는 중…",
+    "error": {
+      "title": "알림을 불러올 수 없습니다",
+      "retry": "다시 시도"
+    },
+    "empty": {
+      "title": "새로운 알림이 없습니다",
+      "desc": "이벤트, 할인, 배지에 대한 알림이 여기에 표시됩니다."
+    },
+    "groups": {
+      "today": "오늘",
+      "yesterday": "어제",
+      "earlier": "이전"
+    }
+  },
+  "badges": {
+    "ariaLabel": "배지 페이지",
+    "breadcrumb": "배지",
+    "title": "배지",
+    "stats": "{earned} / {total} 획득",
+    "filter": {
+      "ariaLabel": "희귀도별 필터",
+      "all": "전체",
+      "common": "일반",
+      "rare": "레어",
+      "epic": "에픽",
+      "legendary": "레전더리"
+    },
+    "loading": "배지를 불러오는 중…",
+    "error": {
+      "title": "배지를 불러올 수 없습니다",
+      "retry": "다시 시도"
+    },
+    "empty": {
+      "title": "배지가 없습니다",
+      "desc": "한국을 탐험하고 도전과제를 완료하여 배지를 획득하세요."
+    },
+    "badge": {
+      "ariaLabel": "{name} — {rarity}",
+      "pinned": "고정된 배지",
+      "earnedOn": "{date} 획득",
+      "locked": "잠금"
+    }
+  },
+  "leaderboard": {
+    "ariaLabel": "리더보드 페이지",
+    "breadcrumb": "리더보드",
+    "title": "리더보드",
+    "windows": {
+      "ariaLabel": "기간 선택",
+      "weekly": "주간",
+      "rising": "급상승",
+      "annual": "연간"
+    },
+    "loading": "리더보드를 불러오는 중…",
+    "error": {
+      "title": "리더보드를 불러올 수 없습니다",
+      "retry": "다시 시도"
+    },
+    "empty": {
+      "title": "아직 항목이 없습니다",
+      "desc": "장소를 저장하고 일정을 만들어 포인트를 획득하세요."
+    },
+    "rank": "{rank}위",
+    "plans": "{count}개 일정",
+    "scoreUnit": "pts",
+    "computedAt": "{date} 업데이트"
+  },
+  "help": {
+    "ariaLabel": "도움말 페이지",
+    "breadcrumb": "도움말",
+    "title": "도움말 & FAQ",
+    "expandAriaLabel": "펼치기: {question}",
+    "collapseAriaLabel": "접기: {question}",
+    "sections": {
+      "gettingStarted": {
+        "title": "시작하기",
+        "items": {
+          "q1": {
+            "q": "B4K는 무엇인가요?",
+            "a": "B4K는 한국을 방문하는 외국인 관광객을 위한 K-컬처 여행 플랫폼입니다. K-팝 공연장, K-드라마 촬영지, 뷰티 명소 등을 탐색하고 나만의 여행 일정을 만들어보세요."
+          },
+          "q2": {
+            "q": "계정 없이도 B4K를 사용할 수 있나요?",
+            "a": "계정 없이도 지도를 탐색할 수 있습니다. 장소 저장, 일정 만들기, 리더보드 참여는 Google로 로그인해야 합니다."
+          },
+          "q3": {
+            "q": "B4K는 어떤 언어를 지원하나요?",
+            "a": "B4K는 한국어, 영어, 일본어, 중국어(간체·번체), 태국어, 포르투갈어(브라질)를 지원합니다."
+          }
+        }
+      },
+      "map": {
+        "title": "지도 사용법",
+        "items": {
+          "q1": {
+            "q": "장소는 어떻게 저장하나요?",
+            "a": "지도에서 핀을 탭하면 장소 패널이 열립니다. 북마크 아이콘을 탭해 저장하세요. 저장된 장소는 저장됨 탭에 표시됩니다."
+          },
+          "q2": {
+            "q": "일정은 어떻게 만드나요?",
+            "a": "지도에서 장소를 열고 패널의 '일정에 추가' 버튼을 탭하세요. 여러 정류장을 추가하고 순서를 바꾸면 B4K가 최적 경로를 계산해 드립니다."
+          }
+        }
+      },
+      "account": {
+        "title": "계정",
+        "items": {
+          "q1": {
+            "q": "프로필은 어떻게 변경하나요?",
+            "a": "사이드바 하단의 프로필 아이콘으로 이동한 후 편집 아이콘을 탭해 표시 이름과 언어 설정을 변경하세요."
+          },
+          "q2": {
+            "q": "계정은 어떻게 삭제하나요?",
+            "a": "프로필 → 설정에서 '계정 삭제'를 탭하세요. 데이터는 개인정보보호법(PIPA)에 따라 30일간 보관된 후 영구 삭제됩니다."
+          }
+        }
+      },
+      "contact": {
+        "title": "문의하기",
+        "desc": "찾으시는 내용이 없으신가요? 연락 주시면 답변 드리겠습니다.",
+        "ctaEmail": "이메일 문의",
+        "ctaEmailHref": "mailto:support@b4k.app"
+      }
+    }
+  },
+  "onboarding": {
+    "ariaLabel": "온보딩 — 관심사 선택",
+    "title": "한국에 오신 이유는 무엇인가요?",
+    "subtitle": "나만의 B4K 경험을 맞춤 설정하세요.",
+    "desc": "가장 기대되는 것들을 선택하세요. 나중에 변경할 수 있습니다.",
+    "interests": {
+      "label": "관심사 선택",
+      "kpop": {
+        "label": "K-팝",
+        "desc": "콘서트, 공연장 & 팬덤"
+      },
+      "kdrama": {
+        "label": "K-드라마",
+        "desc": "촬영지 & 투어"
+      },
+      "kbeauty": {
+        "label": "K-뷰티",
+        "desc": "스킨케어, 메이크업 & 스파"
+      },
+      "kculture": {
+        "label": "K-컬처",
+        "desc": "음식, 시장 & 전통"
+      },
+      "food": {
+        "label": "음식",
+        "desc": "길거리 음식 & 현지 식당"
+      },
+      "nature": {
+        "label": "자연",
+        "desc": "공원, 트레킹 & 야외"
+      },
+      "nightlife": {
+        "label": "나이트라이프",
+        "desc": "바, 클럽 & 심야"
+      },
+      "history": {
+        "label": "역사",
+        "desc": "궁궐, 사원 & 문화유산"
+      }
+    },
+    "cta": "계속",
+    "skip": "나중에"
   }
 }

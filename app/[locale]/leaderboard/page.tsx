@@ -1,27 +1,187 @@
-import { useTranslations } from 'next-intl';
-import { Trophy } from 'lucide-react';
-import { Link } from '@/i18n/navigation';
+'use client'
 
-export default function Page() {
-  const t = useTranslations('routes.leaderboard');
+import { useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
+import { Trophy, RefreshCw, AlertTriangle, Award } from 'lucide-react'
+import { useLeaderboard } from '@/hooks/useLeaderboard'
+import type { LeaderboardWindow } from '@/app/api/leaderboard/route'
+
+const WINDOWS: LeaderboardWindow[] = ['weekly', 'rising', 'annual']
+
+const RANK_STYLE: Record<number, { ring: string; icon: string; bg: string }> = {
+  1: { ring: 'ring-2 ring-warning/60', icon: 'text-warning', bg: 'bg-bg-3' },
+  2: { ring: 'ring-2 ring-muted/40',   icon: 'text-muted',   bg: 'bg-bg-3' },
+  3: { ring: 'ring-2 ring-warning/30', icon: 'text-muted',   bg: 'bg-bg-3' },
+}
+
+function RowSkeleton() {
+  return (
+    <div className="flex items-center gap-sp-3 p-sp-4 animate-pulse" style={{ borderBottom: 'var(--bdr)' }}>
+      <div className="w-6 h-4 rounded bg-muted-3 shrink-0" />
+      <div className="w-9 h-9 rounded-full bg-muted-3 shrink-0" />
+      <div className="flex-1 space-y-sp-2">
+        <div className="h-4 w-1/3 rounded bg-muted-3" />
+        <div className="h-3 w-1/4 rounded bg-muted-3" />
+      </div>
+      <div className="h-5 w-16 rounded bg-muted-3" />
+    </div>
+  )
+}
+
+export default function LeaderboardPage() {
+  const t = useTranslations('leaderboard')
+  const [window, setWindow] = useState<LeaderboardWindow>('weekly')
+  const { data, isLoading, isError, mutate } = useLeaderboard(window)
+
+  const pillClass = (active: boolean) => [
+    'px-sp-4 py-[7px] rounded-full text-[12px] font-semibold whitespace-nowrap transition-colors min-h-touch flex items-center shrink-0',
+    active ? 'bg-lav text-bg' : 'text-muted hover:text-fg',
+  ].join(' ')
 
   return (
-    <main className="px-3.5 md:px-8 pt-7 pb-16 max-w-[1200px]" aria-label={t('title')}>
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted mb-5">
-        <Link href="/" className="text-muted-2 hover:text-fg">B4K</Link>
-
+    <main
+      className="max-w-[720px] mx-auto px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-20"
+      aria-label={t('ariaLabel')}
+    >
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
+        <Link href="/" className="text-muted-2 hover:text-fg transition-colors">B4K</Link>
         <span>›</span>
         <span className="text-fg">{t('breadcrumb')}</span>
       </div>
-      <h1 className="text-fg font-display font-black text-[clamp(20px,2.5vw,32px)] mb-7">{t('title')}</h1>
+
+      <h1 className="font-display font-black text-fg text-[clamp(22px,2.5vw,32px)] mb-sp-5">
+        {t('title')}
+      </h1>
+
+      {/* Window tabs */}
       <div
-        className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-lg"
-        style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+        className="flex gap-sp-2 overflow-x-auto pb-sp-1 mb-sp-5"
+        role="tablist"
+        aria-label={t('windows.ariaLabel')}
+        style={{ scrollbarWidth: 'none' }}
       >
-        <Trophy size={40} strokeWidth={2} className="text-muted-2 mb-4" />
-        <p className="text-[16px] font-semibold text-fg mb-2">{t('empty.title')}</p>
-        <p className="text-[13px] text-muted max-w-[320px]">{t('empty.desc')}</p>
+        {WINDOWS.map(w => (
+          <button
+            key={w}
+            role="tab"
+            aria-selected={window === w}
+            onClick={() => setWindow(w)}
+            className={pillClass(window === w)}
+            style={window !== w ? { background: 'var(--bg-3)', border: '1px solid var(--bdr)' } : {}}
+          >
+            {t(`windows.${w}`)}
+          </button>
+        ))}
       </div>
+
+      {isLoading && (
+        <div
+          aria-busy="true"
+          aria-label={t('loading')}
+          className="rounded-lg overflow-hidden"
+          style={{ border: '1px solid var(--bdr)' }}
+        >
+          {Array.from({ length: 8 }, (_, i) => <RowSkeleton key={i} />)}
+        </div>
+      )}
+
+      {isError && !isLoading && (
+        <div
+          className="flex flex-col items-center justify-center text-center py-16 rounded-lg"
+          style={{ background: 'var(--bg-2)', border: '1px solid rgba(248,113,113,0.2)' }}
+          role="alert"
+        >
+          <AlertTriangle size={36} strokeWidth={2} className="text-danger mb-sp-3" />
+          <p className="text-[15px] font-semibold text-fg mb-sp-2">{t('error.title')}</p>
+          <button
+            onClick={() => mutate()}
+            className="flex items-center gap-sp-2 text-[13px] font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+          >
+            <RefreshCw size={14} strokeWidth={2} />{t('error.retry')}
+          </button>
+        </div>
+      )}
+
+      {!isLoading && !isError && data && (
+        data.entries.length === 0 ? (
+          <div
+            className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-lg"
+            style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+          >
+            <Trophy size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
+            <p className="text-[16px] font-semibold text-fg mb-sp-2">{t('empty.title')}</p>
+            <p className="text-[13px] text-muted max-w-[300px]">{t('empty.desc')}</p>
+          </div>
+        ) : (
+          <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--bdr)' }}>
+            {data.entries.map((entry, idx) => {
+              const isTop = entry.rank <= 3
+              const style = RANK_STYLE[entry.rank]
+              const isLast = idx === data.entries.length - 1
+              const initial = entry.user.name.charAt(0).toUpperCase()
+              return (
+                <div
+                  key={entry.user.id}
+                  className="flex items-center gap-sp-3 p-sp-4 min-h-touch"
+                  style={!isLast ? { borderBottom: 'var(--bdr)' } : {}}
+                  aria-label={`${t('rank', { rank: entry.rank })} ${entry.user.name}`}
+                >
+                  {/* Rank */}
+                  <div className="w-7 text-center shrink-0">
+                    {isTop ? (
+                      <Trophy size={16} strokeWidth={2} className={style?.icon ?? 'text-muted'} />
+                    ) : (
+                      <span className="text-[13px] font-bold text-muted">{entry.rank}</span>
+                    )}
+                  </div>
+                  {/* Avatar */}
+                  <div
+                    className={[
+                      'w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-[13px] font-bold',
+                      isTop ? `${style?.ring ?? ''} ${style?.bg ?? 'bg-bg-3'}` : 'bg-bg-3',
+                    ].join(' ')}
+                    style={!isTop ? { border: 'var(--bdr)' } : {}}
+                    aria-hidden
+                  >
+                    {entry.user.avatar_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={entry.user.avatar_url} alt={entry.user.name} className="w-full h-full rounded-full object-cover" />
+                    ) : (
+                      <span className={isTop ? (style?.icon ?? 'text-muted') : 'text-muted'}>{initial}</span>
+                    )}
+                  </div>
+                  {/* Name + stats */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-semibold text-fg truncate">{entry.user.name}</p>
+                    <div className="flex items-center gap-sp-2 text-[11px] text-muted mt-[2px]">
+                      <span>{t('plans', { count: entry.plans_count })}</span>
+                      <span>·</span>
+                      <Award size={10} strokeWidth={2} />
+                      <span>{entry.badge_count}</span>
+                    </div>
+                  </div>
+                  {/* Score */}
+                  <div className="text-right shrink-0">
+                    <span
+                      className={['text-[13px] font-bold', isTop ? (style?.icon ?? 'text-fg') : 'text-fg'].join(' ')}
+                    >
+                      {entry.score.toLocaleString()}
+                    </span>
+                    <p className="text-[10px] text-muted">{t('scoreUnit')}</p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )
+      )}
+
+      {data && (
+        <p className="text-[11px] text-muted text-center mt-sp-4">
+          {t('computedAt', { date: new Date(data.computed_at).toLocaleDateString() })}
+        </p>
+      )}
     </main>
-  );
+  )
 }
