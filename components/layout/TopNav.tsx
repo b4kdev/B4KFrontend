@@ -76,12 +76,12 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
   return (
     <>
       <header
-        className="fixed top-0 right-0 z-50 h-[52px] flex items-center gap-2.5 px-4 bg-bg-2 lg:left-[52px] left-0"
+        className="fixed top-0 right-0 z-50 h-[52px] flex items-center gap-2.5 bg-bg-2 lg:left-[52px] left-0"
         style={{ borderBottom: 'var(--bdr)' }}
       >
         {/* Mobile hamburger */}
         <button
-          className="lg:hidden relative min-w-touch min-h-touch flex items-center justify-center rounded-lg text-muted hover:text-fg shrink-0"
+          className="lg:hidden relative min-w-touch min-h-touch ml-4 flex items-center justify-center rounded-lg text-muted hover:text-fg shrink-0"
           onClick={onMobileMenuOpen}
           aria-label={tNav('menuOpen')}
         >
@@ -94,7 +94,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
         </button>
 
         {/* Search — desktop */}
-        <div className="hidden lg:flex flex-1 max-w-[480px] mx-auto relative" ref={searchRef}>
+        <div className="hidden lg:flex flex-1 max-w-[480px] relative" style={{ marginLeft: 'var(--sidebar)' }} ref={searchRef}>
           <div className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none z-10">
             <Search size={14} strokeWidth={2} />
           </div>
@@ -188,7 +188,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
         </div>
 
         {/* Actions (desktop) */}
-        <div className="hidden lg:flex items-center gap-1 ml-auto shrink-0">
+        <div className="hidden lg:flex items-center gap-1 ml-auto mr-4 shrink-0">
           <button
             className="relative min-w-touch min-h-touch flex items-center justify-center rounded-lg text-muted hover:text-fg hover:bg-muted-3 transition-colors"
             aria-label={tNav('notifications')}
@@ -217,7 +217,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
         </div>
 
         {/* Mobile actions */}
-        <div className="flex lg:hidden items-center gap-1 ml-auto shrink-0">
+        <div className="flex lg:hidden items-center gap-1 ml-auto mr-4 shrink-0">
           <button
             className="min-w-touch min-h-touch flex items-center justify-center rounded-lg text-muted"
             onClick={() => setMobileSearchOpen(true)}

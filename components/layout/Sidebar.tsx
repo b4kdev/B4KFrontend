@@ -76,7 +76,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
         </div>
 
         {/* Main nav */}
-        <nav className="flex flex-col gap-[2px] flex-1 p-[6px]" aria-label={t('mainNavigation')}>
+        <nav className="flex flex-col gap-[2px] flex-1 px-[6px] pb-[6px] pt-sp-3" aria-label={t('mainNavigation')}>
           {NAV_ITEMS.map(({ href, icon: Icon, labelKey }) => {
             const active = isActive(href);
             return (
@@ -94,17 +94,8 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
           })}
         </nav>
 
-        {/* Bottom anchors: Profile + Notifications */}
+        {/* Bottom anchors: Notifications + Profile */}
         <div className="p-[6px] flex flex-col gap-[2px] shrink-0" style={{ borderTop: 'var(--bdr)' }}>
-          <Link
-            href="/profile"
-            aria-label={t('profile')}
-            onClick={onMobileClose}
-            className={navLinkClass(isActive('/profile'))}
-          >
-            <User size={17} strokeWidth={2} className="shrink-0" />
-            <span className="lg:hidden text-[13px] font-medium">{t('profile')}</span>
-          </Link>
           <Link
             href="/notifications"
             aria-label={t('notifications')}
@@ -116,6 +107,15 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
               <span className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] rounded-full bg-danger" />
             </span>
             <span className="lg:hidden text-[13px] font-medium">{t('notifications')}</span>
+          </Link>
+          <Link
+            href="/profile"
+            aria-label={t('profile')}
+            onClick={onMobileClose}
+            className={navLinkClass(isActive('/profile'))}
+          >
+            <User size={17} strokeWidth={2} className="shrink-0" />
+            <span className="lg:hidden text-[13px] font-medium">{t('profile')}</span>
           </Link>
         </div>
       </aside>
