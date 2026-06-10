@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
-import { GripVertical, X, Car, Bus, Clock, ArrowRight } from 'lucide-react'
+import { GripVertical, X, Car, Bus, Clock, ArrowRight, AlertTriangle } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { saveDraftPlan } from '@/lib/draft-plan'
 import type { MapPoi } from '@/hooks/useMapPois'
@@ -30,6 +30,7 @@ export default function PlanBottomSheet({
   const dragItem = useRef<number | null>(null)
   const dragOver = useRef<number | null>(null)
   const [dragging, setDragging] = useState<number | null>(null)
+  const [routeError, setRouteError] = useState(false)
 
   function handleDragStart(i: number) { dragItem.current = i; setDragging(i) }
   function handleDragEnter(i: number) { dragOver.current = i }
@@ -46,10 +47,15 @@ export default function PlanBottomSheet({
   }
 
   function handlePreviewPlan() {
-    const durations: Record<string, number> = {}
-    stops.forEach(s => { durations[s.place_id] = stopDurations[s.place_id] ?? 60 })
-    saveDraftPlan({ stops, durations, transport })
-    router.push('/plan/preview')
+    try {
+      setRouteError(false)
+      const durations: Record<string, number> = {}
+      stops.forEach(s => { durations[s.place_id] = stopDurations[s.place_id] ?? 60 })
+      saveDraftPlan({ stops, durations, transport })
+      router.push('/plan/preview')
+    } catch {
+      setRouteError(true)
+    }
   }
 
   const totalMin = stops.reduce((sum, s) => sum + (stopDurations[s.place_id] ?? 60), 0)
@@ -169,6 +175,24 @@ export default function PlanBottomSheet({
             )
           })}
         </div>
+
+        {/* ERR_03 — Route generation failure */}
+        {routeError && (
+          <div
+            className="flex items-center gap-sp-2 px-sp-4 py-sp-2 shrink-0"
+            style={{ background: 'rgba(248,113,113,0.08)', borderTop: '1px solid rgba(248,113,113,0.2)' }}
+            role="alert"
+          >
+            <AlertTriangle size={13} strokeWidth={2} className="text-danger shrink-0" aria-hidden="true" />
+            <span className="flex-1 text-[11px] text-danger">{t('routeError')}</span>
+            <button
+              onClick={handlePreviewPlan}
+              className="text-[11px] font-semibold text-danger hover:opacity-70 transition-opacity"
+            >
+              {t('routeRetry')}
+            </button>
+          </div>
+        )}
 
         {/* Footer */}
         <div

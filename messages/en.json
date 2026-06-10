@@ -28,7 +28,18 @@
     "searchPlaceholderMobile": "B4K · Search...",
     "recentSearches": "Recent Searches",
     "clearSearch": "Clear search",
-    "noRecents": "No recent searches"
+    "noRecents": "No recent searches",
+    "searchFilters": {
+      "all": "All",
+      "places": "Places",
+      "itineraries": "Itineraries",
+      "kpop": "K-Pop",
+      "kdrama": "K-Drama",
+      "kbeauty": "K-Beauty"
+    },
+    "noResults": "No results for \"{query}\"",
+    "noResultsDesc": "Try a different search or explore the map",
+    "searchResultAriaLabel": "{name}, {type}"
   },
   "home": {
     "breadcrumb": "Home",
@@ -496,7 +507,9 @@
       "previewPlan": "Preview Plan",
       "close": "Close plan sheet",
       "stripExpand": "Expand plan panel",
-      "stripCollapse": "Collapse plan panel"
+      "stripCollapse": "Collapse plan panel",
+      "routeError": "Route couldn't be generated. Stops are preserved.",
+      "routeRetry": "Retry"
     },
     "aiOverlay": {
       "title": "AI Travel Assistant",

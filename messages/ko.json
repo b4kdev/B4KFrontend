@@ -28,7 +28,18 @@
     "searchPlaceholderMobile": "B4K · 검색...",
     "recentSearches": "최근 검색",
     "clearSearch": "검색어 지우기",
-    "noRecents": "최근 검색 기록 없음"
+    "noRecents": "최근 검색 기록 없음",
+    "searchFilters": {
+      "all": "전체",
+      "places": "장소",
+      "itineraries": "여행 플랜",
+      "kpop": "K-Pop",
+      "kdrama": "K-드라마",
+      "kbeauty": "K-뷰티"
+    },
+    "noResults": "\"{query}\"에 대한 검색 결과가 없습니다",
+    "noResultsDesc": "다른 검색어를 사용하거나 지도를 탐색해 보세요",
+    "searchResultAriaLabel": "{name}, {type}"
   },
   "home": {
     "breadcrumb": "홈",
@@ -496,7 +507,9 @@
       "previewPlan": "플랜 미리보기",
       "close": "플랜 시트 닫기",
       "stripExpand": "플랜 패널 펼치기",
-      "stripCollapse": "플랜 패널 접기"
+      "stripCollapse": "플랜 패널 접기",
+      "routeError": "경로를 생성할 수 없습니다. 정류장은 유지됩니다.",
+      "routeRetry": "다시 시도"
     },
     "aiOverlay": {
       "title": "AI 여행 어시스턴트",

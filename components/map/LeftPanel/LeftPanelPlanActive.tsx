@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { GripVertical, X, Car, Bus, Clock } from 'lucide-react'
+import { GripVertical, X, Car, Bus, Clock, AlertTriangle } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import type { MapPoi } from '@/hooks/useMapPois'
 
@@ -10,6 +10,7 @@ interface Props {
   stops:            MapPoi[]
   stopDurations:    Record<string, number>
   transport:        'car' | 'public'
+  routeError?:      boolean
   onReorder:        (newOrder: string[]) => void
   onRemove:         (id: string) => void
   onDurationChange: (id: string, minutes: number) => void
@@ -18,13 +19,14 @@ interface Props {
 }
 
 export default function LeftPanelPlanActive({
-  stops, stopDurations, transport,
+  stops, stopDurations, transport, routeError = false,
   onReorder, onRemove, onDurationChange, onTransportChange, onPreviewPlan,
 }: Props) {
   const t = useTranslations('map.plan')
   const dragItem = useRef<number | null>(null)
   const dragOver = useRef<number | null>(null)
   const [dragging, setDragging] = useState<number | null>(null)
+  const [errorDismissed, setErrorDismissed] = useState(false)
 
   function handleDragStart(i: number) { dragItem.current = i; setDragging(i) }
   function handleDragEnter(i: number) { dragOver.current = i }
@@ -59,6 +61,25 @@ export default function LeftPanelPlanActive({
           {stops.length} {t('stops')}
         </span>
       </div>
+
+      {/* ERR_03 — Route generation failure banner */}
+      {routeError && !errorDismissed && (
+        <div
+          className="flex items-start gap-sp-2 px-sp-3 py-sp-2 shrink-0"
+          style={{ background: 'rgba(248,113,113,0.08)', borderBottom: '1px solid rgba(248,113,113,0.2)' }}
+          role="alert"
+        >
+          <AlertTriangle size={14} strokeWidth={2} className="text-danger mt-0.5 shrink-0" aria-hidden="true" />
+          <span className="flex-1 text-[11px] text-danger leading-snug">{t('routeError')}</span>
+          <button
+            onClick={() => setErrorDismissed(true)}
+            aria-label={t('routeRetry')}
+            className="text-danger text-[11px] font-semibold shrink-0 hover:opacity-70 transition-opacity"
+          >
+            {t('routeRetry')}
+          </button>
+        </div>
+      )}
 
       {/* Stop list — LP_11, LP_12, LP_13 */}
       <div className="flex-1 overflow-y-auto themed-scrollbar">
