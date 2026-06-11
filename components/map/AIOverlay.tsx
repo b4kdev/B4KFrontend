@@ -234,7 +234,7 @@ export default function AIOverlay({
         {/* Prompt chips — MP_31 */}
         {showChips && (
           <div className="flex flex-col items-center gap-sp-3 py-sp-6">
-            <Sparkles size={28} strokeWidth={1.5} className="text-lav" aria-hidden="true" />
+            <Sparkles size={28} strokeWidth={2} className="text-lav" aria-hidden="true" />
             <p className="text-muted text-sm text-center">{t('greeting')}</p>
             <div className="flex flex-wrap justify-center gap-2 mt-sp-2">
               {chips.map(chip => (

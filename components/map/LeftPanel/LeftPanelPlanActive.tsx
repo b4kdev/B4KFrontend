@@ -66,7 +66,7 @@ export default function LeftPanelPlanActive({
       {routeError && !errorDismissed && (
         <div
           className="flex items-start gap-sp-2 px-sp-3 py-sp-2 shrink-0"
-          style={{ background: 'rgba(248,113,113,0.08)', borderBottom: '1px solid rgba(248,113,113,0.2)' }}
+          style={{ background: 'color-mix(in srgb, var(--danger) 8%, transparent)', borderBottom: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
           role="alert"
         >
           <AlertTriangle size={14} strokeWidth={2} className="text-danger mt-0.5 shrink-0" aria-hidden="true" />

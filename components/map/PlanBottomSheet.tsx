@@ -180,7 +180,7 @@ export default function PlanBottomSheet({
         {routeError && (
           <div
             className="flex items-center gap-sp-2 px-sp-4 py-sp-2 shrink-0"
-            style={{ background: 'rgba(248,113,113,0.08)', borderTop: '1px solid rgba(248,113,113,0.2)' }}
+            style={{ background: 'color-mix(in srgb, var(--danger) 8%, transparent)', borderTop: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
             role="alert"
           >
             <AlertTriangle size={13} strokeWidth={2} className="text-danger shrink-0" aria-hidden="true" />
