@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import {
   Star, Map, RefreshCw, AlertTriangle, X,
-  Trophy, Music, Film, Sparkles, BookOpen, Zap, Award,
+  Trophy, Zap, Award,
 } from 'lucide-react'
 import { useProfileBadges } from '@/hooks/useProfileBadges'
 import type { ProfileBadge } from '@/app/api/profile/badges/route'

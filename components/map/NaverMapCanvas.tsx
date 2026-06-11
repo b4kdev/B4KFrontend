@@ -7,6 +7,7 @@ import { Plus, Minus, Sparkles, X } from 'lucide-react'
 import type { MapPoi } from '@/hooks/useMapPois'
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   interface Window { naver: any }
 }
 
@@ -44,8 +45,11 @@ export default function NaverMapCanvas({
 }: Props) {
   const t = useTranslations('map')
   const containerRef = useRef<HTMLDivElement>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mapRef       = useRef<any>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const markersRef   = useRef<Map<string, any>>(new Map())
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const polylineRef  = useRef<any>(null)
   const [mapReady, setMapReady]   = useState(false)
   const [scriptErr, setScriptErr] = useState(false)
@@ -64,6 +68,7 @@ export default function NaverMapCanvas({
     })
     mapRef.current = map
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     window.naver.maps.Event.addListener(map, 'click', (e: any) => {
       const target = e.domEvent?.target as HTMLElement | undefined
       if (target?.closest?.('.poi-wrap, .plan-marker')) return

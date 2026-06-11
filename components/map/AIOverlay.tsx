@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { X, Minus, ArrowLeft, Send, Sparkles, Plus, Check, Loader2, ArrowRight } from 'lucide-react'

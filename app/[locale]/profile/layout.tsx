@@ -143,12 +143,6 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   ]
 
   const segment = pathname.replace(/^\/[a-z-]+/, '')
-  const isActive = (href: string) =>
-    href === '/profile'
-      ? segment === '/profile' || segment === '/profile/trips' || segment === ''
-      : segment.startsWith(href.slice('/profile'.length + 1) ? href.replace('/profile', '') : href)
-
-  // Simpler active check
   const tabActive = (href: string) => {
     if (href === '/profile') return segment === '/profile' || segment === ''
     return segment === href || segment.startsWith(`${href}/`)

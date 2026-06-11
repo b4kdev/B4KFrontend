@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import {
   Map, Heart, Bookmark, Edit2, Trash2, RefreshCw,
-  Route, Zap, X, AlertTriangle,
+  Route, Zap, AlertTriangle,
 } from 'lucide-react'
 import { useProfileTrips } from '@/hooks/useProfileTrips'
 import type { ProfileTrip } from '@/app/api/profile/trips/route'
