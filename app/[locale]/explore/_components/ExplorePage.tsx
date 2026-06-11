@@ -177,7 +177,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
         {isError && !isLoading && (
           <div
             className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-lg"
-            style={{ background: 'var(--bg-2)', border: '1px solid rgba(248,113,113,0.2)' }}
+            style={{ background: 'var(--bg-2)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
             role="alert"
           >
             <AlertTriangle size={36} strokeWidth={2} className="text-danger mb-sp-3" />

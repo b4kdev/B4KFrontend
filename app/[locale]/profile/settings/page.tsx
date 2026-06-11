@@ -64,7 +64,7 @@ export default function SettingsPage() {
         </h2>
         <div
           className="rounded-xl overflow-hidden divide-y"
-          style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr-color, rgba(255,255,255,0.08))', borderColor: 'var(--bdr-color, rgba(255,255,255,0.08))' }}
+          style={{ background: 'var(--bg-2)', border: 'var(--bdr)' }}
         >
           <div className={`${row} px-sp-4`}>
             <div>
@@ -85,14 +85,14 @@ export default function SettingsPage() {
         </h2>
         <div
           className="rounded-xl overflow-hidden divide-y"
-          style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr-color, rgba(255,255,255,0.08))' }}
+          style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
         >
           {/* Language — PR_51 */}
           <div className={`${row} px-sp-4 flex-wrap gap-sp-3`} aria-labelledby="lang-label">
             <p id="lang-label" className={label}>{t('settings.preferences.language')}</p>
             <select
               className="text-[13px] font-medium text-fg rounded-lg px-sp-3 min-h-[36px] appearance-none cursor-pointer"
-              style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr-color, rgba(255,255,255,0.08))' }}
+              style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
               defaultValue={profile?.preferred_lang ?? 'en'}
               onChange={(e) => handleLangChange(e.target.value)}
               aria-label={t('settings.preferences.language')}
@@ -110,7 +110,7 @@ export default function SettingsPage() {
             <p id="transport-label" className={label}>{t('settings.preferences.transport')}</p>
             <div
               className="flex rounded-lg overflow-hidden"
-              style={{ border: '1px solid var(--bdr-color, rgba(255,255,255,0.08))' }}
+              style={{ border: '1px solid var(--bdr)' }}
               role="radiogroup"
               aria-label={t('settings.preferences.transport')}
             >
@@ -159,7 +159,7 @@ export default function SettingsPage() {
                         ? 'bg-lav-dim text-lav'
                         : 'text-muted hover:text-fg',
                     ].join(' ')}
-                    style={{ border: active ? '1px solid var(--lav-border)' : '1px solid var(--bdr-color, rgba(255,255,255,0.08))' }}
+                    style={{ border: active ? '1px solid var(--lav-border)' : '1px solid var(--bdr)' }}
                   >
                     {t(`settings.interests.${key}`)}
                   </button>
@@ -180,7 +180,7 @@ export default function SettingsPage() {
             ? 'bg-success/20 text-success'
             : 'bg-lav-dim text-lav hover:bg-lav-mid',
         ].join(' ')}
-        style={{ border: saved ? '1px solid rgba(74,222,128,0.3)' : '1px solid var(--lav-border)' }}
+        style={{ border: saved ? '1px solid color-mix(in srgb, var(--success) 30%, transparent)' : '1px solid var(--lav-border)' }}
         aria-label={saving ? t('settings.preferences.saving') : saved ? t('settings.preferences.saved') : t('settings.preferences.save')}
       >
         {saving ? t('settings.preferences.saving') : saved ? (

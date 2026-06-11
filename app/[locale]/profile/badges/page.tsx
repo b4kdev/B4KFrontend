@@ -64,7 +64,7 @@ function BadgeDetailModal({
     >
       <div
         className="w-full max-w-[360px] rounded-2xl p-sp-6 flex flex-col gap-sp-4"
-        style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr-color, rgba(255,255,255,0.08))' }}
+        style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       >
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -115,7 +115,7 @@ function BadgeDetailModal({
                 ? 'text-lav hover:bg-lav-dim'
                 : 'text-muted hover:text-fg',
             ].join(' ')}
-            style={{ border: '1px solid var(--bdr-color, rgba(255,255,255,0.08))' }}
+            style={{ border: '1px solid var(--bdr)' }}
             aria-label={badge.is_pinned
               ? t('badges.unpinAria', { name: badge.name })
               : t('badges.pinAria', { name: badge.name })

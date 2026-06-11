@@ -12,7 +12,7 @@ import type { ProfileTrip } from '@/app/api/profile/trips/route'
 
 function TripCardSkeleton() {
   return (
-    <div className="rounded-xl overflow-hidden animate-pulse" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr-color, rgba(255,255,255,0.08))' }}>
+    <div className="rounded-xl overflow-hidden animate-pulse" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
       <div className="aspect-video bg-muted-3" />
       <div className="p-sp-4 space-y-sp-2">
         <div className="h-4 w-3/4 rounded bg-muted-3" />
@@ -43,7 +43,7 @@ function DeleteModal({
     >
       <div
         className="w-full max-w-[360px] rounded-xl p-sp-6 flex flex-col gap-sp-4"
-        style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr-color, rgba(255,255,255,0.08))' }}
+        style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       >
         <div className="flex items-start gap-sp-3">
           <AlertTriangle size={20} strokeWidth={2} className="text-danger shrink-0 mt-0.5" />
@@ -56,7 +56,7 @@ function DeleteModal({
           <button
             onClick={onCancel}
             className="flex-1 min-h-touch rounded-lg text-[13px] font-semibold text-muted hover:text-fg transition-colors"
-            style={{ border: '1px solid var(--bdr-color, rgba(255,255,255,0.08))' }}
+            style={{ border: '1px solid var(--bdr)' }}
           >
             {t('trips.deleteModal.cancel')}
           </button>
@@ -84,7 +84,7 @@ function TripCard({
   return (
     <article
       className="rounded-xl overflow-hidden flex flex-col"
-      style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr-color, rgba(255,255,255,0.08))' }}
+      style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
     >
       {/* Thumbnail — PR_10 */}
       <div
@@ -113,7 +113,7 @@ function TripCard({
           {!trip.is_published && (
             <span
               className="shrink-0 text-[10px] font-bold uppercase tracking-widest px-sp-2 py-0.5 rounded-full text-warning"
-              style={{ background: 'rgba(251,191,36,0.12)' }}
+              style={{ background: 'color-mix(in srgb, var(--warning) 12%, transparent)' }}
             >
               {t('trips.card.draft')}
             </span>
@@ -148,7 +148,7 @@ function TripCard({
           <button
             onClick={() => onDelete(trip.id)}
             className="min-h-touch min-w-touch flex items-center justify-center rounded-lg text-muted hover:text-danger transition-colors"
-            style={{ border: '1px solid var(--bdr-color, rgba(255,255,255,0.08))' }}
+            style={{ border: '1px solid var(--bdr)' }}
             aria-label={t('trips.card.deleteAria', { title: trip.title })}
           >
             <Trash2 size={15} strokeWidth={2} />

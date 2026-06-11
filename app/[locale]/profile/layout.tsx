@@ -37,7 +37,7 @@ function HeaderError({ onRetry, t }: { onRetry: () => void; t: ReturnType<typeof
   return (
     <div
       className="flex items-center gap-sp-3 p-sp-4 rounded-lg text-danger"
-      style={{ background: 'var(--bg-2)', border: '1px solid rgba(248,113,113,0.2)' }}
+      style={{ background: 'var(--bg-2)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
       role="alert"
     >
       <AlertTriangle size={20} strokeWidth={2} className="shrink-0" />

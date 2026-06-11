@@ -183,7 +183,7 @@ export default function SavedPage() {
       {isError && !isLoading && (
         <div
           className="flex flex-col items-center justify-center text-center py-16 rounded-lg"
-          style={{ background: 'var(--bg-2)', border: '1px solid rgba(248,113,113,0.2)' }}
+          style={{ background: 'var(--bg-2)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
           role="alert"
         >
           <AlertTriangle size={36} strokeWidth={2} className="text-danger mb-sp-3" />
@@ -340,7 +340,7 @@ export default function SavedPage() {
             {generateError && (
               <div
                 className="flex items-center gap-sp-3 px-sp-4 py-sp-3 rounded-xl text-danger text-sm mb-sp-3"
-                style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)' }}
+                style={{ background: 'color-mix(in srgb, var(--danger) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
                 role="alert"
               >
                 <AlertTriangle size={16} strokeWidth={2} aria-hidden="true" />

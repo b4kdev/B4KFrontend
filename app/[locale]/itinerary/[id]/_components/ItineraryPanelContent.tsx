@@ -151,9 +151,9 @@ export default function ItineraryPanelContent({
           aria-pressed={isLiked}
           className="flex items-center gap-1 min-h-touch px-sp-3 rounded-lg text-[12px] font-semibold transition-colors"
           style={{
-            background: isLiked ? 'rgba(248,113,113,0.12)' : 'var(--bg-3)',
+            background: isLiked ? 'color-mix(in srgb, var(--danger) 12%, transparent)' : 'var(--bg-3)',
             color: isLiked ? 'var(--danger)' : 'var(--muted)',
-            border: `1px solid ${isLiked ? 'rgba(248,113,113,0.30)' : 'transparent'}`,
+            border: `1px solid ${isLiked ? 'color-mix(in srgb, var(--danger) 30%, transparent)' : 'transparent'}`,
           }}
         >
           <Heart size={13} strokeWidth={2} fill={isLiked ? 'currentColor' : 'none'} aria-hidden="true" />
