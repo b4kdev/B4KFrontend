@@ -39,10 +39,10 @@ export default function OnboardingPage() {
         <h1 className="font-display font-black text-fg text-[clamp(24px,3vw,36px)] mb-sp-2 text-center">
           {t('title')}
         </h1>
-        <p className="text-[14px] text-muted text-center mb-sp-2">{t('subtitle')}</p>
-        <p className="text-[13px] text-muted-2 text-center mb-sp-8">{t('desc')}</p>
+        <p className="text-f-base text-muted text-center mb-sp-2">{t('subtitle')}</p>
+        <p className="text-f-md text-muted-2 text-center mb-sp-8">{t('desc')}</p>
 
-        <p className="text-[11px] font-semibold tracking-[0.07em] uppercase text-muted mb-sp-4 text-center">
+        <p className="text-f-xs font-semibold tracking-[0.07em] uppercase text-muted mb-sp-4 text-center">
           {t('interests.label')}
         </p>
 
@@ -74,10 +74,10 @@ export default function OnboardingPage() {
                   <Icon size={18} strokeWidth={2} className={active ? color : 'text-muted'} />
                 </div>
                 <div className="min-w-0">
-                  <p className={['text-[13px] font-semibold truncate', active ? 'text-lav' : 'text-fg'].join(' ')}>
+                  <p className={['text-f-md font-semibold truncate', active ? 'text-lav' : 'text-fg'].join(' ')}>
                     {t(`interests.${id}.label`)}
                   </p>
-                  <p className="text-[11px] text-muted truncate">{t(`interests.${id}.desc`)}</p>
+                  <p className="text-f-xs text-muted truncate">{t(`interests.${id}.desc`)}</p>
                 </div>
               </button>
             )
@@ -87,14 +87,14 @@ export default function OnboardingPage() {
         <div className="flex flex-col gap-sp-3">
           <button
             onClick={handleContinue}
-            className="w-full flex items-center justify-center px-sp-5 py-sp-4 rounded-xl text-[14px] font-semibold text-bg min-h-touch transition-opacity hover:opacity-90"
+            className="w-full flex items-center justify-center px-sp-5 py-sp-4 rounded-xl text-f-base font-semibold text-bg min-h-touch transition-opacity hover:opacity-90"
             style={{ background: 'var(--lav)' }}
           >
             {t('cta')}
           </button>
           <button
             onClick={handleContinue}
-            className="w-full flex items-center justify-center px-sp-5 py-sp-3 rounded-xl text-[13px] text-muted min-h-touch hover:text-fg transition-colors"
+            className="w-full flex items-center justify-center px-sp-5 py-sp-3 rounded-xl text-f-md text-muted min-h-touch hover:text-fg transition-colors"
           >
             {t('skip')}
           </button>

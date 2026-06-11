@@ -59,7 +59,7 @@ export default function SavedPage() {
   const { data, isLoading, isError, mutate } = useSaved()
 
   const tabClass = (active: boolean) => [
-    'px-sp-4 py-sp-3 text-[13px] font-semibold tracking-[0.02em] transition-colors min-h-[44px] flex items-center -mb-px',
+    'px-sp-4 py-sp-3 text-f-md font-semibold tracking-[0.02em] transition-colors min-h-[44px] flex items-center -mb-px',
     active ? 'text-lav border-b-2 border-lav' : 'text-muted hover:text-fg',
   ].join(' ')
 
@@ -140,7 +140,7 @@ export default function SavedPage() {
       aria-label={t('ariaLabel')}
     >
       {/* Breadcrumb */}
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
+      <div className="flex items-center gap-1.5 text-f-xxs font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
         <Link href="/" className="text-muted-2 hover:text-fg transition-colors">B4K</Link>
         <span>›</span>
         <span className="text-fg">{t('breadcrumb')}</span>
@@ -187,10 +187,10 @@ export default function SavedPage() {
           role="alert"
         >
           <AlertTriangle size={36} strokeWidth={2} className="text-danger mb-sp-3" />
-          <p className="text-[15px] font-semibold text-fg mb-sp-2">{t('error.title')}</p>
+          <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 text-[13px] font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+            className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
           >
             <RefreshCw size={14} strokeWidth={2} />{t('error.retry')}
           </button>
@@ -208,11 +208,11 @@ export default function SavedPage() {
               style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
             >
               <FolderOpen size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
-              <p className="text-[16px] font-semibold text-fg mb-sp-2">{t('empty.places.title')}</p>
-              <p className="text-[13px] text-muted max-w-[320px] mb-sp-5">{t('empty.places.desc')}</p>
+              <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.places.title')}</p>
+              <p className="text-f-md text-muted max-w-[320px] mb-sp-5">{t('empty.places.desc')}</p>
               <Link
                 href="/map"
-                className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-lg text-[13px] font-semibold text-bg min-h-touch"
+                className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-lg text-f-md font-semibold text-bg min-h-touch"
                 style={{ background: 'var(--lav)' }}
               >
                 <Map size={15} strokeWidth={2} />{t('empty.places.cta')}
@@ -262,8 +262,8 @@ export default function SavedPage() {
                       <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[14px] font-semibold text-fg truncate">{name}</p>
-                      <p className="text-[12px] text-muted mt-[2px]">{poi.display_region}</p>
+                      <p className="text-f-base font-semibold text-fg truncate">{name}</p>
+                      <p className="text-f-sm text-muted mt-[2px]">{poi.display_region}</p>
                     </div>
                   </div>
                 )
@@ -291,7 +291,7 @@ export default function SavedPage() {
             </button>
 
             <div className="flex items-center justify-between mb-sp-3">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-muted">
+              <p className="text-f-xs font-semibold uppercase tracking-widest text-muted">
                 {t('folder.selectHint')}
               </p>
               <button
@@ -329,8 +329,8 @@ export default function SavedPage() {
                       <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[14px] font-semibold text-fg truncate">{name}</p>
-                      <p className="text-[12px] text-muted mt-[2px]">{poi.display_region}</p>
+                      <p className="text-f-base font-semibold text-fg truncate">{name}</p>
+                      <p className="text-f-sm text-muted mt-[2px]">{poi.display_region}</p>
                     </div>
                   </button>
                 )
@@ -370,11 +370,11 @@ export default function SavedPage() {
             style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
           >
             <Bookmark size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
-            <p className="text-[16px] font-semibold text-fg mb-sp-2">{t('empty.itineraries.title')}</p>
-            <p className="text-[13px] text-muted max-w-[320px] mb-sp-5">{t('empty.itineraries.desc')}</p>
+            <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.itineraries.title')}</p>
+            <p className="text-f-md text-muted max-w-[320px] mb-sp-5">{t('empty.itineraries.desc')}</p>
             <Link
               href="/map"
-              className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-lg text-[13px] font-semibold text-bg min-h-touch"
+              className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-lg text-f-md font-semibold text-bg min-h-touch"
               style={{ background: 'var(--lav)' }}
             >
               <Map size={15} strokeWidth={2} />{t('empty.itineraries.cta')}
@@ -397,11 +397,11 @@ export default function SavedPage() {
                   <MapPin size={22} strokeWidth={2} className="text-muted-2" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-semibold text-fg leading-snug mb-[4px] line-clamp-2">
+                  <p className="text-f-base font-semibold text-fg leading-snug mb-[4px] line-clamp-2">
                     {plan.title}
                   </p>
-                  <p className="text-[12px] text-muted mb-sp-2">{plan.author_name}</p>
-                  <div className="flex items-center gap-sp-3 text-[11px] text-muted">
+                  <p className="text-f-sm text-muted mb-sp-2">{plan.author_name}</p>
+                  <div className="flex items-center gap-sp-3 text-f-xs text-muted">
                     <span>{t('plan.stops', { count: plan.stop_count })}</span>
                     <span>·</span>
                     <span>{t('plan.days', { count: plan.duration_days })}</span>

@@ -89,7 +89,7 @@ export default function ItineraryPanelContent({
           <div className="flex items-center gap-1 mb-sp-2">
             <BadgeCheck size={12} strokeWidth={2} className="text-warning" aria-hidden="true" />
             <span
-              className="text-[10px] font-bold uppercase tracking-widest text-warning"
+              className="text-f-xxs font-bold uppercase tracking-widest text-warning"
               aria-label={t('sponsored')}
             >
               {t('sponsored')}
@@ -97,7 +97,7 @@ export default function ItineraryPanelContent({
           </div>
         )}
 
-        <h1 className="text-[15px] font-semibold text-fg leading-snug mb-sp-2">
+        <h1 className="text-f-lg font-semibold text-fg leading-snug mb-sp-2">
           {itinerary.title}
         </h1>
 
@@ -110,7 +110,7 @@ export default function ItineraryPanelContent({
           >
             {authorName.charAt(0).toUpperCase()}
           </div>
-          <span className="text-[12px] text-muted truncate">
+          <span className="text-f-sm text-muted truncate">
             {t('createdBy', { name: authorName })}
           </span>
         </div>
@@ -121,22 +121,22 @@ export default function ItineraryPanelContent({
         className="mx-sp-4 mb-sp-3 px-sp-3 py-sp-2 rounded-lg flex items-center gap-sp-3 flex-wrap"
         style={{ background: 'var(--bg-3)' }}
       >
-        <span className="flex items-center gap-1 text-[11px] text-muted">
+        <span className="flex items-center gap-1 text-f-xs text-muted">
           <MapPin size={11} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
           {t('stats.stops', { count: itinerary.stops.length })}
         </span>
-        <span className="flex items-center gap-1 text-[11px] text-muted">
+        <span className="flex items-center gap-1 text-f-xs text-muted">
           <Clock size={11} strokeWidth={2} className="shrink-0" aria-hidden="true" />
           {durationLabel}
         </span>
         {distanceLabel && (
-          <span className="flex items-center gap-1 text-[11px] text-muted">
+          <span className="flex items-center gap-1 text-f-xs text-muted">
             <Route size={11} strokeWidth={2} className="shrink-0" aria-hidden="true" />
             {distanceLabel}
           </span>
         )}
         {transportModes.map(mode => (
-          <span key={mode} className="flex items-center gap-1 text-[11px] text-muted">
+          <span key={mode} className="flex items-center gap-1 text-f-xs text-muted">
             <TransportIcon mode={mode} />
             {t(`transport.${mode}`)}
           </span>
@@ -149,7 +149,7 @@ export default function ItineraryPanelContent({
           onClick={onLike}
           aria-label={t('actions.likeAria')}
           aria-pressed={isLiked}
-          className="flex items-center gap-1 min-h-touch px-sp-3 rounded-lg text-[12px] font-semibold transition-colors"
+          className="flex items-center gap-1 min-h-touch px-sp-3 rounded-lg text-f-sm font-semibold transition-colors"
           style={{
             background: isLiked ? 'color-mix(in srgb, var(--danger) 12%, transparent)' : 'var(--bg-3)',
             color: isLiked ? 'var(--danger)' : 'var(--muted)',
@@ -164,7 +164,7 @@ export default function ItineraryPanelContent({
           onClick={onSave}
           aria-label={t('actions.saveAria')}
           aria-pressed={isSaved}
-          className="flex items-center gap-1 min-h-touch px-sp-3 rounded-lg text-[12px] font-semibold transition-colors"
+          className="flex items-center gap-1 min-h-touch px-sp-3 rounded-lg text-f-sm font-semibold transition-colors"
           style={{
             background: isSaved ? 'var(--lav-dim)' : 'var(--bg-3)',
             color: isSaved ? 'var(--lav)' : 'var(--muted)',
@@ -188,7 +188,7 @@ export default function ItineraryPanelContent({
           <button
             onClick={onEdit}
             aria-label={t('actions.editAria')}
-            className="flex items-center gap-1 min-h-touch px-sp-3 rounded-lg text-[12px] font-semibold text-lav hover:bg-lav-dim transition-colors"
+            className="flex items-center gap-1 min-h-touch px-sp-3 rounded-lg text-f-sm font-semibold text-lav hover:bg-lav-dim transition-colors"
             style={{ border: '1px solid var(--lav-border)' }}
           >
             <Edit2 size={13} strokeWidth={2} aria-hidden="true" />
@@ -208,7 +208,7 @@ export default function ItineraryPanelContent({
             role="tab"
             aria-selected={activeDay === null}
             onClick={() => setActiveDay(null)}
-            className="shrink-0 min-h-[30px] px-sp-3 rounded-full text-[11px] font-semibold transition-colors"
+            className="shrink-0 min-h-[30px] px-sp-3 rounded-full text-f-xs font-semibold transition-colors"
             style={{
               background: activeDay === null ? 'var(--lav-dim)' : 'var(--bg-3)',
               color: activeDay === null ? 'var(--lav)' : 'var(--muted)',
@@ -223,7 +223,7 @@ export default function ItineraryPanelContent({
               role="tab"
               aria-selected={activeDay === d}
               onClick={() => setActiveDay(d)}
-              className="shrink-0 min-h-[30px] px-sp-3 rounded-full text-[11px] font-semibold transition-colors"
+              className="shrink-0 min-h-[30px] px-sp-3 rounded-full text-f-xs font-semibold transition-colors"
               style={{
                 background: activeDay === d ? 'var(--lav-dim)' : 'var(--bg-3)',
                 color: activeDay === d ? 'var(--lav)' : 'var(--muted)',
@@ -265,7 +265,7 @@ export default function ItineraryPanelContent({
               >
                 {/* Number badge */}
                 <span
-                  className="shrink-0 w-[22px] h-[22px] rounded-full flex items-center justify-center text-[11px] font-bold mt-0.5"
+                  className="shrink-0 w-[22px] h-[22px] rounded-full flex items-center justify-center text-f-xs font-bold mt-0.5"
                   style={{
                     background: isSelected ? 'var(--lav)' : 'var(--bg-2)',
                     color: isSelected ? 'var(--bg)' : 'var(--muted)',
@@ -276,23 +276,23 @@ export default function ItineraryPanelContent({
                 </span>
 
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-semibold text-fg leading-snug truncate">
+                  <p className="text-f-md font-semibold text-fg leading-snug truncate">
                     {poiName}
                   </p>
                   <div className="flex items-center gap-sp-2 mt-0.5">
-                    <span className="text-[11px] text-muted flex items-center gap-0.5">
+                    <span className="text-f-xs text-muted flex items-center gap-0.5">
                       <Clock size={10} strokeWidth={2} aria-hidden="true" />
                       {t('stopItem.min', { min: stop.duration_min })}
                     </span>
                     {stop.transport_mode && (
-                      <span className="flex items-center gap-0.5 text-[11px] text-muted">
+                      <span className="flex items-center gap-0.5 text-f-xs text-muted">
                         <TransportIcon mode={stop.transport_mode} />
                         {t(`transport.${stop.transport_mode}`)}
                       </span>
                     )}
                   </div>
                   {stop.notes && (
-                    <p className="text-[11px] text-muted mt-sp-1 line-clamp-2 leading-relaxed">
+                    <p className="text-f-xs text-muted mt-sp-1 line-clamp-2 leading-relaxed">
                       {stop.notes}
                     </p>
                   )}
@@ -328,7 +328,7 @@ export default function ItineraryPanelContent({
         <section aria-labelledby="related-heading" className="px-sp-4">
           <h2
             id="related-heading"
-            className="text-[11px] font-bold uppercase tracking-widest text-muted mb-sp-3"
+            className="text-f-xs font-bold uppercase tracking-widest text-muted mb-sp-3"
           >
             {t('related.title')}
           </h2>
@@ -353,14 +353,14 @@ export default function ItineraryPanelContent({
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[12px] font-semibold text-fg leading-snug truncate">
+                  <p className="text-f-sm font-semibold text-fg leading-snug truncate">
                     {rel.title}
                   </p>
                   <div className="flex items-center gap-sp-2 mt-0.5">
-                    <span className="text-[11px] text-muted">
+                    <span className="text-f-xs text-muted">
                       {t('related.stops', { count: rel.stop_count })}
                     </span>
-                    <span className="text-[11px] text-muted flex items-center gap-0.5">
+                    <span className="text-f-xs text-muted flex items-center gap-0.5">
                       <Heart size={10} strokeWidth={2} aria-hidden="true" />
                       {rel.like_count}
                     </span>

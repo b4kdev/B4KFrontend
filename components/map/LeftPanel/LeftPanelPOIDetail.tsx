@@ -40,7 +40,7 @@ export default function LeftPanelPOIDetail({
 
         {/* LP_10 — Sponsored label */}
         {poi.is_partner && (
-          <p className="text-[10px] text-muted uppercase tracking-widest -mb-sp-1">
+          <p className="text-f-xxs text-muted uppercase tracking-widest -mb-sp-1">
             {t('sponsored')}
           </p>
         )}

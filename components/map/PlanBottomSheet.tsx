@@ -97,7 +97,7 @@ export default function PlanBottomSheet({
           className="px-sp-4 py-sp-3 flex items-center justify-between shrink-0"
           style={{ borderBottom: '1px solid var(--bdr)' }}
         >
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted">
+          <p className="text-f-xxs font-semibold uppercase tracking-widest text-muted">
             {t('title')}
           </p>
           <div className="flex items-center gap-sp-3">
@@ -142,7 +142,7 @@ export default function PlanBottomSheet({
                 </button>
 
                 <span
-                  className="w-5 h-5 rounded-full bg-lav text-bg text-[10px] font-bold flex items-center justify-center shrink-0 select-none"
+                  className="w-5 h-5 rounded-full bg-lav text-bg text-f-xxs font-bold flex items-center justify-center shrink-0 select-none"
                   aria-hidden="true"
                 >
                   {i + 1}
@@ -161,7 +161,7 @@ export default function PlanBottomSheet({
                     className="w-[42px] text-center text-xs text-fg bg-bg-3 rounded py-0.5 outline-none focus:ring-1 focus:ring-lav tabular-nums"
                     style={{ border: '1px solid var(--bdr)' }}
                   />
-                  <span className="text-muted text-[10px]">{t('durationLabel')}</span>
+                  <span className="text-muted text-f-xxs">{t('durationLabel')}</span>
                 </div>
 
                 <button
@@ -184,10 +184,10 @@ export default function PlanBottomSheet({
             role="alert"
           >
             <AlertTriangle size={13} strokeWidth={2} className="text-danger shrink-0" aria-hidden="true" />
-            <span className="flex-1 text-[11px] text-danger">{t('routeError')}</span>
+            <span className="flex-1 text-f-xs text-danger">{t('routeError')}</span>
             <button
               onClick={handlePreviewPlan}
-              className="text-[11px] font-semibold text-danger hover:opacity-70 transition-opacity"
+              className="text-f-xs font-semibold text-danger hover:opacity-70 transition-opacity"
             >
               {t('routeRetry')}
             </button>

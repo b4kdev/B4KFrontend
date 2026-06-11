@@ -17,7 +17,7 @@ export default function ExploreHubPage() {
       className="max-w-[1200px] mx-auto px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-20"
       aria-label={t('title')}
     >
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
+      <div className="flex items-center gap-1.5 text-f-xxs font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
         <Link href="/" className="text-muted-2 hover:text-fg transition-colors">B4K</Link>
         <span>›</span>
         <span className="text-fg">{t('breadcrumb')}</span>
@@ -26,7 +26,7 @@ export default function ExploreHubPage() {
       <h1 className="font-display font-black text-fg text-[clamp(22px,2.5vw,34px)] mb-sp-2">
         {t('hub.title')}
       </h1>
-      <p className="text-[14px] text-muted mb-sp-8">{t('hub.subtitle')}</p>
+      <p className="text-f-base text-muted mb-sp-8">{t('hub.subtitle')}</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-sp-4">
         {CATEGORIES.map(({ id, href, icon: Icon, tKey, color }) => (
@@ -44,10 +44,10 @@ export default function ExploreHubPage() {
               <Icon size={20} strokeWidth={2} className={color} />
             </div>
             <div>
-              <p className="text-[15px] font-semibold text-fg mb-[3px] group-hover:text-lav transition-colors">
+              <p className="text-f-lg font-semibold text-fg mb-[3px] group-hover:text-lav transition-colors">
                 {t(`${tKey}.title`)}
               </p>
-              <p className="text-[13px] text-muted leading-relaxed">
+              <p className="text-f-md text-muted leading-relaxed">
                 {t(`hub.${tKey}.desc`)}
               </p>
             </div>

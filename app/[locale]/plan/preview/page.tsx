@@ -188,7 +188,7 @@ export default function PlanPreviewPage() {
         <section aria-label={t('nameSection')}>
           <label
             htmlFor="plan-name"
-            className="block text-[11px] font-semibold uppercase tracking-widest text-muted mb-sp-2"
+            className="block text-f-xs font-semibold uppercase tracking-widest text-muted mb-sp-2"
           >
             {t('nameLabel')}
           </label>
@@ -206,7 +206,7 @@ export default function PlanPreviewPage() {
 
         {/* Stop list */}
         <section aria-label={t('stopsSection')}>
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted mb-sp-2">
+          <p className="text-f-xs font-semibold uppercase tracking-widest text-muted mb-sp-2">
             {t('stopsSection')}
           </p>
 
@@ -244,7 +244,7 @@ export default function PlanPreviewPage() {
 
                   {/* Stop number */}
                   <span
-                    className="w-5 h-5 rounded-full bg-lav text-bg text-[10px] font-bold flex items-center justify-center shrink-0 select-none"
+                    className="w-5 h-5 rounded-full bg-lav text-bg text-f-xxs font-bold flex items-center justify-center shrink-0 select-none"
                     aria-hidden="true"
                   >
                     {i + 1}
@@ -266,7 +266,7 @@ export default function PlanPreviewPage() {
                       className="w-[46px] text-center text-xs text-fg bg-bg-3 rounded py-sp-1 outline-none focus:ring-1 focus:ring-lav tabular-nums disabled:opacity-50"
                       style={{ border: '1px solid var(--bdr)' }}
                     />
-                    <span className="text-muted text-[10px]">{t('durationLabel')}</span>
+                    <span className="text-muted text-f-xxs">{t('durationLabel')}</span>
                   </div>
 
                   {/* Remove */}
@@ -293,7 +293,7 @@ export default function PlanPreviewPage() {
 
         {/* Transport + total */}
         <section aria-label={t('transportSection')}>
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted mb-sp-2">
+          <p className="text-f-xs font-semibold uppercase tracking-widest text-muted mb-sp-2">
             {t('transportSection')}
           </p>
 

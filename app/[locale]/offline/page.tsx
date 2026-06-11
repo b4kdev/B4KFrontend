@@ -19,12 +19,12 @@ export default function OfflinePage() {
         <p className="font-display font-black text-fg text-[clamp(18px,2vw,24px)] mb-sp-3">
           {t('title')}
         </p>
-        <p className="text-[13px] text-muted max-w-[280px] leading-relaxed mb-sp-6">
+        <p className="text-f-md text-muted max-w-[280px] leading-relaxed mb-sp-6">
           {t('desc')}
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-lg text-[13px] font-semibold text-lav min-h-touch hover:text-fg transition-colors"
+          className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-lg text-f-md font-semibold text-lav min-h-touch hover:text-fg transition-colors"
           style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
         >
           <RefreshCw size={14} strokeWidth={2} />

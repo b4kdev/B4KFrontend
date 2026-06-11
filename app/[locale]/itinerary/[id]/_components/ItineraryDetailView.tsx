@@ -98,10 +98,10 @@ export default function ItineraryDetailView({ id }: { id: string }) {
         className="fixed top-[52px] left-0 right-0 bottom-14 lg:left-[52px] lg:bottom-0 z-10 flex flex-col items-center justify-center gap-sp-4 bg-bg px-sp-6 text-center"
         role="alert"
       >
-        <p className="text-[15px] font-semibold text-fg">{t('error.title')}</p>
+        <p className="text-f-lg font-semibold text-fg">{t('error.title')}</p>
         <button
           onClick={() => mutate()}
-          className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-lg text-[13px] font-semibold text-lav"
+          className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-lg text-f-md font-semibold text-lav"
           style={{ border: '1px solid var(--lav-border)' }}
         >
           <RefreshCw size={14} strokeWidth={2} />
@@ -116,8 +116,8 @@ export default function ItineraryDetailView({ id }: { id: string }) {
     return (
       <div className="fixed top-[52px] left-0 right-0 bottom-14 lg:left-[52px] lg:bottom-0 z-10 flex flex-col items-center justify-center gap-sp-3 bg-bg text-center px-sp-6">
         <Lock size={32} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
-        <p className="text-[15px] font-semibold text-fg">{t('private')}</p>
-        <p className="text-[13px] text-muted max-w-[280px]">{t('privateDesc')}</p>
+        <p className="text-f-lg font-semibold text-fg">{t('private')}</p>
+        <p className="text-f-md text-muted max-w-[280px]">{t('privateDesc')}</p>
       </div>
     )
   }
@@ -127,7 +127,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
     return (
       <div className="fixed top-[52px] left-0 right-0 bottom-14 lg:left-[52px] lg:bottom-0 z-10 flex flex-col items-center justify-center gap-sp-3 bg-bg text-center px-sp-6">
         <Route size={32} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
-        <p className="text-[15px] font-semibold text-fg">{t('notFound')}</p>
+        <p className="text-f-lg font-semibold text-fg">{t('notFound')}</p>
       </div>
     )
   }

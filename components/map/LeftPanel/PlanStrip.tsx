@@ -24,7 +24,7 @@ export default function PlanStrip({ stopCount, expanded, onToggle }: Props) {
       <span className="flex-1 text-fg text-xs font-semibold truncate">
         {t('title')}
       </span>
-      <span className="text-[10px] tabular-nums text-lav font-bold px-sp-1 py-0.5 rounded bg-lav-dim shrink-0">
+      <span className="text-f-xxs tabular-nums text-lav font-bold px-sp-1 py-0.5 rounded bg-lav-dim shrink-0">
         {stopCount}
       </span>
       {expanded

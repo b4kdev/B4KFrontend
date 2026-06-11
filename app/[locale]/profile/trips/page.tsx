@@ -48,21 +48,21 @@ function DeleteModal({
         <div className="flex items-start gap-sp-3">
           <AlertTriangle size={20} strokeWidth={2} className="text-danger shrink-0 mt-0.5" />
           <div>
-            <p className="text-[15px] font-semibold text-fg">{t('trips.deleteModal.title')}</p>
-            <p className="text-[13px] text-muted mt-1">{t('trips.deleteModal.desc', { title })}</p>
+            <p className="text-f-lg font-semibold text-fg">{t('trips.deleteModal.title')}</p>
+            <p className="text-f-md text-muted mt-1">{t('trips.deleteModal.desc', { title })}</p>
           </div>
         </div>
         <div className="flex gap-sp-3 mt-sp-2">
           <button
             onClick={onCancel}
-            className="flex-1 min-h-touch rounded-lg text-[13px] font-semibold text-muted hover:text-fg transition-colors"
+            className="flex-1 min-h-touch rounded-lg text-f-md font-semibold text-muted hover:text-fg transition-colors"
             style={{ border: '1px solid var(--bdr)' }}
           >
             {t('trips.deleteModal.cancel')}
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 min-h-touch rounded-lg text-[13px] font-semibold bg-danger text-white hover:opacity-90 transition-opacity"
+            className="flex-1 min-h-touch rounded-lg text-f-md font-semibold bg-danger text-bg hover:opacity-90 transition-opacity"
           >
             {t('trips.deleteModal.confirm')}
           </button>
@@ -107,12 +107,12 @@ function TripCard({
       <div className="p-sp-4 flex flex-col gap-sp-3 flex-1">
         {/* Title + draft badge — PR_11 */}
         <div className="flex items-start gap-sp-2">
-          <h2 className="text-[14px] font-semibold text-fg leading-snug line-clamp-2 flex-1">
+          <h2 className="text-f-base font-semibold text-fg leading-snug line-clamp-2 flex-1">
             {trip.title}
           </h2>
           {!trip.is_published && (
             <span
-              className="shrink-0 text-[10px] font-bold uppercase tracking-widest px-sp-2 py-0.5 rounded-full text-warning"
+              className="shrink-0 text-f-xxs font-bold uppercase tracking-widest px-sp-2 py-0.5 rounded-full text-warning"
               style={{ background: 'color-mix(in srgb, var(--warning) 12%, transparent)' }}
             >
               {t('trips.card.draft')}
@@ -122,7 +122,7 @@ function TripCard({
 
         {/* Stats — PR_12 (published only) */}
         {trip.is_published && (
-          <div className="flex items-center gap-sp-3 text-[12px] text-muted">
+          <div className="flex items-center gap-sp-3 text-f-sm text-muted">
             <span className="flex items-center gap-1">
               <Heart size={12} strokeWidth={2} className="text-danger" />
               {trip.like_count} {t('trips.card.likes')}
@@ -138,7 +138,7 @@ function TripCard({
         <div className="flex gap-sp-2 mt-auto pt-sp-1">
           <Link
             href={`/map?plan=${trip.id}`}
-            className="flex-1 min-h-touch flex items-center justify-center gap-1.5 rounded-lg text-[12px] font-semibold text-lav transition-colors hover:bg-lav-dim"
+            className="flex-1 min-h-touch flex items-center justify-center gap-1.5 rounded-lg text-f-sm font-semibold text-lav transition-colors hover:bg-lav-dim"
             style={{ border: '1px solid var(--lav-border)' }}
             aria-label={t('trips.card.editAria', { title: trip.title })}
           >
@@ -194,10 +194,10 @@ export default function TripsPage() {
           role="alert"
         >
           <AlertTriangle size={36} strokeWidth={2} className="text-danger" />
-          <p className="text-[15px] font-semibold text-fg">{t('trips.error.title')}</p>
+          <p className="text-f-lg font-semibold text-fg">{t('trips.error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-lg text-[13px] font-semibold text-lav"
+            className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-lg text-f-md font-semibold text-lav"
             style={{ border: '1px solid var(--lav-border)' }}
           >
             <RefreshCw size={14} strokeWidth={2} />
@@ -211,12 +211,12 @@ export default function TripsPage() {
         <div className="flex flex-col items-center text-center py-sp-16 px-sp-4 gap-sp-6">
           <Route size={40} strokeWidth={2} className="text-muted-2" />
           <div>
-            <p className="text-[16px] font-semibold text-fg mb-1">{t('trips.empty.title')}</p>
-            <p className="text-[13px] text-muted max-w-[280px]">{t('trips.empty.desc')}</p>
+            <p className="text-f-xl font-semibold text-fg mb-1">{t('trips.empty.title')}</p>
+            <p className="text-f-md text-muted max-w-[280px]">{t('trips.empty.desc')}</p>
           </div>
           <Link
             href="/map"
-            className="min-h-touch px-sp-6 flex items-center gap-sp-2 rounded-full text-[13px] font-semibold text-fg"
+            className="min-h-touch px-sp-6 flex items-center gap-sp-2 rounded-full text-f-md font-semibold text-fg"
             style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
           >
             <Map size={15} strokeWidth={2} />
@@ -230,11 +230,11 @@ export default function TripsPage() {
           >
             <div className="flex items-center gap-sp-3">
               <Zap size={18} strokeWidth={2} className="text-lav shrink-0" />
-              <p className="text-[13px] text-fg text-left">{t('trips.nudge.title')}</p>
+              <p className="text-f-md text-fg text-left">{t('trips.nudge.title')}</p>
             </div>
             <Link
               href="/saved"
-              className="shrink-0 text-[12px] font-bold text-lav hover:text-fg transition-colors whitespace-nowrap"
+              className="shrink-0 text-f-sm font-bold text-lav hover:text-fg transition-colors whitespace-nowrap"
             >
               {t('trips.nudge.cta')}
             </Link>

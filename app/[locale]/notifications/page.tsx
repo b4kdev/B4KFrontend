@@ -60,7 +60,7 @@ export default function NotificationsPage() {
       className="max-w-[720px] mx-auto px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-20"
       aria-label={t('ariaLabel')}
     >
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
+      <div className="flex items-center gap-1.5 text-f-xxs font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
         <Link href="/" className="text-muted-2 hover:text-fg transition-colors">B4K</Link>
         <span>›</span>
         <span className="text-fg">{t('breadcrumb')}</span>
@@ -71,7 +71,7 @@ export default function NotificationsPage() {
           {t('title')}
         </h1>
         {data && data.unread_count > 0 && (
-          <span className="text-[12px] font-semibold text-lav">
+          <span className="text-f-sm font-semibold text-lav">
             {t('unread', { count: data.unread_count })}
           </span>
         )}
@@ -95,10 +95,10 @@ export default function NotificationsPage() {
           role="alert"
         >
           <AlertTriangle size={36} strokeWidth={2} className="text-danger mb-sp-3" />
-          <p className="text-[15px] font-semibold text-fg mb-sp-2">{t('error.title')}</p>
+          <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 text-[13px] font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+            className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
           >
             <RefreshCw size={14} strokeWidth={2} />{t('error.retry')}
           </button>
@@ -112,15 +112,15 @@ export default function NotificationsPage() {
             style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
           >
             <Bell size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
-            <p className="text-[16px] font-semibold text-fg mb-sp-2">{t('empty.title')}</p>
-            <p className="text-[13px] text-muted max-w-[300px]">{t('empty.desc')}</p>
+            <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.title')}</p>
+            <p className="text-f-md text-muted max-w-[300px]">{t('empty.desc')}</p>
           </div>
         ) : (
           <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--bdr)' }}>
             {groupByDate(data.notifications).map(group => (
               <div key={group.key}>
                 <p
-                  className="px-sp-4 py-[6px] text-[11px] font-semibold tracking-[0.06em] uppercase text-muted"
+                  className="px-sp-4 py-[6px] text-f-xs font-semibold tracking-[0.06em] uppercase text-muted"
                   style={{ background: 'var(--bg-3)', borderBottom: 'var(--bdr)' }}
                 >
                   {t(`groups.${group.key}`)}
@@ -146,10 +146,10 @@ export default function NotificationsPage() {
                         <Icon size={16} strokeWidth={2} className={n.is_read ? 'text-muted' : 'text-lav'} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={['text-[13px] font-semibold leading-snug', n.is_read ? 'text-fg' : 'text-fg'].join(' ')}>
+                        <p className={['text-f-md font-semibold leading-snug', n.is_read ? 'text-fg' : 'text-fg'].join(' ')}>
                           {n.title}
                         </p>
-                        <p className="text-[12px] text-muted mt-[2px] line-clamp-2">{n.body}</p>
+                        <p className="text-f-sm text-muted mt-[2px] line-clamp-2">{n.body}</p>
                       </div>
                       {n.is_read && (
                         <Check size={14} strokeWidth={2} className="text-muted shrink-0 mt-[4px]" aria-hidden />

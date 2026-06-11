@@ -149,7 +149,7 @@ function PlanResult({ stops }: { stops: MapPoi[] }) {
     <div className="flex flex-col gap-sp-2">
       {stops.map((poi, i) => (
         <div key={poi.place_id} className="flex items-center gap-sp-2">
-          <span className="w-5 h-5 rounded-full bg-lav text-bg text-[10px] font-bold flex items-center justify-center shrink-0">
+          <span className="w-5 h-5 rounded-full bg-lav text-bg text-f-xxs font-bold flex items-center justify-center shrink-0">
             {i + 1}
           </span>
           <span className="text-fg text-sm truncate">{getDisplayName(poi)}</span>

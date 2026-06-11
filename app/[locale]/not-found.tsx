@@ -13,10 +13,10 @@ export default function NotFound() {
       >
         <Compass size={48} strokeWidth={2} className="text-muted-2 mb-4" />
         <p className="text-[20px] font-bold text-fg mb-2">{t('title')}</p>
-        <p className="text-[13px] text-muted mb-5 max-w-[320px]">{t('desc')}</p>
+        <p className="text-f-md text-muted mb-5 max-w-[320px]">{t('desc')}</p>
         <Link
           href="/"
-          className="inline-flex items-center min-h-touch px-4 rounded-full text-[12px] font-semibold text-lav"
+          className="inline-flex items-center min-h-touch px-4 rounded-full text-f-sm font-semibold text-lav"
           style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
         >
           {t('cta')}

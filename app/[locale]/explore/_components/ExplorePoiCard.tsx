@@ -34,12 +34,12 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
       </div>
       <div className="p-sp-3 flex flex-col gap-[4px]">
         <div className="flex items-start justify-between gap-sp-2">
-          <span className="text-[13px] font-semibold text-fg leading-tight line-clamp-2 flex-1">
+          <span className="text-f-md font-semibold text-fg leading-tight line-clamp-2 flex-1">
             {name}
           </span>
           {poi.is_trending && (
             <span
-              className="shrink-0 flex items-center gap-[3px] text-[10px] font-semibold text-lav px-[6px] py-[2px] rounded-full"
+              className="shrink-0 flex items-center gap-[3px] text-f-xxs font-semibold text-lav px-[6px] py-[2px] rounded-full"
               style={{ background: 'var(--lav-dim)' }}
             >
               <TrendingUp size={9} strokeWidth={2} />
@@ -47,7 +47,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
             </span>
           )}
         </div>
-        <span className="text-[11px] text-muted">{poi.display_region}</span>
+        <span className="text-f-xs text-muted">{poi.display_region}</span>
       </div>
     </Link>
   )

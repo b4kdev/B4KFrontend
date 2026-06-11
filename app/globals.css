@@ -76,6 +76,16 @@ body {
   /* Typography */
   --f-display: 'MODERNIZ', system-ui, -apple-system, sans-serif;
   --f-body:    var(--font-work-sans, 'Work Sans'), system-ui, -apple-system, sans-serif;
+
+  /* Font sizes */
+  --f-xxs:  10px;
+  --f-xs:   11px;
+  --f-sm:   12px;
+  --f-md:   13px;
+  --f-base: 14px;
+  --f-lg:   15px;
+  --f-xl:   16px;
+  --f-2xl:  17px;
 }
 
 /* ─── Light mode overrides ──────────────────────────────────── */

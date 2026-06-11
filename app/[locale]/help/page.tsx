@@ -24,7 +24,7 @@ export default function HelpPage() {
       className="max-w-[720px] mx-auto px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-20"
       aria-label={t('ariaLabel')}
     >
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
+      <div className="flex items-center gap-1.5 text-f-xxs font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
         <Link href="/" className="text-muted-2 hover:text-fg transition-colors">B4K</Link>
         <span>›</span>
         <span className="text-fg">{t('breadcrumb')}</span>
@@ -40,7 +40,7 @@ export default function HelpPage() {
       <div className="flex flex-col gap-sp-6">
         {SECTIONS.map(section => (
           <div key={section.key}>
-            <h2 className="text-[12px] font-semibold tracking-[0.07em] uppercase text-muted mb-sp-3">
+            <h2 className="text-f-sm font-semibold tracking-[0.07em] uppercase text-muted mb-sp-3">
               {t(`sections.${section.key}.title`)}
             </h2>
             <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--bdr)' }}>
@@ -61,7 +61,7 @@ export default function HelpPage() {
                         : t('expandAriaLabel',   { question: t(`sections.${section.key}.items.${item}.q`) })
                       }
                     >
-                      <span className="text-[13px] font-semibold text-fg leading-snug">
+                      <span className="text-f-md font-semibold text-fg leading-snug">
                         {t(`sections.${section.key}.items.${item}.q`)}
                       </span>
                       <ChevronDown
@@ -76,7 +76,7 @@ export default function HelpPage() {
                         id={`${id}-panel`}
                         role="region"
                         aria-labelledby={`${id}-btn`}
-                        className="px-sp-4 pb-sp-4 text-[13px] text-muted leading-relaxed"
+                        className="px-sp-4 pb-sp-4 text-f-md text-muted leading-relaxed"
                         style={{ borderTop: 'var(--bdr)' }}
                       >
                         {t(`sections.${section.key}.items.${item}.a`)}
@@ -91,7 +91,7 @@ export default function HelpPage() {
 
         {/* Contact */}
         <div>
-          <h2 className="text-[12px] font-semibold tracking-[0.07em] uppercase text-muted mb-sp-3">
+          <h2 className="text-f-sm font-semibold tracking-[0.07em] uppercase text-muted mb-sp-3">
             {t('sections.contact.title')}
           </h2>
           <div
@@ -105,10 +105,10 @@ export default function HelpPage() {
               <Mail size={18} strokeWidth={2} className="text-lav" />
             </div>
             <div>
-              <p className="text-[13px] text-muted mb-sp-3">{t('sections.contact.desc')}</p>
+              <p className="text-f-md text-muted mb-sp-3">{t('sections.contact.desc')}</p>
               <a
                 href={t('sections.contact.ctaEmailHref')}
-                className="inline-flex items-center gap-sp-2 px-sp-4 py-sp-2 rounded-lg text-[13px] font-semibold text-lav min-h-touch hover:text-fg transition-colors"
+                className="inline-flex items-center gap-sp-2 px-sp-4 py-sp-2 rounded-lg text-f-md font-semibold text-lav min-h-touch hover:text-fg transition-colors"
                 style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
               >
                 <Mail size={14} strokeWidth={2} />

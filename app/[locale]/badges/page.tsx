@@ -41,7 +41,7 @@ export default function BadgesPage() {
   const filtered = data?.badges.filter(b => filter === 'all' || b.rarity === filter) ?? []
 
   const pillClass = (active: boolean) => [
-    'px-sp-3 py-[6px] rounded-full text-[11px] font-semibold whitespace-nowrap transition-colors min-h-[36px] flex items-center',
+    'px-sp-3 py-[6px] rounded-full text-f-xs font-semibold whitespace-nowrap transition-colors min-h-[36px] flex items-center',
     active ? 'bg-lav text-bg' : 'text-muted hover:text-fg',
   ].join(' ')
 
@@ -50,7 +50,7 @@ export default function BadgesPage() {
       className="max-w-[1200px] mx-auto px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-20"
       aria-label={t('ariaLabel')}
     >
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
+      <div className="flex items-center gap-1.5 text-f-xxs font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
         <Link href="/" className="text-muted-2 hover:text-fg transition-colors">B4K</Link>
         <span>›</span>
         <span className="text-fg">{t('breadcrumb')}</span>
@@ -61,7 +61,7 @@ export default function BadgesPage() {
           {t('title')}
         </h1>
         {data && (
-          <span className="text-[12px] font-semibold text-muted">
+          <span className="text-f-sm font-semibold text-muted">
             {t('stats', { earned: data.earned_count, total: data.total_count })}
           </span>
         )}
@@ -104,10 +104,10 @@ export default function BadgesPage() {
           role="alert"
         >
           <AlertTriangle size={36} strokeWidth={2} className="text-danger mb-sp-3" />
-          <p className="text-[15px] font-semibold text-fg mb-sp-2">{t('error.title')}</p>
+          <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 text-[13px] font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+            className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
           >
             <RefreshCw size={14} strokeWidth={2} />{t('error.retry')}
           </button>
@@ -121,8 +121,8 @@ export default function BadgesPage() {
             style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
           >
             <Award size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
-            <p className="text-[16px] font-semibold text-fg mb-sp-2">{t('empty.title')}</p>
-            <p className="text-[13px] text-muted max-w-[300px]">{t('empty.desc')}</p>
+            <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.title')}</p>
+            <p className="text-f-md text-muted max-w-[300px]">{t('empty.desc')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-x-sp-4 gap-y-sp-6">
@@ -157,7 +157,7 @@ export default function BadgesPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-[10px] font-semibold text-center leading-tight text-muted line-clamp-2 px-[2px]">
+                  <p className="text-f-xxs font-semibold text-center leading-tight text-muted line-clamp-2 px-[2px]">
                     {badge.name}
                   </p>
                   {badge.earned && badge.earned_at && (

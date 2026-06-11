@@ -40,7 +40,7 @@ function PlanCard({ plan, index, t }: { plan: HomeTopPlan; index: number; t: Ret
       <div className="relative" style={{ aspectRatio: '3/2', background: grad }}>
         <span
           className="absolute top-[10px] right-[10px] text-[9px] font-bold tracking-[0.1em] uppercase text-fg"
-          style={{ background: 'rgba(0,0,0,0.55)', padding: '3px 8px', borderRadius: 2 }}
+          style={{ background: 'var(--backdrop-50)', padding: '3px 8px', borderRadius: 2 }}
           aria-hidden
         >
           {t('badge')}
@@ -51,8 +51,8 @@ function PlanCard({ plan, index, t }: { plan: HomeTopPlan; index: number; t: Ret
         )}
       </div>
       <div className="p-sp-3 flex flex-col gap-[3px]">
-        <p className="text-[13px] font-semibold text-fg leading-snug">{name}</p>
-        <div className="flex items-center gap-sp-3 text-[11px] text-muted">
+        <p className="text-f-md font-semibold text-fg leading-snug">{name}</p>
+        <div className="flex items-center gap-sp-3 text-f-xs text-muted">
           <span>{plan.author_name}</span>
           <span className="flex items-center gap-[3px]" aria-label={t('card.likesLabel', { count: plan.likes_count })}>
             <Heart size={11} strokeWidth={2} aria-hidden /> {plan.likes_count}
@@ -88,10 +88,10 @@ export default function TopPlans() {
           role="alert"
         >
           <RefreshCw size={28} strokeWidth={2} className="text-muted-2 mb-3" />
-          <p className="text-[14px] font-semibold text-fg mb-1">{tCommon('error')}</p>
+          <p className="text-f-base font-semibold text-fg mb-1">{tCommon('error')}</p>
           <button
             onClick={() => mutate()}
-            className="mt-3 inline-flex items-center min-h-touch px-4 rounded-full text-[12px] font-semibold text-lav"
+            className="mt-3 inline-flex items-center min-h-touch px-4 rounded-full text-f-sm font-semibold text-lav"
             style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
           >
             {tCommon('retry')}
@@ -105,11 +105,11 @@ export default function TopPlans() {
           style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
         >
           <Route size={32} strokeWidth={2} className="text-muted-2 mb-3" />
-          <p className="text-[14px] font-semibold text-fg mb-1">{t('empty.title')}</p>
-          <p className="text-[12px] text-muted mb-4 max-w-[280px]">{t('empty.desc')}</p>
+          <p className="text-f-base font-semibold text-fg mb-1">{t('empty.title')}</p>
+          <p className="text-f-sm text-muted mb-4 max-w-[280px]">{t('empty.desc')}</p>
           <Link
             href="/plan"
-            className="inline-flex items-center min-h-touch px-4 rounded-full text-[12px] font-semibold text-lav"
+            className="inline-flex items-center min-h-touch px-4 rounded-full text-f-sm font-semibold text-lav"
             style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
           >
             {t('empty.cta')}

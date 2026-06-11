@@ -103,7 +103,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
             placeholder={t('searchPlaceholder')}
-            className="w-full h-8 rounded-full pl-8 pr-8 text-[12px] text-fg placeholder:text-muted outline-none bg-bg-3"
+            className="w-full h-8 rounded-full pl-8 pr-8 text-f-sm text-fg placeholder:text-muted outline-none bg-bg-3"
             style={{ border: '1px solid var(--bdr)' }}
             aria-label={t('searchPlaceholder')}
             aria-expanded={dropdownOpen}
@@ -134,7 +134,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
                     key={f}
                     onClick={() => setActiveFilter(f)}
                     className={[
-                      'shrink-0 px-3 h-[26px] rounded-full text-[11px] font-semibold transition-colors whitespace-nowrap',
+                      'shrink-0 px-3 h-[26px] rounded-full text-f-xs font-semibold transition-colors whitespace-nowrap',
                       activeFilter === f ? 'bg-lav text-bg' : 'bg-muted-3 text-muted hover:text-fg',
                     ].join(' ')}
                     aria-pressed={activeFilter === f}
@@ -164,8 +164,8 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
                             }
                           </span>
                           <span className="flex-1 min-w-0">
-                            <span className="block text-[13px] text-fg truncate">{name}</span>
-                            {r.region && <span className="block text-[11px] text-muted truncate">{r.region}</span>}
+                            <span className="block text-f-md text-fg truncate">{name}</span>
+                            {r.region && <span className="block text-f-xs text-muted truncate">{r.region}</span>}
                           </span>
                           <ChevronRight size={12} strokeWidth={2} className="text-muted shrink-0" aria-hidden="true" />
                         </button>
@@ -177,10 +177,10 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
                 /* ERR_05 — No results */
                 <div className="flex flex-col items-center justify-center text-center py-10 px-6" role="status">
                   <SearchX size={32} strokeWidth={2} className="text-muted-2 mb-3" aria-hidden="true" />
-                  <p className="text-[13px] font-semibold text-fg mb-1">
+                  <p className="text-f-md font-semibold text-fg mb-1">
                     {t('noResults', { query: searchVal })}
                   </p>
-                  <p className="text-[11px] text-muted">{t('noResultsDesc')}</p>
+                  <p className="text-f-xs text-muted">{t('noResultsDesc')}</p>
                 </div>
               )}
             </div>
@@ -245,7 +245,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
               value={searchVal}
               onChange={e => setSearchVal(e.target.value)}
               placeholder={t('searchPlaceholderMobile')}
-              className="flex-1 h-9 rounded-full px-4 text-[14px] text-fg placeholder:text-muted outline-none bg-bg-3"
+              className="flex-1 h-9 rounded-full px-4 text-f-base text-fg placeholder:text-muted outline-none bg-bg-3"
               style={{ border: '1px solid var(--bdr)' }}
               aria-label={t('searchPlaceholderMobile')}
             />
@@ -265,7 +265,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
                     key={f}
                     onClick={() => setActiveFilter(f)}
                     className={[
-                      'shrink-0 px-3 h-[28px] rounded-full text-[12px] font-semibold transition-colors whitespace-nowrap',
+                      'shrink-0 px-3 h-[28px] rounded-full text-f-sm font-semibold transition-colors whitespace-nowrap',
                       activeFilter === f ? 'bg-lav text-bg' : 'bg-muted-3 text-muted',
                     ].join(' ')}
                     aria-pressed={activeFilter === f}
@@ -291,8 +291,8 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
                             {r.type === 'itinerary' ? <Route size={16} strokeWidth={2} /> : <MapPin size={16} strokeWidth={2} />}
                           </span>
                           <span className="flex-1 min-w-0">
-                            <span className="block text-[14px] text-fg truncate">{name}</span>
-                            {r.region && <span className="block text-[12px] text-muted">{r.region}</span>}
+                            <span className="block text-f-base text-fg truncate">{name}</span>
+                            {r.region && <span className="block text-f-sm text-muted">{r.region}</span>}
                           </span>
                           <ChevronRight size={14} strokeWidth={2} className="text-muted shrink-0" aria-hidden="true" />
                         </button>
@@ -303,17 +303,17 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
               ) : (
                 <div className="flex flex-col items-center justify-center text-center py-16 px-6" role="status">
                   <SearchX size={40} strokeWidth={2} className="text-muted-2 mb-3" aria-hidden="true" />
-                  <p className="text-[15px] font-semibold text-fg mb-1">{t('noResults', { query: searchVal })}</p>
-                  <p className="text-[13px] text-muted">{t('noResultsDesc')}</p>
+                  <p className="text-f-lg font-semibold text-fg mb-1">{t('noResults', { query: searchVal })}</p>
+                  <p className="text-f-md text-muted">{t('noResultsDesc')}</p>
                 </div>
               )}
             </div>
           ) : (
             <div className="p-4">
-              <p className="text-[11px] font-semibold tracking-[0.06em] uppercase text-muted mb-3">
+              <p className="text-f-xs font-semibold tracking-[0.06em] uppercase text-muted mb-3">
                 {t('recentSearches')}
               </p>
-              <p className="text-[12px] text-muted py-6 text-center">{t('noRecents')}</p>
+              <p className="text-f-sm text-muted py-6 text-center">{t('noRecents')}</p>
             </div>
           )}
         </div>

@@ -7,7 +7,7 @@ export default function Page() {
 
   return (
     <main className="px-3.5 md:px-8 pt-7 pb-16 max-w-[1200px]" aria-label={t('title')}>
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted mb-5">
+      <div className="flex items-center gap-1.5 text-f-xxs font-semibold tracking-[0.08em] uppercase text-muted mb-5">
         <Link href="/" className="text-muted-2 hover:text-fg">B4K</Link>
 
         <span>›</span>
@@ -19,8 +19,8 @@ export default function Page() {
         style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       >
         <Shield size={40} strokeWidth={2} className="text-muted-2 mb-4" />
-        <p className="text-[16px] font-semibold text-fg mb-2">{t('empty.title')}</p>
-        <p className="text-[13px] text-muted max-w-[320px]">{t('empty.desc')}</p>
+        <p className="text-f-xl font-semibold text-fg mb-2">{t('empty.title')}</p>
+        <p className="text-f-md text-muted max-w-[320px]">{t('empty.desc')}</p>
       </div>
     </main>
   );

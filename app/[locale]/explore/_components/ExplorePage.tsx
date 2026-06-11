@@ -92,7 +92,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
               <Link
                 href={c.href}
                 className={[
-                  'flex items-center gap-sp-2 px-sp-3 py-[7px] rounded-lg text-[12px] font-semibold transition-colors min-h-[36px]',
+                  'flex items-center gap-sp-2 px-sp-3 py-[7px] rounded-lg text-f-sm font-semibold transition-colors min-h-[36px]',
                   isActive ? 'bg-lav-dim text-lav' : 'text-muted hover:bg-muted-3 hover:text-fg',
                 ].join(' ')}
               >
@@ -105,7 +105,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                     <a
                       key={sid}
                       href={`#section-${sid}`}
-                      className="block px-sp-3 py-[5px] text-[11px] text-muted hover:text-fg transition-colors rounded"
+                      className="block px-sp-3 py-[5px] text-f-xs text-muted hover:text-fg transition-colors rounded"
                     >
                       {t(`sections.${sid}`)}
                     </a>
@@ -120,7 +120,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
       {/* Main content */}
       <div className="flex-1 min-w-0 px-sp-4 lg:px-sp-6 pt-sp-5 pb-sp-20">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted mb-sp-4">
+        <div className="flex items-center gap-1.5 text-f-xxs font-semibold tracking-[0.08em] uppercase text-muted mb-sp-4">
           <Link href="/" className="text-muted-2 hover:text-fg transition-colors">B4K</Link>
           <span>›</span>
           <Link href="/explore" className="text-muted-2 hover:text-fg transition-colors">{t('breadcrumb')}</Link>
@@ -153,7 +153,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                 role="tab"
                 aria-selected={isActive}
                 className={[
-                  'flex items-center gap-[6px] px-sp-4 py-[7px] rounded-full text-[12px] font-semibold whitespace-nowrap transition-colors shrink-0 min-h-touch',
+                  'flex items-center gap-[6px] px-sp-4 py-[7px] rounded-full text-f-sm font-semibold whitespace-nowrap transition-colors shrink-0 min-h-touch',
                   isActive ? 'bg-lav text-bg' : 'text-muted hover:text-fg',
                 ].join(' ')}
                 style={!isActive ? { background: 'var(--bg-3)', border: '1px solid var(--bdr)' } : {}}
@@ -181,10 +181,10 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
             role="alert"
           >
             <AlertTriangle size={36} strokeWidth={2} className="text-danger mb-sp-3" />
-            <p className="text-[15px] font-semibold text-fg mb-sp-2">{t('error.title')}</p>
+            <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
             <button
               onClick={() => mutate()}
-              className="flex items-center gap-sp-2 text-[13px] font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+              className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
             >
               <RefreshCw size={14} strokeWidth={2} />
               {t('error.retry')}
@@ -201,8 +201,8 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                 style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
               >
                 <CatIcon size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
-                <p className="text-[16px] font-semibold text-fg mb-sp-2">{t(`${cat.tKey}.empty.title`)}</p>
-                <p className="text-[13px] text-muted max-w-[320px]">{t(`${cat.tKey}.empty.desc`)}</p>
+                <p className="text-f-xl font-semibold text-fg mb-sp-2">{t(`${cat.tKey}.empty.title`)}</p>
+                <p className="text-f-md text-muted max-w-[320px]">{t(`${cat.tKey}.empty.desc`)}</p>
               </div>
             ) : (
               data.sections.map(section => (
@@ -212,11 +212,11 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                   className="mb-sp-10 scroll-mt-[80px]"
                   aria-label={t(`sections.${section.id}`)}
                 >
-                  <h2 className="text-[12px] font-semibold tracking-[0.07em] uppercase text-muted mb-sp-4">
+                  <h2 className="text-f-sm font-semibold tracking-[0.07em] uppercase text-muted mb-sp-4">
                     {t(`sections.${section.id}`)}
                   </h2>
                   {section.items.length === 0 ? (
-                    <p className="text-[13px] text-muted py-sp-4">{t('sectionEmpty')}</p>
+                    <p className="text-f-md text-muted py-sp-4">{t('sectionEmpty')}</p>
                   ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-sp-3">
                       {section.items.map(poi => (

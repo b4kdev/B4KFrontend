@@ -82,35 +82,35 @@ function BadgeDetailModal({
 
         {/* Info */}
         <div>
-          <h2 className="text-[17px] font-bold text-fg">{badge.name}</h2>
-          <p className="text-[13px] text-muted mt-1">{badge.description}</p>
+          <h2 className="text-f-2xl font-bold text-fg">{badge.name}</h2>
+          <p className="text-f-md text-muted mt-1">{badge.description}</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-sp-3 text-[12px]">
+        <div className="grid grid-cols-3 gap-sp-3 text-f-sm">
           <div>
-            <p className="text-muted uppercase tracking-widest text-[10px] font-semibold mb-0.5">{t('badges.modal.category')}</p>
+            <p className="text-muted uppercase tracking-widest text-f-xxs font-semibold mb-0.5">{t('badges.modal.category')}</p>
             <p className="text-fg font-semibold">{badge.category}</p>
           </div>
           <div>
-            <p className="text-muted uppercase tracking-widest text-[10px] font-semibold mb-0.5">{t('badges.modal.rarity')}</p>
+            <p className="text-muted uppercase tracking-widest text-f-xxs font-semibold mb-0.5">{t('badges.modal.rarity')}</p>
             <p className={`font-semibold ${style.label}`}>{t(`badges.rarity.${badge.rarity}`)}</p>
           </div>
           <div>
-            <p className="text-muted uppercase tracking-widest text-[10px] font-semibold mb-0.5">{t('badges.modal.earned')}</p>
+            <p className="text-muted uppercase tracking-widest text-f-xxs font-semibold mb-0.5">{t('badges.modal.earned')}</p>
             <p className="text-fg font-semibold">{earned}</p>
           </div>
         </div>
 
         {/* Pin toggle — PR_32 */}
         {pinLimitHit && !badge.is_pinned ? (
-          <p className="text-[12px] text-warning text-center py-sp-2" role="alert">
+          <p className="text-f-sm text-warning text-center py-sp-2" role="alert">
             {t('badges.pinLimitError')}
           </p>
         ) : (
           <button
             onClick={() => onPin(badge.id, !badge.is_pinned)}
             className={[
-              'min-h-touch w-full rounded-lg text-[13px] font-semibold flex items-center justify-center gap-sp-2 transition-colors',
+              'min-h-touch w-full rounded-lg text-f-md font-semibold flex items-center justify-center gap-sp-2 transition-colors',
               badge.is_pinned
                 ? 'text-lav hover:bg-lav-dim'
                 : 'text-muted hover:text-fg',
@@ -171,10 +171,10 @@ export default function BadgesPage() {
       {error && (
         <div className="flex flex-col items-center gap-sp-4 py-sp-16 text-center" role="alert">
           <AlertTriangle size={36} strokeWidth={2} className="text-danger" />
-          <p className="text-[15px] font-semibold text-fg">{t('badges.error.title')}</p>
+          <p className="text-f-lg font-semibold text-fg">{t('badges.error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-lg text-[13px] font-semibold text-lav"
+            className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-lg text-f-md font-semibold text-lav"
             style={{ border: '1px solid var(--lav-border)' }}
           >
             <RefreshCw size={14} strokeWidth={2} />
@@ -188,12 +188,12 @@ export default function BadgesPage() {
         <div className="flex flex-col items-center text-center py-sp-16 px-sp-4 gap-sp-6">
           <Award size={40} strokeWidth={2} className="text-muted-2" />
           <div>
-            <p className="text-[16px] font-semibold text-fg mb-1">{t('badges.empty.title')}</p>
-            <p className="text-[13px] text-muted max-w-[280px]">{t('badges.empty.desc')}</p>
+            <p className="text-f-xl font-semibold text-fg mb-1">{t('badges.empty.title')}</p>
+            <p className="text-f-md text-muted max-w-[280px]">{t('badges.empty.desc')}</p>
           </div>
           <Link
             href="/map"
-            className="min-h-touch px-sp-6 flex items-center gap-sp-2 rounded-full text-[13px] font-semibold text-fg"
+            className="min-h-touch px-sp-6 flex items-center gap-sp-2 rounded-full text-f-md font-semibold text-fg"
             style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
           >
             <Map size={15} strokeWidth={2} />
@@ -228,7 +228,7 @@ export default function BadgesPage() {
                     </span>
                   )}
                 </div>
-                <span className="text-[11px] font-medium text-muted text-center line-clamp-2 leading-tight max-w-[72px]">
+                <span className="text-f-xs font-medium text-muted text-center line-clamp-2 leading-tight max-w-[72px]">
                   {badge.name}
                 </span>
               </button>

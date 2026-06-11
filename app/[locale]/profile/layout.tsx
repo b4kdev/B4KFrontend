@@ -41,10 +41,10 @@ function HeaderError({ onRetry, t }: { onRetry: () => void; t: ReturnType<typeof
       role="alert"
     >
       <AlertTriangle size={20} strokeWidth={2} className="shrink-0" />
-      <span className="text-[13px] flex-1">{t('header.errorTitle')}</span>
+      <span className="text-f-md flex-1">{t('header.errorTitle')}</span>
       <button
         onClick={onRetry}
-        className="flex items-center gap-1 text-[12px] font-semibold text-lav hover:text-fg transition-colors min-h-touch px-sp-2"
+        className="flex items-center gap-1 text-f-sm font-semibold text-lav hover:text-fg transition-colors min-h-touch px-sp-2"
         aria-label={t('header.errorRetry')}
       >
         <RefreshCw size={14} strokeWidth={2} />
@@ -88,7 +88,7 @@ function HeaderContent({ profile, t }: { profile: ProfileData; t: ReturnType<typ
         {/* Stats row — PR_05 + PR_06 */}
         <div className="flex items-center gap-sp-4 mt-sp-2" role="list" aria-label={t('header.statsLabel')}>
           <button
-            className="flex items-center gap-1.5 text-[13px] text-muted hover:text-fg transition-colors group"
+            className="flex items-center gap-1.5 text-f-md text-muted hover:text-fg transition-colors group"
             aria-label={t('header.tripsCountAria', { count: profile.trips_count })}
           >
             <MapPin size={14} strokeWidth={2} className="text-lav shrink-0" />
@@ -96,7 +96,7 @@ function HeaderContent({ profile, t }: { profile: ProfileData; t: ReturnType<typ
             <span className="text-muted">{t('header.tripsLabel')}</span>
           </button>
           <div
-            className="flex items-center gap-1.5 text-[13px]"
+            className="flex items-center gap-1.5 text-f-md"
             aria-label={t('header.likesAria', { count: profile.likes_received })}
           >
             <Heart size={14} strokeWidth={2} className="text-danger shrink-0" />
@@ -154,7 +154,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
       style={{ marginLeft: 'auto', marginRight: 'auto' }}
     >
       {/* Breadcrumb */}
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
+      <div className="flex items-center gap-1.5 text-f-xxs font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
         <Link href="/" className="text-muted-2 hover:text-fg transition-colors">B4K</Link>
         <span>›</span>
         <span className="text-fg">{t('header.breadcrumb')}</span>
@@ -185,7 +185,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
               href={href}
               aria-current={active ? 'page' : undefined}
               className={[
-                'px-sp-4 py-sp-3 text-[13px] font-semibold tracking-[0.02em] transition-colors',
+                'px-sp-4 py-sp-3 text-f-md font-semibold tracking-[0.02em] transition-colors',
                 'min-h-[44px] flex items-center rounded-t-md -mb-px',
                 active
                   ? 'text-lav border-b-2 border-lav'

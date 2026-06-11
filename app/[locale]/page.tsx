@@ -10,7 +10,7 @@ export default function HomePage() {
   return (
     <div className="px-3.5 md:px-8 pt-7 pb-16 max-w-[1200px]">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted mb-5">
+      <div className="flex items-center gap-1.5 text-f-xxs font-semibold tracking-[0.08em] uppercase text-muted mb-5">
         <span className="text-muted-2">B4K</span>
         <span>›</span>
         <span className="text-fg">{t('breadcrumb')}</span>

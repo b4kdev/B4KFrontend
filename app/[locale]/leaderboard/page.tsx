@@ -35,7 +35,7 @@ export default function LeaderboardPage() {
   const { data, isLoading, isError, mutate } = useLeaderboard(window)
 
   const pillClass = (active: boolean) => [
-    'px-sp-4 py-[7px] rounded-full text-[12px] font-semibold whitespace-nowrap transition-colors min-h-touch flex items-center shrink-0',
+    'px-sp-4 py-[7px] rounded-full text-f-sm font-semibold whitespace-nowrap transition-colors min-h-touch flex items-center shrink-0',
     active ? 'bg-lav text-bg' : 'text-muted hover:text-fg',
   ].join(' ')
 
@@ -44,7 +44,7 @@ export default function LeaderboardPage() {
       className="max-w-[720px] mx-auto px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-20"
       aria-label={t('ariaLabel')}
     >
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
+      <div className="flex items-center gap-1.5 text-f-xxs font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
         <Link href="/" className="text-muted-2 hover:text-fg transition-colors">B4K</Link>
         <span>›</span>
         <span className="text-fg">{t('breadcrumb')}</span>
@@ -93,10 +93,10 @@ export default function LeaderboardPage() {
           role="alert"
         >
           <AlertTriangle size={36} strokeWidth={2} className="text-danger mb-sp-3" />
-          <p className="text-[15px] font-semibold text-fg mb-sp-2">{t('error.title')}</p>
+          <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 text-[13px] font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+            className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
           >
             <RefreshCw size={14} strokeWidth={2} />{t('error.retry')}
           </button>
@@ -110,8 +110,8 @@ export default function LeaderboardPage() {
             style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
           >
             <Trophy size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
-            <p className="text-[16px] font-semibold text-fg mb-sp-2">{t('empty.title')}</p>
-            <p className="text-[13px] text-muted max-w-[300px]">{t('empty.desc')}</p>
+            <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.title')}</p>
+            <p className="text-f-md text-muted max-w-[300px]">{t('empty.desc')}</p>
           </div>
         ) : (
           <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--bdr)' }}>
@@ -132,13 +132,13 @@ export default function LeaderboardPage() {
                     {isTop ? (
                       <Trophy size={16} strokeWidth={2} className={style?.icon ?? 'text-muted'} />
                     ) : (
-                      <span className="text-[13px] font-bold text-muted">{entry.rank}</span>
+                      <span className="text-f-md font-bold text-muted">{entry.rank}</span>
                     )}
                   </div>
                   {/* Avatar */}
                   <div
                     className={[
-                      'w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-[13px] font-bold',
+                      'w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-f-md font-bold',
                       isTop ? `${style?.ring ?? ''} ${style?.bg ?? 'bg-bg-3'}` : 'bg-bg-3',
                     ].join(' ')}
                     style={!isTop ? { border: 'var(--bdr)' } : {}}
@@ -153,8 +153,8 @@ export default function LeaderboardPage() {
                   </div>
                   {/* Name + stats */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-semibold text-fg truncate">{entry.user.name}</p>
-                    <div className="flex items-center gap-sp-2 text-[11px] text-muted mt-[2px]">
+                    <p className="text-f-md font-semibold text-fg truncate">{entry.user.name}</p>
+                    <div className="flex items-center gap-sp-2 text-f-xs text-muted mt-[2px]">
                       <span>{t('plans', { count: entry.plans_count })}</span>
                       <span>·</span>
                       <Award size={10} strokeWidth={2} />
@@ -164,11 +164,11 @@ export default function LeaderboardPage() {
                   {/* Score */}
                   <div className="text-right shrink-0">
                     <span
-                      className={['text-[13px] font-bold', isTop ? (style?.icon ?? 'text-fg') : 'text-fg'].join(' ')}
+                      className={['text-f-md font-bold', isTop ? (style?.icon ?? 'text-fg') : 'text-fg'].join(' ')}
                     >
                       {entry.score.toLocaleString()}
                     </span>
-                    <p className="text-[10px] text-muted">{t('scoreUnit')}</p>
+                    <p className="text-f-xxs text-muted">{t('scoreUnit')}</p>
                   </div>
                 </div>
               )
@@ -178,7 +178,7 @@ export default function LeaderboardPage() {
       )}
 
       {data && (
-        <p className="text-[11px] text-muted text-center mt-sp-4">
+        <p className="text-f-xs text-muted text-center mt-sp-4">
           {t('computedAt', { date: new Date(data.computed_at).toLocaleDateString() })}
         </p>
       )}

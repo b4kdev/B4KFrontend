@@ -88,7 +88,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
                 className={navLinkClass(active)}
               >
                 <Icon size={17} strokeWidth={2} className="shrink-0" />
-                <span className="lg:hidden text-[13px] font-medium">{t(labelKey)}</span>
+                <span className="lg:hidden text-f-md font-medium">{t(labelKey)}</span>
               </Link>
             );
           })}
@@ -106,7 +106,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
               <Bell size={17} strokeWidth={2} />
               <span className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] rounded-full bg-danger" />
             </span>
-            <span className="lg:hidden text-[13px] font-medium">{t('notifications')}</span>
+            <span className="lg:hidden text-f-md font-medium">{t('notifications')}</span>
           </Link>
           <Link
             href="/profile"
@@ -115,7 +115,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
             className={navLinkClass(isActive('/profile'))}
           >
             <User size={17} strokeWidth={2} className="shrink-0" />
-            <span className="lg:hidden text-[13px] font-medium">{t('profile')}</span>
+            <span className="lg:hidden text-f-md font-medium">{t('profile')}</span>
           </Link>
         </div>
       </aside>

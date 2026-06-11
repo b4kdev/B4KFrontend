@@ -50,10 +50,10 @@ export default function SettingsPage() {
     setTimeout(() => setSaved(false), 2000)
   }
 
-  const sectionHeading = 'text-[11px] font-bold uppercase tracking-[0.1em] text-muted mb-sp-3'
+  const sectionHeading = 'text-f-xs font-bold uppercase tracking-[0.1em] text-muted mb-sp-3'
   const row = 'flex items-center justify-between min-h-[52px] py-sp-2'
-  const label = 'text-[14px] font-medium text-fg'
-  const sublabel = 'text-[12px] text-muted mt-0.5'
+  const label = 'text-f-base font-medium text-fg'
+  const sublabel = 'text-f-sm text-muted mt-0.5'
 
   return (
     <div className="max-w-[560px] flex flex-col gap-sp-8">
@@ -71,7 +71,7 @@ export default function SettingsPage() {
               <p className={label}>{t('settings.account.email')}</p>
               <p className={sublabel}>{t('settings.account.emailNote')}</p>
             </div>
-            <span className="text-[13px] text-muted font-mono ml-sp-4 truncate max-w-[180px]">
+            <span className="text-f-md text-muted font-mono ml-sp-4 truncate max-w-[180px]">
               {profile?.email ?? '—'}
             </span>
           </div>
@@ -91,7 +91,7 @@ export default function SettingsPage() {
           <div className={`${row} px-sp-4 flex-wrap gap-sp-3`} aria-labelledby="lang-label">
             <p id="lang-label" className={label}>{t('settings.preferences.language')}</p>
             <select
-              className="text-[13px] font-medium text-fg rounded-lg px-sp-3 min-h-[36px] appearance-none cursor-pointer"
+              className="text-f-md font-medium text-fg rounded-lg px-sp-3 min-h-[36px] appearance-none cursor-pointer"
               style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
               defaultValue={profile?.preferred_lang ?? 'en'}
               onChange={(e) => handleLangChange(e.target.value)}
@@ -123,7 +123,7 @@ export default function SettingsPage() {
                     aria-checked={active}
                     onClick={() => handleTransport(val)}
                     className={[
-                      'flex items-center gap-1.5 px-sp-4 min-h-[36px] text-[12px] font-semibold transition-colors',
+                      'flex items-center gap-1.5 px-sp-4 min-h-[36px] text-f-sm font-semibold transition-colors',
                       active ? 'bg-lav-dim text-lav' : 'text-muted hover:text-fg',
                     ].join(' ')}
                   >
@@ -154,7 +154,7 @@ export default function SettingsPage() {
                     onClick={() => toggleInterest(key)}
                     aria-pressed={active}
                     className={[
-                      'min-h-touch px-sp-4 rounded-full text-[12px] font-semibold transition-colors',
+                      'min-h-touch px-sp-4 rounded-full text-f-sm font-semibold transition-colors',
                       active
                         ? 'bg-lav-dim text-lav'
                         : 'text-muted hover:text-fg',
@@ -175,7 +175,7 @@ export default function SettingsPage() {
         onClick={handleSave}
         disabled={saving}
         className={[
-          'self-start min-h-touch px-sp-8 rounded-full text-[13px] font-semibold transition-all',
+          'self-start min-h-touch px-sp-8 rounded-full text-f-md font-semibold transition-all',
           saved
             ? 'bg-success/20 text-success'
             : 'bg-lav-dim text-lav hover:bg-lav-mid',

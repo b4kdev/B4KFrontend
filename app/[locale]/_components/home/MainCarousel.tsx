@@ -84,11 +84,11 @@ export default function MainCarousel() {
         <h1 className="text-fg font-display font-black text-[clamp(26px,3.5vw,48px)] leading-[1.05] tracking-[-0.02em] mb-3 whitespace-pre-line max-w-[520px]">
           {t(`${slide.key}.title`)}
         </h1>
-        <p className="hidden md:block text-[13px] text-muted leading-relaxed mb-6 max-w-[400px]">
+        <p className="hidden md:block text-f-md text-muted leading-relaxed mb-6 max-w-[400px]">
           {t(`${slide.key}.desc`)}
         </p>
         <button
-          className="inline-flex items-center h-10 px-[22px] bg-fg text-bg text-[12px] font-semibold tracking-[0.02em] rounded font-body w-fit cursor-pointer border-none"
+          className="inline-flex items-center h-10 px-[22px] bg-fg text-bg text-f-sm font-semibold tracking-[0.02em] rounded font-body w-fit cursor-pointer border-none"
           onClick={() => {}}
         >
           {t(`${slide.key}.cta`)}

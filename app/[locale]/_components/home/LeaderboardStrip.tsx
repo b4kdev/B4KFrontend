@@ -26,12 +26,12 @@ export default function LeaderboardStrip() {
         🏆
       </span>
       <div className="flex-1 min-w-0">
-        <p className="text-[14px] font-bold text-fg mb-[3px]">
+        <p className="text-f-base font-bold text-fg mb-[3px]">
           {t('title', { week })}
         </p>
-        <p className="text-[12px] text-muted leading-[1.5]">{t('desc')}</p>
+        <p className="text-f-sm text-muted leading-[1.5]">{t('desc')}</p>
       </div>
-      <div className="hidden md:flex items-center gap-1 text-muted text-[11px] font-semibold tracking-[0.05em] shrink-0">
+      <div className="hidden md:flex items-center gap-1 text-muted text-f-xs font-semibold tracking-[0.05em] shrink-0">
         {t('cta')}
         <ArrowRight size={12} strokeWidth={2} />
       </div>

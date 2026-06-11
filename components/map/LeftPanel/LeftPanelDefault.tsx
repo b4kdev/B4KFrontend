@@ -19,7 +19,7 @@ export default function LeftPanelDefault({ activeRegion, activeFilters, onRegion
     <div className="flex flex-col h-full overflow-y-auto themed-scrollbar">
       {/* LP_01 — Region list */}
       <div className="p-sp-4" style={{ borderBottom: '1px solid var(--bdr)' }}>
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-muted mb-sp-3">
+        <p className="text-f-xxs font-semibold uppercase tracking-widest text-muted mb-sp-3">
           {t('regions.title')}
         </p>
         <div className="flex flex-col gap-0.5">
@@ -49,7 +49,7 @@ export default function LeftPanelDefault({ activeRegion, activeFilters, onRegion
 
       {/* LP_02 + LP_03 — Category filter chips */}
       <div className="p-sp-4">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-muted mb-sp-3">
+        <p className="text-f-xxs font-semibold uppercase tracking-widest text-muted mb-sp-3">
           {t('filters.title')}
         </p>
         <div className="flex flex-wrap gap-2">
