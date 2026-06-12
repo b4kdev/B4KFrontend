@@ -5,21 +5,9 @@ import { useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const SLIDES = [
-  {
-    key: 'kCulture' as const,
-    grad: 'linear-gradient(160deg,#0c1a3a 0%,#1a2d5a 40%,#3d2a06 80%,#6b4708 100%)',
-    glow: 'radial-gradient(ellipse at 65% 85%,rgba(255,180,30,0.28) 0%,transparent 55%)',
-  },
-  {
-    key: 'boseong' as const,
-    grad: 'linear-gradient(160deg,#0a1f0a 0%,#1a4a0f 50%,#366e18 100%)',
-    glow: 'radial-gradient(ellipse at 40% 20%,rgba(200,255,180,0.12) 0%,transparent 60%)',
-  },
-  {
-    key: 'seoul' as const,
-    grad: 'linear-gradient(180deg,#020210 0%,#080825 40%,#091832 100%)',
-    glow: 'radial-gradient(ellipse at 50% 45%,rgba(0,180,255,0.22) 0%,transparent 45%)',
-  },
+  { key: 'kCulture' as const },
+  { key: 'boseong' as const },
+  { key: 'seoul' as const },
 ];
 
 export default function MainCarousel() {
@@ -58,21 +46,18 @@ export default function MainCarousel() {
       {SLIDES.map((s, i) => (
         <div
           key={s.key}
-          className="absolute inset-0"
+          className="absolute inset-0 bg-bg-3"
           style={{
-            background: s.grad,
             opacity: i === idx ? 1 : 0,
             transition: prefersReduced ? 'none' : 'opacity 700ms ease',
           }}
           aria-hidden
-        >
-          {s.glow && <div className="absolute inset-0" style={{ background: s.glow }} />}
-        </div>
+        />
       ))}
       {/* Scrim */}
       <div
         className="absolute inset-0"
-        style={{ background: 'linear-gradient(90deg,rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.2) 55%,transparent 100%)' }}
+        style={{ background: 'linear-gradient(90deg, var(--bg) 0%, transparent 100%)' }}
         aria-hidden
       />
 

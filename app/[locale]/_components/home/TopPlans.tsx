@@ -8,11 +8,6 @@ import { getDisplayName } from '@/lib/display-name'
 import SectionHead from './SectionHead'
 import type { HomeTopPlan } from '@/app/api/home/route'
 
-const CARD_GRADS = [
-  'linear-gradient(150deg,#0c1a3a,#4a2a8a)',
-  'linear-gradient(160deg,#0a1f0a,#366e18)',
-  'linear-gradient(150deg,#2a1a0a,#8a6030)',
-]
 
 function PlanCardSkeleton() {
   return (
@@ -26,9 +21,8 @@ function PlanCardSkeleton() {
   )
 }
 
-function PlanCard({ plan, index, t }: { plan: HomeTopPlan; index: number; t: ReturnType<typeof useTranslations> }) {
+function PlanCard({ plan, t }: { plan: HomeTopPlan; t: ReturnType<typeof useTranslations> }) {
   const name = getDisplayName({ name_en: plan.title })
-  const grad = CARD_GRADS[index % CARD_GRADS.length]
 
   return (
     <Link
@@ -37,7 +31,8 @@ function PlanCard({ plan, index, t }: { plan: HomeTopPlan; index: number; t: Ret
       style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       aria-label={t('card.ariaLabel', { title: name, creator: plan.author_name })}
     >
-      <div className="relative" style={{ aspectRatio: '3/2', background: grad }}>
+      <div className="relative bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '3/2' }}>
+        <Route size={28} strokeWidth={2} className="text-muted-2" aria-hidden />
         <span
           className="absolute top-[10px] right-[10px] text-[9px] font-bold tracking-[0.1em] uppercase text-fg"
           style={{ background: 'var(--backdrop-50)', padding: '3px 8px', borderRadius: 2 }}
@@ -119,8 +114,8 @@ export default function TopPlans() {
 
       {!isLoading && !isError && topPlans.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-sp-4">
-          {topPlans.map((plan, i) => (
-            <PlanCard key={plan.id} plan={plan} index={i} t={t} />
+          {topPlans.map((plan) => (
+            <PlanCard key={plan.id} plan={plan} t={t} />
           ))}
         </div>
       )}

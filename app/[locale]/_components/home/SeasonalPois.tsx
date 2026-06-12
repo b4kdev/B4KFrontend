@@ -8,14 +8,6 @@ import { getDisplayName } from '@/lib/display-name'
 import SectionHead from './SectionHead'
 import type { HomeSeasonalPoi } from '@/app/api/home/route'
 
-const POI_GRADS: Record<string, string> = {
-  Heritage: 'linear-gradient(160deg,#0c1a3a,#6b4708)',
-  Nature:   'linear-gradient(160deg,#0a1f0a,#366e18)',
-  Landmark: 'linear-gradient(180deg,#020210,#091832)',
-  Culture:  'linear-gradient(145deg,#1a1226,#4a3060)',
-  Beach:    'linear-gradient(155deg,#0a1832,#243a64)',
-  Default:  'linear-gradient(150deg,#1a1a1a,#2a2a2a)',
-}
 
 function PoiCardSkeleton() {
   return (
@@ -31,7 +23,6 @@ function PoiCardSkeleton() {
 
 function PoiCard({ poi, t }: { poi: HomeSeasonalPoi; t: ReturnType<typeof useTranslations> }) {
   const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
-  const grad = POI_GRADS[poi.category] ?? POI_GRADS.Default
 
   return (
     <Link
@@ -40,7 +31,8 @@ function PoiCard({ poi, t }: { poi: HomeSeasonalPoi; t: ReturnType<typeof useTra
       style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       aria-label={t('card.ariaLabel', { name, region: poi.display_region })}
     >
-      <div className="relative" style={{ aspectRatio: '3/2', background: grad }}>
+      <div className="relative bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '3/2' }}>
+        <MapPin size={28} strokeWidth={2} className="text-muted-2" aria-hidden />
         <span
           className="absolute top-[10px] right-[10px] text-[9px] font-bold tracking-[0.1em] uppercase text-fg"
           style={{ background: 'var(--backdrop-50)', padding: '3px 8px', borderRadius: 2 }}
