@@ -120,7 +120,7 @@ export default function NaverMapCanvas({
       window.naver.maps.Event.addListener(marker, 'click', () => onPoiSelect(poi.place_id))
       markersRef.current.set(poi.place_id, marker)
     })
-  }, [mapReady, pois, selectedPoiId, planStopIds])
+  }, [mapReady, pois, selectedPoiId, planStopIds, onPoiSelect])
 
   // MP_20 — Route polyline connecting plan stops
   useEffect(() => {

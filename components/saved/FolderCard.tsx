@@ -38,6 +38,7 @@ export default function FolderCard({ folder, onOpen, onGeneratePlan }: Props) {
               className="relative flex items-center justify-center bg-bg-3"
             >
               {poi.primary_image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={poi.primary_image_url}
                   alt=""

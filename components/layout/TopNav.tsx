@@ -94,7 +94,15 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
         </button>
 
         {/* Search — desktop */}
-        <div className="hidden lg:flex flex-1 max-w-[480px] relative" style={{ marginLeft: 'var(--sidebar)' }} ref={searchRef}>
+        <div
+          className="hidden lg:flex flex-1 max-w-[480px] relative"
+          style={{ marginLeft: 'var(--sidebar)' }}
+          ref={searchRef}
+          role="combobox"
+          aria-expanded={dropdownOpen}
+          aria-haspopup="listbox"
+          aria-owns="search-listbox"
+        >
           <div className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none z-10">
             <Search size={14} strokeWidth={2} />
           </div>
@@ -106,8 +114,8 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
             className="w-full h-8 rounded-full pl-8 pr-8 text-f-sm text-fg placeholder:text-muted outline-none bg-bg-3"
             style={{ border: '1px solid var(--bdr)' }}
             aria-label={t('searchPlaceholder')}
-            aria-expanded={dropdownOpen}
-            aria-haspopup="listbox"
+            aria-autocomplete="list"
+            aria-controls="search-listbox"
           />
           {searchVal && (
             <button
@@ -122,6 +130,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
           {/* Search results dropdown */}
           {dropdownOpen && (
             <div
+              id="search-listbox"
               className="absolute top-[calc(100%+6px)] left-0 right-0 z-50 rounded-lg overflow-hidden"
               style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)', maxHeight: 380, overflowY: 'auto', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
               role="listbox"
@@ -156,6 +165,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
                           className="w-full flex items-center gap-sp-3 px-sp-3 py-sp-3 text-left hover:bg-muted-3 transition-colors"
                           aria-label={t('searchResultAriaLabel', { name, type: r.type })}
                           role="option"
+                          aria-selected={false}
                         >
                           <span className="text-muted shrink-0" aria-hidden="true">
                             {r.type === 'itinerary'

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -63,7 +64,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
             className="flex items-center justify-center w-[52px] h-full shrink-0"
             aria-label={t('logoHome')}
           >
-            <img src="/logo.svg" alt="B4K" width={28} height={26} className="object-contain" />
+            <Image src="/logo.svg" alt="B4K" width={28} height={26} className="object-contain" />
           </Link>
           <span className="lg:hidden flex-1 text-fg text-sm font-semibold pl-2">Menu</span>
           <button
