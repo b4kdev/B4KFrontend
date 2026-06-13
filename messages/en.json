@@ -1022,5 +1022,12 @@
     },
     "cta": "Continue",
     "skip": "Skip for now"
+  },
+  "footer": {
+    "help": "Help",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "cookies": "Cookie Policy",
+    "copyright": "© {year} B4K. All rights reserved."
   }
 }

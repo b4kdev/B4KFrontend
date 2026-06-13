@@ -1022,5 +1022,12 @@
       "desc": "Head to the map, add some stops, then come back here.",
       "cta": "Open Map"
     }
+  },
+  "footer": {
+    "help": "ヘルプ",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "cookies": "クッキーポリシー",
+    "copyright": "© {year} B4K. All rights reserved."
   }
 }

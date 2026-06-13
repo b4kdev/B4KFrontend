@@ -1022,5 +1022,12 @@
       "desc": "Head to the map, add some stops, then come back here.",
       "cta": "Open Map"
     }
+  },
+  "footer": {
+    "help": "Ajuda",
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Uso",
+    "cookies": "Política de Cookies",
+    "copyright": "© {year} B4K. Todos os direitos reservados."
   }
 }

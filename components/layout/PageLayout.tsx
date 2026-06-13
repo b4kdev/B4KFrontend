@@ -1,3 +1,5 @@
+import Footer from './Footer';
+
 interface PageLayoutProps {
   children: React.ReactNode;
   className?: string;
@@ -7,12 +9,13 @@ export default function PageLayout({ children, className = '' }: PageLayoutProps
   return (
     <main
       className={[
-        'min-h-screen pt-[52px] pb-14 lg:pb-0',
+        'min-h-screen flex flex-col pt-[52px] pb-14 lg:pb-0',
         'lg:ml-[52px]',
         className,
       ].join(' ')}
     >
-      {children}
+      <div className="flex-1">{children}</div>
+      <Footer />
     </main>
   );
 }

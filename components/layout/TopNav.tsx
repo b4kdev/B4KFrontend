@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useTranslations } from 'next-intl';
-import { useRouter } from '@/i18n/navigation';
+import { useTranslations, useLocale } from 'next-intl';
+import { useRouter, usePathname, Link } from '@/i18n/navigation';
 import { Search, Bell, Globe, HelpCircle, Menu, X, ChevronLeft, ChevronRight, MapPin, Route, SearchX } from 'lucide-react';
 import { getDisplayName } from '@/lib/display-name';
 
@@ -13,6 +13,16 @@ interface TopNavProps {
 
 const SEARCH_FILTERS = ['all', 'places', 'itineraries', 'kpop', 'kdrama', 'kbeauty'] as const;
 type Filter = typeof SEARCH_FILTERS[number];
+
+const LOCALE_LABELS: Record<string, string> = {
+  en:      'English',
+  ko:      '한국어',
+  ja:      '日本語',
+  'zh-CN': '中文(简)',
+  'zh-TW': '中文(繁)',
+  th:      'ภาษาไทย',
+  'pt-BR': 'Português',
+};
 
 const STUB_RESULTS = [
   { id: 'r1', type: 'place' as const,     name_en: 'Gyeongbokgung Palace',   name_ko: '경복궁',        region: 'Jongno-gu, Seoul' },
@@ -26,14 +36,18 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
   const t       = useTranslations('topNav');
   const tNav    = useTranslations('nav');
   const tCommon = useTranslations('common');
-  const router  = useRouter();
+  const router   = useRouter();
+  const pathname = usePathname();
+  const locale   = useLocale();
 
-  const [searchVal, setSearchVal]         = useState('');
+  const [searchVal, setSearchVal]               = useState('');
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const [activeFilter, setActiveFilter]   = useState<Filter>('all');
-  const [dropdownOpen, setDropdownOpen]   = useState(false);
+  const [activeFilter, setActiveFilter]         = useState<Filter>('all');
+  const [dropdownOpen, setDropdownOpen]         = useState(false);
+  const [localeOpen, setLocaleOpen]             = useState(false);
 
   const searchRef = useRef<HTMLDivElement>(null);
+  const localeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setDropdownOpen(searchVal.length >= 2);
@@ -48,10 +62,17 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
     function handleEscape(e: KeyboardEvent) {
       if (e.key === 'Escape') setDropdownOpen(false);
     }
+    function handleLocaleClickOutside(e: MouseEvent) {
+      if (localeRef.current && !localeRef.current.contains(e.target as Node)) {
+        setLocaleOpen(false);
+      }
+    }
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handleLocaleClickOutside);
     document.addEventListener('keydown', handleEscape);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mousedown', handleLocaleClickOutside);
       document.removeEventListener('keydown', handleEscape);
     };
   }, []);
@@ -87,7 +108,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
         >
           <Menu size={20} strokeWidth={2} />
           {notifCount > 0 && (
-            <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-danger text-fg text-[9px] font-bold flex items-center justify-center">
+            <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-danger text-fg text-f-xxs font-bold flex items-center justify-center">
               {notifCount}
             </span>
           )}
@@ -199,31 +220,62 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
 
         {/* Actions (desktop) */}
         <div className="hidden lg:flex items-center gap-1 ml-auto mr-4 shrink-0">
-          <button
+          <Link
+            href="/notifications"
             className="relative min-w-touch min-h-touch flex items-center justify-center rounded-lg text-muted hover:text-fg hover:bg-muted-3 transition-colors"
             aria-label={tNav('notifications')}
           >
             <Bell size={17} strokeWidth={2} />
             {notifCount > 0 && (
-              <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-danger text-fg text-[9px] font-bold flex items-center justify-center">
+              <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-danger text-fg text-f-xxs font-bold flex items-center justify-center">
                 {notifCount}
               </span>
             )}
-          </button>
+          </Link>
 
-          <button
-            className="min-w-touch min-h-touch flex items-center justify-center rounded-lg text-muted hover:text-fg hover:bg-muted-3 transition-colors"
-            aria-label={tNav('language')}
-          >
-            <Globe size={17} strokeWidth={2} />
-          </button>
+          {/* Locale switcher */}
+          <div className="relative" ref={localeRef}>
+            <button
+              className="min-w-touch min-h-touch flex items-center justify-center rounded-lg text-muted hover:text-fg hover:bg-muted-3 transition-colors"
+              aria-label={tNav('language')}
+              aria-expanded={localeOpen}
+              aria-haspopup="listbox"
+              onClick={() => setLocaleOpen(o => !o)}
+            >
+              <Globe size={17} strokeWidth={2} />
+            </button>
+            {localeOpen && (
+              <div
+                className="absolute right-0 top-[calc(100%+4px)] z-50 rounded-lg overflow-hidden min-w-[140px]"
+                style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                role="listbox"
+                aria-label={tNav('language')}
+              >
+                {Object.entries(LOCALE_LABELS).map(([loc, label]) => (
+                  <button
+                    key={loc}
+                    role="option"
+                    aria-selected={loc === locale}
+                    className={[
+                      'w-full text-left px-sp-3 py-sp-2 text-f-sm transition-colors',
+                      loc === locale ? 'text-lav font-semibold' : 'text-muted hover:text-fg hover:bg-muted-3',
+                    ].join(' ')}
+                    onClick={() => { router.replace(pathname, { locale: loc }); setLocaleOpen(false); }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
-          <button
+          <Link
+            href="/help"
             className="min-w-touch min-h-touch flex items-center justify-center rounded-lg text-muted hover:text-fg hover:bg-muted-3 transition-colors"
             aria-label={tNav('help')}
           >
             <HelpCircle size={17} strokeWidth={2} />
-          </button>
+          </Link>
         </div>
 
         {/* Mobile actions */}
