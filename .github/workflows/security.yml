@@ -1,0 +1,46 @@
+name: Security
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  gitleaks:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+          GITLEAKS_ENABLE_COMMENTS: "true"
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "true"
+          GITLEAKS_NOTIFY_USER_LIST: ""
+
+  env-discipline:
+    name: .env.example placeholder check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ensure .env.example contains no real values
+        run: |
+          if [ ! -f .env.example ]; then
+            echo "Missing .env.example"; exit 1
+          fi
+          BAD=$(grep -E '^[A-Z_]+=[A-Za-z0-9+/=_\-]{24,}' .env.example | grep -vE 'xxx|YOUR_|your-|example\.com|localhost|placeholder' || true)
+          if [ -n "$BAD" ]; then
+            echo "❌ .env.example contains suspected real values:"
+            echo "$BAD"
+            exit 1
+          fi
+          echo "✅ .env.example clean"

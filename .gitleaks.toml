@@ -1,0 +1,70 @@
+# B4KFrontend gitleaks config
+# Canonical config: ../.gitleaks.toml
+# This repo-local copy keeps B4KFrontend's pre-commit / CI self-contained.
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "b4k-supabase-service-role"
+description = "Supabase service-role key"
+regex = '''SUPABASE_SERVICE_ROLE_KEY\s*=\s*['\"]?eyJ[A-Za-z0-9_\-\.]{40,}'''
+tags = ["supabase", "service-role"]
+
+[[rules]]
+id = "b4k-nextauth-secret"
+description = "NextAuth signing secret"
+regex = '''NEXTAUTH_SECRET\s*=\s*['\"]?[A-Za-z0-9+/=_\-]{16,}'''
+tags = ["nextauth", "signing"]
+
+[[rules]]
+id = "b4k-cloudinary-api-secret"
+description = "Cloudinary API secret"
+regex = '''CLOUDINARY_API_SECRET\s*=\s*['\"]?[A-Za-z0-9_\-]{20,}'''
+tags = ["cloudinary"]
+
+[[rules]]
+id = "b4k-upstash-token"
+description = "Upstash Redis REST token"
+regex = '''UPSTASH_REDIS_REST_TOKEN\s*=\s*['\"]?[A-Za-z0-9_\-]{30,}'''
+tags = ["upstash"]
+
+[[rules]]
+id = "b4k-tmap-key"
+description = "TMAP API key"
+regex = '''TMAP_API_KEY\s*=\s*['\"]?[A-Za-z0-9]{20,}'''
+tags = ["tmap"]
+
+[[rules]]
+id = "b4k-naver-secret"
+description = "Naver server secret"
+regex = '''NAVER_[A-Z_]*SECRET\s*=\s*['\"]?[A-Za-z0-9]{8,}'''
+tags = ["naver"]
+
+[[rules]]
+id = "b4k-google-client-secret"
+description = "Google OAuth client secret"
+regex = '''GOOGLE_CLIENT_SECRET\s*=\s*['\"]?GOCSPX-[A-Za-z0-9_\-]{20,}'''
+tags = ["google", "oauth"]
+
+[allowlist]
+description = "B4KFrontend legitimate non-secret patterns"
+
+paths = [
+  '''\.env\.example$''',
+  '''messages/[a-z\-]+\.json$''',
+  '''public/mock-images/.*''',
+  '''\.gitleaks\.toml$''',
+  '''lib/mock/.*\.ts$''',
+]
+
+regexes = [
+  '''your-[a-z\-]+-here''',
+  '''xxx+''',
+  '''YOUR_[A-Z_]+_HERE''',
+  '''example\.com''',
+  '''#[0-9A-Fa-f]{3,8}\b''',
+  '''https://[a-z0-9]+\.supabase\.co''',
+  '''res\.cloudinary\.com/[a-z0-9\-]+''',
+  '''localhost:[0-9]+''',
+]

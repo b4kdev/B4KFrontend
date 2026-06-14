@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# B4KFrontend pre-commit secret scan
+# Activate (one-time): git config core.hooksPath .githooks
+# Install gitleaks: brew install gitleaks
+
+set -e
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+CONFIG="$REPO_ROOT/.gitleaks.toml"
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  printf '\033[33m⚠️  gitleaks not installed — skipping secret scan.\033[0m\n'
+  printf '   Install: brew install gitleaks\n'
+  exit 0
+fi
+
+if [ ! -f "$CONFIG" ]; then
+  CONFIG_FLAG=""
+else
+  CONFIG_FLAG="--config $CONFIG"
+fi
+
+if ! gitleaks protect --staged --redact --no-banner $CONFIG_FLAG; then
+  printf '\n\033[31m❌ Secret detected. Commit blocked.\033[0m\n'
+  printf '   See ../B4KVault/security/POL-incident-response.md\n'
+  exit 1
+fi
+
+exit 0
