@@ -1,14 +1,12 @@
 # CLAUDE.md — B4KFrontend (Working Project)
 > Clean architecture restart. You are in the active Next.js project directory.
 > Root project rules: `../CLAUDE.md` (auto-loaded)
-> Rules files: `@../.claude/rules/schema.md` · `@../.claude/rules/tokens.md` · `@../.claude/rules/antipatterns.md` · `@../.claude/rules/workflow.md`
+> Rules files: `@../.claude/rules/schema.md` · `@../.claude/rules/tokens.md` · `@../.claude/rules/antipatterns.md` · `@../.claude/rules/workflow.md` · `@../.claude/rules/security.md`
 
 ## ⚡ RIGHT NOW
 
-**UI must be finished this weekend. Testing starts Tuesday.**
-
 - Check `B4K-FRD-v2.0.xlsx` for screen requirements before touching anything
-- Every screen = all 6 DoD gates passed (root CLAUDE.md Section 11)
+- Every screen = all 7 DoD gates passed (root CLAUDE.md Section 11)
 - Visual reference: open `docs/prototype/Home_RefFrame.html` in browser — target look
 - Prototype: `docs/prototype/*.jsx` + `tokens.css` — port the pattern, not the code verbatim
 - All building happens in this directory (`B4KFrontend/`) only
