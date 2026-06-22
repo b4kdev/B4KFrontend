@@ -12,7 +12,7 @@ export default function NotFound() {
         style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       >
         <Compass size={48} strokeWidth={2} className="text-muted-2 mb-4" />
-        <p className="text-[20px] font-bold text-fg mb-2">{t('title')}</p>
+        <p className="text-f-2xl font-bold text-fg mb-2">{t('title')}</p>
         <p className="text-f-md text-muted mb-5 max-w-[320px]">{t('desc')}</p>
         <Link
           href="/"

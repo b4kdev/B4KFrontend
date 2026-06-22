@@ -63,7 +63,7 @@ export default function MainCarousel() {
 
       {/* Content */}
       <div className="absolute inset-0 flex flex-col justify-end p-9 md:p-11">
-        <span className="inline-flex items-center bg-fg text-bg text-[9px] font-extrabold tracking-[0.12em] uppercase px-2.5 py-1 rounded-[2px] mb-3.5 w-fit">
+        <span className="inline-flex items-center bg-fg text-bg text-f-xxs font-extrabold tracking-[0.12em] uppercase px-2.5 py-1 rounded-[2px] mb-3.5 w-fit">
           {t(`${slide.key}.badge`)}
         </span>
         <h1 className="text-fg font-display font-black text-[clamp(26px,3.5vw,48px)] leading-[1.05] tracking-[-0.02em] mb-3 whitespace-pre-line max-w-[520px]">
@@ -81,7 +81,7 @@ export default function MainCarousel() {
       </div>
 
       {/* Dot indicators */}
-      <div className="absolute bottom-[18px] md:bottom-6 left-9 md:left-11 flex gap-1.5">
+      <div className="absolute bottom-sp-4 md:bottom-6 left-9 md:left-11 flex gap-1.5">
         {SLIDES.map((_, i) => (
           <button
             key={i}
