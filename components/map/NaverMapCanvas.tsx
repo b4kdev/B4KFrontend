@@ -182,7 +182,7 @@ export default function NaverMapCanvas({
       {/* Naver Maps SDK */}
       {!scriptErr && (
         <Script
-          src={`https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientId}`}
+          src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}`}
           strategy="afterInteractive"
           onLoad={initMap}
           onError={() => setScriptErr(true)}
