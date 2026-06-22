@@ -176,7 +176,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
         {/* Error */}
         {isError && !isLoading && (
           <div
-            className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-lg"
+            className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-lg"
             style={{ background: 'var(--bg-2)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
             role="alert"
           >
@@ -197,7 +197,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
           <>
             {data.sections.length === 0 ? (
               <div
-                className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-lg"
+                className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-lg"
                 style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
               >
                 <CatIcon size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
