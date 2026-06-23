@@ -26,10 +26,7 @@ When writing or editing any component or screen:
 |---|---|
 | Features / screens | `B4K-FRD-v2.0.xlsx` |
 | Database schema | `B4K-Schema-v2.0.md` |
-| UI / components | `B4K-DesignSystem-v2.0.html` |
-| Color system | `B4K-ColorPalette-v2.0.html` |
-| Typography | `B4K-FontSystem-v2.0.html` |
-| Icons | `B4K-IconSystem-v2.0.html` |
+| UI / components / tokens | `../DESIGN.md` (supersedes archived HTML files) |
 | Visual prototype | `docs/prototype/Home_RefFrame.html` |
 
 ## Directory structure
