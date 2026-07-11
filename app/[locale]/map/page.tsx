@@ -1,4 +1,7 @@
-import MapView from '@/components/map/MapView'
+import dynamic from 'next/dynamic'
+
+// Naver Map API is browser-only — ssr: false prevents window.naver errors
+const MapView = dynamic(() => import('@/components/map/MapView'), { ssr: false })
 
 export default function MapPage() {
   return (

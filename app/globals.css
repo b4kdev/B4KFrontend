@@ -29,6 +29,11 @@ body {
   --bg:          #0a0a0a;
   --bg-2:        #111111;
   --bg-3:        #1a1a1a;
+  --void-100:    #080610;  /* hero/photo context — deepest black for gradient fades */
+
+  /* Accent signals — constrained semantic use */
+  --energy:      #C42490;  /* AI·ENGINE active / live·realtime signals only */
+  --royal-600:   #7B2FBF;  /* CTA fill — primary button bg, interactive hover */
 
   /* Foreground */
   --fg:          #ffffff;
