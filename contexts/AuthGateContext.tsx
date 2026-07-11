@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useCallback } from 'react';
 
-export type GateReason = 'plan' | 'save' | 'like' | null;
+export type GateReason = 'plan' | 'save' | 'like' | 'save_poi' | 'saved_tab' | null;
 
 interface AuthGateContextValue {
   isOpen:  boolean;

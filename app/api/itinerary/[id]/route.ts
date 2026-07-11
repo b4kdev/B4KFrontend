@@ -4,7 +4,7 @@ export interface ItineraryStop {
   stop_order: number
   day: number | null
   duration_min: number
-  transport_mode: 'car' | 'public' | null
+  transport_mode: 'car' | 'public' | 'walk' | null
   notes: string | null
   poi: {
     place_id: string

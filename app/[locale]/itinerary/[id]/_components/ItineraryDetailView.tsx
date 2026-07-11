@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { useSession } from 'next-auth/react'
-import { RefreshCw, Lock, Route } from 'lucide-react'
+import { RefreshCw, Lock, Route, Trash2, AlertTriangle, Loader2 } from 'lucide-react'
 import { useRouter } from '@/i18n/navigation'
 import { useItinerary } from '@/hooks/useItinerary'
 import { useAuthGate } from '@/contexts/AuthGateContext'
@@ -40,6 +40,8 @@ export default function ItineraryDetailView({ id }: { id: string }) {
   const [selectedPoiId, setSelectedPoiId]   = useState<string | null>(null)
   const [likedOverride, setLikedOverride]   = useState<boolean | null>(null)
   const [savedOverride, setSavedOverride]   = useState<boolean | null>(null)
+  const [deleteOpen,    setDeleteOpen]      = useState(false)
+  const [deleting,      setDeleting]        = useState(false)
   const panelScrollRef = useRef<HTMLDivElement>(null)
 
   const isLiked = likedOverride ?? itinerary?.viewer.is_liked ?? false
@@ -80,6 +82,19 @@ export default function ItineraryDetailView({ id }: { id: string }) {
   const handleEdit = useCallback(() => {
     router.push(`/map?plan=${id}`)
   }, [router, id])
+
+  const handleDelete = useCallback(async () => {
+    setDeleting(true)
+    try {
+      const res = await fetch(`/api/plans/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('delete_failed')
+      router.push('/map')
+    } catch {
+      showToast(t('actions.deleteErrorToast'))
+      setDeleting(false)
+      setDeleteOpen(false)
+    }
+  }, [id, router, showToast, t])
 
   // ── Loading ────────────────────────────────────────────────────
   if (isLoading) {
@@ -138,11 +153,12 @@ export default function ItineraryDetailView({ id }: { id: string }) {
     isLiked,
     isSaved,
     isOwner,
-    onStopSelect: handlePoiSelect,
-    onLike:       handleLike,
-    onSave:       handleSave,
-    onShare:      handleShare,
-    onEdit:       handleEdit,
+    onStopSelect:  handlePoiSelect,
+    onLike:        handleLike,
+    onSave:        handleSave,
+    onShare:       handleShare,
+    onEdit:        handleEdit,
+    onDeleteClick: () => setDeleteOpen(true),
   }
 
   // ── Success ────────────────────────────────────────────────────
@@ -178,6 +194,52 @@ export default function ItineraryDetailView({ id }: { id: string }) {
 
       {/* Mobile bottom sheet */}
       <ItineraryMobileSheet {...panelProps} />
+
+      {/* Delete confirm modal */}
+      {deleteOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center px-sp-4"
+          style={{ background: 'var(--backdrop-50)' }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-modal-title"
+        >
+          <div
+            className="w-full max-w-sm rounded-none p-sp-6 flex flex-col gap-sp-4"
+            style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+          >
+            <div className="flex items-center gap-sp-3">
+              <AlertTriangle size={20} strokeWidth={2} className="text-danger shrink-0" aria-hidden="true" />
+              <p id="delete-modal-title" className="text-f-lg font-semibold text-fg">
+                {t('actions.deleteTitle')}
+              </p>
+            </div>
+            <p className="text-f-md text-muted">{t('actions.deleteConfirmText')}</p>
+            <div className="flex gap-sp-3 justify-end">
+              <button
+                onClick={() => setDeleteOpen(false)}
+                disabled={deleting}
+                className="min-h-touch px-sp-4 text-f-md font-semibold text-muted hover:text-fg transition-colors"
+              >
+                {t('actions.deleteCancel')}
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                aria-label={t('actions.deleteAria')}
+                className="min-h-touch px-sp-5 rounded-none text-f-md font-semibold text-fg flex items-center gap-sp-2 disabled:opacity-50"
+                style={{ background: 'var(--danger)' }}
+              >
+                {deleting
+                  ? <Loader2 size={14} strokeWidth={2} className="animate-spin" aria-hidden="true" />
+                  : <Trash2 size={14} strokeWidth={2} aria-hidden="true" />
+                }
+                {deleting ? t('actions.deleting') : t('actions.deleteConfirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

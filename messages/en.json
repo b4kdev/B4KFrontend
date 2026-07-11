@@ -555,7 +555,8 @@
     },
     "transport": {
       "car": "By car",
-      "public": "Public transport"
+      "public": "Public transport",
+      "walk": "On foot"
     },
     "actions": {
       "like": "Like",
@@ -573,7 +574,14 @@
       "likedToast": "Added to liked",
       "unlikedToast": "Removed from liked",
       "savedToast": "Saved!",
-      "unsavedToast": "Removed from saved"
+      "unsavedToast": "Removed from saved",
+      "deleteTitle": "Delete itinerary?",
+      "deleteConfirmText": "This will permanently delete the itinerary. This cannot be undone.",
+      "deleteCancel": "Cancel",
+      "deleteConfirm": "Delete",
+      "deleteAria": "Confirm delete itinerary",
+      "deleting": "Deleting…",
+      "deleteErrorToast": "Failed to delete. Please try again."
     },
     "tabs": {
       "all": "All",
@@ -756,7 +764,15 @@
     },
     "card": {
       "trending": "Trending",
-      "ariaLabel": "View {name} on map"
+      "ariaLabel": "View {name} on map",
+      "saveAria": "Save {name}",
+      "unsaveAria": "Unsave {name}",
+      "likeAria": "Like {name}",
+      "unlikeAria": "Unlike {name}"
+    },
+    "aiCta": {
+      "text": "Let AI plan your K-culture journey",
+      "button": "Try AI Planning"
     },
     "hub": {
       "title": "Explore Korea",

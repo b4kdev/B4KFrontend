@@ -3,8 +3,8 @@
 import { useState, RefObject } from 'react'
 import { useTranslations } from 'next-intl'
 import {
-  Heart, Bookmark, Share2, Edit2,
-  Car, Train, MapPin, Route, Clock,
+  Heart, Bookmark, Share2, Edit2, Trash2,
+  Car, Train, Footprints, MapPin, Route, Clock,
   BadgeCheck,
 } from 'lucide-react'
 import { Link } from '@/i18n/navigation'
@@ -23,11 +23,13 @@ interface Props {
   onSave: () => void
   onShare: () => void
   onEdit: () => void
+  onDeleteClick?: () => void
 }
 
-function TransportIcon({ mode }: { mode: 'car' | 'public' | null }) {
+function TransportIcon({ mode }: { mode: 'car' | 'public' | 'walk' | null }) {
   if (mode === 'car') return <Car size={11} strokeWidth={2} className="text-muted shrink-0" />
   if (mode === 'public') return <Train size={11} strokeWidth={2} className="text-muted shrink-0" />
+  if (mode === 'walk') return <Footprints size={11} strokeWidth={2} className="text-muted shrink-0" />
   return null
 }
 
@@ -43,6 +45,7 @@ export default function ItineraryPanelContent({
   onSave,
   onShare,
   onEdit,
+  onDeleteClick,
 }: Props) {
   const t = useTranslations('itinerary')
 
@@ -68,7 +71,7 @@ export default function ItineraryPanelContent({
       : `${itinerary.distance_m} m`
     : null
 
-  const transportModes = Array.from(new Set(itinerary.stops.map(s => s.transport_mode).filter(Boolean))) as ('car' | 'public')[]
+  const transportModes = Array.from(new Set(itinerary.stops.map(s => s.transport_mode).filter(Boolean))) as ('car' | 'public' | 'walk')[]
 
   const authorName = getDisplayName({
     name_preferred: itinerary.author.name_preferred,
@@ -193,6 +196,16 @@ export default function ItineraryPanelContent({
           >
             <Edit2 size={13} strokeWidth={2} aria-hidden="true" />
             {t('actions.edit')}
+          </button>
+        )}
+        {isOwner && onDeleteClick && (
+          <button
+            onClick={onDeleteClick}
+            aria-label={t('actions.deleteAria')}
+            className="min-h-touch w-touch flex items-center justify-center rounded-lg text-danger hover:bg-danger/10 transition-colors"
+            style={{ background: 'var(--bg-3)' }}
+          >
+            <Trash2 size={13} strokeWidth={2} aria-hidden="true" />
           </button>
         )}
       </div>

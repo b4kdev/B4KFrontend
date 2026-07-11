@@ -17,6 +17,10 @@ const TYPE_ICON: Record<NotificationType, React.ElementType> = {
   badge_earned:   Award,
 }
 
+function isValidInternalLink(url: string | null | undefined): url is string {
+  return typeof url === 'string' && url.startsWith('/')
+}
+
 function groupByDate(notifications: Notification[]) {
   const now   = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
@@ -128,17 +132,13 @@ export default function NotificationsPage() {
                 {group.items.map((n, idx) => {
                   const Icon = TYPE_ICON[n.type as NotificationType] ?? Bell
                   const isLast = idx === group.items.length - 1
-                  return (
-                    <Link
-                      key={n.id}
-                      href={n.deep_link_url}
-                      className={[
-                        'flex items-start gap-sp-3 p-sp-4 hover:bg-muted-3 transition-colors min-h-touch',
-                        !n.is_read ? 'bg-lav-dim' : '',
-                      ].join(' ')}
-                      style={!isLast ? { borderBottom: 'var(--bdr)' } : {}}
-                      aria-label={n.title}
-                    >
+                  const itemClass = [
+                    'flex items-start gap-sp-3 p-sp-4 hover:bg-muted-3 transition-colors min-h-touch w-full text-left',
+                    !n.is_read ? 'bg-lav-dim' : '',
+                  ].join(' ')
+                  const itemStyle = !isLast ? { borderBottom: 'var(--bdr)' } : undefined
+                  const inner = (
+                    <>
                       <div
                         className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-[2px]"
                         style={{ background: n.is_read ? 'var(--bg-3)' : 'var(--lav-mid)' }}
@@ -146,7 +146,7 @@ export default function NotificationsPage() {
                         <Icon size={16} strokeWidth={2} className={n.is_read ? 'text-muted' : 'text-lav'} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={['text-f-md font-semibold leading-snug', n.is_read ? 'text-fg' : 'text-fg'].join(' ')}>
+                        <p className="text-f-md font-semibold leading-snug text-fg">
                           {n.title}
                         </p>
                         <p className="text-f-sm text-muted mt-[2px] line-clamp-2">{n.body}</p>
@@ -154,7 +154,28 @@ export default function NotificationsPage() {
                       {n.is_read && (
                         <Check size={14} strokeWidth={2} className="text-muted shrink-0 mt-[4px]" aria-hidden />
                       )}
+                    </>
+                  )
+                  return isValidInternalLink(n.deep_link_url) ? (
+                    <Link
+                      key={n.id}
+                      href={n.deep_link_url}
+                      className={itemClass}
+                      style={itemStyle}
+                      aria-label={n.title}
+                    >
+                      {inner}
                     </Link>
+                  ) : (
+                    <div
+                      key={n.id}
+                      className={itemClass}
+                      style={itemStyle}
+                      aria-label={n.title}
+                      role="listitem"
+                    >
+                      {inner}
+                    </div>
                   )
                 })}
               </div>

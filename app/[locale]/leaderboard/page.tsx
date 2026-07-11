@@ -121,9 +121,10 @@ export default function LeaderboardPage() {
               const isLast = idx === data.entries.length - 1
               const initial = entry.user.name.charAt(0).toUpperCase()
               return (
-                <div
+                <Link
                   key={entry.user.id}
-                  className="flex items-center gap-sp-3 p-sp-4 min-h-touch"
+                  href={`/profile/${entry.user.id}`}
+                  className="flex items-center gap-sp-3 p-sp-4 min-h-touch hover:bg-muted-3 transition-colors"
                   style={!isLast ? { borderBottom: 'var(--bdr)' } : {}}
                   aria-label={`${t('rank', { rank: entry.rank })} ${entry.user.name}`}
                 >
@@ -170,7 +171,7 @@ export default function LeaderboardPage() {
                     </span>
                     <p className="text-f-xxs text-muted">{t('scoreUnit')}</p>
                   </div>
-                </div>
+                </Link>
               )
             })}
           </div>

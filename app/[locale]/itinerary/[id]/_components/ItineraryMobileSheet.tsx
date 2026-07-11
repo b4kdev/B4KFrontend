@@ -16,6 +16,7 @@ interface Props {
   onSave: () => void
   onShare: () => void
   onEdit: () => void
+  onDeleteClick?: () => void
 }
 
 const SNAP_PCT = { peek: 70, half: 45, full: 10 } as const
@@ -32,6 +33,7 @@ export default function ItineraryMobileSheet({
   onSave,
   onShare,
   onEdit,
+  onDeleteClick,
 }: Props) {
   const t = useTranslations('itinerary')
   const [snap, setSnap] = useState<SnapKey>('peek')
@@ -114,6 +116,7 @@ export default function ItineraryMobileSheet({
         onSave={onSave}
         onShare={onShare}
         onEdit={onEdit}
+        onDeleteClick={onDeleteClick}
       />
     </div>
   )

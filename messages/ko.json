@@ -555,7 +555,8 @@
     },
     "transport": {
       "car": "자가용",
-      "public": "대중교통"
+      "public": "대중교통",
+      "walk": "도보"
     },
     "actions": {
       "like": "좋아요",
@@ -573,7 +574,14 @@
       "likedToast": "좋아요 목록에 추가됐어요",
       "unlikedToast": "좋아요가 취소됐어요",
       "savedToast": "저장됐어요!",
-      "unsavedToast": "저장이 취소됐어요"
+      "unsavedToast": "저장이 취소됐어요",
+      "deleteTitle": "여행 경로를 삭제할까요?",
+      "deleteConfirmText": "이 여행 경로를 영구 삭제합니다. 되돌릴 수 없어요.",
+      "deleteCancel": "취소",
+      "deleteConfirm": "삭제",
+      "deleteAria": "여행 경로 삭제 확인",
+      "deleting": "삭제 중…",
+      "deleteErrorToast": "삭제에 실패했어요. 다시 시도해주세요."
     },
     "tabs": {
       "all": "전체",
@@ -756,7 +764,15 @@
     },
     "card": {
       "trending": "트렌딩",
-      "ariaLabel": "지도에서 {name} 보기"
+      "ariaLabel": "지도에서 {name} 보기",
+      "saveAria": "{name} 저장",
+      "unsaveAria": "{name} 저장 취소",
+      "likeAria": "{name} 좋아요",
+      "unlikeAria": "{name} 좋아요 취소"
+    },
+    "aiCta": {
+      "text": "AI로 나만의 K-컬처 여행을 계획해보세요",
+      "button": "AI 여행 계획 시작"
     },
     "hub": {
       "title": "한국 탐험",
