@@ -678,7 +678,23 @@
       "stripExpand": "플랜 패널 펼치기",
       "stripCollapse": "플랜 패널 접기",
       "routeError": "경로를 생성할 수 없습니다. 정류장은 유지됩니다.",
-      "routeRetry": "다시 시도"
+      "routeRetry": "다시 시도",
+      "saveError": "저장에 실패했습니다. 다시 시도해 주세요."
+    },
+    "namingSheet": {
+      "ariaLabel": "여행 계획 이름 입력",
+      "title": "여행 계획 이름을 입력하세요",
+      "inputLabel": "여행 계획 제목",
+      "placeholder": "예: 서울 K-팝 하루 여행",
+      "cancel": "취소",
+      "save": "계획 저장"
+    },
+    "draftResume": {
+      "ariaLabel": "미완성 계획이 있습니다",
+      "title": "미완성 계획이 있습니다",
+      "stopCount": "{count}개 장소",
+      "resume": "이어서 계획하기",
+      "startFresh": "새로 시작"
     },
     "aiOverlay": {
       "title": "AI 여행 어시스턴트",

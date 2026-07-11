@@ -678,7 +678,23 @@
       "stripExpand": "Expand plan panel",
       "stripCollapse": "Collapse plan panel",
       "routeError": "Route couldn't be generated. Stops are preserved.",
-      "routeRetry": "Retry"
+      "routeRetry": "Retry",
+      "saveError": "Failed to save. Please try again."
+    },
+    "namingSheet": {
+      "ariaLabel": "Name your plan",
+      "title": "Name your plan",
+      "inputLabel": "Plan title",
+      "placeholder": "e.g. Seoul K-Pop day trip",
+      "cancel": "Cancel",
+      "save": "Save plan"
+    },
+    "draftResume": {
+      "ariaLabel": "Unfinished plan found",
+      "title": "You have an unfinished plan",
+      "stopCount": "{count, plural, one {# stop} other {# stops}}",
+      "resume": "Resume this plan",
+      "startFresh": "Start fresh"
     },
     "aiOverlay": {
       "title": "AI Travel Assistant",

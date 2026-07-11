@@ -12,6 +12,8 @@ import POIBottomSheet from './POIBottomSheet'
 import PlanPill from './PlanPill'
 import PlanBottomSheet from './PlanBottomSheet'
 import DraftConflictModal from '@/components/auth/DraftConflictModal'
+import PlanNamingSheet from './PlanNamingSheet'
+import DraftResumeFreshModal from './DraftResumeFreshModal'
 import { useMapPois } from '@/hooks/useMapPois'
 import { useSaved } from '@/hooks/useSaved'
 import { useAuthGate } from '@/contexts/AuthGateContext'
@@ -50,6 +52,14 @@ export default function MapView() {
   const [planSheetOpen, setPlanSheetOpen] = useState(false)
   const [loadedPlanPois, setLoadedPlanPois] = useState<MapPoi[]>([])
   const [draftConflict, setDraftConflict]   = useState<PendingPlan | null>(null)
+  // DEC-29: naming sheet shown before publishing
+  const [namingSheetOpen, setNamingSheetOpen]   = useState(false)
+  // DEC-33 T1: "Resume or start fresh?" when adding first stop but DB draft exists
+  const [draftResumeOpen, setDraftResumeOpen]   = useState(false)
+  const [draftResumeStopCount, setDraftResumeStopCount] = useState(0)
+  const [draftResumePlanId, setDraftResumePlanId]       = useState<string | null>(null)
+  // Pending POI to add after T1 resolution
+  const [pendingPoiId, setPendingPoiId] = useState<string | null>(null)
   const savedSeededRef = useRef(false)
 
   const { pois } = useMapPois(activeRegion, activeFilters)
@@ -148,9 +158,92 @@ export default function MapView() {
 
   function handleAddToPlan(poiId: string) {
     if (planStopIds.includes(poiId) || planStopIds.length >= MAX_STOPS) return
+
+    // DEC-33 T1: logged-in user adds first stop → check for existing DB draft
+    if (session && planStopIds.length === 0) {
+      fetch('/api/plans/draft')
+        .then(r => r.ok ? r.json() : null)
+        .then((dbDraft: { id: string; stop_count: number } | null) => {
+          if (dbDraft?.id) {
+            setPendingPoiId(poiId)
+            setDraftResumeStopCount(dbDraft.stop_count ?? 0)
+            setDraftResumePlanId(dbDraft.id)
+            setDraftResumeOpen(true)
+          } else {
+            // No DB draft — add directly
+            setPlanStopIds(prev => [...prev, poiId])
+            setStopDurations(prev => ({ ...prev, [poiId]: DEFAULT_DURATION }))
+            showToast(t('poiDetail.addedToast'))
+          }
+        })
+        .catch(() => {
+          // Network error — proceed without T1 check
+          setPlanStopIds(prev => [...prev, poiId])
+          setStopDurations(prev => ({ ...prev, [poiId]: DEFAULT_DURATION }))
+          showToast(t('poiDetail.addedToast'))
+        })
+      return
+    }
+
     setPlanStopIds(prev => [...prev, poiId])
     setStopDurations(prev => ({ ...prev, [poiId]: DEFAULT_DURATION }))
     showToast(t('poiDetail.addedToast'))
+  }
+
+  // DEC-33 T1: resume existing DB draft — load it into editing state
+  async function handleResumeExistingDraft() {
+    setDraftResumeOpen(false)
+    setPendingPoiId(null)
+    if (!draftResumePlanId) return
+    try {
+      const res = await fetch(`/api/itinerary/${draftResumePlanId}`)
+      if (!res.ok) return
+      const itinerary = await res.json() as { stops: Array<{ stop_order: number; poi: { place_id: string; name_ko: string; name_en: string; coords_lat: number; coords_lng: number; display_domain: string }; duration_min: number }> }
+      const sorted = [...itinerary.stops].sort((a, b) => a.stop_order - b.stop_order)
+      const ids:  string[]               = sorted.map(s => s.poi.place_id)
+      const durs: Record<string, number> = {}
+      const lpois: MapPoi[]              = []
+      sorted.forEach(s => {
+        durs[s.poi.place_id] = s.duration_min
+        lpois.push({
+          place_id:       s.poi.place_id,
+          name_ko:        s.poi.name_ko,
+          name_en:        s.poi.name_en,
+          coords_lat:     s.poi.coords_lat,
+          coords_lng:     s.poi.coords_lng,
+          display_domain: s.poi.display_domain,
+          display_region: '',
+          is_trending:    false,
+          is_partner:     false,
+          quality_score:  0,
+        })
+      })
+      setPlanStopIds(ids)
+      setStopDurations(durs)
+      setLoadedPlanPois(lpois)
+    } catch {
+      // Silent failure — user continues with blank plan
+    }
+  }
+
+  // DEC-33 T1: start fresh — delete DB draft, then add the pending POI
+  async function handleStartFresh() {
+    setDraftResumeOpen(false)
+    if (draftResumePlanId) {
+      try {
+        await fetch(`/api/plans/${draftResumePlanId}`, { method: 'DELETE' })
+      } catch {
+        // Silent — worst case: stale draft remains
+      }
+    }
+    setDraftResumePlanId(null)
+    const poiToAdd = pendingPoiId
+    setPendingPoiId(null)
+    if (poiToAdd) {
+      setPlanStopIds([poiToAdd])
+      setStopDurations({ [poiToAdd]: DEFAULT_DURATION })
+      showToast(t('poiDetail.addedToast'))
+    }
   }
 
   function handleRemoveFromPlan(poiId: string) {
@@ -189,29 +282,45 @@ export default function MapView() {
     setStopDurations(prev => ({ ...prev, [id]: minutes }))
   }
 
-  async function handlePreviewPlan() {
+  // DEC-29: open naming sheet instead of auto-saving
+  function handlePreviewPlan() {
     if (!session) { openAuthGate('save_plan'); return }
+    setNamingSheetOpen(true)
+  }
+
+  // DEC-29: user confirmed title → POST draft then PATCH is_published=true → navigate IT_01
+  async function handleConfirmNaming(title: string) {
+    setNamingSheetOpen(false)
     saveDraftPlan({ stops: planStops, durations: stopDurations })
     try {
       const res = await fetch('/api/plans', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: `My Plan · ${new Date().toLocaleDateString()}`,
+          title,
           stops: planStops.map((s, i) => ({
-            poi_id: s.place_id,
-            stop_order: i + 1,
-            duration_min: stopDurations[s.place_id] ?? 60,
+            poi_id:       s.place_id,
+            stop_order:   i + 1,
+            duration_min: stopDurations[s.place_id] ?? DEFAULT_DURATION,
           })),
           is_published: false,
         }),
       })
       if (!res.ok) throw new Error()
-      const { plan } = await res.json()
+      const { plan } = await res.json() as { plan: { id: string } }
+      // PATCH is_published = true (naming sheet confirm = publish intent per DEC-29)
+      const patchRes = await fetch(`/api/plans/${plan.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_published: true }),
+      })
+      if (!patchRes.ok) throw new Error()
       clearDraftPlan()
       router.push(`/itinerary/${plan.id}`)
     } catch {
       showToast(t('plan.saveError'), 'error')
+      // Re-open naming sheet so user doesn't lose their title
+      setNamingSheetOpen(true)
     }
   }
 
@@ -341,6 +450,22 @@ export default function MapView() {
           onKeepAccount={handleConflictKeepAccount}
         />
       )}
+
+      {/* DEC-29 — naming sheet before publishing */}
+      <PlanNamingSheet
+        open={namingSheetOpen}
+        initialTitle=""
+        onSave={handleConfirmNaming}
+        onCancel={() => setNamingSheetOpen(false)}
+      />
+
+      {/* DEC-33 T1 — Resume or start fresh when DB draft exists */}
+      <DraftResumeFreshModal
+        open={draftResumeOpen}
+        stopCount={draftResumeStopCount}
+        onResume={handleResumeExistingDraft}
+        onStartFresh={handleStartFresh}
+      />
     </div>
   )
 }
