@@ -80,7 +80,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
     <div className="flex">
       {/* Desktop sidebar */}
       <aside
-        className="hidden lg:flex flex-col w-[196px] shrink-0 sticky top-[52px] self-start h-[calc(100vh-52px)] overflow-y-auto py-sp-4 pr-sp-3"
+        className="hidden lg:flex flex-col w-[196px] shrink-0 sticky top-[50px] self-start h-[calc(100vh-50px)] overflow-y-auto py-sp-4 pr-sp-3"
         style={{ borderRight: 'var(--bdr)' }}
         aria-label={t('sidebar.ariaLabel')}
       >
@@ -138,7 +138,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
 
         {/* Mobile pill strip */}
         <div
-          className="lg:hidden flex gap-sp-2 overflow-x-auto pb-sp-3 mb-sp-5 -mx-sp-4 px-sp-4 sticky top-[52px] z-10 bg-bg pt-sp-2"
+          className="lg:hidden flex gap-sp-2 overflow-x-auto pb-sp-3 mb-sp-5 -mx-sp-4 px-sp-4 sticky top-[50px] z-10 bg-bg pt-sp-2"
           role="tablist"
           aria-label={t('pills.ariaLabel')}
           style={{ scrollbarWidth: 'none' }}

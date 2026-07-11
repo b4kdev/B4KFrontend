@@ -2,10 +2,8 @@
 
 import { useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { useRouter } from '@/i18n/navigation'
 import { GripVertical, X, Car, Bus, Clock, ArrowRight, AlertTriangle } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
-import { saveDraftPlan } from '@/lib/draft-plan'
 import type { MapPoi } from '@/hooks/useMapPois'
 
 interface Props {
@@ -17,20 +15,20 @@ interface Props {
   onRemove:         (id: string) => void
   onDurationChange: (id: string, minutes: number) => void
   onTransportChange:(mode: 'car' | 'public') => void
+  onSavePlan:       () => void
   onDismiss:        () => void
 }
 
 export default function PlanBottomSheet({
   isOpen, stops, stopDurations, transport,
-  onReorder, onRemove, onDurationChange, onTransportChange, onDismiss,
+  onReorder, onRemove, onDurationChange, onTransportChange, onSavePlan, onDismiss,
 }: Props) {
-  const t      = useTranslations('map.plan')
-  const router = useRouter()
+  const t = useTranslations('map.plan')
 
   const dragItem = useRef<number | null>(null)
   const dragOver = useRef<number | null>(null)
   const [dragging, setDragging] = useState<number | null>(null)
-  const [routeError, setRouteError] = useState(false)
+  const [routeError]            = useState(false)
 
   function handleDragStart(i: number) { dragItem.current = i; setDragging(i) }
   function handleDragEnter(i: number) { dragOver.current = i }
@@ -44,18 +42,6 @@ export default function PlanBottomSheet({
     dragItem.current = null
     dragOver.current = null
     setDragging(null)
-  }
-
-  function handlePreviewPlan() {
-    try {
-      setRouteError(false)
-      const durations: Record<string, number> = {}
-      stops.forEach(s => { durations[s.place_id] = stopDurations[s.place_id] ?? 60 })
-      saveDraftPlan({ stops, durations, transport })
-      router.push('/plan/preview')
-    } catch {
-      setRouteError(true)
-    }
   }
 
   const totalMin = stops.reduce((sum, s) => sum + (stopDurations[s.place_id] ?? 60), 0)
@@ -186,7 +172,7 @@ export default function PlanBottomSheet({
             <AlertTriangle size={13} strokeWidth={2} className="text-danger shrink-0" aria-hidden="true" />
             <span className="flex-1 text-f-xs text-danger">{t('routeError')}</span>
             <button
-              onClick={handlePreviewPlan}
+              onClick={onSavePlan}
               className="text-f-xs font-semibold text-danger hover:opacity-70 transition-opacity"
             >
               {t('routeRetry')}
@@ -234,13 +220,13 @@ export default function PlanBottomSheet({
             ))}
           </div>
 
-          {/* Preview Plan CTA */}
+          {/* Save Plan CTA */}
           <button
-            onClick={handlePreviewPlan}
+            onClick={onSavePlan}
             disabled={stops.length === 0}
             className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-xl font-semibold text-sm hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40"
           >
-            {t('previewPlan')}
+            {t('save')}
             <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
           </button>
         </div>

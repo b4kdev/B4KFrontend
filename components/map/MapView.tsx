@@ -106,10 +106,30 @@ export default function MapView() {
     setStopDurations(prev => ({ ...prev, [id]: minutes }))
   }
 
-  function handlePreviewPlan() {
-    if (!session) { openAuthGate('plan'); return }
+  async function handlePreviewPlan() {
+    if (!session) { openAuthGate('save'); return }
     saveDraftPlan({ stops: planStops, durations: stopDurations, transport })
-    router.push('/plan/preview')
+    try {
+      const res = await fetch('/api/plans', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: `My Plan · ${new Date().toLocaleDateString()}`,
+          stops: planStops.map((s, i) => ({
+            poi_id: s.place_id,
+            stop_order: i + 1,
+            duration_min: stopDurations[s.place_id] ?? 60,
+          })),
+          is_published: false,
+        }),
+      })
+      if (!res.ok) throw new Error()
+      const { plan } = await res.json()
+      clearDraftPlan()
+      router.push(`/itinerary/${plan.id}`)
+    } catch {
+      showToast(t('plan.saveError'), 'error')
+    }
   }
 
   function handlePlanPillTap() {
@@ -118,7 +138,7 @@ export default function MapView() {
   }
 
   return (
-    <div className="fixed top-[52px] left-0 right-0 bottom-14 lg:left-[52px] lg:bottom-0 z-10">
+    <div className="fixed top-[50px] left-0 right-0 bottom-14 lg:left-[50px] lg:bottom-0 z-10">
 
       {/* LeftPanel — desktop only */}
       <aside
@@ -215,6 +235,7 @@ export default function MapView() {
         onRemove={handleRemoveFromPlan}
         onDurationChange={handleDurationChange}
         onTransportChange={setTransport}
+        onSavePlan={handlePreviewPlan}
         onDismiss={() => setPlanSheetOpen(false)}
       />
     </div>

@@ -396,7 +396,7 @@ export default function AIOverlay({
 
       {/* ── Mobile full-screen — FL3_02 ── */}
       <div
-        className="lg:hidden fixed inset-x-0 top-[52px] bottom-14 z-30 bg-bg flex flex-col ai-overlay-panel"
+        className="lg:hidden fixed inset-x-0 top-[50px] bottom-14 z-30 bg-bg flex flex-col ai-overlay-panel"
         role="dialog"
         aria-label={t('title')}
         aria-modal="true"

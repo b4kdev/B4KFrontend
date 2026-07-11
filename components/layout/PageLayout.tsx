@@ -9,8 +9,8 @@ export default function PageLayout({ children, className = '' }: PageLayoutProps
   return (
     <main
       className={[
-        'min-h-screen flex flex-col pt-[52px] pb-14 lg:pb-0',
-        'lg:ml-[52px]',
+        'min-h-screen flex flex-col pt-[50px] pb-14 lg:pb-0',
+        'lg:ml-[50px]',
         className,
       ].join(' ')}
     >

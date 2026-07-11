@@ -51,17 +51,17 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
         className={[
           'fixed left-0 top-0 h-screen z-[60] flex flex-col',
           'bg-bg-2',
-          'w-[280px] lg:w-[52px]',
+          'w-[280px] lg:w-[50px]',
           'transition-transform duration-300 ease-out',
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         ].join(' ')}
         style={{ borderRight: 'var(--bdr)' }}
       >
         {/* Logo */}
-        <div className="flex items-center h-[52px] shrink-0" style={{ borderBottom: 'var(--bdr)' }}>
+        <div className="flex items-center h-[50px] shrink-0" style={{ borderBottom: 'var(--bdr)' }}>
           <Link
             href="/"
-            className="flex items-center justify-center w-[52px] h-full shrink-0"
+            className="flex items-center justify-center w-[50px] h-full shrink-0"
             aria-label={t('logoHome')}
           >
             <Image src="/logo.svg" alt="B4K" width={28} height={26} className="object-contain" />
@@ -72,7 +72,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
             onClick={onMobileClose}
             aria-label={t('menuClose')}
           >
-            <X size={18} strokeWidth={2} />
+            <X size={24} strokeWidth={2} />
           </button>
         </div>
 
@@ -88,7 +88,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
                 onClick={onMobileClose}
                 className={navLinkClass(active)}
               >
-                <Icon size={17} strokeWidth={2} className="shrink-0" />
+                <Icon size={24} strokeWidth={2} className="shrink-0" />
                 <span className="lg:hidden text-f-md font-medium">{t(labelKey)}</span>
               </Link>
             );
@@ -104,7 +104,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
             className={navLinkClass(isActive('/notifications'))}
           >
             <span className="relative shrink-0">
-              <Bell size={17} strokeWidth={2} />
+              <Bell size={24} strokeWidth={2} />
               <span className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] rounded-full bg-danger" />
             </span>
             <span className="lg:hidden text-f-md font-medium">{t('notifications')}</span>
@@ -115,7 +115,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
             onClick={onMobileClose}
             className={navLinkClass(isActive('/profile'))}
           >
-            <User size={17} strokeWidth={2} className="shrink-0" />
+            <User size={24} strokeWidth={2} className="shrink-0" />
             <span className="lg:hidden text-f-md font-medium">{t('profile')}</span>
           </Link>
         </div>

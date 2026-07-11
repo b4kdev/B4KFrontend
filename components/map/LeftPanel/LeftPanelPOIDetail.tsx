@@ -14,15 +14,8 @@ interface Props {
   onToggleSave: () => void
 }
 
-function Stars({ rating }: { rating: number }) {
-  const full  = Math.floor(rating)
-  const empty = 5 - full
-  return (
-    <span className="text-sm leading-none tracking-tight" aria-hidden="true">
-      <span className="text-warning">{'★'.repeat(full)}</span>
-      <span className="text-muted-2">{'☆'.repeat(empty)}</span>
-    </span>
-  )
+function formatCount(n: number): string {
+  return n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n)
 }
 
 export default function LeftPanelPOIDetail({
@@ -50,17 +43,11 @@ export default function LeftPanelPOIDetail({
           {name}
         </h2>
 
-        {/* LP_05 — Star rating */}
-        {poi.rating != null && (
-          <div className="flex items-center gap-sp-2">
-            <Stars rating={poi.rating} />
-            <span className="text-fg text-sm font-semibold tabular-nums">{poi.rating.toFixed(1)}</span>
-            {poi.review_count != null && (
-              <span className="text-muted text-xs">
-                ({poi.review_count.toLocaleString()} {t('reviews')})
-              </span>
-            )}
-          </div>
+        {/* LP_05 — Save count (DEC-31: no ratings) */}
+        {poi.save_count != null && poi.save_count > 0 && (
+          <p className="text-muted text-f-xs tabular-nums">
+            {formatCount(poi.save_count)} {t('saves')}
+          </p>
         )}
 
         {/* LP_06 — Category + district + open status */}

@@ -8,7 +8,7 @@ export default function OfflinePage() {
 
   return (
     <main
-      className="min-h-[calc(100vh-52px)] flex items-center justify-center px-sp-6"
+      className="min-h-[calc(100vh-50px)] flex items-center justify-center px-sp-6"
       aria-label={t('title')}
     >
       <div

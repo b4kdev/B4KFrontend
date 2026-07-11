@@ -97,7 +97,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
   return (
     <>
       <header
-        className="fixed top-0 right-0 z-50 h-[52px] flex items-center gap-2.5 bg-bg-2 lg:left-[52px] left-0"
+        className="fixed top-0 right-0 z-50 h-[50px] flex items-center gap-2.5 bg-bg-2 lg:left-[50px] left-0"
         style={{ borderBottom: 'var(--bdr)' }}
       >
         {/* Mobile hamburger */}
@@ -106,7 +106,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
           onClick={onMobileMenuOpen}
           aria-label={tNav('menuOpen')}
         >
-          <Menu size={20} strokeWidth={2} />
+          <Menu size={24} strokeWidth={2} />
           {notifCount > 0 && (
             <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-danger text-fg text-f-xxs font-bold flex items-center justify-center">
               {notifCount}
@@ -116,8 +116,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
 
         {/* Search — desktop */}
         <div
-          className="hidden lg:flex flex-1 max-w-[480px] relative"
-          style={{ marginLeft: 'var(--sidebar)' }}
+          className="hidden lg:flex flex-1 max-w-[480px] relative ml-sp-4"
           ref={searchRef}
           role="combobox"
           aria-expanded={dropdownOpen}
@@ -225,7 +224,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
             className="relative min-w-touch min-h-touch flex items-center justify-center rounded-lg text-muted hover:text-fg hover:bg-muted-3 transition-colors"
             aria-label={tNav('notifications')}
           >
-            <Bell size={17} strokeWidth={2} />
+            <Bell size={24} strokeWidth={2} />
             {notifCount > 0 && (
               <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-danger text-fg text-f-xxs font-bold flex items-center justify-center">
                 {notifCount}
@@ -242,7 +241,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
               aria-haspopup="listbox"
               onClick={() => setLocaleOpen(o => !o)}
             >
-              <Globe size={17} strokeWidth={2} />
+              <Globe size={24} strokeWidth={2} />
             </button>
             {localeOpen && (
               <div
@@ -274,7 +273,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
             className="min-w-touch min-h-touch flex items-center justify-center rounded-lg text-muted hover:text-fg hover:bg-muted-3 transition-colors"
             aria-label={tNav('help')}
           >
-            <HelpCircle size={17} strokeWidth={2} />
+            <HelpCircle size={24} strokeWidth={2} />
           </Link>
         </div>
 
@@ -285,7 +284,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
             onClick={() => setMobileSearchOpen(true)}
             aria-label={t('searchPlaceholder')}
           >
-            <Search size={18} strokeWidth={2} />
+            <Search size={24} strokeWidth={2} />
           </button>
         </div>
       </header>
@@ -299,7 +298,7 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
               onClick={() => { setMobileSearchOpen(false); setSearchVal(''); }}
               aria-label={tCommon('back')}
             >
-              <ChevronLeft size={20} strokeWidth={2} />
+              <ChevronLeft size={24} strokeWidth={2} />
             </button>
             <input
               autoFocus

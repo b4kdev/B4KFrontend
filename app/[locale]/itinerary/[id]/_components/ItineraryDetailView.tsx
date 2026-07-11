@@ -84,7 +84,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
   // ── Loading ────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="fixed top-[52px] left-0 right-0 bottom-14 lg:left-[52px] lg:bottom-0 z-10 flex items-center justify-center bg-bg">
+      <div className="fixed top-[50px] left-0 right-0 bottom-14 lg:left-[50px] lg:bottom-0 z-10 flex items-center justify-center bg-bg">
         <span className="w-8 h-8 border-2 border-lav border-t-transparent rounded-full animate-spin" aria-hidden="true" />
         <span className="sr-only">{t('loading')}</span>
       </div>
@@ -95,7 +95,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
   if (isError) {
     return (
       <div
-        className="fixed top-[52px] left-0 right-0 bottom-14 lg:left-[52px] lg:bottom-0 z-10 flex flex-col items-center justify-center gap-sp-4 bg-bg px-sp-6 text-center"
+        className="fixed top-[50px] left-0 right-0 bottom-14 lg:left-[50px] lg:bottom-0 z-10 flex flex-col items-center justify-center gap-sp-4 bg-bg px-sp-6 text-center"
         role="alert"
       >
         <p className="text-f-lg font-semibold text-fg">{t('error.title')}</p>
@@ -114,7 +114,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
   // ── Private ────────────────────────────────────────────────────
   if (isPrivate) {
     return (
-      <div className="fixed top-[52px] left-0 right-0 bottom-14 lg:left-[52px] lg:bottom-0 z-10 flex flex-col items-center justify-center gap-sp-3 bg-bg text-center px-sp-6">
+      <div className="fixed top-[50px] left-0 right-0 bottom-14 lg:left-[50px] lg:bottom-0 z-10 flex flex-col items-center justify-center gap-sp-3 bg-bg text-center px-sp-6">
         <Lock size={32} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
         <p className="text-f-lg font-semibold text-fg">{t('private')}</p>
         <p className="text-f-md text-muted max-w-[280px]">{t('privateDesc')}</p>
@@ -125,7 +125,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
   // ── Not found ──────────────────────────────────────────────────
   if (isNotFound || !itinerary) {
     return (
-      <div className="fixed top-[52px] left-0 right-0 bottom-14 lg:left-[52px] lg:bottom-0 z-10 flex flex-col items-center justify-center gap-sp-3 bg-bg text-center px-sp-6">
+      <div className="fixed top-[50px] left-0 right-0 bottom-14 lg:left-[50px] lg:bottom-0 z-10 flex flex-col items-center justify-center gap-sp-3 bg-bg text-center px-sp-6">
         <Route size={32} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
         <p className="text-f-lg font-semibold text-fg">{t('notFound')}</p>
       </div>
@@ -147,7 +147,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
 
   // ── Success ────────────────────────────────────────────────────
   return (
-    <div className="fixed top-[52px] left-0 right-0 bottom-14 lg:left-[52px] lg:bottom-0 z-10">
+    <div className="fixed top-[50px] left-0 right-0 bottom-14 lg:left-[50px] lg:bottom-0 z-10">
 
       {/* Desktop LeftPanel (LP_16B) */}
       <aside
