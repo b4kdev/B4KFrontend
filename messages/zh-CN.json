@@ -102,6 +102,128 @@
         "desc": "Curators are gathering this season's must-see locations.",
         "cta": "Open the map"
       }
+    },
+    "continuePlan": {
+      "ariaLabel": "Continue your draft plan",
+      "cta": "Continue",
+      "dismiss": "Dismiss",
+      "stopCount": "{n} stops",
+      "timeAgo": {
+        "minutes": "{n}m ago",
+        "hours": "{n}h ago",
+        "days": "{n}d ago"
+      }
+    },
+    "youMightLike": {
+      "title": "You Might Like",
+      "viewAll": "View all"
+    },
+    "newOnB4K": {
+      "title": "New on B4K",
+      "viewAll": "View all",
+      "newBadge": "New",
+      "error": "Failed to load",
+      "retry": "Retry"
+    },
+    "leaderboardBadge": {
+      "ariaLabel": "Leaderboard and badge showcase",
+      "leaderboard": {
+        "title": "This Week's Top",
+        "viewAll": "View all"
+      },
+      "badge": {
+        "title": "Latest Badge",
+        "viewAll": "View all",
+        "earnedBy": "Earned by {name}"
+      }
+    },
+    "poiCard": {
+      "ariaLabel": "{name}, {region}"
+    },
+    "exploreHub": {
+      "ariaLabel": "Explore by category",
+      "title": "Explore K-Culture",
+      "kPop": {
+        "label": "K-Pop",
+        "sub": "Concerts, studios & fan spots"
+      },
+      "kDrama": {
+        "label": "K-Drama",
+        "sub": "Filming locations & scenes"
+      },
+      "kBeauty": {
+        "label": "K-Beauty",
+        "sub": "Shops, clinics & trends"
+      },
+      "kCulture": {
+        "label": "K-Culture",
+        "sub": "Heritage, art & tradition"
+      }
+    },
+    "trending": {
+      "title": "Trending Spots",
+      "viewAll": "View all",
+      "error": "Failed to load",
+      "retry": "Retry"
+    },
+    "planTrip": {
+      "ariaLabel": "Plan your trip",
+      "title": "Plan Your Trip",
+      "subtitle": "Start planning your Korea journey",
+      "manual": {
+        "label": "Manual Plan",
+        "sub": "Add stops one by one"
+      },
+      "auto": {
+        "label": "From Saved",
+        "sub": "Auto-generate from saved places"
+      },
+      "ai": {
+        "label": "AI Chat Plan",
+        "sub": "Let AI plan for you"
+      }
+    },
+    "challenge": {
+      "ariaLabel": "Weekly challenge",
+      "label": "Weekly Challenge",
+      "badgeReward": "Badge reward",
+      "cta": "Start challenge"
+    },
+    "popularPlans": {
+      "title": "Popular Plans",
+      "viewAll": "View all",
+      "error": "Failed to load",
+      "retry": "Retry",
+      "sponsored": "Sponsored",
+      "card": {
+        "ariaLabel": "{title} by {author}",
+        "stops": "{n} stops"
+      }
+    },
+    "promotions": {
+      "title": "Promotions"
+    },
+    "editorial": {
+      "title": "Editor's Picks",
+      "viewAll": "View all",
+      "error": "Failed to load",
+      "retry": "Retry",
+      "catAll": "All",
+      "catKPop": "K-Pop",
+      "catKDrama": "K-Drama",
+      "catKBeauty": "K-Beauty",
+      "catKCulture": "K-Culture"
+    },
+    "events": {
+      "title": "Upcoming Events"
+    },
+    "partnerPackages": {
+      "title": "Partner Packages",
+      "sponsored": "Sponsored",
+      "viewCta": "View",
+      "card": {
+        "ariaLabel": "{title} by {partner}"
+      }
     }
   },
   "common": {

@@ -102,6 +102,128 @@
         "desc": "큐레이터들이 이번 시즌 꼭 가봐야 할 곳을 모으고 있어요.",
         "cta": "지도 열기"
       }
+    },
+    "poiCard": {
+      "ariaLabel": "{name}, {region}"
+    },
+    "trending": {
+      "title": "트렌딩 스팟",
+      "viewAll": "전체 보기",
+      "error": "불러오기 실패",
+      "retry": "다시 시도"
+    },
+    "exploreHub": {
+      "ariaLabel": "카테고리별 탐색",
+      "title": "K-컬처 탐색",
+      "kPop": {
+        "label": "K-Pop",
+        "sub": "콘서트, 스튜디오 & 팬 스팟"
+      },
+      "kDrama": {
+        "label": "K-Drama",
+        "sub": "촬영지 & 드라마 장소"
+      },
+      "kBeauty": {
+        "label": "K-Beauty",
+        "sub": "매장, 클리닉 & 트렌드"
+      },
+      "kCulture": {
+        "label": "K-Culture",
+        "sub": "유산, 예술 & 전통"
+      }
+    },
+    "editorial": {
+      "title": "에디터 픽",
+      "viewAll": "전체 보기",
+      "error": "불러오기 실패",
+      "retry": "다시 시도",
+      "catAll": "전체",
+      "catKPop": "K-Pop",
+      "catKDrama": "K-Drama",
+      "catKBeauty": "K-Beauty",
+      "catKCulture": "K-Culture"
+    },
+    "newOnB4K": {
+      "title": "B4K 신규",
+      "viewAll": "전체 보기",
+      "newBadge": "New",
+      "error": "불러오기 실패",
+      "retry": "다시 시도"
+    },
+    "youMightLike": {
+      "title": "이런 곳은 어때요",
+      "viewAll": "전체 보기"
+    },
+    "planTrip": {
+      "ariaLabel": "여행 계획하기",
+      "title": "여행 계획하기",
+      "subtitle": "나만의 한국 여행을 시작하세요",
+      "manual": {
+        "label": "직접 계획",
+        "sub": "직접 장소를 추가하세요"
+      },
+      "auto": {
+        "label": "저장 장소로 생성",
+        "sub": "저장한 장소로 자동 생성"
+      },
+      "ai": {
+        "label": "AI 채팅 계획",
+        "sub": "AI가 대신 계획해 드려요"
+      }
+    },
+    "continuePlan": {
+      "ariaLabel": "이전 계획 이어서",
+      "cta": "이어서 계획",
+      "dismiss": "닫기",
+      "stopCount": "{n}개 장소",
+      "timeAgo": {
+        "minutes": "{n}분 전",
+        "hours": "{n}시간 전",
+        "days": "{n}일 전"
+      }
+    },
+    "challenge": {
+      "ariaLabel": "주간 챌린지",
+      "label": "주간 챌린지",
+      "badgeReward": "배지 보상",
+      "cta": "챌린지 시작"
+    },
+    "leaderboardBadge": {
+      "ariaLabel": "리더보드 및 배지 쇼케이스",
+      "leaderboard": {
+        "title": "이번 주 TOP",
+        "viewAll": "전체 보기"
+      },
+      "badge": {
+        "title": "최신 배지",
+        "viewAll": "전체 보기",
+        "earnedBy": "{name} 획득"
+      }
+    },
+    "popularPlans": {
+      "title": "인기 플랜",
+      "viewAll": "전체 보기",
+      "error": "불러오기 실패",
+      "retry": "다시 시도",
+      "sponsored": "스폰서",
+      "card": {
+        "ariaLabel": "{author}의 {title}",
+        "stops": "{n}개 장소"
+      }
+    },
+    "partnerPackages": {
+      "title": "파트너 패키지",
+      "sponsored": "스폰서",
+      "viewCta": "보기",
+      "card": {
+        "ariaLabel": "{partner}의 {title}"
+      }
+    },
+    "events": {
+      "title": "다가오는 이벤트"
+    },
+    "promotions": {
+      "title": "프로모션"
     }
   },
   "common": {

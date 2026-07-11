@@ -38,8 +38,8 @@ export default function MainCarousel() {
 
   return (
     <div
-      className="relative rounded-none overflow-hidden mb-11"
-      style={{ aspectRatio: '2.6/1', background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+      className="relative overflow-hidden h-[240px] lg:h-[560px]"
+      style={{ background: 'var(--bg-2)' }}
       aria-roledescription="carousel"
       aria-label={tCarousel('ariaLabel')}
     >
