@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// POST /api/saved/poi   body: { place_id: string }  → social.poi_saves INSERT
-// DELETE /api/saved/poi body: { place_id: string }  → social.poi_saves DELETE
+// POST /api/saved/poi — save a POI (social.poi_saves)
+// DELETE /api/saved/poi — unsave a POI
+// Stub: returns success. Production: upsert/delete social.poi_saves.
 
-export async function POST(_req: NextRequest) {
-  // TODO: getServerSession → session.user.id; INSERT INTO social.poi_saves (user_id, place_id)
-  return NextResponse.json({ ok: true })
+export async function POST(req: NextRequest) {
+  const body = await req.json().catch(() => ({}))
+  const { place_id } = body
+  if (!place_id) return NextResponse.json({ error: 'missing_place_id' }, { status: 400 })
+  return NextResponse.json({ success: true, place_id, saved: true })
 }
 
-export async function DELETE(_req: NextRequest) {
-  // TODO: getServerSession → session.user.id; DELETE FROM social.poi_saves WHERE user_id AND place_id
-  return NextResponse.json({ ok: true })
+export async function DELETE(req: NextRequest) {
+  const body = await req.json().catch(() => ({}))
+  const { place_id } = body
+  if (!place_id) return NextResponse.json({ error: 'missing_place_id' }, { status: 400 })
+  return NextResponse.json({ success: true, place_id, saved: false })
 }

@@ -1,7 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
+import { useSearchParams } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { useRouter } from '@/i18n/navigation'
 import { Link } from '@/i18n/navigation'
 import {
@@ -10,6 +12,7 @@ import {
   Edit2, Share2, Trash2, FileText,
 } from 'lucide-react'
 import { useSaved } from '@/hooks/useSaved'
+import { useAuthGate } from '@/contexts/AuthGateContext'
 import { getDisplayName } from '@/lib/display-name'
 import FolderCard from '@/components/saved/FolderCard'
 import type { SavedFolder, SavedPoi } from '@/app/api/saved/route'
@@ -36,6 +39,9 @@ function savedPoiToCoords(poi: SavedPoi) {
 export default function SavedPage() {
   const t      = useTranslations('saved')
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const { status } = useSession()
+  const { open: openAuthGate } = useAuthGate()
 
   const [tab,              setTab]              = useState<Tab>('places')
   const [placesView,       setPlacesView]       = useState<PlacesView>('folders')
@@ -47,6 +53,22 @@ export default function SavedPage() {
   const [deletePlanId,     setDeletePlanId]     = useState<string | null>(null)
 
   const { data, isLoading, isError, mutate } = useSaved()
+
+  // GAP H8 — proactive auth gate when unauthenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      openAuthGate('saved_tab')
+    }
+  }, [status, openAuthGate])
+
+  // GAP H17 — ?select=1 URL param → auto-enter select mode on first folder
+  useEffect(() => {
+    if (searchParams.get('select') !== '1') return
+    if (!data?.folders || data.folders.length === 0) return
+    if (placesView !== 'folders') return
+    enterSelectMode(data.folders[0])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, data?.folders])
 
   const tabClass = (active: boolean) => [
     'px-sp-4 py-sp-3 text-f-md font-semibold tracking-[0.02em] transition-colors min-h-[44px] flex items-center -mb-px',

@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// DELETE /api/plans/:id  → ai.plans soft-delete (sets deleted_at = now())
-
+// DELETE /api/plans/:id — soft delete (sets deleted_at)
+// Stub: returns success. Production: verify ownership, set deleted_at.
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: { id: string } }
 ) {
-  // TODO: getServerSession → verify session.user.id === plans.author_id
-  //       UPDATE ai.plans SET deleted_at = now() WHERE id = params.id AND author_id = user_id
-  void params.id
-  return NextResponse.json({ ok: true })
+  const { id } = params
+  if (!id) return NextResponse.json({ error: 'missing_id' }, { status: 400 })
+  return NextResponse.json({ success: true, id })
 }

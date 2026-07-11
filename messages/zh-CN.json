@@ -704,7 +704,8 @@
     },
     "transport": {
       "car": "By car",
-      "public": "Public transport"
+      "public": "Public transport",
+      "walk": "On foot"
     },
     "actions": {
       "like": "Like",
@@ -722,7 +723,14 @@
       "likedToast": "Added to liked",
       "unlikedToast": "Removed from liked",
       "savedToast": "Saved!",
-      "unsavedToast": "Removed from saved"
+      "unsavedToast": "Removed from saved",
+      "deleteTitle": "Delete itinerary?",
+      "deleteConfirmText": "This will permanently delete the itinerary. This cannot be undone.",
+      "deleteCancel": "Cancel",
+      "deleteConfirm": "Delete",
+      "deleteAria": "Confirm delete itinerary",
+      "deleting": "Deleting…",
+      "deleteErrorToast": "Failed to delete. Please try again."
     },
     "tabs": {
       "all": "All",
@@ -770,7 +778,8 @@
       "ariaLabel": "Profile sections",
       "trips": "My Trips",
       "badges": "Badges",
-      "settings": "Settings"
+      "settings": "Settings",
+      "saved": "Saved"
     },
     "trips": {
       "loading": "Loading trips…",
@@ -866,8 +875,26 @@
         "zh-TW": "繁體中文",
         "th": "ภาษาไทย",
         "pt-BR": "Português (BR)"
-      }
-    }
+      },
+      "signOut": "Sign out",
+      "changePassword": "Change password",
+      "deleteAccount": "Delete account",
+      "deleteWarning": "Your account will be permanently deleted after 30 days. This cannot be undone.",
+      "deleteConfirm": "Yes, delete my account",
+      "deleteCancel": "Cancel"
+    },
+    "saved": {
+      "loading": "Loading saved places…",
+      "empty": "No saved places yet",
+      "error": "Failed to load saved places",
+      "retry": "Try again"
+    },
+    "notFound": "Profile not found",
+    "anonymousUser": "User",
+    "avatarAlt": "{name}'s profile photo",
+    "tabsLabel": "Profile sections",
+    "privateTab": "This tab is private",
+    "untitledPlan": "Untitled plan"
   },
   "explore": {
     "title": "Explore",
@@ -886,7 +913,11 @@
     },
     "card": {
       "trending": "Trending",
-      "ariaLabel": "View {name} on map"
+      "ariaLabel": "View {name} on map",
+      "saveAria": "Save {name}",
+      "unsaveAria": "Unsave {name}",
+      "likeAria": "Like {name}",
+      "unlikeAria": "Unlike {name}"
     },
     "hub": {
       "title": "Explore Korea",
@@ -948,6 +979,10 @@
       "markets": "Traditional Markets",
       "historic": "Historic Places",
       "experiences": "Traditional Experiences"
+    },
+    "aiCta": {
+      "text": "Let AI plan your K-culture journey",
+      "button": "Try AI Planning"
     }
   },
   "saved": {
