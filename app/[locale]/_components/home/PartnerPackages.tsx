@@ -40,7 +40,7 @@ export default function PartnerPackages() {
       )}
       {!isLoading && data && (
         <HScrollRow>
-          {data.map(pkg => (
+          {data.filter(pkg => /^https?:\/\//.test(pkg.partner_url)).map(pkg => (
             <a
               key={pkg.id}
               href={pkg.partner_url}

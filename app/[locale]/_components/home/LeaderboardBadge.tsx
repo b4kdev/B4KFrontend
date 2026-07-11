@@ -9,9 +9,9 @@ import type { HomeLeaderboardEntry } from '@/app/api/home/leaderboard/route'
 import type { HomeBadgeShowcase } from '@/app/api/home/badge-showcase/route'
 
 function RankIcon({ rank }: { rank: number }) {
-  if (rank === 1) return <span className="text-[16px]" aria-hidden="true">🥇</span>
-  if (rank === 2) return <span className="text-[16px]" aria-hidden="true">🥈</span>
-  return <span className="text-[16px]" aria-hidden="true">🥉</span>
+  if (rank === 1) return <span className="text-f-xl" aria-hidden="true">🥇</span>
+  if (rank === 2) return <span className="text-f-xl" aria-hidden="true">🥈</span>
+  return <span className="text-f-xl" aria-hidden="true">🥉</span>
 }
 
 const RARITY_LABEL: Record<string, string> = { common: '', rare: 'Rare', epic: 'Epic', legendary: 'Legendary' }
