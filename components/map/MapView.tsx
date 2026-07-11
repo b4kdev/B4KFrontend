@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { useSession } from 'next-auth/react'
@@ -11,11 +11,23 @@ import AIOverlay from './AIOverlay'
 import POIBottomSheet from './POIBottomSheet'
 import PlanPill from './PlanPill'
 import PlanBottomSheet from './PlanBottomSheet'
+import DraftConflictModal from '@/components/auth/DraftConflictModal'
 import { useMapPois } from '@/hooks/useMapPois'
+import { useSaved } from '@/hooks/useSaved'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useToast } from '@/contexts/ToastContext'
 import { getDraftPlan, saveDraftPlan, clearDraftPlan } from '@/lib/draft-plan'
 import type { MapPoi } from '@/hooks/useMapPois'
+import type { DraftMeta } from '@/components/auth/DraftConflictModal'
+import type { ItineraryDetail } from '@/app/api/itinerary/[id]/route'
+
+type PendingPlan = {
+  deviceDraft:  DraftMeta
+  accountDraft: DraftMeta
+  ids:          string[]
+  durations:    Record<string, number>
+  pois:         MapPoi[]
+}
 
 const MAX_STOPS = 40
 const DEFAULT_DURATION = 60
@@ -36,11 +48,17 @@ export default function MapView() {
   const [savedPoiIds, setSavedPoiIds]     = useState<Set<string>>(new Set())
   const [stopDurations, setStopDurations] = useState<Record<string, number>>({})
   const [planSheetOpen, setPlanSheetOpen] = useState(false)
+  const [loadedPlanPois, setLoadedPlanPois] = useState<MapPoi[]>([])
+  const [draftConflict, setDraftConflict]   = useState<PendingPlan | null>(null)
+  const savedSeededRef = useRef(false)
 
   const { pois } = useMapPois(activeRegion, activeFilters)
+  const { data: savedData } = useSaved()
 
-  // Restore draft plan from sessionStorage on mount (e.g. returning from Plan Preview)
+  // Restore draft plan on mount — skip if a specific plan is being loaded via ?plan param
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('plan')) return
     const draft = getDraftPlan()
     if (!draft || draft.stops.length === 0) return
     const ids = draft.stops.map(s => s.place_id)
@@ -49,9 +67,65 @@ export default function MapView() {
     clearDraftPlan()
   }, [])
 
-  // Ordered stop POIs for LeftPanel and polyline
+  // Seed savedPoiIds from API on first load — one-time only so local toggles aren't overwritten
+  useEffect(() => {
+    if (savedSeededRef.current || !savedData?.pois) return
+    savedSeededRef.current = true
+    setSavedPoiIds(new Set(savedData.pois.map(p => p.place_id)))
+  }, [savedData])
+
+  // URL param handling — ?plan=:id loads plan into edit mode; ?ai=1 opens AI overlay
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+
+    if (params.get('ai') === '1') setAiOverlayOpen(true)
+
+    const planId = params.get('plan')
+    if (!planId || planId === 'new') return
+
+    fetch(`/api/itinerary/${planId}`)
+      .then(r => r.ok ? r.json() as Promise<ItineraryDetail> : Promise.reject())
+      .then(itinerary => {
+        const sorted = [...itinerary.stops].sort((a, b) => a.stop_order - b.stop_order)
+        const ids:  string[]               = sorted.map(s => s.poi.place_id)
+        const durs: Record<string, number> = {}
+        const lpois: MapPoi[]              = []
+
+        sorted.forEach(s => {
+          durs[s.poi.place_id] = s.duration_min
+          lpois.push({
+            place_id:      s.poi.place_id,
+            name_ko:       s.poi.name_ko,
+            name_en:       s.poi.name_en,
+            coords_lat:    s.poi.coords_lat,
+            coords_lng:    s.poi.coords_lng,
+            display_domain: s.poi.display_domain,
+            display_region: '',
+            is_trending:   false,
+            is_partner:    false,
+            quality_score: 0,
+          })
+        })
+
+        const localDraft = getDraftPlan()
+        if (localDraft && localDraft.stops.length > 0) {
+          setDraftConflict({
+            deviceDraft:  { stopCount: localDraft.stops.length, lastModified: new Date().toISOString() },
+            accountDraft: { stopCount: ids.length,              lastModified: new Date().toISOString() },
+            ids, durations: durs, pois: lpois,
+          })
+        } else {
+          setPlanStopIds(ids)
+          setStopDurations(durs)
+          setLoadedPlanPois(lpois)
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  // Ordered stop POIs for LeftPanel and polyline — fallback to loadedPlanPois for plan-edit mode
   const planStops = planStopIds
-    .map(id => pois.find(p => p.place_id === id))
+    .map(id => pois.find(p => p.place_id === id) ?? loadedPlanPois.find(p => p.place_id === id))
     .filter((p): p is MapPoi => !!p)
 
   const selectedPoi = selectedPoiId
@@ -133,6 +207,19 @@ export default function MapView() {
   function handlePlanPillTap() {
     setSelectedPoiId(null)
     setPlanSheetOpen(true)
+  }
+
+  function handleConflictKeepDevice() {
+    setDraftConflict(null)
+  }
+
+  function handleConflictKeepAccount() {
+    if (!draftConflict) return
+    clearDraftPlan()
+    setPlanStopIds(draftConflict.ids)
+    setStopDurations(draftConflict.durations)
+    setLoadedPlanPois(draftConflict.pois)
+    setDraftConflict(null)
   }
 
   return (
@@ -232,6 +319,17 @@ export default function MapView() {
         onSavePlan={handlePreviewPlan}
         onDismiss={() => setPlanSheetOpen(false)}
       />
+
+      {/* T2 collision modal — local draft vs plan loaded via ?plan=:id */}
+      {draftConflict && (
+        <DraftConflictModal
+          open={true}
+          deviceDraft={draftConflict.deviceDraft}
+          accountDraft={draftConflict.accountDraft}
+          onKeepDevice={handleConflictKeepDevice}
+          onKeepAccount={handleConflictKeepAccount}
+        />
+      )}
     </div>
   )
 }
