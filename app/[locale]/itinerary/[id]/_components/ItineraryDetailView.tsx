@@ -62,14 +62,28 @@ export default function ItineraryDetailView({ id }: { id: string }) {
     const next = !isLiked
     setLikedOverride(next)
     showToast(next ? t('actions.likedToast') : t('actions.unlikedToast'))
-  }, [session, isLiked, openAuthGate, showToast, t])
+    fetch('/api/likes/plan', {
+      method:  next ? 'POST' : 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ plan_id: id }),
+    })
+      .then(() => mutate())
+      .catch(() => {})
+  }, [session, isLiked, openAuthGate, showToast, t, id, mutate])
 
   const handleSave = useCallback(() => {
     if (!session) { openAuthGate('save_plan_other'); return }
     const next = !isSaved
     setSavedOverride(next)
     showToast(next ? t('actions.savedToast') : t('actions.unsavedToast'))
-  }, [session, isSaved, openAuthGate, showToast, t])
+    fetch('/api/saved/plan', {
+      method:  next ? 'POST' : 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ plan_id: id }),
+    })
+      .then(() => mutate())
+      .catch(() => {})
+  }, [session, isSaved, openAuthGate, showToast, t, id, mutate])
 
   const handleShare = useCallback(async () => {
     const url = itinerary?.share_url ?? (typeof window !== 'undefined' ? window.location.href : '')
@@ -101,7 +115,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
         <p className="text-f-lg font-semibold text-fg">{t('error.title')}</p>
         <button
           onClick={() => mutate()}
-          className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-lg text-f-md font-semibold text-lav"
+          className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-none text-f-md font-semibold text-lav"
           style={{ border: '1px solid var(--lav-border)' }}
         >
           <RefreshCw size={14} strokeWidth={2} />

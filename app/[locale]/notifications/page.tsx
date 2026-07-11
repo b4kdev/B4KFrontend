@@ -54,6 +54,30 @@ export default function NotificationsPage() {
   const t = useTranslations('notifications')
   const { data, isLoading, isError, mutate } = useNotifications()
 
+  function handleMarkRead(id: string) {
+    fetch(`/api/notifications/${id}`, { method: 'PATCH' }).catch(() => {})
+    mutate(
+      prev => prev
+        ? {
+            ...prev,
+            notifications: prev.notifications.map(n => n.id === id ? { ...n, is_read: true } : n),
+            unread_count:  Math.max(0, prev.unread_count - 1),
+          }
+        : prev,
+      false,
+    )
+  }
+
+  function handleMarkAllRead() {
+    fetch('/api/notifications', { method: 'PATCH' }).catch(() => {})
+    mutate(
+      prev => prev
+        ? { ...prev, notifications: prev.notifications.map(n => ({ ...n, is_read: true })), unread_count: 0 }
+        : prev,
+      false,
+    )
+  }
+
   return (
     <main
       className="max-w-[720px] mx-auto px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-20"
@@ -70,9 +94,17 @@ export default function NotificationsPage() {
           {t('title')}
         </h1>
         {data && data.unread_count > 0 && (
-          <span className="text-f-sm font-semibold text-lav">
-            {t('unread', { count: data.unread_count })}
-          </span>
+          <div className="flex items-center gap-sp-3">
+            <span className="text-f-sm font-semibold text-lav">
+              {t('unread', { count: data.unread_count })}
+            </span>
+            <button
+              onClick={handleMarkAllRead}
+              className="text-f-sm text-muted hover:text-fg transition-colors min-h-touch px-sp-2"
+            >
+              {t('markAllRead')}
+            </button>
+          </div>
         )}
       </div>
 
@@ -131,6 +163,7 @@ export default function NotificationsPage() {
                     <Link
                       key={n.id}
                       href={n.deep_link_url}
+                      onClick={() => { if (!n.is_read) handleMarkRead(n.id) }}
                       className={[
                         'flex items-start gap-sp-3 p-sp-4 hover:bg-muted-3 transition-colors min-h-touch',
                         !n.is_read ? 'bg-lav-dim' : '',

@@ -927,6 +927,7 @@
     "breadcrumb": "Notifications",
     "title": "Notifications",
     "unread": "{count, plural, one {# unread} other {# unread}}",
+    "markAllRead": "Mark all read",
     "loading": "Loading notifications…",
     "error": {
       "title": "Couldn't load notifications",

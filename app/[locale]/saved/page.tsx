@@ -114,6 +114,13 @@ export default function SavedPage() {
 
   function handleUnsave(planId: string) {
     setUnsavedPlanIds(prev => { const next = new Set(prev); next.add(planId); return next })
+    fetch('/api/saved/plan', {
+      method:  'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ plan_id: planId }),
+    })
+      .then(() => mutate())
+      .catch(() => {})
   }
 
   const allSelected = activeFolder ? selectedPoiIds.size === activeFolder.pois.length : false
@@ -327,9 +334,11 @@ export default function SavedPage() {
                     </button>
                     <button
                       onClick={() => {
-                        // TODO: POST /api/plans/:id/delete (soft-delete)
+                        const id = deletePlanId
                         setDeletePlanId(null)
-                        mutate()
+                        fetch(`/api/plans/${id}`, { method: 'DELETE' })
+                          .then(() => mutate())
+                          .catch(() => {})
                       }}
                       className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-bg"
                       style={{ background: 'var(--danger)' }}

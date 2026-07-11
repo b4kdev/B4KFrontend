@@ -53,7 +53,7 @@ export default function MapView() {
   const savedSeededRef = useRef(false)
 
   const { pois } = useMapPois(activeRegion, activeFilters)
-  const { data: savedData } = useSaved()
+  const { data: savedData, mutate: mutateSaved } = useSaved()
 
   // Restore draft plan on mount — skip if a specific plan is being loaded via ?plan param
   useEffect(() => {
@@ -157,9 +157,10 @@ export default function MapView() {
 
   function handleToggleSave(poi: MapPoi) {
     if (!session) { openAuthGate('save_poi'); return }
+    const removing = savedPoiIds.has(poi.place_id)
     setSavedPoiIds(prev => {
       const next = new Set(prev)
-      if (next.has(poi.place_id)) {
+      if (removing) {
         next.delete(poi.place_id)
         showToast(t('poiDetail.removedSave'), 'info')
       } else {
@@ -168,6 +169,13 @@ export default function MapView() {
       }
       return next
     })
+    fetch('/api/saved/poi', {
+      method:  removing ? 'DELETE' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ place_id: poi.place_id }),
+    })
+      .then(() => mutateSaved())
+      .catch(() => {})
   }
 
   function handleReorder(newOrder: string[]) {

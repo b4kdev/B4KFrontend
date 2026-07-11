@@ -391,58 +391,58 @@
       "title": "Sign in to B4K",
       "valueProp": "Save your plan · Unlock leaderboards · Earn badges",
       "context": {
-        "save_poi":        "Sign in to save places",
-        "like":            "Sign in to like",
-        "save_plan":       "Sign in to save your plan",
+        "save_poi": "Sign in to save places",
+        "like": "Sign in to like",
+        "save_plan": "Sign in to save your plan",
         "save_plan_other": "Sign in to save this plan",
-        "saved_tab":       "Sign in to see your saved",
-        "profile_nav":     "Sign in to view your profile",
-        "fl3_cap":         "Sign in to keep planning"
+        "saved_tab": "Sign in to see your saved",
+        "profile_nav": "Sign in to view your profile",
+        "fl3_cap": "Sign in to keep planning"
       },
-      "google":          "Continue with Google",
-      "apple":           "Continue with Apple",
-      "microsoft":       "Continue with Microsoft",
-      "email":           "Sign in with email",
+      "google": "Continue with Google",
+      "apple": "Continue with Apple",
+      "microsoft": "Continue with Microsoft",
+      "email": "Sign in with email",
       "emailPlaceholder": "Email address",
       "passwordPlaceholder": "Password",
-      "signIn":          "Sign in",
+      "signIn": "Sign in",
       "backToProviders": "← Other sign-in options",
-      "dismiss":         "Continue as guest",
-      "loading":         "Signing in…",
-      "error":           "Sign-in failed. Try again.",
-      "ariaLabel":       "Sign in modal",
-      "close":           "Close sign-in modal",
-      "planPreserved":   "Your current plan is preserved — sign in to save it permanently.",
-      "fl3Preserved":    "Your chat and plan are saved — sign in to keep planning."
+      "dismiss": "Continue as guest",
+      "loading": "Signing in…",
+      "error": "Sign-in failed. Try again.",
+      "ariaLabel": "Sign in modal",
+      "close": "Close sign-in modal",
+      "planPreserved": "Your current plan is preserved — sign in to save it permanently.",
+      "fl3Preserved": "Your chat and plan are saved — sign in to keep planning."
     },
     "conflict": {
-      "ariaLabel":    "Draft conflict — pick one modal",
-      "title":        "You have two drafts — which one would you like to keep?",
-      "deviceDraft":  "On this device",
+      "ariaLabel": "Draft conflict — pick one modal",
+      "title": "You have two drafts — which one would you like to keep?",
+      "deviceDraft": "On this device",
       "accountDraft": "In your account",
-      "stops":        "{count, plural, one {# stop} other {# stops}}",
+      "stops": "{count, plural, one {# stop} other {# stops}}",
       "lastModified": "Last modified {time}",
-      "keep":         "Keep this one",
-      "discardNote":  "The other draft will be permanently deleted."
+      "keep": "Keep this one",
+      "discardNote": "The other draft will be permanently deleted."
     },
     "resetPassword": {
-      "title":             "Set new password",
-      "subtitle":          "Enter your new password below.",
-      "passwordLabel":     "New password",
+      "title": "Set new password",
+      "subtitle": "Enter your new password below.",
+      "passwordLabel": "New password",
       "passwordPlaceholder": "New password",
-      "confirmLabel":      "Confirm password",
+      "confirmLabel": "Confirm password",
       "confirmPlaceholder": "Confirm password",
-      "submit":            "Set password",
-      "loading":           "Saving…",
-      "success":           "Password updated — signing you in",
-      "redirecting":       "Redirecting to home…",
-      "errorMismatch":     "Passwords don't match",
-      "errorWeak":         "Password must be at least 8 characters",
-      "errorExpired":      "This link has expired. Request a new one.",
-      "errorGeneric":      "Something went wrong. Try again.",
-      "showPw":            "Show password",
-      "hidePw":            "Hide password",
-      "backToHome":        "Back to home"
+      "submit": "Set password",
+      "loading": "Saving…",
+      "success": "Password updated — signing you in",
+      "redirecting": "Redirecting to home…",
+      "errorMismatch": "Passwords don't match",
+      "errorWeak": "Password must be at least 8 characters",
+      "errorExpired": "This link has expired. Request a new one.",
+      "errorGeneric": "Something went wrong. Try again.",
+      "showPw": "Show password",
+      "hidePw": "Hide password",
+      "backToHome": "Back to home"
     }
   },
   "map": {
@@ -815,9 +815,9 @@
     "breadcrumb": "Saved",
     "title": "Saved",
     "tabs": {
-      "ariaLabel":  "Content tabs",
-      "places":     "Places",
-      "myPlans":    "My Plans",
+      "ariaLabel": "Content tabs",
+      "places": "Places",
+      "myPlans": "My Plans",
       "savedPlans": "Saved Plans"
     },
     "loading": "Loading saved items…",
@@ -828,18 +828,18 @@
     "empty": {
       "places": {
         "title": "No saved places yet",
-        "desc":  "Tap the bookmark icon on any place to save it here.",
-        "cta":   "Explore the map"
+        "desc": "Tap the bookmark icon on any place to save it here.",
+        "cta": "Explore the map"
       },
       "myPlans": {
         "title": "No plans yet",
-        "desc":  "Create your first plan on the map.",
-        "cta":   "Open the map"
+        "desc": "Create your first plan on the map.",
+        "cta": "Open the map"
       },
       "savedPlans": {
         "title": "No saved plans yet",
-        "desc":  "Save plans you love to revisit them anytime.",
-        "cta":   "Explore the map"
+        "desc": "Save plans you love to revisit them anytime.",
+        "cta": "Explore the map"
       }
     },
     "place": {
@@ -847,28 +847,28 @@
     },
     "plan": {
       "ariaLabel": "View itinerary {title}",
-      "stops":     "{count, plural, one {# stop} other {# stops}}",
-      "days":      "{count, plural, one {# day} other {# days}}"
+      "stops": "{count, plural, one {# stop} other {# stops}}",
+      "days": "{count, plural, one {# day} other {# days}}"
     },
     "myPlan": {
-      "ariaLabel":       "View plan {title}",
-      "draft":           "Draft",
-      "edit":            "Edit",
-      "share":           "Share",
-      "delete":          "Delete",
-      "editAriaLabel":   "Edit plan {title}",
-      "shareAriaLabel":  "Share plan {title}",
+      "ariaLabel": "View plan {title}",
+      "draft": "Draft",
+      "edit": "Edit",
+      "share": "Share",
+      "delete": "Delete",
+      "editAriaLabel": "Edit plan {title}",
+      "shareAriaLabel": "Share plan {title}",
       "deleteAriaLabel": "Delete plan {title}"
     },
     "unsave": {
-      "label":    "Unsave",
-      "ariaLabel":"Unsave plan {title}"
+      "label": "Unsave",
+      "ariaLabel": "Unsave plan {title}"
     },
     "confirmDelete": {
-      "title":   "Delete plan?",
-      "desc":    "This plan will be permanently removed.",
+      "title": "Delete plan?",
+      "desc": "This plan will be permanently removed.",
       "confirm": "Delete",
-      "cancel":  "Cancel"
+      "cancel": "Cancel"
     },
     "folder": {
       "openAriaLabel": "Open folder {name}",
@@ -902,7 +902,8 @@
       "today": "Today",
       "yesterday": "Yesterday",
       "earlier": "Earlier"
-    }
+    },
+    "markAllRead": "Mark all read"
   },
   "badges": {
     "ariaLabel": "Badges page",
