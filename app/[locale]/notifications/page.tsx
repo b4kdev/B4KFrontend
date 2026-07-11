@@ -3,15 +3,14 @@
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import {
-  Bell, Gift, AlertCircle, Star, Award,
+  Bell, AlertCircle, Star, Award,
   CalendarDays, RefreshCw, AlertTriangle, Check,
 } from 'lucide-react'
 import { useNotifications } from '@/hooks/useNotifications'
 import type { Notification, NotificationType } from '@/app/api/notifications/route'
 
-const TYPE_ICON: Record<NotificationType, React.ElementType> = {
+const TYPE_ICON: Partial<Record<NotificationType, React.ElementType>> = {
   event_drop:     CalendarDays,
-  new_package:    Gift,
   deal_expiring:  AlertCircle,
   editorial_pick: Star,
   badge_earned:   Award,
@@ -43,9 +42,9 @@ function RowSkeleton() {
     <div className="flex items-start gap-sp-3 p-sp-4 animate-pulse" style={{ borderBottom: 'var(--bdr)' }}>
       <div className="w-9 h-9 rounded-full bg-muted-3 shrink-0 mt-[2px]" />
       <div className="flex-1 space-y-sp-2">
-        <div className="h-4 w-2/3 rounded bg-muted-3" />
-        <div className="h-3 w-full rounded bg-muted-3" />
-        <div className="h-3 w-1/4 rounded bg-muted-3" />
+        <div className="h-4 w-2/3 rounded-none bg-muted-3" />
+        <div className="h-3 w-full rounded-none bg-muted-3" />
+        <div className="h-3 w-1/4 rounded-none bg-muted-3" />
       </div>
     </div>
   )
@@ -81,7 +80,7 @@ export default function NotificationsPage() {
         <div
           aria-busy="true"
           aria-label={t('loading')}
-          className="rounded-lg overflow-hidden"
+          className="rounded-none overflow-hidden"
           style={{ border: '1px solid var(--bdr)' }}
         >
           {Array.from({ length: 4 }, (_, i) => <RowSkeleton key={i} />)}
@@ -90,7 +89,7 @@ export default function NotificationsPage() {
 
       {isError && !isLoading && (
         <div
-          className="flex flex-col items-center justify-center text-center py-16 rounded-lg"
+          className="flex flex-col items-center justify-center text-center py-16 rounded-none"
           style={{ background: 'var(--bg-2)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
           role="alert"
         >
@@ -108,7 +107,7 @@ export default function NotificationsPage() {
       {!isLoading && !isError && data && (
         data.notifications.length === 0 ? (
           <div
-            className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-lg"
+            className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-none"
             style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
           >
             <Bell size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
@@ -116,7 +115,7 @@ export default function NotificationsPage() {
             <p className="text-f-md text-muted max-w-[300px]">{t('empty.desc')}</p>
           </div>
         ) : (
-          <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--bdr)' }}>
+          <div className="rounded-none overflow-hidden" style={{ border: '1px solid var(--bdr)' }}>
             {groupByDate(data.notifications).map(group => (
               <div key={group.key}>
                 <p

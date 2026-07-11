@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const SLIDES = [
-  { key: 'kCulture' as const },
-  { key: 'boseong' as const },
-  { key: 'seoul' as const },
+  { key: 'kCulture' as const, href: '/explore/k-culture' },
+  { key: 'boseong'  as const, href: '/map' },
+  { key: 'seoul'    as const, href: '/map' },
 ];
 
 export default function MainCarousel() {
@@ -37,7 +38,7 @@ export default function MainCarousel() {
 
   return (
     <div
-      className="relative rounded-[10px] overflow-hidden mb-11"
+      className="relative rounded-none overflow-hidden mb-11"
       style={{ aspectRatio: '2.6/1', background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       aria-roledescription="carousel"
       aria-label={tCarousel('ariaLabel')}
@@ -63,7 +64,7 @@ export default function MainCarousel() {
 
       {/* Content */}
       <div className="absolute inset-0 flex flex-col justify-end p-9 md:p-11">
-        <span className="inline-flex items-center bg-fg text-bg text-f-xxs font-extrabold tracking-[0.12em] uppercase px-2.5 py-1 rounded-[2px] mb-3.5 w-fit">
+        <span className="inline-flex items-center bg-fg text-bg text-f-xxs font-extrabold tracking-[0.12em] uppercase px-2.5 py-1 rounded-none mb-3.5 w-fit">
           {t(`${slide.key}.badge`)}
         </span>
         <h1 className="text-fg font-display font-black text-[clamp(26px,3.5vw,48px)] leading-[1.05] tracking-[-0.02em] mb-3 whitespace-pre-line max-w-[520px]">
@@ -72,12 +73,12 @@ export default function MainCarousel() {
         <p className="hidden md:block text-f-md text-muted leading-relaxed mb-6 max-w-[400px]">
           {t(`${slide.key}.desc`)}
         </p>
-        <button
-          className="inline-flex items-center h-10 px-[22px] bg-fg text-bg text-f-sm font-semibold tracking-[0.02em] rounded font-body w-fit cursor-pointer border-none"
-          onClick={() => {}}
+        <Link
+          href={slide.href}
+          className="inline-flex items-center h-10 px-[22px] bg-fg text-bg text-f-sm font-semibold tracking-[0.02em] rounded-none font-body w-fit"
         >
           {t(`${slide.key}.cta`)}
-        </button>
+        </Link>
       </div>
 
       {/* Dot indicators */}
@@ -88,7 +89,7 @@ export default function MainCarousel() {
             onClick={() => setIdx(i)}
             aria-label={tCarousel('slideN', { n: i + 1 })}
             aria-current={i === idx ? 'true' : undefined}
-            className="h-[3px] rounded-[2px] border-none cursor-pointer p-0 transition-all duration-300"
+            className="h-[3px] rounded-full border-none cursor-pointer p-0 transition-all duration-300"
             style={{
               width: i === idx ? 28 : 16,
               background: i === idx ? 'var(--fg)' : 'var(--muted-2)',

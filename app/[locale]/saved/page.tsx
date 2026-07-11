@@ -20,7 +20,7 @@ type PlacesView = 'folders' | 'folder-detail' | 'folder-select'
 function RowSkeleton() {
   return (
     <div className="flex items-center gap-sp-3 p-sp-4 animate-pulse" style={{ borderBottom: '1px solid var(--bdr)' }}>
-      <div className="w-14 h-14 rounded-lg bg-muted-3 shrink-0" />
+      <div className="w-14 h-14 rounded-none bg-muted-3 shrink-0" />
       <div className="flex-1 space-y-sp-2">
         <div className="h-4 w-2/3 rounded bg-muted-3" />
         <div className="h-3 w-1/3 rounded bg-muted-3" />
@@ -167,7 +167,7 @@ export default function SavedPage() {
 
       {/* ── Loading ── */}
       {isLoading && (
-        <div aria-busy="true" aria-label={t('loading')} className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--bdr)' }}>
+        <div aria-busy="true" aria-label={t('loading')} className="rounded-none overflow-hidden" style={{ border: '1px solid var(--bdr)' }}>
           {Array.from({ length: 3 }, (_, i) => <RowSkeleton key={i} />)}
         </div>
       )}
@@ -175,7 +175,7 @@ export default function SavedPage() {
       {/* ── Error ── */}
       {isError && !isLoading && (
         <div
-          className="flex flex-col items-center justify-center text-center py-16 rounded-lg"
+          className="flex flex-col items-center justify-center text-center py-16 rounded-none"
           style={{ background: 'var(--bg-2)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
           role="alert"
         >
@@ -196,13 +196,13 @@ export default function SavedPage() {
         placesView === 'folders' ? (
           data.folders.length === 0 ? (
             <div
-              className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-lg"
+              className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-none"
               style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
             >
               <FolderOpen size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
               <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.places.title')}</p>
               <p className="text-f-md text-muted max-w-[320px] mb-sp-5">{t('empty.places.desc')}</p>
-              <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-lg text-f-md font-semibold text-bg min-h-touch" style={{ background: 'var(--lav)' }}>
+              <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-none text-f-md font-semibold text-bg min-h-touch" style={{ background: 'var(--lav)' }}>
                 <Map size={15} strokeWidth={2} />{t('empty.places.cta')}
               </Link>
             </div>
@@ -221,19 +221,19 @@ export default function SavedPage() {
 
         ) : placesView === 'folder-detail' && activeFolder ? (
           <div>
-            <button onClick={backToFolders} className="flex items-center gap-sp-2 text-muted hover:text-fg transition-colors text-sm mb-sp-4 min-h-touch">
+            <button onClick={backToFolders} className="flex items-center gap-sp-2 text-muted hover:text-fg transition-colors text-f-base mb-sp-4 min-h-touch">
               <ArrowLeft size={14} strokeWidth={2} />{t('folder.back')}
             </button>
             <div className="flex items-center justify-between mb-sp-4">
-              <h2 className="font-display font-bold text-fg text-lg">{activeFolder.name}</h2>
-              <span className="text-xs text-muted">{t('folder.poiCount', { count: activeFolder.pois.length })}</span>
+              <h2 className="font-display font-bold text-fg text-f-lg">{activeFolder.name}</h2>
+              <span className="text-f-sm text-muted">{t('folder.poiCount', { count: activeFolder.pois.length })}</span>
             </div>
-            <div className="rounded-xl overflow-hidden mb-sp-4" style={{ border: '1px solid var(--bdr)' }}>
+            <div className="rounded-none overflow-hidden mb-sp-4" style={{ border: '1px solid var(--bdr)' }}>
               {activeFolder.pois.map((poi, idx) => {
                 const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
                 return (
                   <div key={poi.place_id} className="flex items-center gap-sp-3 p-sp-4" style={idx < activeFolder.pois.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
+                    <div className="w-10 h-10 rounded-none flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
                       <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -244,23 +244,23 @@ export default function SavedPage() {
                 )
               })}
             </div>
-            <button onClick={() => enterSelectMode(activeFolder)} className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-xl font-semibold text-sm hover:opacity-90 active:opacity-75 transition-opacity">
+            <button onClick={() => enterSelectMode(activeFolder)} className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-none font-semibold text-f-base hover:opacity-90 active:opacity-75 transition-opacity">
               <Sparkles size={16} strokeWidth={2} aria-hidden="true" />{t('folder.generatePlan')}
             </button>
           </div>
 
         ) : placesView === 'folder-select' && activeFolder ? (
           <div>
-            <button onClick={() => setPlacesView('folder-detail')} className="flex items-center gap-sp-2 text-muted hover:text-fg transition-colors text-sm mb-sp-4 min-h-touch">
+            <button onClick={() => setPlacesView('folder-detail')} className="flex items-center gap-sp-2 text-muted hover:text-fg transition-colors text-f-base mb-sp-4 min-h-touch">
               <ArrowLeft size={14} strokeWidth={2} />{activeFolder.name}
             </button>
             <div className="flex items-center justify-between mb-sp-3">
               <p className="text-f-xs font-semibold uppercase tracking-widest text-muted">{t('folder.selectHint')}</p>
-              <button onClick={toggleAll} className="text-xs font-semibold text-lav hover:text-fg transition-colors min-h-touch px-sp-2">
+              <button onClick={toggleAll} className="text-f-sm font-semibold text-lav hover:text-fg transition-colors min-h-touch px-sp-2">
                 {allSelected ? t('folder.deselectAll') : t('folder.selectAll')}
               </button>
             </div>
-            <div className="rounded-xl overflow-hidden mb-sp-4" style={{ border: '1px solid var(--bdr)' }}>
+            <div className="rounded-none overflow-hidden mb-sp-4" style={{ border: '1px solid var(--bdr)' }}>
               {activeFolder.pois.map((poi, idx) => {
                 const name     = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
                 const selected = selectedPoiIds.has(poi.place_id)
@@ -273,10 +273,10 @@ export default function SavedPage() {
                     className="w-full flex items-center gap-sp-3 p-sp-4 text-left hover:bg-bg-3 transition-colors"
                     style={idx < activeFolder.pois.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}
                   >
-                    <div className={['w-5 h-5 rounded flex items-center justify-center shrink-0 transition-colors', selected ? 'bg-lav' : 'bg-muted-3'].join(' ')} style={selected ? undefined : { border: '1px solid var(--bdr)' }} aria-hidden="true">
+                    <div className={['w-5 h-5 rounded-none flex items-center justify-center shrink-0 transition-colors', selected ? 'bg-lav' : 'bg-muted-3'].join(' ')} style={selected ? undefined : { border: '1px solid var(--bdr)' }} aria-hidden="true">
                       {selected && <Check size={12} strokeWidth={2} className="text-bg" />}
                     </div>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
+                    <div className="w-10 h-10 rounded-none flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
                       <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -288,11 +288,11 @@ export default function SavedPage() {
               })}
             </div>
             {generateError && (
-              <div className="flex items-center gap-sp-3 px-sp-4 py-sp-3 rounded-xl text-danger text-sm mb-sp-3" style={{ background: 'color-mix(in srgb, var(--danger) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }} role="alert">
+              <div className="flex items-center gap-sp-3 px-sp-4 py-sp-3 rounded-none text-danger text-f-base mb-sp-3" style={{ background: 'color-mix(in srgb, var(--danger) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }} role="alert">
                 <AlertTriangle size={16} strokeWidth={2} aria-hidden="true" />{t('folder.generateError')}
               </div>
             )}
-            <button onClick={handleGenerate} disabled={generating || selectedPoiIds.size === 0} className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-xl font-semibold text-sm hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40">
+            <button onClick={handleGenerate} disabled={generating || selectedPoiIds.size === 0} className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-none font-semibold text-f-base hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40">
               {generating
                 ? <><Loader2 size={16} strokeWidth={2} className="animate-spin" aria-hidden="true" />{t('folder.generating')}</>
                 : <><Sparkles size={16} strokeWidth={2} aria-hidden="true" />{t('folder.generate', { count: selectedPoiIds.size })}</>
@@ -305,11 +305,11 @@ export default function SavedPage() {
       {/* ── My Plans tab (flow 39) ── */}
       {!isLoading && !isError && data && tab === 'myPlans' && (
         data.myPlans.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-lg" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
+          <div className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-none" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
             <FileText size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
             <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.myPlans.title')}</p>
             <p className="text-f-md text-muted max-w-[320px] mb-sp-5">{t('empty.myPlans.desc')}</p>
-            <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-lg text-f-md font-semibold text-bg min-h-touch" style={{ background: 'var(--lav)' }}>
+            <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-none text-f-md font-semibold text-bg min-h-touch" style={{ background: 'var(--lav)' }}>
               <Map size={15} strokeWidth={2} />{t('empty.myPlans.cta')}
             </Link>
           </div>
@@ -318,11 +318,11 @@ export default function SavedPage() {
             {deletePlanId && (
               <div className="fixed inset-0 z-50 flex items-center justify-center p-sp-4" role="dialog" aria-modal="true" aria-label={t('confirmDelete.title')}>
                 <div className="absolute inset-0 bg-backdrop-50" onClick={() => setDeletePlanId(null)} aria-hidden="true" />
-                <div className="relative bg-bg-2 rounded-2xl p-sp-6 max-w-sm w-full" style={{ border: '1px solid var(--bdr)' }}>
-                  <h3 className="text-fg font-bold text-lg mb-sp-2">{t('confirmDelete.title')}</h3>
-                  <p className="text-muted text-sm mb-sp-5">{t('confirmDelete.desc')}</p>
+                <div className="relative bg-bg-2 rounded-none p-sp-6 max-w-sm w-full" style={{ border: '1px solid var(--bdr)' }}>
+                  <h3 className="text-fg font-bold text-f-lg mb-sp-2">{t('confirmDelete.title')}</h3>
+                  <p className="text-muted text-f-base mb-sp-5">{t('confirmDelete.desc')}</p>
                   <div className="flex gap-sp-3">
-                    <button onClick={() => setDeletePlanId(null)} className="flex-1 min-h-touch rounded-lg text-f-md font-semibold text-muted hover:text-fg transition-colors" style={{ border: '1px solid var(--bdr)' }}>
+                    <button onClick={() => setDeletePlanId(null)} className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-muted hover:text-fg transition-colors" style={{ border: '1px solid var(--bdr)' }}>
                       {t('confirmDelete.cancel')}
                     </button>
                     <button
@@ -331,7 +331,7 @@ export default function SavedPage() {
                         setDeletePlanId(null)
                         mutate()
                       }}
-                      className="flex-1 min-h-touch rounded-lg text-f-md font-semibold text-bg"
+                      className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-bg"
                       style={{ background: 'var(--danger)' }}
                     >
                       {t('confirmDelete.confirm')}
@@ -344,12 +344,12 @@ export default function SavedPage() {
               {data.myPlans.map(plan => (
                 <div
                   key={plan.id}
-                  className="flex items-start gap-sp-4 p-sp-4 rounded-lg"
+                  className="flex items-start gap-sp-4 p-sp-4 rounded-none"
                   style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
                 >
                   <Link
                     href={`/itinerary/${plan.id}`}
-                    className="w-16 h-16 rounded-lg flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity"
+                    className="w-16 h-16 rounded-none flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity"
                     style={{ background: 'var(--bg-3)' }}
                     aria-label={t('myPlan.ariaLabel', { title: plan.title })}
                   >
@@ -377,7 +377,7 @@ export default function SavedPage() {
                       <Link
                         href={`/map?plan=${plan.id}`}
                         aria-label={t('myPlan.editAriaLabel', { title: plan.title })}
-                        className="flex items-center gap-[4px] text-f-xs font-semibold text-lav hover:opacity-70 transition-opacity min-h-[28px] px-sp-2 rounded"
+                        className="flex items-center gap-[4px] text-f-xs font-semibold text-lav hover:opacity-70 transition-opacity min-h-[28px] px-sp-2 rounded-none"
                         style={{ border: '1px solid var(--lav-border)' }}
                       >
                         <Edit2 size={11} strokeWidth={2} aria-hidden="true" />
@@ -414,11 +414,11 @@ export default function SavedPage() {
       {/* ── Saved Plans tab (flow 40) ── */}
       {!isLoading && !isError && data && tab === 'savedPlans' && (
         visibleSavedPlans.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-lg" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
+          <div className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-none" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
             <Bookmark size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
             <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.savedPlans.title')}</p>
             <p className="text-f-md text-muted max-w-[320px] mb-sp-5">{t('empty.savedPlans.desc')}</p>
-            <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-lg text-f-md font-semibold text-bg min-h-touch" style={{ background: 'var(--lav)' }}>
+            <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-none text-f-md font-semibold text-bg min-h-touch" style={{ background: 'var(--lav)' }}>
               <Map size={15} strokeWidth={2} />{t('empty.savedPlans.cta')}
             </Link>
           </div>
@@ -427,12 +427,12 @@ export default function SavedPage() {
             {visibleSavedPlans.map(plan => (
               <div
                 key={plan.id}
-                className="flex items-start gap-sp-4 p-sp-4 rounded-lg"
+                className="flex items-start gap-sp-4 p-sp-4 rounded-none"
                 style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
               >
                 <Link
                   href={`/itinerary/${plan.id}`}
-                  className="w-16 h-16 rounded-lg flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity"
+                  className="w-16 h-16 rounded-none flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity"
                   style={{ background: 'var(--bg-3)' }}
                   aria-label={t('plan.ariaLabel', { title: plan.title })}
                 >

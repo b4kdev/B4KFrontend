@@ -17,7 +17,7 @@ import { useToast } from '@/contexts/ToastContext'
 import { getDraftPlan, saveDraftPlan, clearDraftPlan } from '@/lib/draft-plan'
 import type { MapPoi } from '@/hooks/useMapPois'
 
-const MAX_STOPS = 10
+const MAX_STOPS = 40
 const DEFAULT_DURATION = 60
 
 export default function MapView() {
