@@ -583,7 +583,8 @@
       "ariaLabel": "Profile sections",
       "trips": "My Trips",
       "badges": "Badges",
-      "settings": "Settings"
+      "settings": "Settings",
+      "saved": "Saved"
     },
     "trips": {
       "loading": "Loading trips…",
@@ -679,8 +680,26 @@
         "zh-TW": "繁體中文",
         "th": "ภาษาไทย",
         "pt-BR": "Português (BR)"
-      }
-    }
+      },
+      "signOut": "Sign out",
+      "changePassword": "Change password",
+      "deleteAccount": "Delete account",
+      "deleteWarning": "Your account will be permanently deleted after 30 days. This cannot be undone.",
+      "deleteConfirm": "Yes, delete my account",
+      "deleteCancel": "Cancel"
+    },
+    "saved": {
+      "loading": "Loading saved places…",
+      "empty": "No saved places yet",
+      "error": "Failed to load saved places",
+      "retry": "Try again"
+    },
+    "notFound": "Profile not found",
+    "anonymousUser": "User",
+    "avatarAlt": "{name}'s profile photo",
+    "tabsLabel": "Profile sections",
+    "privateTab": "This tab is private",
+    "untitledPlan": "Untitled plan"
   },
   "explore": {
     "title": "Explore",

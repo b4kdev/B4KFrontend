@@ -2,14 +2,68 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { useRouter, usePathname } from '@/i18n/navigation'
-import { Car, Train, Check } from 'lucide-react'
+import { useRouter, usePathname, Link } from '@/i18n/navigation'
+import { signOut } from 'next-auth/react'
+import { Car, Train, Check, AlertTriangle } from 'lucide-react'
 import { useProfile } from '@/hooks/useProfile'
 
 const LOCALES = ['en', 'ko', 'ja', 'zh-CN', 'zh-TW', 'th', 'pt-BR'] as const
 const INTERESTS = ['kpop', 'kdrama', 'kbeauty', 'kculture'] as const
 
 type Transport = 'car' | 'public'
+
+function DeleteConfirmModal({
+  onConfirm,
+  onCancel,
+  deleting,
+  t,
+}: {
+  onConfirm: () => void
+  onCancel: () => void
+  deleting: boolean
+  t: ReturnType<typeof useTranslations>
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center p-sp-4"
+      style={{ background: 'var(--backdrop-50)' }}
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('settings.deleteAccount')}
+    >
+      <div
+        className="w-full max-w-[360px] rounded-none p-sp-6 flex flex-col gap-sp-4"
+        style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+      >
+        <div className="flex items-start gap-sp-3">
+          <AlertTriangle size={20} strokeWidth={2} className="text-danger shrink-0 mt-0.5" aria-hidden="true" />
+          <div>
+            <p className="text-f-lg font-semibold text-fg">{t('settings.deleteAccount')}</p>
+            <p className="text-f-md text-muted mt-sp-2">{t('settings.deleteWarning')}</p>
+          </div>
+        </div>
+        <div className="flex gap-sp-3 mt-sp-2">
+          <button
+            onClick={onCancel}
+            disabled={deleting}
+            className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-muted hover:text-fg transition-colors"
+            style={{ border: '1px solid var(--bdr)' }}
+          >
+            {t('settings.deleteCancel')}
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={deleting}
+            className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-fg hover:opacity-90 transition-opacity"
+            style={{ background: 'var(--danger)' }}
+          >
+            {deleting ? '…' : t('settings.deleteConfirm')}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function SettingsPage() {
   const t = useTranslations('profile')
@@ -21,6 +75,8 @@ export default function SettingsPage() {
   const [interests, setInterests] = useState<string[]>(profile?.interests ?? [])
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   const handleLangChange = (locale: string) => {
     router.replace(pathname, { locale })
@@ -50,143 +106,202 @@ export default function SettingsPage() {
     setTimeout(() => setSaved(false), 2000)
   }
 
+  const handleDeleteAccount = async () => {
+    setDeleting(true)
+    try {
+      const res = await fetch('/api/profile/delete', { method: 'POST' })
+      if (res.ok) {
+        await signOut({ callbackUrl: '/' })
+      }
+    } finally {
+      setDeleting(false)
+      setDeleteConfirmOpen(false)
+    }
+  }
+
   const sectionHeading = 'text-f-xs font-bold uppercase tracking-[0.1em] text-muted mb-sp-3'
   const row = 'flex items-center justify-between min-h-[52px] py-sp-2'
   const label = 'text-f-base font-medium text-fg'
   const sublabel = 'text-f-sm text-muted mt-0.5'
 
   return (
-    <div className="max-w-[560px] flex flex-col gap-sp-8">
-      {/* Account section — PR_50 */}
-      <section aria-labelledby="account-heading">
-        <h2 id="account-heading" className={sectionHeading}>
-          {t('settings.account.heading')}
-        </h2>
-        <div
-          className="rounded-xl overflow-hidden divide-y"
-          style={{ background: 'var(--bg-2)', border: 'var(--bdr)' }}
-        >
-          <div className={`${row} px-sp-4`}>
-            <div>
-              <p className={label}>{t('settings.account.email')}</p>
-              <p className={sublabel}>{t('settings.account.emailNote')}</p>
-            </div>
-            <span className="text-f-md text-muted font-mono ml-sp-4 truncate max-w-[180px]">
-              {profile?.email ?? '—'}
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* Preferences — PR_51–53 */}
-      <section aria-labelledby="prefs-heading">
-        <h2 id="prefs-heading" className={sectionHeading}>
-          {t('settings.preferences.heading')}
-        </h2>
-        <div
-          className="rounded-xl overflow-hidden divide-y"
-          style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
-        >
-          {/* Language — PR_51 */}
-          <div className={`${row} px-sp-4 flex-wrap gap-sp-3`} aria-labelledby="lang-label">
-            <p id="lang-label" className={label}>{t('settings.preferences.language')}</p>
-            <select
-              className="text-f-md font-medium text-fg rounded-lg px-sp-3 min-h-[36px] appearance-none cursor-pointer"
-              style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
-              defaultValue={profile?.preferred_lang ?? 'en'}
-              onChange={(e) => handleLangChange(e.target.value)}
-              aria-label={t('settings.preferences.language')}
-            >
-              {LOCALES.map((loc) => (
-                <option key={loc} value={loc}>
-                  {t(`settings.languages.${loc}`)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Transport — PR_52 */}
-          <div className={`${row} px-sp-4`} aria-labelledby="transport-label">
-            <p id="transport-label" className={label}>{t('settings.preferences.transport')}</p>
-            <div
-              className="flex rounded-lg overflow-hidden"
-              style={{ border: '1px solid var(--bdr)' }}
-              role="radiogroup"
-              aria-label={t('settings.preferences.transport')}
-            >
-              {(['car', 'public'] as Transport[]).map((val) => {
-                const active = transport === val
-                return (
-                  <button
-                    key={val}
-                    role="radio"
-                    aria-checked={active}
-                    onClick={() => handleTransport(val)}
-                    className={[
-                      'flex items-center gap-1.5 px-sp-4 min-h-[36px] text-f-sm font-semibold transition-colors',
-                      active ? 'bg-lav-dim text-lav' : 'text-muted hover:text-fg',
-                    ].join(' ')}
-                  >
-                    {val === 'car'
-                      ? <><Car size={13} strokeWidth={2} /> {t('settings.preferences.transportCar')}</>
-                      : <><Train size={13} strokeWidth={2} /> {t('settings.preferences.transportPublic')}</>
-                    }
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Interests — PR_53 */}
-          <div className="px-sp-4 py-sp-4">
-            <div className="flex items-start justify-between mb-sp-3">
+    <>
+      <div className="max-w-[560px] flex flex-col gap-sp-8">
+        {/* Account section — PR_50 */}
+        <section aria-labelledby="account-heading">
+          <h2 id="account-heading" className={sectionHeading}>
+            {t('settings.account.heading')}
+          </h2>
+          <div
+            className="rounded-none overflow-hidden divide-y"
+            style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+          >
+            <div className={`${row} px-sp-4`}>
               <div>
-                <p className={label}>{t('settings.preferences.interests')}</p>
-                <p className={sublabel}>{t('settings.preferences.interestsNote')}</p>
+                <p className={label}>{t('settings.account.email')}</p>
+                <p className={sublabel}>{t('settings.account.emailNote')}</p>
+              </div>
+              <span className="text-f-md text-muted font-mono ml-sp-4 truncate max-w-[180px]">
+                {profile?.email ?? '—'}
+              </span>
+            </div>
+          </div>
+        </section>
+
+        {/* Preferences — PR_51–53 */}
+        <section aria-labelledby="prefs-heading">
+          <h2 id="prefs-heading" className={sectionHeading}>
+            {t('settings.preferences.heading')}
+          </h2>
+          <div
+            className="rounded-none overflow-hidden divide-y"
+            style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+          >
+            {/* Language — PR_51 */}
+            <div className={`${row} px-sp-4 flex-wrap gap-sp-3`} aria-labelledby="lang-label">
+              <p id="lang-label" className={label}>{t('settings.preferences.language')}</p>
+              <select
+                className="text-f-md font-medium text-fg rounded-none px-sp-3 min-h-[36px] appearance-none cursor-pointer"
+                style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
+                defaultValue={profile?.preferred_lang ?? 'en'}
+                onChange={(e) => handleLangChange(e.target.value)}
+                aria-label={t('settings.preferences.language')}
+              >
+                {LOCALES.map((loc) => (
+                  <option key={loc} value={loc}>
+                    {t(`settings.languages.${loc}`)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Transport — PR_52 */}
+            <div className={`${row} px-sp-4`} aria-labelledby="transport-label">
+              <p id="transport-label" className={label}>{t('settings.preferences.transport')}</p>
+              <div
+                className="flex rounded-none overflow-hidden"
+                style={{ border: '1px solid var(--bdr)' }}
+                role="radiogroup"
+                aria-label={t('settings.preferences.transport')}
+              >
+                {(['car', 'public'] as Transport[]).map((val) => {
+                  const active = transport === val
+                  return (
+                    <button
+                      key={val}
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => handleTransport(val)}
+                      className={[
+                        'flex items-center gap-1.5 px-sp-4 min-h-[36px] text-f-sm font-semibold transition-colors',
+                        active ? 'bg-lav-dim text-lav' : 'text-muted hover:text-fg',
+                      ].join(' ')}
+                    >
+                      {val === 'car'
+                        ? <><Car size={13} strokeWidth={2} aria-hidden="true" /> {t('settings.preferences.transportCar')}</>
+                        : <><Train size={13} strokeWidth={2} aria-hidden="true" /> {t('settings.preferences.transportPublic')}</>
+                      }
+                    </button>
+                  )
+                })}
               </div>
             </div>
-            <div className="flex flex-wrap gap-sp-2" role="group" aria-label={t('settings.preferences.interests')}>
-              {INTERESTS.map((key) => {
-                const active = interests.includes(key)
-                return (
-                  <button
-                    key={key}
-                    onClick={() => toggleInterest(key)}
-                    aria-pressed={active}
-                    className={[
-                      'min-h-touch px-sp-4 rounded-full text-f-sm font-semibold transition-colors',
-                      active
-                        ? 'bg-lav-dim text-lav'
-                        : 'text-muted hover:text-fg',
-                    ].join(' ')}
-                    style={{ border: active ? '1px solid var(--lav-border)' : '1px solid var(--bdr)' }}
-                  >
-                    {t(`settings.interests.${key}`)}
-                  </button>
-                )
-              })}
+
+            {/* Interests — PR_53 */}
+            <div className="px-sp-4 py-sp-4">
+              <div className="flex items-start justify-between mb-sp-3">
+                <div>
+                  <p className={label}>{t('settings.preferences.interests')}</p>
+                  <p className={sublabel}>{t('settings.preferences.interestsNote')}</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-sp-2" role="group" aria-label={t('settings.preferences.interests')}>
+                {INTERESTS.map((key) => {
+                  const active = interests.includes(key)
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => toggleInterest(key)}
+                      aria-pressed={active}
+                      className={[
+                        'min-h-touch px-sp-4 rounded-full text-f-sm font-semibold transition-colors',
+                        active
+                          ? 'bg-lav-dim text-lav'
+                          : 'text-muted hover:text-fg',
+                      ].join(' ')}
+                      style={{ border: active ? '1px solid var(--lav-border)' : '1px solid var(--bdr)' }}
+                    >
+                      {t(`settings.interests.${key}`)}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Save button */}
-      <button
-        onClick={handleSave}
-        disabled={saving}
-        className={[
-          'self-start min-h-touch px-sp-8 rounded-full text-f-md font-semibold transition-all',
-          saved
-            ? 'bg-success/20 text-success'
-            : 'bg-lav-dim text-lav hover:bg-lav-mid',
-        ].join(' ')}
-        style={{ border: saved ? '1px solid color-mix(in srgb, var(--success) 30%, transparent)' : '1px solid var(--lav-border)' }}
-        aria-label={saving ? t('settings.preferences.saving') : saved ? t('settings.preferences.saved') : t('settings.preferences.save')}
-      >
-        {saving ? t('settings.preferences.saving') : saved ? (
-          <span className="flex items-center gap-1.5"><Check size={14} strokeWidth={2} /> {t('settings.preferences.saved')}</span>
-        ) : t('settings.preferences.save')}
-      </button>
-    </div>
+        {/* Save button */}
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className={[
+            'self-start min-h-touch px-sp-8 rounded-full text-f-md font-semibold transition-all',
+            saved
+              ? 'bg-success/20 text-success'
+              : 'bg-lav-dim text-lav hover:bg-lav-mid',
+          ].join(' ')}
+          style={{ border: saved ? '1px solid color-mix(in srgb, var(--success) 30%, transparent)' : '1px solid var(--lav-border)' }}
+          aria-label={saving ? t('settings.preferences.saving') : saved ? t('settings.preferences.saved') : t('settings.preferences.save')}
+        >
+          {saving ? t('settings.preferences.saving') : saved ? (
+            <span className="flex items-center gap-1.5"><Check size={14} strokeWidth={2} aria-hidden="true" /> {t('settings.preferences.saved')}</span>
+          ) : t('settings.preferences.save')}
+        </button>
+
+        {/* Account actions — sign out + password + delete */}
+        <section aria-labelledby="actions-heading">
+          <h2 id="actions-heading" className={sectionHeading}>
+            {t('settings.account.heading')}
+          </h2>
+          <div className="flex flex-col gap-sp-2">
+            {/* Change password */}
+            <Link
+              href="/auth/reset-password"
+              className="w-full min-h-touch rounded-none text-f-sm font-semibold text-muted hover:text-fg transition-colors flex items-center px-sp-4"
+              style={{ border: '1px solid var(--bdr)', background: 'var(--bg-2)' }}
+            >
+              {t('settings.changePassword')}
+            </Link>
+
+            {/* Sign out */}
+            <button
+              onClick={() => signOut({ callbackUrl: '/' })}
+              className="w-full min-h-touch rounded-none text-f-sm font-semibold text-fg text-left px-sp-4 hover:opacity-80 transition-opacity"
+              style={{ border: '1px solid var(--bdr)', background: 'var(--bg-2)' }}
+            >
+              {t('settings.signOut')}
+            </button>
+
+            {/* Delete account */}
+            <button
+              onClick={() => setDeleteConfirmOpen(true)}
+              className="w-full min-h-touch rounded-none text-f-sm font-semibold text-danger text-left px-sp-4 hover:opacity-80 transition-opacity"
+              style={{ border: '1px solid color-mix(in srgb, var(--danger) 30%, transparent)', background: 'var(--bg-2)' }}
+            >
+              {t('settings.deleteAccount')}
+            </button>
+          </div>
+        </section>
+      </div>
+
+      {deleteConfirmOpen && (
+        <DeleteConfirmModal
+          onConfirm={handleDeleteAccount}
+          onCancel={() => setDeleteConfirmOpen(false)}
+          deleting={deleting}
+          t={t}
+        />
+      )}
+    </>
   )
 }

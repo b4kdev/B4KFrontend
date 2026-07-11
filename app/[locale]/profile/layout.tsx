@@ -138,6 +138,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
 
   const TABS = [
     { href: '/profile',          label: t('tabs.trips') },
+    { href: '/profile/saved',    label: t('tabs.saved') },
     { href: '/profile/badges',   label: t('tabs.badges') },
     { href: '/profile/settings', label: t('tabs.settings') },
   ]
