@@ -920,7 +920,8 @@
       "saveAria": "Save {name}",
       "unsaveAria": "Unsave {name}",
       "likeAria": "Like {name}",
-      "unlikeAria": "Unlike {name}"
+      "unlikeAria": "Unlike {name}",
+      "sponsored": "Sponsored"
     },
     "hub": {
       "title": "Explore Korea",
@@ -1110,6 +1111,15 @@
       "pinned": "Pinned badge",
       "earnedOn": "Earned {date}",
       "locked": "Locked"
+    },
+    "detail": {
+      "ariaLabel": "Badge details",
+      "close": "Close",
+      "category": "Category",
+      "status": "Status",
+      "earned": "Earned",
+      "earnedOn": "Earned on {date}",
+      "unlockToast": "New badge unlocked: {name}"
     }
   },
   "leaderboard": {

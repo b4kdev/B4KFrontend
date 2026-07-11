@@ -8,6 +8,8 @@ export interface ExplorePoi {
   display_region: string
   quality_score: number
   is_trending: boolean
+  is_partner?: boolean
+  partner_url?: string | null
 }
 
 export interface ExploreSection {

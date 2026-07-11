@@ -1,15 +1,16 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { Home, Map, LayoutGrid, Bookmark } from 'lucide-react';
+import { Home, Map, LayoutGrid, Bookmark, User } from 'lucide-react';
 
 const TABS = [
   { href: '/',        icon: Home,        labelKey: 'home' },
   { href: '/map',     icon: Map,         labelKey: 'map' },
   { href: '/explore', icon: LayoutGrid,  labelKey: 'explore' },
   { href: '/saved',   icon: Bookmark,    labelKey: 'saved' },
+  { href: '/profile', icon: User,        labelKey: 'profile' },
 ] as const;
 
 export default function MobileBottomNav() {
@@ -17,11 +18,11 @@ export default function MobileBottomNav() {
   const pathname = usePathname();
 
   const isActive = (href: string) =>
-    href === '/' ? /^\/[a-z-]+\/?$/.test(pathname) : pathname.includes(href);
+    href === '/' ? pathname === '/' || pathname === '' : pathname.startsWith(href);
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 flex items-center justify-around px-2 z-50 lg:hidden bg-bg-2"
+      className="fixed bottom-0 left-0 right-0 flex items-center justify-around px-sp-2 z-50 lg:hidden bg-bg-2"
       style={{
         borderTop: 'var(--bdr)',
         height: 'calc(var(--sp-12) + env(safe-area-inset-bottom))',
@@ -36,13 +37,14 @@ export default function MobileBottomNav() {
             key={href}
             href={href}
             className={[
-              'flex flex-col items-center gap-[3px] px-4 py-1 rounded-lg flex-1 transition-colors',
+              'flex flex-col items-center gap-sp-1 px-sp-4 py-sp-1 flex-1 transition-colors min-h-touch justify-center',
               active ? 'text-lav' : 'text-muted',
             ].join(' ')}
             aria-label={t(labelKey)}
+            aria-current={active ? 'page' : undefined}
           >
-            <Icon size={20} strokeWidth={2} />
-            <span className="text-[9px] font-semibold tracking-[0.04em]">{t(labelKey)}</span>
+            <Icon size={20} strokeWidth={2} aria-hidden="true" />
+            <span className="text-f-xxs font-semibold tracking-[0.04em]">{t(labelKey)}</span>
           </Link>
         );
       })}

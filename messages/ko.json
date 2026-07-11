@@ -958,7 +958,8 @@
       "saveAria": "{name} 저장",
       "unsaveAria": "{name} 저장 취소",
       "likeAria": "{name} 좋아요",
-      "unlikeAria": "{name} 좋아요 취소"
+      "unlikeAria": "{name} 좋아요 취소",
+      "sponsored": "광고"
     },
     "aiCta": {
       "text": "AI로 나만의 K-컬처 여행을 계획해보세요",
@@ -1148,6 +1149,15 @@
       "pinned": "고정된 배지",
       "earnedOn": "{date} 획득",
       "locked": "잠금"
+    },
+    "detail": {
+      "ariaLabel": "배지 상세",
+      "close": "닫기",
+      "category": "카테고리",
+      "status": "상태",
+      "earned": "획득",
+      "earnedOn": "{date}에 획득",
+      "unlockToast": "새 배지 획득: {name}"
     }
   },
   "leaderboard": {
