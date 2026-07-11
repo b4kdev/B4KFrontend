@@ -11,6 +11,7 @@ interface Props {
   isLiked: boolean
   isSaved: boolean
   isOwner: boolean
+  planId: string
   onStopSelect: (poiId: string) => void
   onLike: () => void
   onSave: () => void
@@ -28,6 +29,7 @@ export default function ItineraryMobileSheet({
   isLiked,
   isSaved,
   isOwner,
+  planId,
   onStopSelect,
   onLike,
   onSave,
@@ -111,6 +113,7 @@ export default function ItineraryMobileSheet({
         isLiked={isLiked}
         isSaved={isSaved}
         isOwner={isOwner}
+        planId={planId}
         onStopSelect={onStopSelect}
         onLike={onLike}
         onSave={onSave}

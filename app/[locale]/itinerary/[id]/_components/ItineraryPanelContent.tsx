@@ -11,12 +11,16 @@ import { Link } from '@/i18n/navigation'
 import { getDisplayName } from '@/lib/display-name'
 import type { ItineraryDetail } from '@/app/api/itinerary/[id]/route'
 
+type TransportMode = 'car' | 'public' | 'walk'
+const MODES: TransportMode[] = ['car', 'public', 'walk']
+
 interface Props {
   itinerary: ItineraryDetail
   selectedPoiId: string | null
   isLiked: boolean
   isSaved: boolean
   isOwner: boolean
+  planId: string
   scrollRef?: RefObject<HTMLDivElement>
   onStopSelect: (poiId: string) => void
   onLike: () => void
@@ -26,11 +30,66 @@ interface Props {
   onDeleteClick?: () => void
 }
 
-function TransportIcon({ mode }: { mode: 'car' | 'public' | 'walk' | null }) {
+function TransportIcon({ mode }: { mode: TransportMode | null }) {
   if (mode === 'car') return <Car size={11} strokeWidth={2} className="text-muted shrink-0" />
   if (mode === 'public') return <Train size={11} strokeWidth={2} className="text-muted shrink-0" />
   if (mode === 'walk') return <Footprints size={11} strokeWidth={2} className="text-muted shrink-0" />
   return null
+}
+
+function TransportModeBadge({
+  mode,
+  isOwner,
+  planId,
+  stopOrder,
+  onModeChange,
+}: {
+  mode: TransportMode
+  isOwner: boolean
+  planId: string
+  stopOrder: number
+  onModeChange: (stopOrder: number, next: TransportMode) => void
+}) {
+  const t = useTranslations('itinerary')
+  const [current, setCurrent] = useState<TransportMode>(mode)
+  const [saving, setSaving] = useState(false)
+
+  async function handleCycle() {
+    if (!isOwner || saving) return
+    const next = MODES[(MODES.indexOf(current) + 1) % MODES.length]
+    const prev = current
+    setCurrent(next)
+    setSaving(true)
+    try {
+      await fetch(`/api/plans/${planId}/stops/${stopOrder}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transport_mode: next }),
+      })
+      onModeChange(stopOrder, next)
+    } catch {
+      setCurrent(prev)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <button
+      onClick={handleCycle}
+      disabled={!isOwner || saving}
+      aria-label={
+        isOwner
+          ? t('transport.changeMode', { mode: current })
+          : t('transport.mode', { mode: current })
+      }
+      className={`flex items-center gap-0.5 text-f-xs text-muted transition-opacity ${isOwner ? 'hover:opacity-70 cursor-pointer' : 'cursor-default'}`}
+      style={isOwner ? { border: 'none', background: 'none', padding: 0 } : { border: 'none', background: 'none', padding: 0 }}
+    >
+      <TransportIcon mode={current} />
+      {t(`transport.${current}`)}
+    </button>
+  )
 }
 
 export default function ItineraryPanelContent({
@@ -39,6 +98,7 @@ export default function ItineraryPanelContent({
   isLiked,
   isSaved,
   isOwner,
+  planId,
   scrollRef,
   onStopSelect,
   onLike,
@@ -48,6 +108,12 @@ export default function ItineraryPanelContent({
   onDeleteClick,
 }: Props) {
   const t = useTranslations('itinerary')
+
+  // Local transport mode overrides (owner edits, optimistic)
+  const [modeOverrides, setModeOverrides] = useState<Record<number, TransportMode>>({})
+  function handleModeChange(stopOrder: number, next: TransportMode) {
+    setModeOverrides(prev => ({ ...prev, [stopOrder]: next }))
+  }
 
   const hasDays = itinerary.stops.some(s => s.day !== null)
   const days = hasDays
@@ -297,11 +363,14 @@ export default function ItineraryPanelContent({
                       <Clock size={10} strokeWidth={2} aria-hidden="true" />
                       {t('stopItem.min', { min: stop.duration_min })}
                     </span>
-                    {stop.transport_mode && (
-                      <span className="flex items-center gap-0.5 text-f-xs text-muted">
-                        <TransportIcon mode={stop.transport_mode} />
-                        {t(`transport.${stop.transport_mode}`)}
-                      </span>
+                    {(modeOverrides[stop.stop_order] ?? stop.transport_mode) && (
+                      <TransportModeBadge
+                        mode={(modeOverrides[stop.stop_order] ?? stop.transport_mode) as TransportMode}
+                        isOwner={isOwner}
+                        planId={planId}
+                        stopOrder={stop.stop_order}
+                        onModeChange={handleModeChange}
+                      />
                     )}
                   </div>
                   {stop.notes && (

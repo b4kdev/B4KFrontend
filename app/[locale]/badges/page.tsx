@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
+import { useSearchParams } from 'next/navigation'
 import { Link } from '@/i18n/navigation'
-import { Award, Lock, RefreshCw, AlertTriangle } from 'lucide-react'
+import { Award, Lock, RefreshCw, AlertTriangle, X, Star, Trophy } from 'lucide-react'
 import { useBadges } from '@/hooks/useBadges'
-import type { BadgeRarity } from '@/app/api/badges/route'
+import { useToast } from '@/contexts/ToastContext'
+import type { Badge, BadgeRarity } from '@/app/api/badges/route'
 
 type Filter = 'all' | BadgeRarity
 
@@ -31,13 +33,125 @@ function BadgeSkeleton() {
   )
 }
 
+function BadgeDetailSheet({
+  badge,
+  onClose,
+  t,
+}: {
+  badge: Badge
+  onClose: () => void
+  t: ReturnType<typeof useTranslations>
+}) {
+  const color = RARITY_COLOR[badge.rarity] ?? 'text-muted'
+  const ring  = RARITY_RING[badge.rarity] ?? ''
+
+  return (
+    <div
+      className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-sp-4"
+      style={{ background: 'var(--backdrop-50)' }}
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('badges.detail.ariaLabel')}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        className="w-full max-w-[360px] p-sp-6 flex flex-col gap-sp-4"
+        style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+      >
+        {/* Drag handle — mobile */}
+        <div className="sm:hidden flex justify-center -mt-sp-2" aria-hidden="true">
+          <div className="w-10 h-1 rounded-full" style={{ background: 'var(--muted-2)' }} />
+        </div>
+
+        {/* Close */}
+        <div className="flex justify-end -mb-sp-2">
+          <button
+            onClick={onClose}
+            className="min-h-touch min-w-touch flex items-center justify-center text-muted hover:text-fg transition-colors"
+            aria-label={t('badges.detail.close')}
+          >
+            <X size={18} strokeWidth={2} />
+          </button>
+        </div>
+
+        {/* Badge icon */}
+        <div className="flex flex-col items-center gap-sp-3 text-center">
+          <div
+            className={[
+              'w-16 h-16 rounded-full flex items-center justify-center',
+              ring,
+              badge.earned ? 'bg-bg-3' : 'bg-bg-2 opacity-50',
+            ].join(' ')}
+          >
+            {badge.earned ? (
+              <Trophy size={28} strokeWidth={2} className={color} aria-hidden="true" />
+            ) : (
+              <Lock size={22} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+            )}
+          </div>
+
+          <div>
+            <h2 className="text-f-2xl font-bold text-fg">{badge.name}</h2>
+            <p className={`text-f-xs font-semibold uppercase tracking-widest mt-sp-1 ${color}`}>
+              {t(`badges.rarity.${badge.rarity}`)}
+            </p>
+          </div>
+        </div>
+
+        {/* Meta grid */}
+        <div className="grid grid-cols-2 gap-sp-3 text-f-sm">
+          <div>
+            <p className="text-muted uppercase tracking-widest text-f-xxs font-semibold mb-sp-1">
+              {t('badges.detail.category')}
+            </p>
+            <p className="text-fg font-semibold capitalize">{badge.category}</p>
+          </div>
+          <div>
+            <p className="text-muted uppercase tracking-widest text-f-xxs font-semibold mb-sp-1">
+              {t('badges.detail.status')}
+            </p>
+            <p className={`font-semibold ${badge.earned ? 'text-success' : 'text-muted'}`}>
+              {badge.earned ? t('badges.detail.earned') : t('badges.badge.locked')}
+            </p>
+          </div>
+        </div>
+
+        {badge.earned && badge.earned_at && (
+          <p className="text-f-xs text-muted text-center">
+            {t('badges.detail.earnedOn', { date: new Date(badge.earned_at).toLocaleDateString() })}
+          </p>
+        )}
+
+        {badge.is_pinned && (
+          <div className="flex items-center justify-center gap-sp-2 text-lav text-f-xs font-semibold">
+            <Star size={12} strokeWidth={2} fill="currentColor" aria-hidden="true" />
+            {t('badges.badge.pinned')}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function BadgesPage() {
-  const t = useTranslations('badges')
+  const t = useTranslations()
   const [filter, setFilter] = useState<Filter>('all')
+  const [selected, setSelected] = useState<Badge | null>(null)
   const { data, isLoading, isError, mutate } = useBadges()
+  const { showToast } = useToast()
+  const searchParams = useSearchParams()
+
+  // Unlock toast — fires when ?badge=<slug> is set (e.g. after earning a badge)
+  useEffect(() => {
+    const newBadgeSlug = searchParams.get('badge')
+    if (!newBadgeSlug || !data?.badges) return
+    const earned = data.badges.find((b) => b.slug === newBadgeSlug && b.earned)
+    if (earned) {
+      showToast(t('badges.detail.unlockToast', { name: earned.name }), 'success')
+    }
+  }, [searchParams, data, showToast, t])
 
   const filters: Filter[] = ['all', 'common', 'rare', 'epic', 'legendary']
-
   const filtered = data?.badges.filter(b => filter === 'all' || b.rarity === filter) ?? []
 
   const pillClass = (active: boolean) => [
@@ -45,24 +159,28 @@ export default function BadgesPage() {
     active ? 'bg-lav text-bg' : 'text-muted hover:text-fg',
   ].join(' ')
 
+  const handleBadgeClick = useCallback((badge: Badge) => {
+    setSelected(badge)
+  }, [])
+
   return (
     <main
       className="max-w-[1200px] mx-auto px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-20"
-      aria-label={t('ariaLabel')}
+      aria-label={t('badges.ariaLabel')}
     >
       <div className="flex items-center gap-1.5 text-f-xxs font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
         <Link href="/" className="text-muted-2 hover:text-fg transition-colors">B4K</Link>
         <span>›</span>
-        <span className="text-fg">{t('breadcrumb')}</span>
+        <span className="text-fg">{t('badges.breadcrumb')}</span>
       </div>
 
       <div className="flex items-center justify-between mb-sp-5">
         <h1 className="font-display font-black text-fg text-[clamp(22px,2.5vw,32px)]">
-          {t('title')}
+          {t('badges.title')}
         </h1>
         {data && (
           <span className="text-f-sm font-semibold text-muted">
-            {t('stats', { earned: data.earned_count, total: data.total_count })}
+            {t('badges.stats', { earned: data.earned_count, total: data.total_count })}
           </span>
         )}
       </div>
@@ -71,7 +189,7 @@ export default function BadgesPage() {
       <div
         className="flex gap-sp-2 overflow-x-auto pb-sp-1 mb-sp-6"
         role="group"
-        aria-label={t('filter.ariaLabel')}
+        aria-label={t('badges.filter.ariaLabel')}
         style={{ scrollbarWidth: 'none' }}
       >
         {filters.map(f => (
@@ -82,7 +200,7 @@ export default function BadgesPage() {
             style={filter !== f ? { background: 'var(--bg-3)', border: '1px solid var(--bdr)' } : {}}
             aria-pressed={filter === f}
           >
-            {t(`filter.${f}`)}
+            {t(`badges.filter.${f}`)}
           </button>
         ))}
       </div>
@@ -90,7 +208,7 @@ export default function BadgesPage() {
       {isLoading && (
         <div
           aria-busy="true"
-          aria-label={t('loading')}
+          aria-label={t('badges.loading')}
           className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-sp-4"
         >
           {Array.from({ length: 12 }, (_, i) => <BadgeSkeleton key={i} />)}
@@ -99,17 +217,17 @@ export default function BadgesPage() {
 
       {isError && !isLoading && (
         <div
-          className="flex flex-col items-center justify-center text-center py-16 rounded-lg"
+          className="flex flex-col items-center justify-center text-center py-16"
           style={{ background: 'var(--bg-2)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
           role="alert"
         >
           <AlertTriangle size={36} strokeWidth={2} className="text-danger mb-sp-3" />
-          <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
+          <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('badges.error.title')}</p>
           <button
             onClick={() => mutate()}
             className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
           >
-            <RefreshCw size={14} strokeWidth={2} />{t('error.retry')}
+            <RefreshCw size={14} strokeWidth={2} />{t('badges.error.retry')}
           </button>
         </div>
       )}
@@ -117,12 +235,12 @@ export default function BadgesPage() {
       {!isLoading && !isError && data && (
         filtered.length === 0 ? (
           <div
-            className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-lg"
+            className="flex flex-col items-center justify-center text-center py-16 px-6"
             style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
           >
             <Award size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
-            <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.title')}</p>
-            <p className="text-f-md text-muted max-w-[300px]">{t('empty.desc')}</p>
+            <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('badges.empty.title')}</p>
+            <p className="text-f-md text-muted max-w-[300px]">{t('badges.empty.desc')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-x-sp-4 gap-y-sp-6">
@@ -130,14 +248,15 @@ export default function BadgesPage() {
               const ring  = RARITY_RING[badge.rarity]
               const color = RARITY_COLOR[badge.rarity]
               return (
-                <div
+                <button
                   key={badge.id}
-                  className="flex flex-col items-center gap-sp-2"
-                  aria-label={t('badge.ariaLabel', { name: badge.name, rarity: badge.rarity })}
+                  onClick={() => handleBadgeClick(badge)}
+                  className="flex flex-col items-center gap-sp-2 group"
+                  aria-label={t('badges.badge.ariaLabel', { name: badge.name, rarity: badge.rarity })}
                 >
                   <div
                     className={[
-                      'w-14 h-14 rounded-full flex items-center justify-center relative',
+                      'w-14 h-14 rounded-full flex items-center justify-center relative transition-transform group-hover:scale-105',
                       ring,
                       badge.earned ? 'bg-bg-3' : 'bg-bg-2 opacity-40',
                     ].join(' ')}
@@ -151,7 +270,7 @@ export default function BadgesPage() {
                       <span
                         className="absolute -top-[4px] -right-[4px] w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-bg"
                         style={{ background: 'var(--lav)' }}
-                        aria-label={t('badge.pinned')}
+                        aria-label={t('badges.badge.pinned')}
                       >
                         ★
                       </span>
@@ -161,18 +280,27 @@ export default function BadgesPage() {
                     {badge.name}
                   </p>
                   {badge.earned && badge.earned_at && (
-                    <p className="text-[9px] text-muted-2 text-center">
-                      {t('badge.earnedOn', { date: new Date(badge.earned_at).toLocaleDateString() })}
+                    <p className="text-f-xxs text-muted-2 text-center">
+                      {t('badges.badge.earnedOn', { date: new Date(badge.earned_at).toLocaleDateString() })}
                     </p>
                   )}
                   {!badge.earned && (
-                    <p className="text-[9px] text-muted-2 text-center">{t('badge.locked')}</p>
+                    <p className="text-f-xxs text-muted-2 text-center">{t('badges.badge.locked')}</p>
                   )}
-                </div>
+                </button>
               )
             })}
           </div>
         )
+      )}
+
+      {/* Badge detail sheet */}
+      {selected && (
+        <BadgeDetailSheet
+          badge={selected}
+          onClose={() => setSelected(null)}
+          t={t}
+        />
       )}
     </main>
   )

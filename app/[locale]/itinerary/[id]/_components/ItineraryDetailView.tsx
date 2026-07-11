@@ -167,6 +167,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
     isLiked,
     isSaved,
     isOwner,
+    planId: id,
     onStopSelect:  handlePoiSelect,
     onLike:        handleLike,
     onSave:        handleSave,

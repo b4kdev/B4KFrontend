@@ -180,7 +180,8 @@
         "minutes": "{n}m ago",
         "hours": "{n}h ago",
         "days": "{n}d ago"
-      }
+      },
+      "guestTitle": "Continue your plan"
     },
     "challenge": {
       "ariaLabel": "Weekly challenge",
@@ -743,7 +744,9 @@
     "transport": {
       "car": "By car",
       "public": "Public transport",
-      "walk": "On foot"
+      "walk": "On foot",
+      "changeMode": "Change transport mode (current: {mode})",
+      "mode": "Transport: {mode}"
     },
     "actions": {
       "like": "Like",
@@ -955,7 +958,8 @@
       "saveAria": "Save {name}",
       "unsaveAria": "Unsave {name}",
       "likeAria": "Like {name}",
-      "unlikeAria": "Unlike {name}"
+      "unlikeAria": "Unlike {name}",
+      "sponsored": "Sponsored"
     },
     "aiCta": {
       "text": "Let AI plan your K-culture journey",
@@ -1145,6 +1149,15 @@
       "pinned": "Pinned badge",
       "earnedOn": "Earned {date}",
       "locked": "Locked"
+    },
+    "detail": {
+      "ariaLabel": "Badge details",
+      "close": "Close",
+      "category": "Category",
+      "status": "Status",
+      "earned": "Earned",
+      "earnedOn": "Earned on {date}",
+      "unlockToast": "New badge unlocked: {name}"
     }
   },
   "leaderboard": {
