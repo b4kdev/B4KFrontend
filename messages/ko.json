@@ -1219,6 +1219,57 @@
     "cta": "계속",
     "skip": "나중에"
   },
+  "search": {
+    "placeholder": "일정, 장소 검색...",
+    "recentTitle": "최근 검색",
+    "clearAll": "전체 삭제",
+    "noResults": "\"{query}\" 검색 결과 없음",
+    "noResultsSubtitle": "카테고리로 탐색해보세요",
+    "suggestions": "추천 검색어",
+    "categories": {
+      "kpop": "K-팝",
+      "kdrama": "K-드라마",
+      "kbeauty": "K-뷰티",
+      "kculture": "K-컬처"
+    },
+    "sections": {
+      "places": "장소",
+      "plans": "여행 계획",
+      "explore": "탐색"
+    },
+    "seeAll": "전체 보기",
+    "removeRecent": "{query} 최근 검색에서 삭제",
+    "filters": {
+      "title": "필터",
+      "sections": "표시",
+      "section_all": "전체",
+      "section_places": "장소",
+      "section_plans": "여행 계획",
+      "section_explore": "탐색",
+      "sort": {
+        "label": "정렬",
+        "relevance": "관련도순",
+        "popularity": "인기순"
+      }
+    },
+    "results": {
+      "poi": "장소",
+      "plans": "여행 계획",
+      "explore": "탐색 카테고리"
+    },
+    "poiAriaLabel": "{name}, {region}",
+    "planAriaLabel": "{author}의 {title}",
+    "exploreAriaLabel": "{category} 탐색",
+    "mapCta": "지도에서 탐색",
+    "sponsored": "스폰서",
+    "stops": "{count}개 정류장",
+    "saves": "{count}개 저장",
+    "mobileFilter": "필터",
+    "mobileSort": "정렬",
+    "loading": "검색 중…",
+    "error": "검색에 실패했습니다. 다시 시도해주세요.",
+    "retry": "다시 시도"
+  },
   "footer": {
     "help": "도움말",
     "privacy": "개인정보 처리방침",

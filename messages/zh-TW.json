@@ -1225,5 +1225,56 @@
     "terms": "使用條款",
     "cookies": "Cookie政策",
     "copyright": "© {year} B4K. All rights reserved."
+  },
+  "search": {
+    "placeholder": "Search itineraries, places...",
+    "recentTitle": "Recent searches",
+    "clearAll": "Clear all",
+    "noResults": "No results for \"{query}\"",
+    "noResultsSubtitle": "Try exploring by category",
+    "suggestions": "Suggestions",
+    "categories": {
+      "kpop": "K-Pop",
+      "kdrama": "K-Drama",
+      "kbeauty": "K-Beauty",
+      "kculture": "K-Culture"
+    },
+    "sections": {
+      "places": "Places",
+      "plans": "Plans",
+      "explore": "Explore"
+    },
+    "seeAll": "See all",
+    "removeRecent": "Remove {query} from recents",
+    "filters": {
+      "title": "Filters",
+      "sections": "Show",
+      "section_all": "All",
+      "section_places": "Places",
+      "section_plans": "Plans",
+      "section_explore": "Explore",
+      "sort": {
+        "label": "Sort by",
+        "relevance": "Relevance",
+        "popularity": "Popularity"
+      }
+    },
+    "results": {
+      "poi": "Places",
+      "plans": "Plans",
+      "explore": "Explore categories"
+    },
+    "poiAriaLabel": "{name}, {region}",
+    "planAriaLabel": "{title} by {author}",
+    "exploreAriaLabel": "Explore {category}",
+    "mapCta": "Explore on map",
+    "sponsored": "Sponsored",
+    "stops": "{count} stops",
+    "saves": "{count} saves",
+    "mobileFilter": "Filter",
+    "mobileSort": "Sort",
+    "loading": "Searching…",
+    "error": "Search failed. Try again.",
+    "retry": "Try again"
   }
 }
