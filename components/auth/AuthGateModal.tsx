@@ -126,7 +126,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
       <div
         ref={panelRef}
         tabIndex={-1}
-        className="relative w-full lg:w-[420px] bg-bg-2 rounded-t-2xl lg:rounded-2xl p-sp-6 outline-none"
+        className="relative w-full lg:w-[420px] bg-bg-2 rounded-none p-sp-6 outline-none"
         style={{ borderTop: '1px solid var(--bdr)' }}
       >
         {/* Drag handle — mobile only */}
@@ -146,16 +146,16 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
         <div className="flex flex-col items-center text-center gap-sp-4 pt-sp-2">
 
           {/* Brand mark */}
-          <span className="text-lav font-display font-bold text-2xl tracking-tight select-none">
+          <span className="text-lav font-display font-bold text-f-2xl tracking-tight select-none">
             B4K
           </span>
 
           {/* Context-specific title + value prop */}
           <div>
-            <h2 className="text-fg font-display font-bold text-xl mb-sp-2">
+            <h2 className="text-fg font-display font-bold text-f-2xl mb-sp-2">
               {contextTitle()}
             </h2>
-            <p className="text-muted text-sm leading-relaxed">
+            <p className="text-muted text-f-base leading-relaxed">
               {t('valueProp')}
             </p>
           </div>
@@ -163,11 +163,11 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
           {/* Draft-preserved notice (save_plan + fl3_cap) */}
           {showDraftNotice && (
             <div
-              className="w-full flex items-center gap-sp-3 px-sp-3 py-sp-2 rounded-lg text-left"
+              className="w-full flex items-center gap-sp-3 px-sp-3 py-sp-2 rounded-none text-left"
               style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
             >
               <Route size={15} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
-              <p className="text-sm text-fg leading-snug">
+              <p className="text-f-base text-fg leading-snug">
                 {reason === 'fl3_cap' ? t('fl3Preserved') : t('planPreserved')}
               </p>
             </div>
@@ -175,7 +175,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
 
           {/* Error alert */}
           {status === 'error' && (
-            <p role="alert" className="text-danger text-sm">{t('error')}</p>
+            <p role="alert" className="text-danger text-f-base">{t('error')}</p>
           )}
 
           {/* Email/password form */}
@@ -188,7 +188,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
                 placeholder={t('emailPlaceholder')}
                 required
                 autoComplete="email"
-                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-sm rounded-lg outline-none focus:ring-2 focus:ring-lav"
+                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
                 style={{ border: '1px solid var(--bdr)' }}
               />
               <input
@@ -198,13 +198,13 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
                 placeholder={t('passwordPlaceholder')}
                 required
                 autoComplete="current-password"
-                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-sm rounded-lg outline-none focus:ring-2 focus:ring-lav"
+                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
                 style={{ border: '1px solid var(--bdr)' }}
               />
               <button
                 type="submit"
                 disabled={status === 'loading' || !email || !password}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-xl font-semibold text-sm transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
+                className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
               >
                 {status === 'loading'
                   ? <span className="w-5 h-5 border-2 border-bg border-t-transparent rounded-full animate-spin" aria-hidden="true" />
@@ -214,7 +214,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
               <button
                 type="button"
                 onClick={() => setEmailMode(false)}
-                className="text-muted text-sm hover:text-fg transition-colors min-h-touch"
+                className="text-muted text-f-base hover:text-fg transition-colors min-h-touch"
               >
                 {t('backToProviders')}
               </button>
@@ -225,7 +225,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
               <button
                 onClick={() => setEmailMode(true)}
                 disabled={status === 'loading'}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
+                className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
                 style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)', color: 'var(--fg)' }}
               >
                 <Mail size={18} strokeWidth={2} aria-hidden="true" />
@@ -236,7 +236,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
               <button
                 onClick={() => handleOAuth('google')}
                 disabled={status === 'loading'}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-3 bg-fg text-bg rounded-xl font-semibold text-sm transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
+                className="w-full min-h-touch flex items-center justify-center gap-sp-3 bg-fg text-bg rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
               >
                 {status === 'loading'
                   ? <span className="w-5 h-5 border-2 border-bg border-t-transparent rounded-full animate-spin" aria-hidden="true" />
@@ -253,7 +253,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
               <button
                 onClick={() => handleOAuth('apple')}
                 disabled={status === 'loading'}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
+                className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
                 style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)', color: 'var(--fg)' }}
               >
                 <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
@@ -266,7 +266,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
               <button
                 onClick={() => handleOAuth('azure-ad')}
                 disabled={status === 'loading'}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
+                className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
                 style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)', color: 'var(--fg)' }}
               >
                 <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
@@ -280,7 +280,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
           {/* Dismiss */}
           <button
             onClick={onDismiss}
-            className="min-h-touch flex items-center text-muted text-sm hover:text-fg transition-colors pb-sp-2"
+            className="min-h-touch flex items-center text-muted text-f-base hover:text-fg transition-colors pb-sp-2"
           >
             {t('dismiss')}
           </button>

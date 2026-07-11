@@ -58,8 +58,8 @@ export default function ResetPasswordPage() {
       <div className="min-h-screen flex items-center justify-center px-sp-4 bg-bg">
         <div className="w-full max-w-[400px] text-center flex flex-col items-center gap-sp-4">
           <CheckCircle size={48} strokeWidth={2} className="text-success" aria-hidden="true" />
-          <p className="text-fg font-display font-bold text-xl">{t('success')}</p>
-          <p className="text-muted text-sm">{t('redirecting')}</p>
+          <p className="text-fg font-display font-bold text-f-2xl">{t('success')}</p>
+          <p className="text-muted text-f-base">{t('redirecting')}</p>
         </div>
       </div>
     )
@@ -79,15 +79,15 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex items-center justify-center px-sp-4 bg-bg">
       <div className="w-full max-w-[400px]">
         <div className="mb-sp-8 text-center">
-          <span className="text-lav font-display font-bold text-3xl tracking-tight select-none">B4K</span>
+          <span className="text-lav font-display font-bold text-f-2xl tracking-tight select-none">B4K</span>
         </div>
 
-        <div className="bg-bg-2 rounded-2xl p-sp-6" style={{ border: '1px solid var(--bdr)' }}>
-          <h1 className="text-fg font-display font-bold text-xl mb-sp-2">{t('title')}</h1>
-          <p className="text-muted text-sm mb-sp-5">{t('subtitle')}</p>
+        <div className="bg-bg-2 rounded-none p-sp-6" style={{ border: '1px solid var(--bdr)' }}>
+          <h1 className="text-fg font-display font-bold text-f-2xl mb-sp-2">{t('title')}</h1>
+          <p className="text-muted text-f-base mb-sp-5">{t('subtitle')}</p>
 
           {errorMessage() && (
-            <p role="alert" className="text-danger text-sm mb-sp-4">{errorMessage()}</p>
+            <p role="alert" className="text-danger text-f-base mb-sp-4">{errorMessage()}</p>
           )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-sp-4">
@@ -104,7 +104,7 @@ export default function ResetPasswordPage() {
                   placeholder={t('passwordPlaceholder')}
                   required
                   autoComplete="new-password"
-                  className="w-full min-h-touch px-sp-4 pr-12 bg-bg-3 text-fg text-sm rounded-lg outline-none focus:ring-2 focus:ring-lav"
+                  className="w-full min-h-touch px-sp-4 pr-12 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
                   style={{ border: '1px solid var(--bdr)' }}
                 />
                 <button
@@ -131,7 +131,7 @@ export default function ResetPasswordPage() {
                   placeholder={t('confirmPlaceholder')}
                   required
                   autoComplete="new-password"
-                  className="w-full min-h-touch px-sp-4 pr-12 bg-bg-3 text-fg text-sm rounded-lg outline-none focus:ring-2 focus:ring-lav"
+                  className="w-full min-h-touch px-sp-4 pr-12 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
                   style={{ border: '1px solid var(--bdr)' }}
                 />
                 <button
@@ -148,7 +148,7 @@ export default function ResetPasswordPage() {
             <button
               type="submit"
               disabled={status === 'loading' || !password || !confirm}
-              className="w-full min-h-touch flex items-center justify-center bg-lav text-bg rounded-xl font-semibold text-sm transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75 mt-sp-2"
+              className="w-full min-h-touch flex items-center justify-center bg-lav text-bg rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75 mt-sp-2"
             >
               {status === 'loading'
                 ? <><span className="w-4 h-4 border-2 border-bg border-t-transparent rounded-full animate-spin mr-sp-2" aria-hidden="true" />{t('loading')}</>
@@ -159,7 +159,7 @@ export default function ResetPasswordPage() {
         </div>
 
         <p className="text-center mt-sp-5">
-          <Link href="/" className="text-muted text-sm hover:text-fg transition-colors">
+          <Link href="/" className="text-muted text-f-base hover:text-fg transition-colors">
             {t('backToHome')}
           </Link>
         </p>

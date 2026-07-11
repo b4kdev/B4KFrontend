@@ -58,7 +58,7 @@ export default function DraftConflictModal({
 
       <div
         ref={panelRef}
-        className="relative w-full lg:w-[480px] bg-bg-2 rounded-t-2xl lg:rounded-2xl p-sp-6 outline-none"
+        className="relative w-full lg:w-[480px] bg-bg-2 rounded-none p-sp-6 outline-none"
         style={{ borderTop: '1px solid var(--bdr)' }}
       >
         {/* Drag handle */}
@@ -66,14 +66,14 @@ export default function DraftConflictModal({
           <div className="w-10 h-1 rounded-full bg-muted-2" />
         </div>
 
-        <h2 className="text-fg font-display font-bold text-lg text-center mb-sp-5 leading-snug">
+        <h2 className="text-fg font-display font-bold text-f-lg text-center mb-sp-5 leading-snug">
           {t('title')}
         </h2>
 
         <div className="grid grid-cols-2 gap-sp-3 mb-sp-5">
           {/* Device draft */}
           <div
-            className="flex flex-col gap-sp-3 p-sp-4 rounded-xl"
+            className="flex flex-col gap-sp-3 p-sp-4 rounded-none"
             style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
           >
             <div className="flex items-center gap-sp-2 text-muted text-f-xs font-semibold uppercase tracking-widest">
@@ -87,7 +87,7 @@ export default function DraftConflictModal({
             <p className="text-muted text-f-xs">{t('lastModified', { time: relativeTime(deviceDraft.lastModified) })}</p>
             <button
               onClick={onKeepDevice}
-              className="w-full min-h-touch flex items-center justify-center bg-lav text-bg rounded-lg text-f-sm font-semibold transition-opacity hover:opacity-90 active:opacity-75"
+              className="w-full min-h-touch flex items-center justify-center bg-lav text-bg rounded-none text-f-sm font-semibold transition-opacity hover:opacity-90 active:opacity-75"
             >
               {t('keep')}
             </button>
@@ -95,7 +95,7 @@ export default function DraftConflictModal({
 
           {/* Account draft */}
           <div
-            className="flex flex-col gap-sp-3 p-sp-4 rounded-xl"
+            className="flex flex-col gap-sp-3 p-sp-4 rounded-none"
             style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
           >
             <div className="flex items-center gap-sp-2 text-muted text-f-xs font-semibold uppercase tracking-widest">
@@ -109,7 +109,7 @@ export default function DraftConflictModal({
             <p className="text-muted text-f-xs">{t('lastModified', { time: relativeTime(accountDraft.lastModified) })}</p>
             <button
               onClick={onKeepAccount}
-              className="w-full min-h-touch flex items-center justify-center rounded-lg text-f-sm font-semibold transition-colors hover:text-fg"
+              className="w-full min-h-touch flex items-center justify-center rounded-none text-f-sm font-semibold transition-colors hover:text-fg"
               style={{ border: '1px solid var(--lav-border)', color: 'var(--lav)' }}
             >
               {t('keep')}
