@@ -112,7 +112,8 @@
         "minutes": "{n}m ago",
         "hours": "{n}h ago",
         "days": "{n}d ago"
-      }
+      },
+      "guestTitle": "Continue your plan"
     },
     "youMightLike": {
       "title": "You Might Like",
@@ -705,7 +706,9 @@
     "transport": {
       "car": "By car",
       "public": "Public transport",
-      "walk": "On foot"
+      "walk": "On foot",
+      "changeMode": "Change transport mode (current: {mode})",
+      "mode": "Transport: {mode}"
     },
     "actions": {
       "like": "Like",

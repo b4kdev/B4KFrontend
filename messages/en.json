@@ -180,7 +180,8 @@
         "minutes": "{n}m ago",
         "hours": "{n}h ago",
         "days": "{n}d ago"
-      }
+      },
+      "guestTitle": "Continue your plan"
     },
     "challenge": {
       "ariaLabel": "Weekly challenge",
@@ -743,7 +744,9 @@
     "transport": {
       "car": "By car",
       "public": "Public transport",
-      "walk": "On foot"
+      "walk": "On foot",
+      "changeMode": "Change transport mode (current: {mode})",
+      "mode": "Transport: {mode}"
     },
     "actions": {
       "like": "Like",

@@ -180,7 +180,8 @@
         "minutes": "{n}분 전",
         "hours": "{n}시간 전",
         "days": "{n}일 전"
-      }
+      },
+      "guestTitle": "계획 이어서 하기"
     },
     "challenge": {
       "ariaLabel": "주간 챌린지",
@@ -743,7 +744,9 @@
     "transport": {
       "car": "자가용",
       "public": "대중교통",
-      "walk": "도보"
+      "walk": "도보",
+      "changeMode": "이동 수단 변경 (현재: {mode})",
+      "mode": "이동 수단: {mode}"
     },
     "actions": {
       "like": "좋아요",
