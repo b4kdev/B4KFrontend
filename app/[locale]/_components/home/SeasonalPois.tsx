@@ -11,11 +11,11 @@ import type { HomeSeasonalPoi } from '@/app/api/home/route'
 
 function PoiCardSkeleton() {
   return (
-    <div className="rounded-xl overflow-hidden animate-pulse" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
+    <div className="rounded-none overflow-hidden animate-pulse" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
       <div className="bg-muted-3" style={{ aspectRatio: '3/2' }} />
       <div className="p-sp-3 space-y-sp-2">
-        <div className="h-[13px] w-2/3 rounded bg-muted-3" />
-        <div className="h-[11px] w-1/2 rounded bg-muted-3" />
+        <div className="h-[13px] w-2/3 rounded-none bg-muted-3" />
+        <div className="h-[11px] w-1/2 rounded-none bg-muted-3" />
       </div>
     </div>
   )
@@ -26,8 +26,8 @@ function PoiCard({ poi, t }: { poi: HomeSeasonalPoi; t: ReturnType<typeof useTra
 
   return (
     <Link
-      href="/map"
-      className="rounded-xl overflow-hidden flex flex-col hover:opacity-90 transition-opacity"
+      href={`/map?poi=${poi.place_id}`}
+      className="rounded-none overflow-hidden flex flex-col hover:opacity-90 transition-opacity"
       style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       aria-label={t('card.ariaLabel', { name, region: poi.display_region })}
     >
@@ -35,7 +35,7 @@ function PoiCard({ poi, t }: { poi: HomeSeasonalPoi; t: ReturnType<typeof useTra
         <MapPin size={28} strokeWidth={2} className="text-muted-2" aria-hidden />
         <span
           className="absolute top-[10px] right-[10px] text-[9px] font-bold tracking-[0.1em] uppercase text-fg"
-          style={{ background: 'var(--backdrop-50)', padding: '3px 8px', borderRadius: 2 }}
+          style={{ background: 'var(--backdrop-50)', padding: '3px 8px', borderRadius: 0 }}
           aria-hidden
         >
           {poi.category}
@@ -73,7 +73,7 @@ export default function SeasonalPois() {
 
       {isError && (
         <div
-          className="flex flex-col items-center justify-center text-center py-12 px-6 rounded-lg"
+          className="flex flex-col items-center justify-center text-center py-12 px-6 rounded-none"
           style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
           role="alert"
         >
@@ -91,7 +91,7 @@ export default function SeasonalPois() {
 
       {!isLoading && !isError && seasonalPois.length === 0 && (
         <div
-          className="flex flex-col items-center justify-center text-center py-12 px-6 rounded-lg"
+          className="flex flex-col items-center justify-center text-center py-12 px-6 rounded-none"
           style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
         >
           <MapPin size={32} strokeWidth={2} className="text-muted-2 mb-3" />

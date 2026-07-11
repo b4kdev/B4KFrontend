@@ -80,6 +80,9 @@ export default function MapView() {
 
     if (params.get('ai') === '1') setAiOverlayOpen(true)
 
+    const poiId = params.get('poi')
+    if (poiId) setSelectedPoiId(poiId)
+
     const planId = params.get('plan')
     if (!planId || planId === 'new') return
 
