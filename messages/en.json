@@ -718,7 +718,9 @@
       "usePlanLoaded": "Plan loaded ✓",
       "poiFound": "Here are some places:",
       "planBuilt": "Here's a plan for you:",
-      "previewPlan": "Preview Plan"
+      "previewPlan": "Preview Plan",
+      "capReached": "You've reached the free plan limit",
+      "signInToContinue": "Sign in to keep planning"
     },
     "planPill": {
       "ariaLabel": "View your plan · {count} stops"

@@ -718,7 +718,9 @@
       "usePlanLoaded": "플랜 불러옴 ✓",
       "poiFound": "관련 장소를 찾았어요:",
       "planBuilt": "이런 플랜은 어떠세요:",
-      "previewPlan": "플랜 미리보기"
+      "previewPlan": "플랜 미리보기",
+      "capReached": "무료 플랜 한도에 도달했습니다",
+      "signInToContinue": "계속하려면 로그인하세요"
     },
     "planPill": {
       "ariaLabel": "플랜 보기 · {count}개 장소"

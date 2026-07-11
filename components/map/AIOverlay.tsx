@@ -3,9 +3,11 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
+import { useSession } from 'next-auth/react'
 import { X, Minus, ArrowLeft, Send, Sparkles, Plus, Check, Loader2, ArrowRight } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { saveDraftPlan } from '@/lib/draft-plan'
+import { useAuthGate } from '@/contexts/AuthGateContext'
 import type { MapPoi } from '@/hooks/useMapPois'
 
 // ─── Types ──────────────────────────────────────────────────────
@@ -171,12 +173,40 @@ export default function AIOverlay({
   open, pois, planStopIds, onAddToPlan, onMinimize, onClose,
 }: Props) {
   const t = useTranslations('map.aiOverlay')
+  const { data: session } = useSession()
+  const { open: openAuthGate } = useAuthGate()
   const [messages, setMessages]     = useState<ChatMessage[]>([])
   const [input, setInput]           = useState('')
   const [status, setStatus]         = useState<'idle' | 'typing' | 'error'>('idle')
   const [lastQuery, setLastQuery]   = useState('')
   const scrollRef  = useRef<HTMLDivElement>(null)
   const inputRef   = useRef<HTMLInputElement>(null)
+
+  // ── FL3 guest cap — DEC-30 ───────────────────────────────────────
+  const MAJOR_REQUEST_CAP = 5
+  const FL3_COUNT_KEY = 'b4k_fl3_count' // gitleaks:allow
+
+  function getFL3Count(): number {
+    if (typeof window === 'undefined') return 0
+    try { return parseInt(localStorage.getItem(FL3_COUNT_KEY) ?? '0', 10) } catch { return 0 }
+  }
+
+  function incrementFL3Count() {
+    try { localStorage.setItem(FL3_COUNT_KEY, String(getFL3Count() + 1)) } catch {}
+  }
+
+  function isMajorIntent(text: string): boolean {
+    const lower = text.toLowerCase()
+    return /trip|plan|itinerary|route|schedule|where|find|recommend|suggest|show me|take me|여행|일정|计划|旅行|어디|찾아|추천|알려줘/.test(lower)
+  }
+
+  // Reset cap on login
+  useEffect(() => {
+    if (session) {
+      try { localStorage.removeItem(FL3_COUNT_KEY) } catch {}
+    }
+  }, [session])
+
   // Scroll to bottom on new messages
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
@@ -187,8 +217,19 @@ export default function AIOverlay({
     if (open) setTimeout(() => inputRef.current?.focus(), 100)
   }, [open])
 
+  const isCapHit = !session && getFL3Count() >= MAJOR_REQUEST_CAP
+
   async function sendMessage(text: string) {
     if (!text.trim() || status === 'typing') return
+
+    // FL3 guest cap check — DEC-30
+    if (!session && isMajorIntent(text)) {
+      if (getFL3Count() >= MAJOR_REQUEST_CAP) {
+        openAuthGate('fl3_cap')
+        return
+      }
+    }
+
     const userMsg: ChatMessage = { id: uid(), role: 'user', type: 'text', content: text.trim() }
     setMessages(prev => [...prev, userMsg])
     setInput('')
@@ -199,6 +240,10 @@ export default function AIOverlay({
       const response = await getMockResponse(text.trim(), pois)
       setMessages(prev => [...prev, response])
       setStatus('idle')
+      // Count major requests for guests after successful response
+      if (!session && isMajorIntent(text)) {
+        incrementFL3Count()
+      }
     } catch {
       setStatus('error')
     }
@@ -321,6 +366,22 @@ export default function AIOverlay({
         )}
       </div>
 
+      {/* FL3 cap banner — DEC-30 */}
+      {isCapHit && (
+        <div
+          className="px-sp-4 py-sp-3 text-center shrink-0"
+          style={{ borderTop: '1px solid var(--bdr)' }}
+        >
+          <p className="text-f-sm text-muted mb-sp-2">{t('capReached')}</p>
+          <button
+            onClick={() => openAuthGate('fl3_cap')}
+            className="text-f-sm font-semibold text-lav hover:opacity-80 transition-opacity min-h-touch"
+          >
+            {t('signInToContinue')}
+          </button>
+        </div>
+      )}
+
       {/* Input — MP_30 */}
       <div
         className="flex items-center gap-sp-2 p-sp-3 shrink-0"
@@ -333,14 +394,14 @@ export default function AIOverlay({
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={t('inputPlaceholder')}
-          disabled={status === 'typing'}
+          disabled={status === 'typing' || isCapHit}
           aria-label={t('inputPlaceholder')}
-          className="flex-1 bg-bg-3 text-fg text-sm rounded-xl px-sp-3 py-sp-2 outline-none focus:ring-1 focus:ring-lav placeholder:text-muted disabled:opacity-50 min-h-[36px]"
+          className="flex-1 bg-bg-3 text-fg text-f-sm rounded-full px-sp-3 py-sp-2 outline-none focus:ring-1 focus:ring-lav placeholder:text-muted disabled:opacity-50 min-h-[36px]"
           style={{ border: '1px solid var(--bdr)' }}
         />
         <button
           onClick={() => sendMessage(input)}
-          disabled={!input.trim() || status === 'typing'}
+          disabled={!input.trim() || status === 'typing' || isCapHit}
           aria-label={t('send')}
           className="min-w-touch min-h-touch flex items-center justify-center text-lav hover:text-fg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
         >
