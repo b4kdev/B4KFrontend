@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ItineraryPanelContent from './ItineraryPanelContent'
-import type { ItineraryDetail } from '@/app/api/itinerary/[id]/route'
+import type { ItineraryDetail } from '@/app/api/plans/[id]/route'
 
 interface Props {
   itinerary: ItineraryDetail

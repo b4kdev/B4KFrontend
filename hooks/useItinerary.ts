@@ -1,12 +1,12 @@
 import useSWR from 'swr'
 import { fetcher } from '@/lib/fetcher'
-import type { ItineraryDetail } from '@/app/api/itinerary/[id]/route'
+import type { ItineraryDetail } from '@/app/api/plans/[id]/route'
 
 export type { ItineraryDetail }
 
 export function useItinerary(id: string) {
   const { data, error, isLoading, mutate } = useSWR<ItineraryDetail | { error: string }>(
-    `/api/itinerary/${id}`,
+    `/api/plans/${id}`,
     fetcher,
     { revalidateOnFocus: false }
   )

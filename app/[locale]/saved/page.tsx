@@ -117,7 +117,7 @@ export default function SavedPage() {
       const generated = await res.json()
       const planId = generated.plan?.id ?? generated.id
       if (planId) {
-        router.push(`/itinerary/${planId}`)
+        router.push(`/plan/${planId}`)
       } else {
         throw new Error('no_plan_id')
       }
@@ -379,7 +379,7 @@ export default function SavedPage() {
                   style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
                 >
                   <Link
-                    href={`/itinerary/${plan.id}`}
+                    href={`/plan/${plan.id}`}
                     className="w-16 h-16 rounded-none flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity"
                     style={{ background: 'var(--bg-3)' }}
                     aria-label={t('myPlan.ariaLabel', { title: plan.title })}
@@ -388,7 +388,7 @@ export default function SavedPage() {
                   </Link>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-sp-2 mb-[4px]">
-                      <Link href={`/itinerary/${plan.id}`} className="text-f-base font-semibold text-fg leading-snug line-clamp-1 hover:text-lav transition-colors">
+                      <Link href={`/plan/${plan.id}`} className="text-f-base font-semibold text-fg leading-snug line-clamp-1 hover:text-lav transition-colors">
                         {plan.title}
                       </Link>
                       {plan.is_draft && (
@@ -416,7 +416,7 @@ export default function SavedPage() {
                       </Link>
                       <button
                         onClick={async () => {
-                          const url = `${window.location.origin}/itinerary/${plan.id}`
+                          const url = `${window.location.origin}/plan/${plan.id}`
                           await navigator.clipboard.writeText(url).catch(() => {})
                         }}
                         aria-label={t('myPlan.shareAriaLabel', { title: plan.title })}
@@ -462,7 +462,7 @@ export default function SavedPage() {
                 style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
               >
                 <Link
-                  href={`/itinerary/${plan.id}`}
+                  href={`/plan/${plan.id}`}
                   className="w-16 h-16 rounded-none flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity"
                   style={{ background: 'var(--bg-3)' }}
                   aria-label={t('plan.ariaLabel', { title: plan.title })}
@@ -470,7 +470,7 @@ export default function SavedPage() {
                   <MapPin size={22} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
                 </Link>
                 <div className="flex-1 min-w-0">
-                  <Link href={`/itinerary/${plan.id}`} className="block text-f-base font-semibold text-fg leading-snug mb-[4px] line-clamp-2 hover:text-lav transition-colors">
+                  <Link href={`/plan/${plan.id}`} className="block text-f-base font-semibold text-fg leading-snug mb-[4px] line-clamp-2 hover:text-lav transition-colors">
                     {plan.title}
                   </Link>
                   <p className="text-f-sm text-muted mb-sp-2">{plan.author_name}</p>

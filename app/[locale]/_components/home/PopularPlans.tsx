@@ -30,7 +30,7 @@ function PlanCard({ plan, t }: { plan: HomePopularPlan; t: ReturnType<typeof use
   const title = getDisplayName({ name_en: plan.title })
   return (
     <Link
-      href={`/itinerary/${plan.id}`}
+      href={`/plan/${plan.id}`}
       className="flex flex-col overflow-hidden hover:opacity-90 transition-opacity"
       style={{ width: 'clamp(220px, 64vw, 280px)', background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       aria-label={t('card.ariaLabel', { title, author: plan.author_name })}

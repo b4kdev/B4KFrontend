@@ -11,6 +11,7 @@ import { ToastProvider } from '@/contexts/ToastContext';
 import AuthGateModal from '@/components/auth/AuthGateModal';
 import ToastStack from '@/components/ui/Toast';
 import { useDraftMigration } from '@/hooks/useDraftMigration';
+import OfflineBanner from '@/components/layout/OfflineBanner';
 
 function ShellInner({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -29,6 +30,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       />
       <MobileBottomNav />
       <PageLayout>{children}</PageLayout>
+      <OfflineBanner />
       <AuthGateModal open={isOpen} onDismiss={close} />
       <ToastStack />
     </>

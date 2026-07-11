@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import {
-  Bell, AlertCircle, Star, Award,
+  Bell, AlertCircle, Star, Award, Trophy, Tag,
   CalendarDays, RefreshCw, AlertTriangle, Check,
 } from 'lucide-react'
 import { useNotifications } from '@/hooks/useNotifications'
@@ -14,6 +14,8 @@ const TYPE_ICON: Partial<Record<NotificationType, React.ElementType>> = {
   deal_expiring:  AlertCircle,
   editorial_pick: Star,
   badge_earned:   Award,
+  challenge_new:  Trophy,
+  promotion:      Tag,
 }
 
 function isValidInternalLink(url: string | null | undefined): url is string {

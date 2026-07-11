@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import { Link } from '@/i18n/navigation'
 import { getDisplayName } from '@/lib/display-name'
-import type { ItineraryDetail } from '@/app/api/itinerary/[id]/route'
+import type { ItineraryDetail } from '@/app/api/plans/[id]/route'
 
 type TransportMode = 'car' | 'public' | 'walk'
 const MODES: TransportMode[] = ['car', 'public', 'walk']
@@ -418,7 +418,7 @@ export default function ItineraryPanelContent({
             {itinerary.related.map(rel => (
               <Link
                 key={rel.id}
-                href={`/itinerary/${rel.id}`}
+                href={`/plan/${rel.id}`}
                 className="flex items-center gap-sp-3 p-sp-3 rounded-xl transition-colors hover:bg-bg-3"
                 style={{ border: '1px solid var(--bdr)' }}
               >
