@@ -60,7 +60,11 @@ export default function MapView() {
   const [draftResumePlanId, setDraftResumePlanId]       = useState<string | null>(null)
   // Pending POI to add after T1 resolution
   const [pendingPoiId, setPendingPoiId] = useState<string | null>(null)
-  const savedSeededRef = useRef(false)
+  // DEC-29: track saving state for PlanNamingSheet spinner
+  const [namingSaving, setNamingSaving] = useState(false)
+  const savedSeededRef  = useRef(false)
+  // DEC-33 T1: track whether draft-conflict check has been resolved this session
+  const t1CheckedRef    = useRef(false)
 
   const { pois } = useMapPois(activeRegion, activeFilters)
   const { data: savedData, mutate: mutateSaved } = useSaved()
@@ -159,8 +163,8 @@ export default function MapView() {
   function handleAddToPlan(poiId: string) {
     if (planStopIds.includes(poiId) || planStopIds.length >= MAX_STOPS) return
 
-    // DEC-33 T1: logged-in user adds first stop → check for existing DB draft
-    if (session && planStopIds.length === 0) {
+    // DEC-33 T1: logged-in user, first plan interaction this session → check for existing DB draft
+    if (session && !t1CheckedRef.current) {
       fetch('/api/plans/draft')
         .then(r => r.ok ? r.json() : null)
         .then((dbDraft: { id: string; stop_count: number } | null) => {
@@ -170,14 +174,16 @@ export default function MapView() {
             setDraftResumePlanId(dbDraft.id)
             setDraftResumeOpen(true)
           } else {
-            // No DB draft — add directly
+            // No DB draft — add directly, mark T1 as done for this session
+            t1CheckedRef.current = true
             setPlanStopIds(prev => [...prev, poiId])
             setStopDurations(prev => ({ ...prev, [poiId]: DEFAULT_DURATION }))
             showToast(t('poiDetail.addedToast'))
           }
         })
         .catch(() => {
-          // Network error — proceed without T1 check
+          // Network error — proceed without T1 check, mark as done to avoid repeated prompts
+          t1CheckedRef.current = true
           setPlanStopIds(prev => [...prev, poiId])
           setStopDurations(prev => ({ ...prev, [poiId]: DEFAULT_DURATION }))
           showToast(t('poiDetail.addedToast'))
@@ -193,6 +199,7 @@ export default function MapView() {
   // DEC-33 T1: resume existing DB draft — load it into editing state
   async function handleResumeExistingDraft() {
     setDraftResumeOpen(false)
+    t1CheckedRef.current = true
     setPendingPoiId(null)
     if (!draftResumePlanId) return
     try {
@@ -229,6 +236,7 @@ export default function MapView() {
   // DEC-33 T1: start fresh — delete DB draft, then add the pending POI
   async function handleStartFresh() {
     setDraftResumeOpen(false)
+    t1CheckedRef.current = true
     if (draftResumePlanId) {
       try {
         await fetch(`/api/plans/${draftResumePlanId}`, { method: 'DELETE' })
@@ -290,7 +298,7 @@ export default function MapView() {
 
   // DEC-29: user confirmed title → POST draft then PATCH is_published=true → navigate IT_01
   async function handleConfirmNaming(title: string) {
-    setNamingSheetOpen(false)
+    setNamingSaving(true)
     saveDraftPlan({ stops: planStops, durations: stopDurations })
     try {
       const res = await fetch('/api/plans', {
@@ -316,11 +324,12 @@ export default function MapView() {
       })
       if (!patchRes.ok) throw new Error()
       clearDraftPlan()
+      setNamingSheetOpen(false)
+      setNamingSaving(false)
       router.push(`/itinerary/${plan.id}`)
     } catch {
+      setNamingSaving(false)
       showToast(t('plan.saveError'), 'error')
-      // Re-open naming sheet so user doesn't lose their title
-      setNamingSheetOpen(true)
     }
   }
 
@@ -454,6 +463,7 @@ export default function MapView() {
       {/* DEC-29 — naming sheet before publishing */}
       <PlanNamingSheet
         open={namingSheetOpen}
+        saving={namingSaving}
         initialTitle=""
         onSave={handleConfirmNaming}
         onCancel={() => setNamingSheetOpen(false)}

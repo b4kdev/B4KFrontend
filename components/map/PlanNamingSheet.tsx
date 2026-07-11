@@ -2,16 +2,17 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
-import { X } from 'lucide-react'
+import { X, Loader2 } from 'lucide-react'
 
 interface Props {
-  open:         boolean
+  open:          boolean
+  saving?:       boolean
   initialTitle?: string
-  onSave:       (title: string) => void
-  onCancel:     () => void
+  onSave:        (title: string) => void
+  onCancel:      () => void
 }
 
-export default function PlanNamingSheet({ open, initialTitle = '', onSave, onCancel }: Props) {
+export default function PlanNamingSheet({ open, saving = false, initialTitle = '', onSave, onCancel }: Props) {
   const t        = useTranslations('map.namingSheet')
   const [title, setTitle] = useState(initialTitle)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -34,7 +35,7 @@ export default function PlanNamingSheet({ open, initialTitle = '', onSave, onCan
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const trimmed = title.trim()
-    if (!trimmed) return
+    if (!trimmed || saving) return
     onSave(trimmed)
   }
 
@@ -45,7 +46,7 @@ export default function PlanNamingSheet({ open, initialTitle = '', onSave, onCan
       aria-modal="true"
       aria-label={t('ariaLabel')}
     >
-      <div className="absolute inset-0 bg-backdrop-50" aria-hidden="true" onClick={onCancel} />
+      <div className="absolute inset-0 bg-backdrop-50" aria-hidden="true" onClick={saving ? undefined : onCancel} />
       <div
         className="relative w-full lg:w-[480px] bg-bg-2 rounded-none p-sp-6"
         style={{ borderTop: '1px solid var(--bdr)' }}
@@ -87,18 +88,22 @@ export default function PlanNamingSheet({ open, initialTitle = '', onSave, onCan
             <button
               type="button"
               onClick={onCancel}
-              className="flex-1 min-h-touch rounded-none text-f-sm font-semibold text-muted hover:text-fg transition-colors"
+              disabled={saving}
+              className="flex-1 min-h-touch rounded-none text-f-sm font-semibold text-muted hover:text-fg transition-colors disabled:opacity-40"
               style={{ border: '1px solid var(--bdr)' }}
             >
               {t('cancel')}
             </button>
             <button
               type="submit"
-              disabled={!title.trim()}
-              className="flex-1 min-h-touch rounded-none text-f-sm font-semibold transition-opacity disabled:opacity-40"
+              disabled={!title.trim() || saving}
+              className="flex-1 min-h-touch rounded-none text-f-sm font-semibold transition-opacity disabled:opacity-40 flex items-center justify-center gap-sp-2"
               style={{ background: 'var(--lav)', color: 'var(--bg)' }}
             >
-              {t('save')}
+              {saving
+                ? <Loader2 size={16} strokeWidth={2} className="animate-spin" aria-hidden="true" />
+                : t('save')
+              }
             </button>
           </div>
         </form>
