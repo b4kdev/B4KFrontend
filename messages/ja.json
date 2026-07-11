@@ -884,7 +884,23 @@
       "deleteAccount": "Delete account",
       "deleteWarning": "Your account will be permanently deleted after 30 days. This cannot be undone.",
       "deleteConfirm": "Yes, delete my account",
-      "deleteCancel": "Cancel"
+      "deleteCancel": "Cancel",
+      "deleteTypePrompt": "Type \"DELETE\" to confirm",
+      "deleteTypeHint": "You must type DELETE (all caps) to enable the confirm button",
+      "password": {
+        "heading": "Change password",
+        "current": "Current password",
+        "new": "New password",
+        "confirm": "Confirm new password",
+        "hint": "At least 8 characters",
+        "show": "Show password",
+        "hide": "Hide password",
+        "submit": "Update password",
+        "submitting": "Updating…",
+        "success": "Password updated",
+        "mismatch": "Passwords do not match"
+      },
+      "passwordError": "Failed to update password. Check your current password and try again."
     },
     "saved": {
       "loading": "Loading saved places…",

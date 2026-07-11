@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { useRouter, usePathname, Link } from '@/i18n/navigation'
+import { useRouter, usePathname } from '@/i18n/navigation'
 import { signOut } from 'next-auth/react'
-import { Car, Train, Check, AlertTriangle } from 'lucide-react'
+import { Car, Train, Check, AlertTriangle, Eye, EyeOff } from 'lucide-react'
 import { useProfile } from '@/hooks/useProfile'
 
 const LOCALES = ['en', 'ko', 'ja', 'zh-CN', 'zh-TW', 'th', 'pt-BR'] as const
@@ -23,6 +23,9 @@ function DeleteConfirmModal({
   deleting: boolean
   t: ReturnType<typeof useTranslations>
 }) {
+  const [typed, setTyped] = useState('')
+  const confirmed = typed === 'DELETE'
+
   return (
     <div
       className="fixed inset-0 z-[200] flex items-center justify-center p-sp-4"
@@ -42,7 +45,25 @@ function DeleteConfirmModal({
             <p className="text-f-md text-muted mt-sp-2">{t('settings.deleteWarning')}</p>
           </div>
         </div>
-        <div className="flex gap-sp-3 mt-sp-2">
+        <div className="flex flex-col gap-sp-2">
+          <label htmlFor="delete-confirm-input" className="text-f-sm text-muted">
+            {t('settings.deleteTypePrompt')}
+          </label>
+          <input
+            id="delete-confirm-input"
+            type="text"
+            value={typed}
+            onChange={(e) => setTyped(e.target.value)}
+            placeholder="DELETE"
+            autoComplete="off"
+            spellCheck={false}
+            className="w-full rounded-none px-sp-3 min-h-touch text-f-base font-mono text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-danger/50"
+            style={{ border: '1px solid var(--bdr)' }}
+            aria-describedby="delete-confirm-hint"
+          />
+          <p id="delete-confirm-hint" className="sr-only">{t('settings.deleteTypeHint')}</p>
+        </div>
+        <div className="flex gap-sp-3">
           <button
             onClick={onCancel}
             disabled={deleting}
@@ -53,9 +74,13 @@ function DeleteConfirmModal({
           </button>
           <button
             onClick={onConfirm}
-            disabled={deleting}
-            className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-fg hover:opacity-90 transition-opacity"
-            style={{ background: 'var(--danger)' }}
+            disabled={!confirmed || deleting}
+            className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-fg transition-opacity"
+            style={{
+              background: 'var(--danger)',
+              opacity: confirmed && !deleting ? 1 : 0.4,
+              cursor: confirmed && !deleting ? 'pointer' : 'not-allowed',
+            }}
           >
             {deleting ? '…' : t('settings.deleteConfirm')}
           </button>
@@ -77,6 +102,16 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
+
+  // Password change state
+  const [pwCurrent, setPwCurrent] = useState('')
+  const [pwNew, setPwNew] = useState('')
+  const [pwConfirm, setPwConfirm] = useState('')
+  const [pwShowCurrent, setPwShowCurrent] = useState(false)
+  const [pwShowNew, setPwShowNew] = useState(false)
+  const [pwChanging, setPwChanging] = useState(false)
+  const [pwStatus, setPwStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [pwError, setPwError] = useState('')
 
   const handleLangChange = (locale: string) => {
     router.replace(pathname, { locale })
@@ -109,13 +144,45 @@ export default function SettingsPage() {
   const handleDeleteAccount = async () => {
     setDeleting(true)
     try {
-      const res = await fetch('/api/profile/delete', { method: 'POST' })
+      const res = await fetch('/api/account/delete', { method: 'POST' })
       if (res.ok) {
         await signOut({ callbackUrl: '/' })
       }
     } finally {
       setDeleting(false)
       setDeleteConfirmOpen(false)
+    }
+  }
+
+  const pwValid = pwCurrent.length > 0 && pwNew.length >= 8 && pwNew === pwConfirm
+
+  const handlePasswordChange = async () => {
+    if (!pwValid) return
+    setPwChanging(true)
+    setPwStatus('idle')
+    setPwError('')
+    try {
+      const res = await fetch('/api/account/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: pwCurrent, newPassword: pwNew }),
+      })
+      if (res.ok) {
+        setPwStatus('success')
+        setPwCurrent('')
+        setPwNew('')
+        setPwConfirm('')
+        setTimeout(() => setPwStatus('idle'), 3000)
+      } else {
+        const body = await res.json().catch(() => ({}))
+        setPwStatus('error')
+        setPwError(body.error ?? t('settings.passwordError'))
+      }
+    } catch {
+      setPwStatus('error')
+      setPwError(t('settings.passwordError'))
+    } finally {
+      setPwChanging(false)
     }
   }
 
@@ -258,21 +325,141 @@ export default function SettingsPage() {
           ) : t('settings.preferences.save')}
         </button>
 
-        {/* Account actions — sign out + password + delete */}
+        {/* Password change — C9 / feature 5.1.3 */}
+        <section aria-labelledby="password-heading">
+          <h2 id="password-heading" className={sectionHeading}>
+            {t('settings.password.heading')}
+          </h2>
+          <div
+            className="rounded-none overflow-hidden"
+            style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+          >
+            <div className="flex flex-col gap-sp-4 p-sp-4">
+              {/* Current password */}
+              <div className="flex flex-col gap-sp-2">
+                <label htmlFor="pw-current" className={label}>
+                  {t('settings.password.current')}
+                </label>
+                <div className="relative">
+                  <input
+                    id="pw-current"
+                    type={pwShowCurrent ? 'text' : 'password'}
+                    value={pwCurrent}
+                    onChange={(e) => { setPwCurrent(e.target.value); setPwStatus('idle') }}
+                    autoComplete="current-password"
+                    className="w-full rounded-none px-sp-3 pr-12 min-h-touch text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-lav-border"
+                    style={{ border: '1px solid var(--bdr)' }}
+                    aria-label={t('settings.password.current')}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setPwShowCurrent((v) => !v)}
+                    className="absolute right-sp-3 top-1/2 -translate-y-1/2 text-muted hover:text-fg transition-colors"
+                    aria-label={pwShowCurrent ? t('settings.password.hide') : t('settings.password.show')}
+                    tabIndex={0}
+                  >
+                    {pwShowCurrent
+                      ? <EyeOff size={16} strokeWidth={2} aria-hidden="true" />
+                      : <Eye size={16} strokeWidth={2} aria-hidden="true" />
+                    }
+                  </button>
+                </div>
+              </div>
+
+              {/* New password */}
+              <div className="flex flex-col gap-sp-2">
+                <label htmlFor="pw-new" className={label}>
+                  {t('settings.password.new')}
+                </label>
+                <div className="relative">
+                  <input
+                    id="pw-new"
+                    type={pwShowNew ? 'text' : 'password'}
+                    value={pwNew}
+                    onChange={(e) => { setPwNew(e.target.value); setPwStatus('idle') }}
+                    autoComplete="new-password"
+                    minLength={8}
+                    className="w-full rounded-none px-sp-3 pr-12 min-h-touch text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-lav-border"
+                    style={{ border: '1px solid var(--bdr)' }}
+                    aria-label={t('settings.password.new')}
+                    aria-describedby="pw-new-hint"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setPwShowNew((v) => !v)}
+                    className="absolute right-sp-3 top-1/2 -translate-y-1/2 text-muted hover:text-fg transition-colors"
+                    aria-label={pwShowNew ? t('settings.password.hide') : t('settings.password.show')}
+                    tabIndex={0}
+                  >
+                    {pwShowNew
+                      ? <EyeOff size={16} strokeWidth={2} aria-hidden="true" />
+                      : <Eye size={16} strokeWidth={2} aria-hidden="true" />
+                    }
+                  </button>
+                </div>
+                <p id="pw-new-hint" className={sublabel}>{t('settings.password.hint')}</p>
+              </div>
+
+              {/* Confirm new password */}
+              <div className="flex flex-col gap-sp-2">
+                <label htmlFor="pw-confirm" className={label}>
+                  {t('settings.password.confirm')}
+                </label>
+                <input
+                  id="pw-confirm"
+                  type="password"
+                  value={pwConfirm}
+                  onChange={(e) => { setPwConfirm(e.target.value); setPwStatus('idle') }}
+                  autoComplete="new-password"
+                  className="w-full rounded-none px-sp-3 min-h-touch text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-lav-border"
+                  style={{
+                    border: pwConfirm.length > 0 && pwNew !== pwConfirm
+                      ? '1px solid var(--danger)'
+                      : '1px solid var(--bdr)',
+                  }}
+                  aria-label={t('settings.password.confirm')}
+                  aria-invalid={pwConfirm.length > 0 && pwNew !== pwConfirm}
+                />
+                {pwConfirm.length > 0 && pwNew !== pwConfirm && (
+                  <p className="text-f-sm text-danger" role="alert">{t('settings.password.mismatch')}</p>
+                )}
+              </div>
+
+              {/* Status / feedback */}
+              {pwStatus === 'success' && (
+                <div className="flex items-center gap-sp-2 text-success text-f-sm" role="status">
+                  <Check size={14} strokeWidth={2} aria-hidden="true" />
+                  {t('settings.password.success')}
+                </div>
+              )}
+              {pwStatus === 'error' && (
+                <p className="text-f-sm text-danger" role="alert">{pwError}</p>
+              )}
+
+              {/* Submit */}
+              <button
+                onClick={handlePasswordChange}
+                disabled={!pwValid || pwChanging}
+                className="self-start min-h-touch px-sp-8 rounded-full text-f-md font-semibold transition-all bg-lav-dim text-lav hover:bg-lav-mid"
+                style={{
+                  border: '1px solid var(--lav-border)',
+                  opacity: pwValid && !pwChanging ? 1 : 0.4,
+                  cursor: pwValid && !pwChanging ? 'pointer' : 'not-allowed',
+                }}
+                aria-label={t('settings.password.submit')}
+              >
+                {pwChanging ? t('settings.password.submitting') : t('settings.password.submit')}
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Account actions — sign out + delete */}
         <section aria-labelledby="actions-heading">
           <h2 id="actions-heading" className={sectionHeading}>
             {t('settings.account.heading')}
           </h2>
           <div className="flex flex-col gap-sp-2">
-            {/* Change password */}
-            <Link
-              href="/auth/reset-password"
-              className="w-full min-h-touch rounded-none text-f-sm font-semibold text-muted hover:text-fg transition-colors flex items-center px-sp-4"
-              style={{ border: '1px solid var(--bdr)', background: 'var(--bg-2)' }}
-            >
-              {t('settings.changePassword')}
-            </Link>
-
             {/* Sign out */}
             <button
               onClick={() => signOut({ callbackUrl: '/' })}
