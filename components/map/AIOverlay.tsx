@@ -141,8 +141,8 @@ function PlanResult({ stops }: { stops: MapPoi[] }) {
   function handlePreviewPlan() {
     const durations: Record<string, number> = {}
     stops.forEach(s => { durations[s.place_id] = 60 })
-    saveDraftPlan({ stops, durations, transport: 'public' })
-    router.push('/plan/preview')
+    saveDraftPlan({ stops, durations })
+    router.push('/map')
   }
 
   return (

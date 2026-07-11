@@ -14,7 +14,6 @@ interface Props {
   activeFilters:    string[]
   planStops:        MapPoi[]
   stopDurations:    Record<string, number>
-  transport:        'car' | 'public'
   onRegionToggle:   (region: string) => void
   onFilterToggle:   (filter: string) => void
   isSaved:          (id: string) => boolean
@@ -25,16 +24,15 @@ interface Props {
   onReorder:        (newOrder: string[]) => void
   onRemove:         (id: string) => void
   onDurationChange: (id: string, minutes: number) => void
-  onTransportChange:(mode: 'car' | 'public') => void
   onPreviewPlan:    () => void
 }
 
 export default function LeftPanel({
   pois, selectedPoiId,
   activeRegion, activeFilters, onRegionToggle, onFilterToggle,
-  planStops, stopDurations, transport,
+  planStops, stopDurations,
   isSaved, isInPlan, planFull, onAddToPlan, onToggleSave,
-  onReorder, onRemove, onDurationChange, onTransportChange, onPreviewPlan,
+  onReorder, onRemove, onDurationChange, onPreviewPlan,
 }: Props) {
   const [planStripExpanded, setPlanStripExpanded] = useState(false)
 
@@ -52,11 +50,9 @@ export default function LeftPanel({
           <LeftPanelPlanActive
             stops={planStops}
             stopDurations={stopDurations}
-            transport={transport}
             onReorder={onReorder}
             onRemove={onRemove}
             onDurationChange={onDurationChange}
-            onTransportChange={onTransportChange}
             onPreviewPlan={onPreviewPlan}
           />
         </div>

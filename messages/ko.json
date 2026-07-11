@@ -428,13 +428,59 @@
     "gate": {
       "title": "B4K에 로그인",
       "valueProp": "플랜 저장 · 리더보드 잠금 해제 · 배지 획득",
-      "google": "Google로 계속하기",
-      "dismiss": "게스트로 계속하기",
-      "loading": "로그인 중…",
-      "error": "로그인에 실패했습니다. 다시 시도해 주세요.",
-      "ariaLabel": "로그인 모달",
-      "close": "로그인 모달 닫기",
-      "planPreserved": "현재 플랜은 그대로 저장돼 있어요 — 로그인하면 영구 저장됩니다."
+      "context": {
+        "save_poi":        "장소를 저장하려면 로그인하세요",
+        "like":            "좋아요를 누르려면 로그인하세요",
+        "save_plan":       "플랜을 저장하려면 로그인하세요",
+        "save_plan_other": "이 플랜을 저장하려면 로그인하세요",
+        "saved_tab":       "저장한 항목을 보려면 로그인하세요",
+        "profile_nav":     "프로필을 보려면 로그인하세요",
+        "fl3_cap":         "계속 계획하려면 로그인하세요"
+      },
+      "google":          "Google로 계속하기",
+      "apple":           "Apple로 계속하기",
+      "microsoft":       "Microsoft로 계속하기",
+      "email":           "이메일로 로그인",
+      "emailPlaceholder": "이메일 주소",
+      "passwordPlaceholder": "비밀번호",
+      "signIn":          "로그인",
+      "backToProviders": "← 다른 로그인 방법",
+      "dismiss":         "게스트로 계속하기",
+      "loading":         "로그인 중…",
+      "error":           "로그인에 실패했습니다. 다시 시도해 주세요.",
+      "ariaLabel":       "로그인 모달",
+      "close":           "로그인 모달 닫기",
+      "planPreserved":   "현재 플랜은 그대로 저장돼 있어요 — 로그인하면 영구 저장됩니다.",
+      "fl3Preserved":    "채팅과 플랜이 저장되어 있어요 — 로그인해서 계속 계획하세요."
+    },
+    "conflict": {
+      "ariaLabel":    "초안 충돌 선택 모달",
+      "title":        "초안이 두 개 있어요 — 어느 것을 유지할까요?",
+      "deviceDraft":  "이 기기",
+      "accountDraft": "계정",
+      "stops":        "{count}개 정류장",
+      "lastModified": "{time}에 마지막 수정",
+      "keep":         "이것으로 유지",
+      "discardNote":  "선택하지 않은 초안은 영구 삭제됩니다."
+    },
+    "resetPassword": {
+      "title":             "새 비밀번호 설정",
+      "subtitle":          "아래에 새 비밀번호를 입력하세요.",
+      "passwordLabel":     "새 비밀번호",
+      "passwordPlaceholder": "새 비밀번호",
+      "confirmLabel":      "비밀번호 확인",
+      "confirmPlaceholder": "비밀번호 확인",
+      "submit":            "비밀번호 설정",
+      "loading":           "저장 중…",
+      "success":           "비밀번호가 업데이트되었습니다 — 로그인 중",
+      "redirecting":       "홈으로 이동 중…",
+      "errorMismatch":     "비밀번호가 일치하지 않습니다",
+      "errorWeak":         "비밀번호는 8자 이상이어야 합니다",
+      "errorExpired":      "링크가 만료되었습니다. 새 링크를 요청하세요.",
+      "errorGeneric":      "오류가 발생했습니다. 다시 시도해 주세요.",
+      "showPw":            "비밀번호 표시",
+      "hidePw":            "비밀번호 숨기기",
+      "backToHome":        "홈으로 돌아가기"
     }
   },
   "map": {
@@ -807,9 +853,10 @@
     "breadcrumb": "저장됨",
     "title": "저장됨",
     "tabs": {
-      "ariaLabel": "콘텐츠 탭",
-      "places": "장소",
-      "itineraries": "일정"
+      "ariaLabel":  "콘텐츠 탭",
+      "places":     "장소",
+      "myPlans":    "내 플랜",
+      "savedPlans": "저장된 플랜"
     },
     "loading": "저장된 항목을 불러오는 중…",
     "error": {
@@ -819,13 +866,18 @@
     "empty": {
       "places": {
         "title": "저장된 장소가 없습니다",
-        "desc": "장소의 북마크 아이콘을 눌러 저장하세요.",
-        "cta": "지도 둘러보기"
+        "desc":  "장소의 북마크 아이콘을 눌러 저장하세요.",
+        "cta":   "지도 둘러보기"
       },
-      "itineraries": {
-        "title": "저장된 일정이 없습니다",
-        "desc": "마음에 드는 일정을 저장하면 언제든지 다시 볼 수 있습니다.",
-        "cta": "지도 둘러보기"
+      "myPlans": {
+        "title": "아직 플랜이 없습니다",
+        "desc":  "지도에서 첫 플랜을 만들어보세요.",
+        "cta":   "지도 열기"
+      },
+      "savedPlans": {
+        "title": "저장된 플랜이 없습니다",
+        "desc":  "마음에 드는 플랜을 저장하면 언제든지 다시 볼 수 있습니다.",
+        "cta":   "지도 둘러보기"
       }
     },
     "place": {
@@ -833,8 +885,28 @@
     },
     "plan": {
       "ariaLabel": "일정 {title} 보기",
-      "stops": "{count}개 정류장",
-      "days": "{count}일"
+      "stops":     "{count}개 정류장",
+      "days":      "{count}일"
+    },
+    "myPlan": {
+      "ariaLabel":       "플랜 {title} 보기",
+      "draft":           "초안",
+      "edit":            "편집",
+      "share":           "공유",
+      "delete":          "삭제",
+      "editAriaLabel":   "플랜 {title} 편집",
+      "shareAriaLabel":  "플랜 {title} 공유",
+      "deleteAriaLabel": "플랜 {title} 삭제"
+    },
+    "unsave": {
+      "label":    "저장 취소",
+      "ariaLabel":"플랜 {title} 저장 취소"
+    },
+    "confirmDelete": {
+      "title":   "플랜을 삭제할까요?",
+      "desc":    "이 플랜이 영구적으로 삭제됩니다.",
+      "confirm": "삭제",
+      "cancel":  "취소"
     },
     "folder": {
       "openAriaLabel": "{name} 폴더 열기",

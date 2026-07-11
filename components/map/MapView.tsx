@@ -35,7 +35,6 @@ export default function MapView() {
   const [planStopIds, setPlanStopIds]     = useState<string[]>([])
   const [savedPoiIds, setSavedPoiIds]     = useState<Set<string>>(new Set())
   const [stopDurations, setStopDurations] = useState<Record<string, number>>({})
-  const [transport, setTransport]         = useState<'car' | 'public'>('car')
   const [planSheetOpen, setPlanSheetOpen] = useState(false)
 
   const { pois } = useMapPois(activeRegion, activeFilters)
@@ -47,7 +46,6 @@ export default function MapView() {
     const ids = draft.stops.map(s => s.place_id)
     setPlanStopIds(ids)
     setStopDurations(draft.durations)
-    setTransport(draft.transport)
     clearDraftPlan()
   }, [])
 
@@ -84,7 +82,7 @@ export default function MapView() {
   }
 
   function handleToggleSave(poi: MapPoi) {
-    if (!session) { openAuthGate('save'); return }
+    if (!session) { openAuthGate('save_poi'); return }
     setSavedPoiIds(prev => {
       const next = new Set(prev)
       if (next.has(poi.place_id)) {
@@ -107,8 +105,8 @@ export default function MapView() {
   }
 
   async function handlePreviewPlan() {
-    if (!session) { openAuthGate('save'); return }
-    saveDraftPlan({ stops: planStops, durations: stopDurations, transport })
+    if (!session) { openAuthGate('save_plan'); return }
+    saveDraftPlan({ stops: planStops, durations: stopDurations })
     try {
       const res = await fetch('/api/plans', {
         method: 'POST',
@@ -153,7 +151,6 @@ export default function MapView() {
           activeFilters={activeFilters}
           planStops={planStops}
           stopDurations={stopDurations}
-          transport={transport}
           onRegionToggle={handleRegionToggle}
           onFilterToggle={handleFilterToggle}
           isSaved={id => savedPoiIds.has(id)}
@@ -164,7 +161,6 @@ export default function MapView() {
           onReorder={handleReorder}
           onRemove={handleRemoveFromPlan}
           onDurationChange={handleDurationChange}
-          onTransportChange={setTransport}
           onPreviewPlan={handlePreviewPlan}
         />
       </aside>
@@ -230,11 +226,9 @@ export default function MapView() {
         isOpen={planSheetOpen}
         stops={planStops}
         stopDurations={stopDurations}
-        transport={transport}
         onReorder={handleReorder}
         onRemove={handleRemoveFromPlan}
         onDurationChange={handleDurationChange}
-        onTransportChange={setTransport}
         onSavePlan={handlePreviewPlan}
         onDismiss={() => setPlanSheetOpen(false)}
       />

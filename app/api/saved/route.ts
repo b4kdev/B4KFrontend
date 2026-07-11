@@ -17,6 +17,7 @@ export interface SavedFolder {
   created_at: string
 }
 
+/** Plans saved from other users — social.plan_saves */
 export interface SavedPlan {
   id: string
   title: string
@@ -30,10 +31,24 @@ export interface SavedPlan {
   saved_at: string
 }
 
+/** Own published plans + active draft — ai.plans WHERE author_id = current_user */
+export interface MyPlan {
+  id: string
+  title: string
+  stop_count: number
+  duration_days: number
+  cover_image_url: string | null
+  is_draft: boolean
+  likes_count: number
+  saves_count: number
+  updated_at: string
+}
+
 export interface SavedData {
-  pois: SavedPoi[]
-  folders: SavedFolder[]
-  plans: SavedPlan[]
+  pois:     SavedPoi[]
+  folders:  SavedFolder[]
+  plans:    SavedPlan[]
+  myPlans:  MyPlan[]
 }
 
 const MOCK_POIS: SavedPoi[] = [
@@ -46,22 +61,16 @@ const MOCK_POIS: SavedPoi[] = [
 const MOCK: SavedData = {
   pois: MOCK_POIS,
   folders: [
-    {
-      id: 'folder-001',
-      name: 'Seoul Trip',
-      created_at: '2026-06-01T00:00:00Z',
-      pois: [MOCK_POIS[0], MOCK_POIS[1], MOCK_POIS[2]],
-    },
-    {
-      id: 'folder-002',
-      name: 'Jeju Island',
-      created_at: '2026-06-03T00:00:00Z',
-      pois: [MOCK_POIS[3]],
-    },
+    { id: 'folder-001', name: 'Seoul Trip',    created_at: '2026-06-01T00:00:00Z', pois: [MOCK_POIS[0], MOCK_POIS[1], MOCK_POIS[2]] },
+    { id: 'folder-002', name: 'Jeju Island',   created_at: '2026-06-03T00:00:00Z', pois: [MOCK_POIS[3]] },
   ],
   plans: [
     { id: 'sp-001', title: 'Seoul in 3 Days — K-Pop & History', stop_count: 8, duration_days: 3, cover_image_url: null, author_name: 'JiYeon K.',  author_avatar_url: null, likes_count: 142, saves_count: 89, saved_at: '2026-06-08T11:00:00Z' },
     { id: 'sp-002', title: 'Jeju Island Hidden Gems',            stop_count: 5, duration_days: 2, cover_image_url: null, author_name: 'Takumi M.', author_avatar_url: null, likes_count: 78,  saves_count: 45, saved_at: '2026-06-07T18:00:00Z' },
+  ],
+  myPlans: [
+    { id: 'my-001', title: 'My Seoul Weekend',    stop_count: 6, duration_days: 2, cover_image_url: null, is_draft: false, likes_count: 12, saves_count: 7,  updated_at: '2026-06-09T14:00:00Z' },
+    { id: 'my-002', title: 'Untitled plan',       stop_count: 3, duration_days: 1, cover_image_url: null, is_draft: true,  likes_count: 0,  saves_count: 0,  updated_at: '2026-06-10T08:30:00Z' },
   ],
 }
 

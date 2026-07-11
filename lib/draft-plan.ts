@@ -1,10 +1,9 @@
 import type { MapPoi } from '@/hooks/useMapPois'
 
 export interface DraftPlan {
-  stops: MapPoi[]
+  stops:     MapPoi[]
   durations: Record<string, number>
-  transport: 'car' | 'public'
-  name?: string
+  name?:     string
 }
 
 const KEY = 'b4k_draft_plan'

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { GripVertical, X, Car, Bus, Clock, ArrowRight, AlertTriangle } from 'lucide-react'
+import { GripVertical, X, Clock, ArrowRight, AlertTriangle } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import type { MapPoi } from '@/hooks/useMapPois'
 
@@ -10,18 +10,16 @@ interface Props {
   isOpen:           boolean
   stops:            MapPoi[]
   stopDurations:    Record<string, number>
-  transport:        'car' | 'public'
   onReorder:        (newOrder: string[]) => void
   onRemove:         (id: string) => void
   onDurationChange: (id: string, minutes: number) => void
-  onTransportChange:(mode: 'car' | 'public') => void
   onSavePlan:       () => void
   onDismiss:        () => void
 }
 
 export default function PlanBottomSheet({
-  isOpen, stops, stopDurations, transport,
-  onReorder, onRemove, onDurationChange, onTransportChange, onSavePlan, onDismiss,
+  isOpen, stops, stopDurations,
+  onReorder, onRemove, onDurationChange, onSavePlan, onDismiss,
 }: Props) {
   const t = useTranslations('map.plan')
 
@@ -191,33 +189,6 @@ export default function PlanBottomSheet({
             <span>
               {hrs > 0 ? `${hrs}h ` : ''}{mins > 0 || hrs === 0 ? `${mins}m` : ''}{' '}{t('total')}
             </span>
-          </div>
-
-          {/* Transport toggle */}
-          <div
-            className="flex gap-1.5"
-            role="group"
-            aria-label={t('transport.label')}
-          >
-            {(['car', 'public'] as const).map(mode => (
-              <button
-                key={mode}
-                onClick={() => onTransportChange(mode)}
-                aria-pressed={transport === mode}
-                className={[
-                  'flex-1 min-h-[32px] flex items-center justify-center gap-1',
-                  'rounded-lg text-xs font-medium transition-colors',
-                  transport === mode
-                    ? 'bg-lav-dim text-lav'
-                    : 'bg-overlay-10 text-muted hover:text-fg',
-                ].join(' ')}
-              >
-                {mode === 'car'
-                  ? <><Car  size={12} strokeWidth={2} aria-hidden="true" />{t('transport.car')}</>
-                  : <><Bus  size={12} strokeWidth={2} aria-hidden="true" />{t('transport.public')}</>
-                }
-              </button>
-            ))}
           </div>
 
           {/* Save Plan CTA */}
