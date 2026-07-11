@@ -149,7 +149,7 @@ export default function OtherUserProfilePage({ params }: { params: { id: string 
 
   if (error || !profile) {
     return (
-      <div className="flex flex-col items-center gap-sp-4 p-sp-10 text-center max-w-2xl mx-auto" role="alert">
+      <div className="flex flex-col items-center gap-sp-4 p-sp-10 text-center max-w-[720px] mx-auto" role="alert">
         <User size={32} strokeWidth={2} className="text-muted" aria-hidden="true" />
         <p className="text-muted text-f-base">{t('notFound')}</p>
       </div>
@@ -159,7 +159,7 @@ export default function OtherUserProfilePage({ params }: { params: { id: string 
   const displayName = profile.display_name ?? t('anonymousUser')
 
   return (
-    <div className="flex flex-col max-w-2xl mx-auto w-full">
+    <div className="flex flex-col max-w-[720px] mx-auto w-full">
       {/* Header */}
       <div
         className="flex items-center gap-sp-4 p-sp-4"

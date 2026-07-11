@@ -193,7 +193,7 @@ export default function SettingsPage() {
 
   return (
     <>
-      <div className="max-w-[560px] flex flex-col gap-sp-8">
+      <div className="max-w-[560px] mx-auto flex flex-col gap-sp-8">
         {/* Account section — PR_50 */}
         <section aria-labelledby="account-heading">
           <h2 id="account-heading" className={sectionHeading}>
