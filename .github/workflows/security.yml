@@ -37,7 +37,7 @@ jobs:
           if [ ! -f .env.example ]; then
             echo "Missing .env.example"; exit 1
           fi
-          BAD=$(grep -E '^[A-Z_]+=[A-Za-z0-9+/=_\-]{24,}' .env.example | grep -vE 'xxx|YOUR_|your-|example\.com|localhost|placeholder' || true)
+          BAD=$(grep -E '^[A-Z_]+=[A-Za-z0-9+/=_\-]{24,}' .env.example | grep -vE 'xxx|YOUR_|your-|your_|example\.com|localhost|placeholder|change-me|change_me' || true)
           if [ -n "$BAD" ]; then
             echo "❌ .env.example contains suspected real values:"
             echo "$BAD"

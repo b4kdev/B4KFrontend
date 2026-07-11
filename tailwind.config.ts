@@ -35,6 +35,10 @@ const config: Config = {
         "bg":         "var(--bg)",
         "bg-2":       "var(--bg-2)",
         "bg-3":       "var(--bg-3)",
+        "void-100":   "var(--void-100)",
+        // Accent signals
+        "energy":     "var(--energy)",
+        "royal-600":  "var(--royal-600)",
         // Foreground
         "fg":         "var(--fg)",
         "muted":      "var(--muted)",

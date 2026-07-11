@@ -4,9 +4,9 @@ import { Music, Tv, Sparkles, Globe } from 'lucide-react'
 
 const CATEGORIES = [
   { id: 'k-pop',     href: '/explore/k-pop',     icon: Music,    tKey: 'kpop',     color: 'text-lav' },
-  { id: 'k-drama',   href: '/explore/k-drama',   icon: Tv,       tKey: 'kdrama',   color: 'text-info' },
-  { id: 'k-beauty',  href: '/explore/k-beauty',  icon: Sparkles, tKey: 'kbeauty',  color: 'text-warning' },
-  { id: 'k-culture', href: '/explore/k-culture', icon: Globe,    tKey: 'kculture', color: 'text-success' },
+  { id: 'k-drama',   href: '/explore/k-drama',   icon: Tv,       tKey: 'kdrama',   color: 'text-lav' },
+  { id: 'k-beauty',  href: '/explore/k-beauty',  icon: Sparkles, tKey: 'kbeauty',  color: 'text-lav' },
+  { id: 'k-culture', href: '/explore/k-culture', icon: Globe,    tKey: 'kculture', color: 'text-lav' },
 ] as const
 
 export default function ExploreHubPage() {
@@ -33,12 +33,12 @@ export default function ExploreHubPage() {
           <Link
             key={id}
             href={href}
-            className="flex items-start gap-sp-4 p-sp-5 rounded-xl transition-colors group"
+            className="flex items-start gap-sp-4 p-sp-5 rounded-none transition-colors group"
             style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
             aria-label={t(`${tKey}.title`)}
           >
             <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 mt-[2px]"
+              className="w-10 h-10 rounded-none flex items-center justify-center shrink-0 mt-[2px]"
               style={{ background: 'var(--bg-3)' }}
             >
               <Icon size={20} strokeWidth={2} className={color} />

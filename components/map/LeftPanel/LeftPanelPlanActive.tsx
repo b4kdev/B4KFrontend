@@ -2,25 +2,23 @@
 
 import { useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { GripVertical, X, Car, Bus, Clock, AlertTriangle } from 'lucide-react'
+import { GripVertical, X, Clock, AlertTriangle } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import type { MapPoi } from '@/hooks/useMapPois'
 
 interface Props {
   stops:            MapPoi[]
   stopDurations:    Record<string, number>
-  transport:        'car' | 'public'
   routeError?:      boolean
   onReorder:        (newOrder: string[]) => void
   onRemove:         (id: string) => void
   onDurationChange: (id: string, minutes: number) => void
-  onTransportChange:(mode: 'car' | 'public') => void
   onPreviewPlan:    () => void
 }
 
 export default function LeftPanelPlanActive({
-  stops, stopDurations, transport, routeError = false,
-  onReorder, onRemove, onDurationChange, onTransportChange, onPreviewPlan,
+  stops, stopDurations, routeError = false,
+  onReorder, onRemove, onDurationChange, onPreviewPlan,
 }: Props) {
   const t = useTranslations('map.plan')
   const dragItem = useRef<number | null>(null)
@@ -159,33 +157,6 @@ export default function LeftPanelPlanActive({
           <span>
             {hrs > 0 ? `${hrs}h ` : ''}{mins > 0 || hrs === 0 ? `${mins}m` : ''}{' '}{t('total')}
           </span>
-        </div>
-
-        {/* LP_14 — Transport mode */}
-        <div
-          className="flex gap-1.5"
-          role="group"
-          aria-label={t('transport.label')}
-        >
-          {(['car', 'public'] as const).map(mode => (
-            <button
-              key={mode}
-              onClick={() => onTransportChange(mode)}
-              aria-pressed={transport === mode}
-              className={[
-                'flex-1 min-h-[32px] flex items-center justify-center gap-1',
-                'rounded-lg text-xs font-medium transition-colors',
-                transport === mode
-                  ? 'bg-lav-dim text-lav'
-                  : 'bg-overlay-10 text-muted hover:text-fg',
-              ].join(' ')}
-            >
-              {mode === 'car'
-                ? <><Car  size={12} strokeWidth={2} aria-hidden="true" />{t('transport.car')}</>
-                : <><Bus  size={12} strokeWidth={2} aria-hidden="true" />{t('transport.public')}</>
-              }
-            </button>
-          ))}
         </div>
 
         {/* LP_15 — Preview plan */}

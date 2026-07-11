@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { useSession } from 'next-auth/react'
@@ -11,13 +11,27 @@ import AIOverlay from './AIOverlay'
 import POIBottomSheet from './POIBottomSheet'
 import PlanPill from './PlanPill'
 import PlanBottomSheet from './PlanBottomSheet'
+import DraftConflictModal from '@/components/auth/DraftConflictModal'
+import PlanNamingSheet from './PlanNamingSheet'
+import DraftResumeFreshModal from './DraftResumeFreshModal'
 import { useMapPois } from '@/hooks/useMapPois'
+import { useSaved } from '@/hooks/useSaved'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useToast } from '@/contexts/ToastContext'
 import { getDraftPlan, saveDraftPlan, clearDraftPlan } from '@/lib/draft-plan'
 import type { MapPoi } from '@/hooks/useMapPois'
+import type { DraftMeta } from '@/components/auth/DraftConflictModal'
+import type { ItineraryDetail } from '@/app/api/itinerary/[id]/route'
 
-const MAX_STOPS = 10
+type PendingPlan = {
+  deviceDraft:  DraftMeta
+  accountDraft: DraftMeta
+  ids:          string[]
+  durations:    Record<string, number>
+  pois:         MapPoi[]
+}
+
+const MAX_STOPS = 40
 const DEFAULT_DURATION = 60
 
 export default function MapView() {
@@ -35,25 +49,96 @@ export default function MapView() {
   const [planStopIds, setPlanStopIds]     = useState<string[]>([])
   const [savedPoiIds, setSavedPoiIds]     = useState<Set<string>>(new Set())
   const [stopDurations, setStopDurations] = useState<Record<string, number>>({})
-  const [transport, setTransport]         = useState<'car' | 'public'>('car')
   const [planSheetOpen, setPlanSheetOpen] = useState(false)
+  const [loadedPlanPois, setLoadedPlanPois] = useState<MapPoi[]>([])
+  const [draftConflict, setDraftConflict]   = useState<PendingPlan | null>(null)
+  // DEC-29: naming sheet shown before publishing
+  const [namingSheetOpen, setNamingSheetOpen]   = useState(false)
+  // DEC-33 T1: "Resume or start fresh?" when adding first stop but DB draft exists
+  const [draftResumeOpen, setDraftResumeOpen]   = useState(false)
+  const [draftResumeStopCount, setDraftResumeStopCount] = useState(0)
+  const [draftResumePlanId, setDraftResumePlanId]       = useState<string | null>(null)
+  // Pending POI to add after T1 resolution
+  const [pendingPoiId, setPendingPoiId] = useState<string | null>(null)
+  const savedSeededRef = useRef(false)
 
   const { pois } = useMapPois(activeRegion, activeFilters)
+  const { data: savedData, mutate: mutateSaved } = useSaved()
 
-  // Restore draft plan from sessionStorage on mount (e.g. returning from Plan Preview)
+  // Restore draft plan on mount — skip if a specific plan is being loaded via ?plan param
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('plan')) return
     const draft = getDraftPlan()
     if (!draft || draft.stops.length === 0) return
     const ids = draft.stops.map(s => s.place_id)
     setPlanStopIds(ids)
     setStopDurations(draft.durations)
-    setTransport(draft.transport)
     clearDraftPlan()
   }, [])
 
-  // Ordered stop POIs for LeftPanel and polyline
+  // Seed savedPoiIds from API on first load — one-time only so local toggles aren't overwritten
+  useEffect(() => {
+    if (savedSeededRef.current || !savedData?.pois) return
+    savedSeededRef.current = true
+    setSavedPoiIds(new Set(savedData.pois.map(p => p.place_id)))
+  }, [savedData])
+
+  // URL param handling — ?plan=:id loads plan into edit mode; ?ai=1 opens AI overlay
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+
+    if (params.get('ai') === '1') setAiOverlayOpen(true)
+
+    const poiId = params.get('poi')
+    if (poiId) setSelectedPoiId(poiId)
+
+    const planId = params.get('plan')
+    if (!planId || planId === 'new') return
+
+    fetch(`/api/itinerary/${planId}`)
+      .then(r => r.ok ? r.json() as Promise<ItineraryDetail> : Promise.reject())
+      .then(itinerary => {
+        const sorted = [...itinerary.stops].sort((a, b) => a.stop_order - b.stop_order)
+        const ids:  string[]               = sorted.map(s => s.poi.place_id)
+        const durs: Record<string, number> = {}
+        const lpois: MapPoi[]              = []
+
+        sorted.forEach(s => {
+          durs[s.poi.place_id] = s.duration_min
+          lpois.push({
+            place_id:      s.poi.place_id,
+            name_ko:       s.poi.name_ko,
+            name_en:       s.poi.name_en,
+            coords_lat:    s.poi.coords_lat,
+            coords_lng:    s.poi.coords_lng,
+            display_domain: s.poi.display_domain,
+            display_region: '',
+            is_trending:   false,
+            is_partner:    false,
+            quality_score: 0,
+          })
+        })
+
+        const localDraft = getDraftPlan()
+        if (localDraft && localDraft.stops.length > 0) {
+          setDraftConflict({
+            deviceDraft:  { stopCount: localDraft.stops.length, lastModified: new Date().toISOString() },
+            accountDraft: { stopCount: ids.length,              lastModified: new Date().toISOString() },
+            ids, durations: durs, pois: lpois,
+          })
+        } else {
+          setPlanStopIds(ids)
+          setStopDurations(durs)
+          setLoadedPlanPois(lpois)
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  // Ordered stop POIs for LeftPanel and polyline — fallback to loadedPlanPois for plan-edit mode
   const planStops = planStopIds
-    .map(id => pois.find(p => p.place_id === id))
+    .map(id => pois.find(p => p.place_id === id) ?? loadedPlanPois.find(p => p.place_id === id))
     .filter((p): p is MapPoi => !!p)
 
   const selectedPoi = selectedPoiId
@@ -73,9 +158,92 @@ export default function MapView() {
 
   function handleAddToPlan(poiId: string) {
     if (planStopIds.includes(poiId) || planStopIds.length >= MAX_STOPS) return
+
+    // DEC-33 T1: logged-in user adds first stop → check for existing DB draft
+    if (session && planStopIds.length === 0) {
+      fetch('/api/plans/draft')
+        .then(r => r.ok ? r.json() : null)
+        .then((dbDraft: { id: string; stop_count: number } | null) => {
+          if (dbDraft?.id) {
+            setPendingPoiId(poiId)
+            setDraftResumeStopCount(dbDraft.stop_count ?? 0)
+            setDraftResumePlanId(dbDraft.id)
+            setDraftResumeOpen(true)
+          } else {
+            // No DB draft — add directly
+            setPlanStopIds(prev => [...prev, poiId])
+            setStopDurations(prev => ({ ...prev, [poiId]: DEFAULT_DURATION }))
+            showToast(t('poiDetail.addedToast'))
+          }
+        })
+        .catch(() => {
+          // Network error — proceed without T1 check
+          setPlanStopIds(prev => [...prev, poiId])
+          setStopDurations(prev => ({ ...prev, [poiId]: DEFAULT_DURATION }))
+          showToast(t('poiDetail.addedToast'))
+        })
+      return
+    }
+
     setPlanStopIds(prev => [...prev, poiId])
     setStopDurations(prev => ({ ...prev, [poiId]: DEFAULT_DURATION }))
     showToast(t('poiDetail.addedToast'))
+  }
+
+  // DEC-33 T1: resume existing DB draft — load it into editing state
+  async function handleResumeExistingDraft() {
+    setDraftResumeOpen(false)
+    setPendingPoiId(null)
+    if (!draftResumePlanId) return
+    try {
+      const res = await fetch(`/api/itinerary/${draftResumePlanId}`)
+      if (!res.ok) return
+      const itinerary = await res.json() as { stops: Array<{ stop_order: number; poi: { place_id: string; name_ko: string; name_en: string; coords_lat: number; coords_lng: number; display_domain: string }; duration_min: number }> }
+      const sorted = [...itinerary.stops].sort((a, b) => a.stop_order - b.stop_order)
+      const ids:  string[]               = sorted.map(s => s.poi.place_id)
+      const durs: Record<string, number> = {}
+      const lpois: MapPoi[]              = []
+      sorted.forEach(s => {
+        durs[s.poi.place_id] = s.duration_min
+        lpois.push({
+          place_id:       s.poi.place_id,
+          name_ko:        s.poi.name_ko,
+          name_en:        s.poi.name_en,
+          coords_lat:     s.poi.coords_lat,
+          coords_lng:     s.poi.coords_lng,
+          display_domain: s.poi.display_domain,
+          display_region: '',
+          is_trending:    false,
+          is_partner:     false,
+          quality_score:  0,
+        })
+      })
+      setPlanStopIds(ids)
+      setStopDurations(durs)
+      setLoadedPlanPois(lpois)
+    } catch {
+      // Silent failure — user continues with blank plan
+    }
+  }
+
+  // DEC-33 T1: start fresh — delete DB draft, then add the pending POI
+  async function handleStartFresh() {
+    setDraftResumeOpen(false)
+    if (draftResumePlanId) {
+      try {
+        await fetch(`/api/plans/${draftResumePlanId}`, { method: 'DELETE' })
+      } catch {
+        // Silent — worst case: stale draft remains
+      }
+    }
+    setDraftResumePlanId(null)
+    const poiToAdd = pendingPoiId
+    setPendingPoiId(null)
+    if (poiToAdd) {
+      setPlanStopIds([poiToAdd])
+      setStopDurations({ [poiToAdd]: DEFAULT_DURATION })
+      showToast(t('poiDetail.addedToast'))
+    }
   }
 
   function handleRemoveFromPlan(poiId: string) {
@@ -84,10 +252,11 @@ export default function MapView() {
   }
 
   function handleToggleSave(poi: MapPoi) {
-    if (!session) { openAuthGate('save'); return }
+    if (!session) { openAuthGate('save_poi'); return }
+    const removing = savedPoiIds.has(poi.place_id)
     setSavedPoiIds(prev => {
       const next = new Set(prev)
-      if (next.has(poi.place_id)) {
+      if (removing) {
         next.delete(poi.place_id)
         showToast(t('poiDetail.removedSave'), 'info')
       } else {
@@ -96,6 +265,13 @@ export default function MapView() {
       }
       return next
     })
+    fetch('/api/saved/poi', {
+      method:  removing ? 'DELETE' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ place_id: poi.place_id }),
+    })
+      .then(() => mutateSaved())
+      .catch(() => {})
   }
 
   function handleReorder(newOrder: string[]) {
@@ -106,10 +282,46 @@ export default function MapView() {
     setStopDurations(prev => ({ ...prev, [id]: minutes }))
   }
 
+  // DEC-29: open naming sheet instead of auto-saving
   function handlePreviewPlan() {
-    if (!session) { openAuthGate('plan'); return }
-    saveDraftPlan({ stops: planStops, durations: stopDurations, transport })
-    router.push('/plan/preview')
+    if (!session) { openAuthGate('save_plan'); return }
+    setNamingSheetOpen(true)
+  }
+
+  // DEC-29: user confirmed title → POST draft then PATCH is_published=true → navigate IT_01
+  async function handleConfirmNaming(title: string) {
+    setNamingSheetOpen(false)
+    saveDraftPlan({ stops: planStops, durations: stopDurations })
+    try {
+      const res = await fetch('/api/plans', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          stops: planStops.map((s, i) => ({
+            poi_id:       s.place_id,
+            stop_order:   i + 1,
+            duration_min: stopDurations[s.place_id] ?? DEFAULT_DURATION,
+          })),
+          is_published: false,
+        }),
+      })
+      if (!res.ok) throw new Error()
+      const { plan } = await res.json() as { plan: { id: string } }
+      // PATCH is_published = true (naming sheet confirm = publish intent per DEC-29)
+      const patchRes = await fetch(`/api/plans/${plan.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_published: true }),
+      })
+      if (!patchRes.ok) throw new Error()
+      clearDraftPlan()
+      router.push(`/itinerary/${plan.id}`)
+    } catch {
+      showToast(t('plan.saveError'), 'error')
+      // Re-open naming sheet so user doesn't lose their title
+      setNamingSheetOpen(true)
+    }
   }
 
   function handlePlanPillTap() {
@@ -117,8 +329,21 @@ export default function MapView() {
     setPlanSheetOpen(true)
   }
 
+  function handleConflictKeepDevice() {
+    setDraftConflict(null)
+  }
+
+  function handleConflictKeepAccount() {
+    if (!draftConflict) return
+    clearDraftPlan()
+    setPlanStopIds(draftConflict.ids)
+    setStopDurations(draftConflict.durations)
+    setLoadedPlanPois(draftConflict.pois)
+    setDraftConflict(null)
+  }
+
   return (
-    <div className="fixed top-[52px] left-0 right-0 bottom-14 lg:left-[52px] lg:bottom-0 z-10">
+    <div className="fixed top-[50px] left-0 right-0 bottom-14 lg:left-[50px] lg:bottom-0 z-10">
 
       {/* LeftPanel — desktop only */}
       <aside
@@ -133,7 +358,6 @@ export default function MapView() {
           activeFilters={activeFilters}
           planStops={planStops}
           stopDurations={stopDurations}
-          transport={transport}
           onRegionToggle={handleRegionToggle}
           onFilterToggle={handleFilterToggle}
           isSaved={id => savedPoiIds.has(id)}
@@ -144,7 +368,6 @@ export default function MapView() {
           onReorder={handleReorder}
           onRemove={handleRemoveFromPlan}
           onDurationChange={handleDurationChange}
-          onTransportChange={setTransport}
           onPreviewPlan={handlePreviewPlan}
         />
       </aside>
@@ -210,12 +433,38 @@ export default function MapView() {
         isOpen={planSheetOpen}
         stops={planStops}
         stopDurations={stopDurations}
-        transport={transport}
         onReorder={handleReorder}
         onRemove={handleRemoveFromPlan}
         onDurationChange={handleDurationChange}
-        onTransportChange={setTransport}
+        onSavePlan={handlePreviewPlan}
         onDismiss={() => setPlanSheetOpen(false)}
+      />
+
+      {/* T2 collision modal — local draft vs plan loaded via ?plan=:id */}
+      {draftConflict && (
+        <DraftConflictModal
+          open={true}
+          deviceDraft={draftConflict.deviceDraft}
+          accountDraft={draftConflict.accountDraft}
+          onKeepDevice={handleConflictKeepDevice}
+          onKeepAccount={handleConflictKeepAccount}
+        />
+      )}
+
+      {/* DEC-29 — naming sheet before publishing */}
+      <PlanNamingSheet
+        open={namingSheetOpen}
+        initialTitle=""
+        onSave={handleConfirmNaming}
+        onCancel={() => setNamingSheetOpen(false)}
+      />
+
+      {/* DEC-33 T1 — Resume or start fresh when DB draft exists */}
+      <DraftResumeFreshModal
+        open={draftResumeOpen}
+        stopCount={draftResumeStopCount}
+        onResume={handleResumeExistingDraft}
+        onStartFresh={handleStartFresh}
       />
     </div>
   )

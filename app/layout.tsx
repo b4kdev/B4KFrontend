@@ -11,6 +11,22 @@ const workSans = Work_Sans({
 export const metadata: Metadata = {
   title: 'B4K | Korea Travel & Culture',
   description: 'Discover K-culture experiences across Korea',
+  icons: {
+    icon: '/icon.svg',
+    apple: '/brand/B4K_BrandLogo_Square_White.svg',
+  },
+  openGraph: {
+    title: 'B4K | Korea Travel & Culture',
+    description: 'Discover K-culture experiences across Korea',
+    siteName: 'B4K',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'B4K | Korea Travel & Culture',
+    description: 'Discover K-culture experiences across Korea',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

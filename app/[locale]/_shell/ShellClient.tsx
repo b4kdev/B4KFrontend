@@ -10,10 +10,12 @@ import { AuthGateProvider, useAuthGate } from '@/contexts/AuthGateContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 import AuthGateModal from '@/components/auth/AuthGateModal';
 import ToastStack from '@/components/ui/Toast';
+import { useDraftMigration } from '@/hooks/useDraftMigration';
 
 function ShellInner({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isOpen, close } = useAuthGate();
+  useDraftMigration();
 
   return (
     <>

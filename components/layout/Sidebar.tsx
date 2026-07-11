@@ -1,10 +1,12 @@
 'use client';
 
 import Image from 'next/image';
+import useSWR from 'swr';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Home, Map, LayoutGrid, Bookmark, User, Bell, X } from 'lucide-react';
+import { fetcher } from '@/lib/fetcher';
 
 interface SidebarProps {
   mobileOpen: boolean;
@@ -21,6 +23,10 @@ const NAV_ITEMS = [
 export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
   const t = useTranslations('nav');
   const pathname = usePathname();
+  const { data: unreadData } = useSWR<{ count: number }>(
+    '/api/notifications/unread-count', fetcher, { refreshInterval: 60_000 },
+  );
+  const hasUnread = (unreadData?.count ?? 0) > 0;
 
   const isActive = (href: string) => {
     if (href === '/') return /^\/[a-z-]+\/?$/.test(pathname);
@@ -29,7 +35,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
   };
 
   const navLinkClass = (active: boolean) => [
-    'flex items-center rounded-lg transition-colors duration-150',
+    'flex items-center rounded-none transition-colors duration-150',
     'min-h-touch',
     'lg:min-w-touch lg:justify-center',
     'w-full gap-3 px-3 lg:px-0',
@@ -51,28 +57,28 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
         className={[
           'fixed left-0 top-0 h-screen z-[60] flex flex-col',
           'bg-bg-2',
-          'w-[280px] lg:w-[52px]',
+          'w-[280px] lg:w-[50px]',
           'transition-transform duration-300 ease-out',
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         ].join(' ')}
         style={{ borderRight: 'var(--bdr)' }}
       >
         {/* Logo */}
-        <div className="flex items-center h-[52px] shrink-0" style={{ borderBottom: 'var(--bdr)' }}>
+        <div className="flex items-center h-[50px] shrink-0" style={{ borderBottom: 'var(--bdr)' }}>
           <Link
             href="/"
-            className="flex items-center justify-center w-[52px] h-full shrink-0"
+            className="flex items-center justify-center w-[50px] h-full shrink-0"
             aria-label={t('logoHome')}
           >
             <Image src="/logo.svg" alt="B4K" width={28} height={26} className="object-contain" />
           </Link>
-          <span className="lg:hidden flex-1 text-fg text-sm font-semibold pl-2">Menu</span>
+          <span className="lg:hidden flex-1 text-fg text-f-base font-semibold pl-2">Menu</span>
           <button
             className="lg:hidden min-w-touch min-h-touch flex items-center justify-center text-muted mr-1 shrink-0"
             onClick={onMobileClose}
             aria-label={t('menuClose')}
           >
-            <X size={18} strokeWidth={2} />
+            <X size={24} strokeWidth={2} />
           </button>
         </div>
 
@@ -88,7 +94,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
                 onClick={onMobileClose}
                 className={navLinkClass(active)}
               >
-                <Icon size={17} strokeWidth={2} className="shrink-0" />
+                <Icon size={24} strokeWidth={2} className="shrink-0" />
                 <span className="lg:hidden text-f-md font-medium">{t(labelKey)}</span>
               </Link>
             );
@@ -104,8 +110,8 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
             className={navLinkClass(isActive('/notifications'))}
           >
             <span className="relative shrink-0">
-              <Bell size={17} strokeWidth={2} />
-              <span className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] rounded-full bg-danger" />
+              <Bell size={24} strokeWidth={2} />
+              {hasUnread && <span className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] rounded-full bg-danger" aria-hidden="true" />}
             </span>
             <span className="lg:hidden text-f-md font-medium">{t('notifications')}</span>
           </Link>
@@ -115,7 +121,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
             onClick={onMobileClose}
             className={navLinkClass(isActive('/profile'))}
           >
-            <User size={17} strokeWidth={2} className="shrink-0" />
+            <User size={24} strokeWidth={2} className="shrink-0" />
             <span className="lg:hidden text-f-md font-medium">{t('profile')}</span>
           </Link>
         </div>

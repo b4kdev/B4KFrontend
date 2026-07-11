@@ -1,0 +1,290 @@
+name: CI
+
+# OQ-20 — B4KFrontend CI hardening
+# Adds 5 jobs on top of the existing gitleaks workflow:
+#   1. lint            — next lint (eslint)
+#   2. typecheck       — tsc --noEmit
+#   3. build           — next build (no deploy)
+#   4. i18n-keys       — every t() key exists in every locale file
+#   5. token-compliance — no hardcoded hex / arbitrary Tailwind / forbidden tokens
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Note: B4KFrontend lives in its own repo (this workflow is in B4KFrontend/.github/workflows/).
+# All paths are relative to the B4KFrontend repo root, so no `cd` is required.
+
+jobs:
+  lint:
+    name: Lint (next lint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/iron
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+  typecheck:
+    name: Typecheck (tsc --noEmit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/iron
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run typecheck
+        run: npx tsc --noEmit
+
+  build:
+    name: Build (next build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/iron
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run build
+        env:
+          # Next.js requires placeholder env vars at build time for any code paths
+          # that read them at module-eval. Real values are injected by Vercel at
+          # deploy time. We use safe placeholders here so the build can complete.
+          NEXTAUTH_SECRET: ci-placeholder-not-a-real-secret
+          NEXTAUTH_URL: http://localhost:3000
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+        run: npm run build
+
+  i18n-keys:
+    name: i18n completeness (7 locales)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python (for completeness script)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Run i18n completeness check
+        # The completeness script lives in the sibling B4KStudio repo. In CI we
+        # fetch it inline so this workflow stays self-contained inside the
+        # B4KFrontend repo. The script is short and read-only.
+        run: |
+          set -euo pipefail
+          mkdir -p .ci
+          cat > .ci/i18n-completeness.py <<'PYEOF'
+          import sys, os, re, json, glob
+
+          frontend = sys.argv[1]
+          messages_dir = os.path.join(frontend, "messages")
+          locales = ["en", "ko", "ja", "zh-CN", "zh-TW", "th", "pt-BR"]
+
+          t_call_re = re.compile(
+              r"""(?:^|[\s\{\(\|&!?:,=;])t(?:\.(?:rich|raw|markup))?\(\s*['"]([a-zA-Z0-9_\.]+)['"]"""
+          )
+          ns_call_re = re.compile(
+              r"""(?:useTranslations|getTranslations)\(\s*['"]([a-zA-Z0-9_\.]+)['"]"""
+          )
+
+          key_candidates = []
+          files_scanned = 0
+
+          def collect(path):
+              global files_scanned
+              files_scanned += 1
+              try:
+                  src = open(path, encoding="utf-8").read()
+              except Exception:
+                  return
+              ns_matches = ns_call_re.findall(src)
+              namespaces = ns_matches if ns_matches else [None]
+              for k in t_call_re.findall(src):
+                  candidates = []
+                  for ns in namespaces:
+                      if ns is None:
+                          candidates.append(k)
+                      else:
+                          candidates.append(f"{ns}.{k}")
+                  if k not in candidates:
+                      candidates.append(k)
+                  key_candidates.append(candidates)
+
+          for root in ("app", "components"):
+              for path in glob.iglob(os.path.join(frontend, root, "**", "*.tsx"), recursive=True):
+                  collect(path)
+              for path in glob.iglob(os.path.join(frontend, root, "**", "*.ts"), recursive=True):
+                  collect(path)
+
+          def flatten(d, prefix=""):
+              out = {}
+              for k, v in d.items():
+                  key = f"{prefix}.{k}" if prefix else k
+                  if isinstance(v, dict):
+                      out.update(flatten(v, key))
+                  else:
+                      out[key] = v
+              return out
+
+          def has_key(keyset, key):
+              if key in keyset:
+                  return True
+              prefix = key + "."
+              for k in keyset:
+                  if k.startswith(prefix):
+                      return True
+              return False
+
+          print(f"Files scanned: {files_scanned}")
+          print(f"Call sites: {len(key_candidates)}")
+          print("")
+
+          failed = False
+          for loc in locales:
+              p = os.path.join(messages_dir, f"{loc}.json")
+              if not os.path.exists(p):
+                  print(f"ERROR: locale file missing: {p}")
+                  failed = True
+                  continue
+              with open(p, encoding="utf-8") as f:
+                  data = json.load(f)
+              keyset = set(flatten(data).keys())
+              missing = []
+              for cands in key_candidates:
+                  if not any(has_key(keyset, c) for c in cands):
+                      missing.append(cands[0])
+              missing = sorted(set(missing))
+              if missing:
+                  failed = True
+                  print(f"FAIL  {loc}: {len(missing)} missing key(s)")
+                  for m in missing[:50]:
+                      print(f"    - {m}")
+                  if len(missing) > 50:
+                      print(f"    ... ({len(missing) - 50} more)")
+              else:
+                  print(f"PASS  {loc}: all call sites resolve")
+
+          sys.exit(1 if failed else 0)
+          PYEOF
+          python3 .ci/i18n-completeness.py .
+
+  token-compliance:
+    name: Token compliance (no hex / arbitrary tw / forbidden tokens)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run token compliance scan
+        run: |
+          set -uo pipefail
+
+          # Self-contained inline scan — see B4KStudio/scripts/token-compliance.sh
+          # in the parent project for the canonical implementation.
+
+          VIOLATIONS=0
+          TMP=$(mktemp)
+          trap 'rm -f "$TMP"' EXIT
+
+          FILE_LIST=$(find app components \
+            -type f \( -name '*.tsx' -o -name '*.ts' \) \
+            ! -name '*.test.tsx' ! -name '*.test.ts' \
+            ! -name '*.spec.tsx' ! -name '*.spec.ts' \
+            ! -path '*/node_modules/*' ! -path '*/.next/*' \
+            ! -name 'global-error.tsx' \
+            2>/dev/null)
+
+          echo "=== TOKEN COMPLIANCE CHECK ==="
+          echo ""
+
+          echo "--- Rule 1: hardcoded hex colours ---"
+          : > "$TMP"
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            grep -nE '#[0-9a-fA-F]{3,8}\b' "$f" 2>/dev/null \
+              | grep -vE '//\s*allow-hex' \
+              | grep -vE '^\s*[0-9]+:\s*//' \
+              | grep -vE '^\s*[0-9]+:\s*\*' \
+              | sed "s|^|$f:|"
+          done <<< "$FILE_LIST" >> "$TMP"
+          if [ -s "$TMP" ]; then
+            COUNT=$(wc -l < "$TMP" | tr -d ' ')
+            echo "FAIL ($COUNT hits):"
+            cat "$TMP"
+            VIOLATIONS=$((VIOLATIONS + COUNT))
+          else
+            echo "PASS"
+          fi
+          echo ""
+
+          echo "--- Rule 2: arbitrary Tailwind sizes (text-[Npx], p-[Npx], m-[Npx]) ---"
+          : > "$TMP"
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            grep -nE '\btext-\[[0-9]+px\]|\bp-\[[0-9]+px\]|\bm-\[[0-9]+px\]' "$f" 2>/dev/null \
+              | grep -vE '^\s*[0-9]+:\s*//' \
+              | grep -vE '^\s*[0-9]+:\s*\*' \
+              | sed "s|^|$f:|"
+          done <<< "$FILE_LIST" >> "$TMP"
+          if [ -s "$TMP" ]; then
+            COUNT=$(wc -l < "$TMP" | tr -d ' ')
+            echo "FAIL ($COUNT hits):"
+            cat "$TMP"
+            VIOLATIONS=$((VIOLATIONS + COUNT))
+          else
+            echo "PASS"
+          fi
+          echo ""
+
+          echo "--- Rule 3: forbidden CSS tokens (--ink, --font-display, --font-body) ---"
+          : > "$TMP"
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            grep -nE '\-\-ink\b|\-\-ink-3\b|\-\-font-display\b|\-\-font-body\b' "$f" 2>/dev/null \
+              | grep -vE '^\s*[0-9]+:\s*//' \
+              | grep -vE '^\s*[0-9]+:\s*\*' \
+              | sed "s|^|$f:|"
+          done <<< "$FILE_LIST" >> "$TMP"
+          if [ -s "$TMP" ]; then
+            COUNT=$(wc -l < "$TMP" | tr -d ' ')
+            echo "FAIL ($COUNT hits):"
+            cat "$TMP"
+            VIOLATIONS=$((VIOLATIONS + COUNT))
+          else
+            echo "PASS"
+          fi
+          echo ""
+
+          echo "=== RESULT ==="
+          if [ "$VIOLATIONS" -eq 0 ]; then
+            echo "Token compliance: PASS"
+            exit 0
+          else
+            echo "Token compliance: FAIL ($VIOLATIONS total violations)"
+            exit 1
+          fi

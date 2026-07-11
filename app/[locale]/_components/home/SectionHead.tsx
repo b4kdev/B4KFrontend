@@ -1,30 +1,29 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react'
+import { Link } from '@/i18n/navigation'
 
-interface SectionHeadProps {
-  title: string;
-  subtitle?: string;
-  seeAllLabel: string;
-  onSeeAll?: () => void;
+interface Props {
+  title: string
+  subtitle?: string
+  viewAllLabel?: string
+  viewAllHref?: string
 }
 
-export default function SectionHead({ title, subtitle, seeAllLabel, onSeeAll }: SectionHeadProps) {
+export default function SectionHead({ title, subtitle, viewAllLabel, viewAllHref }: Props) {
   return (
-    <div className="flex items-end justify-between mb-4">
+    <div className="flex items-end justify-between mb-sp-4">
       <div>
-        <h2 className="text-f-xl font-extrabold tracking-[0.04em] uppercase text-fg mb-1 font-display">
-          {title}
-        </h2>
-        {subtitle && (
-          <p className="text-f-sm text-muted leading-[1.5]">{subtitle}</p>
-        )}
+        <h2 className="text-f-xl font-semibold text-fg">{title}</h2>
+        {subtitle && <p className="text-f-sm text-muted mt-[2px]">{subtitle}</p>}
       </div>
-      <button
-        onClick={onSeeAll}
-        className="flex items-center gap-1 text-f-xs font-semibold tracking-[0.06em] uppercase text-muted hover:text-fg transition-colors whitespace-nowrap shrink-0 cursor-pointer bg-transparent border-none font-body"
-      >
-        {seeAllLabel}
-        <ArrowRight size={12} strokeWidth={2} />
-      </button>
+      {viewAllLabel && viewAllHref && (
+        <Link
+          href={viewAllHref}
+          className="flex items-center gap-1 text-f-sm text-lav hover:opacity-80 transition-opacity whitespace-nowrap shrink-0 ml-sp-4"
+        >
+          {viewAllLabel}
+          <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />
+        </Link>
+      )}
     </div>
-  );
+  )
 }

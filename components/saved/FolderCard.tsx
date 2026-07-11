@@ -18,7 +18,7 @@ export default function FolderCard({ folder, onOpen, onGeneratePlan }: Props) {
 
   return (
     <div
-      className="rounded-xl overflow-hidden bg-bg-2 flex flex-col"
+      className="rounded-none overflow-hidden bg-bg-2 flex flex-col"
       style={{ border: '1px solid var(--bdr)' }}
     >
       {/* Thumbnail grid — tap whole grid opens folder */}
@@ -50,7 +50,7 @@ export default function FolderCard({ folder, onOpen, onGeneratePlan }: Props) {
               {/* +N overlay on last visible thumbnail */}
               {i === 3 && extraCount > 0 && (
                 <div className="absolute inset-0 flex items-center justify-center bg-backdrop-50">
-                  <span className="text-fg text-sm font-bold">+{extraCount}</span>
+                  <span className="text-fg text-f-base font-bold">+{extraCount}</span>
                 </div>
               )}
             </div>
@@ -64,11 +64,11 @@ export default function FolderCard({ folder, onOpen, onGeneratePlan }: Props) {
           <button
             onClick={onOpen}
             aria-label={t('openAriaLabel', { name: folder.name })}
-            className="text-fg text-sm font-semibold truncate max-w-full text-left hover:text-lav transition-colors focus:outline-none focus:underline"
+            className="text-fg text-f-base font-semibold truncate max-w-full text-left hover:text-lav transition-colors focus:outline-none focus:underline"
           >
             {folder.name}
           </button>
-          <p className="text-muted text-xs mt-[2px]">
+          <p className="text-muted text-f-sm mt-[2px]">
             {t('poiCount', { count: folder.pois.length })}
           </p>
         </div>
@@ -79,7 +79,7 @@ export default function FolderCard({ folder, onOpen, onGeneratePlan }: Props) {
         <button
           onClick={onGeneratePlan}
           disabled={folder.pois.length === 0}
-          className="w-full min-h-[36px] flex items-center justify-center gap-sp-2 rounded-lg bg-lav-dim text-lav text-xs font-semibold hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40"
+          className="w-full min-h-[36px] flex items-center justify-center gap-sp-2 rounded-none bg-lav-dim text-lav text-f-sm font-semibold hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40"
           style={{ border: '1px solid var(--lav-border)' }}
         >
           <Sparkles size={12} strokeWidth={2} aria-hidden="true" />

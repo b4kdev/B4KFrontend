@@ -102,6 +102,128 @@
         "desc": "Curators are gathering this season's must-see locations.",
         "cta": "Open the map"
       }
+    },
+    "continuePlan": {
+      "ariaLabel": "Continue your draft plan",
+      "cta": "Continue",
+      "dismiss": "Dismiss",
+      "stopCount": "{n} stops",
+      "timeAgo": {
+        "minutes": "{n}m ago",
+        "hours": "{n}h ago",
+        "days": "{n}d ago"
+      }
+    },
+    "youMightLike": {
+      "title": "You Might Like",
+      "viewAll": "View all"
+    },
+    "newOnB4K": {
+      "title": "New on B4K",
+      "viewAll": "View all",
+      "newBadge": "New",
+      "error": "Failed to load",
+      "retry": "Retry"
+    },
+    "leaderboardBadge": {
+      "ariaLabel": "Leaderboard and badge showcase",
+      "leaderboard": {
+        "title": "This Week's Top",
+        "viewAll": "View all"
+      },
+      "badge": {
+        "title": "Latest Badge",
+        "viewAll": "View all",
+        "earnedBy": "Earned by {name}"
+      }
+    },
+    "poiCard": {
+      "ariaLabel": "{name}, {region}"
+    },
+    "exploreHub": {
+      "ariaLabel": "Explore by category",
+      "title": "Explore K-Culture",
+      "kPop": {
+        "label": "K-Pop",
+        "sub": "Concerts, studios & fan spots"
+      },
+      "kDrama": {
+        "label": "K-Drama",
+        "sub": "Filming locations & scenes"
+      },
+      "kBeauty": {
+        "label": "K-Beauty",
+        "sub": "Shops, clinics & trends"
+      },
+      "kCulture": {
+        "label": "K-Culture",
+        "sub": "Heritage, art & tradition"
+      }
+    },
+    "trending": {
+      "title": "Trending Spots",
+      "viewAll": "View all",
+      "error": "Failed to load",
+      "retry": "Retry"
+    },
+    "planTrip": {
+      "ariaLabel": "Plan your trip",
+      "title": "Plan Your Trip",
+      "subtitle": "Start planning your Korea journey",
+      "manual": {
+        "label": "Manual Plan",
+        "sub": "Add stops one by one"
+      },
+      "auto": {
+        "label": "From Saved",
+        "sub": "Auto-generate from saved places"
+      },
+      "ai": {
+        "label": "AI Chat Plan",
+        "sub": "Let AI plan for you"
+      }
+    },
+    "challenge": {
+      "ariaLabel": "Weekly challenge",
+      "label": "Weekly Challenge",
+      "badgeReward": "Badge reward",
+      "cta": "Start challenge"
+    },
+    "popularPlans": {
+      "title": "Popular Plans",
+      "viewAll": "View all",
+      "error": "Failed to load",
+      "retry": "Retry",
+      "sponsored": "Sponsored",
+      "card": {
+        "ariaLabel": "{title} by {author}",
+        "stops": "{n} stops"
+      }
+    },
+    "promotions": {
+      "title": "Promotions"
+    },
+    "editorial": {
+      "title": "Editor's Picks",
+      "viewAll": "View all",
+      "error": "Failed to load",
+      "retry": "Retry",
+      "catAll": "All",
+      "catKPop": "K-Pop",
+      "catKDrama": "K-Drama",
+      "catKBeauty": "K-Beauty",
+      "catKCulture": "K-Culture"
+    },
+    "events": {
+      "title": "Upcoming Events"
+    },
+    "partnerPackages": {
+      "title": "Partner Packages",
+      "sponsored": "Sponsored",
+      "viewCta": "View",
+      "card": {
+        "ariaLabel": "{title} by {partner}"
+      }
     }
   },
   "common": {
@@ -390,13 +512,59 @@
     "gate": {
       "title": "Sign in to B4K",
       "valueProp": "Save your plan · Unlock leaderboards · Earn badges",
+      "context": {
+        "save_poi": "Sign in to save places",
+        "like": "Sign in to like",
+        "save_plan": "Sign in to save your plan",
+        "save_plan_other": "Sign in to save this plan",
+        "saved_tab": "Sign in to see your saved",
+        "profile_nav": "Sign in to view your profile",
+        "fl3_cap": "Sign in to keep planning"
+      },
       "google": "Continue with Google",
+      "apple": "Continue with Apple",
+      "microsoft": "Continue with Microsoft",
+      "email": "Sign in with email",
+      "emailPlaceholder": "Email address",
+      "passwordPlaceholder": "Password",
+      "signIn": "Sign in",
+      "backToProviders": "← Other sign-in options",
       "dismiss": "Continue as guest",
       "loading": "Signing in…",
       "error": "Sign-in failed. Try again.",
       "ariaLabel": "Sign in modal",
       "close": "Close sign-in modal",
-      "planPreserved": "Your current plan is preserved — sign in to save it permanently."
+      "planPreserved": "Your current plan is preserved — sign in to save it permanently.",
+      "fl3Preserved": "Your chat and plan are saved — sign in to keep planning."
+    },
+    "conflict": {
+      "ariaLabel": "Draft conflict — pick one modal",
+      "title": "You have two drafts — which one would you like to keep?",
+      "deviceDraft": "On this device",
+      "accountDraft": "In your account",
+      "stops": "{count, plural, one {# stop} other {# stops}}",
+      "lastModified": "Last modified {time}",
+      "keep": "Keep this one",
+      "discardNote": "The other draft will be permanently deleted."
+    },
+    "resetPassword": {
+      "title": "Set new password",
+      "subtitle": "Enter your new password below.",
+      "passwordLabel": "New password",
+      "passwordPlaceholder": "New password",
+      "confirmLabel": "Confirm password",
+      "confirmPlaceholder": "Confirm password",
+      "submit": "Set password",
+      "loading": "Saving…",
+      "success": "Password updated — signing you in",
+      "redirecting": "Redirecting to home…",
+      "errorMismatch": "Passwords don't match",
+      "errorWeak": "Password must be at least 8 characters",
+      "errorExpired": "This link has expired. Request a new one.",
+      "errorGeneric": "Something went wrong. Try again.",
+      "showPw": "Show password",
+      "hidePw": "Hide password",
+      "backToHome": "Back to home"
     }
   },
   "map": {
@@ -438,6 +606,7 @@
     "poiDetail": {
       "sponsored": "Sponsored",
       "reviews": "reviews",
+      "saves": "saves",
       "openNow": "Open now",
       "closed": "Closed",
       "addToPlan": "Add to Plan",
@@ -471,7 +640,23 @@
       "stripExpand": "Expand plan panel",
       "stripCollapse": "Collapse plan panel",
       "routeError": "Route couldn't be generated. Stops are preserved.",
-      "routeRetry": "Retry"
+      "routeRetry": "Retry",
+      "saveError": "Failed to save. Please try again."
+    },
+    "namingSheet": {
+      "ariaLabel": "Name your plan",
+      "title": "Name your plan",
+      "inputLabel": "Plan title",
+      "placeholder": "e.g. Seoul K-Pop day trip",
+      "cancel": "Cancel",
+      "save": "Save plan"
+    },
+    "draftResume": {
+      "ariaLabel": "Unfinished plan found",
+      "title": "You have an unfinished plan",
+      "stopCount": "{count, plural, one {# stop} other {# stops}}",
+      "resume": "Resume this plan",
+      "startFresh": "Start fresh"
     },
     "aiOverlay": {
       "title": "AI Travel Assistant",
@@ -770,7 +955,8 @@
     "tabs": {
       "ariaLabel": "Content tabs",
       "places": "Places",
-      "itineraries": "Itineraries"
+      "myPlans": "My Plans",
+      "savedPlans": "Saved Plans"
     },
     "loading": "Loading saved items…",
     "error": {
@@ -783,9 +969,14 @@
         "desc": "Tap the bookmark icon on any place to save it here.",
         "cta": "Explore the map"
       },
-      "itineraries": {
-        "title": "No saved itineraries yet",
-        "desc": "Save itineraries you love to revisit them anytime.",
+      "myPlans": {
+        "title": "No plans yet",
+        "desc": "Create your first plan on the map.",
+        "cta": "Open the map"
+      },
+      "savedPlans": {
+        "title": "No saved plans yet",
+        "desc": "Save plans you love to revisit them anytime.",
         "cta": "Explore the map"
       }
     },
@@ -796,6 +987,26 @@
       "ariaLabel": "View itinerary {title}",
       "stops": "{count, plural, one {# stop} other {# stops}}",
       "days": "{count, plural, one {# day} other {# days}}"
+    },
+    "myPlan": {
+      "ariaLabel": "View plan {title}",
+      "draft": "Draft",
+      "edit": "Edit",
+      "share": "Share",
+      "delete": "Delete",
+      "editAriaLabel": "Edit plan {title}",
+      "shareAriaLabel": "Share plan {title}",
+      "deleteAriaLabel": "Delete plan {title}"
+    },
+    "unsave": {
+      "label": "Unsave",
+      "ariaLabel": "Unsave plan {title}"
+    },
+    "confirmDelete": {
+      "title": "Delete plan?",
+      "desc": "This plan will be permanently removed.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
     },
     "folder": {
       "openAriaLabel": "Open folder {name}",
@@ -829,7 +1040,8 @@
       "today": "Today",
       "yesterday": "Yesterday",
       "earlier": "Earlier"
-    }
+    },
+    "markAllRead": "Mark all read"
   },
   "badges": {
     "ariaLabel": "Badges page",
@@ -1029,5 +1241,56 @@
     "terms": "使用條款",
     "cookies": "Cookie政策",
     "copyright": "© {year} B4K. All rights reserved."
+  },
+  "search": {
+    "placeholder": "Search itineraries, places...",
+    "recentTitle": "Recent searches",
+    "clearAll": "Clear all",
+    "noResults": "No results for \"{query}\"",
+    "noResultsSubtitle": "Try exploring by category",
+    "suggestions": "Suggestions",
+    "categories": {
+      "kpop": "K-Pop",
+      "kdrama": "K-Drama",
+      "kbeauty": "K-Beauty",
+      "kculture": "K-Culture"
+    },
+    "sections": {
+      "places": "Places",
+      "plans": "Plans",
+      "explore": "Explore"
+    },
+    "seeAll": "See all",
+    "removeRecent": "Remove {query} from recents",
+    "filters": {
+      "title": "Filters",
+      "sections": "Show",
+      "section_all": "All",
+      "section_places": "Places",
+      "section_plans": "Plans",
+      "section_explore": "Explore",
+      "sort": {
+        "label": "Sort by",
+        "relevance": "Relevance",
+        "popularity": "Popularity"
+      }
+    },
+    "results": {
+      "poi": "Places",
+      "plans": "Plans",
+      "explore": "Explore categories"
+    },
+    "poiAriaLabel": "{name}, {region}",
+    "planAriaLabel": "{title} by {author}",
+    "exploreAriaLabel": "Explore {category}",
+    "mapCta": "Explore on map",
+    "sponsored": "Sponsored",
+    "stops": "{count} stops",
+    "saves": "{count} saves",
+    "mobileFilter": "Filter",
+    "mobileSort": "Sort",
+    "loading": "Searching…",
+    "error": "Search failed. Try again.",
+    "retry": "Try again"
   }
 }
