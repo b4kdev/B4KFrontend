@@ -1,75 +1,110 @@
 'use client'
 
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
+import useSWR from 'swr'
 import { Link } from '@/i18n/navigation'
-import { Music, Tv, Sparkles, Globe, RefreshCw, AlertTriangle } from 'lucide-react'
-import { useExplore } from '@/hooks/useExplore'
+import { Music, Tv, Sparkles, Globe, RefreshCw, AlertTriangle, ArrowRight } from 'lucide-react'
+import { fetcher } from '@/lib/fetcher'
+import type { ExploreData } from '@/app/api/explore/[category]/route'
 import ExplorePoiCard from './ExplorePoiCard'
+import ExploreHero from './ExploreHero'
+import ExploreChipFilter, { ChipFilterConfig } from './ExploreChipFilter'
+import ExplorePackages from './ExplorePackages'
+import ExploreAiCta from './ExploreAiCta'
 
 export type ExploreCategory = 'k-pop' | 'k-drama' | 'k-beauty' | 'k-culture'
 
-const CATEGORIES = [
+interface CategoryConfig {
+  id: ExploreCategory
+  href: string
+  icon: typeof Music
+  tKey: string
+  /** Section order (trending is prepended server-side). */
+  sections: string[]
+  filter?: ChipFilterConfig
+}
+
+const CATEGORIES: CategoryConfig[] = [
   {
-    id: 'k-pop'     as ExploreCategory,
+    id: 'k-pop',
     href: '/explore/k-pop',
     icon: Music,
     tKey: 'kpop',
-    sections: ['concerts', 'tours', 'agencies', 'merchandise'],
+    sections: ['trending', 'concerts', 'tours', 'agencies', 'merchandise'],
+    filter: { param: 'agency', values: ['HYBE', 'SM', 'JYP', 'YG'] },
   },
   {
-    id: 'k-drama'   as ExploreCategory,
+    id: 'k-drama',
     href: '/explore/k-drama',
     icon: Tv,
     tKey: 'kdrama',
-    sections: ['filming', 'tours', 'historical', 'ostCafes'],
+    sections: ['trending', 'filming', 'tours', 'historical', 'ostCafes'],
+    // K-Drama has no chip filter (SPEC-05).
   },
   {
-    id: 'k-beauty'  as ExploreCategory,
+    id: 'k-beauty',
     href: '/explore/k-beauty',
     icon: Sparkles,
     tKey: 'kbeauty',
-    sections: ['skincare', 'makeup', 'spa', 'salon'],
+    sections: ['trending', 'skincare', 'makeup', 'spa', 'salon'],
+    filter: { param: 'district', values: ['Apgujeong', 'Myeongdong', 'Hongdae', 'Gangnam'] },
   },
   {
-    id: 'k-culture' as ExploreCategory,
+    id: 'k-culture',
     href: '/explore/k-culture',
     icon: Globe,
     tKey: 'kculture',
-    sections: ['traditional', 'food', 'festivals', 'crafts'],
+    sections: ['trending', 'traditional', 'food', 'festivals', 'crafts'],
+    filter: { param: 'region', values: ['Seoul', 'Jeonju', 'Gyeongju', 'Andong'] },
   },
 ]
 
-function CardSkeleton() {
+function RowSkeleton() {
   return (
-    <div className="rounded-lg overflow-hidden animate-pulse" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
-      <div className="w-full aspect-[4/3]" style={{ background: 'var(--bg-3)' }} />
-      <div className="p-sp-3 space-y-sp-2">
-        <div className="h-4 w-3/4 rounded bg-muted-3" />
-        <div className="h-3 w-1/2 rounded bg-muted-3" />
+    <div className="mb-sp-10">
+      <div className="h-4 w-28 rounded bg-muted-3 mb-sp-4 animate-pulse" />
+      <div className="flex gap-sp-3 overflow-hidden">
+        {Array.from({ length: 4 }, (_, i) => (
+          <div
+            key={i}
+            className="w-[clamp(220px,72vw,260px)] shrink-0 overflow-hidden animate-pulse"
+            style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+          >
+            <div className="w-full aspect-[4/3]" style={{ background: 'var(--bg-3)' }} />
+            <div className="p-sp-3 space-y-sp-2">
+              <div className="h-4 w-3/4 rounded bg-muted-3" />
+              <div className="h-3 w-1/2 rounded bg-muted-3" />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )
 }
 
-function SectionSkeleton() {
-  return (
-    <div className="mb-sp-8">
-      <div className="h-4 w-28 rounded bg-muted-3 mb-sp-4 animate-pulse" />
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-sp-3">
-        {Array.from({ length: 3 }, (_, i) => <CardSkeleton key={i} />)}
-      </div>
-    </div>
-  )
+function HeroSkeleton() {
+  return <div className="h-[240px] lg:h-[400px] mb-sp-8 animate-pulse" style={{ background: 'var(--bg-2)' }} aria-hidden="true" />
 }
 
 export default function ExplorePage({ category }: { category: ExploreCategory }) {
   const t = useTranslations('explore')
   const pathname = usePathname()
-  const { data, isLoading, isError, mutate } = useExplore(category)
 
   const cat = CATEGORIES.find(c => c.id === category)!
   const CatIcon = cat.icon
+
+  const [activeFilter, setActiveFilter] = useState<string | null>(null)
+
+  // Fetch directly (not via useExplore) so the chip filter can pass a query param.
+  const query = cat.filter && activeFilter ? `?${cat.filter.param}=${encodeURIComponent(activeFilter)}` : ''
+  const { data, isLoading, error, mutate } = useSWR<ExploreData>(
+    `/api/explore/${category}${query}`,
+    fetcher,
+    { revalidateOnFocus: false, keepPreviousData: true },
+  )
+  const isError = !!error
 
   const isActivePath = (href: string) => {
     const segment = pathname.replace(/^\/[a-z-]+/, '')
@@ -92,7 +127,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
               <Link
                 href={c.href}
                 className={[
-                  'flex items-center gap-sp-2 px-sp-3 py-[7px] rounded-lg text-f-sm font-semibold transition-colors min-h-[36px]',
+                  'flex items-center gap-sp-2 px-sp-3 py-[7px] rounded-none text-f-sm font-semibold transition-colors min-h-[36px]',
                   isActive ? 'bg-lav-dim text-lav' : 'text-muted hover:bg-muted-3 hover:text-fg',
                 ].join(' ')}
               >
@@ -105,7 +140,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                     <a
                       key={sid}
                       href={`#section-${sid}`}
-                      className="block px-sp-3 py-[5px] text-f-xs text-muted hover:text-fg transition-colors rounded"
+                      className="block px-sp-3 py-[5px] text-f-xs text-muted hover:text-fg transition-colors rounded-none"
                     >
                       {t(`sections.${sid}`)}
                     </a>
@@ -136,7 +171,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
           </h1>
         </div>
 
-        {/* Mobile pill strip */}
+        {/* Mobile pill strip (sub-nav) */}
         <div
           className="lg:hidden flex gap-sp-2 overflow-x-auto pb-sp-3 mb-sp-5 -mx-sp-4 px-sp-4 sticky top-[50px] z-10 bg-bg pt-sp-2"
           role="tablist"
@@ -166,17 +201,18 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
         </div>
 
         {/* Loading */}
-        {isLoading && (
+        {isLoading && !data && (
           <div aria-busy="true" aria-label={t('loading')}>
-            <SectionSkeleton />
-            <SectionSkeleton />
+            <HeroSkeleton />
+            <RowSkeleton />
+            <RowSkeleton />
           </div>
         )}
 
         {/* Error */}
-        {isError && !isLoading && (
+        {isError && !data && (
           <div
-            className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-lg"
+            className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-none"
             style={{ background: 'var(--bg-2)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
             role="alert"
           >
@@ -193,40 +229,76 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
         )}
 
         {/* Success */}
-        {!isLoading && !isError && data && (
+        {!isError && data && (
           <>
-            {data.sections.length === 0 ? (
+            {/* H2 Hero */}
+            {data.hero && data.hero.length > 0 && <ExploreHero slides={data.hero} />}
+
+            {/* H4 Chip filter (per-hub; K-Drama has none) */}
+            {cat.filter && (
+              <ExploreChipFilter
+                config={cat.filter}
+                active={activeFilter}
+                onChange={setActiveFilter}
+              />
+            )}
+
+            {/* H3 Horizontal-scroll section rows */}
+            {data.sections.every(s => s.items.length === 0) ? (
               <div
-                className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-lg"
+                className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-none"
                 style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
               >
                 <CatIcon size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
                 <p className="text-f-xl font-semibold text-fg mb-sp-2">{t(`${cat.tKey}.empty.title`)}</p>
-                <p className="text-f-md text-muted max-w-[320px]">{t(`${cat.tKey}.empty.desc`)}</p>
+                <p className="text-f-md text-muted max-w-[320px] mb-sp-4">{t(`${cat.tKey}.empty.desc`)}</p>
+                <Link
+                  href="/map"
+                  className="flex items-center min-h-touch px-sp-5 rounded-none text-f-md font-semibold text-bg"
+                  style={{ background: 'var(--lav)' }}
+                >
+                  {t('aiCta.button')}
+                </Link>
               </div>
             ) : (
-              data.sections.map(section => (
-                <section
-                  key={section.id}
-                  id={`section-${section.id}`}
-                  className="mb-sp-10 scroll-mt-[80px]"
-                  aria-label={t(`sections.${section.id}`)}
-                >
-                  <h2 className="text-f-sm font-semibold tracking-[0.07em] uppercase text-muted mb-sp-4">
-                    {t(`sections.${section.id}`)}
-                  </h2>
-                  {section.items.length === 0 ? (
-                    <p className="text-f-md text-muted py-sp-4">{t('sectionEmpty')}</p>
-                  ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-sp-3">
-                      {section.items.map(poi => (
-                        <ExplorePoiCard key={poi.place_id} poi={poi} />
-                      ))}
+              data.sections
+                .filter(s => s.items.length > 0)
+                .map(section => (
+                  <section
+                    key={section.id}
+                    id={`section-${section.id}`}
+                    className="mb-sp-10 scroll-mt-[80px]"
+                    aria-label={t(`sections.${section.id}`)}
+                  >
+                    <div className="flex items-end justify-between mb-sp-4">
+                      <h2 className="text-f-sm font-semibold tracking-[0.07em] uppercase text-muted">
+                        {t(`sections.${section.id}`)}
+                      </h2>
+                      <Link
+                        href={`/search?q=${category}`}
+                        className="flex items-center gap-1 text-f-sm text-lav hover:opacity-80 transition-opacity whitespace-nowrap shrink-0 ml-sp-4"
+                        aria-label={t('viewAllAria', { section: t(`sections.${section.id}`) })}
+                      >
+                        {t('viewAll')}
+                        <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />
+                      </Link>
                     </div>
-                  )}
-                </section>
-              ))
+                    <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-sp-4 lg:-mx-sp-6 px-sp-4 lg:px-sp-6">
+                      <div className="flex gap-sp-3 pb-[4px]" style={{ width: 'max-content' }}>
+                        {section.items.map(poi => (
+                          <ExplorePoiCard key={poi.place_id} poi={poi} />
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+                ))
             )}
+
+            {/* H5 B4K Best Packages */}
+            {data.packages && data.packages.length > 0 && <ExplorePackages packages={data.packages} />}
+
+            {/* H6 Per-hub AI Planner CTA */}
+            <ExploreAiCta category={category} />
           </>
         )}
       </div>

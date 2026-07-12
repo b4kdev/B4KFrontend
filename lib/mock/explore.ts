@@ -158,7 +158,7 @@ const KCULTURE: ExploreData = {
   category: 'k-culture',
   sections: [
     {
-      id: 'cuisine',
+      id: 'food',
       items: [
         { place_id: 'kc-1',  name_ko: '광장시장',                 name_en: 'Gwangjang Market',               primary_image_url: IMG.kbbq,         display_region: '종로구', quality_score: 96, is_trending: true  },
         { place_id: 'kc-2',  name_ko: '전주 한정식 거리',          name_en: 'Jeonju Hanjeongsik Street',      primary_image_url: IMG.pork_soup,    display_region: '전주',   quality_score: 98, is_trending: true  },
@@ -169,7 +169,7 @@ const KCULTURE: ExploreData = {
       ],
     },
     {
-      id: 'markets',
+      id: 'traditional',
       items: [
         { place_id: 'kc-m1', name_ko: '남대문 시장',              name_en: 'Namdaemun Market',               primary_image_url: IMG.kbbq,         display_region: '중구',   quality_score: 94, is_trending: false },
         { place_id: 'kc-m2', name_ko: '동대문 종합시장',           name_en: 'Dongdaemun Wholesale Market',    primary_image_url: IMG.film_street,  display_region: '중구',   quality_score: 90, is_trending: false },
@@ -178,7 +178,7 @@ const KCULTURE: ExploreData = {
       ],
     },
     {
-      id: 'historic',
+      id: 'festivals',
       items: [
         { place_id: 'kc-11', name_ko: '수원화성',                  name_en: 'Hwaseong Fortress, Suwon',       primary_image_url: IMG.gyeongbok,    display_region: '수원',   quality_score: 98, is_trending: true  },
         { place_id: 'kc-12', name_ko: '창덕궁',                    name_en: 'Changdeokgung Palace',           primary_image_url: IMG.palace_spring, display_region: '종로구', quality_score: 98, is_trending: true  },
@@ -188,7 +188,7 @@ const KCULTURE: ExploreData = {
       ],
     },
     {
-      id: 'experiences',
+      id: 'crafts',
       items: [
         { place_id: 'kc-7',  name_ko: '서울 김치 아카데미',        name_en: 'Seoul Kimchi Academy Myeongdong', primary_image_url: IMG.kbbq,         display_region: '중구',   quality_score: 96, is_trending: true  },
         { place_id: 'kc-9',  name_ko: '쿡코리안 망원',             name_en: 'cooKorean Mangwon',              primary_image_url: IMG.pork_soup,    display_region: '마포구', quality_score: 98, is_trending: true  },

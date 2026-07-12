@@ -1047,7 +1047,10 @@
       "unsaveAria": "Unsave {name}",
       "likeAria": "Like {name}",
       "unlikeAria": "Unlike {name}",
-      "sponsored": "Sponsored"
+      "sponsored": "Sponsored",
+      "dDay": "D-{days}",
+      "dDayToday": "D-DAY",
+      "dDayPast": "Ended"
     },
     "hub": {
       "title": "Explore Korea",
@@ -1112,11 +1115,60 @@
       "traditional": "Traditional",
       "food": "Food",
       "festivals": "Festivals",
-      "crafts": "Crafts"
+      "crafts": "Crafts",
+      "trending": "Trending Now"
     },
     "aiCta": {
       "text": "Let AI plan your K-culture journey",
-      "button": "Try AI Planning"
+      "button": "Try AI Planning",
+      "kpop": {
+        "text": "Plan your K-Pop trip with AI"
+      },
+      "kdrama": {
+        "text": "Plan your K-Drama trip with AI"
+      },
+      "kbeauty": {
+        "text": "Plan your K-Beauty trip with AI"
+      },
+      "kculture": {
+        "text": "Plan your K-Culture trip with AI"
+      }
+    },
+    "viewAll": "View all",
+    "viewAllAria": "View all {section}",
+    "hero": {
+      "ariaLabel": "Featured highlights",
+      "slideN": "Slide {n}",
+      "prev": "Previous slide",
+      "next": "Next slide"
+    },
+    "filters": {
+      "ariaLabel": "Filter",
+      "all": "All",
+      "agency": {
+        "HYBE": "HYBE",
+        "SM": "SM",
+        "JYP": "JYP",
+        "YG": "YG"
+      },
+      "district": {
+        "Apgujeong": "Apgujeong",
+        "Myeongdong": "Myeongdong",
+        "Hongdae": "Hongdae",
+        "Gangnam": "Gangnam"
+      },
+      "region": {
+        "Seoul": "Seoul",
+        "Jeonju": "Jeonju",
+        "Gyeongju": "Gyeongju",
+        "Andong": "Andong"
+      }
+    },
+    "packages": {
+      "title": "B4K Best Packages",
+      "sponsored": "Sponsored",
+      "viewCta": "View",
+      "ariaLabel": "{title} by {partner}"
     }
   },
   "saved": {

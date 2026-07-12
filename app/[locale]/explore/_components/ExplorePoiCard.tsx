@@ -22,6 +22,15 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
   // Partner redirect — Link href points to partner_url (validated https://) in new tab
   const isPartner = !!(poi.is_partner && poi.partner_url && /^https?:\/\//.test(poi.partner_url))
 
+  // D-Day countdown — days until event_date (whole-day delta from today).
+  let dDay: string | null = null
+  if (poi.event_date) {
+    const today = new Date(); today.setHours(0, 0, 0, 0)
+    const target = new Date(poi.event_date + 'T00:00:00')
+    const days = Math.round((target.getTime() - today.getTime()) / 86400000)
+    dDay = days > 0 ? t('card.dDay', { days }) : days === 0 ? t('card.dDayToday') : t('card.dDayPast')
+  }
+
   const handleSave = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -50,7 +59,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
 
   return (
     <article
-      className="flex flex-col overflow-hidden relative"
+      className="flex flex-col overflow-hidden relative w-[clamp(220px,72vw,260px)] shrink-0"
       style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
     >
       <Link
@@ -73,6 +82,15 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
             />
           ) : (
             <MapPin size={22} strokeWidth={2} className="text-muted-2" />
+          )}
+          {/* D-Day countdown badge — event/festival/merch items */}
+          {dDay && (
+            <span
+              className="absolute top-sp-2 right-sp-2 text-f-xxs font-bold px-sp-2 py-[3px] rounded-full text-bg"
+              style={{ background: 'var(--lav)' }}
+            >
+              {dDay}
+            </span>
           )}
           {/* Sponsored label — DEC-05 / CLAUDE.md §9: LeftPanel card only on desktop, but Explore cards are equivalent */}
           {isPartner && (

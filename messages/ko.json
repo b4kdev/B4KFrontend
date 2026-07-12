@@ -1085,11 +1085,26 @@
       "unsaveAria": "{name} 저장 취소",
       "likeAria": "{name} 좋아요",
       "unlikeAria": "{name} 좋아요 취소",
-      "sponsored": "광고"
+      "sponsored": "광고",
+      "dDay": "D-{days}",
+      "dDayToday": "D-DAY",
+      "dDayPast": "종료"
     },
     "aiCta": {
       "text": "AI로 나만의 K-컬처 여행을 계획해보세요",
-      "button": "AI 여행 계획 시작"
+      "button": "AI 여행 계획 시작",
+      "kpop": {
+        "text": "AI로 K-팝 여행을 계획하세요"
+      },
+      "kdrama": {
+        "text": "AI로 K-드라마 여행을 계획하세요"
+      },
+      "kbeauty": {
+        "text": "AI로 K-뷰티 여행을 계획하세요"
+      },
+      "kculture": {
+        "text": "AI로 K-컬처 여행을 계획하세요"
+      }
     },
     "hub": {
       "title": "한국 탐험",
@@ -1154,7 +1169,44 @@
       "traditional": "전통문화",
       "food": "음식",
       "festivals": "축제",
-      "crafts": "공예"
+      "crafts": "공예",
+      "trending": "지금 뜨는 곳"
+    },
+    "viewAll": "전체 보기",
+    "viewAllAria": "{section} 전체 보기",
+    "hero": {
+      "ariaLabel": "추천 하이라이트",
+      "slideN": "슬라이드 {n}",
+      "prev": "이전 슬라이드",
+      "next": "다음 슬라이드"
+    },
+    "filters": {
+      "ariaLabel": "필터",
+      "all": "전체",
+      "agency": {
+        "HYBE": "HYBE",
+        "SM": "SM",
+        "JYP": "JYP",
+        "YG": "YG"
+      },
+      "district": {
+        "Apgujeong": "압구정",
+        "Myeongdong": "명동",
+        "Hongdae": "홍대",
+        "Gangnam": "강남"
+      },
+      "region": {
+        "Seoul": "서울",
+        "Jeonju": "전주",
+        "Gyeongju": "경주",
+        "Andong": "안동"
+      }
+    },
+    "packages": {
+      "title": "B4K 베스트 패키지",
+      "sponsored": "광고",
+      "viewCta": "보기",
+      "ariaLabel": "{partner}의 {title}"
     }
   },
   "saved": {

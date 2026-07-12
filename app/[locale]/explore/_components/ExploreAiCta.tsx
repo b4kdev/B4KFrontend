@@ -3,10 +3,21 @@
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { Sparkles } from 'lucide-react'
+import type { ExploreCategory } from './ExplorePage'
 
-export default function ExploreAiCta() {
+const T_KEY: Record<ExploreCategory, string> = {
+  'k-pop': 'kpop',
+  'k-drama': 'kdrama',
+  'k-beauty': 'kbeauty',
+  'k-culture': 'kculture',
+}
+
+export default function ExploreAiCta({ category }: { category?: ExploreCategory }) {
   const t = useTranslations('explore')
   const router = useRouter()
+
+  // Per-hub copy when a category is given; generic copy on the Explore hub landing.
+  const text = category ? t(`aiCta.${T_KEY[category]}.text`) : t('aiCta.text')
 
   return (
     <div
@@ -14,7 +25,7 @@ export default function ExploreAiCta() {
       style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
     >
       <div className="flex-1 min-w-0">
-        <p className="text-f-lg font-semibold text-fg mb-[4px]">{t('aiCta.text')}</p>
+        <p className="text-f-lg font-semibold text-fg mb-[4px]">{text}</p>
       </div>
       <button
         onClick={() => router.push('/map?ai=1')}
