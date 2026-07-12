@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { signIn } from 'next-auth/react';
-import { X, Mail, Route } from 'lucide-react';
+import { X, Mail, MailCheck, Route } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 import { useAuthGate } from '@/contexts/AuthGateContext';
 
 interface Props {
@@ -13,14 +14,22 @@ interface Props {
 
 const FOCUSABLE = 'button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
+type View      = 'providers' | 'email' | 'forgot' | 'check_email';
+type EmailMode = 'signin' | 'signup';
+const RESEND_COOLDOWN_S = 60; // S-JNCTDV: 60s resend cooldown
+
 export default function AuthGateModal({ open, onDismiss }: Props) {
   const t = useTranslations('auth.gate');
-  const { reason, executePendingAction } = useAuthGate();
+  const { reason, executePendingAction, persistPendingAction } = useAuthGate();
 
-  const [status,       setStatus]       = useState<'idle' | 'loading' | 'error'>('idle');
-  const [emailMode,    setEmailMode]    = useState(false);
-  const [email,        setEmail]        = useState('');
-  const [password,     setPassword]     = useState('');
+  const [status,     setStatus]     = useState<'idle' | 'loading'>('idle');
+  const [error,      setError]      = useState<string | null>(null); // i18n key
+  const [view,       setView]       = useState<View>('providers');
+  const [mode,       setMode]       = useState<EmailMode>('signin');
+  const [checkKind,  setCheckKind]  = useState<'signup' | 'reset'>('signup');
+  const [email,      setEmail]      = useState('');
+  const [password,   setPassword]   = useState('');
+  const [resendLeft, setResendLeft] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Context-specific first-line copy (DEC-34)
@@ -37,22 +46,39 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
     }
   }
 
-  // Show plan-preserved notice for save_plan and fl3_cap
-  const showDraftNotice = reason === 'save_plan' || reason === 'fl3_cap';
+  function viewTitle(): string {
+    switch (view) {
+      case 'forgot':      return t('forgotTitle');
+      case 'check_email': return t('checkEmailTitle');
+      default:            return contextTitle();
+    }
+  }
 
-  // Focus first focusable element on open; reset email form
+  // Show plan-preserved notice for save_plan and fl3_cap
+  const showDraftNotice = (reason === 'save_plan' || reason === 'fl3_cap')
+    && (view === 'providers' || view === 'email');
+
+  // Reset state on open
   useEffect(() => {
     if (!open) return;
     setStatus('idle');
-    setEmailMode(false);
+    setError(null);
+    setView('providers');
+    setMode('signin');
     setEmail('');
     setPassword('');
+    setResendLeft(0);
+  }, [open]);
+
+  // Focus first focusable element on open and on view change
+  useEffect(() => {
+    if (!open) return;
     const id = setTimeout(() => {
       const el = panelRef.current?.querySelector<HTMLElement>(FOCUSABLE);
       (el ?? panelRef.current)?.focus();
     }, 50);
     return () => clearTimeout(id);
-  }, [open]);
+  }, [open, view]);
 
   // Keyboard: Escape + focus trap
   useEffect(() => {
@@ -82,8 +108,40 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
     return () => { document.body.style.overflow = ''; };
   }, [open]);
 
-  async function handleEmailSignIn(e: React.FormEvent) {
+  // Resend cooldown countdown
+  useEffect(() => {
+    if (resendLeft <= 0) return;
+    const id = setTimeout(() => setResendLeft(s => s - 1), 1000);
+    return () => clearTimeout(id);
+  }, [resendLeft]);
+
+  async function handleEmailSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
+
+    if (mode === 'signup') {
+      if (password.length < 8) { setError('errorWeak'); return; }
+      setStatus('loading');
+      try {
+        const res = await fetch('/api/auth/signup', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ email, password }),
+        });
+        if (res.ok) {
+          setCheckKind('signup');
+          setView('check_email');
+          setResendLeft(RESEND_COOLDOWN_S);
+        } else {
+          setError('errorSignup');
+        }
+      } catch {
+        setError('errorSignup');
+      }
+      setStatus('idle');
+      return;
+    }
+
     setStatus('loading');
     try {
       const res = await signIn('credentials', { email, password, redirect: false });
@@ -91,19 +149,65 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
         executePendingAction();
         onDismiss();
       } else {
-        setStatus('error');
+        setError('errorCredentials'); // generic only — no field-level detail (S-JNCTDV)
+        setStatus('idle');
       }
     } catch {
-      setStatus('error');
+      setError('errorCredentials');
+      setStatus('idle');
     }
   }
 
-  async function handleOAuth(provider: 'google' | 'apple' | 'azure-ad') {
+  async function handleForgotSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
     setStatus('loading');
     try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        setCheckKind('reset');
+        setView('check_email');
+        setResendLeft(RESEND_COOLDOWN_S);
+      } else {
+        setError('errorForgot');
+      }
+    } catch {
+      setError('errorForgot');
+    }
+    setStatus('idle');
+  }
+
+  async function handleResend() {
+    setError(null);
+    setStatus('loading');
+    try {
+      const url = checkKind === 'signup' ? '/api/auth/signup/resend' : '/api/auth/forgot-password';
+      const res = await fetch(url, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email }),
+      });
+      if (res.ok) setResendLeft(RESEND_COOLDOWN_S);
+      else        setError(checkKind === 'signup' ? 'errorSignup' : 'errorForgot');
+    } catch {
+      setError(checkKind === 'signup' ? 'errorSignup' : 'errorForgot');
+    }
+    setStatus('idle');
+  }
+
+  async function handleOAuth(provider: 'google' | 'apple' | 'azure-ad') {
+    setError(null);
+    setStatus('loading');
+    try {
+      persistPendingAction(); // L9 — survive the OAuth redirect
       await signIn(provider);
     } catch {
-      setStatus('error');
+      setError('error');
+      setStatus('idle');
     }
   }
 
@@ -150,14 +254,28 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
             B4K
           </span>
 
-          {/* Context-specific title + value prop */}
+          {/* Title + subline per view */}
           <div>
             <h2 className="text-fg font-display font-bold text-f-2xl mb-sp-2">
-              {contextTitle()}
+              {viewTitle()}
             </h2>
-            <p className="text-muted text-f-base leading-relaxed">
-              {t('valueProp')}
-            </p>
+            {(view === 'providers' || view === 'email') && (
+              <p className="text-muted text-f-base leading-relaxed">
+                {t('valueProp')}
+              </p>
+            )}
+            {view === 'forgot' && (
+              <p className="text-muted text-f-base leading-relaxed">
+                {t('forgotSubtitle')}
+              </p>
+            )}
+            {view === 'check_email' && (
+              <p className="text-muted text-f-base leading-relaxed">
+                {checkKind === 'signup'
+                  ? t('checkEmailBodySignup', { email })
+                  : t('checkEmailBodyReset',  { email })}
+              </p>
+            )}
           </div>
 
           {/* Draft-preserved notice (save_plan + fl3_cap) */}
@@ -174,64 +292,12 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
           )}
 
           {/* Error alert */}
-          {status === 'error' && (
-            <p role="alert" className="text-danger text-f-base">{t('error')}</p>
+          {error && (
+            <p role="alert" className="text-danger text-f-base">{t(error)}</p>
           )}
 
-          {/* Email/password form */}
-          {emailMode ? (
-            <form onSubmit={handleEmailSignIn} className="w-full flex flex-col gap-sp-3">
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder={t('emailPlaceholder')}
-                required
-                autoComplete="email"
-                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
-                style={{ border: '1px solid var(--bdr)' }}
-              />
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder={t('passwordPlaceholder')}
-                required
-                autoComplete="current-password"
-                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
-                style={{ border: '1px solid var(--bdr)' }}
-              />
-              <button
-                type="submit"
-                disabled={status === 'loading' || !email || !password}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
-              >
-                {status === 'loading'
-                  ? <span className="w-5 h-5 border-2 border-bg border-t-transparent rounded-full animate-spin" aria-hidden="true" />
-                  : t('signIn')
-                }
-              </button>
-              <button
-                type="button"
-                onClick={() => setEmailMode(false)}
-                className="text-muted text-f-base hover:text-fg transition-colors min-h-touch"
-              >
-                {t('backToProviders')}
-              </button>
-            </form>
-          ) : (
+          {view === 'providers' && (
             <>
-              {/* Email sign-in toggle */}
-              <button
-                onClick={() => setEmailMode(true)}
-                disabled={status === 'loading'}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
-                style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)', color: 'var(--fg)' }}
-              >
-                <Mail size={18} strokeWidth={2} aria-hidden="true" />
-                {t('email')}
-              </button>
-
               {/* Google */}
               <button
                 onClick={() => handleOAuth('google')}
@@ -274,16 +340,159 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
                 </svg>
                 {t('microsoft')}
               </button>
+
+              {/* Continue with email */}
+              <button
+                onClick={() => setView('email')}
+                disabled={status === 'loading'}
+                className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
+                style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)', color: 'var(--fg)' }}
+              >
+                <Mail size={18} strokeWidth={2} aria-hidden="true" />
+                {t('emailContinue')}
+              </button>
             </>
+          )}
+
+          {view === 'email' && (
+            <form onSubmit={handleEmailSubmit} className="w-full flex flex-col gap-sp-3">
+              {/* Sign in / Sign up toggle */}
+              <div className="w-full flex" style={{ borderBottom: '1px solid var(--bdr)' }}>
+                {(['signin', 'signup'] as const).map(m => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => { setMode(m); setError(null); }}
+                    aria-pressed={mode === m}
+                    className={`flex-1 min-h-touch text-f-base font-semibold transition-colors ${
+                      mode === m ? 'text-lav' : 'text-muted hover:text-fg'
+                    }`}
+                    style={mode === m ? { boxShadow: 'inset 0 -2px 0 var(--lav)' } : undefined}
+                  >
+                    {m === 'signin' ? t('signInTab') : t('signUpTab')}
+                  </button>
+                ))}
+              </div>
+
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder={t('emailPlaceholder')}
+                required
+                autoComplete="email"
+                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
+                style={{ border: '1px solid var(--bdr)' }}
+              />
+              <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder={t('passwordPlaceholder')}
+                required
+                autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
+                style={{ border: '1px solid var(--bdr)' }}
+              />
+              <button
+                type="submit"
+                disabled={status === 'loading' || !email || !password}
+                className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
+              >
+                {status === 'loading'
+                  ? <span className="w-5 h-5 border-2 border-bg border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+                  : (mode === 'signin' ? t('signIn') : t('signUp'))
+                }
+              </button>
+              {mode === 'signin' && (
+                <button
+                  type="button"
+                  onClick={() => { setView('forgot'); setError(null); }}
+                  className="text-muted text-f-base hover:text-fg transition-colors min-h-touch"
+                >
+                  {t('forgotPassword')}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => { setView('providers'); setError(null); }}
+                className="text-muted text-f-base hover:text-fg transition-colors min-h-touch"
+              >
+                {t('backToProviders')}
+              </button>
+            </form>
+          )}
+
+          {view === 'forgot' && (
+            <form onSubmit={handleForgotSubmit} className="w-full flex flex-col gap-sp-3">
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder={t('emailPlaceholder')}
+                required
+                autoComplete="email"
+                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
+                style={{ border: '1px solid var(--bdr)' }}
+              />
+              <button
+                type="submit"
+                disabled={status === 'loading' || !email}
+                className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
+              >
+                {status === 'loading'
+                  ? <span className="w-5 h-5 border-2 border-bg border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+                  : t('forgotSubmit')
+                }
+              </button>
+              <button
+                type="button"
+                onClick={() => { setView('email'); setMode('signin'); setError(null); }}
+                className="text-muted text-f-base hover:text-fg transition-colors min-h-touch"
+              >
+                {t('backToSignIn')}
+              </button>
+            </form>
+          )}
+
+          {view === 'check_email' && (
+            <div className="w-full flex flex-col items-center gap-sp-3">
+              <MailCheck size={32} strokeWidth={2} className="text-lav" aria-hidden="true" />
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={status === 'loading' || resendLeft > 0}
+                className="w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
+                style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)', color: 'var(--fg)' }}
+              >
+                {resendLeft > 0 ? t('resendIn', { seconds: resendLeft }) : t('resend')}
+              </button>
+            </div>
           )}
 
           {/* Dismiss */}
           <button
             onClick={onDismiss}
-            className="min-h-touch flex items-center text-muted text-f-base hover:text-fg transition-colors pb-sp-2"
+            className="min-h-touch flex items-center text-muted text-f-base hover:text-fg transition-colors"
           >
             {t('dismiss')}
           </button>
+
+          {/* ToS / Privacy footer */}
+          <p className="text-mut2 text-f-sm leading-relaxed pb-sp-2">
+            {t.rich('tosFooter', {
+              terms: chunks => (
+                <Link href="/legal/terms" className="underline text-muted hover:text-fg transition-colors">
+                  {chunks}
+                </Link>
+              ),
+              privacy: chunks => (
+                <Link href="/legal/privacy" className="underline text-muted hover:text-fg transition-colors">
+                  {chunks}
+                </Link>
+              ),
+            })}
+          </p>
 
         </div>
       </div>
