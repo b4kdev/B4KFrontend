@@ -977,7 +977,66 @@
         "success": "Password updated",
         "mismatch": "Passwords do not match"
       },
-      "passwordError": "Failed to update password. Check your current password and try again."
+      "passwordError": "Failed to update password. Check your current password and try again.",
+      "avatar": {
+        "heading": "Profile photo",
+        "alt": "Your profile photo",
+        "upload": "Upload photo",
+        "remove": "Remove",
+        "uploading": "Uploading…",
+        "hint": "JPG, PNG or WebP. Max 2MB.",
+        "uploaded": "Photo updated",
+        "removed": "Photo removed",
+        "error": "Could not update photo. Try again."
+      },
+      "identity": {
+        "heading": "Name & bio",
+        "displayName": "Display name",
+        "displayNamePlaceholder": "Your name",
+        "bio": "Bio",
+        "bioPlaceholder": "Tell others a little about you",
+        "bioCounter": "{count}/150",
+        "save": "Save",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "error": "Could not save. Try again."
+      },
+      "notifications": {
+        "heading": "Notifications",
+        "note": "Turn off the notifications you don't want to receive.",
+        "error": "Could not update. Try again.",
+        "types": {
+          "event_drop": "New event drops",
+          "deal_expiring": "Deals expiring soon",
+          "editorial_pick": "Editor's picks",
+          "badge_earned": "Badges earned",
+          "challenge_new": "New challenges",
+          "promotion": "Promotions"
+        }
+      },
+      "privacy": {
+        "heading": "Privacy",
+        "note": "Control which tabs other people can see on your profile.",
+        "trips": "Trips",
+        "tripsNote": "Show your trips on your public profile",
+        "saved": "Saved",
+        "savedNote": "Show your saved places on your public profile",
+        "public": "Public",
+        "private": "Private",
+        "error": "Could not update. Try again."
+      },
+      "signOutAll": "Log out from all devices",
+      "signOutAllNote": "Ends your session everywhere you're signed in.",
+      "signOutAllError": "Could not log out everywhere. Try again.",
+      "reauth": {
+        "heading": "Confirm it's you",
+        "note": "For your security, re-enter your password to continue.",
+        "password": "Password",
+        "continue": "Continue",
+        "verifying": "Verifying…",
+        "cancel": "Cancel",
+        "error": "Incorrect password. Try again."
+      }
     },
     "saved": {
       "loading": "Loading saved places…",
@@ -1228,7 +1287,18 @@
       "status": "Status",
       "earned": "Earned",
       "earnedOn": "Earned on {date}",
-      "unlockToast": "New badge unlocked: {name}"
+      "unlockToast": "New badge unlocked: {name}",
+      "unlockCriteria": "How to unlock",
+      "pin": "Pin to profile",
+      "unpin": "Unpin from profile",
+      "pinLimit": "You can pin up to 3 badges. Unpin one first.",
+      "pinError": "Could not update pin. Please try again."
+    },
+    "rarity": {
+      "common": "Common",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
     }
   },
   "leaderboard": {
@@ -1311,6 +1381,10 @@
           "q2": {
             "q": "How do I delete my account?",
             "a": "In Profile → Settings, tap 'Delete account'. Your data is held for 30 days before permanent deletion, in line with Korean privacy law (PIPA)."
+          },
+          "q3": {
+            "q": "How do I change my password?",
+            "a": "If you signed up with email, go to Profile → Settings to update your password. If you signed in with Google, Apple, or Microsoft, manage your password with that provider — B4K does not store it."
           }
         }
       },
@@ -1318,8 +1392,86 @@
         "title": "Contact",
         "desc": "Can't find what you're looking for? Reach out and we'll get back to you.",
         "ctaEmail": "Email support",
-        "ctaEmailHref": "mailto:support@b4k.app"
+        "ctaEmailHref": "mailto:support@b4k.app",
+        "emailAddress": "support@b4k.app",
+        "copyEmail": "Copy email address",
+        "copyEmailCopied": "Copied",
+        "copyEmailAriaLabel": "Copy email address to clipboard"
+      },
+      "getting-started": {
+        "title": "Getting started",
+        "items": {
+          "q1": {
+            "q": "What is B4K?",
+            "a": "B4K is a K-culture travel discovery platform for foreign tourists visiting Korea. Explore K-Pop venues, K-Drama filming locations, K-Beauty spots, and K-Culture landmarks on an interactive map, then build your own trip plan."
+          },
+          "q2": {
+            "q": "How do I create an account?",
+            "a": "Sign up with your email and a password, or continue with Google, Apple, or Microsoft. There is no separate onboarding — once you sign up you land straight on the Home page."
+          },
+          "q3": {
+            "q": "What languages are supported?",
+            "a": "B4K is available in Korean, English, Japanese, Chinese (Simplified and Traditional), Thai, and Brazilian Portuguese. You can change your language anytime in Profile settings."
+          }
+        }
+      },
+      "planning": {
+        "title": "Planning",
+        "items": {
+          "q1": {
+            "q": "How do I create a trip plan?",
+            "a": "Open a place on the map and add it to your plan. Add stops, reorder them, and each leg shows an estimated travel time. When you are happy with it, tap Save Plan. You can also ask the AI assistant to draft a plan for you."
+          },
+          "q2": {
+            "q": "Can I use B4K without an account?",
+            "a": "Yes. You can explore the map and build a plan as a guest — your draft is kept in your browser so it survives a refresh. You only need to sign in when you tap Save Plan, and your draft moves to your account automatically."
+          },
+          "q3": {
+            "q": "Is there a limit on how many stops a plan can have?",
+            "a": "A single plan can hold up to 40 stops. Once you reach the limit the Add button is disabled and a message lets you know. There is no in-app payment — partner plans simply link out to the partner's website."
+          }
+        }
+      },
+      "saved": {
+        "title": "Saved",
+        "items": {
+          "q1": {
+            "q": "How do I save a place?",
+            "a": "Open any place from the map and tap the bookmark icon. Saved places appear in your Saved tab, where you can browse them all in one list."
+          },
+          "q2": {
+            "q": "What are folders?",
+            "a": "Folders let you organize your saved places into single-level groups — for example one folder per city or per interest. Folders are for saved places only; saved plans stay in a single flat list."
+          },
+          "q3": {
+            "q": "How do I generate a plan from saved places?",
+            "a": "In the Saved tab, select the places you want with the checkboxes, then choose Generate plan. B4K arranges them into a suggested route and opens the new plan so you can fine-tune it."
+          }
+        }
+      },
+      "technical": {
+        "title": "Technical",
+        "items": {
+          "q1": {
+            "q": "The map isn't loading.",
+            "a": "First try refreshing the page. If the map still doesn't appear, check your internet connection and disable any ad or script blockers, which can interfere with the map. If the problem continues, contact us using the email below."
+          },
+          "q2": {
+            "q": "The app is in the wrong language.",
+            "a": "B4K picks a language from your browser settings and falls back to English if your language isn't supported. To set it yourself, open Profile → Settings and choose your preferred language."
+          },
+          "q3": {
+            "q": "How do I report a problem?",
+            "a": "Use the email address in the Contact section below to report bugs or send feedback. Please include what you were doing, your device, and your browser so we can help faster."
+          }
+        }
       }
+    },
+    "legal": {
+      "title": "Legal",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "cookies": "Cookie Policy"
     }
   },
   "onboarding": {
@@ -1396,7 +1548,41 @@
         "label": "Sort by",
         "relevance": "Relevance",
         "popularity": "Popularity"
-      }
+      },
+      "area": {
+        "label": "Area",
+        "lv1Label": "Region",
+        "lv2Label": "District",
+        "chipAriaLabel": "Filter by {name}"
+      },
+      "tags": {
+        "label": "Theme"
+      },
+      "region": {
+        "seoul": "Seoul",
+        "busan": "Busan",
+        "jeju": "Jeju"
+      },
+      "district": {
+        "gangnam": "Gangnam",
+        "hongdae": "Hongdae",
+        "myeongdong": "Myeongdong",
+        "haeundae": "Haeundae",
+        "seomyeon": "Seomyeon",
+        "jejuCity": "Jeju City",
+        "seogwipo": "Seogwipo"
+      },
+      "tag": {
+        "kpop": "K-Pop",
+        "kdrama": "K-Drama",
+        "kbeauty": "K-Beauty",
+        "food": "Food",
+        "nature": "Nature",
+        "shopping": "Shopping",
+        "history": "History",
+        "nightlife": "Nightlife"
+      },
+      "apply": "Apply"
     },
     "results": {
       "poi": "Places",
@@ -1414,7 +1600,11 @@
     "mobileSort": "Sort",
     "loading": "Searching…",
     "error": "Search failed. Try again.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "seeAllPlaces": "See all {count} places",
+    "seeAllPlans": "See all {count} plans",
+    "seeAllExplore": "See all {count} contents",
+    "showLess": "Show less"
   },
   "footer": {
     "help": "Help",
