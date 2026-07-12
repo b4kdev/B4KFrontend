@@ -11,7 +11,6 @@ import { fetcher } from '@/lib/fetcher';
 
 interface TopNavProps {
   onMobileMenuOpen: () => void;
-  notifCount?: number;
 }
 
 // ─── localStorage recents helpers ─────────────────────────────────────────────
@@ -240,11 +239,15 @@ function SearchDropdown({
 
 // ─── Main TopNav ──────────────────────────────────────────────────────────────
 
-export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps) {
+export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
   const t       = useTranslations('topNav');
   const tSearch = useTranslations('search');
   const tNav    = useTranslations('nav');
   const tCommon = useTranslations('common');
+  const { data: unreadData } = useSWR<{ count: number }>(
+    '/api/notifications/unread-count', fetcher, { refreshInterval: 60_000 },
+  );
+  const notifCount = unreadData?.count ?? 0;
   const router   = useRouter();
   const pathname = usePathname();
   const locale   = useLocale();

@@ -24,10 +24,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         mobileOpen={mobileMenuOpen}
         onMobileClose={() => setMobileMenuOpen(false)}
       />
-      <TopNav
-        onMobileMenuOpen={() => setMobileMenuOpen(true)}
-        notifCount={3}
-      />
+      <TopNav onMobileMenuOpen={() => setMobileMenuOpen(true)} />
       <MobileBottomNav />
       <PageLayout>{children}</PageLayout>
       <OfflineBanner />

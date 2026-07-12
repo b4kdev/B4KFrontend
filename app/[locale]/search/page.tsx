@@ -120,11 +120,12 @@ function LoadingState() {
 function EmptyState({ query }: { query: string }) {
   const t = useTranslations('search')
   const categories = ['kpop', 'kdrama', 'kbeauty', 'kculture'] as const
-  const hrefs: Record<string, string> = {
-    kpop: '/explore/k-pop',
-    kdrama: '/explore/k-drama',
-    kbeauty: '/explore/k-beauty',
-    kculture: '/explore/k-culture',
+  // DEC-26: chips → /search?q=<category>, not Explore hubs
+  const queries: Record<string, string> = {
+    kpop: 'k-pop',
+    kdrama: 'k-drama',
+    kbeauty: 'k-beauty',
+    kculture: 'k-culture',
   }
 
   return (
@@ -139,7 +140,7 @@ function EmptyState({ query }: { query: string }) {
         {categories.map(cat => (
           <Link
             key={cat}
-            href={hrefs[cat] as `/explore/${string}`}
+            href={`/search?q=${queries[cat]}`}
             className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-lav min-h-touch flex items-center"
             style={{ border: '1px solid var(--lav-border)' }}
           >
@@ -520,14 +521,15 @@ export default function SearchPage() {
               <p className="text-f-base text-muted">{t('placeholder')}</p>
               <div className="flex flex-wrap gap-sp-2 justify-center mt-sp-8">
                 {(['kpop', 'kdrama', 'kbeauty', 'kculture'] as const).map(cat => {
-                  const hrefs: Record<string, string> = {
-                    kpop: '/explore/k-pop', kdrama: '/explore/k-drama',
-                    kbeauty: '/explore/k-beauty', kculture: '/explore/k-culture',
+                  // DEC-26: chips → /search?q=<category>, not Explore hubs
+                  const queries: Record<string, string> = {
+                    kpop: 'k-pop', kdrama: 'k-drama',
+                    kbeauty: 'k-beauty', kculture: 'k-culture',
                   }
                   return (
                     <Link
                       key={cat}
-                      href={hrefs[cat] as `/explore/${string}`}
+                      href={`/search?q=${queries[cat]}`}
                       className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-lav min-h-touch flex items-center"
                       style={{ border: '1px solid var(--lav-border)' }}
                     >

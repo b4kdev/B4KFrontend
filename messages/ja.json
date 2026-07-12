@@ -998,7 +998,11 @@
       "cuisine": "Korean Cuisine",
       "markets": "Traditional Markets",
       "historic": "Historic Places",
-      "experiences": "Traditional Experiences"
+      "experiences": "Traditional Experiences",
+      "traditional": "Traditional",
+      "food": "Food",
+      "festivals": "Festivals",
+      "crafts": "Crafts"
     },
     "aiCta": {
       "text": "Let AI plan your K-culture journey",

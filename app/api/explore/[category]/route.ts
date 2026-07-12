@@ -133,23 +133,7 @@ const MOCK: Record<string, ExploreData> = {
     category: 'k-culture',
     sections: [
       {
-        id: 'cuisine',
-        items: [
-          { place_id: 'kc-001', name_ko: '광장시장', name_en: 'Gwangjang Market', primary_image_url: null, display_region: '서울', quality_score: 96, is_trending: true },
-          { place_id: 'kc-002', name_ko: '전주 한옥마을 음식거리', name_en: 'Jeonju Hanok Food Street', primary_image_url: null, display_region: '전주', quality_score: 94, is_trending: true },
-          { place_id: 'kc-003', name_ko: '통인시장', name_en: 'Tongin Market', primary_image_url: null, display_region: '서울', quality_score: 88, is_trending: false },
-        ],
-      },
-      {
-        id: 'markets',
-        items: [
-          { place_id: 'kc-010', name_ko: '남대문시장', name_en: 'Namdaemun Market', primary_image_url: null, display_region: '서울', quality_score: 91, is_trending: false },
-          { place_id: 'kc-011', name_ko: '동대문 디자인 플라자', name_en: 'Dongdaemun Design Plaza', primary_image_url: null, display_region: '서울', quality_score: 89, is_trending: true },
-          { place_id: 'kc-012', name_ko: '부산 국제시장', name_en: 'Busan Gukje Market', primary_image_url: null, display_region: '부산', quality_score: 87, is_trending: false },
-        ],
-      },
-      {
-        id: 'historic',
+        id: 'traditional',
         items: [
           { place_id: 'kc-020', name_ko: '해인사', name_en: 'Haeinsa Temple', primary_image_url: null, display_region: '합천', quality_score: 97, is_trending: false },
           { place_id: 'kc-021', name_ko: '안동 하회마을', name_en: 'Hahoe Folk Village', primary_image_url: null, display_region: '안동', quality_score: 95, is_trending: false },
@@ -157,7 +141,23 @@ const MOCK: Record<string, ExploreData> = {
         ],
       },
       {
-        id: 'experiences',
+        id: 'food',
+        items: [
+          { place_id: 'kc-001', name_ko: '광장시장', name_en: 'Gwangjang Market', primary_image_url: null, display_region: '서울', quality_score: 96, is_trending: true },
+          { place_id: 'kc-002', name_ko: '전주 한옥마을 음식거리', name_en: 'Jeonju Hanok Food Street', primary_image_url: null, display_region: '전주', quality_score: 94, is_trending: true },
+          { place_id: 'kc-003', name_ko: '통인시장', name_en: 'Tongin Market', primary_image_url: null, display_region: '서울', quality_score: 88, is_trending: false },
+        ],
+      },
+      {
+        id: 'festivals',
+        items: [
+          { place_id: 'kc-010', name_ko: '보령 머드축제', name_en: 'Boryeong Mud Festival', primary_image_url: null, display_region: '보령', quality_score: 92, is_trending: true },
+          { place_id: 'kc-011', name_ko: '진주 남강유등축제', name_en: 'Jinju Lantern Festival', primary_image_url: null, display_region: '진주', quality_score: 90, is_trending: false },
+          { place_id: 'kc-012', name_ko: '안동 국제탈춤페스티벌', name_en: 'Andong Mask Dance Festival', primary_image_url: null, display_region: '안동', quality_score: 89, is_trending: false },
+        ],
+      },
+      {
+        id: 'crafts',
         items: [
           { place_id: 'kc-030', name_ko: '국립민속박물관', name_en: 'National Folk Museum', primary_image_url: null, display_region: '서울', quality_score: 90, is_trending: false },
           { place_id: 'kc-031', name_ko: '한국민속촌', name_en: 'Korean Folk Village', primary_image_url: null, display_region: '용인', quality_score: 88, is_trending: true },

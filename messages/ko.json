@@ -1040,7 +1040,11 @@
       "cuisine": "한국 음식",
       "markets": "전통시장",
       "historic": "역사 유적지",
-      "experiences": "전통 체험"
+      "experiences": "전통 체험",
+      "traditional": "전통문화",
+      "food": "음식",
+      "festivals": "축제",
+      "crafts": "공예"
     }
   },
   "saved": {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useFormatter, useNow } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import {
   Bell, AlertCircle, Star, Award, Trophy, Tag,
@@ -58,6 +58,8 @@ function RowSkeleton() {
 
 export default function NotificationsPage() {
   const t = useTranslations('notifications')
+  const format = useFormatter()
+  const now = useNow({ updateInterval: 60_000 })
   const { data, isLoading, isError, mutate } = useNotifications()
 
   function handleMarkRead(id: string) {
@@ -183,6 +185,9 @@ export default function NotificationsPage() {
                           {n.title}
                         </p>
                         <p className="text-f-sm text-muted mt-[2px] line-clamp-2">{n.body}</p>
+                        <p className="text-f-xs text-muted-2 mt-[2px]">
+                          {format.relativeTime(new Date(n.created_at), now)}
+                        </p>
                       </div>
                       {n.is_read && (
                         <Check size={14} strokeWidth={2} className="text-muted shrink-0 mt-[4px]" aria-hidden />

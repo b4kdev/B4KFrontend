@@ -36,7 +36,7 @@ const CATEGORIES = [
     href: '/explore/k-culture',
     icon: Globe,
     tKey: 'kculture',
-    sections: ['cuisine', 'markets', 'historic', 'experiences'],
+    sections: ['traditional', 'food', 'festivals', 'crafts'],
   },
 ]
 

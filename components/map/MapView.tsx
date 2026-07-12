@@ -21,7 +21,7 @@ import { useToast } from '@/contexts/ToastContext'
 import { getDraftPlan, saveDraftPlan, clearDraftPlan } from '@/lib/draft-plan'
 import type { MapPoi } from '@/hooks/useMapPois'
 import type { DraftMeta } from '@/components/auth/DraftConflictModal'
-import type { ItineraryDetail } from '@/app/api/itinerary/[id]/route'
+import type { ItineraryDetail } from '@/app/api/plans/[id]/route'
 
 type PendingPlan = {
   deviceDraft:  DraftMeta
@@ -100,7 +100,7 @@ export default function MapView() {
     const planId = params.get('plan')
     if (!planId || planId === 'new') return
 
-    fetch(`/api/itinerary/${planId}`)
+    fetch(`/api/plans/${planId}`)
       .then(r => r.ok ? r.json() as Promise<ItineraryDetail> : Promise.reject())
       .then(itinerary => {
         const sorted = [...itinerary.stops].sort((a, b) => a.stop_order - b.stop_order)
@@ -203,7 +203,7 @@ export default function MapView() {
     setPendingPoiId(null)
     if (!draftResumePlanId) return
     try {
-      const res = await fetch(`/api/itinerary/${draftResumePlanId}`)
+      const res = await fetch(`/api/plans/${draftResumePlanId}`)
       if (!res.ok) return
       const itinerary = await res.json() as { stops: Array<{ stop_order: number; poi: { place_id: string; name_ko: string; name_en: string; coords_lat: number; coords_lng: number; display_domain: string }; duration_min: number }> }
       const sorted = [...itinerary.stops].sort((a, b) => a.stop_order - b.stop_order)
@@ -326,7 +326,7 @@ export default function MapView() {
       clearDraftPlan()
       setNamingSheetOpen(false)
       setNamingSaving(false)
-      router.push(`/itinerary/${plan.id}`)
+      router.push(`/plan/${plan.id}`)
     } catch {
       setNamingSaving(false)
       showToast(t('plan.saveError'), 'error')
