@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useRouter, Link } from '@/i18n/navigation'
-import { Search, SlidersHorizontal, MapPin, BookOpen, Sparkles, X, ChevronRight } from 'lucide-react'
+import { Search, SlidersHorizontal, X, ChevronRight } from 'lucide-react'
 import useSWR from 'swr'
 import { fetcher } from '@/lib/fetcher'
 import { getDisplayName } from '@/lib/display-name'
@@ -22,21 +22,164 @@ interface SearchResponse {
 type FilterType = 'all' | 'places' | 'plans' | 'explore'
 type SortType = 'relevance' | 'popularity'
 
-// ─── Desktop Filter Panel ─────────────────────────────────────────────────────
+// ─── M14 filter data (mock tree + flat tag list) ───────────────────────────────
 
-function SearchFilterPanel({
-  type,
-  setType,
-  sort,
-  setSort,
+// Area: two-level hierarchy. lv1 region → lv2 district ids. i18n keys are separate.
+const AREA_TREE: Record<string, string[]> = {
+  seoul: ['gangnam', 'hongdae', 'myeongdong'],
+  busan: ['haeundae', 'seomyeon'],
+  jeju: ['jejuCity', 'seogwipo'],
+}
+const AREA_REGIONS = Object.keys(AREA_TREE)
+
+const TAG_LIST = [
+  'kpop', 'kdrama', 'kbeauty', 'food', 'nature', 'shopping', 'history', 'nightlife',
+] as const
+
+// ─── Chip ──────────────────────────────────────────────────────────────────────
+
+function Chip({
+  active,
+  onClick,
+  children,
+  ariaLabel,
 }: {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+  ariaLabel?: string
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      aria-label={ariaLabel}
+      className="px-sp-3 py-sp-2 rounded-full text-f-sm font-semibold min-h-touch flex items-center transition-colors"
+      style={{
+        background: active ? 'var(--lav)' : 'transparent',
+        color: active ? 'var(--bg)' : 'var(--lav)',
+        border: active ? '1px solid var(--lav)' : '1px solid var(--lav-border)',
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
+// ─── Filter controls (shared by desktop panel + mobile sheet) ───────────────────
+
+interface FilterState {
   type: FilterType
   setType: (t: FilterType) => void
   sort: SortType
   setSort: (s: SortType) => void
-}) {
+  areaLv1: string | null
+  areaLv2: string | null
+  setArea: (lv1: string | null, lv2: string | null) => void
+  tags: string[]
+  toggleTag: (tag: string) => void
+}
+
+function FilterControls({ state }: { state: FilterState }) {
   const t = useTranslations('search.filters')
   const sections: FilterType[] = ['all', 'places', 'plans', 'explore']
+  const districts = state.areaLv1 ? AREA_TREE[state.areaLv1] ?? [] : []
+
+  return (
+    <>
+      {/* Sections */}
+      <div className="mb-sp-6">
+        <p className="text-f-xs text-muted uppercase tracking-[0.08em] mb-sp-2">{t('sections')}</p>
+        <div className="flex flex-wrap gap-sp-2">
+          {sections.map(s => (
+            <Chip key={s} active={state.type === s} onClick={() => state.setType(s)}>
+              {t(`section_${s}` as const)}
+            </Chip>
+          ))}
+        </div>
+      </div>
+
+      {/* Area — level 1 */}
+      <div className="mb-sp-6">
+        <p className="text-f-xs text-muted uppercase tracking-[0.08em] mb-sp-2">{t('area.lv1Label')}</p>
+        <div className="flex flex-wrap gap-sp-2">
+          {AREA_REGIONS.map(region => {
+            const label = t(`region.${region}` as const)
+            const active = state.areaLv1 === region
+            return (
+              <Chip
+                key={region}
+                active={active}
+                ariaLabel={t('area.chipAriaLabel', { name: label })}
+                // Toggle region; clear lv2 when region changes/clears.
+                onClick={() => state.setArea(active ? null : region, null)}
+              >
+                {label}
+              </Chip>
+            )
+          })}
+        </div>
+
+        {/* Area — level 2 (appears after lv1 select) */}
+        {state.areaLv1 && districts.length > 0 && (
+          <div className="mt-sp-3">
+            <p className="text-f-xs text-muted uppercase tracking-[0.08em] mb-sp-2">{t('area.lv2Label')}</p>
+            <div className="flex flex-wrap gap-sp-2">
+              {districts.map(district => {
+                const label = t(`district.${district}` as const)
+                const active = state.areaLv2 === district
+                return (
+                  <Chip
+                    key={district}
+                    active={active}
+                    ariaLabel={t('area.chipAriaLabel', { name: label })}
+                    onClick={() => state.setArea(state.areaLv1, active ? null : district)}
+                  >
+                    {label}
+                  </Chip>
+                )
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Theme / tags */}
+      <div className="mb-sp-6">
+        <p className="text-f-xs text-muted uppercase tracking-[0.08em] mb-sp-2">{t('tags.label')}</p>
+        <div className="flex flex-wrap gap-sp-2">
+          {TAG_LIST.map(tag => (
+            <Chip
+              key={tag}
+              active={state.tags.includes(tag)}
+              onClick={() => state.toggleTag(tag)}
+            >
+              {t(`tag.${tag}` as const)}
+            </Chip>
+          ))}
+        </div>
+      </div>
+
+      {/* Sort */}
+      <div>
+        <p className="text-f-xs text-muted uppercase tracking-[0.08em] mb-sp-2">{t('sort.label')}</p>
+        <div className="flex flex-wrap gap-sp-2">
+          {(['relevance', 'popularity'] as SortType[]).map(s => (
+            <Chip key={s} active={state.sort === s} onClick={() => state.setSort(s)}>
+              {t(`sort.${s}` as const)}
+            </Chip>
+          ))}
+        </div>
+      </div>
+    </>
+  )
+}
+
+// ─── Desktop Filter Panel ─────────────────────────────────────────────────────
+
+function SearchFilterPanel({ state }: { state: FilterState }) {
+  const t = useTranslations('search.filters')
 
   return (
     <aside
@@ -44,46 +187,7 @@ function SearchFilterPanel({
       style={{ borderRight: 'var(--bdr)' }}
     >
       <p className="text-f-sm font-semibold text-fg mb-sp-4">{t('title')}</p>
-
-      <div className="mb-sp-6">
-        <p className="text-f-xs text-muted uppercase tracking-[0.08em] mb-sp-2">
-          {t('sections')}
-        </p>
-        <div className="flex flex-col gap-sp-1">
-          {sections.map(s => (
-            <button
-              key={s}
-              onClick={() => setType(s)}
-              className="text-left px-sp-3 py-sp-2 rounded-full text-f-sm transition-colors min-h-touch flex items-center"
-              style={{
-                background: type === s ? 'var(--lav-dim)' : 'transparent',
-                color: type === s ? 'var(--lav)' : 'var(--muted)',
-              }}
-            >
-              {t(`section_${s}` as const)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <p className="text-f-xs text-muted uppercase tracking-[0.08em] mb-sp-2">
-          {t('sort.label')}
-        </p>
-        {(['relevance', 'popularity'] as SortType[]).map(s => (
-          <button
-            key={s}
-            onClick={() => setSort(s)}
-            className="w-full text-left px-sp-3 py-sp-2 rounded-full text-f-sm transition-colors min-h-touch flex items-center"
-            style={{
-              background: sort === s ? 'var(--lav-dim)' : 'transparent',
-              color: sort === s ? 'var(--lav)' : 'var(--muted)',
-            }}
-          >
-            {t(`sort.${s}` as const)}
-          </button>
-        ))}
-      </div>
+      <FilterControls state={state} />
     </aside>
   )
 }
@@ -178,11 +282,51 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
   )
 }
 
+// ─── See-all expand link ────────────────────────────────────────────────────────
+
+const SEE_ALL_LIMIT = 4
+
+function SeeAllLink({
+  labelKey,
+  count,
+  expanded,
+  onToggle,
+}: {
+  labelKey: 'seeAllPlaces' | 'seeAllPlans' | 'seeAllExplore'
+  count: number
+  expanded: boolean
+  onToggle: () => void
+}) {
+  const t = useTranslations('search')
+  if (count <= SEE_ALL_LIMIT) return null
+  return (
+    <div className="px-sp-4 py-sp-3">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="text-f-sm font-semibold text-lav min-h-touch flex items-center gap-sp-1"
+      >
+        {expanded ? t('showLess') : t(labelKey, { count })}
+        {!expanded && <ChevronRight size={16} strokeWidth={2} aria-hidden="true" />}
+      </button>
+    </div>
+  )
+}
+
 // ─── Result Sections ──────────────────────────────────────────────────────────
 
-function PoiSection({ places }: { places: SearchPoi[] }) {
+function PoiSection({
+  places,
+  expanded,
+  onToggle,
+}: {
+  places: SearchPoi[]
+  expanded: boolean
+  onToggle: () => void
+}) {
   const t = useTranslations('search')
   const router = useRouter()
+  const shown = expanded ? places : places.slice(0, SEE_ALL_LIMIT)
 
   return (
     <section>
@@ -190,7 +334,7 @@ function PoiSection({ places }: { places: SearchPoi[] }) {
         {t('results.poi')}
       </h2>
       <ul>
-        {places.map(poi => {
+        {shown.map(poi => {
           const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
           return (
             <li key={poi.place_id}>
@@ -225,13 +369,23 @@ function PoiSection({ places }: { places: SearchPoi[] }) {
           )
         })}
       </ul>
+      <SeeAllLink labelKey="seeAllPlaces" count={places.length} expanded={expanded} onToggle={onToggle} />
     </section>
   )
 }
 
-function PlanSection({ plans }: { plans: SearchPlan[] }) {
+function PlanSection({
+  plans,
+  expanded,
+  onToggle,
+}: {
+  plans: SearchPlan[]
+  expanded: boolean
+  onToggle: () => void
+}) {
   const t = useTranslations('search')
   const router = useRouter()
+  const shown = expanded ? plans : plans.slice(0, SEE_ALL_LIMIT)
 
   return (
     <section>
@@ -239,7 +393,7 @@ function PlanSection({ plans }: { plans: SearchPlan[] }) {
         {t('results.plans')}
       </h2>
       <ul>
-        {plans.map(plan => (
+        {shown.map(plan => (
           <li key={plan.id}>
             <button
               className="w-full flex items-center gap-sp-3 px-sp-4 py-sp-3 text-left hover:bg-muted-3 transition-colors min-h-touch"
@@ -276,12 +430,22 @@ function PlanSection({ plans }: { plans: SearchPlan[] }) {
           </li>
         ))}
       </ul>
+      <SeeAllLink labelKey="seeAllPlans" count={plans.length} expanded={expanded} onToggle={onToggle} />
     </section>
   )
 }
 
-function ExploreSection({ explore }: { explore: SearchExplore[] }) {
+function ExploreSection({
+  explore,
+  expanded,
+  onToggle,
+}: {
+  explore: SearchExplore[]
+  expanded: boolean
+  onToggle: () => void
+}) {
   const t = useTranslations('search')
+  const shown = expanded ? explore : explore.slice(0, SEE_ALL_LIMIT)
 
   return (
     <section>
@@ -289,7 +453,7 @@ function ExploreSection({ explore }: { explore: SearchExplore[] }) {
         {t('results.explore')}
       </h2>
       <div className="flex flex-wrap gap-sp-2 px-sp-4 py-sp-3">
-        {explore.map(item => (
+        {shown.map(item => (
           <Link
             key={item.category}
             href={item.href as `/explore/${string}`}
@@ -301,6 +465,7 @@ function ExploreSection({ explore }: { explore: SearchExplore[] }) {
           </Link>
         ))}
       </div>
+      <SeeAllLink labelKey="seeAllExplore" count={explore.length} expanded={expanded} onToggle={onToggle} />
     </section>
   )
 }
@@ -310,20 +475,13 @@ function ExploreSection({ explore }: { explore: SearchExplore[] }) {
 function MobileFilterSheet({
   open,
   onClose,
-  type,
-  setType,
-  sort,
-  setSort,
+  state,
 }: {
   open: boolean
   onClose: () => void
-  type: FilterType
-  setType: (t: FilterType) => void
-  sort: SortType
-  setSort: (s: SortType) => void
+  state: FilterState
 }) {
   const t = useTranslations('search.filters')
-  const sections: FilterType[] = ['all', 'places', 'plans', 'explore']
 
   if (!open) return null
 
@@ -342,7 +500,7 @@ function MobileFilterSheet({
         tabIndex={-1}
       />
       <div
-        className="absolute bottom-0 left-0 right-0 p-sp-6 rounded-none"
+        className="absolute bottom-0 left-0 right-0 p-sp-6 rounded-none max-h-[85vh] overflow-y-auto"
         style={{ background: 'var(--bg-2)', borderTop: 'var(--bdr)' }}
       >
         <div className="flex items-center justify-between mb-sp-4">
@@ -356,39 +514,16 @@ function MobileFilterSheet({
           </button>
         </div>
 
-        <p className="text-f-xs text-muted uppercase tracking-[0.08em] mb-sp-2">{t('sections')}</p>
-        <div className="flex flex-wrap gap-sp-2 mb-sp-4">
-          {sections.map(s => (
-            <button
-              key={s}
-              onClick={() => { setType(s); onClose() }}
-              className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold min-h-touch transition-colors"
-              style={{
-                background: type === s ? 'var(--lav)' : 'var(--muted-3)',
-                color: type === s ? 'var(--bg)' : 'var(--muted)',
-              }}
-            >
-              {t(`section_${s}` as const)}
-            </button>
-          ))}
-        </div>
+        <FilterControls state={state} />
 
-        <p className="text-f-xs text-muted uppercase tracking-[0.08em] mb-sp-2">{t('sort.label')}</p>
-        <div className="flex flex-wrap gap-sp-2">
-          {(['relevance', 'popularity'] as SortType[]).map(s => (
-            <button
-              key={s}
-              onClick={() => { setSort(s); onClose() }}
-              className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold min-h-touch transition-colors"
-              style={{
-                background: sort === s ? 'var(--lav)' : 'var(--muted-3)',
-                color: sort === s ? 'var(--bg)' : 'var(--muted)',
-              }}
-            >
-              {t(`sort.${s}` as const)}
-            </button>
-          ))}
-        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="w-full mt-sp-6 py-sp-3 rounded-full text-f-sm font-semibold min-h-touch flex items-center justify-center"
+          style={{ background: 'var(--lav)', color: 'var(--bg)' }}
+        >
+          {t('apply')}
+        </button>
       </div>
     </div>
   )
@@ -405,30 +540,97 @@ export default function SearchPage() {
   const [inputVal, setInputVal] = useState(initialQ)
   const [type, setType] = useState<FilterType>('all')
   const [sort, setSort] = useState<SortType>('relevance')
+  const [areaLv1, setAreaLv1] = useState<string | null>(null)
+  const [areaLv2, setAreaLv2] = useState<string | null>(null)
+  const [tags, setTags] = useState<string[]>([])
+  const [expanded, setExpanded] = useState({ places: false, plans: false, explore: false })
   const [filterSheetOpen, setFilterSheetOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Build SWR key — null when no query to avoid fetching
-  const swrKey = inputVal.trim()
-    ? `/api/search?q=${encodeURIComponent(inputVal.trim())}${type !== 'all' ? `&type=${type}` : ''}&sort=${sort}`
-    : null
+  // Hydrate filter state from URL params (mount + browser back/forward).
+  useEffect(() => {
+    setInputVal(searchParams.get('q') ?? '')
+    const urlType = searchParams.get('type')
+    setType(urlType === 'places' || urlType === 'plans' || urlType === 'explore' ? urlType : 'all')
+    setSort(searchParams.get('sort') === 'popularity' ? 'popularity' : 'relevance')
+    const lv1 = searchParams.get('area_lv1')
+    const lv2 = searchParams.get('area_lv2')
+    setAreaLv1(lv1 && AREA_TREE[lv1] ? lv1 : null)
+    setAreaLv2(lv1 && lv2 && AREA_TREE[lv1]?.includes(lv2) ? lv2 : null)
+    const tagParam = searchParams.get('tags')
+    setTags(tagParam ? tagParam.split(',').filter(t => (TAG_LIST as readonly string[]).includes(t)) : [])
+  }, [searchParams])
 
-  const { data, error, isLoading, mutate } = useSWR<SearchResponse>(
-    swrKey,
-    fetcher,
+  // Write filter changes back to URL (replace — don't inflate history).
+  const syncFilters = useCallback(
+    (next: {
+      type?: FilterType
+      sort?: SortType
+      areaLv1?: string | null
+      areaLv2?: string | null
+      tags?: string[]
+    }) => {
+      const q = inputVal.trim()
+      if (!q) return
+      const p = new URLSearchParams()
+      p.set('q', q)
+      const nType = next.type ?? type
+      const nSort = next.sort ?? sort
+      const nLv1 = next.areaLv1 !== undefined ? next.areaLv1 : areaLv1
+      const nLv2 = next.areaLv2 !== undefined ? next.areaLv2 : areaLv2
+      const nTags = next.tags ?? tags
+      if (nType !== 'all') p.set('type', nType)
+      if (nSort !== 'relevance') p.set('sort', nSort)
+      if (nLv1) p.set('area_lv1', nLv1)
+      if (nLv2) p.set('area_lv2', nLv2)
+      if (nTags.length) p.set('tags', nTags.join(','))
+      router.replace(`/search?${p.toString()}`)
+    },
+    [inputVal, type, sort, areaLv1, areaLv2, tags, router],
   )
 
-  // Sync URL param changes → input (e.g. browser back/forward)
-  useEffect(() => {
-    const q = searchParams.get('q') ?? ''
-    setInputVal(q)
-  }, [searchParams])
+  const filterState: FilterState = {
+    type,
+    setType: t => { setType(t); syncFilters({ type: t }) },
+    sort,
+    setSort: s => { setSort(s); syncFilters({ sort: s }) },
+    areaLv1,
+    areaLv2,
+    setArea: (lv1, lv2) => {
+      setAreaLv1(lv1)
+      setAreaLv2(lv2)
+      syncFilters({ areaLv1: lv1, areaLv2: lv2 })
+    },
+    tags,
+    toggleTag: tag => {
+      const nTags = tags.includes(tag) ? tags.filter(x => x !== tag) : [...tags, tag]
+      setTags(nTags)
+      syncFilters({ tags: nTags })
+    },
+  }
+
+  // Build SWR key — null when no query to avoid fetching.
+  const q = inputVal.trim()
+  const swrKey = q
+    ? (() => {
+        const p = new URLSearchParams()
+        p.set('q', q)
+        if (type !== 'all') p.set('type', type)
+        p.set('sort', sort)
+        if (areaLv1) p.set('area_lv1', areaLv1)
+        if (areaLv2) p.set('area_lv2', areaLv2)
+        if (tags.length) p.set('tags', tags.join(','))
+        return `/api/search?${p.toString()}`
+      })()
+    : null
+
+  const { data, error, isLoading, mutate } = useSWR<SearchResponse>(swrKey, fetcher)
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault()
-    const q = inputVal.trim()
-    if (!q) return
-    router.push(`/search?q=${encodeURIComponent(q)}`)
+    const trimmed = inputVal.trim()
+    if (!trimmed) return
+    router.push(`/search?q=${encodeURIComponent(trimmed)}`)
   }, [inputVal, router])
 
   const hasResults = data && (
@@ -481,12 +683,7 @@ export default function SearchPage() {
       {/* Body */}
       <div className="max-w-[1280px] mx-auto flex gap-sp-8 px-sp-4 lg:px-sp-8 py-sp-6">
         {/* Desktop sidebar */}
-        <SearchFilterPanel
-          type={type}
-          setType={setType}
-          sort={sort}
-          setSort={setSort}
-        />
+        <SearchFilterPanel state={filterState} />
 
         {/* Results */}
         <main className="flex-1 min-w-0">
@@ -496,26 +693,38 @@ export default function SearchPage() {
             <ErrorState onRetry={() => mutate()} />
           )}
 
-          {!isLoading && !error && inputVal.trim() && !hasResults && (
-            <EmptyState query={inputVal.trim()} />
+          {!isLoading && !error && q && !hasResults && (
+            <EmptyState query={q} />
           )}
 
-          {!isLoading && !error && inputVal.trim() && hasResults && (
+          {!isLoading && !error && q && hasResults && (
             <div>
               {data!.places.length > 0 && (
-                <PoiSection places={data!.places} />
+                <PoiSection
+                  places={data!.places}
+                  expanded={expanded.places}
+                  onToggle={() => setExpanded(e => ({ ...e, places: !e.places }))}
+                />
               )}
               {data!.plans.length > 0 && (
-                <PlanSection plans={data!.plans} />
+                <PlanSection
+                  plans={data!.plans}
+                  expanded={expanded.plans}
+                  onToggle={() => setExpanded(e => ({ ...e, plans: !e.plans }))}
+                />
               )}
               {data!.explore.length > 0 && (
-                <ExploreSection explore={data!.explore} />
+                <ExploreSection
+                  explore={data!.explore}
+                  expanded={expanded.explore}
+                  onToggle={() => setExpanded(e => ({ ...e, explore: !e.explore }))}
+                />
               )}
             </div>
           )}
 
           {/* Initial empty — no query yet */}
-          {!inputVal.trim() && (
+          {!q && (
             <div className="flex flex-col items-center text-center py-sp-16 px-sp-6">
               <Search size={40} strokeWidth={2} className="text-muted mb-sp-4" aria-hidden="true" />
               <p className="text-f-base text-muted">{t('placeholder')}</p>
@@ -547,10 +756,7 @@ export default function SearchPage() {
       <MobileFilterSheet
         open={filterSheetOpen}
         onClose={() => setFilterSheetOpen(false)}
-        type={type}
-        setType={setType}
-        sort={sort}
-        setSort={setSort}
+        state={filterState}
       />
     </div>
   )

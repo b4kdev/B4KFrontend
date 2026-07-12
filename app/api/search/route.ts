@@ -50,6 +50,13 @@ export async function GET(request: Request) {
   const type = searchParams.get('type') // 'places' | 'plans' | 'explore' | null = all
   const sort = searchParams.get('sort') ?? 'relevance'
 
+  // M14 area + tag filters — accepted + echoed; rough/no filtering in MVP mock.
+  const areaLv1 = searchParams.get('area_lv1') ?? null
+  const areaLv2 = searchParams.get('area_lv2') ?? null
+  const tags = searchParams.get('tags')
+    ? searchParams.get('tags')!.split(',').filter(Boolean)
+    : []
+
   let places = (type && type !== 'places') ? [] : [...MOCK_POIS]
   let plans = (type && type !== 'plans') ? [] : [...MOCK_PLANS]
   const explore = (type && type !== 'explore') ? [] : [...EXPLORE_CATEGORIES]
@@ -59,5 +66,11 @@ export async function GET(request: Request) {
     plans = plans.sort((a, b) => b.save_count - a.save_count)
   }
 
-  return NextResponse.json({ places, plans, explore, query: q })
+  return NextResponse.json({
+    places,
+    plans,
+    explore,
+    query: q,
+    filters: { area_lv1: areaLv1, area_lv2: areaLv2, tags },
+  })
 }
