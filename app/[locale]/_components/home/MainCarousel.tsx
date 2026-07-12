@@ -3,20 +3,35 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import useSWR from 'swr';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { fetcher } from '@/lib/fetcher';
+import type { HomeCarouselSlide } from '@/app/api/home/carousel/route';
 
-const SLIDES = [
-  { key: 'kCulture' as const, href: '/explore/k-culture' },
-  { key: 'boseong'  as const, href: '/map' },
-  { key: 'seoul'    as const, href: '/map' },
-];
+function CarouselSkeleton() {
+  return (
+    <div
+      className="relative overflow-hidden h-[240px] lg:h-[560px] animate-pulse bg-bg-2"
+      aria-hidden="true"
+    >
+      <div className="absolute inset-0 bg-bg-3" />
+      <div className="absolute inset-0 flex flex-col justify-end p-9 md:p-11 gap-3">
+        <div className="h-[18px] w-[110px] bg-muted-3" />
+        <div className="h-[40px] w-3/5 bg-muted-3" />
+        <div className="hidden md:block h-[14px] w-2/5 bg-muted-3" />
+        <div className="h-10 w-[180px] bg-muted-3" />
+      </div>
+    </div>
+  );
+}
 
 export default function MainCarousel() {
-  const t = useTranslations('home.carousel.slides');
   const tCarousel = useTranslations('home.carousel');
+  const { data, isLoading, error } = useSWR<HomeCarouselSlide[]>('/api/home/carousel', fetcher);
+
   const [idx, setIdx] = useState(0);
   const [prefersReduced, setPrefersReduced] = useState(false);
-  const total = SLIDES.length;
+  const total = data?.length ?? 0;
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -26,31 +41,44 @@ export default function MainCarousel() {
     return () => mq.removeEventListener('change', handler);
   }, []);
 
+  // Auto-advance ~5s. Skipped when reduced motion is requested or <2 slides.
   useEffect(() => {
-    if (prefersReduced) return;
+    if (prefersReduced || total < 2) return;
     const timer = setInterval(() => setIdx((i) => (i + 1) % total), 5000);
     return () => clearInterval(timer);
   }, [total, prefersReduced]);
 
+  // Keep index in range if the slide array shrinks between fetches.
+  useEffect(() => {
+    if (total > 0 && idx >= total) setIdx(0);
+  }, [total, idx]);
+
+  if (isLoading) return <CarouselSkeleton />;
+  // Hide the hero entirely on empty/error (Hero is page-critical, but with no
+  // slides there is nothing to render — the rest of the page still loads).
+  if (error || !data || total === 0) return null;
+
   const prev = () => setIdx((i) => (i - 1 + total) % total);
   const next = () => setIdx((i) => (i + 1) % total);
-  const slide = SLIDES[idx];
+  const slide = data[Math.min(idx, total - 1)];
 
   return (
     <div
-      className="relative overflow-hidden h-[240px] lg:h-[560px]"
-      style={{ background: 'var(--bg-2)' }}
+      className="relative overflow-hidden h-[240px] lg:h-[560px] bg-bg-2"
       aria-roledescription="carousel"
       aria-label={tCarousel('ariaLabel')}
     >
       {/* Slide backgrounds — crossfade */}
-      {SLIDES.map((s, i) => (
+      {data.map((s, i) => (
         <div
-          key={s.key}
+          key={s.id}
           className="absolute inset-0 bg-bg-3"
           style={{
             opacity: i === idx ? 1 : 0,
             transition: prefersReduced ? 'none' : 'opacity 700ms ease',
+            backgroundImage: s.image_url ? `url(${s.image_url})` : undefined,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
           }}
           aria-hidden
         />
@@ -65,27 +93,27 @@ export default function MainCarousel() {
       {/* Content */}
       <div className="absolute inset-0 flex flex-col justify-end p-9 md:p-11">
         <span className="inline-flex items-center bg-fg text-bg text-f-xxs font-extrabold tracking-[0.12em] uppercase px-2.5 py-1 rounded-none mb-3.5 w-fit">
-          {t(`${slide.key}.badge`)}
+          {slide.badge}
         </span>
         <h1 className="text-fg font-display font-black text-[clamp(26px,3.5vw,48px)] leading-[1.05] tracking-[-0.02em] mb-3 whitespace-pre-line max-w-[520px]">
-          {t(`${slide.key}.title`)}
+          {slide.title}
         </h1>
         <p className="hidden md:block text-f-md text-muted leading-relaxed mb-6 max-w-[400px]">
-          {t(`${slide.key}.desc`)}
+          {slide.subtitle}
         </p>
         <Link
-          href={slide.href}
+          href={slide.cta_href}
           className="inline-flex items-center h-10 px-[22px] bg-fg text-bg text-f-sm font-semibold tracking-[0.02em] rounded-none font-body w-fit"
         >
-          {t(`${slide.key}.cta`)}
+          {slide.cta_label}
         </Link>
       </div>
 
       {/* Dot indicators */}
       <div className="absolute bottom-sp-4 md:bottom-6 left-9 md:left-11 flex gap-1.5">
-        {SLIDES.map((_, i) => (
+        {data.map((s, i) => (
           <button
-            key={i}
+            key={s.id}
             onClick={() => setIdx(i)}
             aria-label={tCarousel('slideN', { n: i + 1 })}
             aria-current={i === idx ? 'true' : undefined}
@@ -99,22 +127,24 @@ export default function MainCarousel() {
       </div>
 
       {/* Arrows (desktop) */}
-      <div className="hidden md:flex absolute bottom-5 right-6 gap-2">
-        {[
-          { key: 'prev', fn: prev, Icon: ChevronLeft },
-          { key: 'next', fn: next, Icon: ChevronRight },
-        ].map(({ key, fn, Icon }) => (
-          <button
-            key={key}
-            onClick={fn}
-            aria-label={tCarousel(key)}
-            className="min-w-touch min-h-touch rounded-full flex items-center justify-center text-muted cursor-pointer transition-colors hover:text-fg"
-            style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
-          >
-            <Icon size={13} strokeWidth={2} />
-          </button>
-        ))}
-      </div>
+      {total > 1 && (
+        <div className="hidden md:flex absolute bottom-5 right-6 gap-2">
+          {[
+            { key: 'prev', fn: prev, Icon: ChevronLeft },
+            { key: 'next', fn: next, Icon: ChevronRight },
+          ].map(({ key, fn, Icon }) => (
+            <button
+              key={key}
+              onClick={fn}
+              aria-label={tCarousel(key)}
+              className="min-w-touch min-h-touch rounded-full flex items-center justify-center text-muted cursor-pointer transition-colors hover:text-fg"
+              style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
+            >
+              <Icon size={13} strokeWidth={2} />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
