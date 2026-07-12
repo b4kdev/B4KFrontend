@@ -801,7 +801,8 @@
     },
     "stopItem": {
       "ariaLabel": "Stop {n}: {name}",
-      "min": "{min} min"
+      "min": "{min} min",
+      "fromStart": "{time} from start"
     },
     "sponsored": "Sponsored",
     "related": {
@@ -818,7 +819,22 @@
     },
     "copiedToast": "Link copied!",
     "mapAriaLabel": "Itinerary route map",
-    "createdBy": "by {name}"
+    "createdBy": "by {name}",
+    "duration": {
+      "hoursMinutes": "{h}h {m}m",
+      "hours": "{h}h",
+      "minutes": "{m}m"
+    },
+    "leg": {
+      "calculating": "Calculating route…",
+      "km": "{km} km",
+      "m": "{m} m",
+      "ariaLabel": "Travel from stop {from} to stop {to}"
+    },
+    "footer": {
+      "totalDuration": "Total duration"
+    },
+    "notFoundRedirect": "Taking you back to the map…"
   },
   "profile": {
     "header": {

@@ -4,15 +4,31 @@ import { useState, RefObject } from 'react'
 import { useTranslations } from 'next-intl'
 import {
   Heart, Bookmark, Share2, Edit2, Trash2,
-  Car, Train, Footprints, MapPin, Route, Clock,
+  Car, Train, Footprints, MapPin, Route, Clock, Loader2,
   BadgeCheck,
 } from 'lucide-react'
 import { Link } from '@/i18n/navigation'
 import { getDisplayName } from '@/lib/display-name'
-import type { ItineraryDetail } from '@/app/api/plans/[id]/route'
+import type { ItineraryDetail, ItineraryLeg } from '@/app/api/plans/[id]/route'
 
 type TransportMode = 'car' | 'public' | 'walk'
 const MODES: TransportMode[] = ['car', 'public', 'walk']
+
+type TFn = ReturnType<typeof useTranslations>
+
+function formatDuration(t: TFn, min: number): string {
+  const h = Math.floor(min / 60)
+  const m = min % 60
+  if (h > 0 && m > 0) return t('duration.hoursMinutes', { h, m })
+  if (h > 0) return t('duration.hours', { h })
+  return t('duration.minutes', { m })
+}
+
+function formatDistance(t: TFn, meters: number): string {
+  return meters >= 1000
+    ? t('leg.km', { km: (meters / 1000).toFixed(1) })
+    : t('leg.m', { m: meters })
+}
 
 interface Props {
   itinerary: ItineraryDetail
@@ -37,58 +53,97 @@ function TransportIcon({ mode }: { mode: TransportMode | null }) {
   return null
 }
 
-function TransportModeBadge({
-  mode,
+/**
+ * Leg row between two consecutive stop cards.
+ * Transport mode lives on the leg (DEC-13): owner taps to cycle Car → Public → Walk,
+ * non-owners see it read-only. While the (mock) recompute is pending — and when the
+ * leg is missing entirely (TMAP cache miss) — shows "Calculating route…".
+ */
+function LegRow({
+  leg,
+  fromOrder,
+  toOrder,
   isOwner,
   planId,
-  stopOrder,
   onModeChange,
 }: {
-  mode: TransportMode
+  leg: ItineraryLeg | undefined
+  fromOrder: number
+  toOrder: number
   isOwner: boolean
   planId: string
-  stopOrder: number
-  onModeChange: (stopOrder: number, next: TransportMode) => void
+  onModeChange: (fromOrder: number, next: TransportMode) => void
 }) {
   const t = useTranslations('itinerary')
-  const [current, setCurrent] = useState<TransportMode>(mode)
   const [saving, setSaving] = useState(false)
+
+  if (!leg) {
+    return (
+      <div
+        className="flex items-center gap-sp-2 py-sp-1 pl-sp-3 ml-sp-2"
+        style={{ borderLeft: '1px solid var(--muted-3)' }}
+        aria-label={t('leg.ariaLabel', { from: fromOrder, to: toOrder })}
+      >
+        <Loader2 size={11} strokeWidth={2} className="animate-spin shrink-0 text-muted-2" aria-hidden="true" />
+        <span className="text-f-xs text-muted-2">{t('leg.calculating')}</span>
+      </div>
+    )
+  }
+
+  const mode = leg.transport_mode
 
   async function handleCycle() {
     if (!isOwner || saving) return
-    const next = MODES[(MODES.indexOf(current) + 1) % MODES.length]
-    const prev = current
-    setCurrent(next)
+    const next = MODES[(MODES.indexOf(mode) + 1) % MODES.length]
     setSaving(true)
+    onModeChange(fromOrder, next) // optimistic
     try {
-      await fetch(`/api/plans/${planId}/stops/${stopOrder}`, {
+      const res = await fetch(`/api/plans/${planId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transport_mode: next }),
+        body: JSON.stringify({ from_stop_order: fromOrder, transport_mode: next }),
       })
-      onModeChange(stopOrder, next)
+      if (!res.ok) throw new Error('patch_failed')
     } catch {
-      setCurrent(prev)
+      onModeChange(fromOrder, mode) // revert
     } finally {
       setSaving(false)
     }
   }
 
   return (
-    <button
-      onClick={handleCycle}
-      disabled={!isOwner || saving}
-      aria-label={
-        isOwner
-          ? t('transport.changeMode', { mode: current })
-          : t('transport.mode', { mode: current })
-      }
-      className={`flex items-center gap-0.5 text-f-xs text-muted transition-opacity ${isOwner ? 'hover:opacity-70 cursor-pointer' : 'cursor-default'}`}
-      style={isOwner ? { border: 'none', background: 'none', padding: 0 } : { border: 'none', background: 'none', padding: 0 }}
+    <div
+      className="flex items-center gap-sp-2 py-sp-1 pl-sp-3 ml-sp-2"
+      style={{ borderLeft: '1px solid var(--muted-3)' }}
+      aria-label={t('leg.ariaLabel', { from: fromOrder, to: toOrder })}
     >
-      <TransportIcon mode={current} />
-      {t(`transport.${current}`)}
-    </button>
+      <button
+        onClick={handleCycle}
+        disabled={!isOwner || saving}
+        aria-label={
+          isOwner
+            ? t('transport.changeMode', { mode: t(`transport.${mode}`) })
+            : t('transport.mode', { mode: t(`transport.${mode}`) })
+        }
+        className={`flex items-center gap-1 rounded-none text-f-xs text-muted transition-opacity ${isOwner ? 'hover:opacity-70 cursor-pointer' : 'cursor-default'}`}
+        style={{ border: 'none', background: 'none', padding: 0 }}
+      >
+        <TransportIcon mode={mode} />
+        {t(`transport.${mode}`)}
+      </button>
+      {saving ? (
+        <span className="flex items-center gap-1 text-f-xs text-muted-2">
+          <Loader2 size={11} strokeWidth={2} className="animate-spin shrink-0" aria-hidden="true" />
+          {t('leg.calculating')}
+        </span>
+      ) : (
+        <span className="text-f-xs text-muted-2">
+          {formatDuration(t, Math.max(1, Math.round(leg.estimated_duration_s / 60)))}
+          {' · '}
+          {formatDistance(t, leg.distance_m)}
+        </span>
+      )}
+    </div>
   )
 }
 
@@ -109,11 +164,19 @@ export default function ItineraryPanelContent({
 }: Props) {
   const t = useTranslations('itinerary')
 
-  // Local transport mode overrides (owner edits, optimistic)
-  const [modeOverrides, setModeOverrides] = useState<Record<number, TransportMode>>({})
-  function handleModeChange(stopOrder: number, next: TransportMode) {
-    setModeOverrides(prev => ({ ...prev, [stopOrder]: next }))
+  // Leg transport mode overrides (owner edits, optimistic) — keyed by from_stop_order
+  const [legModeOverrides, setLegModeOverrides] = useState<Record<number, TransportMode>>({})
+  function handleLegModeChange(fromOrder: number, next: TransportMode) {
+    setLegModeOverrides(prev => ({ ...prev, [fromOrder]: next }))
   }
+
+  const legs: ItineraryLeg[] = itinerary.legs.map(l =>
+    legModeOverrides[l.from_stop_order]
+      ? { ...l, transport_mode: legModeOverrides[l.from_stop_order] }
+      : l
+  )
+  const findLeg = (from: number, to: number) =>
+    legs.find(l => l.from_stop_order === from && l.to_stop_order === to)
 
   const hasDays = itinerary.stops.some(s => s.day !== null)
   const days = hasDays
@@ -121,23 +184,30 @@ export default function ItineraryPanelContent({
     : []
   const [activeDay, setActiveDay] = useState<number | null>(null)
 
+  const orderedStops = [...itinerary.stops].sort((a, b) => a.stop_order - b.stop_order)
   const visibleStops = activeDay === null
-    ? itinerary.stops
-    : itinerary.stops.filter(s => s.day === activeDay)
+    ? orderedStops
+    : orderedStops.filter(s => s.day === activeDay)
 
-  const totalHours = Math.floor(itinerary.total_duration_min / 60)
-  const totalMins  = itinerary.total_duration_min % 60
-  const durationLabel = totalHours > 0
-    ? `${totalHours}h${totalMins > 0 ? ` ${totalMins}m` : ''}`
-    : `${totalMins}m`
+  // Cumulative time from stop 1 (arrival at each stop) — stop durations + leg durations so far
+  const cumulativeMin: Record<number, number> = {}
+  let acc = 0
+  orderedStops.forEach((stop, i) => {
+    if (i > 0) {
+      const prev = orderedStops[i - 1]
+      const leg = findLeg(prev.stop_order, stop.stop_order)
+      acc += prev.duration_min + (leg ? Math.round(leg.estimated_duration_s / 60) : 0)
+    }
+    cumulativeMin[stop.stop_order] = acc
+  })
+
+  const durationLabel = formatDuration(t, itinerary.total_duration_min)
 
   const distanceLabel = itinerary.distance_m
-    ? itinerary.distance_m >= 1000
-      ? `${(itinerary.distance_m / 1000).toFixed(1)} km`
-      : `${itinerary.distance_m} m`
+    ? formatDistance(t, itinerary.distance_m)
     : null
 
-  const transportModes = Array.from(new Set(itinerary.stops.map(s => s.transport_mode).filter(Boolean))) as ('car' | 'public' | 'walk')[]
+  const transportModes = Array.from(new Set(legs.map(l => l.transport_mode)))
 
   const authorName = getDisplayName({
     name_preferred: itinerary.author.name_preferred,
@@ -147,6 +217,7 @@ export default function ItineraryPanelContent({
   })
 
   return (
+    <>
     <div
       ref={scrollRef}
       className="flex-1 overflow-y-auto overscroll-contain pb-sp-8"
@@ -173,7 +244,7 @@ export default function ItineraryPanelContent({
         {/* Creator */}
         <div className="flex items-center gap-sp-2">
           <div
-            className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[9px] font-bold text-lav"
+            className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-f-xxs font-bold text-lav"
             style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
             aria-hidden="true"
           >
@@ -187,7 +258,7 @@ export default function ItineraryPanelContent({
 
       {/* ─── Stats ──────────────────────────────────────────────── */}
       <div
-        className="mx-sp-4 mb-sp-3 px-sp-3 py-sp-2 rounded-lg flex items-center gap-sp-3 flex-wrap"
+        className="mx-sp-4 mb-sp-3 px-sp-3 py-sp-2 rounded-none flex items-center gap-sp-3 flex-wrap"
         style={{ background: 'var(--bg-3)' }}
       >
         <span className="flex items-center gap-1 text-f-xs text-muted">
@@ -212,13 +283,13 @@ export default function ItineraryPanelContent({
         ))}
       </div>
 
-      {/* ─── Actions ────────────────────────────────────────────── */}
+      {/* ─── Actions (secondary — primary CTAs live in the sticky footer) ── */}
       <div className="px-sp-4 mb-sp-4 flex items-center gap-sp-2">
         <button
           onClick={onLike}
           aria-label={t('actions.likeAria')}
           aria-pressed={isLiked}
-          className="flex items-center gap-1 min-h-touch px-sp-3 rounded-lg text-f-sm font-semibold transition-colors"
+          className="flex items-center gap-1 min-h-touch px-sp-3 rounded-none text-f-sm font-semibold transition-colors"
           style={{
             background: isLiked ? 'color-mix(in srgb, var(--danger) 12%, transparent)' : 'var(--bg-3)',
             color: isLiked ? 'var(--danger)' : 'var(--muted)',
@@ -228,52 +299,6 @@ export default function ItineraryPanelContent({
           <Heart size={13} strokeWidth={2} fill={isLiked ? 'currentColor' : 'none'} aria-hidden="true" />
           {isLiked ? t('actions.liked') : t('actions.like')}
         </button>
-
-        <button
-          onClick={onSave}
-          aria-label={t('actions.saveAria')}
-          aria-pressed={isSaved}
-          className="flex items-center gap-1 min-h-touch px-sp-3 rounded-lg text-f-sm font-semibold transition-colors"
-          style={{
-            background: isSaved ? 'var(--lav-dim)' : 'var(--bg-3)',
-            color: isSaved ? 'var(--lav)' : 'var(--muted)',
-            border: `1px solid ${isSaved ? 'var(--lav-border)' : 'transparent'}`,
-          }}
-        >
-          <Bookmark size={13} strokeWidth={2} fill={isSaved ? 'currentColor' : 'none'} aria-hidden="true" />
-          {isSaved ? t('actions.saved') : t('actions.save')}
-        </button>
-
-        <button
-          onClick={onShare}
-          aria-label={t('actions.shareAria')}
-          className="min-h-touch w-touch flex items-center justify-center rounded-lg text-muted hover:text-fg transition-colors"
-          style={{ background: 'var(--bg-3)' }}
-        >
-          <Share2 size={13} strokeWidth={2} aria-hidden="true" />
-        </button>
-
-        {isOwner && (
-          <button
-            onClick={onEdit}
-            aria-label={t('actions.editAria')}
-            className="flex items-center gap-1 min-h-touch px-sp-3 rounded-lg text-f-sm font-semibold text-lav hover:bg-lav-dim transition-colors"
-            style={{ border: '1px solid var(--lav-border)' }}
-          >
-            <Edit2 size={13} strokeWidth={2} aria-hidden="true" />
-            {t('actions.edit')}
-          </button>
-        )}
-        {isOwner && onDeleteClick && (
-          <button
-            onClick={onDeleteClick}
-            aria-label={t('actions.deleteAria')}
-            className="min-h-touch w-touch flex items-center justify-center rounded-lg text-danger hover:bg-danger/10 transition-colors"
-            style={{ background: 'var(--bg-3)' }}
-          >
-            <Trash2 size={13} strokeWidth={2} aria-hidden="true" />
-          </button>
-        )}
       </div>
 
       {/* ─── Day tabs ───────────────────────────────────────────── */}
@@ -328,6 +353,8 @@ export default function ItineraryPanelContent({
           })
           const isSelected = selectedPoiId === stop.poi.place_id
           const displayNum = activeDay === null ? stop.stop_order : idx + 1
+          const fromStart  = cumulativeMin[stop.stop_order] ?? 0
+          const nextStop   = visibleStops[idx + 1]
 
           return (
             <li key={stop.stop_order}>
@@ -336,7 +363,7 @@ export default function ItineraryPanelContent({
                 onClick={() => onStopSelect(stop.poi.place_id)}
                 aria-label={t('stopItem.ariaLabel', { n: displayNum, name: poiName })}
                 aria-current={isSelected ? 'true' : undefined}
-                className="w-full text-left rounded-xl p-sp-3 transition-colors flex gap-sp-3 items-start"
+                className="w-full text-left rounded-none p-sp-3 transition-colors flex gap-sp-3 items-start"
                 style={{
                   background: isSelected ? 'var(--lav-dim)' : 'var(--bg-3)',
                   border: `1px solid ${isSelected ? 'var(--lav-border)' : 'transparent'}`,
@@ -358,19 +385,15 @@ export default function ItineraryPanelContent({
                   <p className="text-f-md font-semibold text-fg leading-snug truncate">
                     {poiName}
                   </p>
-                  <div className="flex items-center gap-sp-2 mt-0.5">
+                  <div className="flex items-center gap-sp-2 mt-0.5 flex-wrap">
                     <span className="text-f-xs text-muted flex items-center gap-0.5">
                       <Clock size={10} strokeWidth={2} aria-hidden="true" />
                       {t('stopItem.min', { min: stop.duration_min })}
                     </span>
-                    {(modeOverrides[stop.stop_order] ?? stop.transport_mode) && (
-                      <TransportModeBadge
-                        mode={(modeOverrides[stop.stop_order] ?? stop.transport_mode) as TransportMode}
-                        isOwner={isOwner}
-                        planId={planId}
-                        stopOrder={stop.stop_order}
-                        onModeChange={handleModeChange}
-                      />
+                    {fromStart > 0 && (
+                      <span className="text-f-xs text-muted-2">
+                        {t('stopItem.fromStart', { time: formatDuration(t, fromStart) })}
+                      </span>
                     )}
                   </div>
                   {stop.notes && (
@@ -382,7 +405,7 @@ export default function ItineraryPanelContent({
 
                 {/* Thumbnail placeholder */}
                 <div
-                  className="shrink-0 w-10 h-10 rounded-lg overflow-hidden"
+                  className="shrink-0 w-10 h-10 rounded-none overflow-hidden"
                   style={{ background: 'var(--bg-2)' }}
                   aria-hidden="true"
                 >
@@ -400,6 +423,18 @@ export default function ItineraryPanelContent({
                   )}
                 </div>
               </button>
+
+              {/* Leg row to next stop */}
+              {nextStop && (
+                <LegRow
+                  leg={findLeg(stop.stop_order, nextStop.stop_order)}
+                  fromOrder={stop.stop_order}
+                  toOrder={nextStop.stop_order}
+                  isOwner={isOwner}
+                  planId={planId}
+                  onModeChange={handleLegModeChange}
+                />
+              )}
             </li>
           )
         })}
@@ -419,17 +454,17 @@ export default function ItineraryPanelContent({
               <Link
                 key={rel.id}
                 href={`/plan/${rel.id}`}
-                className="flex items-center gap-sp-3 p-sp-3 rounded-xl transition-colors hover:bg-bg-3"
+                className="flex items-center gap-sp-3 p-sp-3 rounded-none transition-colors hover:bg-bg-3"
                 style={{ border: '1px solid var(--bdr)' }}
               >
                 <div
-                  className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
+                  className="shrink-0 w-10 h-10 rounded-none flex items-center justify-center overflow-hidden"
                   style={{ background: 'var(--bg-3)' }}
                   aria-hidden="true"
                 >
                   {rel.thumbnail_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={rel.thumbnail_url} alt="" className="w-full h-full object-cover rounded-lg" />
+                    <img src={rel.thumbnail_url} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <Route size={14} strokeWidth={2} className="text-muted-2" />
                   )}
@@ -454,5 +489,65 @@ export default function ItineraryPanelContent({
         </section>
       )}
     </div>
+
+    {/* ─── Sticky footer — total duration + primary CTAs (S-BMGOFW) ── */}
+    <div
+      className="flex-none px-sp-4 py-sp-3 flex flex-col gap-sp-2 bg-bg-2"
+      style={{ borderTop: '1px solid var(--bdr)' }}
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-f-xs text-muted">{t('footer.totalDuration')}</span>
+        <span className="text-f-sm font-semibold text-fg">{durationLabel}</span>
+      </div>
+      <div className="flex items-center gap-sp-2">
+        {isOwner ? (
+          <button
+            onClick={onEdit}
+            aria-label={t('actions.editAria')}
+            className="flex-1 flex items-center justify-center gap-1 min-h-touch px-sp-3 rounded-none text-f-sm font-semibold text-lav hover:bg-lav-dim transition-colors"
+            style={{ border: '1px solid var(--lav-border)' }}
+          >
+            <Edit2 size={13} strokeWidth={2} aria-hidden="true" />
+            {t('actions.edit')}
+          </button>
+        ) : (
+          <button
+            onClick={onSave}
+            aria-label={t('actions.saveAria')}
+            aria-pressed={isSaved}
+            className="flex-1 flex items-center justify-center gap-1 min-h-touch px-sp-3 rounded-none text-f-sm font-semibold transition-colors"
+            style={{
+              background: isSaved ? 'var(--lav-dim)' : 'var(--bg-3)',
+              color: isSaved ? 'var(--lav)' : 'var(--muted)',
+              border: `1px solid ${isSaved ? 'var(--lav-border)' : 'transparent'}`,
+            }}
+          >
+            <Bookmark size={13} strokeWidth={2} fill={isSaved ? 'currentColor' : 'none'} aria-hidden="true" />
+            {isSaved ? t('actions.saved') : t('actions.save')}
+          </button>
+        )}
+
+        <button
+          onClick={onShare}
+          aria-label={t('actions.shareAria')}
+          className="min-h-touch w-touch flex items-center justify-center rounded-none text-muted hover:text-fg transition-colors"
+          style={{ background: 'var(--bg-3)' }}
+        >
+          <Share2 size={13} strokeWidth={2} aria-hidden="true" />
+        </button>
+
+        {isOwner && onDeleteClick && (
+          <button
+            onClick={onDeleteClick}
+            aria-label={t('actions.deleteAria')}
+            className="min-h-touch w-touch flex items-center justify-center rounded-none text-danger transition-colors"
+            style={{ background: 'var(--bg-3)' }}
+          >
+            <Trash2 size={13} strokeWidth={2} aria-hidden="true" />
+          </button>
+        )}
+      </div>
+    </div>
+    </>
   )
 }

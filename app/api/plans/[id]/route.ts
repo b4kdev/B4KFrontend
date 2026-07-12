@@ -18,6 +18,14 @@ export interface ItineraryStop {
   }
 }
 
+export interface ItineraryLeg {
+  from_stop_order: number
+  to_stop_order: number
+  estimated_duration_s: number
+  distance_m: number
+  transport_mode: 'car' | 'public' | 'walk'
+}
+
 export interface ItineraryRelated {
   id: string
   title: string
@@ -45,6 +53,7 @@ export interface ItineraryDetail {
     avatar_url: string | null
   }
   stops: ItineraryStop[]
+  legs: ItineraryLeg[]
   related: ItineraryRelated[]
   viewer: {
     is_owner: boolean
@@ -98,6 +107,12 @@ const MOCK: Record<string, ItineraryDetail> = {
         poi: { place_id: 'p3', name_preferred: null, name_en: 'Jogyesa Temple', name_ko: '조계사', primary_image_url: null, display_domain: 'Temples', coords_lat: 37.5742, coords_lng: 126.9814 },
       },
     ],
+    // Leg 4→5 intentionally absent — exercises "Calculating route…" placeholder (TMAP cache miss)
+    legs: [
+      { from_stop_order: 1, to_stop_order: 2, estimated_duration_s: 900, distance_m: 1600, transport_mode: 'public' },
+      { from_stop_order: 2, to_stop_order: 3, estimated_duration_s: 600, distance_m: 900, transport_mode: 'walk' },
+      { from_stop_order: 3, to_stop_order: 4, estimated_duration_s: 720, distance_m: 1100, transport_mode: 'public' },
+    ],
     related: [
       { id: 'it-partner', title: 'Premium Seoul Experience', like_count: 124, save_count: 67, stop_count: 4, thumbnail_url: null },
       { id: 'it-r2', title: 'Han River Sunset', like_count: 22, save_count: 12, stop_count: 3, thumbnail_url: null },
@@ -145,6 +160,11 @@ const MOCK: Record<string, ItineraryDetail> = {
         poi: { place_id: 'p9', name_preferred: null, name_en: 'National Museum of Korea', name_ko: '국립중앙박물관', primary_image_url: null, display_domain: 'Museums', coords_lat: 37.5236, coords_lng: 126.9803 },
       },
     ],
+    legs: [
+      { from_stop_order: 1, to_stop_order: 2, estimated_duration_s: 1200, distance_m: 5200, transport_mode: 'car' },
+      { from_stop_order: 2, to_stop_order: 3, estimated_duration_s: 1500, distance_m: 6100, transport_mode: 'car' },
+      { from_stop_order: 3, to_stop_order: 4, estimated_duration_s: 1800, distance_m: 7400, transport_mode: 'car' },
+    ],
     related: [
       { id: 'it-demo', title: 'Seoul Heritage Walk', like_count: 47, save_count: 23, stop_count: 5, thumbnail_url: null },
       { id: 'it-r2', title: 'Han River Sunset', like_count: 22, save_count: 12, stop_count: 3, thumbnail_url: null },
@@ -159,6 +179,25 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
   if (!plan) return NextResponse.json({ error: 'not_found' }, { status: 404 })
   if (!plan.is_published) return NextResponse.json({ error: 'private' }, { status: 403 })
   return NextResponse.json(plan)
+}
+
+// Owner sets transport mode per leg (DEC-13) — real impl recomputes via TMAP (24h cache)
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+  const plan = MOCK[params.id]
+  if (!plan) return NextResponse.json({ error: 'not_found' }, { status: 404 })
+
+  const body = await req.json().catch(() => null) as
+    { from_stop_order?: number; transport_mode?: string } | null
+  const mode = body?.transport_mode
+  const from = body?.from_stop_order
+  if (typeof from !== 'number' || !mode || !['car', 'public', 'walk'].includes(mode)) {
+    return NextResponse.json({ error: 'invalid_body' }, { status: 400 })
+  }
+
+  const leg = plan.legs.find(l => l.from_stop_order === from)
+  if (!leg) return NextResponse.json({ error: 'leg_not_found' }, { status: 404 })
+  leg.transport_mode = mode as ItineraryLeg['transport_mode']
+  return NextResponse.json({ success: true, leg })
 }
 
 export async function DELETE(

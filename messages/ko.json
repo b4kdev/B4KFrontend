@@ -801,7 +801,8 @@
     },
     "stopItem": {
       "ariaLabel": "{n}번째 목적지: {name}",
-      "min": "{min}분"
+      "min": "{min}분",
+      "fromStart": "출발 후 {time}"
     },
     "sponsored": "스폰서",
     "related": {
@@ -818,7 +819,22 @@
     },
     "copiedToast": "링크가 복사됐어요!",
     "mapAriaLabel": "여행 경로 지도",
-    "createdBy": "{name} 작성"
+    "createdBy": "{name} 작성",
+    "duration": {
+      "hoursMinutes": "{h}시간 {m}분",
+      "hours": "{h}시간",
+      "minutes": "{m}분"
+    },
+    "leg": {
+      "calculating": "경로 계산 중…",
+      "km": "{km}km",
+      "m": "{m}m",
+      "ariaLabel": "{from}번에서 {to}번 정류 지점으로 이동"
+    },
+    "footer": {
+      "totalDuration": "총 소요 시간"
+    },
+    "notFoundRedirect": "지도로 이동합니다…"
   },
   "profile": {
     "header": {

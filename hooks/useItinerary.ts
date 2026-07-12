@@ -1,8 +1,8 @@
 import useSWR from 'swr'
 import { fetcher } from '@/lib/fetcher'
-import type { ItineraryDetail } from '@/app/api/plans/[id]/route'
+import type { ItineraryDetail, ItineraryLeg } from '@/app/api/plans/[id]/route'
 
-export type { ItineraryDetail }
+export type { ItineraryDetail, ItineraryLeg }
 
 export function useItinerary(id: string) {
   const { data, error, isLoading, mutate } = useSWR<ItineraryDetail | { error: string }>(

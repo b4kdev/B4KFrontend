@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { useSession } from 'next-auth/react'
 import { RefreshCw, Lock, Route, Trash2, AlertTriangle, Loader2 } from 'lucide-react'
@@ -88,14 +88,36 @@ export default function ItineraryDetailView({ id }: { id: string }) {
   }, [session, isSaved, openAuthGate, showToast, t, id, mutate])
 
   const handleShare = useCallback(async () => {
-    const url = itinerary?.share_url ?? (typeof window !== 'undefined' ? window.location.href : '')
-    await navigator.clipboard.writeText(url).catch(() => {})
+    if (typeof window === 'undefined') return
+    // Shared URL always carries ?ref=share (S-BMGOFW)
+    const url = new URL(itinerary?.share_url ?? window.location.href, window.location.origin)
+    url.searchParams.set('ref', 'share')
+    const shareUrl = url.toString()
+
+    if (typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title: itinerary?.title, url: shareUrl })
+        return
+      } catch (err) {
+        // User cancelled the native sheet — do nothing
+        if ((err as DOMException)?.name === 'AbortError') return
+        // Otherwise fall through to clipboard
+      }
+    }
+    await navigator.clipboard.writeText(shareUrl).catch(() => {})
     showToast(t('copiedToast'))
   }, [itinerary, showToast, t])
 
   const handleEdit = useCallback(() => {
     router.push(`/map?plan=${id}`)
   }, [router, id])
+
+  // IT_01 Not Found → brief message, then redirect to /map (spec: 404 → /map)
+  useEffect(() => {
+    if (!isNotFound) return
+    const timer = setTimeout(() => router.push('/map'), 1500)
+    return () => clearTimeout(timer)
+  }, [isNotFound, router])
 
   const handleDelete = useCallback(async () => {
     setDeleting(true)
@@ -157,6 +179,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
       <div className="fixed top-[50px] left-0 right-0 bottom-14 lg:left-[50px] lg:bottom-0 z-10 flex flex-col items-center justify-center gap-sp-3 bg-bg text-center px-sp-6">
         <Route size={32} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
         <p className="text-f-lg font-semibold text-fg">{t('notFound')}</p>
+        {isNotFound && <p className="text-f-md text-muted">{t('notFoundRedirect')}</p>}
       </div>
     )
   }
