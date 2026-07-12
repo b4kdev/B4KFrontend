@@ -3,11 +3,21 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
-import { Trophy, RefreshCw, AlertTriangle, Award } from 'lucide-react'
+import { Trophy, RefreshCw, AlertTriangle, Award, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { useLeaderboard } from '@/hooks/useLeaderboard'
-import type { LeaderboardWindow } from '@/app/api/leaderboard/route'
+import type { LeaderboardWindow, LeaderboardTrend } from '@/app/api/leaderboard/route'
 
 const WINDOWS: LeaderboardWindow[] = ['weekly', 'rising', 'annual']
+
+function TrendIndicator({ trend, label }: { trend: LeaderboardTrend; label: string }) {
+  const Icon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus
+  const color = trend === 'up' ? 'text-success' : trend === 'down' ? 'text-danger' : 'text-muted-2'
+  return (
+    <span className={`shrink-0 ${color}`} role="img" aria-label={label}>
+      <Icon size={14} strokeWidth={2} aria-hidden="true" />
+    </span>
+  )
+}
 
 const RANK_STYLE: Record<number, { ring: string; icon: string; bg: string }> = {
   1: { ring: 'ring-2 ring-warning/60', icon: 'text-warning', bg: 'bg-bg-3' },
@@ -162,6 +172,8 @@ export default function LeaderboardPage() {
                       <span>{entry.badge_count}</span>
                     </div>
                   </div>
+                  {/* Trend vs previous period */}
+                  <TrendIndicator trend={entry.trend} label={t(`trend.${entry.trend}`)} />
                   {/* Score */}
                   <div className="text-right shrink-0">
                     <span
@@ -176,6 +188,25 @@ export default function LeaderboardPage() {
             })}
           </div>
         )
+      )}
+
+      {/* Own-user rank — sticky at bottom when not in visible top N */}
+      {!isLoading && !isError && data?.your_rank && (
+        <div
+          className="sticky bottom-0 z-10 mt-sp-3 flex items-center gap-sp-3 p-sp-4 min-h-touch"
+          style={{ background: 'var(--bg-3)', border: '1px solid var(--lav-border)' }}
+          aria-label={t('yourRank.ariaLabel', { rank: data.your_rank.rank })}
+        >
+          <span className="text-f-md font-bold text-lav shrink-0">
+            {t('yourRank.label', { rank: data.your_rank.rank })}
+          </span>
+          <TrendIndicator trend={data.your_rank.trend} label={t(`trend.${data.your_rank.trend}`)} />
+          <div className="flex-1" />
+          <div className="text-right shrink-0">
+            <span className="text-f-md font-bold text-fg">{data.your_rank.score.toLocaleString()}</span>
+            <p className="text-f-xxs text-muted">{t('scoreUnit')}</p>
+          </div>
+        </div>
       )}
 
       {data && (
