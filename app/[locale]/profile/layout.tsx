@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import { Link } from '@/i18n/navigation'
-import { User, Heart, MapPin, RefreshCw, AlertTriangle } from 'lucide-react'
+import { User, MapPin, Bookmark, Award, RefreshCw, AlertTriangle } from 'lucide-react'
 import { useProfile } from '@/hooks/useProfile'
 import type { ProfileData } from '@/app/api/profile/route'
 
@@ -21,6 +21,7 @@ function HeaderSkeleton() {
       <div className="flex-1 space-y-sp-2 pt-1">
         <div className="h-5 w-32 rounded bg-muted-3" />
         <div className="flex gap-sp-4 mt-sp-2">
+          <div className="h-4 w-16 rounded bg-muted-3" />
           <div className="h-4 w-16 rounded bg-muted-3" />
           <div className="h-4 w-16 rounded bg-muted-3" />
         </div>
@@ -85,23 +86,34 @@ function HeaderContent({ profile, t }: { profile: ProfileData; t: ReturnType<typ
           {profile.name}
         </h1>
 
-        {/* Stats row — PR_05 + PR_06 */}
+        {/* Stats row — PR_05 + PR_06 · Trips · Saves · Badges (SPEC-09 header) */}
         <div className="flex items-center gap-sp-4 mt-sp-2" role="list" aria-label={t('header.statsLabel')}>
-          <button
-            className="flex items-center gap-1.5 text-f-md text-muted hover:text-fg transition-colors group"
+          <div
+            role="listitem"
+            className="flex items-center gap-1.5 text-f-md"
             aria-label={t('header.tripsCountAria', { count: profile.trips_count })}
           >
             <MapPin size={14} strokeWidth={2} className="text-lav shrink-0" />
             <span className="font-semibold text-fg">{profile.trips_count}</span>
             <span className="text-muted">{t('header.tripsLabel')}</span>
-          </button>
+          </div>
           <div
+            role="listitem"
             className="flex items-center gap-1.5 text-f-md"
-            aria-label={t('header.likesAria', { count: profile.likes_received })}
+            aria-label={t('header.savesCountAria', { count: profile.saves_count })}
           >
-            <Heart size={14} strokeWidth={2} className="text-danger shrink-0" />
-            <span className="font-semibold text-fg">{profile.likes_received}</span>
-            <span className="text-muted">{t('header.likesLabel')}</span>
+            <Bookmark size={14} strokeWidth={2} className="text-lav shrink-0" />
+            <span className="font-semibold text-fg">{profile.saves_count}</span>
+            <span className="text-muted">{t('header.savesLabel')}</span>
+          </div>
+          <div
+            role="listitem"
+            className="flex items-center gap-1.5 text-f-md"
+            aria-label={t('header.badgesCountAria', { count: profile.badges_count })}
+          >
+            <Award size={14} strokeWidth={2} className="text-lav shrink-0" />
+            <span className="font-semibold text-fg">{profile.badges_count}</span>
+            <span className="text-muted">{t('header.badgesLabel')}</span>
           </div>
         </div>
 

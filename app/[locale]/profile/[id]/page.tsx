@@ -3,14 +3,20 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import useSWR from 'swr'
-import { User } from 'lucide-react'
+import { Link } from '@/i18n/navigation'
+import { User, MapPin, Bookmark, Award, Lock, Route } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
 import { getDisplayName } from '@/lib/display-name'
+import type { OtherUserTrip } from '@/app/api/profile/[id]/trips/route'
+import type { OtherUserBadge } from '@/app/api/profile/[id]/badges/route'
 
 interface OtherUserProfile {
   id: string
   display_name: string | null
   avatar_url: string | null
+  trips_count: number
+  saves_count: number
+  badges_count: number
   trips_public: boolean
   saved_public: boolean
   badges_public: boolean
@@ -20,11 +26,16 @@ interface ListResponse<T> {
   items: T[]
 }
 
-interface TripItem { id: string; title?: string | null }
 interface PoiItem { place_id: string; name_preferred?: string | null; name_en?: string | null; name_ko?: string | null }
-interface BadgeItem { badge_id: string; slug?: string | null }
 
 type TabId = 'trips' | 'saved' | 'badges'
+
+const RARITY_COLOR: Record<OtherUserBadge['rarity'], string> = {
+  common: 'text-muted',
+  rare: 'text-info',
+  epic: 'text-lav',
+  legendary: 'text-warning',
+}
 
 function ListSkeleton() {
   return (
@@ -52,24 +63,82 @@ function PrivateTabMessage({ label }: { label: string }) {
   )
 }
 
+/* M7 — trips link to /plan/:id (IT_01) + Save CTA per row (social.plan_saves) */
 function TripsList({ userId, emptyLabel }: { userId: string; emptyLabel: string }) {
-  const { data, isLoading } = useSWR<ListResponse<TripItem>>(
+  const t = useTranslations('profile')
+  const { data, isLoading, mutate } = useSWR<ListResponse<OtherUserTrip>>(
     `/api/profile/${userId}/trips`,
     fetcher
   )
+  const [savedOverride, setSavedOverride] = useState<Record<string, boolean>>({})
+
   if (isLoading) return <ListSkeleton />
   if (!data?.items?.length) return <EmptyState message={emptyLabel} />
+
+  const isSaved = (trip: OtherUserTrip) => savedOverride[trip.id] ?? trip.is_saved
+
+  const toggleSave = async (trip: OtherUserTrip) => {
+    const next = !isSaved(trip)
+    setSavedOverride((prev) => ({ ...prev, [trip.id]: next }))
+    try {
+      await fetch('/api/saved/plan', {
+        method: next ? 'POST' : 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan_id: trip.id }),
+      })
+      mutate()
+    } catch {
+      // Revert optimistic toggle on network failure
+      setSavedOverride((prev) => ({ ...prev, [trip.id]: !next }))
+    }
+  }
+
   return (
     <div className="flex flex-col gap-sp-2 p-sp-4">
-      {data.items.map((trip) => (
-        <div
-          key={trip.id}
-          className="p-sp-3 bg-bg-2 rounded-none text-fg text-f-base"
-          style={{ border: '1px solid var(--bdr)' }}
-        >
-          {trip.title ?? '—'}
-        </div>
-      ))}
+      {data.items.map((trip) => {
+        const saved = isSaved(trip)
+        return (
+          <div
+            key={trip.id}
+            className="flex items-center gap-sp-3 p-sp-3 bg-bg-2 rounded-none"
+            style={{ border: '1px solid var(--bdr)' }}
+          >
+            <Link
+              href={`/plan/${trip.id}`}
+              className="flex-1 min-w-0 min-h-touch flex flex-col justify-center gap-0.5 hover:opacity-80 transition-opacity"
+              aria-label={t('otherTrips.openAria', { title: trip.title })}
+            >
+              <span className="text-fg text-f-base font-semibold truncate">{trip.title}</span>
+              <span className="flex items-center gap-sp-3 text-f-sm text-muted">
+                <span className="flex items-center gap-1">
+                  <Route size={12} strokeWidth={2} aria-hidden="true" />
+                  {t('otherTrips.stops', { count: trip.stop_count })}
+                </span>
+                <span>{t('otherTrips.days', { count: trip.day_count })}</span>
+                <span className="flex items-center gap-1">
+                  <Bookmark size={12} strokeWidth={2} aria-hidden="true" />
+                  {trip.save_count}
+                </span>
+              </span>
+            </Link>
+            <button
+              onClick={() => toggleSave(trip)}
+              aria-pressed={saved}
+              aria-label={saved
+                ? t('otherTrips.unsaveAria', { title: trip.title })
+                : t('otherTrips.saveAria', { title: trip.title })}
+              className={[
+                'shrink-0 min-h-touch px-sp-3 flex items-center gap-1.5 rounded-full text-f-sm font-semibold transition-colors',
+                saved ? 'bg-lav-dim text-lav' : 'text-muted hover:text-fg',
+              ].join(' ')}
+              style={{ border: saved ? '1px solid var(--lav-border)' : '1px solid var(--bdr)' }}
+            >
+              <Bookmark size={14} strokeWidth={2} aria-hidden="true" fill={saved ? 'currentColor' : 'none'} />
+              {saved ? t('otherTrips.saved') : t('otherTrips.save')}
+            </button>
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -96,22 +165,32 @@ function SavedList({ userId, emptyLabel }: { userId: string; emptyLabel: string 
   )
 }
 
+/* M8 — full 12-slot badge grid: earned = colored, unearned = greyed + lock */
 function BadgesList({ userId, emptyLabel }: { userId: string; emptyLabel: string }) {
-  const { data, isLoading } = useSWR<ListResponse<BadgeItem>>(
+  const t = useTranslations('profile')
+  const { data, isLoading } = useSWR<ListResponse<OtherUserBadge>>(
     `/api/profile/${userId}/badges`,
     fetcher
   )
   if (isLoading) return <ListSkeleton />
   if (!data?.items?.length) return <EmptyState message={emptyLabel} />
   return (
-    <div className="grid grid-cols-3 gap-sp-3 p-sp-4">
+    <div className="grid grid-cols-3 md:grid-cols-4 gap-sp-3 p-sp-4">
       {data.items.map((b) => (
         <div
           key={b.badge_id}
-          className="aspect-square bg-bg-2 rounded-none flex items-center justify-center text-muted text-f-xs"
-          style={{ border: '1px solid var(--bdr)' }}
+          className="aspect-square bg-bg-2 rounded-none flex flex-col items-center justify-center gap-sp-2 p-sp-2 text-center"
+          style={{ border: '1px solid var(--bdr)', opacity: b.earned ? 1 : 0.45 }}
+          aria-label={b.earned ? b.name : t('otherBadges.lockedAria', { name: b.name })}
         >
-          {b.slug ?? b.badge_id}
+          {b.earned ? (
+            <Award size={22} strokeWidth={2} className={RARITY_COLOR[b.rarity]} aria-hidden="true" />
+          ) : (
+            <Lock size={22} strokeWidth={2} className="text-muted" aria-hidden="true" />
+          )}
+          <span className={['text-f-xs font-semibold leading-tight', b.earned ? 'text-fg' : 'text-muted'].join(' ')}>
+            {b.name}
+          </span>
         </div>
       ))}
     </div>
@@ -178,8 +257,38 @@ export default function OtherUserProfilePage({ params }: { params: { id: string 
             <User size={24} strokeWidth={2} className="text-muted" />
           </div>
         )}
-        <div>
-          <h1 className="text-fg text-f-xl font-semibold">{displayName}</h1>
+        <div className="min-w-0">
+          <h1 className="text-fg text-f-xl font-semibold truncate">{displayName}</h1>
+          {/* Stats row — Trips · Saves · Badges (SPEC-09 header, read-only) */}
+          <div className="flex items-center gap-sp-4 mt-sp-2" role="list" aria-label={t('header.statsLabel')}>
+            <div
+              role="listitem"
+              className="flex items-center gap-1.5 text-f-sm"
+              aria-label={t('header.tripsCountAria', { count: profile.trips_count })}
+            >
+              <MapPin size={13} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
+              <span className="font-semibold text-fg">{profile.trips_count}</span>
+              <span className="text-muted">{t('header.tripsLabel')}</span>
+            </div>
+            <div
+              role="listitem"
+              className="flex items-center gap-1.5 text-f-sm"
+              aria-label={t('header.savesCountAria', { count: profile.saves_count })}
+            >
+              <Bookmark size={13} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
+              <span className="font-semibold text-fg">{profile.saves_count}</span>
+              <span className="text-muted">{t('header.savesLabel')}</span>
+            </div>
+            <div
+              role="listitem"
+              className="flex items-center gap-1.5 text-f-sm"
+              aria-label={t('header.badgesCountAria', { count: profile.badges_count })}
+            >
+              <Award size={13} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
+              <span className="font-semibold text-fg">{profile.badges_count}</span>
+              <span className="text-muted">{t('header.badgesLabel')}</span>
+            </div>
+          </div>
         </div>
       </div>
 

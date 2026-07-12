@@ -12,20 +12,32 @@ export interface ProfileData {
   name: string
   email: string
   avatar_url: string | null
+  bio: string | null
   trips_count: number
+  saves_count: number
+  badges_count: number
   likes_received: number
   pinned_badges: PinnedBadge[]
   preferred_lang: string
   transport_default: 'car' | 'public'
   interests: string[]
+  trips_public: boolean
+  saved_public: boolean
 }
 
+// Stub — real impl:
+//   trips_count  = COUNT(ai.plans WHERE author_id = user AND is_published = TRUE AND deleted_at IS NULL)
+//   saves_count  = COUNT(social.poi_saves WHERE user_id = user)
+//   badges_count = COUNT(social.user_badges WHERE user_id = user)
 const MOCK: ProfileData = {
   id: 'user-1',
   name: 'Sun Min',
-  email: 'technoprecarious@gmail.com',
+  email: 'sunmin@example.com',
   avatar_url: null,
+  bio: 'Chasing K-drama filming spots across Seoul.',
   trips_count: 3,
+  saves_count: 18,
+  badges_count: 3,
   likes_received: 24,
   pinned_badges: [
     { id: 'b1', slug: 'first-itinerary', name: 'First Steps', rarity: 'common' },
@@ -34,6 +46,8 @@ const MOCK: ProfileData = {
   preferred_lang: 'en',
   transport_default: 'car',
   interests: ['k-pop', 'k-drama'],
+  trips_public: true,
+  saved_public: false,
 }
 
 export async function GET() {

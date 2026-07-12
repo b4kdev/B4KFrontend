@@ -848,7 +848,11 @@
       "likesAria": "받은 좋아요 {count}개",
       "pinnedBadgesLabel": "고정된 배지",
       "errorTitle": "프로필을 불러올 수 없습니다",
-      "errorRetry": "다시 시도"
+      "errorRetry": "다시 시도",
+      "savesLabel": "저장",
+      "badgesLabel": "배지",
+      "savesCountAria": "저장 {count}개",
+      "badgesCountAria": "배지 {count}개"
     },
     "tabs": {
       "ariaLabel": "프로필 섹션",
@@ -986,7 +990,19 @@
     "avatarAlt": "{name}님의 프로필 사진",
     "tabsLabel": "프로필 섹션",
     "privateTab": "이 탭은 비공개입니다",
-    "untitledPlan": "제목 없는 플랜"
+    "untitledPlan": "제목 없는 플랜",
+    "otherTrips": {
+      "stops": "{count}개 장소",
+      "days": "{count}일",
+      "save": "저장",
+      "saved": "저장됨",
+      "saveAria": "플랜 {title} 저장",
+      "unsaveAria": "저장된 플랜 {title} 삭제",
+      "openAria": "플랜 {title} 열기"
+    },
+    "otherBadges": {
+      "lockedAria": "잠긴 배지: {name}"
+    }
   },
   "explore": {
     "title": "탐험하기",
@@ -1237,7 +1253,16 @@
     "rank": "{rank}위",
     "plans": "{count}개 일정",
     "scoreUnit": "pts",
-    "computedAt": "{date} 업데이트"
+    "computedAt": "{date} 업데이트",
+    "yourRank": {
+      "label": "내 순위: #{rank}",
+      "ariaLabel": "내 순위는 {rank}위입니다"
+    },
+    "trend": {
+      "up": "순위 상승",
+      "down": "순위 하락",
+      "same": "변동 없음"
+    }
   },
   "help": {
     "ariaLabel": "도움말 페이지",

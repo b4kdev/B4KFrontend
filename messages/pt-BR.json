@@ -810,7 +810,11 @@
       "likesAria": "{count} likes received",
       "pinnedBadgesLabel": "Pinned badges",
       "errorTitle": "Couldn't load profile",
-      "errorRetry": "Try again"
+      "errorRetry": "Try again",
+      "savesLabel": "Saves",
+      "badgesLabel": "Badges",
+      "savesCountAria": "{count} saves",
+      "badgesCountAria": "{count} badges"
     },
     "tabs": {
       "ariaLabel": "Profile sections",
@@ -948,7 +952,19 @@
     "avatarAlt": "{name}'s profile photo",
     "tabsLabel": "Profile sections",
     "privateTab": "This tab is private",
-    "untitledPlan": "Untitled plan"
+    "untitledPlan": "Untitled plan",
+    "otherTrips": {
+      "stops": "{count} stops",
+      "days": "{count} days",
+      "save": "Save",
+      "saved": "Saved",
+      "saveAria": "Save plan {title}",
+      "unsaveAria": "Remove saved plan {title}",
+      "openAria": "Open plan {title}"
+    },
+    "otherBadges": {
+      "lockedAria": "Locked badge: {name}"
+    }
   },
   "explore": {
     "title": "Explore",
@@ -1199,7 +1215,16 @@
     "rank": "Rank {rank}",
     "plans": "{count, plural, one {# plan} other {# plans}}",
     "scoreUnit": "pts",
-    "computedAt": "Updated {date}"
+    "computedAt": "Updated {date}",
+    "yourRank": {
+      "label": "Your rank: #{rank}",
+      "ariaLabel": "Your rank is number {rank}"
+    },
+    "trend": {
+      "up": "Rank up",
+      "down": "Rank down",
+      "same": "No change"
+    }
   },
   "help": {
     "ariaLabel": "Help page",
