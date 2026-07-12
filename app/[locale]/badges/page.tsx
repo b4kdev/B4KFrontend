@@ -4,10 +4,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import { Link } from '@/i18n/navigation'
-import { Award, Lock, RefreshCw, AlertTriangle, X, Star, Trophy } from 'lucide-react'
+import { Award, Lock, RefreshCw, AlertTriangle, X, Star, Trophy, Pin, PinOff } from 'lucide-react'
 import { useBadges } from '@/hooks/useBadges'
 import { useToast } from '@/contexts/ToastContext'
-import type { Badge, BadgeRarity } from '@/app/api/badges/route'
+import type { Badge, BadgeRarity, BadgesData } from '@/app/api/badges/route'
 
 type Filter = 'all' | BadgeRarity
 
@@ -23,6 +23,15 @@ const RARITY_COLOR: Record<BadgeRarity, string> = {
   epic:      'text-lav',
   legendary: 'text-warning',
 }
+// Chip background per rarity — token-derived via color-mix, no hex.
+const RARITY_CHIP_BG: Record<BadgeRarity, string> = {
+  common:    'color-mix(in srgb, var(--muted) 18%, transparent)',
+  rare:      'color-mix(in srgb, var(--info) 18%, transparent)',
+  epic:      'color-mix(in srgb, var(--lav) 18%, transparent)',
+  legendary: 'color-mix(in srgb, var(--warning) 18%, transparent)',
+}
+
+const MAX_PINS = 3
 
 function BadgeSkeleton() {
   return (
@@ -36,14 +45,19 @@ function BadgeSkeleton() {
 function BadgeDetailSheet({
   badge,
   onClose,
+  onTogglePin,
+  pinnedCount,
   t,
 }: {
   badge: Badge
   onClose: () => void
+  onTogglePin: (badge: Badge) => void
+  pinnedCount: number
   t: ReturnType<typeof useTranslations>
 }) {
   const color = RARITY_COLOR[badge.rarity] ?? 'text-muted'
   const ring  = RARITY_RING[badge.rarity] ?? ''
+  const atPinLimit = !badge.is_pinned && pinnedCount >= MAX_PINS
 
   return (
     <div
@@ -116,17 +130,50 @@ function BadgeDetailSheet({
           </div>
         </div>
 
+        {/* M17 — Unlock criteria */}
+        {badge.unlock_criteria?.description && (
+          <div>
+            <p className="text-muted uppercase tracking-widest text-f-xxs font-semibold mb-sp-1">
+              {t('badges.detail.unlockCriteria')}
+            </p>
+            <p className="text-f-sm text-fg leading-relaxed">
+              {badge.unlock_criteria.description}
+            </p>
+          </div>
+        )}
+
         {badge.earned && badge.earned_at && (
           <p className="text-f-xs text-muted text-center">
             {t('badges.detail.earnedOn', { date: new Date(badge.earned_at).toLocaleDateString() })}
           </p>
         )}
 
-        {badge.is_pinned && (
-          <div className="flex items-center justify-center gap-sp-2 text-lav text-f-xs font-semibold">
-            <Star size={12} strokeWidth={2} fill="currentColor" aria-hidden="true" />
-            {t('badges.badge.pinned')}
-          </div>
+        {/* M16 — Pin toggle (earned badges, own profile only) */}
+        {badge.earned && (
+          <button
+            onClick={() => onTogglePin(badge)}
+            disabled={atPinLimit}
+            aria-pressed={badge.is_pinned}
+            className={[
+              'min-h-touch flex items-center justify-center gap-sp-2 rounded-full text-f-sm font-semibold transition-colors px-sp-4',
+              badge.is_pinned
+                ? 'bg-lav text-bg'
+                : atPinLimit
+                  ? 'text-muted-2 cursor-not-allowed'
+                  : 'text-lav hover:text-fg',
+            ].join(' ')}
+            style={!badge.is_pinned ? { background: 'var(--bg-3)', border: '1px solid var(--lbdr)' } : {}}
+          >
+            {badge.is_pinned ? (
+              <PinOff size={16} strokeWidth={2} aria-hidden="true" />
+            ) : (
+              <Pin size={16} strokeWidth={2} aria-hidden="true" />
+            )}
+            {badge.is_pinned ? t('badges.detail.unpin') : t('badges.detail.pin')}
+          </button>
+        )}
+        {atPinLimit && (
+          <p className="text-f-xxs text-muted text-center">{t('badges.detail.pinLimit')}</p>
         )}
       </div>
     </div>
@@ -162,6 +209,37 @@ export default function BadgesPage() {
   const handleBadgeClick = useCallback((badge: Badge) => {
     setSelected(badge)
   }, [])
+
+  const pinnedCount = data?.badges.filter(b => b.is_pinned).length ?? 0
+
+  const handleTogglePin = useCallback(async (badge: Badge) => {
+    if (!data) return
+    const nextPinned = !badge.is_pinned
+    // Block a 4th pin — do not call the API.
+    if (nextPinned && pinnedCount >= MAX_PINS) {
+      showToast(t('badges.detail.pinLimit'), 'info')
+      return
+    }
+    const applyPin = (bs: Badge[]) =>
+      bs.map(b => (b.id === badge.id ? { ...b, is_pinned: nextPinned } : b))
+    const optimistic: BadgesData = { ...data, badges: applyPin(data.badges) }
+    // Optimistic update + keep the open sheet in sync.
+    mutate(optimistic, { revalidate: false })
+    setSelected(prev => (prev && prev.id === badge.id ? { ...prev, is_pinned: nextPinned } : prev))
+    try {
+      const res = await fetch(`/api/badges/${badge.id}/pin`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_pinned: nextPinned }),
+      })
+      if (!res.ok) throw new Error('pin failed')
+    } catch {
+      // Revert on failure.
+      mutate()
+      setSelected(prev => (prev && prev.id === badge.id ? { ...prev, is_pinned: badge.is_pinned } : prev))
+      showToast(t('badges.detail.pinError'), 'error')
+    }
+  }, [data, pinnedCount, mutate, showToast, t])
 
   return (
     <main
@@ -279,6 +357,15 @@ export default function BadgesPage() {
                   <p className="text-f-xxs font-semibold text-center leading-tight text-muted line-clamp-2 px-[2px]">
                     {badge.name}
                   </p>
+                  {/* L6 — Rarity chip on earned cells */}
+                  {badge.earned && (
+                    <span
+                      className={`rounded-full px-sp-2 py-[1px] text-f-xxs font-semibold uppercase tracking-wide ${color}`}
+                      style={{ background: RARITY_CHIP_BG[badge.rarity] }}
+                    >
+                      {t(`badges.rarity.${badge.rarity}`)}
+                    </span>
+                  )}
                   {badge.earned && badge.earned_at && (
                     <p className="text-f-xxs text-muted-2 text-center">
                       {t('badges.badge.earnedOn', { date: new Date(badge.earned_at).toLocaleDateString() })}
@@ -299,6 +386,8 @@ export default function BadgesPage() {
         <BadgeDetailSheet
           badge={selected}
           onClose={() => setSelected(null)}
+          onTogglePin={handleTogglePin}
+          pinnedCount={pinnedCount}
           t={t}
         />
       )}
