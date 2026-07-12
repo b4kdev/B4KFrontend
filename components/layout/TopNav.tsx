@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter, usePathname, Link } from '@/i18n/navigation';
-import { Search, Bell, Globe, HelpCircle, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Globe, HelpCircle, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/fetcher';
 
@@ -419,19 +419,6 @@ export default function TopNav({ onMobileMenuOpen, notifCount = 0 }: TopNavProps
 
         {/* Actions (desktop) */}
         <div className="hidden lg:flex items-center gap-1 ml-auto mr-4 shrink-0">
-          <Link
-            href="/notifications"
-            className="relative min-w-touch min-h-touch flex items-center justify-center rounded-full text-muted hover:text-fg hover:bg-muted-3 transition-colors"
-            aria-label={tNav('notifications')}
-          >
-            <Bell size={24} strokeWidth={2} />
-            {notifCount > 0 && (
-              <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-danger text-fg text-f-xxs font-bold flex items-center justify-center">
-                {notifCount}
-              </span>
-            )}
-          </Link>
-
           {/* Locale switcher */}
           <div className="relative" ref={localeRef}>
             <button
