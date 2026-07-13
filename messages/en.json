@@ -1036,7 +1036,8 @@
         "verifying": "Verifying…",
         "cancel": "Cancel",
         "error": "Incorrect password. Try again."
-      }
+      },
+      "deleteError": "Couldn't delete your account. Please try again."
     },
     "saved": {
       "loading": "Loading saved places…",

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { HelpCircle, ChevronDown, Mail, Copy, Check } from 'lucide-react'
@@ -37,12 +37,15 @@ export default function HelpPage() {
   }, [])
 
   const email = t('sections.contact.emailAddress')
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => () => { if (copyTimerRef.current) clearTimeout(copyTimerRef.current) }, [])
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(email)
       setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+      copyTimerRef.current = setTimeout(() => setCopied(false), 2000)
     } catch {
       /* clipboard unavailable — mailto CTA remains the fallback */
     }

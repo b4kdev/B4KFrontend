@@ -57,9 +57,10 @@ export async function GET(request: Request) {
     ? searchParams.get('tags')!.split(',').filter(Boolean)
     : []
 
-  let places = (type && type !== 'places') ? [] : [...MOCK_POIS]
-  let plans = (type && type !== 'plans') ? [] : [...MOCK_PLANS]
-  const explore = (type && type !== 'explore') ? [] : [...EXPLORE_CATEGORIES]
+  const wantAll = !type || type === 'all'
+  let places = (wantAll || type === 'places') ? [...MOCK_POIS] : []
+  let plans = (wantAll || type === 'plans') ? [...MOCK_PLANS] : []
+  const explore = (wantAll || type === 'explore') ? [...EXPLORE_CATEGORIES] : []
 
   if (sort === 'popularity') {
     places = places.sort((a, b) => b.save_count - a.save_count)

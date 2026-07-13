@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import { Link } from '@/i18n/navigation'
@@ -188,12 +188,15 @@ export default function BadgesPage() {
   const { showToast } = useToast()
   const searchParams = useSearchParams()
 
-  // Unlock toast — fires when ?badge=<slug> is set (e.g. after earning a badge)
+  // Unlock toast — fires once per ?badge=<slug> (not on every data mutation, e.g. pin toggle)
+  const unlockToastFiredRef = useRef<string | null>(null)
   useEffect(() => {
     const newBadgeSlug = searchParams.get('badge')
     if (!newBadgeSlug || !data?.badges) return
+    if (unlockToastFiredRef.current === newBadgeSlug) return
     const earned = data.badges.find((b) => b.slug === newBadgeSlug && b.earned)
     if (earned) {
+      unlockToastFiredRef.current = newBadgeSlug
       showToast(t('badges.detail.unlockToast', { name: earned.name }), 'success')
     }
   }, [searchParams, data, showToast, t])

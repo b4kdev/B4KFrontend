@@ -75,7 +75,7 @@ export default function MainCarousel() {
           className="absolute inset-0 bg-bg-3"
           style={{
             opacity: i === idx ? 1 : 0,
-            transition: prefersReduced ? 'none' : 'opacity 700ms ease',
+            transition: prefersReduced ? 'none' : 'opacity var(--dur-reveal) ease',
             backgroundImage: s.image_url ? `url(${s.image_url})` : undefined,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
@@ -110,21 +110,24 @@ export default function MainCarousel() {
       </div>
 
       {/* Dot indicators */}
-      <div className="absolute bottom-sp-4 md:bottom-6 left-9 md:left-11 flex gap-1.5">
-        {data.map((s, i) => (
-          <button
-            key={s.id}
-            onClick={() => setIdx(i)}
-            aria-label={tCarousel('slideN', { n: i + 1 })}
-            aria-current={i === idx ? 'true' : undefined}
-            className="h-[3px] rounded-full border-none cursor-pointer p-0 transition-all duration-300"
-            style={{
-              width: i === idx ? 28 : 16,
-              background: i === idx ? 'var(--fg)' : 'var(--muted-2)',
-            }}
-          />
-        ))}
-      </div>
+      {total > 1 && (
+        <div className="absolute bottom-sp-4 md:bottom-6 left-9 md:left-11 flex gap-1.5">
+          {data.map((s, i) => (
+            <button
+              key={s.id}
+              onClick={() => setIdx(i)}
+              aria-label={tCarousel('slideN', { n: i + 1 })}
+              aria-current={i === idx ? 'true' : undefined}
+              className="h-[3px] rounded-full border-none cursor-pointer p-0"
+              style={{
+                width: i === idx ? 28 : 16,
+                background: i === idx ? 'var(--fg)' : 'var(--muted-2)',
+                transition: prefersReduced ? 'none' : 'all var(--dur-standard) ease',
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Arrows (desktop) */}
       {total > 1 && (

@@ -2,9 +2,8 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
-import { Link } from '@/i18n/navigation'
+import { Link, usePathname } from '@/i18n/navigation'
 import { Music, Tv, Sparkles, Globe, RefreshCw, AlertTriangle, ArrowRight } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
 import type { ExploreData } from '@/app/api/explore/[category]/route'
@@ -107,8 +106,8 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
   const isError = !!error
 
   const isActivePath = (href: string) => {
-    const segment = pathname.replace(/^\/[a-z-]+/, '')
-    return segment === href || segment.startsWith(`${href}/`)
+    // usePathname from @/i18n/navigation is already locale-stripped
+    return pathname === href || pathname.startsWith(`${href}/`)
   }
 
   return (

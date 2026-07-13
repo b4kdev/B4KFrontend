@@ -459,7 +459,7 @@ function ExploreSection({
             href={item.href as `/explore/${string}`}
             className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-lav min-h-touch flex items-center"
             style={{ border: '1px solid var(--lav-border)' }}
-            aria-label={t('exploreAriaLabel', { category: item.category })}
+            aria-label={t('exploreAriaLabel', { category: t(`categories.${item.label_key}` as `categories.${string}`) })}
           >
             {t(`categories.${item.label_key}` as `categories.${string}`)}
           </Link>
@@ -559,6 +559,7 @@ export default function SearchPage() {
     setAreaLv2(lv1 && lv2 && AREA_TREE[lv1]?.includes(lv2) ? lv2 : null)
     const tagParam = searchParams.get('tags')
     setTags(tagParam ? tagParam.split(',').filter(t => (TAG_LIST as readonly string[]).includes(t)) : [])
+    setExpanded({ places: false, plans: false, explore: false })
   }, [searchParams])
 
   // Write filter changes back to URL (replace — don't inflate history).
@@ -628,10 +629,10 @@ export default function SearchPage() {
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault()
-    const trimmed = inputVal.trim()
-    if (!trimmed) return
-    router.push(`/search?q=${encodeURIComponent(trimmed)}`)
-  }, [inputVal, router])
+    if (!inputVal.trim()) return
+    // Preserve active filters when re-submitting a query.
+    syncFilters({})
+  }, [inputVal, syncFilters])
 
   const hasResults = data && (
     data.places.length > 0 || data.plans.length > 0 || data.explore.length > 0

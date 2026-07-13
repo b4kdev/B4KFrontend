@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useSWRConfig } from 'swr'
 import { useRouter, usePathname } from '@/i18n/navigation'
 import { signOut } from 'next-auth/react'
@@ -236,6 +236,7 @@ export default function SettingsPage() {
   const { data: profile } = useProfile()
   const { mutate } = useSWRConfig()
   const { showToast } = useToast()
+  const locale = useLocale()
 
   const [transport, setTransport] = useState<Transport>(profile?.transport_default ?? 'car')
   const [interests, setInterests] = useState<string[]>(profile?.interests ?? [])
@@ -276,6 +277,8 @@ export default function SettingsPage() {
     if (!identityInit) {
       setDisplayName(profile.name ?? '')
       setBio(profile.bio ?? '')
+      setTransport(profile.transport_default ?? 'car')
+      setInterests(profile.interests ?? [])
       setIdentityInit(true)
     }
   }, [profile, identityInit])
@@ -320,7 +323,7 @@ export default function SettingsPage() {
       const res = await fetch('/api/account/avatar', { method: 'POST', body: form })
       if (!res.ok) throw new Error()
       const body = await res.json()
-      setAvatarUrl(body.avatar_url ?? preview)
+      setAvatarUrl(body.avatar_url ?? prev)
       mutate('/api/profile', (p: typeof profile) => (p ? { ...p, avatar_url: body.avatar_url } : p), false)
       showToast(t('settings.avatar.uploaded'), 'success')
     } catch {
@@ -469,12 +472,12 @@ export default function SettingsPage() {
     setDeleting(true)
     try {
       const res = await fetch('/api/account/delete', { method: 'POST' })
-      if (res.ok) {
-        await signOut({ callbackUrl: '/' })
-      }
-    } finally {
+      if (!res.ok) throw new Error()
+      await signOut({ callbackUrl: '/' })
+    } catch {
+      // Keep the modal open so the failure is visible and retryable.
       setDeleting(false)
-      setDeleteConfirmOpen(false)
+      showToast(t('settings.deleteError'), 'error')
     }
   }
 
@@ -664,7 +667,7 @@ export default function SettingsPage() {
               <select
                 className="text-f-md font-medium text-fg rounded-none px-sp-3 min-h-[36px] appearance-none cursor-pointer"
                 style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
-                defaultValue={profile?.preferred_lang ?? 'en'}
+                value={locale}
                 onChange={(e) => handleLangChange(e.target.value)}
                 aria-label={t('settings.preferences.language')}
               >
