@@ -21,7 +21,13 @@
     "mainNavigation": "주 탐색",
     "logoHome": "B4K 홈",
     "about": "소개",
-    "bottomNav": "하단 내비게이션"
+    "bottomNav": "하단 내비게이션",
+    "settings": "설정",
+    "legal": "약관 및 정책",
+    "legalTerms": "서비스 약관",
+    "legalPrivacy": "개인정보 처리방침",
+    "legalCookies": "쿠키 정책",
+    "guestSubtitle": "로그인하여 장소를 저장하고 여행을 계획하세요"
   },
   "topNav": {
     "searchPlaceholder": "여행지, 플랜, 크리에이터 검색…",

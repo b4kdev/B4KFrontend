@@ -21,7 +21,13 @@
     "about": "About",
     "bottomNav": "Bottom navigation",
     "explore": "Explore",
-    "saved": "Saved"
+    "saved": "Saved",
+    "settings": "Settings",
+    "legal": "Legal",
+    "legalTerms": "Terms of Service",
+    "legalPrivacy": "Privacy Policy",
+    "legalCookies": "Cookie Policy",
+    "guestSubtitle": "Sign in to save places and plan trips"
   },
   "topNav": {
     "searchPlaceholder": "Pesquise roteiros, lugares, criadores…",

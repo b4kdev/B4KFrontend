@@ -4,14 +4,17 @@ import Image from 'next/image';
 import useSWR from 'swr';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useSession } from 'next-auth/react';
 import { Link } from '@/i18n/navigation';
-import { Home, Map, LayoutGrid, Bookmark, User, Bell, X } from 'lucide-react';
+import { Home, Map, LayoutGrid, Bookmark, User, Bell, LogIn } from 'lucide-react';
 import { fetcher } from '@/lib/fetcher';
+import { useAuthGate } from '@/contexts/AuthGateContext';
 
-interface SidebarProps {
-  mobileOpen: boolean;
-  onMobileClose: () => void;
-}
+// Desktop-only SideNav rail (SN_01–07). The mobile hamburger menu is a
+// separate component (MobileDrawer) per DEC-06 — this rail is hidden < lg.
+// TODO(L8): collapsible '>>' toggle deferred — expanding the rail would
+// require converting the hardcoded `lg:left-[50px]` content offset (used in
+// TopNav, MapView, ItineraryDetailView) to a shared variable; low priority.
 
 const NAV_ITEMS = [
   { href: '/',        icon: Home,        labelKey: 'home' },
@@ -20,9 +23,12 @@ const NAV_ITEMS = [
   { href: '/saved',   icon: Bookmark,    labelKey: 'saved' },
 ] as const;
 
-export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
+export default function Sidebar() {
   const t = useTranslations('nav');
   const pathname = usePathname();
+  const { status } = useSession();
+  const { open } = useAuthGate();
+  const isGuest = status === 'unauthenticated';
   const { data: unreadData } = useSWR<{ count: number }>(
     '/api/notifications/unread-count', fetcher, { refreshInterval: 60_000 },
   );
@@ -34,98 +40,88 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
     return segment === href || segment.startsWith(`${href}/`);
   };
 
-  const navLinkClass = (active: boolean) => [
-    'flex items-center rounded-none transition-colors duration-150',
-    'min-h-touch',
-    'lg:min-w-touch lg:justify-center',
-    'w-full gap-3 px-3 lg:px-0',
+  const railClass = (active: boolean) => [
+    'flex items-center justify-center min-w-touch min-h-touch rounded-none transition-colors duration-150',
     active ? 'bg-lav-dim text-lav' : 'text-muted hover:bg-muted-3 hover:text-fg',
   ].join(' ');
 
   return (
-    <>
-      {/* Mobile backdrop */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 bg-backdrop-50 z-[55] lg:hidden"
-          onClick={onMobileClose}
-        />
-      )}
+    <aside
+      className="hidden lg:flex fixed left-0 top-0 h-screen z-[60] flex-col w-[50px] bg-bg-2"
+      style={{ borderRight: 'var(--bdr)' }}
+    >
+      {/* Logo */}
+      <div className="flex items-center justify-center h-[50px] shrink-0" style={{ borderBottom: 'var(--bdr)' }}>
+        <Link href="/" className="flex items-center justify-center w-full h-full" aria-label={t('logoHome')}>
+          <Image src="/logo.svg" alt="B4K" width={28} height={26} className="object-contain" />
+        </Link>
+      </div>
 
-      {/* Rail */}
-      <aside
-        className={[
-          'fixed left-0 top-0 h-screen z-[60] flex flex-col',
-          'bg-bg-2',
-          'w-[280px] lg:w-[50px]',
-          'transition-transform duration-300 ease-out',
-          mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
-        ].join(' ')}
-        style={{ borderRight: 'var(--bdr)' }}
-      >
-        {/* Logo */}
-        <div className="flex items-center h-[50px] shrink-0" style={{ borderBottom: 'var(--bdr)' }}>
+      {/* Main nav */}
+      <nav className="flex flex-col gap-[2px] flex-1 px-[6px] pt-sp-3" aria-label={t('mainNavigation')}>
+        {NAV_ITEMS.map(({ href, icon: Icon, labelKey }) => (
           <Link
-            href="/"
-            className="flex items-center justify-center w-[50px] h-full shrink-0"
-            aria-label={t('logoHome')}
+            key={href}
+            href={href}
+            aria-label={t(labelKey)}
+            aria-current={isActive(href) ? 'page' : undefined}
+            className={railClass(isActive(href))}
           >
-            <Image src="/logo.svg" alt="B4K" width={28} height={26} className="object-contain" />
+            <Icon size={24} strokeWidth={2} className="shrink-0" />
           </Link>
-          <span className="lg:hidden flex-1 text-fg text-f-base font-semibold pl-2">Menu</span>
+        ))}
+      </nav>
+
+      {/* Bottom anchors: Notifications + Profile — M18: guests are gated (variant #6) */}
+      <div className="p-[6px] flex flex-col gap-[2px] shrink-0" style={{ borderTop: 'var(--bdr)' }}>
+        {isGuest ? (
           <button
-            className="lg:hidden min-w-touch min-h-touch flex items-center justify-center text-muted mr-1 shrink-0"
-            onClick={onMobileClose}
-            aria-label={t('menuClose')}
+            type="button"
+            aria-label={t('notifications')}
+            onClick={() => open('profile_nav')}
+            className={railClass(false)}
           >
-            <X size={24} strokeWidth={2} />
+            <Bell size={24} strokeWidth={2} />
           </button>
-        </div>
-
-        {/* Main nav */}
-        <nav className="flex flex-col gap-[2px] flex-1 px-[6px] pb-[6px] pt-sp-3" aria-label={t('mainNavigation')}>
-          {NAV_ITEMS.map(({ href, icon: Icon, labelKey }) => {
-            const active = isActive(href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                aria-label={t(labelKey)}
-                onClick={onMobileClose}
-                className={navLinkClass(active)}
-              >
-                <Icon size={24} strokeWidth={2} className="shrink-0" />
-                <span className="lg:hidden text-f-md font-medium">{t(labelKey)}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Bottom anchors: Notifications + Profile */}
-        <div className="p-[6px] flex flex-col gap-[2px] shrink-0" style={{ borderTop: 'var(--bdr)' }}>
+        ) : (
           <Link
             href="/notifications"
             aria-label={t('notifications')}
-            onClick={onMobileClose}
-            className={navLinkClass(isActive('/notifications'))}
+            aria-current={isActive('/notifications') ? 'page' : undefined}
+            className={railClass(isActive('/notifications'))}
           >
             <span className="relative shrink-0">
               <Bell size={24} strokeWidth={2} />
-              {hasUnread && <span className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] rounded-full bg-danger" aria-hidden="true" />}
+              {hasUnread && (
+                <span
+                  className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] rounded-full bg-danger"
+                  aria-hidden="true"
+                />
+              )}
             </span>
-            <span className="lg:hidden text-f-md font-medium">{t('notifications')}</span>
           </Link>
+        )}
+
+        {isGuest ? (
+          <button
+            type="button"
+            aria-label={t('signIn')}
+            onClick={() => open('profile_nav')}
+            className={railClass(false)}
+          >
+            <LogIn size={24} strokeWidth={2} />
+          </button>
+        ) : (
           <Link
             href="/profile"
             aria-label={t('profile')}
-            onClick={onMobileClose}
-            className={navLinkClass(isActive('/profile'))}
+            aria-current={isActive('/profile') ? 'page' : undefined}
+            className={railClass(isActive('/profile'))}
           >
             <User size={24} strokeWidth={2} className="shrink-0" />
-            <span className="lg:hidden text-f-md font-medium">{t('profile')}</span>
           </Link>
-        </div>
-      </aside>
-    </>
+        )}
+      </div>
+    </aside>
   );
 }

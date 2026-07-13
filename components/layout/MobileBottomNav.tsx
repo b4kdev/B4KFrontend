@@ -3,14 +3,14 @@
 import { usePathname } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { Home, Map, LayoutGrid, Bookmark, User } from 'lucide-react';
+import { Home, Map, LayoutGrid, Bookmark } from 'lucide-react';
 
+// H10 (DEC-06): Profile removed from the tab bar → lives in the hamburger drawer.
 const TABS = [
   { href: '/',        icon: Home,        labelKey: 'home' },
   { href: '/map',     icon: Map,         labelKey: 'map' },
   { href: '/explore', icon: LayoutGrid,  labelKey: 'explore' },
   { href: '/saved',   icon: Bookmark,    labelKey: 'saved' },
-  { href: '/profile', icon: User,        labelKey: 'profile' },
 ] as const;
 
 export default function MobileBottomNav() {

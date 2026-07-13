@@ -21,7 +21,13 @@
     "mainNavigation": "Main navigation",
     "logoHome": "B4K Home",
     "about": "About",
-    "bottomNav": "Bottom navigation"
+    "bottomNav": "Bottom navigation",
+    "settings": "Settings",
+    "legal": "Legal",
+    "legalTerms": "Terms of Service",
+    "legalPrivacy": "Privacy Policy",
+    "legalCookies": "Cookie Policy",
+    "guestSubtitle": "Sign in to save places and plan trips"
   },
   "topNav": {
     "searchPlaceholder": "Search itineraries, places, creators…",

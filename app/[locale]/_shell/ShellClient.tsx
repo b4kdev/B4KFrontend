@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { SessionProvider } from 'next-auth/react';
 import Sidebar from '@/components/layout/Sidebar';
+import MobileDrawer from '@/components/layout/MobileDrawer';
 import TopNav from '@/components/layout/TopNav';
 import MobileBottomNav from '@/components/layout/MobileBottomNav';
 import PageLayout from '@/components/layout/PageLayout';
@@ -20,10 +21,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <Sidebar
-        mobileOpen={mobileMenuOpen}
-        onMobileClose={() => setMobileMenuOpen(false)}
-      />
+      <Sidebar />
+      <MobileDrawer open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       <TopNav onMobileMenuOpen={() => setMobileMenuOpen(true)} />
       <MobileBottomNav />
       <PageLayout>{children}</PageLayout>
