@@ -644,7 +644,12 @@
       "savedToast": "Place saved!",
       "removedSave": "Removed from saved",
       "addedToast": "Added to plan",
-      "dismiss": "Close"
+      "dismiss": "Close",
+      "share": "Share",
+      "like": "Like",
+      "liked": "Liked",
+      "unlike": "Unlike",
+      "website": "Visit website"
     },
     "plan": {
       "title": "Your Plan",
@@ -711,7 +716,8 @@
       "signInToContinue": "Sign in to keep planning"
     },
     "planPill": {
-      "ariaLabel": "View your plan · {count} stops"
+      "ariaLabel": "View your plan · {count} stops",
+      "label": "Plan · {count} stops"
     }
   },
   "itinerary": {

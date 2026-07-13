@@ -48,8 +48,10 @@ export default function MapView() {
   const [aiOverlayOpen, setAiOverlayOpen] = useState(false)
   const [planStopIds, setPlanStopIds]     = useState<string[]>([])
   const [savedPoiIds, setSavedPoiIds]     = useState<Set<string>>(new Set())
+  const [likedPoiIds, setLikedPoiIds]     = useState<Set<string>>(new Set())
   const [stopDurations, setStopDurations] = useState<Record<string, number>>({})
   const [planSheetOpen, setPlanSheetOpen] = useState(false)
+  const [poiSheetSnap, setPoiSheetSnap]   = useState<'peek' | 'mid' | 'full'>('mid')
   const [loadedPlanPois, setLoadedPlanPois] = useState<MapPoi[]>([])
   const [draftConflict, setDraftConflict]   = useState<PendingPlan | null>(null)
   // DEC-29: naming sheet shown before publishing
@@ -282,6 +284,30 @@ export default function MapView() {
       .catch(() => {})
   }
 
+  function handleToggleLike(poi: MapPoi) {
+    if (!session) { openAuthGate('like'); return }
+    const removing = likedPoiIds.has(poi.place_id)
+    setLikedPoiIds(prev => {
+      const next = new Set(prev)
+      if (removing) next.delete(poi.place_id)
+      else next.add(poi.place_id)
+      return next
+    })
+    fetch('/api/likes/poi', {
+      method:  removing ? 'DELETE' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ place_id: poi.place_id }),
+    }).catch(() => {
+      // revert on failure
+      setLikedPoiIds(prev => {
+        const next = new Set(prev)
+        if (removing) next.add(poi.place_id)
+        else next.delete(poi.place_id)
+        return next
+      })
+    })
+  }
+
   function handleReorder(newOrder: string[]) {
     setPlanStopIds(newOrder)
   }
@@ -395,11 +421,13 @@ export default function MapView() {
           onAiOpen={() => setAiOverlayOpen(true)}
         />
 
-        {/* Plan Pill — mobile, when stops > 0 */}
-        <PlanPill
-          stopCount={planStopIds.length}
-          onTap={handlePlanPillTap}
-        />
+        {/* Plan Pill — mobile, when stops > 0; hidden while the POI sheet covers it (mid/full) */}
+        {!(selectedPoiId && !aiOverlayOpen && !planSheetOpen && poiSheetSnap !== 'peek') && (
+          <PlanPill
+            stopCount={planStopIds.length}
+            onTap={handlePlanPillTap}
+          />
+        )}
 
         {/* Mobile AI FAB — AI_01 */}
         {!aiOverlayOpen && (
@@ -429,11 +457,14 @@ export default function MapView() {
           poi={selectedPoi}
           isOpen={!!selectedPoiId && !aiOverlayOpen && !planSheetOpen}
           isSaved={savedPoiIds.has(selectedPoi.place_id)}
+          isLiked={likedPoiIds.has(selectedPoi.place_id)}
           isInPlan={planStopIds.includes(selectedPoi.place_id)}
           planFull={planStopIds.length >= MAX_STOPS}
           onAddToPlan={() => handleAddToPlan(selectedPoi.place_id)}
           onToggleSave={() => handleToggleSave(selectedPoi)}
+          onToggleLike={() => handleToggleLike(selectedPoi)}
           onDismiss={() => setSelectedPoiId(null)}
+          onSnapChange={setPoiSheetSnap}
         />
       )}
 

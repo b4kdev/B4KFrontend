@@ -1,20 +1,24 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { X, Heart, Plus, Check, Clock } from 'lucide-react'
+import { X, Heart, Plus, Check, Clock, Share2, MapPin, ExternalLink } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
+import { useBottomSheetSnap, type SheetSnap } from '@/hooks/useBottomSheetSnap'
 import type { MapPoi } from '@/hooks/useMapPois'
 
 interface Props {
   poi:          MapPoi
   isOpen:       boolean
   isSaved:      boolean
+  isLiked:      boolean
   isInPlan:     boolean
   planFull:     boolean
   onAddToPlan:  () => void
   onToggleSave: () => void
+  onToggleLike: () => void
   onDismiss:    () => void
+  onSnapChange?: (snap: SheetSnap) => void
 }
 
 function formatCount(n: number): string {
@@ -22,20 +26,19 @@ function formatCount(n: number): string {
 }
 
 export default function POIBottomSheet({
-  poi, isOpen, isSaved, isInPlan, planFull, onAddToPlan, onToggleSave, onDismiss,
+  poi, isOpen, isSaved, isLiked, isInPlan, planFull,
+  onAddToPlan, onToggleSave, onToggleLike, onDismiss, onSnapChange,
 }: Props) {
   const t = useTranslations('map.poiDetail')
-  const sheetRef = useRef<HTMLDivElement>(null)
   const addDisabled = planFull && !isInPlan
+  const name = getDisplayName(poi)
 
-  // Trap focus when open
-  useEffect(() => {
-    if (!isOpen) return
-    const el = sheetRef.current
-    if (!el) return
-    const firstFocusable = el.querySelector<HTMLElement>('button, [tabindex="0"]')
-    firstFocusable?.focus()
-  }, [isOpen, poi])
+  const { sheetRef, snap, handleProps, sheetStyle } = useBottomSheetSnap({
+    open: isOpen,
+    initialSnap: 'mid',
+    onDismiss,
+    onSnapChange,
+  })
 
   // Close on Escape
   useEffect(() => {
@@ -47,61 +50,71 @@ export default function POIBottomSheet({
     return () => document.removeEventListener('keydown', onKey)
   }, [isOpen, onDismiss])
 
-  const name = getDisplayName(poi)
+  async function handleShare() {
+    const url = `${window.location.origin}/map?poi=${poi.place_id}`
+    try {
+      if (navigator.share) await navigator.share({ title: name, url })
+      else await navigator.clipboard.writeText(url)
+    } catch { /* user cancelled share / clipboard blocked — no-op */ }
+  }
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop — only at mid/full; peek keeps the map interactive */}
       <div
         className={[
           'lg:hidden fixed inset-0 z-30 transition-opacity duration-200',
-          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
+          isOpen && snap !== 'peek' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
         ].join(' ')}
         style={{ background: 'var(--backdrop-50)' }}
         aria-hidden="true"
         onClick={onDismiss}
       />
 
-      {/* Sheet */}
+      {/* Sheet — 3-snap (peek/mid/full) */}
       <div
         ref={sheetRef}
         role="dialog"
-        aria-modal="true"
+        aria-modal={snap !== 'peek'}
         aria-label={name}
-        className={[
-          'lg:hidden fixed bottom-14 left-0 right-0 z-40',
-          'bg-bg-2 rounded-t-2xl transition-transform duration-300 ease-out',
-          isOpen ? 'translate-y-0' : 'translate-y-full',
-        ].join(' ')}
-        style={{ borderTop: '1px solid var(--bdr)' }}
+        className="lg:hidden fixed bottom-14 left-0 right-0 z-40 h-[85vh] flex flex-col bg-bg-2 rounded-none"
+        style={{ ...sheetStyle, borderTop: '1px solid var(--bdr)' }}
       >
-        {/* Drag handle indicator */}
-        <div className="flex justify-center pt-sp-2 pb-sp-1" aria-hidden="true">
-          <div className="w-8 h-1 rounded-full bg-muted-2" />
+        {/* Peek zone: drag handle + header (title + Share + dismiss) — owns the gesture */}
+        <div className="shrink-0" style={{ touchAction: 'none' }} {...handleProps}>
+          <div className="flex justify-center pt-sp-2 pb-sp-1" aria-hidden="true">
+            <div className="w-8 h-1 rounded-full bg-muted-2" />
+          </div>
+          <div className="flex items-center gap-sp-2 px-sp-4 pb-sp-2 min-h-touch">
+            <h2 className="flex-1 text-fg font-display font-bold text-f-2xl leading-tight truncate">
+              {name}
+            </h2>
+            <button
+              onClick={handleShare}
+              aria-label={t('share')}
+              className="min-w-touch min-h-touch flex items-center justify-center text-muted hover:text-fg transition-colors shrink-0"
+            >
+              <Share2 size={18} strokeWidth={2} />
+            </button>
+            <button
+              onClick={onDismiss}
+              aria-label={t('dismiss')}
+              className="min-w-touch min-h-touch flex items-center justify-center text-muted hover:text-fg transition-colors shrink-0"
+            >
+              <X size={18} strokeWidth={2} />
+            </button>
+          </div>
         </div>
 
-        {/* Dismiss button */}
-        <button
-          onClick={onDismiss}
-          aria-label={t('dismiss')}
-          className="absolute top-sp-3 right-sp-3 min-w-touch min-h-touch flex items-center justify-center text-muted hover:text-fg transition-colors"
+        {/* Scrollable body — revealed at mid (CTAs) and full (detail) */}
+        <div
+          className="flex-1 overflow-y-auto px-sp-4 pb-sp-6"
+          style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}
         >
-          <X size={18} strokeWidth={2} />
-        </button>
-
-        <div className="px-sp-4 pb-sp-6">
-
-          {/* Sponsored label */}
+          {/* Sponsored */}
           {poi.is_partner && (
-            <p className="text-f-xxs text-muted uppercase tracking-widest mb-sp-1">
-              {t('sponsored')}
-            </p>
+            <p className="text-f-xxs text-muted uppercase tracking-widest mb-sp-2">{t('sponsored')}</p>
           )}
-
-          {/* POI name */}
-          <h2 className="text-fg font-display font-bold text-xl leading-tight line-clamp-2 mb-sp-3 pr-sp-8">
-            {name}
-          </h2>
 
           {/* Save count (DEC-31: no ratings) */}
           {poi.save_count != null && poi.save_count > 0 && (
@@ -112,15 +125,15 @@ export default function POIBottomSheet({
 
           {/* Domain chip + region + open status */}
           <div className="flex flex-wrap items-center gap-sp-2 mb-sp-3">
-            <span className="px-sp-2 py-0.5 rounded-full bg-lav-dim text-lav text-xs font-medium">
+            <span className="px-sp-2 py-0.5 rounded-full bg-lav-dim text-lav text-f-xs font-medium">
               {poi.display_domain}
             </span>
             {poi.display_region_detail && (
-              <span className="text-muted text-xs">{poi.display_region_detail}</span>
+              <span className="text-muted text-f-xs">{poi.display_region_detail}</span>
             )}
             {poi.is_open != null && (
               <span
-                className={`text-xs font-medium ${poi.is_open ? 'text-success' : 'text-danger'}`}
+                className={`text-f-xs font-medium ${poi.is_open ? 'text-success' : 'text-danger'}`}
                 aria-label={poi.is_open ? t('openNow') : t('closed')}
               >
                 {poi.is_open ? t('openNow') : t('closed')}
@@ -130,24 +143,21 @@ export default function POIBottomSheet({
 
           {/* Hours */}
           {poi.hours_open && poi.hours_close && (
-            <div className="flex items-center gap-sp-2 text-muted text-xs mb-sp-4">
+            <div className="flex items-center gap-sp-2 text-muted text-f-xs mb-sp-4">
               <Clock size={12} strokeWidth={2} aria-hidden="true" />
               <span>{poi.hours_open}–{poi.hours_close}</span>
             </div>
           )}
 
-          {/* CTAs */}
+          {/* CTAs — mid snap (S-DEVEQK): Add to Plan · Save · Like */}
           <div className="flex flex-col gap-sp-3">
-
-            {/* Add to Plan — D02 mobile override */}
             <button
               onClick={onAddToPlan}
               disabled={addDisabled}
               aria-disabled={addDisabled}
               title={addDisabled ? t('planFull') : undefined}
               className={[
-                'w-full min-h-touch flex items-center justify-center gap-sp-2',
-                'rounded-xl font-semibold text-sm transition-all',
+                'w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-none font-semibold text-f-sm transition-all',
                 isInPlan
                   ? 'bg-lav-dim text-lav cursor-default'
                   : addDisabled
@@ -157,30 +167,65 @@ export default function POIBottomSheet({
             >
               {isInPlan
                 ? <><Check size={16} strokeWidth={2} aria-hidden="true" />{t('added')}</>
-                : <><Plus  size={16} strokeWidth={2} aria-hidden="true" />{t('addToPlan')}</>
-              }
+                : <><Plus  size={16} strokeWidth={2} aria-hidden="true" />{t('addToPlan')}</>}
             </button>
 
-            {/* Save */}
-            <button
-              onClick={onToggleSave}
-              aria-label={isSaved ? t('unsave') : t('save')}
-              aria-pressed={isSaved}
-              className="w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-xl text-sm font-medium transition-colors bg-overlay-10 hover:bg-muted-3"
-              style={{ border: '1px solid var(--bdr)' }}
-            >
-              <Heart
-                size={16}
-                strokeWidth={2}
-                fill={isSaved ? 'currentColor' : 'none'}
-                className={isSaved ? 'text-danger' : 'text-muted'}
-                aria-hidden="true"
-              />
-              <span className={isSaved ? 'text-fg' : 'text-muted'}>
-                {isSaved ? t('saved') : t('save')}
-              </span>
-            </button>
+            <div className="flex gap-sp-3">
+              <button
+                onClick={onToggleSave}
+                aria-label={isSaved ? t('unsave') : t('save')}
+                aria-pressed={isSaved}
+                className="flex-1 min-h-touch flex items-center justify-center gap-sp-2 rounded-none text-f-sm font-medium transition-colors bg-overlay-10 hover:bg-muted-3"
+                style={{ border: '1px solid var(--bdr)' }}
+              >
+                <Heart
+                  size={16} strokeWidth={2}
+                  fill={isSaved ? 'currentColor' : 'none'}
+                  className={isSaved ? 'text-danger' : 'text-muted'}
+                  aria-hidden="true"
+                />
+                <span className={isSaved ? 'text-fg' : 'text-muted'}>{isSaved ? t('saved') : t('save')}</span>
+              </button>
+
+              <button
+                onClick={onToggleLike}
+                aria-label={isLiked ? t('unlike') : t('like')}
+                aria-pressed={isLiked}
+                className="flex-1 min-h-touch flex items-center justify-center gap-sp-2 rounded-none text-f-sm font-medium transition-colors bg-overlay-10 hover:bg-muted-3"
+                style={{ border: '1px solid var(--bdr)' }}
+              >
+                <Heart
+                  size={16} strokeWidth={2}
+                  fill={isLiked ? 'currentColor' : 'none'}
+                  className={isLiked ? 'text-lav' : 'text-muted'}
+                  aria-hidden="true"
+                />
+                <span className={isLiked ? 'text-fg' : 'text-muted'}>{isLiked ? t('liked') : t('like')}</span>
+              </button>
+            </div>
           </div>
+
+          {/* Full snap: description + address + website */}
+          {poi.description && (
+            <p className="text-fg text-f-sm leading-relaxed mt-sp-5">{poi.description}</p>
+          )}
+          {poi.address && (
+            <div className="flex items-start gap-sp-2 text-muted text-f-xs mt-sp-4">
+              <MapPin size={14} strokeWidth={2} aria-hidden="true" className="shrink-0 mt-0.5" />
+              <span>{poi.address}</span>
+            </div>
+          )}
+          {poi.website_url && /^https?:\/\//.test(poi.website_url) && (
+            <a
+              href={poi.website_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-sp-2 text-lav text-f-sm font-medium mt-sp-4 min-h-touch"
+            >
+              <ExternalLink size={14} strokeWidth={2} aria-hidden="true" />
+              {t('website')}
+            </a>
+          )}
         </div>
       </div>
     </>

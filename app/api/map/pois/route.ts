@@ -17,6 +17,10 @@ export interface MapPoi {
   is_open?: boolean
   hours_open?: string
   hours_close?: string
+  // Full-snap detail (POIBottomSheet full state, S-DEVEQK)
+  description?: string
+  address?: string
+  website_url?: string
 }
 
 // Stub: replace with Supabase query against service.places_snapshot when API is ready
@@ -45,6 +49,15 @@ export async function GET(req: NextRequest) {
   let pois = [...MOCK_POIS]
   if (region)          pois = pois.filter(p => p.display_region === region)
   if (categories.length > 0) pois = pois.filter(p => categories.includes(p.display_domain))
+
+  // Enrich with full-snap detail (mock — real values come from
+  // service.places_snapshot.description / address / extra_info).
+  pois = pois.map(p => ({
+    ...p,
+    description: p.description
+      ?? `${p.name_en} is a popular ${p.display_domain.toLowerCase().replace(/s$/, '')} in ${p.display_region}, a favourite stop for visitors exploring the area.`,
+    address: p.address ?? `${p.display_region_detail ?? ''}, ${p.display_region}, South Korea`.replace(/^, /, ''),
+  }))
 
   return NextResponse.json({ pois })
 }

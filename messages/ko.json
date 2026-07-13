@@ -682,7 +682,12 @@
       "savedToast": "장소가 저장되었습니다!",
       "removedSave": "저장이 취소되었습니다",
       "addedToast": "플랜에 추가되었습니다",
-      "dismiss": "닫기"
+      "dismiss": "닫기",
+      "share": "공유",
+      "like": "좋아요",
+      "liked": "좋아요됨",
+      "unlike": "좋아요 취소",
+      "website": "웹사이트 방문"
     },
     "plan": {
       "title": "내 플랜",
@@ -749,7 +754,8 @@
       "signInToContinue": "계속하려면 로그인하세요"
     },
     "planPill": {
-      "ariaLabel": "플랜 보기 · {count}개 장소"
+      "ariaLabel": "플랜 보기 · {count}개 장소",
+      "label": "플랜 · {count}개 장소"
     }
   },
   "itinerary": {
