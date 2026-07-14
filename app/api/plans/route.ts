@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { MOCK_PLANS } from '@/lib/mock/plans-list'
 
 export interface PlanStop {
   poi_id:      string
@@ -19,25 +20,6 @@ export interface Plan {
 export interface PlansData {
   plans: Plan[]
 }
-
-export const MOCK_PLANS: Plan[] = [
-  {
-    id:          'plan-001',
-    title:       'Seoul Highlights',
-    stop_count:  4,
-    is_published: true,
-    is_partner:  false,
-    created_at:  new Date(Date.now() - 86400000 * 2).toISOString(),
-  },
-  {
-    id:          'plan-002',
-    title:       'Bukchon & Insadong Walk',
-    stop_count:  3,
-    is_published: false,
-    is_partner:  false,
-    created_at:  new Date(Date.now() - 86400000 * 5).toISOString(),
-  },
-]
 
 export async function GET() {
   return NextResponse.json({ plans: MOCK_PLANS })

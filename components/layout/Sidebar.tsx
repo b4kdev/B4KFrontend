@@ -59,17 +59,22 @@ export default function Sidebar() {
 
       {/* Main nav */}
       <nav className="flex flex-col gap-[2px] flex-1 px-[6px] pt-sp-3" aria-label={t('mainNavigation')}>
-        {NAV_ITEMS.map(({ href, icon: Icon, labelKey }) => (
-          <Link
-            key={href}
-            href={href}
-            aria-label={t(labelKey)}
-            aria-current={isActive(href) ? 'page' : undefined}
-            className={railClass(isActive(href))}
-          >
-            <Icon size={24} strokeWidth={2} className="shrink-0" />
-          </Link>
-        ))}
+        {NAV_ITEMS.map(({ href, icon: Icon, labelKey }) => {
+          // SC-31 (S-HDTVGP) — already on /map: keep map context, open the
+          // embedded Saved Hub instead of navigating to the standalone page.
+          const target = href === '/saved' && isActive('/map') ? '/map?saved=1' : href;
+          return (
+            <Link
+              key={href}
+              href={target}
+              aria-label={t(labelKey)}
+              aria-current={isActive(href) ? 'page' : undefined}
+              className={railClass(isActive(href))}
+            >
+              <Icon size={24} strokeWidth={2} className="shrink-0" />
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Bottom anchors: Notifications + Profile — M18: guests are gated (variant #6) */}

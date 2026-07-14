@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { routing } from '@/i18n/routing'
 import { SITE_URL, hreflangAlternates } from '@/lib/site-url'
-import { MOCK_PLANS } from '@/app/api/plans/route'
+import { MOCK_PLANS } from '@/lib/mock/plans-list'
 
 // SC-28 (F-DGWQGW) — Home, Explore hubs, static public pages, and published
 // plans. Excludes /profile/*, /notifications, drafts, /plan/preview (never
