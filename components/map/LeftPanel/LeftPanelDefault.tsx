@@ -1,19 +1,41 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { MapPin, Bookmark, AlertTriangle } from 'lucide-react'
+import { getDisplayName } from '@/lib/display-name'
+import type { MapPoi } from '@/hooks/useMapPois'
 
 const REGIONS   = ['Seoul', 'Busan', 'Jeju', 'Incheon', 'Gyeongju'] as const
 const CATEGORIES = ['Palaces', 'Temples', 'Cafes', 'Parks', 'Restaurants', 'Hotels', 'Shopping', 'Museums'] as const
 
+// SC-30 (LP_01–10, S-ZKAIGJ) — cold-start fallback is popular POIs (no
+// behavior-signal tracking exists yet), so mock ranking = quality_score desc.
+const RECOMMENDED_COUNT = 8
+
+function formatCount(n: number) {
+  return n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n)
+}
+
 interface Props {
+  pois:           MapPoi[]
+  isLoading:      boolean
+  isError:        boolean
   activeRegion:   string | null
   activeFilters:  string[]
   onRegionToggle: (region: string) => void
   onFilterToggle: (filter: string) => void
+  isSaved:        (id: string) => boolean
+  onSelectPoi:    (id: string) => void
+  onToggleSave:   (poi: MapPoi) => void
 }
 
-export default function LeftPanelDefault({ activeRegion, activeFilters, onRegionToggle, onFilterToggle }: Props) {
+export default function LeftPanelDefault({
+  pois, isLoading, isError,
+  activeRegion, activeFilters, onRegionToggle, onFilterToggle,
+  isSaved, onSelectPoi, onToggleSave,
+}: Props) {
   const t = useTranslations('map')
+  const recommended = [...pois].sort((a, b) => b.quality_score - a.quality_score).slice(0, RECOMMENDED_COUNT)
 
   return (
     <div className="flex flex-col h-full overflow-y-auto themed-scrollbar">
@@ -73,6 +95,86 @@ export default function LeftPanelDefault({ activeRegion, activeFilters, onRegion
             )
           })}
         </div>
+      </div>
+
+      {/* LP_04–10 — Recommended POI list (S-ZKAIGJ: cold-start = popular fallback) */}
+      <div className="p-sp-4 flex-1">
+        <p className="text-f-xxs font-semibold uppercase tracking-widest text-muted mb-sp-3">
+          {t('recommended.title')}
+        </p>
+
+        {isLoading && (
+          <div className="flex flex-col gap-sp-2" aria-hidden="true">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex gap-sp-2 animate-pulse">
+                <div className="w-12 h-12 shrink-0 bg-muted-3" />
+                <div className="flex-1 flex flex-col gap-1 justify-center">
+                  <div className="h-[12px] w-4/5 bg-muted-3" />
+                  <div className="h-[10px] w-1/2 bg-muted-3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!isLoading && isError && (
+          <div className="flex flex-col items-center text-center gap-sp-2 py-sp-6">
+            <AlertTriangle size={20} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+            <p className="text-f-xs text-muted">{t('recommended.error')}</p>
+          </div>
+        )}
+
+        {!isLoading && !isError && recommended.length === 0 && (
+          <p className="text-f-xs text-muted py-sp-4 text-center">{t('recommended.empty')}</p>
+        )}
+
+        {!isLoading && !isError && recommended.length > 0 && (
+          <div className="flex flex-col gap-1">
+            {recommended.map(poi => {
+              const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
+              const saved = isSaved(poi.place_id)
+              return (
+                <div
+                  key={poi.place_id}
+                  className="flex items-center gap-sp-2 py-1 hover:bg-overlay-10 transition-colors"
+                >
+                  <button
+                    onClick={() => onSelectPoi(poi.place_id)}
+                    className="flex items-center gap-sp-2 flex-1 min-w-0 text-left"
+                    aria-label={t('recommended.cardAriaLabel', { name, region: poi.display_region })}
+                  >
+                    <span className="w-12 h-12 shrink-0 bg-bg-3 flex items-center justify-center overflow-hidden">
+                      <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                    </span>
+                    <span className="flex-1 min-w-0 flex flex-col gap-[2px]">
+                      <span className="text-f-sm font-medium text-fg leading-snug line-clamp-1">{name}</span>
+                      <span className="flex items-center gap-[3px] text-f-xxs text-muted">
+                        <MapPin size={9} strokeWidth={2} aria-hidden="true" />
+                        <span className="line-clamp-1">{poi.display_region}</span>
+                        <span aria-hidden="true">·</span>
+                        <span className="tabular-nums">{formatCount(poi.save_count ?? 0)}</span>
+                      </span>
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => onToggleSave(poi)}
+                    aria-pressed={saved}
+                    aria-label={saved ? t('recommended.unsave') : t('recommended.save')}
+                    className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full hover:bg-overlay-10 transition-colors"
+                  >
+                    <Bookmark
+                      size={16}
+                      strokeWidth={2}
+                      className={saved ? 'text-lav' : 'text-muted-2'}
+                      fill={saved ? 'currentColor' : 'none'}
+                      aria-hidden="true"
+                    />
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
     </div>
   )

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { signIn } from 'next-auth/react';
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 import { X, Mail, MailCheck, Route } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useAuthGate } from '@/contexts/AuthGateContext';
@@ -144,8 +144,9 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
 
     setStatus('loading');
     try {
-      const res = await signIn('credentials', { email, password, redirect: false });
-      if (res?.ok) {
+      const supabase = createSupabaseBrowserClient();
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (!signInError) {
         executePendingAction();
         onDismiss();
       } else {
@@ -199,12 +200,18 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
     setStatus('idle');
   }
 
-  async function handleOAuth(provider: 'google' | 'apple' | 'azure-ad') {
+  async function handleOAuth(provider: 'google' | 'apple' | 'azure') {
     setError(null);
     setStatus('loading');
     try {
       persistPendingAction(); // L9 — survive the OAuth redirect
-      await signIn(provider);
+      const supabase = createSupabaseBrowserClient();
+      const redirectTo = `${window.location.origin}/auth/callback`;
+      if (provider === 'azure') {
+        await supabase.auth.signInWithOAuth({ provider: 'azure', options: { scopes: 'email', redirectTo } });
+      } else {
+        await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
+      }
     } catch {
       setError('error');
       setStatus('idle');
@@ -330,7 +337,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
 
               {/* Microsoft */}
               <button
-                onClick={() => handleOAuth('azure-ad')}
+                onClick={() => handleOAuth('azure')}
                 disabled={status === 'loading'}
                 className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
                 style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)', color: 'var(--fg)' }}

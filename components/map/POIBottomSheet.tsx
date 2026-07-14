@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { X, Heart, Plus, Check, Clock, Share2, MapPin, ExternalLink } from 'lucide-react'
+import { X, Heart, Plus, Check, Clock, Share2, MapPin, ExternalLink, ImageOff } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { useBottomSheetSnap, type SheetSnap } from '@/hooks/useBottomSheetSnap'
 import type { MapPoi } from '@/hooks/useMapPois'
@@ -111,6 +111,16 @@ export default function POIBottomSheet({
           className="flex-1 overflow-y-auto px-sp-4 pb-sp-6"
           style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}
         >
+          {/* LP_11-16 — Media (primary image, placeholder if none) */}
+          <div className="-mx-sp-4 mb-sp-3 bg-bg-3 flex items-center justify-center overflow-hidden" style={{ aspectRatio: '16/9' }}>
+            {poi.primary_image_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={poi.primary_image_url} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <ImageOff size={28} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+            )}
+          </div>
+
           {/* Sponsored */}
           {poi.is_partner && (
             <p className="text-f-xxs text-muted uppercase tracking-widest mb-sp-2">{t('sponsored')}</p>

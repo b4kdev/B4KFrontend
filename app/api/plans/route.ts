@@ -20,7 +20,7 @@ export interface PlansData {
   plans: Plan[]
 }
 
-const MOCK_PLANS: Plan[] = [
+export const MOCK_PLANS: Plan[] = [
   {
     id:          'plan-001',
     title:       'Seoul Highlights',

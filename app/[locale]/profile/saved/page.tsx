@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/contexts/AuthContext'
 import useSWR from 'swr'
 import { MapPin } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
@@ -14,10 +14,10 @@ interface SavedResponse {
 
 export default function ProfileSavedPage() {
   const t = useTranslations('profile')
-  const { data: session } = useSession()
+  const { user } = useAuth()
 
   const { data, isLoading, error, mutate } = useSWR<SavedResponse>(
-    session ? '/api/profile/saved' : null,
+    user ? '/api/profile/saved' : null,
     fetcher
   )
 

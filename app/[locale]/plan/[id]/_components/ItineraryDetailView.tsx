@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/contexts/AuthContext'
 import { RefreshCw, Lock, Route, Trash2, AlertTriangle, Loader2 } from 'lucide-react'
 import { useRouter } from '@/i18n/navigation'
 import { useItinerary } from '@/hooks/useItinerary'
@@ -31,7 +31,7 @@ function stopsToMapPois(detail: ItineraryDetail): MapPoi[] {
 
 export default function ItineraryDetailView({ id }: { id: string }) {
   const t = useTranslations('itinerary')
-  const { data: session } = useSession()
+  const { user } = useAuth()
   const { open: openAuthGate } = useAuthGate()
   const { showToast } = useToast()
   const router = useRouter()
@@ -60,7 +60,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
   }, [])
 
   const handleLike = useCallback(() => {
-    if (!session) { openAuthGate('like'); return }
+    if (!user) { openAuthGate('like'); return }
     const next = !isLiked
     setLikedOverride(next)
     showToast(next ? t('actions.likedToast') : t('actions.unlikedToast'))
@@ -71,10 +71,10 @@ export default function ItineraryDetailView({ id }: { id: string }) {
     })
       .then(() => mutate())
       .catch(() => {})
-  }, [session, isLiked, openAuthGate, showToast, t, id, mutate])
+  }, [user, isLiked, openAuthGate, showToast, t, id, mutate])
 
   const handleSave = useCallback(() => {
-    if (!session) { openAuthGate('save_plan_other'); return }
+    if (!user) { openAuthGate('save_plan_other'); return }
     const next = !isSaved
     setSavedOverride(next)
     showToast(next ? t('actions.savedToast') : t('actions.unsavedToast'))
@@ -85,7 +85,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
     })
       .then(() => mutate())
       .catch(() => {})
-  }, [session, isSaved, openAuthGate, showToast, t, id, mutate])
+  }, [user, isSaved, openAuthGate, showToast, t, id, mutate])
 
   const handleShare = useCallback(async () => {
     if (typeof window === 'undefined') return

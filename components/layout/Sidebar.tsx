@@ -4,7 +4,7 @@ import Image from 'next/image';
 import useSWR from 'swr';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Link } from '@/i18n/navigation';
 import { Home, Map, LayoutGrid, Bookmark, User, Bell, LogIn } from 'lucide-react';
 import { fetcher } from '@/lib/fetcher';
@@ -26,9 +26,9 @@ const NAV_ITEMS = [
 export default function Sidebar() {
   const t = useTranslations('nav');
   const pathname = usePathname();
-  const { status } = useSession();
+  const { session, loading } = useAuth();
   const { open } = useAuthGate();
-  const isGuest = status === 'unauthenticated';
+  const isGuest = !loading && !session;
   const { data: unreadData } = useSWR<{ count: number }>(
     '/api/notifications/unread-count', fetcher, { refreshInterval: 60_000 },
   );

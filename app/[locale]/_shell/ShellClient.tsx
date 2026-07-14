@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { SessionProvider } from 'next-auth/react';
+import { AuthProvider } from '@/contexts/AuthContext';
 import Sidebar from '@/components/layout/Sidebar';
 import MobileDrawer from '@/components/layout/MobileDrawer';
 import TopNav from '@/components/layout/TopNav';
@@ -44,12 +44,12 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
 export default function ShellClient({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
+    <AuthProvider>
       <AuthGateProvider>
         <ToastProvider>
           <ShellInner>{children}</ShellInner>
         </ToastProvider>
       </AuthGateProvider>
-    </SessionProvider>
+    </AuthProvider>
   );
 }

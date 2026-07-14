@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/contexts/AuthContext'
 import { Link } from '@/i18n/navigation'
 import { TrendingUp, MapPin, Bookmark, Heart, ExternalLink } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
@@ -11,7 +11,7 @@ import type { ExplorePoi } from '@/app/api/explore/[category]/route'
 
 export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
   const t = useTranslations('explore')
-  const { data: session } = useSession()
+  const { user } = useAuth()
   const { open: openAuthGate } = useAuthGate()
 
   const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
@@ -34,7 +34,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
   const handleSave = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (!session) { openAuthGate('save_poi'); return }
+    if (!user) { openAuthGate('save_poi'); return }
     const next = !saved
     setSaved(next)
     await fetch('/api/saved/poi', {
@@ -42,12 +42,12 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ place_id: poi.place_id }),
     }).catch(() => setSaved(!next))
-  }, [session, saved, openAuthGate, poi.place_id])
+  }, [user, saved, openAuthGate, poi.place_id])
 
   const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (!session) { openAuthGate('like'); return }
+    if (!user) { openAuthGate('like'); return }
     const next = !liked
     setLiked(next)
     await fetch('/api/likes/poi', {
@@ -55,7 +55,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ place_id: poi.place_id }),
     }).catch(() => setLiked(!next))
-  }, [session, liked, openAuthGate, poi.place_id])
+  }, [user, liked, openAuthGate, poi.place_id])
 
   return (
     <article

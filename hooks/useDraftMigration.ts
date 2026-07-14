@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/contexts/AuthContext';
 import { getDraftPlan, clearDraftPlan, type DraftPlan } from '@/lib/draft-plan';
 import type { PlanDraft } from '@/app/api/plans/draft/route';
 import type { DraftMeta } from '@/components/auth/DraftConflictModal';
@@ -20,12 +20,12 @@ export interface PostLoginConflict {
 // side — caller renders DraftConflictModal and calls resolveKeepDevice /
 // resolveKeepAccount once the user picks.
 export function useDraftMigration() {
-  const { status } = useSession();
+  const { user, loading } = useAuth();
   const attempted = useRef(false);
   const [conflict, setConflict] = useState<PostLoginConflict | null>(null);
 
   useEffect(() => {
-    if (status !== 'authenticated' || attempted.current) return;
+    if (!user || loading || attempted.current) return;
     attempted.current = true;
 
     const localDraft = getDraftPlan();
@@ -53,7 +53,7 @@ export function useDraftMigration() {
         });
       })
       .catch(() => { /* silent — draft stays in localStorage for next session */ });
-  }, [status]);
+  }, [user, loading]);
 
   // Pick local draft: hard-delete the DB draft, migrate local → DB, clear local.
   const resolveKeepDevice = useCallback(() => {

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { useSearchParams } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/contexts/AuthContext'
 import { Sparkles, AlertTriangle } from 'lucide-react'
 import NaverMapCanvas from './NaverMapCanvas'
 import LeftPanel from './LeftPanel/index'
@@ -40,7 +40,7 @@ export default function MapView() {
   const t = useTranslations('map')
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { data: session } = useSession()
+  const { session } = useAuth()
   const { open: openAuthGate } = useAuthGate()
   const { showToast } = useToast()
 
@@ -80,7 +80,7 @@ export default function MapView() {
   // DEC-33 T1: track whether draft-conflict check has been resolved this session
   const t1CheckedRef    = useRef(false)
 
-  const { pois } = useMapPois(activeRegion, activeFilters)
+  const { pois, isLoading: poisLoading, isError: poisError } = useMapPois(activeRegion, activeFilters)
   const { data: savedData, mutate: mutateSaved } = useSaved()
 
   // Restore draft plan on mount — skip if a specific plan is being loaded via ?plan param
@@ -490,6 +490,9 @@ export default function MapView() {
           activeDay={activeDay}
           onDayChange={setActiveDay}
           onClosePoi={() => setSelectedPoiId(null)}
+          onSelectPoi={setSelectedPoiId}
+          poisLoading={poisLoading}
+          poisError={poisError}
         />
       </aside>
 

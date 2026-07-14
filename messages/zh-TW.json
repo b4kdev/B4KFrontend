@@ -642,7 +642,7 @@
       "closed": "Closed",
       "addToPlan": "Add to Plan",
       "added": "Added ✓",
-      "planFull": "Maximum 10 stops reached",
+      "planFull": "Maximum 40 stops reached",
       "save": "Save",
       "saved": "Saved",
       "unsave": "Remove from saved",
@@ -736,6 +736,14 @@
       "ariaLabel": "View your plan · {count} stops",
       "label": "Plan · {count} stops",
       "aiLabel": "AI Plan · {count} stops"
+    },
+    "recommended": {
+      "title": "Popular Spots",
+      "empty": "No spots match your filters",
+      "error": "Couldn't load recommendations",
+      "save": "Save",
+      "unsave": "Remove from saved",
+      "cardAriaLabel": "{name}, {region}"
     }
   },
   "itinerary": {

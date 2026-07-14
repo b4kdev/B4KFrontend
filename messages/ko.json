@@ -642,7 +642,7 @@
       "closed": "영업 종료",
       "addToPlan": "플랜에 추가",
       "added": "추가됨 ✓",
-      "planFull": "최대 10개 정류장에 도달했습니다",
+      "planFull": "최대 40개 정류장에 도달했습니다",
       "save": "저장",
       "saved": "저장됨",
       "unsave": "저장 취소",
@@ -736,6 +736,14 @@
       "ariaLabel": "플랜 보기 · {count}개 장소",
       "label": "플랜 · {count}개 장소",
       "aiLabel": "AI 플랜 · {count}곳"
+    },
+    "recommended": {
+      "title": "인기 명소",
+      "empty": "필터에 맞는 장소가 없어요",
+      "error": "추천을 불러오지 못했어요",
+      "save": "저장",
+      "unsave": "저장 취소",
+      "cardAriaLabel": "{name}, {region}"
     }
   },
   "itinerary": {

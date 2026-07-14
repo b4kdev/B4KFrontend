@@ -4,7 +4,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import useSWR from 'swr';
 import { useTranslations } from 'next-intl';
-import { useSession, signOut } from 'next-auth/react';
+import { useAuth } from '@/contexts/AuthContext';
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import {
   Bell, Settings, Globe, HelpCircle, FileText, LogIn, LogOut, User, X, ChevronRight,
@@ -31,7 +32,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
   const tProfile = useTranslations('profile');
   const pathname = usePathname();
   const router = useRouter();
-  const { status } = useSession();
+  const { session, loading } = useAuth();
   const { data: profile } = useProfile();
   const { open: openGate } = useAuthGate();
   const { data: unreadData } = useSWR<{ count: number }>(
@@ -42,8 +43,8 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
   const [langExpanded, setLangExpanded] = useState(false);
   const [legalExpanded, setLegalExpanded] = useState(false);
 
-  const isLoading = status === 'loading';
-  const isGuest = status === 'unauthenticated';
+  const isLoading = loading;
+  const isGuest = !loading && !session;
 
   const rowClass =
     'flex items-center gap-sp-3 w-full min-h-touch px-sp-4 text-f-base font-medium text-fg hover:bg-muted-3 transition-colors';
@@ -229,7 +230,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
             <button
               type="button"
               className="flex items-center gap-sp-3 w-full min-h-touch px-sp-4 text-f-base font-medium text-danger hover:bg-muted-3 transition-colors"
-              onClick={() => { onClose(); signOut({ callbackUrl: '/' }); }}
+              onClick={async () => { onClose(); await createSupabaseBrowserClient().auth.signOut(); router.push('/'); }}
             >
               <LogOut size={22} strokeWidth={2} className="shrink-0" />
               <span className="flex-1 text-left">{t('signOut')}</span>

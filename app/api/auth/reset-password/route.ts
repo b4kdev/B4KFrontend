@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 export async function POST(req: Request) {
   const { token, password } = await req.json().catch(() => ({}))
@@ -11,12 +11,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Password too short' }, { status: 400 })
   }
 
-  const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  )
+  const supabase = createSupabaseServerClient()
 
-  // Exchange the recovery token for a session, then update the password
+  // Exchange the recovery token for a session (user-scoped, not admin)
   const { error: sessionErr } = await supabase.auth.exchangeCodeForSession(token)
 
   if (sessionErr) {
@@ -24,6 +21,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: sessionErr.message, code }, { status: 400 })
   }
 
+  // Update password through the now-authenticated session
   const { error: updateErr } = await supabase.auth.updateUser({ password })
 
   if (updateErr) {
