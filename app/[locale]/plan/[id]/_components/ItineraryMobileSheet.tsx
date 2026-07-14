@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
-import ItineraryPanelContent from './ItineraryPanelContent'
+import { MapPin, Clock } from 'lucide-react'
+import { useBottomSheetSnap } from '@/hooks/useBottomSheetSnap'
+import ItineraryPanelContent, { formatDuration } from './ItineraryPanelContent'
 import type { ItineraryDetail } from '@/app/api/plans/[id]/route'
 
 interface Props {
@@ -20,9 +21,10 @@ interface Props {
   onDeleteClick?: () => void
 }
 
-const SNAP_PCT = { peek: 70, half: 45, full: 10 } as const
-type SnapKey = keyof typeof SNAP_PCT
-
+// SC-34 (S-BMGOFW) — 3-snap sheet, shared gesture hook (DEC-38) instead of the
+// old hand-rolled peek/half/full pointer math. Content differs per snap:
+// peek = title + stop count + duration only (~80px) · mid = stop list (notes
+// clamped, no Related) · full = same list with untruncated notes + Related.
 export default function ItineraryMobileSheet({
   itinerary,
   selectedPoiId,
@@ -38,89 +40,69 @@ export default function ItineraryMobileSheet({
   onDeleteClick,
 }: Props) {
   const t = useTranslations('itinerary')
-  const [snap, setSnap] = useState<SnapKey>('peek')
-  const [dragY, setDragY] = useState<number | null>(null)
-  const dragStart = useRef<{ clientY: number; basePct: number } | null>(null)
-  const sheetRef = useRef<HTMLDivElement>(null)
 
-  const currentPct = dragY !== null ? dragY : SNAP_PCT[snap]
-  const isDragging = dragY !== null
+  // Always-present content sheet over the map — nothing to dismiss to, so a
+  // drag/fling past peek just has nowhere further to go.
+  const { sheetRef, snap, handleProps, sheetStyle } = useBottomSheetSnap({
+    open: true,
+    initialSnap: 'peek',
+    onDismiss: () => {},
+  })
 
-  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
-    e.currentTarget.setPointerCapture(e.pointerId)
-    dragStart.current = { clientY: e.clientY, basePct: SNAP_PCT[snap] }
-  }
-
-  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
-    if (!dragStart.current) return
-    const dy = e.clientY - dragStart.current.clientY
-    const vh = window.innerHeight
-    const pct = Math.max(5, Math.min(82, dragStart.current.basePct + (dy / vh) * 100))
-    setDragY(pct)
-  }
-
-  function handlePointerUp() {
-    if (!dragStart.current || dragY === null) {
-      dragStart.current = null
-      return
-    }
-    const snapKeys: SnapKey[] = ['peek', 'half', 'full']
-    const nearest = snapKeys.reduce<SnapKey>(
-      (best, key) =>
-        Math.abs(SNAP_PCT[key] - dragY) < Math.abs(SNAP_PCT[best] - dragY) ? key : best,
-      'peek'
-    )
-    setSnap(nearest)
-    setDragY(null)
-    dragStart.current = null
-  }
+  const durationLabel = formatDuration(t, itinerary.total_duration_min)
 
   return (
     <div
       ref={sheetRef}
       className="absolute inset-x-0 bottom-0 z-20 lg:hidden rounded-t-2xl flex flex-col bg-bg-2"
-      style={{
-        height: '95%',
-        transform: `translateY(${currentPct}%)`,
-        transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        borderTop: '1px solid var(--bdr)',
-      }}
+      style={{ ...sheetStyle, height: '95%', borderTop: '1px solid var(--bdr)' }}
       role="dialog"
       aria-label={t('sheet.ariaLabel')}
     >
       {/* Drag handle */}
       <div
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        className="flex-none h-sp-6 flex items-center justify-center cursor-grab active:cursor-grabbing touch-none"
+        {...handleProps}
+        className="flex-none h-sp-6 flex items-center justify-center cursor-grab active:cursor-grabbing"
+        style={{ touchAction: 'none' }}
         aria-label={t('sheet.handle')}
         role="separator"
         aria-orientation="horizontal"
       >
-        <div
-          className="w-8 h-1 rounded-full"
-          style={{ background: 'var(--muted-2)' }}
-          aria-hidden="true"
-        />
+        <div className="w-8 h-1 rounded-full" style={{ background: 'var(--muted-2)' }} aria-hidden="true" />
       </div>
 
-      {/* Content */}
-      <ItineraryPanelContent
-        itinerary={itinerary}
-        selectedPoiId={selectedPoiId}
-        isLiked={isLiked}
-        isSaved={isSaved}
-        isOwner={isOwner}
-        planId={planId}
-        onStopSelect={onStopSelect}
-        onLike={onLike}
-        onSave={onSave}
-        onShare={onShare}
-        onEdit={onEdit}
-        onDeleteClick={onDeleteClick}
-      />
+      {snap === 'peek' ? (
+        /* Peek — title + stop count + duration only, ~80px total with the handle */
+        <div className="px-sp-4 pb-sp-3 flex flex-col gap-[2px] min-w-0">
+          <p className="text-f-md font-semibold text-fg leading-snug truncate">{itinerary.title}</p>
+          <div className="flex items-center gap-sp-3">
+            <span className="flex items-center gap-1 text-f-xs text-muted">
+              <MapPin size={11} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
+              {t('stats.stops', { count: itinerary.stops.length })}
+            </span>
+            <span className="flex items-center gap-1 text-f-xs text-muted">
+              <Clock size={11} strokeWidth={2} className="shrink-0" aria-hidden="true" />
+              {durationLabel}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <ItineraryPanelContent
+          itinerary={itinerary}
+          selectedPoiId={selectedPoiId}
+          isLiked={isLiked}
+          isSaved={isSaved}
+          isOwner={isOwner}
+          planId={planId}
+          onStopSelect={onStopSelect}
+          onLike={onLike}
+          onSave={onSave}
+          onShare={onShare}
+          onEdit={onEdit}
+          onDeleteClick={onDeleteClick}
+          snap={snap}
+        />
+      )}
     </div>
   )
 }

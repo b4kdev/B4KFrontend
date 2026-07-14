@@ -17,7 +17,7 @@ const MODES: TransportMode[] = ['car', 'public', 'walk']
 
 type TFn = ReturnType<typeof useTranslations>
 
-function formatDuration(t: TFn, min: number): string {
+export function formatDuration(t: TFn, min: number): string {
   const h = Math.floor(min / 60)
   const m = min % 60
   if (h > 0 && m > 0) return t('duration.hoursMinutes', { h, m })
@@ -45,6 +45,10 @@ interface Props {
   onShare: () => void
   onEdit: () => void
   onDeleteClick?: () => void
+  // SC-34 — mobile 3-snap content: 'full' shows untruncated stop notes +
+  // Related; 'mid' (and desktop, where this stays undefined) keeps the
+  // compact clamped view. Peek never renders this component at all.
+  snap?: 'mid' | 'full'
 }
 
 function TransportIcon({ mode }: { mode: TransportMode | null }) {
@@ -162,6 +166,7 @@ export default function ItineraryPanelContent({
   onShare,
   onEdit,
   onDeleteClick,
+  snap = 'full',
 }: Props) {
   const t = useTranslations('itinerary')
   const isOnline = useOnline() // SC-21 (OFF_04)
@@ -399,7 +404,7 @@ export default function ItineraryPanelContent({
                     )}
                   </div>
                   {stop.notes && (
-                    <p className="text-f-xs text-muted mt-sp-1 line-clamp-2 leading-relaxed">
+                    <p className={`text-f-xs text-muted mt-sp-1 leading-relaxed ${snap === 'full' ? '' : 'line-clamp-2'}`}>
                       {stop.notes}
                     </p>
                   )}
@@ -444,7 +449,7 @@ export default function ItineraryPanelContent({
       </ol>
 
       {/* ─── Related ────────────────────────────────────────────── */}
-      {itinerary.related.length > 0 && (
+      {snap === 'full' && itinerary.related.length > 0 && (
         <section aria-labelledby="related-heading" className="px-sp-4">
           <h2
             id="related-heading"
