@@ -28,7 +28,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: lts/iron
+          node-version: lts/jod
           cache: npm
 
       - name: Install dependencies
@@ -46,7 +46,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: lts/iron
+          node-version: lts/jod
           cache: npm
 
       - name: Install dependencies
@@ -64,7 +64,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: lts/iron
+          node-version: lts/jod
           cache: npm
 
       - name: Install dependencies
@@ -72,16 +72,9 @@ jobs:
 
       - name: Run build
         env:
-          # Next.js requires placeholder env vars at build time for any code paths
-          # that read them at module-eval. Real values are injected by Vercel at
-          # deploy time. We use safe placeholders here so the build can complete.
-          NEXTAUTH_SECRET: ci-placeholder-not-a-real-secret
-          NEXTAUTH_URL: http://localhost:3000
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key
-          # Server-side aliases read by lib/auth.ts SupabaseAdapter at module-eval
-          SUPABASE_URL: https://placeholder.supabase.co
-          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
+          NEXT_PUBLIC_SITE_URL: https://b4k.app
         run: npm run build
 
   i18n-keys:
