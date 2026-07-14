@@ -1092,7 +1092,8 @@
       "sponsored": "Sponsored",
       "dDay": "D-{days}",
       "dDayToday": "D-DAY",
-      "dDayPast": "Ended"
+      "dDayPast": "Ended",
+      "featured": "Featured"
     },
     "aiCta": {
       "text": "Let AI plan your K-culture journey",

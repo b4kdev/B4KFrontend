@@ -16,6 +16,8 @@ export interface ExplorePoi {
   region?: string
   /** ISO date (YYYY-MM-DD) for D-Day countdown on event/merch/festival items. */
   event_date?: string
+  /** SC-36 (KD_04/KB_04) — one featured item renders as a wide card above the row. */
+  is_featured?: boolean
 }
 
 export interface ExploreSection {
@@ -148,7 +150,7 @@ const MOCK: Record<string, ExploreData> = {
       {
         id: 'tours',
         items: [
-          { place_id: 'kd-9',  name_ko: '사랑의 불시착 파주 DMZ', name_en: 'CLOY Paju DMZ Tour',           primary_image_url: IMG.palace_spring, display_region: '파주',   quality_score: 94, is_trending: true  },
+          { place_id: 'kd-9',  name_ko: '사랑의 불시착 파주 DMZ', name_en: 'CLOY Paju DMZ Tour',           primary_image_url: IMG.palace_spring, display_region: '파주',   quality_score: 94, is_trending: true,  is_featured: true },
           { place_id: 'kd-11', name_ko: '갯마을 차차차 촬영지',   name_en: 'Hometown Cha-Cha-Cha Village', primary_image_url: IMG.cherry,       display_region: '포항',   quality_score: 96, is_trending: true  },
           { place_id: 'kd-26', name_ko: '몽테드 카페 (러블리 러너)', name_en: 'Mongted Café — Lovely Runner', primary_image_url: IMG.film_street,  display_region: '수원',   quality_score: 94, is_trending: true  },
         ],
@@ -196,7 +198,7 @@ const MOCK: Record<string, ExploreData> = {
       {
         id: 'makeup',
         items: [
-          { place_id: 'kb-11', name_ko: '롬앤 명동 팝업',    name_en: 'rom&nd Myeongdong Pop-Up',  primary_image_url: IMG.beauty_clinic,   display_region: '중구',   quality_score: 92, is_trending: true,  district: 'Myeongdong' },
+          { place_id: 'kb-11', name_ko: '롬앤 명동 팝업',    name_en: 'rom&nd Myeongdong Pop-Up',  primary_image_url: IMG.beauty_clinic,   display_region: '중구',   quality_score: 92, is_trending: true,  district: 'Myeongdong', is_featured: true },
           { place_id: 'kb-14', name_ko: '젠틀몬스터 압구정',  name_en: 'Gentle Monster Apgujeong',  primary_image_url: IMG.beauty_clinic,   display_region: '강남구', quality_score: 98, is_trending: true,  district: 'Apgujeong'  },
           { place_id: 'kb-15', name_ko: '탬버린즈 홍대',      name_en: 'Tamburins Hongdae',         primary_image_url: IMG.skincare_clinic, display_region: '마포구', quality_score: 96, is_trending: true,  district: 'Hongdae'    },
         ],

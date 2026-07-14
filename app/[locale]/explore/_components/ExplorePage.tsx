@@ -8,12 +8,17 @@ import { Music, Tv, Sparkles, Globe, RefreshCw, AlertTriangle, ArrowRight } from
 import { fetcher } from '@/lib/fetcher'
 import type { ExploreData } from '@/app/api/explore/[category]/route'
 import ExplorePoiCard from './ExplorePoiCard'
+import ExploreFeaturedCard from './ExploreFeaturedCard'
 import ExploreHero from './ExploreHero'
 import ExploreChipFilter, { ChipFilterConfig } from './ExploreChipFilter'
 import ExplorePackages from './ExplorePackages'
 import ExploreAiCta from './ExploreAiCta'
 
 export type ExploreCategory = 'k-pop' | 'k-drama' | 'k-beauty' | 'k-culture'
+
+// SC-36 (KD_04 Tours / KB_04 Makeup) — the only two sections spec'd for a
+// featured wide card above the row.
+const FEATURED_SECTIONS = new Set(['tours', 'makeup'])
 
 interface CategoryConfig {
   id: ExploreCategory
@@ -262,35 +267,50 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
             ) : (
               data.sections
                 .filter(s => s.items.length > 0)
-                .map(section => (
-                  <section
-                    key={section.id}
-                    id={`section-${section.id}`}
-                    className="mb-sp-10 scroll-mt-[80px]"
-                    aria-label={t(`sections.${section.id}`)}
-                  >
-                    <div className="flex items-end justify-between mb-sp-4">
-                      <h2 className="text-f-sm font-semibold tracking-[0.07em] uppercase text-muted">
-                        {t(`sections.${section.id}`)}
-                      </h2>
-                      <Link
-                        href={`/search?q=${category}`}
-                        className="flex items-center gap-1 text-f-sm text-lav hover:opacity-80 transition-opacity whitespace-nowrap shrink-0 ml-sp-4"
-                        aria-label={t('viewAllAria', { section: t(`sections.${section.id}`) })}
-                      >
-                        {t('viewAll')}
-                        <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />
-                      </Link>
-                    </div>
-                    <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-sp-4 lg:-mx-sp-6 px-sp-4 lg:px-sp-6">
-                      <div className="flex gap-sp-3 pb-[4px]" style={{ width: 'max-content' }}>
-                        {section.items.map(poi => (
-                          <ExplorePoiCard key={poi.place_id} poi={poi} />
-                        ))}
+                .map(section => {
+                  // Featured wide-card treatment is scoped to KD_04/KB_04 (SC-36) —
+                  // 'trending' re-includes the same items by dedup and must stay
+                  // a plain row, so the featured flag can't leak in there too.
+                  const featured = FEATURED_SECTIONS.has(section.id)
+                    ? section.items.find(poi => poi.is_featured)
+                    : undefined
+                  const rest = featured
+                    ? section.items.filter(poi => poi.place_id !== featured.place_id)
+                    : section.items
+
+                  return (
+                    <section
+                      key={section.id}
+                      id={`section-${section.id}`}
+                      className="mb-sp-10 scroll-mt-[80px]"
+                      aria-label={t(`sections.${section.id}`)}
+                    >
+                      <div className="flex items-end justify-between mb-sp-4">
+                        <h2 className="text-f-sm font-semibold tracking-[0.07em] uppercase text-muted">
+                          {t(`sections.${section.id}`)}
+                        </h2>
+                        <Link
+                          href={`/search?q=${category}`}
+                          className="flex items-center gap-1 text-f-sm text-lav hover:opacity-80 transition-opacity whitespace-nowrap shrink-0 ml-sp-4"
+                          aria-label={t('viewAllAria', { section: t(`sections.${section.id}`) })}
+                        >
+                          {t('viewAll')}
+                          <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />
+                        </Link>
                       </div>
-                    </div>
-                  </section>
-                ))
+                      {featured && <ExploreFeaturedCard poi={featured} />}
+                      {rest.length > 0 && (
+                        <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-sp-4 lg:-mx-sp-6 px-sp-4 lg:px-sp-6">
+                          <div className="flex gap-sp-3 pb-[4px]" style={{ width: 'max-content' }}>
+                            {rest.map(poi => (
+                              <ExplorePoiCard key={poi.place_id} poi={poi} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </section>
+                  )
+                })
             )}
 
             {/* H5 B4K Best Packages */}

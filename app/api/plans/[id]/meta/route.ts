@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
-import { MOCK } from '../route'
+import { MOCK } from '@/lib/mock/plan-detail'
 
 export interface PlanMeta {
   isOwner: boolean

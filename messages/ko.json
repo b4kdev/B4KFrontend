@@ -1092,7 +1092,8 @@
       "sponsored": "광고",
       "dDay": "D-{days}",
       "dDayToday": "D-DAY",
-      "dDayPast": "종료"
+      "dDayPast": "종료",
+      "featured": "추천"
     },
     "aiCta": {
       "text": "AI로 나만의 K-컬처 여행을 계획해보세요",
