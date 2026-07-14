@@ -70,6 +70,9 @@ export default function MapView() {
   const [namingSaving, setNamingSaving] = useState(false)
   // UF-6 (G5.6) — discard-draft confirm dialog
   const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false)
+  // UF-5 (G4.2) — day assignment (1–7) per stop; new stops join the active day tab
+  const [stopDays, setStopDays]   = useState<Record<string, number>>({})
+  const [activeDay, setActiveDay] = useState(1)
   const savedSeededRef  = useRef(false)
   // DEC-33 T1: track whether draft-conflict check has been resolved this session
   const t1CheckedRef    = useRef(false)
@@ -225,6 +228,7 @@ export default function MapView() {
             t1CheckedRef.current = true
             setPlanStopIds(prev => [...prev, poiId])
             setStopDurations(prev => ({ ...prev, [poiId]: DEFAULT_DURATION }))
+            setStopDays(prev => ({ ...prev, [poiId]: activeDay }))
             showToast(t('poiDetail.addedToast'))
           }
         })
@@ -233,6 +237,7 @@ export default function MapView() {
           t1CheckedRef.current = true
           setPlanStopIds(prev => [...prev, poiId])
           setStopDurations(prev => ({ ...prev, [poiId]: DEFAULT_DURATION }))
+          setStopDays(prev => ({ ...prev, [poiId]: activeDay }))
           showToast(t('poiDetail.addedToast'))
         })
       return
@@ -240,6 +245,7 @@ export default function MapView() {
 
     setPlanStopIds(prev => [...prev, poiId])
     setStopDurations(prev => ({ ...prev, [poiId]: DEFAULT_DURATION }))
+    setStopDays(prev => ({ ...prev, [poiId]: activeDay }))
     showToast(t('poiDetail.addedToast'))
   }
 
@@ -297,6 +303,7 @@ export default function MapView() {
     if (poiToAdd) {
       setPlanStopIds([poiToAdd])
       setStopDurations({ [poiToAdd]: DEFAULT_DURATION })
+      setStopDays({ [poiToAdd]: activeDay })
       showToast(t('poiDetail.addedToast'))
     }
   }
@@ -304,6 +311,7 @@ export default function MapView() {
   function handleRemoveFromPlan(poiId: string) {
     setPlanStopIds(prev => prev.filter(id => id !== poiId))
     setStopDurations(prev => { const next = { ...prev }; delete next[poiId]; return next })
+    setStopDays(prev => { const next = { ...prev }; delete next[poiId]; return next })
   }
 
   function handleToggleSave(poi: MapPoi) {
@@ -353,8 +361,15 @@ export default function MapView() {
     })
   }
 
-  function handleReorder(newOrder: string[]) {
-    setPlanStopIds(newOrder)
+  // Receives the reordered ids for whichever day is currently visible (the
+  // child panel is day-filtered) and splices them back into their original
+  // slots in the full ordered list, leaving other days' stops untouched.
+  function handleReorder(newDayOrder: string[]) {
+    setPlanStopIds(prev => {
+      const daySet = new Set(newDayOrder)
+      let i = 0
+      return prev.map(id => (daySet.has(id) ? newDayOrder[i++] : id))
+    })
   }
 
   function handleDurationChange(id: string, minutes: number) {
@@ -466,6 +481,9 @@ export default function MapView() {
           onDurationChange={handleDurationChange}
           onPreviewPlan={handlePreviewPlan}
           onDiscardPlan={() => setDiscardConfirmOpen(true)}
+          stopDays={stopDays}
+          activeDay={activeDay}
+          onDayChange={setActiveDay}
         />
       </aside>
 
@@ -541,6 +559,9 @@ export default function MapView() {
         onSavePlan={handlePreviewPlan}
         onDiscardPlan={() => setDiscardConfirmOpen(true)}
         onDismiss={() => setPlanSheetOpen(false)}
+        stopDays={stopDays}
+        activeDay={activeDay}
+        onDayChange={setActiveDay}
       />
 
       {/* Mobile Saved bottom sheet — H13 (S-IGOSPS), opened via /map?saved=1 */}

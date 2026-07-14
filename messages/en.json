@@ -720,7 +720,10 @@
       "discardTitle": "Discard draft?",
       "discardWarning": "This removes all {count, plural, one {# stop} other {# stops}} from the current draft. This cannot be undone.",
       "discardCancel": "Cancel",
-      "discardConfirm": "Discard draft"
+      "discardConfirm": "Discard draft",
+      "dayTab": "Day {n}",
+      "legEstimate": "est {min}m",
+      "legAriaLabel": "Estimated travel time from stop {from} to stop {to}"
     },
     "namingSheet": {
       "ariaLabel": "Name your plan",

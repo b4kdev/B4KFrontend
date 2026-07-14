@@ -4,7 +4,10 @@ import { useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { GripVertical, X, Clock, ArrowRight, AlertTriangle } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
+import { estimateLegMinutes } from '@/lib/plan-estimate'
 import type { MapPoi } from '@/hooks/useMapPois'
+
+const MAX_DAYS = 7
 
 interface Props {
   isOpen:           boolean
@@ -16,11 +19,15 @@ interface Props {
   onSavePlan:       () => void
   onDiscardPlan:    () => void
   onDismiss:        () => void
+  stopDays:         Record<string, number>
+  activeDay:        number
+  onDayChange:      (day: number) => void
 }
 
 export default function PlanBottomSheet({
   isOpen, stops, stopDurations,
   onReorder, onRemove, onDurationChange, onSavePlan, onDiscardPlan, onDismiss,
+  stopDays, activeDay, onDayChange,
 }: Props) {
   const t = useTranslations('map.plan')
 
@@ -29,11 +36,16 @@ export default function PlanBottomSheet({
   const [dragging, setDragging] = useState<number | null>(null)
   const [routeError]            = useState(false)
 
+  // UF-5 (G4.2) — day tabs: always offer one more than the highest day in use, capped at 7
+  const maxDayUsed = stops.reduce((max, s) => Math.max(max, stopDays[s.place_id] ?? 1), 1)
+  const dayCount = Math.min(Math.max(maxDayUsed, activeDay) + (maxDayUsed < MAX_DAYS ? 1 : 0), MAX_DAYS)
+  const dayStops = stops.filter(s => (stopDays[s.place_id] ?? 1) === activeDay)
+
   function handleDragStart(i: number) { dragItem.current = i; setDragging(i) }
   function handleDragEnter(i: number) { dragOver.current = i }
   function handleDragEnd() {
     if (dragItem.current !== null && dragOver.current !== null && dragItem.current !== dragOver.current) {
-      const ids = stops.map(s => s.place_id)
+      const ids = dayStops.map(s => s.place_id)
       const [moved] = ids.splice(dragItem.current, 1)
       ids.splice(dragOver.current, 0, moved)
       onReorder(ids)
@@ -99,63 +111,95 @@ export default function PlanBottomSheet({
           </div>
         </div>
 
+        {/* UF-5 (G4.2) — Day tabs */}
+        <div className="flex gap-1 px-sp-3 py-sp-2 shrink-0 overflow-x-auto" style={{ borderBottom: '1px solid var(--bdr)' }}>
+          {Array.from({ length: dayCount }, (_, i) => i + 1).map(day => (
+            <button
+              key={day}
+              onClick={() => onDayChange(day)}
+              aria-pressed={day === activeDay}
+              className="min-h-touch px-sp-3 rounded-full text-f-xxs font-semibold whitespace-nowrap transition-colors"
+              style={day === activeDay
+                ? { background: 'var(--lav-dim)', color: 'var(--lav)' }
+                : { color: 'var(--muted)' }}
+            >
+              {t('dayTab', { n: day })}
+            </button>
+          ))}
+        </div>
+
         {/* Stop list */}
         <div className="flex-1 overflow-y-auto themed-scrollbar">
-          {stops.map((poi, i) => {
+          {dayStops.map((poi, i) => {
             const name     = getDisplayName(poi)
             const duration = stopDurations[poi.place_id] ?? 60
+            const next     = dayStops[i + 1]
 
             return (
-              <div
-                key={poi.place_id}
-                draggable
-                onDragStart={() => handleDragStart(i)}
-                onDragEnter={() => handleDragEnter(i)}
-                onDragEnd={handleDragEnd}
-                onDragOver={e => e.preventDefault()}
-                className={[
-                  'flex items-center gap-sp-2 px-sp-3 py-sp-3 group transition-opacity',
-                  dragging === i ? 'opacity-40' : 'opacity-100',
-                ].join(' ')}
-                style={{ borderBottom: '1px solid var(--bdr)' }}
-              >
-                <button
-                  aria-label={t('dragHandle', { n: i + 1 })}
-                  className="cursor-grab active:cursor-grabbing text-muted opacity-0 group-hover:opacity-100 transition-opacity shrink-0 min-w-[20px] min-h-[20px] flex items-center justify-center"
+              <div key={poi.place_id}>
+                <div
+                  draggable
+                  onDragStart={() => handleDragStart(i)}
+                  onDragEnter={() => handleDragEnter(i)}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={e => e.preventDefault()}
+                  className={[
+                    'flex items-center gap-sp-2 px-sp-3 py-sp-3 group transition-opacity',
+                    dragging === i ? 'opacity-40' : 'opacity-100',
+                  ].join(' ')}
+                  style={{ borderBottom: '1px solid var(--bdr)' }}
                 >
-                  <GripVertical size={13} strokeWidth={2} />
-                </button>
+                  <button
+                    aria-label={t('dragHandle', { n: i + 1 })}
+                    className="cursor-grab active:cursor-grabbing text-muted opacity-0 group-hover:opacity-100 transition-opacity shrink-0 min-w-[20px] min-h-[20px] flex items-center justify-center"
+                  >
+                    <GripVertical size={13} strokeWidth={2} />
+                  </button>
 
-                <span
-                  className="w-5 h-5 rounded-full bg-lav text-bg text-f-xxs font-bold flex items-center justify-center shrink-0 select-none"
-                  aria-hidden="true"
-                >
-                  {i + 1}
-                </span>
+                  <span
+                    className="w-5 h-5 rounded-full bg-lav text-bg text-f-xxs font-bold flex items-center justify-center shrink-0 select-none"
+                    aria-hidden="true"
+                  >
+                    {i + 1}
+                  </span>
 
-                <span className="flex-1 text-fg text-sm truncate min-w-0">{name}</span>
+                  <span className="flex-1 text-fg text-sm truncate min-w-0">{name}</span>
 
-                <div className="flex items-center gap-1 shrink-0">
-                  <input
-                    type="number"
-                    min={5}
-                    max={480}
-                    value={duration}
-                    onChange={e => onDurationChange(poi.place_id, Math.max(5, Math.min(480, Number(e.target.value) || 60)))}
-                    aria-label={t('durationAriaLabel', { name })}
-                    className="w-[42px] text-center text-xs text-fg bg-bg-3 rounded py-0.5 outline-none focus:ring-1 focus:ring-lav tabular-nums"
-                    style={{ border: '1px solid var(--bdr)' }}
-                  />
-                  <span className="text-muted text-f-xxs">{t('durationLabel')}</span>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <input
+                      type="number"
+                      min={5}
+                      max={480}
+                      value={duration}
+                      onChange={e => onDurationChange(poi.place_id, Math.max(5, Math.min(480, Number(e.target.value) || 60)))}
+                      aria-label={t('durationAriaLabel', { name })}
+                      className="w-[42px] text-center text-xs text-fg bg-bg-3 rounded py-0.5 outline-none focus:ring-1 focus:ring-lav tabular-nums"
+                      style={{ border: '1px solid var(--bdr)' }}
+                    />
+                    <span className="text-muted text-f-xxs">{t('durationLabel')}</span>
+                  </div>
+
+                  <button
+                    onClick={() => onRemove(poi.place_id)}
+                    aria-label={t('removeStop', { n: i + 1 })}
+                    className="text-muted hover:text-danger transition-colors shrink-0 min-w-touch min-h-touch flex items-center justify-center"
+                  >
+                    <X size={13} strokeWidth={2} />
+                  </button>
                 </div>
 
-                <button
-                  onClick={() => onRemove(poi.place_id)}
-                  aria-label={t('removeStop', { n: i + 1 })}
-                  className="text-muted hover:text-danger transition-colors shrink-0 min-w-touch min-h-touch flex items-center justify-center"
-                >
-                  <X size={13} strokeWidth={2} />
-                </button>
+                {/* UF-5 (G4.2 / DEC-13 §1) — bare leg estimate, no mode selector in the builder */}
+                {next && (
+                  <div
+                    className="flex items-center gap-sp-2 py-1 pl-sp-4 ml-sp-3"
+                    style={{ borderLeft: '1px solid var(--muted-3)' }}
+                    aria-label={t('legAriaLabel', { from: i + 1, to: i + 2 })}
+                  >
+                    <span className="text-f-xxs text-muted-2">
+                      {t('legEstimate', { min: estimateLegMinutes(poi.coords_lat, poi.coords_lng, next.coords_lat, next.coords_lng) })}
+                    </span>
+                  </div>
+                )}
               </div>
             )
           })}
