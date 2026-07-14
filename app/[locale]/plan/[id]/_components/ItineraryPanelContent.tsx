@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { Link } from '@/i18n/navigation'
 import { getDisplayName } from '@/lib/display-name'
+import { useOnline } from '@/hooks/useOnline'
 import type { ItineraryDetail, ItineraryLeg } from '@/app/api/plans/[id]/route'
 
 type TransportMode = 'car' | 'public' | 'walk'
@@ -64,6 +65,7 @@ function LegRow({
   fromOrder,
   toOrder,
   isOwner,
+  isOnline,
   planId,
   onModeChange,
 }: {
@@ -71,6 +73,7 @@ function LegRow({
   fromOrder: number
   toOrder: number
   isOwner: boolean
+  isOnline: boolean
   planId: string
   onModeChange: (fromOrder: number, next: TransportMode) => void
 }) {
@@ -93,7 +96,7 @@ function LegRow({
   const mode = leg.transport_mode
 
   async function handleCycle() {
-    if (!isOwner || saving) return
+    if (!isOwner || !isOnline || saving) return
     const next = MODES[(MODES.indexOf(mode) + 1) % MODES.length]
     setSaving(true)
     onModeChange(fromOrder, next) // optimistic
@@ -119,13 +122,14 @@ function LegRow({
     >
       <button
         onClick={handleCycle}
-        disabled={!isOwner || saving}
+        disabled={!isOwner || !isOnline || saving}
+        title={isOwner && !isOnline ? t('transport.offlineNote') : undefined}
         aria-label={
           isOwner
             ? t('transport.changeMode', { mode: t(`transport.${mode}`) })
             : t('transport.mode', { mode: t(`transport.${mode}`) })
         }
-        className={`flex items-center gap-1 rounded-none text-f-xs text-muted transition-opacity ${isOwner ? 'hover:opacity-70 cursor-pointer' : 'cursor-default'}`}
+        className={`flex items-center gap-1 rounded-none text-f-xs text-muted transition-opacity ${isOwner && isOnline ? 'hover:opacity-70 cursor-pointer' : 'cursor-default'}`}
         style={{ border: 'none', background: 'none', padding: 0 }}
       >
         <TransportIcon mode={mode} />
@@ -160,6 +164,7 @@ export default function ItineraryPanelContent({
   onDeleteClick,
 }: Props) {
   const t = useTranslations('itinerary')
+  const isOnline = useOnline() // SC-21 (OFF_04)
 
   // Leg transport mode overrides (owner edits, optimistic) — keyed by from_stop_order
   const [legModeOverrides, setLegModeOverrides] = useState<Record<number, TransportMode>>({})
@@ -428,6 +433,7 @@ export default function ItineraryPanelContent({
                   fromOrder={stop.stop_order}
                   toOrder={nextStop.stop_order}
                   isOwner={isOwner}
+                  isOnline={isOnline}
                   planId={planId}
                   onModeChange={handleLegModeChange}
                 />

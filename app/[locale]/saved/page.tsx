@@ -8,11 +8,12 @@ import { useRouter } from '@/i18n/navigation'
 import { Link } from '@/i18n/navigation'
 import {
   Bookmark, MapPin, Heart, Map, RefreshCw, AlertTriangle,
-  ArrowLeft, Sparkles, Loader2, FolderOpen, FolderPlus,
+  ArrowLeft, Sparkles, FolderOpen, FolderPlus,
   Edit2, Share2, Trash2, FileText,
 } from 'lucide-react'
 import { useSaved } from '@/hooks/useSaved'
 import { useAuthGate } from '@/contexts/AuthGateContext'
+import { useOnline } from '@/hooks/useOnline'
 import { getDisplayName } from '@/lib/display-name'
 import FolderCard from '@/components/saved/FolderCard'
 import type { SavedFolder } from '@/app/api/saved/route'
@@ -39,6 +40,7 @@ export default function SavedPage() {
   const searchParams = useSearchParams()
   const { status } = useSession()
   const { open: openAuthGate } = useAuthGate()
+  const isOnline = useOnline() // SC-21 (OFF_03)
 
   const [tab,              setTab]              = useState<Tab>('places')
   const [placesView,       setPlacesView]       = useState<PlacesView>('folders')
@@ -375,9 +377,17 @@ export default function SavedPage() {
                     <AlertTriangle size={16} strokeWidth={2} aria-hidden="true" />{t('folder.generateError')}
                   </div>
                 )}
-                <button onClick={handleGenerate} disabled={generating || selectedFolderIds.size === 0} className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-none font-semibold text-f-base hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40">
+                {/* SC-21 (OFF_03) — a write action; disabled with an explicit reason when offline */}
+                {!isOnline && (
+                  <p className="text-f-sm text-muted text-center mb-sp-2">{t('folder.offlineNote')}</p>
+                )}
+                <button
+                  onClick={handleGenerate}
+                  disabled={generating || selectedFolderIds.size === 0 || !isOnline}
+                  className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-none font-semibold text-f-base hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40"
+                >
                   {generating
-                    ? <><Loader2 size={16} strokeWidth={2} className="animate-spin" aria-hidden="true" />{t('folder.generating')}</>
+                    ? <span className="font-mono">{t('folder.generating')}</span>
                     : <><Sparkles size={16} strokeWidth={2} aria-hidden="true" />{t('folder.generateFolders', { count: selectedFolderIds.size })}</>}
                 </button>
               </div>
