@@ -1293,7 +1293,23 @@
       "selectAriaLabel": "Select {name}",
       "generate": "Generate ({count} places)",
       "generating": "Generating…",
-      "generateError": "Couldn't generate plan. Please try again."
+      "generateError": "Couldn't generate plan. Please try again.",
+      "newFolder": "New folder",
+      "createPlan": "Create plan",
+      "cancel": "Cancel",
+      "selectFoldersHint": "Select folders to plan from",
+      "newFolderPlaceholder": "Folder name",
+      "create": "Create",
+      "generateFolders": "Generate plan from {count, plural, one {# folder} other {# folders}}",
+      "selectFolderAria": "Select folder {name}",
+      "folderMenu": "Options for {name}",
+      "rename": "Rename",
+      "delete": "Delete",
+      "renameTitle": "Rename folder",
+      "save": "Save",
+      "deleteTitle": "Delete folder?",
+      "deleteWarning": "\"{name}\" will be deleted. Its saved places move to All Saved — nothing is lost.",
+      "deleteCancel": "Cancel"
     }
   },
   "notifications": {

@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server'
 
 export interface GenerateRequest {
   poi_ids: string[]
+  // M5 — FL2 folder-level select (DEC-24). Client sends the selected folder ids
+  // plus the resolved POI union; a real impl would resolve folder_ids → POIs
+  // server-side. The mock uses poi_ids.
+  folder_ids?: string[]
 }
 
 export interface GeneratedStop {

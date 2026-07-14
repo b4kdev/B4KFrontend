@@ -15,6 +15,7 @@ export interface SavedFolder {
   name: string
   pois: SavedPoi[]
   created_at: string
+  is_default?: boolean // "All Saved" — not renamable/deletable (DEC-24)
 }
 
 /** Plans saved from other users — social.plan_saves */
@@ -61,6 +62,7 @@ const MOCK_POIS: SavedPoi[] = [
 const MOCK: SavedData = {
   pois: MOCK_POIS,
   folders: [
+    { id: 'folder-000', name: 'All Saved',     created_at: '2026-05-30T00:00:00Z', is_default: true, pois: MOCK_POIS },
     { id: 'folder-001', name: 'Seoul Trip',    created_at: '2026-06-01T00:00:00Z', pois: [MOCK_POIS[0], MOCK_POIS[1], MOCK_POIS[2]] },
     { id: 'folder-002', name: 'Jeju Island',   created_at: '2026-06-03T00:00:00Z', pois: [MOCK_POIS[3]] },
   ],

@@ -1293,7 +1293,23 @@
       "selectAriaLabel": "{name} 선택",
       "generate": "생성하기 ({count}개)",
       "generating": "생성 중…",
-      "generateError": "플랜 생성에 실패했습니다. 다시 시도해 주세요."
+      "generateError": "플랜 생성에 실패했습니다. 다시 시도해 주세요.",
+      "newFolder": "새 폴더",
+      "createPlan": "플랜 만들기",
+      "cancel": "취소",
+      "selectFoldersHint": "플랜에 사용할 폴더를 선택하세요",
+      "newFolderPlaceholder": "폴더 이름",
+      "create": "만들기",
+      "generateFolders": "폴더 {count}개로 플랜 생성",
+      "selectFolderAria": "폴더 {name} 선택",
+      "folderMenu": "{name} 옵션",
+      "rename": "이름 변경",
+      "delete": "삭제",
+      "renameTitle": "폴더 이름 변경",
+      "save": "저장",
+      "deleteTitle": "폴더를 삭제할까요?",
+      "deleteWarning": "\"{name}\" 폴더가 삭제됩니다. 저장된 장소는 전체 저장으로 이동하며 사라지지 않습니다.",
+      "deleteCancel": "취소"
     }
   },
   "notifications": {
