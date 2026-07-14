@@ -56,13 +56,15 @@ export interface ItineraryDetail {
   legs: ItineraryLeg[]
   related: ItineraryRelated[]
   viewer: {
-    is_owner: boolean
     is_liked: boolean
     is_saved: boolean
   }
 }
 
-const MOCK: Record<string, ItineraryDetail> = {
+// SC-35 (S-DEGJDE) — exported so /api/plans/[id]/meta can look up the author
+// without duplicating mock data. Ownership must never be derived from this
+// same cacheable payload — it needs its own per-session authenticated check.
+export const MOCK: Record<string, ItineraryDetail> = {
   'it-demo': {
     id: 'it-demo',
     title: 'Seoul Heritage Walk',
@@ -118,7 +120,7 @@ const MOCK: Record<string, ItineraryDetail> = {
       { id: 'it-r2', title: 'Han River Sunset', like_count: 22, save_count: 12, stop_count: 3, thumbnail_url: null },
       { id: 'it-r3', title: 'Dongdaemun Night Walk', like_count: 15, save_count: 8, stop_count: 5, thumbnail_url: null },
     ],
-    viewer: { is_owner: false, is_liked: false, is_saved: false },
+    viewer: { is_liked: false, is_saved: false },
   },
 
   'it-partner': {
@@ -170,7 +172,7 @@ const MOCK: Record<string, ItineraryDetail> = {
       { id: 'it-r2', title: 'Han River Sunset', like_count: 22, save_count: 12, stop_count: 3, thumbnail_url: null },
       { id: 'it-r3', title: 'Dongdaemun Night Walk', like_count: 15, save_count: 8, stop_count: 5, thumbnail_url: null },
     ],
-    viewer: { is_owner: false, is_liked: true, is_saved: false },
+    viewer: { is_liked: true, is_saved: false },
   },
 }
 

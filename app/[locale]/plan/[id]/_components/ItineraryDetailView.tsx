@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useAuth } from '@/contexts/AuthContext'
 import { RefreshCw, Lock, Route, Trash2, AlertTriangle, Loader2 } from 'lucide-react'
 import { useRouter } from '@/i18n/navigation'
-import { useItinerary } from '@/hooks/useItinerary'
+import { useItinerary, useItineraryMeta } from '@/hooks/useItinerary'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useToast } from '@/contexts/ToastContext'
 import NaverMapCanvas from '@/components/map/NaverMapCanvas'
@@ -36,6 +36,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
   const { showToast } = useToast()
   const router = useRouter()
   const { itinerary, isLoading, isError, isPrivate, isNotFound, mutate } = useItinerary(id)
+  const { isOwner } = useItineraryMeta(itinerary ? id : null)
 
   const [selectedPoiId, setSelectedPoiId]   = useState<string | null>(null)
   const [likedOverride, setLikedOverride]   = useState<boolean | null>(null)
@@ -46,7 +47,6 @@ export default function ItineraryDetailView({ id }: { id: string }) {
 
   const isLiked = likedOverride ?? itinerary?.viewer.is_liked ?? false
   const isSaved = savedOverride ?? itinerary?.viewer.is_saved ?? false
-  const isOwner = itinerary?.viewer.is_owner ?? false
 
   const stopPois    = itinerary ? stopsToMapPois(itinerary) : []
   const planStopIds = itinerary ? itinerary.stops.map(s => s.poi.place_id) : []
