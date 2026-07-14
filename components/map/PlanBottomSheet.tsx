@@ -78,8 +78,8 @@ export default function PlanBottomSheet({
         aria-modal="true"
         aria-label={t('title')}
         className={[
-          'lg:hidden fixed bottom-14 left-0 right-0 z-40 bg-bg-2 rounded-t-2xl',
-          'transition-transform duration-300 ease-out max-h-[70vh] flex flex-col',
+          'lg:hidden fixed bottom-14 left-0 right-0 z-40 bg-bg-2 rounded-none',
+          'transition-transform duration-[250ms] ease-out max-h-[70vh] flex flex-col',
           isOpen ? 'translate-y-0' : 'translate-y-full',
         ].join(' ')}
         style={{ borderTop: '1px solid var(--bdr)' }}
@@ -94,7 +94,7 @@ export default function PlanBottomSheet({
           className="px-sp-4 py-sp-3 flex items-center justify-between shrink-0"
           style={{ borderBottom: '1px solid var(--bdr)' }}
         >
-          <p className="text-f-xxs font-semibold uppercase tracking-widest text-muted">
+          <p className="font-mono text-f-xxs uppercase tracking-[0.22em] text-muted">
             {t('title')}
           </p>
           <div className="flex items-center gap-sp-3">
@@ -118,7 +118,7 @@ export default function PlanBottomSheet({
               key={day}
               onClick={() => onDayChange(day)}
               aria-pressed={day === activeDay}
-              className="min-h-touch px-sp-3 rounded-full text-f-xxs font-semibold whitespace-nowrap transition-colors"
+              className="min-h-touch px-sp-3 rounded-full font-mono text-f-xxs uppercase tracking-[0.06em] whitespace-nowrap transition-colors"
               style={day === activeDay
                 ? { background: 'var(--lav-dim)', color: 'var(--lav)' }
                 : { color: 'var(--muted)' }}
@@ -173,7 +173,7 @@ export default function PlanBottomSheet({
                       value={duration}
                       onChange={e => onDurationChange(poi.poi_id, Math.max(5, Math.min(480, Number(e.target.value) || 60)))}
                       aria-label={t('durationAriaLabel', { name })}
-                      className="w-[42px] text-center text-xs text-fg bg-bg-3 rounded py-0.5 outline-none focus:ring-1 focus:ring-lav tabular-nums"
+                      className="w-[42px] text-center text-xs text-fg bg-bg-3 rounded-none py-0.5 outline-none focus:ring-1 focus:ring-lav tabular-nums"
                       style={{ border: '1px solid var(--bdr)' }}
                     />
                     <span className="text-muted text-f-xxs">{t('durationLabel')}</span>
@@ -216,7 +216,7 @@ export default function PlanBottomSheet({
             <span className="flex-1 text-f-xs text-danger">{t('routeError')}</span>
             <button
               onClick={onSavePlan}
-              className="text-f-xs font-semibold text-danger hover:opacity-70 transition-opacity"
+              className="font-mono text-f-xs uppercase tracking-[0.06em] text-danger hover:opacity-70 transition-opacity"
             >
               {t('routeRetry')}
             </button>
@@ -240,7 +240,7 @@ export default function PlanBottomSheet({
           <button
             onClick={onSavePlan}
             disabled={stops.length === 0}
-            className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-xl font-semibold text-sm hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40"
+            className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-fg text-bg rounded-none font-mono text-f-sm uppercase tracking-[0.06em] hover:bg-royal-600 hover:text-fg transition-[background,color] duration-[80ms] disabled:opacity-40"
           >
             {t('save')}
             <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
@@ -249,7 +249,7 @@ export default function PlanBottomSheet({
           {/* UF-6 (G5.6) — Discard draft */}
           <button
             onClick={onDiscardPlan}
-            className="w-full min-h-touch flex items-center justify-center text-muted hover:text-danger transition-colors text-xs"
+            className="w-full min-h-touch flex items-center justify-center rounded-none font-mono text-f-sm uppercase tracking-[0.06em] text-danger bg-transparent border border-transparent hover:border-danger transition-[border-color,color] duration-[80ms]"
           >
             {t('discardDraft')}
           </button>

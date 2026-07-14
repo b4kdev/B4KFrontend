@@ -12,7 +12,7 @@ export default function OfflinePage() {
       aria-label={t('title')}
     >
       <div
-        className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-8 rounded-xl w-full max-w-[400px]"
+        className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-8 rounded-none w-full max-w-[400px]"
         style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       >
         <WifiOff size={48} strokeWidth={2} className="text-muted-2 mb-sp-5" />
@@ -24,8 +24,7 @@ export default function OfflinePage() {
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-lg text-f-md font-semibold text-lav min-h-touch hover:text-fg transition-colors"
-          style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
+          className="flex items-center gap-sp-2 rounded-none bg-transparent text-muted font-mono text-f-sm uppercase tracking-[0.06em] border border-transparent min-h-touch px-sp-5 hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
         >
           <RefreshCw size={14} strokeWidth={2} />
           {t('retry')}

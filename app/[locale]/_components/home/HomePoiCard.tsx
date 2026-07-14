@@ -82,14 +82,14 @@ export default function HomePoiCard({ poi, badge }: Props) {
           )}
           {badge && (
             <span
-              className="absolute bottom-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.1em] uppercase text-bg bg-lav px-[6px] py-[3px]"
+              className="absolute bottom-sp-2 left-sp-2 text-f-xxs font-mono tracking-[0.22em] uppercase text-bg bg-lav px-[6px] py-[3px]"
               aria-label={badge}
             >
               {badge}
             </span>
           )}
           <span
-            className="absolute top-sp-2 right-sp-2 text-f-xxs font-semibold text-fg"
+            className="absolute top-sp-2 right-sp-2 text-f-xxs font-mono text-fg"
             style={{ background: 'var(--backdrop-50)', padding: '2px 6px' }}
             aria-hidden="true"
           >
@@ -117,7 +117,7 @@ export default function HomePoiCard({ poi, badge }: Props) {
           onClick={handleSave}
           aria-label={saved ? t('unsaveAria', { name }) : t('saveAria', { name })}
           aria-pressed={saved}
-          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-[80ms]"
           style={{ background: 'var(--backdrop-50)', color: saved ? 'var(--lav)' : 'var(--fg)' }}
         >
           <Bookmark size={15} strokeWidth={2} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
@@ -126,7 +126,7 @@ export default function HomePoiCard({ poi, badge }: Props) {
           onClick={handleLike}
           aria-label={liked ? t('unlikeAria', { name }) : t('likeAria', { name })}
           aria-pressed={liked}
-          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-[80ms]"
           style={{ background: 'var(--backdrop-50)', color: liked ? 'var(--danger)' : 'var(--fg)' }}
         >
           <Heart size={15} strokeWidth={2} fill={liked ? 'currentColor' : 'none'} aria-hidden="true" />

@@ -158,7 +158,7 @@ export default function LeftPanelPlanActive({
                     value={duration}
                     onChange={e => onDurationChange(poi.poi_id, Math.max(5, Math.min(480, Number(e.target.value) || 60)))}
                     aria-label={t('durationAriaLabel', { name })}
-                    className="w-[42px] text-center text-xs text-fg bg-bg-3 rounded py-0.5 outline-none focus:ring-1 focus:ring-lav tabular-nums"
+                    className="w-[42px] text-center text-xs text-fg bg-bg-3 rounded-none py-0.5 outline-none focus:ring-1 focus:ring-lav tabular-nums"
                     style={{ border: '1px solid var(--bdr)' }}
                   />
                   <span className="text-muted text-f-xxs">{t('durationLabel')}</span>
@@ -207,7 +207,7 @@ export default function LeftPanelPlanActive({
         {/* LP_15 — Preview plan */}
         <button
           onClick={onPreviewPlan}
-          className="w-full min-h-touch flex items-center justify-center bg-lav text-bg rounded-xl font-body font-semibold text-sm hover:opacity-90 active:opacity-75 transition-opacity"
+          className="w-full min-h-touch flex items-center justify-center rounded-none bg-fg text-bg font-mono text-f-sm uppercase tracking-[0.06em] px-sp-5 hover:bg-royal-600 hover:text-fg transition-[background,color] duration-[80ms]"
         >
           {t('previewPlan')}
         </button>

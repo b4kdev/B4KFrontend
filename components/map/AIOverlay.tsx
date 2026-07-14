@@ -83,7 +83,7 @@ async function getMockResponse(input: string, pois: MapPoi[]): Promise<ChatMessa
 // ─── Sub-components ──────────────────────────────────────────────
 function TypingIndicator() {
   return (
-    <div className="flex items-center gap-1 px-sp-3 py-sp-2 bg-bg-3 rounded-2xl rounded-tl-sm w-fit">
+    <div className="flex items-center gap-1 px-sp-3 py-sp-2 bg-bg-3 rounded-none w-fit">
       {[0, 1, 2].map(i => (
         <span
           key={i}
@@ -107,7 +107,7 @@ function POICard({ poi, isInPlan, planFull, onAdd }: {
 
   return (
     <div
-      className="flex items-center justify-between gap-sp-3 p-sp-3 rounded-xl bg-bg-2"
+      className="flex items-center justify-between gap-sp-3 p-sp-3 rounded-none bg-bg-2"
       style={{ border: '1px solid var(--bdr)' }}
     >
       <div className="min-w-0">
@@ -119,7 +119,7 @@ function POICard({ poi, isInPlan, planFull, onAdd }: {
         disabled={disabled}
         aria-label={isInPlan ? t('added') : t('addToPlan')}
         className={[
-          'shrink-0 min-w-touch min-h-touch flex items-center justify-center gap-1 px-sp-3 rounded-lg text-xs font-semibold transition-all',
+          'shrink-0 min-w-touch min-h-touch flex items-center justify-center gap-1 px-sp-3 rounded-none text-xs font-semibold transition-all',
           isInPlan
             ? 'bg-lav-dim text-lav cursor-default'
             : disabled
@@ -160,7 +160,7 @@ function PlanResult({ stops }: { stops: MapPoi[] }) {
       ))}
       <button
         onClick={handlePreviewPlan}
-        className="mt-sp-2 w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-xl font-semibold text-sm bg-lav text-bg hover:opacity-90 active:opacity-75 transition-opacity"
+        className="mt-sp-2 w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-none bg-fg text-bg font-mono text-f-sm uppercase tracking-[0.06em] px-sp-5 hover:bg-royal-600 hover:text-fg transition-[background,color] duration-[80ms]"
       >
         {t('previewPlan')}
         <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
@@ -300,7 +300,7 @@ export default function AIOverlay({
           if (msg.role === 'user') {
             return (
               <div key={msg.id} className="flex justify-end">
-                <div className="max-w-[80%] px-sp-3 py-sp-2 bg-lav text-bg rounded-2xl rounded-tr-sm text-sm">
+                <div className="max-w-[80%] px-sp-3 py-sp-2 bg-lav text-bg rounded-none text-sm">
                   {msg.content}
                 </div>
               </div>
@@ -310,7 +310,7 @@ export default function AIOverlay({
           return (
             <div key={msg.id} className="flex flex-col gap-sp-2">
               {msg.type === 'text' && (
-                <div className="px-sp-3 py-sp-2 bg-bg-3 rounded-2xl rounded-tl-sm text-fg text-sm max-w-[85%]">
+                <div className="px-sp-3 py-sp-2 bg-bg-3 rounded-none text-fg text-sm max-w-[85%]">
                   {msg.content}
                 </div>
               )}
@@ -339,7 +339,7 @@ export default function AIOverlay({
                 <div className="flex flex-col gap-sp-2 max-w-full">
                   <p className="text-muted text-xs">{t('planBuilt')}</p>
                   <div
-                    className="p-sp-3 rounded-xl bg-bg-3 flex flex-col gap-sp-2"
+                    className="p-sp-3 rounded-none bg-bg-3 flex flex-col gap-sp-2"
                     style={{ border: '1px solid var(--lav-border)' }}
                   >
                     <PlanResult stops={msg.planStops!} />
@@ -429,7 +429,7 @@ export default function AIOverlay({
     <>
       {/* ── Desktop panel — FL3_01 / MP_30-35 ── */}
       <div
-        className="hidden lg:flex flex-col absolute bottom-0 right-0 z-20 w-[380px] bg-bg-2 rounded-tl-2xl ai-overlay-panel"
+        className="hidden lg:flex flex-col absolute bottom-0 right-0 z-20 w-[380px] bg-bg-2 rounded-none ai-overlay-panel"
         style={{
           border: '1px solid var(--lav-border)',
           borderRight: 'none',

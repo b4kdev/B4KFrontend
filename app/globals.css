@@ -30,6 +30,8 @@ body {
   --bg-2:        #111111;
   --bg-3:        #1a1a1a;
   --void-100:    #080610;  /* hero/photo context — deepest black for gradient fades */
+  --void-200:    #0D0A1A;
+  --void-300:    #150F28;
 
   /* Accent signals — constrained semantic use */
   --energy:      #C42490;  /* AI·ENGINE active / live·realtime signals only */
@@ -65,6 +67,20 @@ body {
   /* Touch target — Apple HIG + WCAG AAA minimum */
   --touch-min: 44px;
 
+  /* Motion — duration scale */
+  --dur-micro:    80ms;
+  --dur-standard: 150ms;
+  --dur-reveal:   250ms;
+  --dur-max:      300ms;
+
+  /* Motion — easing */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.4, 0, 1, 1);
+  --ease-linear: linear;
+
+  /* Layout */
+  --sidebar: 220px;
+
   /* Spacing */
   --sp-1:  4px;
   --sp-2:  8px;
@@ -81,6 +97,7 @@ body {
   /* Typography */
   --f-display: 'MODERNIZ', system-ui, -apple-system, sans-serif;
   --f-body:    var(--font-work-sans, 'Work Sans'), system-ui, -apple-system, sans-serif;
+  --f-mono:    'IBM Plex Mono', 'Courier New', monospace;
 
   /* Font sizes */
   --f-xxs:  10px;
@@ -289,3 +306,107 @@ a { color: inherit; text-decoration: none; }
   0%, 60%, 100% { transform: translateY(0);    opacity: 0.4; }
   30%           { transform: translateY(-4px); opacity: 1; }
 }
+
+/* ─── CTA components ───────────────────────────────────────── */
+.cta-primary {
+  height: 44px;
+  padding: 0 20px;
+  background: var(--fg);
+  color: var(--bg);
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 0;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--dur-micro) var(--ease-linear), color var(--dur-micro) var(--ease-linear);
+}
+.cta-primary:hover { background: var(--royal-600); color: var(--fg); }
+.cta-primary:focus-visible { outline: 1px solid var(--lav); outline-offset: 2px; }
+.cta-primary:disabled { opacity: 0.40; cursor: not-allowed; }
+
+.cta-secondary {
+  height: 44px;
+  padding: 0 20px;
+  background: transparent;
+  color: rgba(255,255,255,0.55);
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 0;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color var(--dur-micro) var(--ease-linear), color var(--dur-micro) var(--ease-linear);
+}
+.cta-secondary:hover { border-color: rgba(255,255,255,0.08); color: var(--fg); }
+.cta-secondary:focus-visible { outline: 1px solid var(--lav); outline-offset: 2px; }
+.cta-secondary:disabled { opacity: 0.30; cursor: not-allowed; }
+
+.cta-ai {
+  height: 44px;
+  padding: 0 20px;
+  background: rgba(196,36,144,0.05);
+  color: var(--energy);
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 0;
+  border: 1px solid rgba(196,36,144,0.20);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--dur-micro) var(--ease-linear), border-color var(--dur-micro) var(--ease-linear);
+}
+.cta-ai:hover { background: rgba(196,36,144,0.12); border-color: var(--energy); }
+.cta-ai:focus-visible { outline: 1px solid var(--lav); outline-offset: 2px; }
+
+/* ─── Divrow — section label separator ─────────────────────── */
+.divrow {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  font-family: var(--f-mono);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  gap: 12px;
+}
+.divrow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.10);
+}
+
+/* ─── Catalogue row ─────────────────────────────────────────── */
+.catalogue-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  transition: background var(--dur-micro) var(--ease-linear);
+  cursor: pointer;
+}
+.catalogue-row:hover { background: rgba(255,255,255,0.04); }
+.catalogue-row[aria-selected="true"],
+.catalogue-row.selected {
+  background: var(--lav-dim);
+  border-left: 2px solid var(--lav);
+  color: var(--fg);
+}
+.catalogue-row:focus-visible { outline: 1px solid var(--lav) inset; }

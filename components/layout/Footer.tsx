@@ -18,16 +18,16 @@ export default function Footer() {
       style={{ borderTop: 'var(--bdr)' }}
     >
       <div className="flex flex-wrap items-center gap-x-sp-4 gap-y-sp-2 text-f-xs text-muted">
-        <Link href="/help" className="hover:text-fg transition-colors">
+        <Link href="/help" className="font-mono hover:text-fg" style={{ transitionProperty: 'color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}>
           {t('help')}
         </Link>
-        <Link href="/legal/privacy" className="hover:text-fg transition-colors">
+        <Link href="/legal/privacy" className="font-mono hover:text-fg" style={{ transitionProperty: 'color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}>
           {t('privacy')}
         </Link>
-        <Link href="/legal/terms" className="hover:text-fg transition-colors">
+        <Link href="/legal/terms" className="font-mono hover:text-fg" style={{ transitionProperty: 'color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}>
           {t('terms')}
         </Link>
-        <Link href="/legal/cookies" className="hover:text-fg transition-colors">
+        <Link href="/legal/cookies" className="font-mono hover:text-fg" style={{ transitionProperty: 'color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}>
           {t('cookies')}
         </Link>
         <span className="ml-auto text-f-xs text-muted-2">

@@ -39,14 +39,15 @@ export default function MobileBottomNav() {
             key={href}
             href={href}
             className={[
-              'flex flex-col items-center gap-sp-1 px-sp-4 py-sp-1 flex-1 transition-colors min-h-touch justify-center',
+              'flex flex-col items-center gap-sp-1 px-sp-4 py-sp-1 flex-1 min-h-touch justify-center',
               active ? 'text-lav' : 'text-muted',
             ].join(' ')}
+            style={{ transitionProperty: 'color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}
             aria-label={t(labelKey)}
             aria-current={active ? 'page' : undefined}
           >
             <Icon size={20} strokeWidth={2} aria-hidden="true" />
-            <span className="text-f-xxs font-semibold tracking-[0.04em]">{t(labelKey)}</span>
+            <span className="text-f-xxs font-mono uppercase tracking-[0.12em]">{t(labelKey)}</span>
           </Link>
         );
       })}

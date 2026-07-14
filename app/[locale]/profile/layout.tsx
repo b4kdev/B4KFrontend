@@ -37,7 +37,7 @@ function HeaderSkeleton() {
 function HeaderError({ onRetry, t }: { onRetry: () => void; t: ReturnType<typeof useTranslations> }) {
   return (
     <div
-      className="flex items-center gap-sp-3 p-sp-4 rounded-lg text-danger"
+      className="flex items-center gap-sp-3 p-sp-4 rounded-none text-danger"
       style={{ background: 'var(--bg-2)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
       role="alert"
     >
@@ -199,7 +199,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
               aria-current={active ? 'page' : undefined}
               className={[
                 'px-sp-4 py-sp-3 text-f-md font-semibold tracking-[0.02em] transition-colors',
-                'min-h-[44px] flex items-center rounded-t-md -mb-px',
+                'min-h-[44px] flex items-center rounded-none -mb-px',
                 active
                   ? 'text-lav border-b-2 border-lav'
                   : 'text-muted hover:text-fg',

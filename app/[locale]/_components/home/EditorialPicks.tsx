@@ -36,7 +36,7 @@ export default function EditorialPicks() {
           <button
             key={c.key}
             onClick={() => setCat(c.key)}
-            className="shrink-0 px-sp-3 py-[5px] text-f-xs font-semibold rounded-full transition-colors"
+            className="shrink-0 px-sp-3 py-[5px] text-f-xs font-mono rounded-full transition-colors duration-[80ms]"
             style={{
               background: cat === c.key ? 'var(--lav)' : 'var(--bg-3)',
               color: cat === c.key ? 'var(--bg)' : 'var(--muted)',
@@ -57,7 +57,7 @@ export default function EditorialPicks() {
         <div className="flex items-center gap-sp-3 py-sp-6 text-muted text-f-sm" role="alert">
           <RefreshCw size={14} strokeWidth={2} aria-hidden="true" />
           <span>{t('error')}</span>
-          <button onClick={() => mutate()} className="text-lav font-semibold hover:opacity-80 transition-opacity">
+          <button onClick={() => mutate()} className="text-lav font-mono uppercase tracking-[0.06em] hover:opacity-80 transition-opacity duration-[80ms]">
             {t('retry')}
           </button>
         </div>

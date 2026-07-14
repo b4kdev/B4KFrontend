@@ -1,5 +1,6 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import Image from 'next/image';
 import useSWR from 'swr';
 import { usePathname } from 'next/navigation';
@@ -40,8 +41,14 @@ export default function Sidebar() {
     return segment === href || segment.startsWith(`${href}/`);
   };
 
+  const railStyle: CSSProperties = {
+    transitionProperty: 'color, background-color',
+    transitionDuration: 'var(--dur-micro)',
+    transitionTimingFunction: 'var(--ease-linear)',
+  };
+
   const railClass = (active: boolean) => [
-    'flex items-center justify-center min-w-touch min-h-touch rounded-none transition-colors duration-150',
+    'flex items-center justify-center min-w-touch min-h-touch rounded-none',
     active ? 'bg-lav-dim text-lav' : 'text-muted hover:bg-muted-3 hover:text-fg',
   ].join(' ');
 
@@ -70,6 +77,7 @@ export default function Sidebar() {
               aria-label={t(labelKey)}
               aria-current={isActive(href) ? 'page' : undefined}
               className={railClass(isActive(href))}
+              style={railStyle}
             >
               <Icon size={24} strokeWidth={2} className="shrink-0" />
             </Link>
@@ -85,6 +93,7 @@ export default function Sidebar() {
             aria-label={t('notifications')}
             onClick={() => open('profile_nav')}
             className={railClass(false)}
+            style={railStyle}
           >
             <Bell size={24} strokeWidth={2} />
           </button>
@@ -94,6 +103,7 @@ export default function Sidebar() {
             aria-label={t('notifications')}
             aria-current={isActive('/notifications') ? 'page' : undefined}
             className={railClass(isActive('/notifications'))}
+            style={railStyle}
           >
             <span className="relative shrink-0">
               <Bell size={24} strokeWidth={2} />
@@ -113,6 +123,7 @@ export default function Sidebar() {
             aria-label={t('signIn')}
             onClick={() => open('profile_nav')}
             className={railClass(false)}
+            style={railStyle}
           >
             <LogIn size={24} strokeWidth={2} />
           </button>
@@ -122,6 +133,7 @@ export default function Sidebar() {
             aria-label={t('profile')}
             aria-current={isActive('/profile') ? 'page' : undefined}
             className={railClass(isActive('/profile'))}
+            style={railStyle}
           >
             <User size={24} strokeWidth={2} className="shrink-0" />
           </Link>

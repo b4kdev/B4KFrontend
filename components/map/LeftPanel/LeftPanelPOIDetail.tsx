@@ -53,7 +53,7 @@ export default function LeftPanelPOIDetail({
 
         {/* LP_10 — Sponsored label */}
         {poi.is_partner && (
-          <p className="text-f-xxs text-muted uppercase tracking-widest -mb-sp-1">
+          <p className="font-mono text-f-xxs text-muted uppercase tracking-[0.22em] -mb-sp-1">
             {t('sponsored')}
           </p>
         )}
@@ -113,12 +113,12 @@ export default function LeftPanelPOIDetail({
           title={addDisabled ? t('planFull') : undefined}
           className={[
             'w-full min-h-touch flex items-center justify-center gap-sp-2',
-            'rounded-xl font-body font-semibold text-sm transition-all',
+            'rounded-none font-mono text-f-sm uppercase tracking-[0.06em]',
             isInPlan
-              ? 'bg-lav-dim text-lav cursor-default'
+              ? 'bg-lav-dim text-lav cursor-default transition-none'
               : addDisabled
-                ? 'bg-muted-3 text-muted cursor-not-allowed'
-                : 'bg-lav text-bg hover:opacity-90 active:opacity-75',
+                ? 'bg-muted-3 text-muted cursor-not-allowed transition-none'
+                : 'bg-fg text-bg hover:bg-royal-600 hover:text-fg transition-[background,color] duration-[80ms]',
           ].join(' ')}
         >
           {isInPlan
@@ -132,7 +132,7 @@ export default function LeftPanelPOIDetail({
           onClick={onToggleSave}
           aria-label={isSaved ? t('unsave') : t('save')}
           aria-pressed={isSaved}
-          className="w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-xl text-sm font-medium transition-colors bg-overlay-10 hover:bg-muted-3"
+          className="w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-none font-mono text-f-sm uppercase tracking-[0.06em] bg-transparent text-muted border border-transparent hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
         >
           <Heart
             size={16}

@@ -8,7 +8,7 @@ export default function NotFound() {
   return (
     <main className="px-3.5 md:px-8 pt-7 pb-16 max-w-[1200px]" aria-label={t('title')}>
       <div
-        className="flex flex-col items-center justify-center text-center py-20 px-6 rounded-lg"
+        className="flex flex-col items-center justify-center text-center py-20 px-6 rounded-none"
         style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       >
         <Compass size={48} strokeWidth={2} className="text-muted-2 mb-4" />

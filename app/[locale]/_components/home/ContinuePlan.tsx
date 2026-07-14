@@ -65,7 +65,7 @@ export default function ContinuePlan() {
         </div>
         <button
           onClick={() => router.push(`/map?plan=${serverDraft.id}`)}
-          className="flex items-center gap-1 text-f-sm font-semibold text-lav hover:opacity-80 transition-opacity shrink-0 min-h-touch px-sp-3"
+          className="flex items-center gap-1 text-f-sm font-mono uppercase tracking-[0.06em] text-lav hover:opacity-80 transition-opacity duration-[80ms] shrink-0 min-h-touch px-sp-3"
         >
           {t('cta')}
           <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />
@@ -73,7 +73,7 @@ export default function ContinuePlan() {
         <button
           onClick={() => setDismissed(true)}
           aria-label={t('dismiss')}
-          className="text-muted hover:text-fg transition-colors shrink-0 min-w-touch min-h-touch flex items-center justify-center"
+          className="text-muted hover:text-fg transition-colors duration-[80ms] shrink-0 min-w-touch min-h-touch flex items-center justify-center"
         >
           <X size={16} strokeWidth={2} aria-hidden="true" />
         </button>
@@ -105,7 +105,7 @@ export default function ContinuePlan() {
         </div>
         <button
           onClick={() => router.push('/map')}
-          className="flex items-center gap-1 text-f-sm font-semibold text-lav hover:opacity-80 transition-opacity shrink-0 min-h-touch px-sp-3"
+          className="flex items-center gap-1 text-f-sm font-mono uppercase tracking-[0.06em] text-lav hover:opacity-80 transition-opacity duration-[80ms] shrink-0 min-h-touch px-sp-3"
         >
           {t('cta')}
           <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />
@@ -113,7 +113,7 @@ export default function ContinuePlan() {
         <button
           onClick={() => setDismissed(true)}
           aria-label={t('dismiss')}
-          className="text-muted hover:text-fg transition-colors shrink-0 min-w-touch min-h-touch flex items-center justify-center"
+          className="text-muted hover:text-fg transition-colors duration-[80ms] shrink-0 min-w-touch min-h-touch flex items-center justify-center"
         >
           <X size={16} strokeWidth={2} aria-hidden="true" />
         </button>

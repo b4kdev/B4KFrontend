@@ -63,7 +63,7 @@ function BadgeDetailModal({
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="w-full max-w-[360px] rounded-2xl p-sp-6 flex flex-col gap-sp-4"
+        className="w-full max-w-[360px] rounded-none p-sp-6 flex flex-col gap-sp-4"
         style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       >
         {/* Header */}
@@ -110,7 +110,7 @@ function BadgeDetailModal({
           <button
             onClick={() => onPin(badge.id, !badge.is_pinned)}
             className={[
-              'min-h-touch w-full rounded-lg text-f-md font-semibold flex items-center justify-center gap-sp-2 transition-colors',
+              'min-h-touch w-full rounded-none text-f-md font-semibold flex items-center justify-center gap-sp-2 transition-colors',
               badge.is_pinned
                 ? 'text-lav hover:bg-lav-dim'
                 : 'text-muted hover:text-fg',
@@ -173,8 +173,7 @@ export default function BadgesPage() {
           <p className="text-f-lg font-semibold text-fg">{t('badges.error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-lg text-f-md font-semibold text-lav"
-            style={{ border: '1px solid var(--lav-border)' }}
+            className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-none bg-transparent text-muted font-mono text-f-sm uppercase tracking-[0.06em] border border-transparent hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
           >
             <RefreshCw size={14} strokeWidth={2} />
             {t('badges.error.cta')}

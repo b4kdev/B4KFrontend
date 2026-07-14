@@ -33,7 +33,7 @@ export default function ToastStack() {
           <div
             key={toast.id}
             role="status"
-            className="flex items-center gap-sp-2 px-sp-4 py-sp-3 bg-bg-3 rounded-xl toast-enter pointer-events-auto"
+            className="flex items-center gap-sp-2 px-sp-4 py-sp-3 bg-bg-3 rounded-none toast-enter pointer-events-auto"
             style={{ border: '1px solid var(--bdr)', boxShadow: '0 4px 16px var(--backdrop-50)' }}
           >
             <Icon size={16} strokeWidth={2} className={COLOR[toast.type]} aria-hidden="true" />

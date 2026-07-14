@@ -13,7 +13,7 @@ import type { ProfileTrip } from '@/app/api/profile/trips/route'
 
 function TripCardSkeleton() {
   return (
-    <div className="rounded-xl overflow-hidden animate-pulse" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
+    <div className="rounded-none overflow-hidden animate-pulse" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
       <div className="aspect-video bg-muted-3" />
       <div className="p-sp-4 space-y-sp-2">
         <div className="h-4 w-3/4 rounded bg-muted-3" />
@@ -43,7 +43,7 @@ function DeleteModal({
       aria-label={t('trips.deleteModal.ariaLabel')}
     >
       <div
-        className="w-full max-w-[360px] rounded-xl p-sp-6 flex flex-col gap-sp-4"
+        className="w-full max-w-[360px] rounded-none p-sp-6 flex flex-col gap-sp-4"
         style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       >
         <div className="flex items-start gap-sp-3">
@@ -56,14 +56,14 @@ function DeleteModal({
         <div className="flex gap-sp-3 mt-sp-2">
           <button
             onClick={onCancel}
-            className="flex-1 min-h-touch rounded-lg text-f-md font-semibold text-muted hover:text-fg transition-colors"
-            style={{ border: '1px solid var(--bdr)' }}
+            className="flex-1 min-h-touch rounded-none bg-transparent text-muted font-mono text-f-sm uppercase tracking-[0.06em] px-sp-5 hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
+            style={{ border: '1px solid transparent' }}
           >
             {t('trips.deleteModal.cancel')}
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 min-h-touch rounded-lg text-f-md font-semibold bg-danger text-bg hover:opacity-90 transition-opacity"
+            className="flex-1 min-h-touch rounded-none bg-danger text-bg font-mono text-f-sm uppercase tracking-[0.06em] px-sp-5 hover:opacity-90 transition-opacity duration-[80ms]"
           >
             {t('trips.deleteModal.confirm')}
           </button>
@@ -86,7 +86,7 @@ function TripCard({
 }) {
   return (
     <article
-      className="rounded-xl overflow-hidden flex flex-col"
+      className="rounded-none overflow-hidden flex flex-col"
       style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
     >
       {/* Thumbnail — PR_10 */}
@@ -147,7 +147,7 @@ function TripCard({
         <div className="flex gap-sp-2 mt-auto pt-sp-1">
           <Link
             href={`/map?plan=${trip.id}`}
-            className="flex-1 min-h-touch flex items-center justify-center gap-1.5 rounded-lg text-f-sm font-semibold text-lav transition-colors hover:bg-lav-dim"
+            className="flex-1 min-h-touch flex items-center justify-center gap-1.5 rounded-none text-f-sm font-semibold text-lav transition-colors hover:bg-lav-dim"
             style={{ border: '1px solid var(--lav-border)' }}
             aria-label={t('trips.card.editAria', { title: trip.title })}
           >
@@ -157,7 +157,7 @@ function TripCard({
           {/* UF-14 (G10.3) — share, mirroring IT_01's share behavior */}
           <button
             onClick={() => onShare(trip)}
-            className="min-h-touch min-w-touch flex items-center justify-center rounded-lg text-muted hover:text-fg transition-colors"
+            className="min-h-touch min-w-touch flex items-center justify-center rounded-none text-muted hover:text-fg transition-colors"
             style={{ border: '1px solid var(--bdr)' }}
             aria-label={t('trips.card.shareAria', { title: trip.title })}
           >
@@ -165,7 +165,7 @@ function TripCard({
           </button>
           <button
             onClick={() => onDelete(trip.id)}
-            className="min-h-touch min-w-touch flex items-center justify-center rounded-lg text-muted hover:text-danger transition-colors"
+            className="min-h-touch min-w-touch flex items-center justify-center rounded-none text-muted hover:text-danger transition-colors"
             style={{ border: '1px solid var(--bdr)' }}
             aria-label={t('trips.card.deleteAria', { title: trip.title })}
           >
@@ -234,8 +234,7 @@ export default function TripsPage() {
           <p className="text-f-lg font-semibold text-fg">{t('trips.error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-lg text-f-md font-semibold text-lav"
-            style={{ border: '1px solid var(--lav-border)' }}
+            className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-none bg-transparent text-muted font-mono text-f-sm uppercase tracking-[0.06em] border border-transparent hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
           >
             <RefreshCw size={14} strokeWidth={2} />
             {t('trips.error.cta')}
@@ -262,7 +261,7 @@ export default function TripsPage() {
 
           {/* Auto-gen nudge — PR_16 */}
           <div
-            className="w-full max-w-[400px] flex items-center justify-between gap-sp-4 p-sp-4 rounded-xl mt-sp-2"
+            className="w-full max-w-[400px] flex items-center justify-between gap-sp-4 p-sp-4 rounded-none mt-sp-2"
             style={{ background: 'var(--bg-2)', border: '1px solid var(--lav-border)' }}
           >
             <div className="flex items-center gap-sp-3">

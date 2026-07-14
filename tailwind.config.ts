@@ -75,6 +75,7 @@ const config: Config = {
       fontFamily: {
         display: ["var(--f-display)"],
         body:    ["var(--f-body)"],
+        mono:    ["var(--f-mono)"],
       },
       fontSize: {
         "f-xxs":  "var(--f-xxs)",

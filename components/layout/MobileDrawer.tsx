@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import Image from 'next/image';
 import useSWR from 'swr';
 import { useTranslations } from 'next-intl';
@@ -47,16 +47,22 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
   const isGuest = !loading && !session;
 
   const rowClass =
-    'flex items-center gap-sp-3 w-full min-h-touch px-sp-4 text-f-base font-medium text-fg hover:bg-muted-3 transition-colors';
+    'flex items-center gap-sp-3 w-full min-h-touch px-sp-4 text-f-base font-mono uppercase tracking-[0.12em] text-fg hover:bg-muted-3';
+
+  const rowStyle: CSSProperties = {
+    transitionProperty: 'background-color',
+    transitionDuration: 'var(--dur-micro)',
+    transitionTimingFunction: 'var(--ease-linear)',
+  };
 
   const gatedOrLink = (href: string, label: string, icon: React.ReactNode, badge?: boolean) =>
     isGuest ? (
-      <button type="button" className={rowClass} onClick={() => { openGate('profile_nav'); onClose(); }}>
+      <button type="button" className={rowClass} style={rowStyle} onClick={() => { openGate('profile_nav'); onClose(); }}>
         {icon}
         <span className="flex-1 text-left">{label}</span>
       </button>
     ) : (
-      <Link href={href} className={rowClass} onClick={onClose}>
+      <Link href={href} className={rowClass} style={rowStyle} onClick={onClose}>
         <span className="relative shrink-0 flex items-center">
           {icon}
           {badge && hasUnread && (
@@ -158,6 +164,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
           <button
             type="button"
             className={rowClass}
+            style={rowStyle}
             onClick={() => setLangExpanded(v => !v)}
             aria-expanded={langExpanded}
           >
@@ -166,8 +173,8 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
             <ChevronRight
               size={18}
               strokeWidth={2}
-              className="shrink-0 transition-transform"
-              style={{ transform: langExpanded ? 'rotate(90deg)' : 'none' }}
+              className="shrink-0"
+              style={{ transform: langExpanded ? 'rotate(90deg)' : 'none', transitionProperty: 'transform', transitionDuration: 'var(--dur-standard)', transitionTimingFunction: 'var(--ease-out)' }}
               aria-hidden="true"
             />
           </button>
@@ -177,7 +184,8 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
                 <button
                   key={loc}
                   type="button"
-                  className="min-h-touch pl-[52px] pr-sp-4 text-left text-f-md text-muted hover:text-fg transition-colors"
+                  className="min-h-touch pl-[52px] pr-sp-4 text-left text-f-md font-mono text-muted hover:text-fg"
+                  style={{ transitionProperty: 'color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}
                   onClick={() => changeLocale(loc)}
                 >
                   {tProfile(`settings.languages.${loc}`)}
@@ -186,7 +194,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
             </div>
           )}
 
-          <Link href="/help" className={rowClass} onClick={onClose}>
+          <Link href="/help" className={rowClass} style={rowStyle} onClick={onClose}>
             <HelpCircle size={22} strokeWidth={2} className="shrink-0" />
             <span className="flex-1">{t('help')}</span>
           </Link>
@@ -195,6 +203,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
           <button
             type="button"
             className={rowClass}
+            style={rowStyle}
             onClick={() => setLegalExpanded(v => !v)}
             aria-expanded={legalExpanded}
           >
@@ -203,8 +212,8 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
             <ChevronRight
               size={18}
               strokeWidth={2}
-              className="shrink-0 transition-transform"
-              style={{ transform: legalExpanded ? 'rotate(90deg)' : 'none' }}
+              className="shrink-0"
+              style={{ transform: legalExpanded ? 'rotate(90deg)' : 'none', transitionProperty: 'transform', transitionDuration: 'var(--dur-standard)', transitionTimingFunction: 'var(--ease-out)' }}
               aria-hidden="true"
             />
           </button>
@@ -214,7 +223,8 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
                 <Link
                   key={key}
                   href={href}
-                  className="min-h-touch pl-[52px] pr-sp-4 flex items-center text-f-md text-muted hover:text-fg transition-colors"
+                  className="min-h-touch pl-[52px] pr-sp-4 flex items-center text-f-md font-mono text-muted hover:text-fg"
+                  style={{ transitionProperty: 'color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}
                   onClick={onClose}
                 >
                   {t(key)}
@@ -229,7 +239,8 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
           <div className="p-sp-2 shrink-0" style={{ borderTop: 'var(--bdr)' }}>
             <button
               type="button"
-              className="flex items-center gap-sp-3 w-full min-h-touch px-sp-4 text-f-base font-medium text-danger hover:bg-muted-3 transition-colors"
+              className="flex items-center gap-sp-3 w-full min-h-touch px-sp-4 text-f-base font-mono uppercase tracking-[0.12em] text-danger hover:bg-muted-3"
+              style={{ transitionProperty: 'background-color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}
               onClick={async () => { onClose(); await createSupabaseBrowserClient().auth.signOut(); router.push('/'); }}
             >
               <LogOut size={22} strokeWidth={2} className="shrink-0" />

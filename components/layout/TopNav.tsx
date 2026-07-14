@@ -372,7 +372,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
       >
         {/* Mobile hamburger */}
         <button
-          className="lg:hidden relative min-w-touch min-h-touch ml-4 flex items-center justify-center rounded-full text-muted hover:text-fg shrink-0"
+          className="lg:hidden relative min-w-touch min-h-touch ml-4 flex items-center justify-center rounded-none text-muted hover:text-fg shrink-0"
           onClick={onMobileMenuOpen}
           aria-label={tNav('menuOpen')}
         >
@@ -405,7 +405,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
               onFocus={() => setDropdownOpen(true)}
               onKeyDown={handleKeyDownInput}
               placeholder={tSearch('placeholder')}
-              className="w-full h-8 rounded-full pl-8 pr-8 text-f-sm text-fg placeholder:text-muted outline-none bg-bg-3"
+              className="w-full h-8 rounded-none pl-8 pr-8 text-f-sm text-fg placeholder:text-muted outline-none bg-bg-3"
               style={{ border: '1px solid var(--bdr)' }}
               aria-label={tSearch('placeholder')}
               aria-autocomplete="list"
@@ -442,7 +442,8 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
           {/* Locale switcher */}
           <div className="relative" ref={localeRef}>
             <button
-              className="min-w-touch min-h-touch flex items-center justify-center rounded-full text-muted hover:text-fg hover:bg-muted-3 transition-colors"
+              className="min-w-touch min-h-touch flex items-center justify-center rounded-none text-muted hover:text-fg hover:bg-muted-3"
+              style={{ transitionProperty: 'color, background-color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}
               aria-label={tNav('language')}
               aria-expanded={localeOpen}
               aria-haspopup="listbox"
@@ -477,7 +478,8 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
 
           <Link
             href="/help"
-            className="min-w-touch min-h-touch flex items-center justify-center rounded-full text-muted hover:text-fg hover:bg-muted-3 transition-colors"
+            className="min-w-touch min-h-touch flex items-center justify-center rounded-none text-muted hover:text-fg hover:bg-muted-3"
+            style={{ transitionProperty: 'color, background-color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}
             aria-label={tNav('help')}
           >
             <HelpCircle size={24} strokeWidth={2} />
@@ -487,7 +489,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
         {/* Mobile actions */}
         <div className="flex lg:hidden items-center gap-1 ml-auto mr-4 shrink-0">
           <button
-            className="min-w-touch min-h-touch flex items-center justify-center rounded-full text-muted"
+            className="min-w-touch min-h-touch flex items-center justify-center rounded-none text-muted"
             onClick={() => { setMobileSearchOpen(true); setRecents(getRecents()); }}
             aria-label={tSearch('placeholder')}
           >
@@ -591,7 +593,7 @@ function MobileSearchOverlay({
       {/* Header */}
       <div className="flex items-center gap-sp-2 px-sp-3 py-sp-2" style={{ borderBottom: 'var(--bdr)' }}>
         <button
-          className="text-muted min-h-touch min-w-touch flex items-center justify-center rounded-full"
+          className="text-muted min-h-touch min-w-touch flex items-center justify-center rounded-none"
           onClick={onClose}
           aria-label={tCommon('back')}
         >
@@ -606,7 +608,7 @@ function MobileSearchOverlay({
             onChange={e => { setSearchVal(e.target.value); setHighlightIdx(-1); }}
             onKeyDown={handleKeyDown}
             placeholder={t('placeholder')}
-            className="w-full h-9 rounded-full px-sp-4 text-f-base text-fg placeholder:text-muted outline-none bg-bg-3"
+            className="w-full h-9 rounded-none px-sp-4 text-f-base text-fg placeholder:text-muted outline-none bg-bg-3"
             style={{ border: '1px solid var(--bdr)' }}
             aria-label={t('placeholder')}
           />
@@ -614,7 +616,7 @@ function MobileSearchOverlay({
         {searchVal && (
           <button
             onClick={() => { setSearchVal(''); inputRef.current?.focus(); }}
-            className="text-muted min-h-touch min-w-touch flex items-center justify-center rounded-full"
+            className="text-muted min-h-touch min-w-touch flex items-center justify-center rounded-none"
             aria-label={tSearch('clearSearch')}
           >
             <X size={16} strokeWidth={2} />
