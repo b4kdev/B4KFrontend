@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { Heart, Plus, Check, Clock, X } from 'lucide-react'
+import { Heart, Plus, Check, Clock, X, ImageOff } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import type { MapPoi } from '@/hooks/useMapPois'
 
@@ -40,6 +40,16 @@ export default function LeftPanelPOIDetail({
         >
           <X size={18} strokeWidth={2} aria-hidden="true" />
         </button>
+
+        {/* LP_11-16 — Media (primary image, placeholder if none) */}
+        <div className="-mx-sp-4 -mt-sp-2 bg-bg-3 flex items-center justify-center overflow-hidden" style={{ aspectRatio: '4/3' }}>
+          {poi.primary_image_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={poi.primary_image_url} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <ImageOff size={28} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+          )}
+        </div>
 
         {/* LP_10 — Sponsored label */}
         {poi.is_partner && (

@@ -21,6 +21,21 @@ export interface MapPoi {
   description?: string
   address?: string
   website_url?: string
+  // SC-33 (LP_11-16 media) — service.places_snapshot.primary_image_url
+  primary_image_url?: string
+}
+
+// Mock only — real data is service.places_snapshot.primary_image_url per POI.
+// Shared per-domain until real photography exists.
+const DOMAIN_IMAGE: Record<string, string> = {
+  Palaces:     '/mock-images/gyeongbok.png',
+  Temples:     '/mock-images/cherry.png',
+  Cafes:       '/mock-images/dance_students.png',
+  Parks:       '/mock-images/film_street.png',
+  Restaurants: '/mock-images/pork_soup.png',
+  Hotels:      '/mock-images/culture001.png',
+  Shopping:    '/mock-images/kbbq.png',
+  Museums:     '/mock-images/palace_spring.png',
 }
 
 // Stub: replace with Supabase query against service.places_snapshot when API is ready
@@ -57,6 +72,7 @@ export async function GET(req: NextRequest) {
     description: p.description
       ?? `${p.name_en} is a popular ${p.display_domain.toLowerCase().replace(/s$/, '')} in ${p.display_region}, a favourite stop for visitors exploring the area.`,
     address: p.address ?? `${p.display_region_detail ?? ''}, ${p.display_region}, South Korea`.replace(/^, /, ''),
+    primary_image_url: p.primary_image_url ?? DOMAIN_IMAGE[p.display_domain],
   }))
 
   return NextResponse.json({ pois })
