@@ -600,7 +600,7 @@
   "map": {
     "ariaLabel": "Interactive map of Korea",
     "loading": "Loading map…",
-    "error": "Map failed to load",
+    "error": "Map could not load",
     "retry": "Try again",
     "noKey": "Map API key not configured",
     "zoomIn": "Zoom in",

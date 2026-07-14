@@ -275,21 +275,26 @@ export default function NaverMapCanvas({
         aria-label={t('ariaLabel')}
       />
 
-      {/* Loading state */}
+      {/* Loading state — mono dots, no spinner (DESIGN.md loading-state rule) */}
       {!mapReady && !scriptErr && (
         <div className="absolute inset-0 bg-bg-3 flex flex-col items-center justify-center gap-sp-3">
-          <span className="w-8 h-8 border-2 border-lav border-t-transparent rounded-full animate-spin" aria-hidden="true" />
-          <p className="text-muted text-sm">{t('loading')}</p>
+          <p className="text-muted text-sm font-mono">{t('loading')}</p>
         </div>
       )}
 
-      {/* Error state */}
+      {/* SC-32 (ERR_01) — error notice overlays the canvas rather than replacing
+          it, so whatever last rendered (map/POI pins) stays visible underneath. */}
       {scriptErr && (
-        <div className="absolute inset-0 bg-bg-3 flex flex-col items-center justify-center gap-sp-3 text-center px-sp-6">
-          <p className="text-fg text-sm">{t('error')}</p>
-          <button onClick={() => setScriptErr(false)} className="text-lav text-sm hover:underline min-h-touch flex items-center">
-            {t('retry')}
-          </button>
+        <div className="absolute inset-0 flex items-end sm:items-center justify-center pointer-events-none px-sp-4 pb-sp-6 sm:pb-0">
+          <div
+            className="pointer-events-auto flex flex-col items-center gap-sp-2 text-center px-sp-6 py-sp-4"
+            style={{ background: 'rgba(17,17,17,0.92)', backdropFilter: 'blur(12px)', border: '1px solid var(--bdr)' }}
+          >
+            <p className="text-fg text-sm font-semibold">{t('error')}</p>
+            <button onClick={() => setScriptErr(false)} className="text-lav text-sm hover:underline min-h-touch flex items-center">
+              {t('retry')}
+            </button>
+          </div>
         </div>
       )}
 
