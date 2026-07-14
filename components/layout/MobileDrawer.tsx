@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import {
-  Bell, Settings, Globe, HelpCircle, FileText, LogIn, LogOut, User, X, ChevronRight,
+  Bell, Settings, Globe, HelpCircle, FileText, LogOut, User, X, ChevronRight,
 } from 'lucide-react';
 import { fetcher } from '@/lib/fetcher';
 import { useAuthGate } from '@/contexts/AuthGateContext';
@@ -128,7 +128,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
                 className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
                 style={{ background: 'var(--bg-3)' }}
               >
-                <LogIn size={22} strokeWidth={2} className="text-lav" />
+                <User size={22} strokeWidth={2} className="text-lav" />
               </span>
               <span className="flex flex-col">
                 <span className="text-f-base font-semibold text-lav">{t('signIn')}</span>

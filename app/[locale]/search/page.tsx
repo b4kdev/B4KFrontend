@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useRouter, Link } from '@/i18n/navigation'
@@ -182,15 +182,11 @@ function FilterControls({ state }: { state: FilterState }) {
 
 function SearchFilterPanel({ state }: { state: FilterState }) {
   const t = useTranslations('search.filters')
-
   return (
-    <aside
-      className="hidden lg:block w-[220px] shrink-0 pr-sp-6"
-      style={{ borderRight: 'var(--bdr)' }}
-    >
+    <>
       <p className="text-f-sm font-semibold text-fg mb-sp-4">{t('title')}</p>
       <FilterControls state={state} />
-    </aside>
+    </>
   )
 }
 
@@ -547,7 +543,6 @@ export default function SearchPage() {
   const [tags, setTags] = useState<string[]>([])
   const [expanded, setExpanded] = useState({ places: false, plans: false, explore: false })
   const [filterSheetOpen, setFilterSheetOpen] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
 
   // Hydrate filter state from URL params (mount + browser back/forward).
   useEffect(() => {
@@ -629,67 +624,38 @@ export default function SearchPage() {
 
   const { data, error, isLoading, mutate } = useSWR<SearchResponse>(swrKey, fetcher)
 
-  const handleSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault()
-    if (!inputVal.trim()) return
-    // Preserve active filters when re-submitting a query.
-    syncFilters({})
-  }, [inputVal, syncFilters])
-
   const hasResults = data && (
     data.places.length > 0 || data.plans.length > 0 || data.explore.length > 0
   )
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
-      {/* Header */}
-      <header
-        className="sticky top-0 z-10 px-sp-4 py-sp-3 flex items-center gap-sp-3"
-        style={{ background: 'var(--bg-2)', borderBottom: 'var(--bdr)' }}
-      >
-        <form onSubmit={handleSubmit} className="flex-1 relative" role="search">
-          <span className="absolute left-sp-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" aria-hidden="true">
-            <Search size={16} strokeWidth={2} />
-          </span>
-          <input
-            ref={inputRef}
-            type="search"
-            value={inputVal}
-            onChange={e => setInputVal(e.target.value)}
-            placeholder={t('placeholder')}
-            aria-label={t('placeholder')}
-            className="w-full h-10 rounded-full pl-10 pr-sp-4 text-f-base text-fg placeholder:text-muted outline-none bg-bg-3 min-h-touch"
-            style={{ border: '1px solid var(--bdr)' }}
-          />
-          {inputVal && (
-            <button
-              type="button"
-              className="absolute right-sp-3 top-1/2 -translate-y-1/2 text-muted hover:text-fg"
-              onClick={() => { setInputVal(''); inputRef.current?.focus() }}
-              aria-label="Clear search"
-            >
-              <X size={14} strokeWidth={2} />
-            </button>
-          )}
-        </form>
-
-        {/* Mobile filter button */}
-        <button
-          className="lg:hidden min-h-touch min-w-touch flex items-center justify-center text-muted hover:text-fg rounded-full"
-          onClick={() => setFilterSheetOpen(true)}
-          aria-label={t('mobileFilter')}
+    <div style={{ background: 'var(--bg)' }}>
+      <div className="lg:flex">
+        {/* Desktop filter sidebar */}
+        <aside
+          className="hidden lg:flex flex-col w-sidebar shrink-0 sticky top-[50px] h-[calc(100vh-50px)] overflow-y-auto py-sp-6 px-sp-4"
+          style={{ borderRight: 'var(--bdr)', background: 'var(--bg-2)' }}
         >
-          <SlidersHorizontal size={20} strokeWidth={2} />
-        </button>
-      </header>
+          <SearchFilterPanel state={filterState} />
+        </aside>
 
-      {/* Body */}
-      <div className="max-w-[1280px] mx-auto flex gap-sp-8 px-sp-4 lg:px-sp-8 py-sp-6">
-        {/* Desktop sidebar */}
-        <SearchFilterPanel state={filterState} />
+        {/* Results column */}
+        <div className="flex-1 min-w-0">
+          {/* Mobile: filter button */}
+          <div
+            className="lg:hidden flex items-center justify-end px-sp-4 py-sp-2 sticky top-[50px] z-10"
+            style={{ background: 'var(--bg-2)', borderBottom: 'var(--bdr)' }}
+          >
+            <button
+              className="min-h-touch min-w-touch flex items-center justify-center text-muted hover:text-fg"
+              onClick={() => setFilterSheetOpen(true)}
+              aria-label={t('mobileFilter')}
+            >
+              <SlidersHorizontal size={20} strokeWidth={2} aria-hidden="true" />
+            </button>
+          </div>
 
-        {/* Results */}
-        <main className="flex-1 min-w-0">
+          <div className="px-sp-4 lg:px-sp-8 py-sp-6">
           {isLoading && <LoadingState />}
 
           {!isLoading && error && (
@@ -752,7 +718,8 @@ export default function SearchPage() {
               </div>
             </div>
           )}
-        </main>
+          </div>
+        </div>
       </div>
 
       {/* Mobile filter sheet */}

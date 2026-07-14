@@ -7,8 +7,9 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from '@/i18n/navigation';
-import { Home, Map, LayoutGrid, Bookmark, User, Bell, LogIn } from 'lucide-react';
+import { Home, Map, LayoutGrid, Bookmark, User, Bell } from 'lucide-react';
 import { fetcher } from '@/lib/fetcher';
+import { useProfile } from '@/hooks/useProfile';
 import { useAuthGate } from '@/contexts/AuthGateContext';
 
 // Desktop-only SideNav rail (SN_01–07). The mobile hamburger menu is a
@@ -29,6 +30,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { session, loading } = useAuth();
   const { open } = useAuthGate();
+  const { data: profile } = useProfile();
   const isGuest = !loading && !session;
   const { data: unreadData } = useSWR<{ count: number }>(
     '/api/notifications/unread-count', fetcher, { refreshInterval: 60_000 },
@@ -49,8 +51,11 @@ export default function Sidebar() {
 
   const railClass = (active: boolean) => [
     'flex items-center justify-center min-w-touch min-h-touch rounded-none',
-    active ? 'bg-lav-dim text-lav' : 'text-muted hover:bg-muted-3 hover:text-fg',
+    active ? 'bg-lav-dim text-lav' : 'text-fg hover:bg-muted-3',
   ].join(' ');
+
+  const iconStyle = (active: boolean): CSSProperties =>
+    active ? {} : { opacity: 0.35 };
 
   return (
     <aside
@@ -79,7 +84,7 @@ export default function Sidebar() {
               className={railClass(isActive(href))}
               style={railStyle}
             >
-              <Icon size={24} strokeWidth={2} className="shrink-0" />
+              <Icon size={24} strokeWidth={2} className="shrink-0" style={iconStyle(isActive(href))} />
             </Link>
           );
         })}
@@ -95,7 +100,7 @@ export default function Sidebar() {
             className={railClass(false)}
             style={railStyle}
           >
-            <Bell size={24} strokeWidth={2} />
+            <Bell size={24} strokeWidth={2} style={{ opacity: 0.35 }} />
           </button>
         ) : (
           <Link
@@ -106,7 +111,7 @@ export default function Sidebar() {
             style={railStyle}
           >
             <span className="relative shrink-0">
-              <Bell size={24} strokeWidth={2} />
+              <Bell size={24} strokeWidth={2} style={iconStyle(isActive('/notifications'))} />
               {hasUnread && (
                 <span
                   className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] rounded-full bg-danger"
@@ -125,7 +130,7 @@ export default function Sidebar() {
             className={railClass(false)}
             style={railStyle}
           >
-            <LogIn size={24} strokeWidth={2} />
+            <User size={24} strokeWidth={2} style={{ opacity: 0.35 }} />
           </button>
         ) : (
           <Link
@@ -135,7 +140,17 @@ export default function Sidebar() {
             className={railClass(isActive('/profile'))}
             style={railStyle}
           >
-            <User size={24} strokeWidth={2} className="shrink-0" />
+            {profile?.avatar_url ? (
+              <Image
+                src={profile.avatar_url}
+                alt=""
+                width={24}
+                height={24}
+                className="rounded-full object-cover"
+              />
+            ) : (
+              <User size={24} strokeWidth={2} className="shrink-0" style={iconStyle(isActive('/profile'))} />
+            )}
           </Link>
         )}
       </div>

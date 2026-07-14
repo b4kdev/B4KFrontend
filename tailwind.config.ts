@@ -70,7 +70,8 @@ const config: Config = {
         "sp-12": "var(--sp-12)",
         "sp-16": "var(--sp-16)",
         "sp-20": "var(--sp-20)",
-        "touch": "var(--touch-min)",
+        "touch":   "var(--touch-min)",
+        "sidebar": "var(--sidebar)",
       },
       fontFamily: {
         display: ["var(--f-display)"],
