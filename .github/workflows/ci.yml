@@ -79,6 +79,9 @@ jobs:
           NEXTAUTH_URL: http://localhost:3000
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          # Server-side aliases read by lib/auth.ts SupabaseAdapter at module-eval
+          SUPABASE_URL: https://placeholder.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
         run: npm run build
 
   i18n-keys:
@@ -231,7 +234,7 @@ jobs:
               | grep -vE '//\s*allow-hex' \
               | grep -vE '^\s*[0-9]+:\s*//' \
               | grep -vE '^\s*[0-9]+:\s*\*' \
-              | sed "s|^|$f:|"
+              | sed "s|^|$f:|" || true
           done <<< "$FILE_LIST" >> "$TMP"
           if [ -s "$TMP" ]; then
             COUNT=$(wc -l < "$TMP" | tr -d ' ')
@@ -250,7 +253,7 @@ jobs:
             grep -nE '\btext-\[[0-9]+px\]|\bp-\[[0-9]+px\]|\bm-\[[0-9]+px\]' "$f" 2>/dev/null \
               | grep -vE '^\s*[0-9]+:\s*//' \
               | grep -vE '^\s*[0-9]+:\s*\*' \
-              | sed "s|^|$f:|"
+              | sed "s|^|$f:|" || true
           done <<< "$FILE_LIST" >> "$TMP"
           if [ -s "$TMP" ]; then
             COUNT=$(wc -l < "$TMP" | tr -d ' ')
@@ -269,7 +272,7 @@ jobs:
             grep -nE '\-\-ink\b|\-\-ink-3\b|\-\-font-display\b|\-\-font-body\b' "$f" 2>/dev/null \
               | grep -vE '^\s*[0-9]+:\s*//' \
               | grep -vE '^\s*[0-9]+:\s*\*' \
-              | sed "s|^|$f:|"
+              | sed "s|^|$f:|" || true
           done <<< "$FILE_LIST" >> "$TMP"
           if [ -s "$TMP" ]; then
             COUNT=$(wc -l < "$TMP" | tr -d ' ')

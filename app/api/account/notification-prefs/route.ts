@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export const NOTIF_TYPES = [
+// not exported — Next.js route files may only export handlers + route config
+const NOTIF_TYPES = [
   'event_drop',
   'deal_expiring',
   'editorial_pick',
