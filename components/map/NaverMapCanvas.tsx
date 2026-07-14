@@ -21,6 +21,9 @@ interface Props {
   onAiPillExpand:  () => void
   aiOverlayOpen:   boolean
   onAiOpen:        () => void
+  // SC-31 (S-HDTVGP) — when a Saved-hub folder is active, only its POIs stay
+  // pinned (never clustered — spec: "all folder POIs pinned on map").
+  savedFolderPoiIds?: string[] | null
 }
 
 const SEOUL = { lat: 37.5665, lng: 126.9780 }
@@ -56,6 +59,7 @@ export default function NaverMapCanvas({
   pois, selectedPoiId, planStopIds, onPoiSelect,
   showAiPill, onAiPillDismiss, onAiPillExpand,
   aiOverlayOpen, onAiOpen,
+  savedFolderPoiIds = null,
 }: Props) {
   const t = useTranslations('map')
   const containerRef = useRef<HTMLDivElement>(null)
@@ -103,10 +107,14 @@ export default function NaverMapCanvas({
   useEffect(() => {
     if (!mapReady || !mapRef.current || !window.naver?.maps) return
     const map = mapRef.current
-    const clusterActive = zoom <= CLUSTER_ZOOM_THRESHOLD
+    const clusterActive = zoom <= CLUSTER_ZOOM_THRESHOLD && !savedFolderPoiIds
 
-    const planPois = pois.filter(p => planStopIds.includes(p.place_id))
-    const freePois = pois.filter(p => !planStopIds.includes(p.place_id))
+    const visiblePois = savedFolderPoiIds
+      ? pois.filter(p => savedFolderPoiIds.includes(p.place_id))
+      : pois
+
+    const planPois = visiblePois.filter(p => planStopIds.includes(p.place_id))
+    const freePois = visiblePois.filter(p => !planStopIds.includes(p.place_id))
 
     // Bucket free POIs into a lat/lng grid at the current zoom's resolution.
     // Cells with 2+ members become a cluster bubble; singletons render as normal dots.
@@ -196,7 +204,7 @@ export default function NaverMapCanvas({
 
       return marker
     })
-  }, [mapReady, pois, selectedPoiId, planStopIds, onPoiSelect, zoom])
+  }, [mapReady, pois, selectedPoiId, planStopIds, onPoiSelect, zoom, savedFolderPoiIds])
 
   // MP_20 — Route polyline connecting plan stops
   useEffect(() => {

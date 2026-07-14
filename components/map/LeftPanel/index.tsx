@@ -4,6 +4,7 @@ import { useState } from 'react'
 import LeftPanelDefault from './LeftPanelDefault'
 import LeftPanelPOIDetail from './LeftPanelPOIDetail'
 import LeftPanelPlanActive from './LeftPanelPlanActive'
+import LeftPanelSavedHub from './LeftPanelSavedHub'
 import PlanStrip from './PlanStrip'
 import type { MapPoi } from '@/hooks/useMapPois'
 
@@ -33,6 +34,9 @@ interface Props {
   onSelectPoi:      (id: string) => void
   poisLoading:      boolean
   poisError:        boolean
+  savedHubOpen:        boolean
+  onCloseSavedHub:     () => void
+  onSavedFolderChange: (poiIds: string[] | null) => void
 }
 
 export default function LeftPanel({
@@ -43,6 +47,7 @@ export default function LeftPanel({
   onReorder, onRemove, onDurationChange, onPreviewPlan, onDiscardPlan,
   stopDays, activeDay, onDayChange, onClosePoi, onSelectPoi,
   poisLoading, poisError,
+  savedHubOpen, onCloseSavedHub, onSavedFolderChange,
 }: Props) {
   const [planStripExpanded, setPlanStripExpanded] = useState(false)
 
@@ -92,6 +97,12 @@ export default function LeftPanel({
             onAddToPlan={() => onAddToPlan(selectedPoi.place_id)}
             onToggleSave={() => onToggleSave(selectedPoi)}
             onClose={onClosePoi}
+          />
+        ) : savedHubOpen ? (
+          <LeftPanelSavedHub
+            onClose={onCloseSavedHub}
+            onSelectPoi={onSelectPoi}
+            onFolderChange={onSavedFolderChange}
           />
         ) : (
           <LeftPanelDefault

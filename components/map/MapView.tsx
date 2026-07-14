@@ -56,6 +56,8 @@ export default function MapView() {
   const [planSheetOpen, setPlanSheetOpen] = useState(false)
   const [poiSheetSnap, setPoiSheetSnap]   = useState<'peek' | 'mid' | 'full'>('mid')
   const [savedSheetOpen, setSavedSheetOpen] = useState(false)
+  // SC-31/DEC-38 (S-HDTVGP/S-IGOSPS) — active Saved-hub folder's POIs, synced to the map
+  const [savedFolderPoiIds, setSavedFolderPoiIds] = useState<string[] | null>(null)
   const [loadedPlanPois, setLoadedPlanPois] = useState<MapPoi[]>([])
   const [draftConflict, setDraftConflict]   = useState<PendingPlan | null>(null)
   // DEC-29: naming sheet shown before publishing
@@ -493,6 +495,9 @@ export default function MapView() {
           onSelectPoi={setSelectedPoiId}
           poisLoading={poisLoading}
           poisError={poisError}
+          savedHubOpen={savedSheetOpen}
+          onCloseSavedHub={() => { setSavedSheetOpen(false); router.replace('/map') }}
+          onSavedFolderChange={setSavedFolderPoiIds}
         />
       </aside>
 
@@ -508,6 +513,7 @@ export default function MapView() {
           onAiPillExpand={() => setAiOverlayOpen(true)}
           aiOverlayOpen={aiOverlayOpen}
           onAiOpen={() => setAiOverlayOpen(true)}
+          savedFolderPoiIds={savedFolderPoiIds}
         />
 
         {/* Plan Pill — mobile, when stops > 0; hidden while the POI sheet covers it (mid/full) */}
@@ -579,6 +585,7 @@ export default function MapView() {
         open={savedSheetOpen}
         onClose={() => { setSavedSheetOpen(false); router.replace('/map') }}
         onSelectPoi={(id) => { setSavedSheetOpen(false); router.replace('/map'); setSelectedPoiId(id) }}
+        onFolderChange={setSavedFolderPoiIds}
       />
 
       {/* T2 collision modal — local draft vs plan loaded via ?plan=:id */}

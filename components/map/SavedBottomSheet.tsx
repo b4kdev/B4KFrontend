@@ -10,22 +10,30 @@ import { useBottomSheetSnap } from '@/hooks/useBottomSheetSnap'
 import type { SavedFolder } from '@/app/api/saved/route'
 
 interface Props {
-  open:        boolean
-  onClose:     () => void
-  onSelectPoi: (placeId: string) => void
+  open:           boolean
+  onClose:        () => void
+  onSelectPoi:    (placeId: string) => void
+  onFolderChange: (poiIds: string[] | null) => void
 }
 
 type Tab = 'places' | 'plans'
 
 // H13 — mobile Saved BottomSheet (S-IGOSPS): 3-snap sheet over the map,
 // folder list → folder POI list, + My Plans tab. Reuses useBottomSheetSnap.
-export default function SavedBottomSheet({ open, onClose, onSelectPoi }: Props) {
+export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderChange }: Props) {
   const t = useTranslations('saved')
   const { data, isLoading, mutate } = useSaved()
   const [tab, setTab] = useState<Tab>('places')
   const [activeFolder, setActiveFolder] = useState<SavedFolder | null>(null)
   // UF-3 — optimistic removal of a saved POI from the folder list
   const [removingPoiIds, setRemovingPoiIds] = useState<Set<string>>(new Set())
+
+  // DEC-38 (S-IGOSPS) — active folder's POIs pinned on the map underneath the sheet
+  useEffect(() => {
+    onFolderChange(activeFolder ? activeFolder.pois.map(p => p.place_id) : null)
+    return () => onFolderChange(null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeFolder])
 
   // UF-3 — remove a saved POI (optimistic → DELETE → mutate, revert on failure)
   function handleRemovePoi(placeId: string) {

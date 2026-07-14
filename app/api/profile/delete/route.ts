@@ -1,17 +1,26 @@
-import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
-import { supabaseAdmin } from '@/lib/supabase-admin'
+import { NextResponse } from 'next/server'
 
-export async function POST() {
+// DELETE /api/profile/delete
+// Soft-deletes the authenticated user's account via the BFF Edge Function.
+// The BFF performs the actual DB write (SET deleted_at = NOW()) with service role.
+export async function DELETE() {
   const supabase = createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  // Soft delete: UPDATE accounts.users SET deleted_at = NOW() WHERE id = user.id
-  // Uses supabaseAdmin to bypass RLS for account deletion
-  const { error } = await supabaseAdmin
-    .from('accounts.users')
-    .update({ deleted_at: new Date().toISOString() })
-    .eq('id', user.id)
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json({ success: true })
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const bff = process.env.NEXT_PUBLIC_API_URL
+  if (!bff) return NextResponse.json({ error: 'BFF not configured' }, { status: 503 })
+
+  const res = await fetch(`${bff}/me`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  })
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    return NextResponse.json({ error: body.error ?? 'Delete failed' }, { status: res.status })
+  }
+
+  return NextResponse.json({ ok: true })
 }

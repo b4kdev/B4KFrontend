@@ -8,6 +8,10 @@ export interface SavedPoi {
   primary_image_url: string | null
   quality_score: number
   saved_at: string
+  // SC-31 — pin sync needs coords; place_id reuses the /api/map/pois universe
+  // (a save is a join row against that same POI table, never a separate list).
+  coords_lat: number
+  coords_lng: number
 }
 
 export interface SavedFolder {
@@ -53,10 +57,10 @@ export interface SavedData {
 }
 
 const MOCK_POIS: SavedPoi[] = [
-  { place_id: 'sv-001', name_ko: '경복궁',              name_en: 'Gyeongbokgung Palace',  display_region: '서울', primary_image_url: null, quality_score: 97, saved_at: '2026-06-08T10:00:00Z' },
-  { place_id: 'sv-002', name_ko: '광장시장',             name_en: 'Gwangjang Market',       display_region: '서울', primary_image_url: null, quality_score: 96, saved_at: '2026-06-07T14:30:00Z' },
-  { place_id: 'sv-003', name_ko: 'HYBE 인사이트',        name_en: 'HYBE Insight',           display_region: '서울', primary_image_url: null, quality_score: 91, saved_at: '2026-06-06T09:15:00Z' },
-  { place_id: 'sv-004', name_ko: '이니스프리 제주 하우스', name_en: 'Innisfree Jeju House',  display_region: '제주', primary_image_url: null, quality_score: 87, saved_at: '2026-06-05T16:00:00Z' },
+  { place_id: 'p1',  name_ko: '경복궁',         name_en: 'Gyeongbokgung Palace',   display_region: 'Seoul', primary_image_url: '/mock-images/gyeongbok.png',      quality_score: 95, saved_at: '2026-06-08T10:00:00Z', coords_lat: 37.5796, coords_lng: 126.9770 },
+  { place_id: 'p6',  name_ko: '명동 먹자골목',   name_en: 'Myeongdong Food Street',  display_region: 'Seoul', primary_image_url: '/mock-images/pork_soup.png',      quality_score: 87, saved_at: '2026-06-07T14:30:00Z', coords_lat: 37.5636, coords_lng: 126.9831 },
+  { place_id: 'p8',  name_ko: '동대문 DDP',      name_en: 'DDP Dongdaemun',          display_region: 'Seoul', primary_image_url: '/mock-images/kbbq.png',           quality_score: 90, saved_at: '2026-06-06T09:15:00Z', coords_lat: 37.5664, coords_lng: 127.0095 },
+  { place_id: 'p12', name_ko: '성산일출봉',      name_en: 'Seongsan Ilchulbong',     display_region: 'Jeju',  primary_image_url: '/mock-images/palace_spring.png',  quality_score: 98, saved_at: '2026-06-05T16:00:00Z', coords_lat: 33.4583, coords_lng: 126.9421 },
 ]
 
 const MOCK: SavedData = {
