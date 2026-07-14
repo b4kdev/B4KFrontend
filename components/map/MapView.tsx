@@ -73,6 +73,9 @@ export default function MapView() {
   // UF-5 (G4.2) — day assignment (1–7) per stop; new stops join the active day tab
   const [stopDays, setStopDays]   = useState<Record<string, number>>({})
   const [activeDay, setActiveDay] = useState(1)
+  // SC-25 — sticky once 'ai': PlanPill reads this to show "AI Plan · X stops"
+  // once any stop came from FL3, even if the user adds more stops manually after.
+  const [planSource, setPlanSource] = useState<'manual' | 'ai'>('manual')
   const savedSeededRef  = useRef(false)
   // DEC-33 T1: track whether draft-conflict check has been resolved this session
   const t1CheckedRef    = useRef(false)
@@ -205,13 +208,14 @@ export default function MapView() {
     )
   }
 
-  function handleAddToPlan(poiId: string) {
+  function handleAddToPlan(poiId: string, source: 'manual' | 'ai' = 'manual') {
     if (planStopIds.includes(poiId)) return
     // UF-7 (DEC-27 / G4.2) — enforce the 40-stop cap with visible feedback, not a silent no-op.
     if (planStopIds.length >= MAX_STOPS) {
       showToast(t('plan.maxStopsToast', { max: MAX_STOPS }), 'error')
       return
     }
+    if (source === 'ai') setPlanSource('ai')
 
     // DEC-33 T1: logged-in user, first plan interaction this session → check for existing DB draft
     if (session && !t1CheckedRef.current) {
@@ -392,6 +396,7 @@ export default function MapView() {
     setPlanStopIds([])
     setStopDurations({})
     setLoadedPlanPois([])
+    setPlanSource('manual')
     if (dbDraftId) {
       fetch(`/api/plans/${dbDraftId}`, { method: 'DELETE' }).catch(() => {})
     }
@@ -505,6 +510,7 @@ export default function MapView() {
         {!(selectedPoiId && !aiOverlayOpen && !planSheetOpen && poiSheetSnap !== 'peek') && (
           <PlanPill
             stopCount={planStopIds.length}
+            fromAi={planSource === 'ai'}
             onTap={handlePlanPillTap}
           />
         )}
@@ -525,7 +531,7 @@ export default function MapView() {
           open={aiOverlayOpen}
           pois={pois}
           planStopIds={planStopIds}
-          onAddToPlan={handleAddToPlan}
+          onAddToPlan={(poiId) => handleAddToPlan(poiId, 'ai')}
           onMinimize={() => { setAiOverlayOpen(false); setShowAiPill(true) }}
           onClose={() => setAiOverlayOpen(false)}
         />

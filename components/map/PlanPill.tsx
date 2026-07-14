@@ -5,15 +5,17 @@ import { Route } from 'lucide-react'
 
 interface Props {
   stopCount:  number
+  fromAi?:    boolean
   onTap:      () => void
 }
 
-export default function PlanPill({ stopCount, onTap }: Props) {
+export default function PlanPill({ stopCount, fromAi = false, onTap }: Props) {
   const t = useTranslations('map.planPill')
 
   if (stopCount === 0) return null
 
   // M20: pill with "Plan · X stops" label (was a bare count circle).
+  // SC-25 — "AI Plan · X stops" once the plan has any FL3-added stop.
   return (
     <button
       onClick={onTap}
@@ -25,7 +27,7 @@ export default function PlanPill({ stopCount, onTap }: Props) {
       }}
     >
       <Route size={16} strokeWidth={2} aria-hidden="true" />
-      <span className="tabular-nums">{t('label', { count: stopCount })}</span>
+      <span className="tabular-nums">{t(fromAi ? 'aiLabel' : 'label', { count: stopCount })}</span>
     </button>
   )
 }

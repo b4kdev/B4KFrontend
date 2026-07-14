@@ -512,7 +512,8 @@
     "offline": {
       "title": "You're offline",
       "desc": "Reconnect to keep planning. Your saved trips are kept locally.",
-      "retry": "Try again"
+      "retry": "Try again",
+      "titleMap": "You're offline. Map may be outdated."
     }
   },
   "auth": {
@@ -732,7 +733,8 @@
     },
     "planPill": {
       "ariaLabel": "View your plan · {count} stops",
-      "label": "Plan · {count} stops"
+      "label": "Plan · {count} stops",
+      "aiLabel": "AI Plan · {count} stops"
     }
   },
   "itinerary": {

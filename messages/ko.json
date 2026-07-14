@@ -512,7 +512,8 @@
     "offline": {
       "title": "오프라인 상태입니다",
       "desc": "연결을 다시 시도해 주세요. 저장된 여행은 로컬에 보관됩니다.",
-      "retry": "다시 시도"
+      "retry": "다시 시도",
+      "titleMap": "오프라인 상태입니다. 지도 정보가 최신이 아닐 수 있어요."
     }
   },
   "auth": {
@@ -732,7 +733,8 @@
     },
     "planPill": {
       "ariaLabel": "플랜 보기 · {count}개 장소",
-      "label": "플랜 · {count}개 장소"
+      "label": "플랜 · {count}개 장소",
+      "aiLabel": "AI 플랜 · {count}곳"
     }
   },
   "itinerary": {
