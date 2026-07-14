@@ -523,8 +523,8 @@
         "save_poi": "Sign in to save places",
         "like": "Sign in to like",
         "save_plan": "Sign in to save your plan",
-        "save_plan_other": "Sign in to save this plan",
-        "saved_tab": "Sign in to see your saved",
+        "save_plan_other": "Sign in to save this plan to your trips",
+        "saved_tab": "Sign in to see your saved places",
         "profile_nav": "Sign in to view your profile",
         "fl3_cap": "Sign in to keep planning"
       },
@@ -1088,13 +1088,13 @@
         "text": "Plan your K-Pop trip with AI"
       },
       "kdrama": {
-        "text": "Plan your K-Drama trip with AI"
+        "text": "Plan my K-Drama trip"
       },
       "kbeauty": {
-        "text": "Plan your K-Beauty trip with AI"
+        "text": "Plan my K-Beauty day"
       },
       "kculture": {
-        "text": "Plan your K-Culture trip with AI"
+        "text": "Plan my cultural trip"
       }
     },
     "hub": {
@@ -1381,8 +1381,8 @@
       "retry": "Try again"
     },
     "empty": {
-      "title": "No entries yet",
-      "desc": "Start saving places and creating itineraries to earn points."
+      "title": "No rankings yet this week.",
+      "desc": "Publish your first itinerary to appear here."
     },
     "rank": "Rank {rank}",
     "plans": "{count, plural, one {# plan} other {# plans}}",

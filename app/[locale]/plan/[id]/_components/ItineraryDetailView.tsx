@@ -179,7 +179,6 @@ export default function ItineraryDetailView({ id }: { id: string }) {
       <div className="fixed top-[50px] left-0 right-0 bottom-14 lg:left-[50px] lg:bottom-0 z-10 flex flex-col items-center justify-center gap-sp-3 bg-bg text-center px-sp-6">
         <Route size={32} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
         <p className="text-f-lg font-semibold text-fg">{t('notFound')}</p>
-        {isNotFound && <p className="text-f-md text-muted">{t('notFoundRedirect')}</p>}
       </div>
     )
   }

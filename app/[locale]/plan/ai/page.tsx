@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
 export default function Page() {
-  redirect('/map?ai=1');
+  redirect('/map?ai=open');
 }

@@ -1,32 +1,31 @@
 'use client';
 
 import { AlertTriangle } from 'lucide-react';
+// This file replaces the ENTIRE root layout when the root layout itself
+// throws — Next.js renders it as its own <html>/<body>, bypassing
+// app/layout.tsx. That import never runs here, so globals.css (and its
+// CSS custom properties) must be imported directly in this file too.
+import './globals.css';
 
+// SC-4 — root layout can throw before locale routing resolves, so
+// next-intl has no context here. Static English copy is the correct
+// fallback for this specific boundary, not a hardcoded-string violation.
 export default function GlobalError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', fontFamily: 'system-ui, sans-serif' }}>
-        <div
-          style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            textAlign: 'center', padding: '80px 24px', borderRadius: 12, maxWidth: 480, width: '100%',
-            background: '#111111', border: '1px solid rgba(255,255,255,0.08)',
-          }}
-        >
-          <AlertTriangle size={48} strokeWidth={2} style={{ color: '#F87171', marginBottom: 16 }} />
-          <p style={{ fontSize: 20, fontWeight: 700, color: '#ffffff', margin: '0 0 8px' }}>
-            Something went wrong
+      <body className="m-0 min-h-screen flex items-center justify-center bg-bg font-body">
+        <div className="flex flex-col items-center text-center px-sp-6 py-sp-20 max-w-[480px] w-full rounded-none bg-bg-2" style={{ border: '1px solid var(--bdr)' }}>
+          <AlertTriangle size={48} strokeWidth={2} className="text-danger mb-sp-4" aria-hidden="true" />
+          <p className="text-f-xl font-bold text-fg mb-sp-2 font-mono tracking-wide uppercase">
+            SYS·ERR · APPLICATION FAILURE
           </p>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', margin: '0 0 24px', maxWidth: 300 }}>
-            An unexpected error occurred. Please try again.
+          <p className="text-f-md text-muted mb-sp-6 max-w-[300px]">
+            Something on our end broke. Try again, or come back later.
           </p>
           <button
             onClick={reset}
-            style={{
-              display: 'inline-flex', alignItems: 'center', minHeight: 44, padding: '0 20px',
-              borderRadius: 9999, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-              color: '#C4A8E0', background: 'rgba(196,168,224,0.12)', border: '1px solid rgba(196,168,224,0.18)',
-            }}
+            className="inline-flex items-center min-h-touch px-sp-5 rounded-full text-f-sm font-semibold text-lav"
+            style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
           >
             Try again
           </button>

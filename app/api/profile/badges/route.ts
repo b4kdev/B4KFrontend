@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+// SC-6 — schema mandates social.badge_definitions.unlock_criteria (JSONB), not a
+// flat description column. Matches the shape /api/badges already uses correctly.
 export interface ProfileBadge {
   id: string
   slug: string
@@ -8,7 +10,7 @@ export interface ProfileBadge {
   rarity: 'common' | 'rare' | 'epic' | 'legendary'
   earned_at: string
   is_pinned: boolean
-  description: string
+  unlock_criteria: { description: string }
 }
 
 const MOCK: ProfileBadge[] = [
@@ -20,7 +22,7 @@ const MOCK: ProfileBadge[] = [
     rarity: 'common',
     earned_at: '2026-05-20T10:00:00Z',
     is_pinned: true,
-    description: 'Save your first itinerary.',
+    unlock_criteria: { description: 'Save your first itinerary.' },
   },
   {
     id: 'b2',
@@ -30,7 +32,7 @@ const MOCK: ProfileBadge[] = [
     rarity: 'rare',
     earned_at: '2026-05-25T12:00:00Z',
     is_pinned: false,
-    description: 'Visit 3 K-Pop related POIs.',
+    unlock_criteria: { description: 'Visit 3 K-Pop related POIs.' },
   },
   {
     id: 'b3',
@@ -40,7 +42,7 @@ const MOCK: ProfileBadge[] = [
     rarity: 'epic',
     earned_at: '2026-06-01T08:00:00Z',
     is_pinned: true,
-    description: 'Complete the full BTS Seoul trail itinerary.',
+    unlock_criteria: { description: 'Complete the full BTS Seoul trail itinerary.' },
   },
 ]
 

@@ -18,8 +18,10 @@ export default function PlanTrip() {
   const { open: openAuthGate } = useAuthGate()
   const router = useRouter()
 
-  function handleOption(href: string) {
-    if (!session) { openAuthGate('save_plan'); return }
+  // AG-1 (locked): only FL2 (auto-generate, needs saved POIs → requires login) gates.
+  // FL1 (manual) and FL3 (AI chat) stay guest-free — navigate straight through.
+  function handleOption(key: string, href: string) {
+    if (key === 'auto' && !session) { openAuthGate('save_plan'); return }
     router.push(href)
   }
 
@@ -31,7 +33,7 @@ export default function PlanTrip() {
         {OPTIONS.map(({ key, href, Icon }) => (
           <button
             key={key}
-            onClick={() => handleOption(href)}
+            onClick={() => handleOption(key, href)}
             className="flex items-center gap-sp-4 p-sp-4 text-left hover:opacity-90 active:opacity-75 transition-opacity"
             style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
           >

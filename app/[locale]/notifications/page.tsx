@@ -77,7 +77,7 @@ export default function NotificationsPage() {
   }
 
   function handleMarkAllRead() {
-    fetch('/api/notifications', { method: 'PATCH' }).catch(() => {})
+    fetch('/api/notifications/mark-all-read', { method: 'POST' }).catch(() => {})
     mutate(
       prev => prev
         ? { ...prev, notifications: prev.notifications.map(n => ({ ...n, is_read: true })), unread_count: 0 }

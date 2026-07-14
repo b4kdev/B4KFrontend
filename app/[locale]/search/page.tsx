@@ -83,7 +83,9 @@ interface FilterState {
 
 function FilterControls({ state }: { state: FilterState }) {
   const t = useTranslations('search.filters')
-  const sections: FilterType[] = ['all', 'places', 'plans', 'explore']
+  // SC-13 (S-EIUBHC) — 3 toggles only; 'all' stays a valid internal state
+  // (no chip selected = show everything) but isn't its own clickable pill.
+  const sections: FilterType[] = ['places', 'plans', 'explore']
   const districts = state.areaLv1 ? AREA_TREE[state.areaLv1] ?? [] : []
 
   return (

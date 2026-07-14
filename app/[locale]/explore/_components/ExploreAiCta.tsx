@@ -28,7 +28,7 @@ export default function ExploreAiCta({ category }: { category?: ExploreCategory 
         <p className="text-f-lg font-semibold text-fg mb-[4px]">{text}</p>
       </div>
       <button
-        onClick={() => router.push('/map?ai=1')}
+        onClick={() => router.push('/map?ai=open')}
         className="shrink-0 flex items-center gap-sp-2 min-h-touch px-sp-5 text-f-md font-semibold text-bg rounded-none"
         style={{ background: 'var(--lav)' }}
       >

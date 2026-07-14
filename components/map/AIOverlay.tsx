@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react'
 import { X, Minus, ArrowLeft, Send, Sparkles, Plus, Check, Loader2, ArrowRight } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { saveDraftPlan } from '@/lib/draft-plan'
+import { MAX_STOPS } from '@/lib/plan-constants'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import type { MapPoi } from '@/hooks/useMapPois'
 
@@ -325,7 +326,7 @@ export default function AIOverlay({
                         key={poi.place_id}
                         poi={poi}
                         isInPlan={isInPlan}
-                        planFull={planStopIds.length >= 10 && !isInPlan}
+                        planFull={planStopIds.length >= MAX_STOPS && !isInPlan}
                         onAdd={() => onAddToPlan(poi.place_id)}
                       />
                     )

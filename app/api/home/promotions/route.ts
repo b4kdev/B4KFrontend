@@ -10,7 +10,7 @@ export interface HomePromotion {
 
 const MOCK: HomePromotion[] = [
   { id: 'promo-01', headline: '10% off all K-Beauty partner tours this month', image_url: null, cta_url: 'https://english.visitkorea.or.kr', cta_label: 'Claim offer' },
-  { id: 'promo-02', headline: 'Free itinerary planning for Japan travelers',   image_url: null, cta_url: '/map?ai=1',                        cta_label: 'Plan with AI' },
+  { id: 'promo-02', headline: 'Free itinerary planning for Japan travelers',   image_url: null, cta_url: '/map?ai=open',                     cta_label: 'Plan with AI' },
 ]
 
 export async function GET() {

@@ -83,7 +83,7 @@ function BadgeDetailModal({
         {/* Info */}
         <div>
           <h2 className="text-f-2xl font-bold text-fg">{badge.name}</h2>
-          <p className="text-f-md text-muted mt-1">{badge.description}</p>
+          <p className="text-f-md text-muted mt-1">{badge.unlock_criteria.description}</p>
         </div>
 
         <div className="grid grid-cols-3 gap-sp-3 text-f-sm">

@@ -21,6 +21,7 @@ import { useSaved } from '@/hooks/useSaved'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useToast } from '@/contexts/ToastContext'
 import { getDraftPlan, saveDraftPlan, clearDraftPlan } from '@/lib/draft-plan'
+import { MAX_STOPS } from '@/lib/plan-constants'
 import type { MapPoi } from '@/hooks/useMapPois'
 import type { DraftMeta } from '@/components/auth/DraftConflictModal'
 import type { ItineraryDetail } from '@/app/api/plans/[id]/route'
@@ -33,7 +34,6 @@ type PendingPlan = {
   pois:         MapPoi[]
 }
 
-const MAX_STOPS = 40
 const DEFAULT_DURATION = 60
 
 export default function MapView() {
@@ -105,11 +105,11 @@ export default function MapView() {
     setSavedSheetOpen(searchParams.get('saved') === '1')
   }, [searchParams])
 
-  // URL param handling — ?plan=:id loads plan into edit mode; ?ai=1 opens AI overlay
+  // URL param handling — ?plan=:id loads plan into edit mode; ?ai=open opens AI overlay
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
 
-    if (params.get('ai') === '1') setAiOverlayOpen(true)
+    if (params.get('ai') === 'open') setAiOverlayOpen(true)
 
     const poiId = params.get('poi')
     if (poiId) setSelectedPoiId(poiId)

@@ -1,9 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useSession } from 'next-auth/react'
 import { useRouter } from '@/i18n/navigation'
-import { useAuthGate } from '@/contexts/AuthGateContext'
 import useSWR from 'swr'
 import { Trophy, ArrowRight } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
@@ -11,15 +9,14 @@ import type { HomeChallengeData } from '@/app/api/home/challenge/route'
 
 export default function ChallengeCard() {
   const t = useTranslations('home.challenge')
-  const { data: session } = useSession()
-  const { open: openAuthGate } = useAuthGate()
   const router = useRouter()
   const { data, isLoading } = useSWR<HomeChallengeData>('/api/home/challenge', fetcher)
 
   if (isLoading || !data) return null
 
+  // S-FYFMTY / AG-1 (locked): this CTA is navigation, not a write — it never
+  // gates. The mission page itself gates at the actual user-keyed write.
   function handleCta() {
-    if (!session) { openAuthGate('save_plan'); return }
     router.push(data!.cta_href)
   }
 

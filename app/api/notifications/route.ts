@@ -32,9 +32,3 @@ const MOCK: NotificationsData = {
 export async function GET() {
   return NextResponse.json(MOCK)
 }
-
-// PATCH /api/notifications  → mark all as read (social.notifications SET is_read = true WHERE user_id)
-export async function PATCH() {
-  // TODO: getServerSession → UPDATE social.notifications SET is_read = true WHERE user_id = session.user.id
-  return NextResponse.json({ ok: true })
-}
