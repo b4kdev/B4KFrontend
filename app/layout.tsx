@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Work_Sans } from 'next/font/google';
+import { SITE_URL } from '@/lib/site-url';
 import './globals.css';
 
 const workSans = Work_Sans({
@@ -9,6 +10,7 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: 'B4K | Korea Travel & Culture',
   description: 'Discover K-culture experiences across Korea',
   icons: {
