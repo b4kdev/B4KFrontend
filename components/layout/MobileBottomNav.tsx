@@ -6,11 +6,13 @@ import { Link } from '@/i18n/navigation';
 import { Home, Map, LayoutGrid, Bookmark } from 'lucide-react';
 
 // H10 (DEC-06): Profile removed from the tab bar → lives in the hamburger drawer.
+// H13 (S-IGOSPS): on mobile, Saved opens the Saved BottomSheet over the map
+// (/map?saved=1) rather than the full /saved page (which serves desktop).
 const TABS = [
-  { href: '/',        icon: Home,        labelKey: 'home' },
-  { href: '/map',     icon: Map,         labelKey: 'map' },
-  { href: '/explore', icon: LayoutGrid,  labelKey: 'explore' },
-  { href: '/saved',   icon: Bookmark,    labelKey: 'saved' },
+  { href: '/',            icon: Home,        labelKey: 'home' },
+  { href: '/map',         icon: Map,         labelKey: 'map' },
+  { href: '/explore',     icon: LayoutGrid,  labelKey: 'explore' },
+  { href: '/map?saved=1', icon: Bookmark,    labelKey: 'saved' },
 ] as const;
 
 export default function MobileBottomNav() {

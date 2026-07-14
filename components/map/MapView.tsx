@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { Sparkles } from 'lucide-react'
 import NaverMapCanvas from './NaverMapCanvas'
@@ -11,6 +12,7 @@ import AIOverlay from './AIOverlay'
 import POIBottomSheet from './POIBottomSheet'
 import PlanPill from './PlanPill'
 import PlanBottomSheet from './PlanBottomSheet'
+import SavedBottomSheet from './SavedBottomSheet'
 import DraftConflictModal from '@/components/auth/DraftConflictModal'
 import PlanNamingSheet from './PlanNamingSheet'
 import DraftResumeFreshModal from './DraftResumeFreshModal'
@@ -37,6 +39,7 @@ const DEFAULT_DURATION = 60
 export default function MapView() {
   const t = useTranslations('map')
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { data: session } = useSession()
   const { open: openAuthGate } = useAuthGate()
   const { showToast } = useToast()
@@ -52,6 +55,7 @@ export default function MapView() {
   const [stopDurations, setStopDurations] = useState<Record<string, number>>({})
   const [planSheetOpen, setPlanSheetOpen] = useState(false)
   const [poiSheetSnap, setPoiSheetSnap]   = useState<'peek' | 'mid' | 'full'>('mid')
+  const [savedSheetOpen, setSavedSheetOpen] = useState(false)
   const [loadedPlanPois, setLoadedPlanPois] = useState<MapPoi[]>([])
   const [draftConflict, setDraftConflict]   = useState<PendingPlan | null>(null)
   // DEC-29: naming sheet shown before publishing
@@ -89,6 +93,12 @@ export default function MapView() {
     savedSeededRef.current = true
     setSavedPoiIds(new Set(savedData.pois.map(p => p.place_id)))
   }, [savedData])
+
+  // H13 — Saved sheet reacts to ?saved=1 (toggled from the mobile Saved tab
+  // on the same page, so this must track searchParams, not just mount).
+  useEffect(() => {
+    setSavedSheetOpen(searchParams.get('saved') === '1')
+  }, [searchParams])
 
   // URL param handling — ?plan=:id loads plan into edit mode; ?ai=1 opens AI overlay
   useEffect(() => {
@@ -478,6 +488,13 @@ export default function MapView() {
         onDurationChange={handleDurationChange}
         onSavePlan={handlePreviewPlan}
         onDismiss={() => setPlanSheetOpen(false)}
+      />
+
+      {/* Mobile Saved bottom sheet — H13 (S-IGOSPS), opened via /map?saved=1 */}
+      <SavedBottomSheet
+        open={savedSheetOpen}
+        onClose={() => { setSavedSheetOpen(false); router.replace('/map') }}
+        onSelectPoi={(id) => { setSavedSheetOpen(false); router.replace('/map'); setSelectedPoiId(id) }}
       />
 
       {/* T2 collision modal — local draft vs plan loaded via ?plan=:id */}
