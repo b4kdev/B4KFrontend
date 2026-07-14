@@ -425,44 +425,6 @@
         "plan": "플랜"
       }
     },
-    "planPreview": {
-      "ariaLabel": "플랜 미리보기",
-      "title": "플랜 미리보기",
-      "breadcrumb": "플랜 미리보기",
-      "defaultName": "내 플랜",
-      "nameLabel": "플랜 이름",
-      "namePlaceholder": "플랜 이름을 입력하세요",
-      "nameSection": "플랜 이름",
-      "stopsSection": "방문지",
-      "stopsLabel": "개 장소",
-      "removeStop": "{n}번 장소 삭제",
-      "dragHandle": "{n}번 장소 순서 변경",
-      "durationLabel": "분",
-      "durationAriaLabel": "{name} 체류 시간",
-      "transportSection": "이동 수단",
-      "transport": {
-        "label": "이동 수단 선택",
-        "car": "자동차",
-        "public": "대중교통"
-      },
-      "total": "총 예상 시간",
-      "noStops": "장소가 없습니다 — 지도로 돌아가 장소를 추가하세요",
-      "editOnMap": "지도에서 편집",
-      "save": "플랜 저장",
-      "savePublish": "저장 후 공개",
-      "saving": "저장 중…",
-      "saveError": "저장에 실패했습니다. 다시 시도해 주세요.",
-      "savedTitle": "플랜이 저장되었습니다!",
-      "savedDesc": "저장된 탭에서 확인할 수 있습니다.",
-      "viewSaved": "저장 목록 보기",
-      "backToMap": "지도로 돌아가기",
-      "back": "뒤로",
-      "empty": {
-        "title": "미리볼 플랜이 없습니다",
-        "desc": "지도에서 장소를 추가한 후 다시 방문하세요.",
-        "cta": "지도 열기"
-      }
-    },
     "leaderboard": {
       "breadcrumb": "리더보드",
       "title": "리더보드",

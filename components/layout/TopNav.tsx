@@ -243,7 +243,6 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
   const t       = useTranslations('topNav');
   const tSearch = useTranslations('search');
   const tNav    = useTranslations('nav');
-  const tCommon = useTranslations('common');
   const { data: unreadData } = useSWR<{ count: number }>(
     '/api/notifications/unread-count', fetcher, { refreshInterval: 60_000 },
   );
@@ -262,7 +261,6 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
   const searchRef  = useRef<HTMLDivElement>(null);
   const localeRef  = useRef<HTMLDivElement>(null);
   const inputRef   = useRef<HTMLInputElement>(null);
-  const mInputRef  = useRef<HTMLInputElement>(null);
 
   // Load recents from localStorage (client-only)
   useEffect(() => {

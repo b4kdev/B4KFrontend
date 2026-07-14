@@ -1,7 +1,6 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { Link } from '@/i18n/navigation'
 import useSWR from 'swr'
 import { Calendar, MapPin } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'

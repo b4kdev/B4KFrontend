@@ -1581,44 +1581,6 @@
     "cta": "Continue",
     "skip": "Skip for now"
   },
-  "planPreview": {
-    "ariaLabel": "Plan preview",
-    "title": "Plan Preview",
-    "breadcrumb": "Plan Preview",
-    "defaultName": "My Plan",
-    "nameLabel": "Plan name",
-    "namePlaceholder": "Give your plan a name",
-    "nameSection": "Plan name",
-    "stopsSection": "Stops",
-    "stopsLabel": "stops",
-    "removeStop": "Remove stop {n}",
-    "dragHandle": "Drag to reorder stop {n}",
-    "durationLabel": "min",
-    "durationAriaLabel": "Duration for {name}",
-    "transportSection": "Transport",
-    "transport": {
-      "label": "Transport mode",
-      "car": "Car",
-      "public": "Public"
-    },
-    "total": "total",
-    "noStops": "No stops — go back and add places on the map",
-    "editOnMap": "Edit on Map",
-    "save": "Save Plan",
-    "savePublish": "Save & Publish",
-    "saving": "Saving…",
-    "saveError": "Failed to save. Please try again.",
-    "savedTitle": "Plan saved!",
-    "savedDesc": "Your plan is ready. Find it in your Saved tab.",
-    "viewSaved": "View Saved",
-    "backToMap": "Back to Map",
-    "back": "Go back",
-    "empty": {
-      "title": "No plan to preview",
-      "desc": "Head to the map, add some stops, then come back here.",
-      "cta": "Open Map"
-    }
-  },
   "footer": {
     "help": "ช่วยเหลือ",
     "privacy": "นโยบายความเป็นส่วนตัว",

@@ -15,7 +15,7 @@ import { useSaved } from '@/hooks/useSaved'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import { getDisplayName } from '@/lib/display-name'
 import FolderCard from '@/components/saved/FolderCard'
-import type { SavedFolder, SavedPoi } from '@/app/api/saved/route'
+import type { SavedFolder } from '@/app/api/saved/route'
 
 type Tab        = 'places' | 'myPlans' | 'savedPlans'
 type PlacesView = 'folders' | 'folder-detail'
@@ -32,9 +32,6 @@ function RowSkeleton() {
   )
 }
 
-function savedPoiToCoords(poi: SavedPoi) {
-  return { ...poi, coords_lat: 0, coords_lng: 0, display_domain: '', is_trending: false, is_partner: false }
-}
 
 export default function SavedPage() {
   const t      = useTranslations('saved')
