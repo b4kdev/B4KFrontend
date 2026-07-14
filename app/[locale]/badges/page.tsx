@@ -197,7 +197,12 @@ export default function BadgesPage() {
     const earned = data.badges.find((b) => b.slug === newBadgeSlug && b.earned)
     if (earned) {
       unlockToastFiredRef.current = newBadgeSlug
-      showToast(t('badges.detail.unlockToast', { name: earned.name }), 'success')
+      // UF-13 (G11.2) — explicit "view badge" action + dismiss, not just an auto-timeout
+      showToast(
+        t('badges.detail.unlockToast', { name: earned.name }),
+        'success',
+        { label: t('badges.detail.unlockToastView'), onClick: () => setSelected(earned) },
+      )
     }
   }, [searchParams, data, showToast, t])
 

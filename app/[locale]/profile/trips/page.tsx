@@ -4,10 +4,11 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import {
-  Map, Heart, Bookmark, Edit2, Trash2, RefreshCw,
+  Map, Heart, Bookmark, Edit2, Trash2, RefreshCw, Share2,
   Route, Zap, AlertTriangle,
 } from 'lucide-react'
 import { useProfileTrips } from '@/hooks/useProfileTrips'
+import { useToast } from '@/contexts/ToastContext'
 import type { ProfileTrip } from '@/app/api/profile/trips/route'
 
 function TripCardSkeleton() {
@@ -75,10 +76,12 @@ function DeleteModal({
 function TripCard({
   trip,
   onDelete,
+  onShare,
   t,
 }: {
   trip: ProfileTrip
   onDelete: (id: string) => void
+  onShare: (trip: ProfileTrip) => void
   t: ReturnType<typeof useTranslations>
 }) {
   return (
@@ -145,6 +148,15 @@ function TripCard({
             <Edit2 size={14} strokeWidth={2} />
             {t('trips.card.edit')}
           </Link>
+          {/* UF-14 (G10.3) — share, mirroring IT_01's share behavior */}
+          <button
+            onClick={() => onShare(trip)}
+            className="min-h-touch min-w-touch flex items-center justify-center rounded-lg text-muted hover:text-fg transition-colors"
+            style={{ border: '1px solid var(--bdr)' }}
+            aria-label={t('trips.card.shareAria', { title: trip.title })}
+          >
+            <Share2 size={15} strokeWidth={2} />
+          </button>
           <button
             onClick={() => onDelete(trip.id)}
             className="min-h-touch min-w-touch flex items-center justify-center rounded-lg text-muted hover:text-danger transition-colors"
@@ -161,6 +173,7 @@ function TripCard({
 
 export default function TripsPage() {
   const t = useTranslations('profile')
+  const { showToast } = useToast()
   const { data: trips, isLoading, error, mutate } = useProfileTrips()
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
@@ -169,6 +182,24 @@ export default function TripsPage() {
     await fetch(`/api/profile/trips?id=${deleteId}`, { method: 'DELETE' })
     mutate()
     setDeleteId(null)
+  }
+
+  // UF-14 (G10.3) — share a trip card, mirroring IT_01's native-share-then-clipboard fallback
+  const handleShare = async (trip: ProfileTrip) => {
+    const url = new URL(`/plan/${trip.id}`, window.location.origin)
+    url.searchParams.set('ref', 'share')
+    const shareUrl = url.toString()
+
+    if (typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title: trip.title, url: shareUrl })
+        return
+      } catch (err) {
+        if ((err as DOMException)?.name === 'AbortError') return
+      }
+    }
+    await navigator.clipboard.writeText(shareUrl).catch(() => {})
+    showToast(t('trips.card.shareCopiedToast'))
   }
 
   const tripToDelete = trips?.find((t) => t.id === deleteId)
@@ -253,6 +284,7 @@ export default function TripsPage() {
               key={trip.id}
               trip={trip}
               onDelete={setDeleteId}
+              onShare={handleShare}
               t={t}
             />
           ))}

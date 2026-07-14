@@ -716,7 +716,7 @@
         "kdrama": "K-Drama filming spots",
         "food": "Best street food today"
       },
-      "error": "Something went wrong. Check your connection.",
+      "error": "Connection lost. Retry when ready.",
       "retry": "Retry",
       "addToPlan": "Add",
       "added": "Added",
@@ -726,7 +726,8 @@
       "planBuilt": "Here's a plan for you:",
       "previewPlan": "Preview Plan",
       "capReached": "You've reached the free plan limit",
-      "signInToContinue": "Sign in to keep planning"
+      "signInToContinue": "Sign in to keep planning",
+      "errorCode": "SYS·ERR · AI·TIMEOUT"
     },
     "planPill": {
       "ariaLabel": "View your plan · {count} stops",
@@ -872,7 +873,9 @@
         "likes": "likes",
         "saves": "saves",
         "stops": "stops",
-        "thumbnailAlt": "Thumbnail for {title}"
+        "thumbnailAlt": "Thumbnail for {title}",
+        "shareAria": "Share trip {title}",
+        "shareCopiedToast": "Link copied to clipboard"
       },
       "deleteModal": {
         "title": "Delete trip?",
@@ -1352,7 +1355,8 @@
       "pin": "Pin to profile",
       "unpin": "Unpin from profile",
       "pinLimit": "You can pin up to 3 badges. Unpin one first.",
-      "pinError": "Could not update pin. Please try again."
+      "pinError": "Could not update pin. Please try again.",
+      "unlockToastView": "View badge"
     },
     "rarity": {
       "common": "Common",
@@ -1710,5 +1714,8 @@
     "seeAllPlans": "See all {count} plans",
     "seeAllExplore": "See all {count} contents",
     "showLess": "Show less"
+  },
+  "toast": {
+    "dismiss": "Dismiss"
   }
 }

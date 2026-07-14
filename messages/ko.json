@@ -754,7 +754,7 @@
         "kdrama": "K-드라마 촬영지",
         "food": "오늘의 길거리 음식 추천"
       },
-      "error": "오류가 발생했습니다. 연결을 확인해 주세요.",
+      "error": "연결이 끊겼습니다. 준비되면 다시 시도하세요.",
       "retry": "다시 시도",
       "addToPlan": "추가",
       "added": "추가됨",
@@ -764,7 +764,8 @@
       "planBuilt": "이런 플랜은 어떠세요:",
       "previewPlan": "플랜 미리보기",
       "capReached": "무료 플랜 한도에 도달했습니다",
-      "signInToContinue": "계속하려면 로그인하세요"
+      "signInToContinue": "계속하려면 로그인하세요",
+      "errorCode": "SYS·ERR · AI·TIMEOUT"
     },
     "planPill": {
       "ariaLabel": "플랜 보기 · {count}개 장소",
@@ -910,7 +911,9 @@
         "likes": "좋아요",
         "saves": "저장",
         "stops": "장소",
-        "thumbnailAlt": "{title} 썸네일"
+        "thumbnailAlt": "{title} 썸네일",
+        "shareAria": "여행 {title} 공유",
+        "shareCopiedToast": "링크가 복사되었습니다"
       },
       "deleteModal": {
         "title": "여행을 삭제할까요?",
@@ -1390,7 +1393,8 @@
       "pin": "프로필에 고정",
       "unpin": "프로필 고정 해제",
       "pinLimit": "배지는 최대 3개까지 고정할 수 있어요. 먼저 하나를 해제하세요.",
-      "pinError": "고정 상태를 변경하지 못했어요. 다시 시도해 주세요."
+      "pinError": "고정 상태를 변경하지 못했어요. 다시 시도해 주세요.",
+      "unlockToastView": "배지 보기"
     },
     "rarity": {
       "common": "일반",
@@ -1710,5 +1714,8 @@
     "terms": "이용약관",
     "cookies": "쿠키 정책",
     "copyright": "© {year} B4K. All rights reserved."
+  },
+  "toast": {
+    "dismiss": "닫기"
   }
 }
