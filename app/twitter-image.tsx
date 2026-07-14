@@ -15,7 +15,7 @@ export default function TwitterImage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#080610',
+          backgroundColor: '#080610', // allow-hex — ImageResponse requires literal colours
         }}
       >
         <img

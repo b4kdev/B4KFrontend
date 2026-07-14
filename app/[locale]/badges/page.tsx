@@ -354,7 +354,7 @@ export default function BadgesPage() {
                     )}
                     {badge.is_pinned && (
                       <span
-                        className="absolute -top-[4px] -right-[4px] w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-bg"
+                        className="absolute -top-[4px] -right-[4px] w-4 h-4 rounded-full flex items-center justify-center text-f-xxs font-bold text-bg"
                         style={{ background: 'var(--lav)' }}
                         aria-label={t('badges.badge.pinned')}
                       >

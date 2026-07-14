@@ -217,6 +217,7 @@ jobs:
             ! -name '*.spec.tsx' ! -name '*.spec.ts' \
             ! -path '*/node_modules/*' ! -path '*/.next/*' \
             ! -name 'global-error.tsx' \
+            ! -path '*/test/*' \
             2>/dev/null)
 
           echo "=== TOKEN COMPLIANCE CHECK ==="

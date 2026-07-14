@@ -73,7 +73,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom anchors: Notifications + Profile — M18: guests are gated (variant #6) */}
-      <div className="p-[6px] flex flex-col gap-[2px] shrink-0" style={{ borderTop: 'var(--bdr)' }}>
+      <div className="p-sp-2 flex flex-col gap-[2px] shrink-0" style={{ borderTop: 'var(--bdr)' }}>
         {isGuest ? (
           <button
             type="button"

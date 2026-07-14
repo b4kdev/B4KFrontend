@@ -25,7 +25,7 @@ interface Props {
 
 const SEOUL = { lat: 37.5665, lng: 126.9780 }
 // Naver Maps API requires hex — cannot use CSS var here
-const LAV_HEX = '#C4A8E0'
+const LAV_HEX = '#C4A8E0' // allow-hex — map SDK marker colour
 
 function poiMarkerHtml(poi: MapPoi, selected: boolean): string {
   const sel = selected ? ' poi-selected' : ''
