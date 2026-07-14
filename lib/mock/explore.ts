@@ -1,4 +1,11 @@
-import type { ExploreData } from '@/app/api/explore/[category]/route'
+import type { ExploreData, ExplorePoi } from '@/app/api/explore/[category]/route'
+
+// This dev-toggle dataset predates quick-add-to-plan and never carried coords —
+// they're added at request time in app/api/mock/explore/[category]/route.ts.
+type MockExplorePoi = Omit<ExplorePoi, 'coords_lat' | 'coords_lng'>
+type MockExploreData = Omit<ExploreData, 'sections'> & {
+  sections: { id: string; items: MockExplorePoi[] }[]
+}
 
 const IMG = {
   kpop0001: '/mock-images/kpop0001.png',
@@ -22,7 +29,7 @@ const IMG = {
   pork_soup: '/mock-images/pork_soup.png',
 }
 
-const KPOP: ExploreData = {
+const KPOP: MockExploreData = {
   category: 'k-pop',
   sections: [
     {
@@ -67,7 +74,7 @@ const KPOP: ExploreData = {
   ],
 }
 
-const KDRAMA: ExploreData = {
+const KDRAMA: MockExploreData = {
   category: 'k-drama',
   sections: [
     {
@@ -111,7 +118,7 @@ const KDRAMA: ExploreData = {
   ],
 }
 
-const KBEAUTY: ExploreData = {
+const KBEAUTY: MockExploreData = {
   category: 'k-beauty',
   sections: [
     {
@@ -154,7 +161,7 @@ const KBEAUTY: ExploreData = {
   ],
 }
 
-const KCULTURE: ExploreData = {
+const KCULTURE: MockExploreData = {
   category: 'k-culture',
   sections: [
     {
@@ -200,7 +207,7 @@ const KCULTURE: ExploreData = {
   ],
 }
 
-export const EXPLORE_MOCK: Record<string, ExploreData> = {
+export const EXPLORE_MOCK: Record<string, MockExploreData> = {
   'k-pop':     KPOP,
   'k-drama':   KDRAMA,
   'k-beauty':  KBEAUTY,

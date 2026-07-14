@@ -4,9 +4,10 @@ import { useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { useAuth } from '@/contexts/AuthContext'
 import { Link } from '@/i18n/navigation'
-import { TrendingUp, MapPin, Bookmark, Heart, ExternalLink } from 'lucide-react'
+import { TrendingUp, MapPin, Bookmark, Heart, Plus, Check, ExternalLink } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { useAuthGate } from '@/contexts/AuthGateContext'
+import { useQuickAddToPlan } from '@/hooks/useQuickAddToPlan'
 import type { ExplorePoi } from '@/app/api/explore/[category]/route'
 
 export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
@@ -18,6 +19,18 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
 
   const [saved,  setSaved]  = useState(false)
   const [liked,  setLiked]  = useState(false)
+  const { inPlan, addToPlan } = useQuickAddToPlan({
+    id:                poi.poi_id,
+    name_ko:           poi.name_ko,
+    name_en:           poi.name_en,
+    coords_lat:        poi.coords_lat,
+    coords_lng:        poi.coords_lng,
+    display_region:    poi.display_region,
+    is_trending:       poi.is_trending,
+    is_partner:        poi.is_partner,
+    quality_score:     poi.quality_score,
+    primary_image_url: poi.primary_image_url,
+  })
 
   // Partner redirect — Link href points to partner_url (validated https://) in new tab
   const isPartner = !!(poi.is_partner && poi.partner_url && /^https?:\/\//.test(poi.partner_url))
@@ -95,7 +108,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
           {/* Sponsored label — DEC-05 / CLAUDE.md §9: LeftPanel card only on desktop, but Explore cards are equivalent */}
           {isPartner && (
             <span
-              className="absolute top-sp-2 left-sp-2 text-f-xxs font-semibold px-sp-2 py-[3px] rounded-full"
+              className="absolute bottom-sp-2 left-sp-2 text-f-xxs font-semibold px-sp-2 py-[3px] rounded-full"
               style={{ background: 'var(--backdrop-50)', color: 'var(--fg)', border: '1px solid var(--bdr)' }}
             >
               {t('card.sponsored')}
@@ -126,40 +139,41 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
         </div>
       </Link>
 
-      {/* Save + Like actions — outside Link to avoid <a>-in-<a> */}
-      <div
-        className="flex items-center gap-sp-1 px-sp-3 pb-sp-3"
-        style={{ borderTop: '1px solid var(--bdr)' }}
-      >
+      {/* Save + Like — top-left, sibling of Link (not nested — avoids <button> inside <a>) */}
+      <div className="absolute top-sp-2 left-sp-2 flex items-center gap-1">
         <button
           onClick={handleSave}
           aria-label={saved ? t('card.unsaveAria', { name }) : t('card.saveAria', { name })}
           aria-pressed={saved}
-          className="flex items-center justify-center min-h-touch w-touch transition-colors"
-          style={{ color: saved ? 'var(--lav)' : 'var(--muted)' }}
+          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+          style={{ background: 'var(--backdrop-50)', color: saved ? 'var(--lav)' : 'var(--fg)' }}
         >
-          <Bookmark
-            size={20}
-            strokeWidth={2}
-            fill={saved ? 'currentColor' : 'none'}
-            aria-hidden="true"
-          />
+          <Bookmark size={15} strokeWidth={2} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
         </button>
         <button
           onClick={handleLike}
           aria-label={liked ? t('card.unlikeAria', { name }) : t('card.likeAria', { name })}
           aria-pressed={liked}
-          className="flex items-center justify-center min-h-touch w-touch transition-colors"
-          style={{ color: liked ? 'var(--danger)' : 'var(--muted)' }}
+          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+          style={{ background: 'var(--backdrop-50)', color: liked ? 'var(--danger)' : 'var(--fg)' }}
         >
-          <Heart
-            size={20}
-            strokeWidth={2}
-            fill={liked ? 'currentColor' : 'none'}
-            aria-hidden="true"
-          />
+          <Heart size={15} strokeWidth={2} fill={liked ? 'currentColor' : 'none'} aria-hidden="true" />
         </button>
       </div>
+
+      {/* Add to Plan — bottom-right */}
+      <button
+        onClick={addToPlan}
+        disabled={inPlan}
+        aria-label={inPlan ? t('card.addedAria', { name }) : t('card.addAria', { name })}
+        aria-pressed={inPlan}
+        className="absolute bottom-sp-2 right-sp-2 flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+        style={{ background: inPlan ? 'var(--lav)' : 'var(--backdrop-50)', color: inPlan ? 'var(--bg)' : 'var(--fg)' }}
+      >
+        {inPlan
+          ? <Check size={15} strokeWidth={2} aria-hidden="true" />
+          : <Plus size={15} strokeWidth={2} aria-hidden="true" />}
+      </button>
     </article>
   )
 }

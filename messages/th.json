@@ -145,7 +145,13 @@
       }
     },
     "poiCard": {
-      "ariaLabel": "{name}, {region}"
+      "ariaLabel": "{name}, {region}",
+      "saveAria": "Save {name}",
+      "unsaveAria": "Unsave {name}",
+      "likeAria": "Like {name}",
+      "unlikeAria": "Unlike {name}",
+      "addAria": "Add {name} to plan",
+      "addedAria": "{name} added to plan"
     },
     "exploreHub": {
       "ariaLabel": "Explore by category",
@@ -1093,7 +1099,9 @@
       "dDay": "D-{days}",
       "dDayToday": "D-DAY",
       "dDayPast": "Ended",
-      "featured": "Featured"
+      "featured": "Featured",
+      "addAria": "Add {name} to plan",
+      "addedAria": "{name} added to plan"
     },
     "hub": {
       "title": "Explore Korea",

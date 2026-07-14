@@ -110,7 +110,13 @@
       }
     },
     "poiCard": {
-      "ariaLabel": "{name}, {region}"
+      "ariaLabel": "{name}, {region}",
+      "saveAria": "{name} 저장",
+      "unsaveAria": "{name} 저장 취소",
+      "likeAria": "{name} 좋아요",
+      "unlikeAria": "{name} 좋아요 취소",
+      "addAria": "{name} 일정에 추가",
+      "addedAria": "{name} 일정에 추가됨"
     },
     "trending": {
       "title": "트렌딩 스팟",
@@ -1093,7 +1099,9 @@
       "dDay": "D-{days}",
       "dDayToday": "D-DAY",
       "dDayPast": "종료",
-      "featured": "추천"
+      "featured": "추천",
+      "addAria": "{name} 일정에 추가",
+      "addedAria": "{name} 일정에 추가됨"
     },
     "aiCta": {
       "text": "AI로 나만의 K-컬처 여행을 계획해보세요",

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { mockCoordsFor } from '@/lib/mock-geo'
 
 export interface HomeTrendingPoi {
   poi_id: string
@@ -8,9 +9,12 @@ export interface HomeTrendingPoi {
   display_domain: string
   save_count: number
   primary_image_url: string | null
+  // Quick-add-to-plan needs coords — service.places_snapshot has them for real
+  coords_lat: number
+  coords_lng: number
 }
 
-const MOCK: HomeTrendingPoi[] = [
+const MOCK: Omit<HomeTrendingPoi, 'coords_lat' | 'coords_lng'>[] = [
   { poi_id: 'poi-t-01', name_ko: '홍대 거리',        name_en: 'Hongdae Street',           display_region: 'Mapo-gu, Seoul',        display_domain: 'K-Pop',     save_count: 1820, primary_image_url: null },
   { poi_id: 'poi-t-02', name_ko: '명동 성당',        name_en: 'Myeongdong Cathedral',     display_region: 'Jung-gu, Seoul',         display_domain: 'Heritage',  save_count: 1540, primary_image_url: null },
   { poi_id: 'poi-t-03', name_ko: '이태원 경리단길',   name_en: 'Gyeongnidan-gil',          display_region: 'Yongsan-gu, Seoul',     display_domain: 'Culture',   save_count: 1310, primary_image_url: null },
@@ -19,5 +23,9 @@ const MOCK: HomeTrendingPoi[] = [
 ]
 
 export async function GET() {
-  return NextResponse.json(MOCK)
+  const enriched: HomeTrendingPoi[] = MOCK.map(p => {
+    const { lat, lng } = mockCoordsFor(p.poi_id, p.display_region)
+    return { ...p, coords_lat: lat, coords_lng: lng }
+  })
+  return NextResponse.json(enriched)
 }

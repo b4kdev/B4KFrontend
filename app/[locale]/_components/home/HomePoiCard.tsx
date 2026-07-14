@@ -1,9 +1,13 @@
 'use client'
 
+import { useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
+import { useAuth } from '@/contexts/AuthContext'
 import { Link } from '@/i18n/navigation'
-import { MapPin, Bookmark } from 'lucide-react'
+import { MapPin, Bookmark, Heart, Plus, Check } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
+import { useAuthGate } from '@/contexts/AuthGateContext'
+import { useQuickAddToPlan } from '@/hooks/useQuickAddToPlan'
 import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 
 interface Props {
@@ -17,55 +21,132 @@ function formatCount(n: number) {
 
 export default function HomePoiCard({ poi, badge }: Props) {
   const t = useTranslations('home.poiCard')
+  const { user } = useAuth()
+  const { open: openAuthGate } = useAuthGate()
   const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
 
+  const [saved, setSaved] = useState(false)
+  const [liked, setLiked] = useState(false)
+  const { inPlan, addToPlan } = useQuickAddToPlan({
+    id:                poi.poi_id,
+    name_ko:           poi.name_ko,
+    name_en:           poi.name_en,
+    coords_lat:        poi.coords_lat,
+    coords_lng:        poi.coords_lng,
+    display_region:    poi.display_region,
+    display_domain:    poi.display_domain,
+    primary_image_url: poi.primary_image_url,
+  })
+
+  const handleSave = useCallback(async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!user) { openAuthGate('save_poi'); return }
+    const next = !saved
+    setSaved(next)
+    await fetch('/api/saved/poi', {
+      method:  next ? 'POST' : 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ poi_id: poi.poi_id }),
+    }).catch(() => setSaved(!next))
+  }, [user, saved, openAuthGate, poi.poi_id])
+
+  const handleLike = useCallback(async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!user) { openAuthGate('like'); return }
+    const next = !liked
+    setLiked(next)
+    await fetch('/api/likes/poi', {
+      method:  next ? 'POST' : 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ poi_id: poi.poi_id }),
+    }).catch(() => setLiked(!next))
+  }, [user, liked, openAuthGate, poi.poi_id])
+
   return (
-    <Link
-      href={`/map?poi=${poi.poi_id}`}
-      className="flex flex-col overflow-hidden hover:opacity-90 transition-opacity"
-      style={{
-        width: 'clamp(220px, 44vw, 280px)',
-        background: 'var(--bg-2)',
-        border: '1px solid var(--bdr)',
-      }}
-      aria-label={t('ariaLabel', { name, region: poi.display_region })}
+    <article
+      className="relative overflow-hidden"
+      style={{ width: 'clamp(220px, 44vw, 280px)', background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
     >
-      <div className="relative bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '4/3' }}>
-        <MapPin size={28} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
-        {poi.primary_image_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={poi.primary_image_url} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
-        )}
-        {badge && (
+      <Link
+        href={`/map?poi=${poi.poi_id}`}
+        className="flex flex-col hover:opacity-90 transition-opacity"
+        aria-label={t('ariaLabel', { name, region: poi.display_region })}
+      >
+        <div className="relative bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '4/3' }}>
+          <MapPin size={28} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+          {poi.primary_image_url && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={poi.primary_image_url} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
+          )}
+          {badge && (
+            <span
+              className="absolute bottom-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.1em] uppercase text-bg bg-lav px-[6px] py-[3px]"
+              aria-label={badge}
+            >
+              {badge}
+            </span>
+          )}
           <span
-            className="absolute top-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.1em] uppercase text-bg bg-lav px-[6px] py-[3px]"
-            aria-label={badge}
+            className="absolute top-sp-2 right-sp-2 text-f-xxs font-semibold text-fg"
+            style={{ background: 'var(--backdrop-50)', padding: '2px 6px' }}
+            aria-hidden="true"
           >
-            {badge}
+            {poi.display_domain}
           </span>
-        )}
-        <span
-          className="absolute top-sp-2 right-sp-2 text-f-xxs font-semibold text-fg"
-          style={{ background: 'var(--backdrop-50)', padding: '2px 6px' }}
-          aria-hidden="true"
-        >
-          {poi.display_domain}
-        </span>
-      </div>
-      <div className="p-sp-3 flex flex-col gap-[3px]">
-        <p className="text-f-md font-semibold text-fg leading-snug line-clamp-1">{name}</p>
-        <div className="flex items-center justify-between">
-          <p className="flex items-center gap-[3px] text-f-xs text-muted">
-            <MapPin size={10} strokeWidth={2} aria-hidden="true" />
-            <span className="line-clamp-1">{poi.display_region}</span>
-          </p>
-          <p className="flex items-center gap-[3px] text-f-xs text-muted tabular-nums shrink-0">
-            <Bookmark size={10} strokeWidth={2} aria-hidden="true" />
-            {formatCount(poi.save_count)}
-          </p>
         </div>
+        <div className="p-sp-3 flex flex-col gap-[3px]">
+          <p className="text-f-md font-semibold text-fg leading-snug line-clamp-1">{name}</p>
+          <div className="flex items-center justify-between">
+            <p className="flex items-center gap-[3px] text-f-xs text-muted">
+              <MapPin size={10} strokeWidth={2} aria-hidden="true" />
+              <span className="line-clamp-1">{poi.display_region}</span>
+            </p>
+            <p className="flex items-center gap-[3px] text-f-xs text-muted tabular-nums shrink-0">
+              <Bookmark size={10} strokeWidth={2} aria-hidden="true" />
+              {formatCount(poi.save_count)}
+            </p>
+          </div>
+        </div>
+      </Link>
+
+      {/* Save + Like — top-left, sibling of Link (not nested — avoids <button> inside <a>) */}
+      <div className="absolute top-sp-2 left-sp-2 flex items-center gap-1">
+        <button
+          onClick={handleSave}
+          aria-label={saved ? t('unsaveAria', { name }) : t('saveAria', { name })}
+          aria-pressed={saved}
+          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+          style={{ background: 'var(--backdrop-50)', color: saved ? 'var(--lav)' : 'var(--fg)' }}
+        >
+          <Bookmark size={15} strokeWidth={2} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
+        </button>
+        <button
+          onClick={handleLike}
+          aria-label={liked ? t('unlikeAria', { name }) : t('likeAria', { name })}
+          aria-pressed={liked}
+          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+          style={{ background: 'var(--backdrop-50)', color: liked ? 'var(--danger)' : 'var(--fg)' }}
+        >
+          <Heart size={15} strokeWidth={2} fill={liked ? 'currentColor' : 'none'} aria-hidden="true" />
+        </button>
       </div>
-    </Link>
+
+      {/* Add to Plan — bottom-right */}
+      <button
+        onClick={addToPlan}
+        disabled={inPlan}
+        aria-label={inPlan ? t('addedAria', { name }) : t('addAria', { name })}
+        aria-pressed={inPlan}
+        className="absolute bottom-sp-2 right-sp-2 flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+        style={{ background: inPlan ? 'var(--lav)' : 'var(--backdrop-50)', color: inPlan ? 'var(--bg)' : 'var(--fg)' }}
+      >
+        {inPlan
+          ? <Check size={15} strokeWidth={2} aria-hidden="true" />
+          : <Plus size={15} strokeWidth={2} aria-hidden="true" />}
+      </button>
+    </article>
   )
 }
 

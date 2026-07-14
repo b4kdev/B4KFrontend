@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { mockCoordsFor } from '@/lib/mock-geo'
 
 export interface ExplorePoi {
   poi_id: string
@@ -18,6 +19,9 @@ export interface ExplorePoi {
   event_date?: string
   /** SC-36 (KD_04/KB_04) — one featured item renders as a wide card above the row. */
   is_featured?: boolean
+  // Quick-add-to-plan needs coords — service.places_snapshot has them for real
+  coords_lat: number
+  coords_lng: number
 }
 
 export interface ExploreSection {
@@ -79,7 +83,14 @@ const soon = (days: number) => {
   return d.toISOString().slice(0, 10)
 }
 
-const MOCK: Record<string, ExploreData> = {
+// Coords are added at request time (mockCoordsFor) — the literal below predates
+// quick-add-to-plan and was never geocoded per-item.
+type MockExplorePoi = Omit<ExplorePoi, 'coords_lat' | 'coords_lng'>
+type MockExploreData = Omit<ExploreData, 'sections'> & {
+  sections: { id: string; items: MockExplorePoi[] }[]
+}
+
+const MOCK: Record<string, MockExploreData> = {
   'k-pop': {
     category: 'k-pop',
     hero: [
@@ -288,8 +299,20 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { category: string } }
 ) {
-  const base = MOCK[params.category]
-  if (!base) return NextResponse.json({ error: 'not_found' }, { status: 404 })
+  const rawBase = MOCK[params.category]
+  if (!rawBase) return NextResponse.json({ error: 'not_found' }, { status: 404 })
+
+  // Quick-add-to-plan needs coords — mock POIs never carried them before.
+  const base: ExploreData = {
+    ...rawBase,
+    sections: rawBase.sections.map(s => ({
+      ...s,
+      items: s.items.map(it => {
+        const { lat, lng } = mockCoordsFor(it.poi_id, it.display_region, it.district)
+        return { ...it, coords_lat: lat, coords_lng: lng }
+      }),
+    })),
+  }
 
   const facet = FACET_BY_CATEGORY[params.category]
   const filterValue = facet ? req.nextUrl.searchParams.get(facet) : null
