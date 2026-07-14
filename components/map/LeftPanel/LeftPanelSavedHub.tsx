@@ -29,7 +29,7 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
   // Pin sync — tell MapView which POIs to show while a folder is open;
   // clear on unmount/tab switch/close so the full map returns.
   useEffect(() => {
-    onFolderChange(activeFolder ? activeFolder.pois.map(p => p.place_id) : null)
+    onFolderChange(activeFolder ? activeFolder.pois.map(p => p.poi_id) : null)
     return () => onFolderChange(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFolder])
@@ -40,7 +40,7 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
     fetch('/api/saved/poi', {
       method:  'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ place_id: placeId }),
+      body:    JSON.stringify({ poi_id: placeId }),
     })
       .then(res => { if (!res.ok) throw new Error(); return mutate() })
       .catch(() => {
@@ -97,7 +97,7 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
                 <ArrowLeft size={14} strokeWidth={2} aria-hidden="true" />{activeFolder.name}
               </button>
               {(() => {
-                const visiblePois = activeFolder.pois.filter(p => !removingPoiIds.has(p.place_id))
+                const visiblePois = activeFolder.pois.filter(p => !removingPoiIds.has(p.poi_id))
                 if (visiblePois.length === 0) {
                   return (
                     <div className="flex flex-col items-center text-center p-sp-8">
@@ -110,12 +110,12 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
                   const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
                   return (
                     <div
-                      key={poi.place_id}
+                      key={poi.poi_id}
                       className="w-full flex items-center gap-sp-2 px-sp-4 py-sp-3 hover:bg-bg-3 transition-colors"
                       style={idx < visiblePois.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}
                     >
                       <button
-                        onClick={() => onSelectPoi(poi.place_id)}
+                        onClick={() => onSelectPoi(poi.poi_id)}
                         className="flex-1 min-w-0 flex items-center gap-sp-2 text-left min-h-touch"
                       >
                         <div className="w-8 h-8 flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
@@ -127,7 +127,7 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
                         </div>
                       </button>
                       <button
-                        onClick={() => handleRemovePoi(poi.place_id)}
+                        onClick={() => handleRemovePoi(poi.poi_id)}
                         aria-label={t('poi.removeAriaLabel', { name })}
                         title={t('poi.removeLabel')}
                         className="min-w-touch min-h-touch flex items-center justify-center shrink-0 text-muted hover:text-danger transition-colors"

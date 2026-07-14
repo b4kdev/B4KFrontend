@@ -116,12 +116,10 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
         get(name) { return req.cookies.get(name)?.value },
         set(name, value, options) {
           req.cookies.set({ name, value, ...options })
-          response = NextResponse.next({ request: { headers: req.headers } })
           response.cookies.set({ name, value, ...options })
         },
         remove(name, options) {
           req.cookies.set({ name, value: '', ...options })
-          response = NextResponse.next({ request: { headers: req.headers } })
           response.cookies.set({ name, value: '', ...options })
         },
       },

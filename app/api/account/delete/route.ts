@@ -6,15 +6,19 @@ import { NextResponse } from 'next/server'
 // The BFF performs the actual DB write (SET deleted_at = NOW()) with service role.
 export async function DELETE() {
   const supabase = createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { data: { session } } = await supabase.auth.getSession()
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const accessToken = session?.access_token
+  if (!accessToken) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const bff = process.env.NEXT_PUBLIC_API_URL
+  const bff = process.env.API_URL
   if (!bff) return NextResponse.json({ error: 'BFF not configured' }, { status: 503 })
 
   const res = await fetch(`${bff}/me`, {
     method: 'DELETE',
-    headers: { Authorization: `Bearer ${session.access_token}` },
+    headers: { Authorization: `Bearer ${accessToken}` },
+    signal: AbortSignal.timeout(8000),
   })
 
   if (!res.ok) {

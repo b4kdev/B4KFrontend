@@ -34,7 +34,7 @@ export default function FolderCard({
         </div>
       ) : (
         thumbnails.map((poi, i) => (
-          <div key={poi.place_id} className="relative flex items-center justify-center bg-bg-3">
+          <div key={poi.poi_id} className="relative flex items-center justify-center bg-bg-3">
             {poi.primary_image_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={poi.primary_image_url} alt="" className="w-full h-full object-cover" />

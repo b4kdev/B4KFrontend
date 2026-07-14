@@ -16,7 +16,7 @@ import type { ItineraryDetail } from '@/app/api/plans/[id]/route'
 
 function stopsToMapPois(detail: ItineraryDetail): MapPoi[] {
   return detail.stops.map(s => ({
-    place_id:       s.poi.place_id,
+    poi_id:       s.poi.poi_id,
     name_ko:        s.poi.name_ko,
     name_en:        s.poi.name_en,
     coords_lat:     s.poi.coords_lat,
@@ -49,7 +49,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
   const isSaved = savedOverride ?? itinerary?.viewer.is_saved ?? false
 
   const stopPois    = itinerary ? stopsToMapPois(itinerary) : []
-  const planStopIds = itinerary ? itinerary.stops.map(s => s.poi.place_id) : []
+  const planStopIds = itinerary ? itinerary.stops.map(s => s.poi.poi_id) : []
 
   const handlePoiSelect = useCallback((poiId: string | null) => {
     setSelectedPoiId(poiId)

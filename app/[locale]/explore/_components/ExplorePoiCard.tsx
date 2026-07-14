@@ -40,9 +40,9 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
     await fetch('/api/saved/poi', {
       method:  next ? 'POST' : 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ place_id: poi.place_id }),
+      body:    JSON.stringify({ poi_id: poi.poi_id }),
     }).catch(() => setSaved(!next))
-  }, [user, saved, openAuthGate, poi.place_id])
+  }, [user, saved, openAuthGate, poi.poi_id])
 
   const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -53,9 +53,9 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
     await fetch('/api/likes/poi', {
       method:  next ? 'POST' : 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ place_id: poi.place_id }),
+      body:    JSON.stringify({ poi_id: poi.poi_id }),
     }).catch(() => setLiked(!next))
-  }, [user, liked, openAuthGate, poi.place_id])
+  }, [user, liked, openAuthGate, poi.poi_id])
 
   return (
     <article
@@ -63,7 +63,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
       style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
     >
       <Link
-        href={isPartner ? (poi.partner_url ?? `/map?poi=${poi.place_id}`) : `/map?poi=${poi.place_id}`}
+        href={isPartner ? (poi.partner_url ?? `/map?poi=${poi.poi_id}`) : `/map?poi=${poi.poi_id}`}
         className="flex flex-col flex-1 transition-opacity hover:opacity-80"
         aria-label={t('card.ariaLabel', { name })}
         target={isPartner ? '_blank' : undefined}

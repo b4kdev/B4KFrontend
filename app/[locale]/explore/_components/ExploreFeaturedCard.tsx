@@ -15,7 +15,7 @@ export default function ExploreFeaturedCard({ poi }: { poi: ExplorePoi }) {
 
   return (
     <Link
-      href={isPartner ? (poi.partner_url ?? `/map?poi=${poi.place_id}`) : `/map?poi=${poi.place_id}`}
+      href={isPartner ? (poi.partner_url ?? `/map?poi=${poi.poi_id}`) : `/map?poi=${poi.poi_id}`}
       target={isPartner ? '_blank' : undefined}
       rel={isPartner ? 'noopener noreferrer' : undefined}
       className="flex flex-col sm:flex-row overflow-hidden mb-sp-4 transition-opacity hover:opacity-90"

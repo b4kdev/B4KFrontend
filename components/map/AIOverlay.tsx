@@ -143,7 +143,7 @@ function PlanResult({ stops }: { stops: MapPoi[] }) {
 
   function handlePreviewPlan() {
     const durations: Record<string, number> = {}
-    stops.forEach(s => { durations[s.place_id] = 60 })
+    stops.forEach(s => { durations[s.poi_id] = 60 })
     saveDraftPlan({ stops, durations })
     router.push('/map')
   }
@@ -151,7 +151,7 @@ function PlanResult({ stops }: { stops: MapPoi[] }) {
   return (
     <div className="flex flex-col gap-sp-2">
       {stops.map((poi, i) => (
-        <div key={poi.place_id} className="flex items-center gap-sp-2">
+        <div key={poi.poi_id} className="flex items-center gap-sp-2">
           <span className="w-5 h-5 rounded-full bg-lav text-bg text-f-xxs font-bold flex items-center justify-center shrink-0">
             {i + 1}
           </span>
@@ -320,14 +320,14 @@ export default function AIOverlay({
                 <div className="flex flex-col gap-sp-2 max-w-full">
                   <p className="text-muted text-xs">{t('poiFound')}</p>
                   {msg.pois.map(poi => {
-                    const isInPlan = planStopIds.includes(poi.place_id)
+                    const isInPlan = planStopIds.includes(poi.poi_id)
                     return (
                       <POICard
-                        key={poi.place_id}
+                        key={poi.poi_id}
                         poi={poi}
                         isInPlan={isInPlan}
                         planFull={planStopIds.length >= MAX_STOPS && !isInPlan}
-                        onAdd={() => onAddToPlan(poi.place_id)}
+                        onAdd={() => onAddToPlan(poi.poi_id)}
                       />
                     )
                   })}

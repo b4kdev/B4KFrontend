@@ -31,7 +31,7 @@ export default function YouMightLike() {
       )}
       {!isLoading && data && (
         <HScrollRow>
-          {data.map(poi => <HomePoiCard key={poi.place_id} poi={poi} />)}
+          {data.map(poi => <HomePoiCard key={poi.poi_id} poi={poi} />)}
         </HScrollRow>
       )}
     </section>

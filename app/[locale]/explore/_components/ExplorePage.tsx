@@ -275,7 +275,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                     ? section.items.find(poi => poi.is_featured)
                     : undefined
                   const rest = featured
-                    ? section.items.filter(poi => poi.place_id !== featured.place_id)
+                    ? section.items.filter(poi => poi.poi_id !== featured.poi_id)
                     : section.items
 
                   return (
@@ -303,7 +303,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                         <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-sp-4 lg:-mx-sp-6 px-sp-4 lg:px-sp-6">
                           <div className="flex gap-sp-3 pb-[4px]" style={{ width: 'max-content' }}>
                             {rest.map(poi => (
-                              <ExplorePoiCard key={poi.place_id} poi={poi} />
+                              <ExplorePoiCard key={poi.poi_id} poi={poi} />
                             ))}
                           </div>
                         </div>

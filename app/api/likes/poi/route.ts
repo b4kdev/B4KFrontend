@@ -6,14 +6,14 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}))
-  const { place_id } = body
-  if (!place_id) return NextResponse.json({ error: 'missing_place_id' }, { status: 400 })
-  return NextResponse.json({ success: true, place_id, liked: true })
+  const { poi_id } = body
+  if (!poi_id) return NextResponse.json({ error: 'missing_poi_id' }, { status: 400 })
+  return NextResponse.json({ success: true, poi_id, liked: true })
 }
 
 export async function DELETE(req: NextRequest) {
   const body = await req.json().catch(() => ({}))
-  const { place_id } = body
-  if (!place_id) return NextResponse.json({ error: 'missing_place_id' }, { status: 400 })
-  return NextResponse.json({ success: true, place_id, liked: false })
+  const { poi_id } = body
+  if (!poi_id) return NextResponse.json({ error: 'missing_poi_id' }, { status: 400 })
+  return NextResponse.json({ success: true, poi_id, liked: false })
 }

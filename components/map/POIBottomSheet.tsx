@@ -51,7 +51,7 @@ export default function POIBottomSheet({
   }, [isOpen, onDismiss])
 
   async function handleShare() {
-    const url = `${window.location.origin}/map?poi=${poi.place_id}`
+    const url = `${window.location.origin}/map?poi=${poi.poi_id}`
     try {
       if (navigator.share) await navigator.share({ title: name, url })
       else await navigator.clipboard.writeText(url)

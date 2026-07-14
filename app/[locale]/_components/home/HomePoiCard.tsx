@@ -21,7 +21,7 @@ export default function HomePoiCard({ poi, badge }: Props) {
 
   return (
     <Link
-      href={`/map?poi=${poi.place_id}`}
+      href={`/map?poi=${poi.poi_id}`}
       className="flex flex-col overflow-hidden hover:opacity-90 transition-opacity"
       style={{
         width: 'clamp(220px, 44vw, 280px)',

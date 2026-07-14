@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 export interface ProfileSavedPoi {
-  place_id: string
+  poi_id: string
   name_preferred: string | null
   name_en: string | null
   name_ko: string | null

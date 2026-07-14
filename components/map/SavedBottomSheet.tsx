@@ -30,7 +30,7 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
 
   // DEC-38 (S-IGOSPS) — active folder's POIs pinned on the map underneath the sheet
   useEffect(() => {
-    onFolderChange(activeFolder ? activeFolder.pois.map(p => p.place_id) : null)
+    onFolderChange(activeFolder ? activeFolder.pois.map(p => p.poi_id) : null)
     return () => onFolderChange(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFolder])
@@ -42,7 +42,7 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
     fetch('/api/saved/poi', {
       method:  'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ place_id: placeId }),
+      body:    JSON.stringify({ poi_id: placeId }),
     })
       .then(res => { if (!res.ok) throw new Error(); return mutate() })
       .catch(() => {
@@ -135,17 +135,17 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
                   <ArrowLeft size={14} strokeWidth={2} />{activeFolder.name}
                 </button>
                 {(() => {
-                  const visiblePois = activeFolder.pois.filter(p => !removingPoiIds.has(p.place_id))
+                  const visiblePois = activeFolder.pois.filter(p => !removingPoiIds.has(p.poi_id))
                   return visiblePois.map((poi, idx) => {
                     const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
                     return (
                       <div
-                        key={poi.place_id}
+                        key={poi.poi_id}
                         className="w-full flex items-center gap-sp-3 p-sp-4 hover:bg-bg-3 transition-colors"
                         style={idx < visiblePois.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}
                       >
                         <button
-                          onClick={() => onSelectPoi(poi.place_id)}
+                          onClick={() => onSelectPoi(poi.poi_id)}
                           className="flex-1 min-w-0 flex items-center gap-sp-3 text-left min-h-touch"
                         >
                           <div className="w-10 h-10 rounded-none flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
@@ -157,7 +157,7 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
                           </div>
                         </button>
                         <button
-                          onClick={() => handleRemovePoi(poi.place_id)}
+                          onClick={() => handleRemovePoi(poi.poi_id)}
                           aria-label={t('poi.removeAriaLabel', { name })}
                           title={t('poi.removeLabel')}
                           className="min-w-touch min-h-touch flex items-center justify-center shrink-0 text-muted hover:text-danger transition-colors"

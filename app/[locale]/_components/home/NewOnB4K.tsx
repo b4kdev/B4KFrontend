@@ -34,7 +34,7 @@ export default function NewOnB4K() {
       )}
       {!isLoading && !error && data && (
         <HScrollRow>
-          {data.map(poi => <HomePoiCard key={poi.place_id} poi={poi} badge={t('newBadge')} />)}
+          {data.map(poi => <HomePoiCard key={poi.poi_id} poi={poi} badge={t('newBadge')} />)}
         </HScrollRow>
       )}
     </section>

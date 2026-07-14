@@ -5,7 +5,7 @@ import type { Domain, Place } from "../types/place"
 export async function getHotPlaces(limit = 10) {
   const { data, error } = await db
     .from("places_snapshot")
-    .select("place_id, name_ko, address_ko, address_en, display_domain, domains, display_region, primary_image_url, extra_info, quality_score")
+    .select("poi_id, name_ko, address_ko, address_en, display_domain, domains, display_region, primary_image_url, extra_info, quality_score")
     .eq("is_publishable", true)
     .order("quality_score", { ascending: false })
     .order("updated_at", { ascending: false })
@@ -20,7 +20,7 @@ export async function getPlacesByDomain(domain: Domain, page = 1, limit = 20) {
   const { data, error, count } = await db
     .from("places_snapshot")
     .select(
-      "place_id, name_ko, address_ko, address_en, display_domain, domains, display_region, primary_image_url, quality_score, extra_info",
+      "poi_id, name_ko, address_ko, address_en, display_domain, domains, display_region, primary_image_url, quality_score, extra_info",
       { count: "exact" }
     )
     .eq("is_publishable", true)
@@ -36,7 +36,7 @@ export async function searchPlaces(keyword: string) {
   if (!keyword.trim()) return []
   const { data, error } = await db
     .from("places_snapshot")
-    .select("place_id, name_ko, address_ko, address_en, display_domain, domains, primary_image_url")
+    .select("poi_id, name_ko, address_ko, address_en, display_domain, domains, primary_image_url")
     .eq("is_publishable", true)
     .or(`name_ko.ilike.%${keyword}%,address_ko.ilike.%${keyword}%`)
     .limit(30)
@@ -49,7 +49,7 @@ export async function getPlace(placeId: number): Promise<Place | null> {
   const { data, error } = await db
     .from("places_snapshot")
     .select("*")
-    .eq("place_id", placeId)
+    .eq("poi_id", placeId)
     .eq("is_publishable", true)
     .single()
 
@@ -64,7 +64,7 @@ export async function getPlacePins(
 ) {
   let query = db
     .from("places_snapshot")
-    .select("place_id, name_ko, address_ko, address_en, coords_lat, coords_lng, display_domain")
+    .select("poi_id, name_ko, address_ko, address_en, coords_lat, coords_lng, display_domain")
     .eq("is_publishable", true)
     .not("coords_lat", "is", null)
     .gte("coords_lat", bounds.south)

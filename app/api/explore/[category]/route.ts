@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export interface ExplorePoi {
-  place_id: string
+  poi_id: string
   name_ko: string
   name_en: string
   primary_image_url: string | null
@@ -91,36 +91,36 @@ const MOCK: Record<string, ExploreData> = {
       {
         id: 'concerts',
         items: [
-          { place_id: 'kp-6',  name_ko: '잠실 올림픽 주경기장',    name_en: 'Jamsil Olympic Stadium',    primary_image_url: IMG.bts_concert,  display_region: '송파구', quality_score: 94, is_trending: true  },
-          { place_id: 'kp-7',  name_ko: 'KSPO 돔 (체조경기장)',    name_en: 'KSPO Dome',                 primary_image_url: IMG.kpop0009,     display_region: '송파구', quality_score: 92, is_trending: false },
-          { place_id: 'kp-8',  name_ko: '고척 스카이돔',           name_en: 'Gocheok Sky Dome',          primary_image_url: IMG.kpop0001,     display_region: '구로구', quality_score: 90, is_trending: false },
-          { place_id: 'kp-9',  name_ko: '인스파이어 아레나',        name_en: 'Inspire Arena Incheon',     primary_image_url: IMG.bts_concert,  display_region: '인천',   quality_score: 96, is_trending: true  },
+          { poi_id: 'kp-6',  name_ko: '잠실 올림픽 주경기장',    name_en: 'Jamsil Olympic Stadium',    primary_image_url: IMG.bts_concert,  display_region: '송파구', quality_score: 94, is_trending: true  },
+          { poi_id: 'kp-7',  name_ko: 'KSPO 돔 (체조경기장)',    name_en: 'KSPO Dome',                 primary_image_url: IMG.kpop0009,     display_region: '송파구', quality_score: 92, is_trending: false },
+          { poi_id: 'kp-8',  name_ko: '고척 스카이돔',           name_en: 'Gocheok Sky Dome',          primary_image_url: IMG.kpop0001,     display_region: '구로구', quality_score: 90, is_trending: false },
+          { poi_id: 'kp-9',  name_ko: '인스파이어 아레나',        name_en: 'Inspire Arena Incheon',     primary_image_url: IMG.bts_concert,  display_region: '인천',   quality_score: 96, is_trending: true  },
         ],
       },
       {
         id: 'tours',
         items: [
-          { place_id: 'kp-19', name_ko: 'Real K-Pop Dance 홍대',   name_en: 'Real K-Pop Dance Hongdae',  primary_image_url: IMG.dance_students, display_region: '마포구', quality_score: 96, is_trending: true  },
-          { place_id: 'kp-20', name_ko: '1MILLION Dance Studio',   name_en: '1MILLION Dance Studio',     primary_image_url: IMG.kpop0006,     display_region: '서초구', quality_score: 98, is_trending: true  },
-          { place_id: 'kp-24', name_ko: 'K-팝 아이돌 메이크업&포토슛', name_en: 'K-Pop Idol Makeup & Photoshoot', primary_image_url: IMG.kpop0008, display_region: '강남구', quality_score: 96, is_trending: true  },
+          { poi_id: 'kp-19', name_ko: 'Real K-Pop Dance 홍대',   name_en: 'Real K-Pop Dance Hongdae',  primary_image_url: IMG.dance_students, display_region: '마포구', quality_score: 96, is_trending: true  },
+          { poi_id: 'kp-20', name_ko: '1MILLION Dance Studio',   name_en: '1MILLION Dance Studio',     primary_image_url: IMG.kpop0006,     display_region: '서초구', quality_score: 98, is_trending: true  },
+          { poi_id: 'kp-24', name_ko: 'K-팝 아이돌 메이크업&포토슛', name_en: 'K-Pop Idol Makeup & Photoshoot', primary_image_url: IMG.kpop0008, display_region: '강남구', quality_score: 96, is_trending: true  },
         ],
       },
       {
         id: 'agencies',
         items: [
-          { place_id: 'kp-1',  name_ko: 'HYBE 사옥',            name_en: 'HYBE Headquarters',   primary_image_url: IMG.kpop0007, display_region: '용산구', quality_score: 96, is_trending: true,  agency: 'HYBE' },
-          { place_id: 'kp-2',  name_ko: 'SM타운 코엑스 아티움',  name_en: 'SM Town Coex Artium',  primary_image_url: IMG.kpop0004, display_region: '강남구', quality_score: 92, is_trending: true,  agency: 'SM'   },
-          { place_id: 'kp-3',  name_ko: 'JYP 엔터테인먼트',      name_en: 'JYP Entertainment',    primary_image_url: IMG.kpop0005, display_region: '강동구', quality_score: 88, is_trending: false, agency: 'JYP'  },
-          { place_id: 'kp-4',  name_ko: 'YG 엔터테인먼트',       name_en: 'YG Entertainment',     primary_image_url: IMG.kpop0005, display_region: '마포구', quality_score: 86, is_trending: false, agency: 'YG'   },
-          { place_id: 'kp-2b', name_ko: 'SM 커뮤니케이션 센터',  name_en: 'SM Communication Center', primary_image_url: IMG.kpop0004, display_region: '성동구', quality_score: 85, is_trending: false, agency: 'SM' },
+          { poi_id: 'kp-1',  name_ko: 'HYBE 사옥',            name_en: 'HYBE Headquarters',   primary_image_url: IMG.kpop0007, display_region: '용산구', quality_score: 96, is_trending: true,  agency: 'HYBE' },
+          { poi_id: 'kp-2',  name_ko: 'SM타운 코엑스 아티움',  name_en: 'SM Town Coex Artium',  primary_image_url: IMG.kpop0004, display_region: '강남구', quality_score: 92, is_trending: true,  agency: 'SM'   },
+          { poi_id: 'kp-3',  name_ko: 'JYP 엔터테인먼트',      name_en: 'JYP Entertainment',    primary_image_url: IMG.kpop0005, display_region: '강동구', quality_score: 88, is_trending: false, agency: 'JYP'  },
+          { poi_id: 'kp-4',  name_ko: 'YG 엔터테인먼트',       name_en: 'YG Entertainment',     primary_image_url: IMG.kpop0005, display_region: '마포구', quality_score: 86, is_trending: false, agency: 'YG'   },
+          { poi_id: 'kp-2b', name_ko: 'SM 커뮤니케이션 센터',  name_en: 'SM Communication Center', primary_image_url: IMG.kpop0004, display_region: '성동구', quality_score: 85, is_trending: false, agency: 'SM' },
         ],
       },
       {
         id: 'merchandise',
         items: [
-          { place_id: 'kp-11', name_ko: '위버스 샵 성수',      name_en: 'Weverse Shop Seongsu',    primary_image_url: IMG.kpop0005, display_region: '성동구', quality_score: 94, is_trending: true,  event_date: soon(3)  },
-          { place_id: 'kp-12', name_ko: '라이즈마켓 홍대',     name_en: 'Rise Market Hongdae',     primary_image_url: IMG.kpop0005, display_region: '마포구', quality_score: 90, is_trending: true,  event_date: soon(10) },
-          { place_id: 'kp-13', name_ko: '스타필드 수원 팝업',  name_en: 'Starfield Suwon Fan Pop', primary_image_url: IMG.kpop0004, display_region: '수원',   quality_score: 86, is_trending: false },
+          { poi_id: 'kp-11', name_ko: '위버스 샵 성수',      name_en: 'Weverse Shop Seongsu',    primary_image_url: IMG.kpop0005, display_region: '성동구', quality_score: 94, is_trending: true,  event_date: soon(3)  },
+          { poi_id: 'kp-12', name_ko: '라이즈마켓 홍대',     name_en: 'Rise Market Hongdae',     primary_image_url: IMG.kpop0005, display_region: '마포구', quality_score: 90, is_trending: true,  event_date: soon(10) },
+          { poi_id: 'kp-13', name_ko: '스타필드 수원 팝업',  name_en: 'Starfield Suwon Fan Pop', primary_image_url: IMG.kpop0004, display_region: '수원',   quality_score: 86, is_trending: false },
         ],
       },
     ],
@@ -141,34 +141,34 @@ const MOCK: Record<string, ExploreData> = {
       {
         id: 'filming',
         items: [
-          { place_id: 'kd-1',  name_ko: '경복궁 (야간관람)',    name_en: 'Gyeongbokgung Palace Night',   primary_image_url: IMG.gyeongbok,    display_region: '종로구', quality_score: 98, is_trending: true  },
-          { place_id: 'kd-4',  name_ko: '전주 한옥마을',        name_en: 'Jeonju Hanok Village',         primary_image_url: IMG.palace_spring, display_region: '전주',   quality_score: 98, is_trending: true  },
-          { place_id: 'kd-6',  name_ko: '춘천 남이섬',          name_en: 'Nami Island, Chuncheon',       primary_image_url: IMG.cherry,       display_region: '춘천',   quality_score: 94, is_trending: true  },
-          { place_id: 'kd-7',  name_ko: '수원 화성 행궁동',     name_en: 'Hwaseong Haenggung-dong',      primary_image_url: IMG.palace_spring, display_region: '수원',   quality_score: 96, is_trending: true  },
+          { poi_id: 'kd-1',  name_ko: '경복궁 (야간관람)',    name_en: 'Gyeongbokgung Palace Night',   primary_image_url: IMG.gyeongbok,    display_region: '종로구', quality_score: 98, is_trending: true  },
+          { poi_id: 'kd-4',  name_ko: '전주 한옥마을',        name_en: 'Jeonju Hanok Village',         primary_image_url: IMG.palace_spring, display_region: '전주',   quality_score: 98, is_trending: true  },
+          { poi_id: 'kd-6',  name_ko: '춘천 남이섬',          name_en: 'Nami Island, Chuncheon',       primary_image_url: IMG.cherry,       display_region: '춘천',   quality_score: 94, is_trending: true  },
+          { poi_id: 'kd-7',  name_ko: '수원 화성 행궁동',     name_en: 'Hwaseong Haenggung-dong',      primary_image_url: IMG.palace_spring, display_region: '수원',   quality_score: 96, is_trending: true  },
         ],
       },
       {
         id: 'tours',
         items: [
-          { place_id: 'kd-9',  name_ko: '사랑의 불시착 파주 DMZ', name_en: 'CLOY Paju DMZ Tour',           primary_image_url: IMG.palace_spring, display_region: '파주',   quality_score: 94, is_trending: true,  is_featured: true },
-          { place_id: 'kd-11', name_ko: '갯마을 차차차 촬영지',   name_en: 'Hometown Cha-Cha-Cha Village', primary_image_url: IMG.cherry,       display_region: '포항',   quality_score: 96, is_trending: true  },
-          { place_id: 'kd-26', name_ko: '몽테드 카페 (러블리 러너)', name_en: 'Mongted Café — Lovely Runner', primary_image_url: IMG.film_street,  display_region: '수원',   quality_score: 94, is_trending: true  },
+          { poi_id: 'kd-9',  name_ko: '사랑의 불시착 파주 DMZ', name_en: 'CLOY Paju DMZ Tour',           primary_image_url: IMG.palace_spring, display_region: '파주',   quality_score: 94, is_trending: true,  is_featured: true },
+          { poi_id: 'kd-11', name_ko: '갯마을 차차차 촬영지',   name_en: 'Hometown Cha-Cha-Cha Village', primary_image_url: IMG.cherry,       display_region: '포항',   quality_score: 96, is_trending: true  },
+          { poi_id: 'kd-26', name_ko: '몽테드 카페 (러블리 러너)', name_en: 'Mongted Café — Lovely Runner', primary_image_url: IMG.film_street,  display_region: '수원',   quality_score: 94, is_trending: true  },
         ],
       },
       {
         id: 'historical',
         items: [
-          { place_id: 'kd-13', name_ko: 'MBC 드라미아',      name_en: 'MBC Dramia',             primary_image_url: IMG.palace_spring, display_region: '용인', quality_score: 90, is_trending: false },
-          { place_id: 'kd-14', name_ko: '안동 하회마을',     name_en: 'Andong Hahoe Village',   primary_image_url: IMG.culture001,   display_region: '안동', quality_score: 98, is_trending: true  },
-          { place_id: 'kd-15', name_ko: '경주 양동마을',     name_en: 'Yangdong Folk Village',  primary_image_url: IMG.palace_spring, display_region: '경주', quality_score: 96, is_trending: true  },
+          { poi_id: 'kd-13', name_ko: 'MBC 드라미아',      name_en: 'MBC Dramia',             primary_image_url: IMG.palace_spring, display_region: '용인', quality_score: 90, is_trending: false },
+          { poi_id: 'kd-14', name_ko: '안동 하회마을',     name_en: 'Andong Hahoe Village',   primary_image_url: IMG.culture001,   display_region: '안동', quality_score: 98, is_trending: true  },
+          { poi_id: 'kd-15', name_ko: '경주 양동마을',     name_en: 'Yangdong Folk Village',  primary_image_url: IMG.palace_spring, display_region: '경주', quality_score: 96, is_trending: true  },
         ],
       },
       {
         id: 'ostCafes',
         items: [
-          { place_id: 'kd-17', name_ko: '응답하라 1988 세트 카페', name_en: 'Reply 1988 Set Café',    primary_image_url: IMG.film_street, display_region: '도봉구', quality_score: 92, is_trending: true  },
-          { place_id: 'kd-22', name_ko: '카페 지노 (파주, 도깨비)', name_en: 'Café ZINO Paju — Goblin', primary_image_url: IMG.film_street, display_region: '파주',   quality_score: 96, is_trending: true  },
-          { place_id: 'kd-25', name_ko: 'DDP (동대문디자인플라자)', name_en: 'Dongdaemun Design Plaza', primary_image_url: IMG.gyeongbok,   display_region: '중구',   quality_score: 96, is_trending: true  },
+          { poi_id: 'kd-17', name_ko: '응답하라 1988 세트 카페', name_en: 'Reply 1988 Set Café',    primary_image_url: IMG.film_street, display_region: '도봉구', quality_score: 92, is_trending: true  },
+          { poi_id: 'kd-22', name_ko: '카페 지노 (파주, 도깨비)', name_en: 'Café ZINO Paju — Goblin', primary_image_url: IMG.film_street, display_region: '파주',   quality_score: 96, is_trending: true  },
+          { poi_id: 'kd-25', name_ko: 'DDP (동대문디자인플라자)', name_en: 'Dongdaemun Design Plaza', primary_image_url: IMG.gyeongbok,   display_region: '중구',   quality_score: 96, is_trending: true  },
         ],
       },
     ],
@@ -189,34 +189,34 @@ const MOCK: Record<string, ExploreData> = {
       {
         id: 'skincare',
         items: [
-          { place_id: 'kb-1', name_ko: '설화수 플래그십 강남',      name_en: 'Sulwhasoo Flagship Gangnam', primary_image_url: IMG.skincare_clinic, display_region: '강남구', quality_score: 94, is_trending: true,  district: 'Gangnam'    },
-          { place_id: 'kb-3', name_ko: '이니스프리 홍대 하우스',    name_en: 'Innisfree Hongdae House',    primary_image_url: IMG.skincare_clinic, display_region: '마포구', quality_score: 94, is_trending: true,  district: 'Hongdae'    },
-          { place_id: 'kb-5', name_ko: '올리브영 명동 타운',        name_en: 'Olive Young Myeongdong Town', primary_image_url: IMG.beauty_clinic,  display_region: '중구',   quality_score: 92, is_trending: true,  district: 'Myeongdong' },
-          { place_id: 'kb-6', name_ko: 'CNP 차앤박 압구정',        name_en: 'CNP Cha & Park Apgujeong',   primary_image_url: IMG.skincare_clinic, display_region: '강남구', quality_score: 98, is_trending: true,  district: 'Apgujeong'  },
+          { poi_id: 'kb-1', name_ko: '설화수 플래그십 강남',      name_en: 'Sulwhasoo Flagship Gangnam', primary_image_url: IMG.skincare_clinic, display_region: '강남구', quality_score: 94, is_trending: true,  district: 'Gangnam'    },
+          { poi_id: 'kb-3', name_ko: '이니스프리 홍대 하우스',    name_en: 'Innisfree Hongdae House',    primary_image_url: IMG.skincare_clinic, display_region: '마포구', quality_score: 94, is_trending: true,  district: 'Hongdae'    },
+          { poi_id: 'kb-5', name_ko: '올리브영 명동 타운',        name_en: 'Olive Young Myeongdong Town', primary_image_url: IMG.beauty_clinic,  display_region: '중구',   quality_score: 92, is_trending: true,  district: 'Myeongdong' },
+          { poi_id: 'kb-6', name_ko: 'CNP 차앤박 압구정',        name_en: 'CNP Cha & Park Apgujeong',   primary_image_url: IMG.skincare_clinic, display_region: '강남구', quality_score: 98, is_trending: true,  district: 'Apgujeong'  },
         ],
       },
       {
         id: 'makeup',
         items: [
-          { place_id: 'kb-11', name_ko: '롬앤 명동 팝업',    name_en: 'rom&nd Myeongdong Pop-Up',  primary_image_url: IMG.beauty_clinic,   display_region: '중구',   quality_score: 92, is_trending: true,  district: 'Myeongdong', is_featured: true },
-          { place_id: 'kb-14', name_ko: '젠틀몬스터 압구정',  name_en: 'Gentle Monster Apgujeong',  primary_image_url: IMG.beauty_clinic,   display_region: '강남구', quality_score: 98, is_trending: true,  district: 'Apgujeong'  },
-          { place_id: 'kb-15', name_ko: '탬버린즈 홍대',      name_en: 'Tamburins Hongdae',         primary_image_url: IMG.skincare_clinic, display_region: '마포구', quality_score: 96, is_trending: true,  district: 'Hongdae'    },
+          { poi_id: 'kb-11', name_ko: '롬앤 명동 팝업',    name_en: 'rom&nd Myeongdong Pop-Up',  primary_image_url: IMG.beauty_clinic,   display_region: '중구',   quality_score: 92, is_trending: true,  district: 'Myeongdong', is_featured: true },
+          { poi_id: 'kb-14', name_ko: '젠틀몬스터 압구정',  name_en: 'Gentle Monster Apgujeong',  primary_image_url: IMG.beauty_clinic,   display_region: '강남구', quality_score: 98, is_trending: true,  district: 'Apgujeong'  },
+          { poi_id: 'kb-15', name_ko: '탬버린즈 홍대',      name_en: 'Tamburins Hongdae',         primary_image_url: IMG.skincare_clinic, display_region: '마포구', quality_score: 96, is_trending: true,  district: 'Hongdae'    },
         ],
       },
       {
         id: 'spa',
         items: [
-          { place_id: 'kb-16', name_ko: '청담 아모리스 스파',   name_en: 'Cheongdam Amoris Spa', primary_image_url: IMG.skincare_clinic, display_region: '강남구', quality_score: 96, is_trending: true,  district: 'Gangnam'    },
-          { place_id: 'kb-17', name_ko: '명동 힐링 스파',       name_en: 'Myeongdong Healing Spa', primary_image_url: IMG.beauty_clinic, display_region: '중구',   quality_score: 90, is_trending: false, district: 'Myeongdong' },
-          { place_id: 'kb-19', name_ko: '압구정 데이 스파',     name_en: 'Apgujeong Day Spa',    primary_image_url: IMG.beauty_clinic,   display_region: '강남구', quality_score: 92, is_trending: true,  district: 'Apgujeong'  },
+          { poi_id: 'kb-16', name_ko: '청담 아모리스 스파',   name_en: 'Cheongdam Amoris Spa', primary_image_url: IMG.skincare_clinic, display_region: '강남구', quality_score: 96, is_trending: true,  district: 'Gangnam'    },
+          { poi_id: 'kb-17', name_ko: '명동 힐링 스파',       name_en: 'Myeongdong Healing Spa', primary_image_url: IMG.beauty_clinic, display_region: '중구',   quality_score: 90, is_trending: false, district: 'Myeongdong' },
+          { poi_id: 'kb-19', name_ko: '압구정 데이 스파',     name_en: 'Apgujeong Day Spa',    primary_image_url: IMG.beauty_clinic,   display_region: '강남구', quality_score: 92, is_trending: true,  district: 'Apgujeong'  },
         ],
       },
       {
         id: 'salon',
         items: [
-          { place_id: 'kb-21', name_ko: '이철헤어커커 압구정',  name_en: 'Lee Cheol Hair Apgujeong', primary_image_url: IMG.beauty_clinic,   display_region: '강남구', quality_score: 94, is_trending: false, district: 'Apgujeong'  },
-          { place_id: 'kb-22', name_ko: '준오헤어 홍대',        name_en: 'Juno Hair Hongdae',        primary_image_url: IMG.skincare_clinic, display_region: '마포구', quality_score: 90, is_trending: false, district: 'Hongdae'    },
-          { place_id: 'kb-23', name_ko: '제니하우스 강남',      name_en: 'Jenny House Gangnam',      primary_image_url: IMG.beauty_clinic,   display_region: '강남구', quality_score: 98, is_trending: true,  district: 'Gangnam'    },
+          { poi_id: 'kb-21', name_ko: '이철헤어커커 압구정',  name_en: 'Lee Cheol Hair Apgujeong', primary_image_url: IMG.beauty_clinic,   display_region: '강남구', quality_score: 94, is_trending: false, district: 'Apgujeong'  },
+          { poi_id: 'kb-22', name_ko: '준오헤어 홍대',        name_en: 'Juno Hair Hongdae',        primary_image_url: IMG.skincare_clinic, display_region: '마포구', quality_score: 90, is_trending: false, district: 'Hongdae'    },
+          { poi_id: 'kb-23', name_ko: '제니하우스 강남',      name_en: 'Jenny House Gangnam',      primary_image_url: IMG.beauty_clinic,   display_region: '강남구', quality_score: 98, is_trending: true,  district: 'Gangnam'    },
         ],
       },
     ],
@@ -237,34 +237,34 @@ const MOCK: Record<string, ExploreData> = {
       {
         id: 'traditional',
         items: [
-          { place_id: 'kc-12', name_ko: '창덕궁',          name_en: 'Changdeokgung Palace',        primary_image_url: IMG.palace_spring, display_region: '종로구', quality_score: 98, is_trending: true,  region: 'Seoul'    },
-          { place_id: 'kc-13', name_ko: '불국사',          name_en: 'Bulguksa Temple, Gyeongju',   primary_image_url: IMG.culture001,   display_region: '경주',   quality_score: 98, is_trending: false, region: 'Gyeongju' },
-          { place_id: 'kc-15', name_ko: '안동 하회마을',   name_en: 'Andong Hahoe Village',        primary_image_url: IMG.palace_spring, display_region: '안동',   quality_score: 98, is_trending: true,  region: 'Andong'   },
-          { place_id: 'kc-15b', name_ko: '전주 경기전',    name_en: 'Jeonju Gyeonggijeon Shrine',  primary_image_url: IMG.culture001,   display_region: '전주',   quality_score: 94, is_trending: false, region: 'Jeonju'   },
+          { poi_id: 'kc-12', name_ko: '창덕궁',          name_en: 'Changdeokgung Palace',        primary_image_url: IMG.palace_spring, display_region: '종로구', quality_score: 98, is_trending: true,  region: 'Seoul'    },
+          { poi_id: 'kc-13', name_ko: '불국사',          name_en: 'Bulguksa Temple, Gyeongju',   primary_image_url: IMG.culture001,   display_region: '경주',   quality_score: 98, is_trending: false, region: 'Gyeongju' },
+          { poi_id: 'kc-15', name_ko: '안동 하회마을',   name_en: 'Andong Hahoe Village',        primary_image_url: IMG.palace_spring, display_region: '안동',   quality_score: 98, is_trending: true,  region: 'Andong'   },
+          { poi_id: 'kc-15b', name_ko: '전주 경기전',    name_en: 'Jeonju Gyeonggijeon Shrine',  primary_image_url: IMG.culture001,   display_region: '전주',   quality_score: 94, is_trending: false, region: 'Jeonju'   },
         ],
       },
       {
         id: 'food',
         items: [
-          { place_id: 'kc-1', name_ko: '광장시장',            name_en: 'Gwangjang Market',           primary_image_url: IMG.kbbq,      display_region: '종로구', quality_score: 96, is_trending: true,  region: 'Seoul'  },
-          { place_id: 'kc-2', name_ko: '전주 한정식 거리',    name_en: 'Jeonju Hanjeongsik Street',  primary_image_url: IMG.pork_soup, display_region: '전주',   quality_score: 98, is_trending: true,  region: 'Jeonju' },
-          { place_id: 'kc-6', name_ko: '경주 황리단길',       name_en: 'Gyeongju Hwangnidan-gil',    primary_image_url: IMG.kbbq,      display_region: '경주',   quality_score: 96, is_trending: true,  region: 'Gyeongju' },
+          { poi_id: 'kc-1', name_ko: '광장시장',            name_en: 'Gwangjang Market',           primary_image_url: IMG.kbbq,      display_region: '종로구', quality_score: 96, is_trending: true,  region: 'Seoul'  },
+          { poi_id: 'kc-2', name_ko: '전주 한정식 거리',    name_en: 'Jeonju Hanjeongsik Street',  primary_image_url: IMG.pork_soup, display_region: '전주',   quality_score: 98, is_trending: true,  region: 'Jeonju' },
+          { poi_id: 'kc-6', name_ko: '경주 황리단길',       name_en: 'Gyeongju Hwangnidan-gil',    primary_image_url: IMG.kbbq,      display_region: '경주',   quality_score: 96, is_trending: true,  region: 'Gyeongju' },
         ],
       },
       {
         id: 'festivals',
         items: [
-          { place_id: 'kc-10', name_ko: '서울 등불 축제',        name_en: 'Seoul Lantern Festival',   primary_image_url: IMG.culture001,   display_region: '서울', quality_score: 92, is_trending: true,  region: 'Seoul',   event_date: soon(20) },
-          { place_id: 'kc-11', name_ko: '경주 신라문화제',       name_en: 'Gyeongju Silla Festival',  primary_image_url: IMG.palace_spring, display_region: '경주', quality_score: 90, is_trending: false, region: 'Gyeongju', event_date: soon(45) },
-          { place_id: 'kc-12f', name_ko: '안동 국제탈춤페스티벌', name_en: 'Andong Mask Dance Festival', primary_image_url: IMG.culture001, display_region: '안동', quality_score: 89, is_trending: false, region: 'Andong', event_date: soon(7) },
+          { poi_id: 'kc-10', name_ko: '서울 등불 축제',        name_en: 'Seoul Lantern Festival',   primary_image_url: IMG.culture001,   display_region: '서울', quality_score: 92, is_trending: true,  region: 'Seoul',   event_date: soon(20) },
+          { poi_id: 'kc-11', name_ko: '경주 신라문화제',       name_en: 'Gyeongju Silla Festival',  primary_image_url: IMG.palace_spring, display_region: '경주', quality_score: 90, is_trending: false, region: 'Gyeongju', event_date: soon(45) },
+          { poi_id: 'kc-12f', name_ko: '안동 국제탈춤페스티벌', name_en: 'Andong Mask Dance Festival', primary_image_url: IMG.culture001, display_region: '안동', quality_score: 89, is_trending: false, region: 'Andong', event_date: soon(7) },
         ],
       },
       {
         id: 'crafts',
         items: [
-          { place_id: 'kc-30', name_ko: '국립민속박물관',     name_en: 'National Folk Museum',     primary_image_url: IMG.culture001,   display_region: '종로구', quality_score: 90, is_trending: false, region: 'Seoul'  },
-          { place_id: 'kc-11b', name_ko: '경주 도예 공방 체험', name_en: 'Gyeongju Pottery Workshop', primary_image_url: IMG.culture001,  display_region: '경주',   quality_score: 94, is_trending: false, region: 'Gyeongju' },
-          { place_id: 'kc-32', name_ko: '전주 전통문화연수원', name_en: 'Jeonju Traditional Center', primary_image_url: IMG.palace_spring, display_region: '전주',   quality_score: 85, is_trending: true,  region: 'Jeonju' },
+          { poi_id: 'kc-30', name_ko: '국립민속박물관',     name_en: 'National Folk Museum',     primary_image_url: IMG.culture001,   display_region: '종로구', quality_score: 90, is_trending: false, region: 'Seoul'  },
+          { poi_id: 'kc-11b', name_ko: '경주 도예 공방 체험', name_en: 'Gyeongju Pottery Workshop', primary_image_url: IMG.culture001,  display_region: '경주',   quality_score: 94, is_trending: false, region: 'Gyeongju' },
+          { poi_id: 'kc-32', name_ko: '전주 전통문화연수원', name_en: 'Jeonju Traditional Center', primary_image_url: IMG.palace_spring, display_region: '전주',   quality_score: 85, is_trending: true,  region: 'Jeonju' },
         ],
       },
     ],
@@ -300,8 +300,8 @@ export async function GET(
   const trendingItems: ExplorePoi[] = []
   for (const s of base.sections) {
     for (const it of s.items) {
-      if (it.is_trending && !seen.has(it.place_id)) {
-        seen.add(it.place_id)
+      if (it.is_trending && !seen.has(it.poi_id)) {
+        seen.add(it.poi_id)
         trendingItems.push(it)
       }
     }

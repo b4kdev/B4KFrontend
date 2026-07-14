@@ -26,7 +26,7 @@ interface ListResponse<T> {
   items: T[]
 }
 
-interface PoiItem { place_id: string; name_preferred?: string | null; name_en?: string | null; name_ko?: string | null }
+interface PoiItem { poi_id: string; name_preferred?: string | null; name_en?: string | null; name_ko?: string | null }
 
 type TabId = 'trips' | 'saved' | 'badges'
 
@@ -154,11 +154,11 @@ function SavedList({ userId, emptyLabel }: { userId: string; emptyLabel: string 
     <div className="flex flex-col gap-sp-2 p-sp-4">
       {data.items.map((poi) => (
         <div
-          key={poi.place_id}
+          key={poi.poi_id}
           className="p-sp-3 bg-bg-2 rounded-none text-fg text-f-base"
           style={{ border: '1px solid var(--bdr)' }}
         >
-          {getDisplayName({ name_preferred: poi.name_preferred, name_en: poi.name_en, name_ko: poi.name_ko, id: poi.place_id })}
+          {getDisplayName({ name_preferred: poi.name_preferred, name_en: poi.name_en, name_ko: poi.name_ko, id: poi.poi_id })}
         </div>
       ))}
     </div>

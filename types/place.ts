@@ -1,13 +1,11 @@
 export type Domain =
-  | "ktourism"
-  | "kfood"
-  | "kbeauty"
-  | "kshopping"
-  | "klodging"
-  | "kleisure"
+  | "k-pop"
+  | "k-drama"
+  | "k-beauty"
+  | "k-culture"
 
 export interface Place {
-  place_id: number
+  poi_id: number
   name_ko: string
   address_ko: string | null
   address_en: string | null

@@ -54,7 +54,7 @@ export default function LeftPanel({
   const hasPlan = planStops.length > 0
 
   const selectedPoi = selectedPoiId
-    ? pois.find(p => p.place_id === selectedPoiId) ?? null
+    ? pois.find(p => p.poi_id === selectedPoiId) ?? null
     : null
 
   // State B: plan strip expanded → full-height plan active panel
@@ -91,10 +91,10 @@ export default function LeftPanel({
         {selectedPoi ? (
           <LeftPanelPOIDetail
             poi={selectedPoi}
-            isSaved={isSaved(selectedPoi.place_id)}
-            isInPlan={isInPlan(selectedPoi.place_id)}
+            isSaved={isSaved(selectedPoi.poi_id)}
+            isInPlan={isInPlan(selectedPoi.poi_id)}
             planFull={planFull}
-            onAddToPlan={() => onAddToPlan(selectedPoi.place_id)}
+            onAddToPlan={() => onAddToPlan(selectedPoi.poi_id)}
             onToggleSave={() => onToggleSave(selectedPoi)}
             onClose={onClosePoi}
           />

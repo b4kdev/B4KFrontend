@@ -1,6 +1,6 @@
 // service.places_snapshot — returned by /api/places and /api/places/[id]
 export interface Place {
-  place_id: string
+  poi_id: string
   name_ko: string
   address_ko: string
   address_en: string
@@ -18,7 +18,7 @@ export interface Place {
 
 // /api/map/pins — name_ko only, no lang param
 export interface PlacePin {
-  place_id: string
+  poi_id: string
   name_ko: string
   coords_lat: number
   coords_lng: number

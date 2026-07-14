@@ -119,7 +119,7 @@ export default function SavedPage() {
     const poiIds = Array.from(new Set(
       data.folders
         .filter(f => selectedFolderIds.has(f.id))
-        .flatMap(f => f.pois.map(p => p.place_id)),
+        .flatMap(f => f.pois.map(p => p.poi_id)),
     ))
     if (poiIds.length === 0) { setGenerateError(true); return }
     setGenerating(true)
@@ -209,7 +209,7 @@ export default function SavedPage() {
     fetch('/api/saved/poi', {
       method:  'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ place_id: placeId }),
+      body:    JSON.stringify({ poi_id: placeId }),
     })
       .then(res => { if (!res.ok) throw new Error(); return mutate() })
       .catch(() => {
@@ -396,7 +396,7 @@ export default function SavedPage() {
 
         ) : placesView === 'folder-detail' && activeFolder ? (
           (() => {
-            const visiblePois = activeFolder.pois.filter(p => !removingPoiIds.has(p.place_id))
+            const visiblePois = activeFolder.pois.filter(p => !removingPoiIds.has(p.poi_id))
             return (
           <div>
             <button onClick={backToFolders} className="flex items-center gap-sp-2 text-muted hover:text-fg transition-colors text-f-base mb-sp-4 min-h-touch">
@@ -410,7 +410,7 @@ export default function SavedPage() {
               {visiblePois.map((poi, idx) => {
                 const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
                 return (
-                  <div key={poi.place_id} className="flex items-center gap-sp-3 p-sp-4" style={idx < visiblePois.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}>
+                  <div key={poi.poi_id} className="flex items-center gap-sp-3 p-sp-4" style={idx < visiblePois.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}>
                     <div className="w-10 h-10 rounded-none flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
                       <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
                     </div>
@@ -419,7 +419,7 @@ export default function SavedPage() {
                       <p className="text-f-sm text-muted mt-[2px]">{poi.display_region}</p>
                     </div>
                     <button
-                      onClick={() => handleRemovePoi(poi.place_id)}
+                      onClick={() => handleRemovePoi(poi.poi_id)}
                       aria-label={t('poi.removeAriaLabel', { name })}
                       title={t('poi.removeLabel')}
                       className="min-w-touch min-h-touch flex items-center justify-center shrink-0 text-muted hover:text-danger transition-colors"

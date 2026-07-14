@@ -63,14 +63,14 @@ export default function ProfileSavedPage() {
     <div className="flex flex-col gap-sp-2 p-sp-4">
       {data.items.map((poi) => (
         <div
-          key={poi.place_id}
+          key={poi.poi_id}
           className="flex items-center gap-sp-3 p-sp-3 bg-bg-2 rounded-none"
           style={{ border: '1px solid var(--bdr)' }}
         >
           <MapPin size={16} strokeWidth={2} className="text-muted shrink-0" aria-hidden="true" />
           <div className="min-w-0">
             <p className="text-fg text-f-base truncate">
-              {getDisplayName({ name_preferred: poi.name_preferred, name_en: poi.name_en, name_ko: poi.name_ko, id: poi.place_id })}
+              {getDisplayName({ name_preferred: poi.name_preferred, name_en: poi.name_en, name_ko: poi.name_ko, id: poi.poi_id })}
             </p>
             {poi.display_region && (
               <p className="text-muted text-f-xs truncate">{poi.display_region}</p>

@@ -110,11 +110,11 @@ export default function NaverMapCanvas({
     const clusterActive = zoom <= CLUSTER_ZOOM_THRESHOLD && !savedFolderPoiIds
 
     const visiblePois = savedFolderPoiIds
-      ? pois.filter(p => savedFolderPoiIds.includes(p.place_id))
+      ? pois.filter(p => savedFolderPoiIds.includes(p.poi_id))
       : pois
 
-    const planPois = visiblePois.filter(p => planStopIds.includes(p.place_id))
-    const freePois = visiblePois.filter(p => !planStopIds.includes(p.place_id))
+    const planPois = visiblePois.filter(p => planStopIds.includes(p.poi_id))
+    const freePois = visiblePois.filter(p => !planStopIds.includes(p.poi_id))
 
     // Bucket free POIs into a lat/lng grid at the current zoom's resolution.
     // Cells with 2+ members become a cluster bubble; singletons render as normal dots.
@@ -134,28 +134,28 @@ export default function NaverMapCanvas({
       buckets.forEach(members => {
         if (members.length >= 2) {
           clusterGroups.push(members)
-          members.forEach(m => clusteredIds.add(m.place_id))
+          members.forEach(m => clusteredIds.add(m.poi_id))
         }
       })
     }
 
-    const individualPois = [...planPois, ...freePois.filter(p => !clusteredIds.has(p.place_id))]
-    const liveIds = new Set(individualPois.map(p => p.place_id))
+    const individualPois = [...planPois, ...freePois.filter(p => !clusteredIds.has(p.poi_id))]
+    const liveIds = new Set(individualPois.map(p => p.poi_id))
 
     markersRef.current.forEach((marker, id) => {
       if (!liveIds.has(id)) { marker.setMap(null); markersRef.current.delete(id) }
     })
 
     individualPois.forEach(poi => {
-      const selected   = poi.place_id === selectedPoiId
-      const planIndex  = planStopIds.indexOf(poi.place_id)
+      const selected   = poi.poi_id === selectedPoiId
+      const planIndex  = planStopIds.indexOf(poi.poi_id)
       const isInPlan   = planIndex !== -1
       const content    = isInPlan
         ? planMarkerHtml(planIndex, selected)
         : poiMarkerHtml(poi, selected)
 
-      if (markersRef.current.has(poi.place_id)) {
-        markersRef.current.get(poi.place_id)!.setIcon({
+      if (markersRef.current.has(poi.poi_id)) {
+        markersRef.current.get(poi.poi_id)!.setIcon({
           content,
           size:   new window.naver.maps.Size(24, 24),
           anchor: new window.naver.maps.Point(12, 12),
@@ -175,8 +175,8 @@ export default function NaverMapCanvas({
         cursor: 'pointer',
       })
 
-      window.naver.maps.Event.addListener(marker, 'click', () => onPoiSelect(poi.place_id))
-      markersRef.current.set(poi.place_id, marker)
+      window.naver.maps.Event.addListener(marker, 'click', () => onPoiSelect(poi.poi_id))
+      markersRef.current.set(poi.poi_id, marker)
     })
 
     // Cluster bubbles — rebuilt fresh each pass (cheap: bounded by visible POI count).
@@ -215,7 +215,7 @@ export default function NaverMapCanvas({
     if (planStopIds.length < 2) return
 
     const coords = planStopIds
-      .map(id => pois.find(p => p.place_id === id))
+      .map(id => pois.find(p => p.poi_id === id))
       .filter((p): p is MapPoi => !!p)
       .map(p => new window.naver.maps.LatLng(p.coords_lat, p.coords_lng))
 

@@ -35,15 +35,15 @@ export default function LeftPanelPlanActive({
   const [errorDismissed, setErrorDismissed] = useState(false)
 
   // UF-5 (G4.2) — day tabs: always offer one more than the highest day in use, capped at 7
-  const maxDayUsed = stops.reduce((max, s) => Math.max(max, stopDays[s.place_id] ?? 1), 1)
+  const maxDayUsed = stops.reduce((max, s) => Math.max(max, stopDays[s.poi_id] ?? 1), 1)
   const dayCount = Math.min(Math.max(maxDayUsed, activeDay) + (maxDayUsed < MAX_DAYS ? 1 : 0), MAX_DAYS)
-  const dayStops = stops.filter(s => (stopDays[s.place_id] ?? 1) === activeDay)
+  const dayStops = stops.filter(s => (stopDays[s.poi_id] ?? 1) === activeDay)
 
   function handleDragStart(i: number) { dragItem.current = i; setDragging(i) }
   function handleDragEnter(i: number) { dragOver.current = i }
   function handleDragEnd() {
     if (dragItem.current !== null && dragOver.current !== null && dragItem.current !== dragOver.current) {
-      const ids = dayStops.map(s => s.place_id)
+      const ids = dayStops.map(s => s.poi_id)
       const [moved] = ids.splice(dragItem.current, 1)
       ids.splice(dragOver.current, 0, moved)
       onReorder(ids)
@@ -53,7 +53,7 @@ export default function LeftPanelPlanActive({
     setDragging(null)
   }
 
-  const totalMin = stops.reduce((sum, s) => sum + (stopDurations[s.place_id] ?? 60), 0)
+  const totalMin = stops.reduce((sum, s) => sum + (stopDurations[s.poi_id] ?? 60), 0)
   const hrs  = Math.floor(totalMin / 60)
   const mins = totalMin % 60
 
@@ -113,11 +113,11 @@ export default function LeftPanelPlanActive({
       <div className="flex-1 overflow-y-auto themed-scrollbar">
         {dayStops.map((poi, i) => {
           const name     = getDisplayName(poi)
-          const duration = stopDurations[poi.place_id] ?? 60
+          const duration = stopDurations[poi.poi_id] ?? 60
           const next     = dayStops[i + 1]
 
           return (
-            <div key={poi.place_id}>
+            <div key={poi.poi_id}>
               <div
                 draggable
                 onDragStart={() => handleDragStart(i)}
@@ -156,7 +156,7 @@ export default function LeftPanelPlanActive({
                     min={5}
                     max={480}
                     value={duration}
-                    onChange={e => onDurationChange(poi.place_id, Math.max(5, Math.min(480, Number(e.target.value) || 60)))}
+                    onChange={e => onDurationChange(poi.poi_id, Math.max(5, Math.min(480, Number(e.target.value) || 60)))}
                     aria-label={t('durationAriaLabel', { name })}
                     className="w-[42px] text-center text-xs text-fg bg-bg-3 rounded py-0.5 outline-none focus:ring-1 focus:ring-lav tabular-nums"
                     style={{ border: '1px solid var(--bdr)' }}
@@ -166,7 +166,7 @@ export default function LeftPanelPlanActive({
 
                 {/* Remove */}
                 <button
-                  onClick={() => onRemove(poi.place_id)}
+                  onClick={() => onRemove(poi.poi_id)}
                   aria-label={t('removeStop', { n: i + 1 })}
                   className="text-muted hover:text-danger transition-colors shrink-0 min-w-touch min-h-touch flex items-center justify-center"
                 >

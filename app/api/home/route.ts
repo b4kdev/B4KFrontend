@@ -10,7 +10,7 @@ export interface HomeTopPlan {
 }
 
 export interface HomeSeasonalPoi {
-  place_id: string
+  poi_id: string
   name_ko: string
   name_en: string
   display_region: string
@@ -30,12 +30,12 @@ const MOCK_TOP_PLANS: HomeTopPlan[] = [
 ]
 
 const MOCK_SEASONAL_POIS: HomeSeasonalPoi[] = [
-  { place_id: 'poi-s-01', name_ko: '경복궁',         name_en: 'Gyeongbokgung Palace',      display_region: 'Jongno-gu, Seoul',      category: 'Heritage', primary_image_url: null },
-  { place_id: 'poi-s-02', name_ko: '보성 녹차밭',    name_en: 'Boseong Green Tea Fields',  display_region: 'Boseong, South Jeolla', category: 'Nature',   primary_image_url: null },
-  { place_id: 'poi-s-03', name_ko: 'N 서울타워',     name_en: 'N Seoul Tower',             display_region: 'Namsan, Seoul',         category: 'Landmark', primary_image_url: null },
-  { place_id: 'poi-s-04', name_ko: '전주 한옥마을',  name_en: 'Jeonju Hanok Village',      display_region: 'Jeonju, North Jeolla', category: 'Culture',  primary_image_url: null },
-  { place_id: 'poi-s-05', name_ko: '북한산 국립공원', name_en: 'Bukhansan National Park',  display_region: 'Seoul Metropolitan',    category: 'Nature',   primary_image_url: null },
-  { place_id: 'poi-s-06', name_ko: '해운대 해수욕장', name_en: 'Haeundae Beach',           display_region: 'Busan',                 category: 'Beach',    primary_image_url: null },
+  { poi_id: 'poi-s-01', name_ko: '경복궁',         name_en: 'Gyeongbokgung Palace',      display_region: 'Jongno-gu, Seoul',      category: 'Heritage', primary_image_url: null },
+  { poi_id: 'poi-s-02', name_ko: '보성 녹차밭',    name_en: 'Boseong Green Tea Fields',  display_region: 'Boseong, South Jeolla', category: 'Nature',   primary_image_url: null },
+  { poi_id: 'poi-s-03', name_ko: 'N 서울타워',     name_en: 'N Seoul Tower',             display_region: 'Namsan, Seoul',         category: 'Landmark', primary_image_url: null },
+  { poi_id: 'poi-s-04', name_ko: '전주 한옥마을',  name_en: 'Jeonju Hanok Village',      display_region: 'Jeonju, North Jeolla', category: 'Culture',  primary_image_url: null },
+  { poi_id: 'poi-s-05', name_ko: '북한산 국립공원', name_en: 'Bukhansan National Park',  display_region: 'Seoul Metropolitan',    category: 'Nature',   primary_image_url: null },
+  { poi_id: 'poi-s-06', name_ko: '해운대 해수욕장', name_en: 'Haeundae Beach',           display_region: 'Busan',                 category: 'Beach',    primary_image_url: null },
 ]
 
 export async function GET() {

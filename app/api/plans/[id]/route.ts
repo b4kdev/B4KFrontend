@@ -8,7 +8,7 @@ export interface ItineraryStop {
   transport_mode: 'car' | 'public' | 'walk' | null
   notes: string | null
   poi: {
-    place_id: string
+    poi_id: string
     name_preferred: string | null
     name_en: string
     name_ko: string

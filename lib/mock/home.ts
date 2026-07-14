@@ -53,7 +53,7 @@ const TOP_PLANS: HomeTopPlan[] = [
 
 const SEASONAL_POIS: HomeSeasonalPoi[] = [
   {
-    place_id: 'sp-1',
+    poi_id: 'sp-1',
     name_ko: '잠실 올림픽 주경기장',
     name_en: 'Jamsil Olympic Stadium',
     display_region: '송파구, 서울',
@@ -61,7 +61,7 @@ const SEASONAL_POIS: HomeSeasonalPoi[] = [
     primary_image_url: '/mock-images/bts_concert.png',
   },
   {
-    place_id: 'sp-2',
+    poi_id: 'sp-2',
     name_ko: '담양 메타세쿼이아 길',
     name_en: 'Damyang Metasequoia Road',
     display_region: '담양, 전남',
@@ -69,7 +69,7 @@ const SEASONAL_POIS: HomeSeasonalPoi[] = [
     primary_image_url: '/mock-images/cherry.png',
   },
   {
-    place_id: 'sp-3',
+    poi_id: 'sp-3',
     name_ko: '광장시장',
     name_en: 'Gwangjang Market',
     display_region: '종로구, 서울',
@@ -77,7 +77,7 @@ const SEASONAL_POIS: HomeSeasonalPoi[] = [
     primary_image_url: '/mock-images/kbbq.png',
   },
   {
-    place_id: 'sp-4',
+    poi_id: 'sp-4',
     name_ko: 'CNP 차앤박 피부과',
     name_en: 'CNP Cha & Park Dermatology',
     display_region: '강남구, 서울',
@@ -85,7 +85,7 @@ const SEASONAL_POIS: HomeSeasonalPoi[] = [
     primary_image_url: '/mock-images/skincare_clinic.png',
   },
   {
-    place_id: 'sp-5',
+    poi_id: 'sp-5',
     name_ko: '창덕궁 후원',
     name_en: 'Changdeokgung Secret Garden',
     display_region: '종로구, 서울',
@@ -93,7 +93,7 @@ const SEASONAL_POIS: HomeSeasonalPoi[] = [
     primary_image_url: '/mock-images/gyeongbok.png',
   },
   {
-    place_id: 'sp-6',
+    poi_id: 'sp-6',
     name_ko: '1MILLION Dance Studio',
     name_en: '1MILLION Dance Studio',
     display_region: '서초구, 서울',

@@ -91,7 +91,7 @@ export default function MapView() {
     if (params.get('plan')) return
     const draft = getDraftPlan()
     if (!draft || draft.stops.length === 0) return
-    const ids = draft.stops.map(s => s.place_id)
+    const ids = draft.stops.map(s => s.poi_id)
     setPlanStopIds(ids)
     setStopDurations(draft.durations)
     clearDraftPlan()
@@ -101,7 +101,7 @@ export default function MapView() {
   useEffect(() => {
     if (savedSeededRef.current || !savedData?.pois) return
     savedSeededRef.current = true
-    setSavedPoiIds(new Set(savedData.pois.map(p => p.place_id)))
+    setSavedPoiIds(new Set(savedData.pois.map(p => p.poi_id)))
   }, [savedData])
 
   // H13 — Saved sheet reacts to ?saved=1 (toggled from the mobile Saved tab
@@ -126,14 +126,14 @@ export default function MapView() {
       .then(r => r.ok ? r.json() as Promise<ItineraryDetail> : Promise.reject())
       .then(itinerary => {
         const sorted = [...itinerary.stops].sort((a, b) => a.stop_order - b.stop_order)
-        const ids:  string[]               = sorted.map(s => s.poi.place_id)
+        const ids:  string[]               = sorted.map(s => s.poi.poi_id)
         const durs: Record<string, number> = {}
         const lpois: MapPoi[]              = []
 
         sorted.forEach(s => {
-          durs[s.poi.place_id] = s.duration_min
+          durs[s.poi.poi_id] = s.duration_min
           lpois.push({
-            place_id:      s.poi.place_id,
+            poi_id:      s.poi.poi_id,
             name_ko:       s.poi.name_ko,
             name_en:       s.poi.name_en,
             coords_lat:    s.poi.coords_lat,
@@ -164,7 +164,7 @@ export default function MapView() {
 
   // Ordered stop POIs for LeftPanel and polyline — fallback to loadedPlanPois for plan-edit mode
   const planStops = planStopIds
-    .map(id => pois.find(p => p.place_id === id) ?? loadedPlanPois.find(p => p.place_id === id))
+    .map(id => pois.find(p => p.poi_id === id) ?? loadedPlanPois.find(p => p.poi_id === id))
     .filter((p): p is MapPoi => !!p)
 
   // UF-1 (G5.2 / G5.3) — continuous autosave on every stop/reorder/duration
@@ -196,7 +196,7 @@ export default function MapView() {
   }, [planStopIds, stopDurations, session])
 
   const selectedPoi = selectedPoiId
-    ? pois.find(p => p.place_id === selectedPoiId) ?? null
+    ? pois.find(p => p.poi_id === selectedPoiId) ?? null
     : null
 
   function handleRegionToggle(region: string) {
@@ -264,15 +264,15 @@ export default function MapView() {
     try {
       const res = await fetch(`/api/plans/${draftResumePlanId}`)
       if (!res.ok) return
-      const itinerary = await res.json() as { stops: Array<{ stop_order: number; poi: { place_id: string; name_ko: string; name_en: string; coords_lat: number; coords_lng: number; display_domain: string }; duration_min: number }> }
+      const itinerary = await res.json() as { stops: Array<{ stop_order: number; poi: { poi_id: string; name_ko: string; name_en: string; coords_lat: number; coords_lng: number; display_domain: string }; duration_min: number }> }
       const sorted = [...itinerary.stops].sort((a, b) => a.stop_order - b.stop_order)
-      const ids:  string[]               = sorted.map(s => s.poi.place_id)
+      const ids:  string[]               = sorted.map(s => s.poi.poi_id)
       const durs: Record<string, number> = {}
       const lpois: MapPoi[]              = []
       sorted.forEach(s => {
-        durs[s.poi.place_id] = s.duration_min
+        durs[s.poi.poi_id] = s.duration_min
         lpois.push({
-          place_id:       s.poi.place_id,
+          poi_id:       s.poi.poi_id,
           name_ko:        s.poi.name_ko,
           name_en:        s.poi.name_en,
           coords_lat:     s.poi.coords_lat,
@@ -322,14 +322,14 @@ export default function MapView() {
 
   function handleToggleSave(poi: MapPoi) {
     if (!session) { openAuthGate('save_poi'); return }
-    const removing = savedPoiIds.has(poi.place_id)
+    const removing = savedPoiIds.has(poi.poi_id)
     setSavedPoiIds(prev => {
       const next = new Set(prev)
       if (removing) {
-        next.delete(poi.place_id)
+        next.delete(poi.poi_id)
         showToast(t('poiDetail.removedSave'), 'info')
       } else {
-        next.add(poi.place_id)
+        next.add(poi.poi_id)
         showToast(t('poiDetail.savedToast'))
       }
       return next
@@ -337,7 +337,7 @@ export default function MapView() {
     fetch('/api/saved/poi', {
       method:  removing ? 'DELETE' : 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ place_id: poi.place_id }),
+      body:    JSON.stringify({ poi_id: poi.poi_id }),
     })
       .then(() => mutateSaved())
       .catch(() => {})
@@ -345,23 +345,23 @@ export default function MapView() {
 
   function handleToggleLike(poi: MapPoi) {
     if (!session) { openAuthGate('like'); return }
-    const removing = likedPoiIds.has(poi.place_id)
+    const removing = likedPoiIds.has(poi.poi_id)
     setLikedPoiIds(prev => {
       const next = new Set(prev)
-      if (removing) next.delete(poi.place_id)
-      else next.add(poi.place_id)
+      if (removing) next.delete(poi.poi_id)
+      else next.add(poi.poi_id)
       return next
     })
     fetch('/api/likes/poi', {
       method:  removing ? 'DELETE' : 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ place_id: poi.place_id }),
+      body:    JSON.stringify({ poi_id: poi.poi_id }),
     }).catch(() => {
       // revert on failure
       setLikedPoiIds(prev => {
         const next = new Set(prev)
-        if (removing) next.add(poi.place_id)
-        else next.delete(poi.place_id)
+        if (removing) next.add(poi.poi_id)
+        else next.delete(poi.poi_id)
         return next
       })
     })
@@ -416,9 +416,9 @@ export default function MapView() {
         body: JSON.stringify({
           title,
           stops: planStops.map((s, i) => ({
-            poi_id:       s.place_id,
+            poi_id:       s.poi_id,
             stop_order:   i + 1,
-            duration_min: stopDurations[s.place_id] ?? DEFAULT_DURATION,
+            duration_min: stopDurations[s.poi_id] ?? DEFAULT_DURATION,
           })),
           is_published: false,
         }),
@@ -552,11 +552,11 @@ export default function MapView() {
         <POIBottomSheet
           poi={selectedPoi}
           isOpen={!!selectedPoiId && !aiOverlayOpen && !planSheetOpen}
-          isSaved={savedPoiIds.has(selectedPoi.place_id)}
-          isLiked={likedPoiIds.has(selectedPoi.place_id)}
-          isInPlan={planStopIds.includes(selectedPoi.place_id)}
+          isSaved={savedPoiIds.has(selectedPoi.poi_id)}
+          isLiked={likedPoiIds.has(selectedPoi.poi_id)}
+          isInPlan={planStopIds.includes(selectedPoi.poi_id)}
           planFull={planStopIds.length >= MAX_STOPS}
-          onAddToPlan={() => handleAddToPlan(selectedPoi.place_id)}
+          onAddToPlan={() => handleAddToPlan(selectedPoi.poi_id)}
           onToggleSave={() => handleToggleSave(selectedPoi)}
           onToggleLike={() => handleToggleLike(selectedPoi)}
           onDismiss={() => setSelectedPoiId(null)}

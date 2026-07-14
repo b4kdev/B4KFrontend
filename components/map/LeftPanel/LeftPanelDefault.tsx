@@ -132,14 +132,14 @@ export default function LeftPanelDefault({
           <div className="flex flex-col gap-1">
             {recommended.map(poi => {
               const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
-              const saved = isSaved(poi.place_id)
+              const saved = isSaved(poi.poi_id)
               return (
                 <div
-                  key={poi.place_id}
+                  key={poi.poi_id}
                   className="flex items-center gap-sp-2 py-1 hover:bg-overlay-10 transition-colors"
                 >
                   <button
-                    onClick={() => onSelectPoi(poi.place_id)}
+                    onClick={() => onSelectPoi(poi.poi_id)}
                     className="flex items-center gap-sp-2 flex-1 min-w-0 text-left"
                     aria-label={t('recommended.cardAriaLabel', { name, region: poi.display_region })}
                   >

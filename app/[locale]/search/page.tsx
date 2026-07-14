@@ -339,11 +339,11 @@ function PoiSection({
         {shown.map(poi => {
           const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
           return (
-            <li key={poi.place_id}>
+            <li key={poi.poi_id}>
               <button
                 className="w-full flex items-center gap-sp-3 px-sp-4 py-sp-3 text-left hover:bg-muted-3 transition-colors min-h-touch"
                 style={{ borderBottom: 'var(--bdr)' }}
-                onClick={() => router.push(`/map?poi=${poi.place_id}`)}
+                onClick={() => router.push(`/map?poi=${poi.poi_id}`)}
                 aria-label={t('poiAriaLabel', { name, region: poi.display_region })}
               >
                 <div

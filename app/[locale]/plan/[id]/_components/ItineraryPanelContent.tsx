@@ -358,7 +358,7 @@ export default function ItineraryPanelContent({
             name_en:        stop.poi.name_en,
             name_ko:        stop.poi.name_ko,
           })
-          const isSelected = selectedPoiId === stop.poi.place_id
+          const isSelected = selectedPoiId === stop.poi.poi_id
           const displayNum = activeDay === null ? stop.stop_order : idx + 1
           const fromStart  = cumulativeMin[stop.stop_order] ?? 0
           const nextStop   = visibleStops[idx + 1]
@@ -366,8 +366,8 @@ export default function ItineraryPanelContent({
           return (
             <li key={stop.stop_order}>
               <button
-                data-poi={stop.poi.place_id}
-                onClick={() => onStopSelect(stop.poi.place_id)}
+                data-poi={stop.poi.poi_id}
+                onClick={() => onStopSelect(stop.poi.poi_id)}
                 aria-label={t('stopItem.ariaLabel', { n: displayNum, name: poiName })}
                 aria-current={isSelected ? 'true' : undefined}
                 className="w-full text-left rounded-none p-sp-3 transition-colors flex gap-sp-3 items-start"

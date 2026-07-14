@@ -26,27 +26,27 @@ export const MOCK: Record<string, ItineraryDetail> = {
       {
         stop_order: 1, day: null, duration_min: 90, transport_mode: 'public',
         notes: 'Start early to avoid crowds. Free entry on last Wednesday of the month.',
-        poi: { place_id: 'p1', name_preferred: null, name_en: 'Gyeongbokgung Palace', name_ko: '경복궁', primary_image_url: null, display_domain: 'Palaces', coords_lat: 37.5796, coords_lng: 126.9770 },
+        poi: { poi_id: 'p1', name_preferred: null, name_en: 'Gyeongbokgung Palace', name_ko: '경복궁', primary_image_url: null, display_domain: 'Palaces', coords_lat: 37.5796, coords_lng: 126.9770 },
       },
       {
         stop_order: 2, day: null, duration_min: 60, transport_mode: 'public',
         notes: 'The Secret Garden tour is highly recommended.',
-        poi: { place_id: 'p2', name_preferred: null, name_en: 'Changdeokgung', name_ko: '창덕궁', primary_image_url: null, display_domain: 'Palaces', coords_lat: 37.5793, coords_lng: 126.9910 },
+        poi: { poi_id: 'p2', name_preferred: null, name_en: 'Changdeokgung', name_ko: '창덕궁', primary_image_url: null, display_domain: 'Palaces', coords_lat: 37.5793, coords_lng: 126.9910 },
       },
       {
         stop_order: 3, day: null, duration_min: 45, transport_mode: 'public',
         notes: null,
-        poi: { place_id: 'p5', name_preferred: null, name_en: 'Bukchon Hanok Village', name_ko: '북촌 한옥마을', primary_image_url: null, display_domain: 'Cultural', coords_lat: 37.5826, coords_lng: 126.9852 },
+        poi: { poi_id: 'p5', name_preferred: null, name_en: 'Bukchon Hanok Village', name_ko: '북촌 한옥마을', primary_image_url: null, display_domain: 'Cultural', coords_lat: 37.5826, coords_lng: 126.9852 },
       },
       {
         stop_order: 4, day: null, duration_min: 30, transport_mode: 'public',
         notes: 'Great stop for a quick lunch.',
-        poi: { place_id: 'p4', name_preferred: null, name_en: 'Ikseon-dong Café', name_ko: '익선동 카페', primary_image_url: null, display_domain: 'Cafes', coords_lat: 37.5748, coords_lng: 126.9891 },
+        poi: { poi_id: 'p4', name_preferred: null, name_en: 'Ikseon-dong Café', name_ko: '익선동 카페', primary_image_url: null, display_domain: 'Cafes', coords_lat: 37.5748, coords_lng: 126.9891 },
       },
       {
         stop_order: 5, day: null, duration_min: 45, transport_mode: 'public',
         notes: null,
-        poi: { place_id: 'p3', name_preferred: null, name_en: 'Jogyesa Temple', name_ko: '조계사', primary_image_url: null, display_domain: 'Temples', coords_lat: 37.5742, coords_lng: 126.9814 },
+        poi: { poi_id: 'p3', name_preferred: null, name_en: 'Jogyesa Temple', name_ko: '조계사', primary_image_url: null, display_domain: 'Temples', coords_lat: 37.5742, coords_lng: 126.9814 },
       },
     ],
     // Leg 4→5 intentionally absent — exercises "Calculating route…" placeholder (TMAP cache miss)
@@ -84,22 +84,22 @@ export const MOCK: Record<string, ItineraryDetail> = {
       {
         stop_order: 1, day: 1, duration_min: 120, transport_mode: 'car',
         notes: null,
-        poi: { place_id: 'p1', name_preferred: null, name_en: 'Gyeongbokgung Palace', name_ko: '경복궁', primary_image_url: null, display_domain: 'Palaces', coords_lat: 37.5796, coords_lng: 126.9770 },
+        poi: { poi_id: 'p1', name_preferred: null, name_en: 'Gyeongbokgung Palace', name_ko: '경복궁', primary_image_url: null, display_domain: 'Palaces', coords_lat: 37.5796, coords_lng: 126.9770 },
       },
       {
         stop_order: 2, day: 1, duration_min: 90, transport_mode: 'car',
         notes: null,
-        poi: { place_id: 'p6', name_preferred: null, name_en: 'Myeongdong Food Street', name_ko: '명동 먹자골목', primary_image_url: null, display_domain: 'Restaurants', coords_lat: 37.5636, coords_lng: 126.9831 },
+        poi: { poi_id: 'p6', name_preferred: null, name_en: 'Myeongdong Food Street', name_ko: '명동 먹자골목', primary_image_url: null, display_domain: 'Restaurants', coords_lat: 37.5636, coords_lng: 126.9831 },
       },
       {
         stop_order: 3, day: 2, duration_min: 120, transport_mode: 'car',
         notes: null,
-        poi: { place_id: 'p8', name_preferred: null, name_en: 'DDP Dongdaemun', name_ko: '동대문 DDP', primary_image_url: null, display_domain: 'Shopping', coords_lat: 37.5664, coords_lng: 127.0095 },
+        poi: { poi_id: 'p8', name_preferred: null, name_en: 'DDP Dongdaemun', name_ko: '동대문 DDP', primary_image_url: null, display_domain: 'Shopping', coords_lat: 37.5664, coords_lng: 127.0095 },
       },
       {
         stop_order: 4, day: 2, duration_min: 90, transport_mode: 'car',
         notes: null,
-        poi: { place_id: 'p9', name_preferred: null, name_en: 'National Museum of Korea', name_ko: '국립중앙박물관', primary_image_url: null, display_domain: 'Museums', coords_lat: 37.5236, coords_lng: 126.9803 },
+        poi: { poi_id: 'p9', name_preferred: null, name_en: 'National Museum of Korea', name_ko: '국립중앙박물관', primary_image_url: null, display_domain: 'Museums', coords_lat: 37.5236, coords_lng: 126.9803 },
       },
     ],
     legs: [

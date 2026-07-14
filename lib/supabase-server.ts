@@ -10,6 +10,12 @@ export function createSupabaseServerClient() {
     {
       cookies: {
         get(name: string) { return cookieStore.get(name)?.value },
+        set(name: string, value: string, options: Record<string, unknown>) {
+          try { cookieStore.set({ name, value, ...options }) } catch { /* Server Component — ignored */ }
+        },
+        remove(name: string, options: Record<string, unknown>) {
+          try { cookieStore.set({ name, value: '', ...options }) } catch { /* Server Component — ignored */ }
+        },
       },
     }
   )
