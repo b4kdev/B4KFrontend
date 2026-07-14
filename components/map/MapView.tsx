@@ -80,7 +80,7 @@ export default function MapView() {
   // DEC-33 T1: track whether draft-conflict check has been resolved this session
   const t1CheckedRef    = useRef(false)
 
-  const { pois } = useMapPois(activeRegion, activeFilters)
+  const { pois, isLoading: poisLoading, isError: poisError } = useMapPois(activeRegion, activeFilters)
   const { data: savedData, mutate: mutateSaved } = useSaved()
 
   // Restore draft plan on mount — skip if a specific plan is being loaded via ?plan param
@@ -490,6 +490,9 @@ export default function MapView() {
           activeDay={activeDay}
           onDayChange={setActiveDay}
           onClosePoi={() => setSelectedPoiId(null)}
+          onSelectPoi={setSelectedPoiId}
+          poisLoading={poisLoading}
+          poisError={poisError}
         />
       </aside>
 

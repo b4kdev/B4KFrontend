@@ -30,6 +30,9 @@ interface Props {
   activeDay:        number
   onDayChange:      (day: number) => void
   onClosePoi:       () => void
+  onSelectPoi:      (id: string) => void
+  poisLoading:      boolean
+  poisError:        boolean
 }
 
 export default function LeftPanel({
@@ -38,7 +41,8 @@ export default function LeftPanel({
   planStops, stopDurations,
   isSaved, isInPlan, planFull, onAddToPlan, onToggleSave,
   onReorder, onRemove, onDurationChange, onPreviewPlan, onDiscardPlan,
-  stopDays, activeDay, onDayChange, onClosePoi,
+  stopDays, activeDay, onDayChange, onClosePoi, onSelectPoi,
+  poisLoading, poisError,
 }: Props) {
   const [planStripExpanded, setPlanStripExpanded] = useState(false)
 
@@ -91,10 +95,16 @@ export default function LeftPanel({
           />
         ) : (
           <LeftPanelDefault
+            pois={pois}
+            isLoading={poisLoading}
+            isError={poisError}
             activeRegion={activeRegion}
             activeFilters={activeFilters}
             onRegionToggle={onRegionToggle}
             onFilterToggle={onFilterToggle}
+            isSaved={isSaved}
+            onSelectPoi={onSelectPoi}
+            onToggleSave={onToggleSave}
           />
         )}
       </div>
