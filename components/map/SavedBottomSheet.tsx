@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
-import { X, ArrowLeft, MapPin, FolderOpen, FileText } from 'lucide-react'
+import { X, ArrowLeft, MapPin, FolderOpen, FileText, Trash2 } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { useSaved } from '@/hooks/useSaved'
 import { useBottomSheetSnap } from '@/hooks/useBottomSheetSnap'
@@ -21,9 +21,26 @@ type Tab = 'places' | 'plans'
 // folder list → folder POI list, + My Plans tab. Reuses useBottomSheetSnap.
 export default function SavedBottomSheet({ open, onClose, onSelectPoi }: Props) {
   const t = useTranslations('saved')
-  const { data, isLoading } = useSaved()
+  const { data, isLoading, mutate } = useSaved()
   const [tab, setTab] = useState<Tab>('places')
   const [activeFolder, setActiveFolder] = useState<SavedFolder | null>(null)
+  // UF-3 — optimistic removal of a saved POI from the folder list
+  const [removingPoiIds, setRemovingPoiIds] = useState<Set<string>>(new Set())
+
+  // UF-3 — remove a saved POI (optimistic → DELETE → mutate, revert on failure)
+  function handleRemovePoi(placeId: string) {
+    if (removingPoiIds.has(placeId)) return
+    setRemovingPoiIds(prev => { const next = new Set(prev); next.add(placeId); return next })
+    fetch('/api/saved/poi', {
+      method:  'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ place_id: placeId }),
+    })
+      .then(res => { if (!res.ok) throw new Error(); return mutate() })
+      .catch(() => {
+        setRemovingPoiIds(prev => { const next = new Set(prev); next.delete(placeId); return next })
+      })
+  }
 
   const { sheetRef, snap, handleProps, sheetStyle } = useBottomSheetSnap({
     open, initialSnap: 'mid', onDismiss: onClose,
@@ -109,25 +126,40 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi }: Props) 
                 <button onClick={() => setActiveFolder(null)} className="flex items-center gap-sp-2 text-muted hover:text-fg transition-colors text-f-sm m-sp-4 min-h-touch">
                   <ArrowLeft size={14} strokeWidth={2} />{activeFolder.name}
                 </button>
-                {activeFolder.pois.map((poi, idx) => {
-                  const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
-                  return (
-                    <button
-                      key={poi.place_id}
-                      onClick={() => onSelectPoi(poi.place_id)}
-                      className="w-full flex items-center gap-sp-3 p-sp-4 text-left hover:bg-bg-3 transition-colors"
-                      style={idx < activeFolder.pois.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}
-                    >
-                      <div className="w-10 h-10 rounded-none flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
-                        <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                {(() => {
+                  const visiblePois = activeFolder.pois.filter(p => !removingPoiIds.has(p.place_id))
+                  return visiblePois.map((poi, idx) => {
+                    const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
+                    return (
+                      <div
+                        key={poi.place_id}
+                        className="w-full flex items-center gap-sp-3 p-sp-4 hover:bg-bg-3 transition-colors"
+                        style={idx < visiblePois.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}
+                      >
+                        <button
+                          onClick={() => onSelectPoi(poi.place_id)}
+                          className="flex-1 min-w-0 flex items-center gap-sp-3 text-left min-h-touch"
+                        >
+                          <div className="w-10 h-10 rounded-none flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
+                            <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-f-base font-semibold text-fg truncate">{name}</p>
+                            <p className="text-f-sm text-muted mt-[2px]">{poi.display_region}</p>
+                          </div>
+                        </button>
+                        <button
+                          onClick={() => handleRemovePoi(poi.place_id)}
+                          aria-label={t('poi.removeAriaLabel', { name })}
+                          title={t('poi.removeLabel')}
+                          className="min-w-touch min-h-touch flex items-center justify-center shrink-0 text-muted hover:text-danger transition-colors"
+                        >
+                          <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
+                        </button>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-f-base font-semibold text-fg truncate">{name}</p>
-                        <p className="text-f-sm text-muted mt-[2px]">{poi.display_region}</p>
-                      </div>
-                    </button>
-                  )
-                })}
+                    )
+                  })
+                })()}
               </div>
             ) : (data?.folders?.length ?? 0) === 0 ? (
               <div className="flex flex-col items-center text-center p-sp-10">

@@ -629,6 +629,10 @@
       "showPw": "비밀번호 표시",
       "hidePw": "비밀번호 숨기기",
       "backToHome": "홈으로 돌아가기"
+    },
+    "callback": {
+      "verifying": "인증 중…",
+      "redirecting": "홈으로 이동 중…"
     }
   },
   "map": {
@@ -710,7 +714,13 @@
       "stripCollapse": "플랜 패널 접기",
       "routeError": "경로를 생성할 수 없습니다. 정류장은 유지됩니다.",
       "routeRetry": "다시 시도",
-      "saveError": "저장에 실패했습니다. 다시 시도해 주세요."
+      "saveError": "저장에 실패했습니다. 다시 시도해 주세요.",
+      "maxStopsToast": "한 계획에 최대 {max}개 장소까지 추가할 수 있어요.",
+      "discardDraft": "초안 삭제",
+      "discardTitle": "초안을 삭제할까요?",
+      "discardWarning": "현재 초안의 {count}개 장소가 모두 삭제됩니다. 되돌릴 수 없습니다.",
+      "discardCancel": "취소",
+      "discardConfirm": "초안 삭제"
     },
     "namingSheet": {
       "ariaLabel": "여행 계획 이름 입력",
@@ -1310,6 +1320,10 @@
       "deleteTitle": "폴더를 삭제할까요?",
       "deleteWarning": "\"{name}\" 폴더가 삭제됩니다. 저장된 장소는 전체 저장으로 이동하며 사라지지 않습니다.",
       "deleteCancel": "취소"
+    },
+    "poi": {
+      "removeAriaLabel": "폴더에서 {name} 삭제",
+      "removeLabel": "삭제"
     }
   },
   "notifications": {

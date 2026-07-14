@@ -10,6 +10,7 @@ import PageLayout from '@/components/layout/PageLayout';
 import { AuthGateProvider, useAuthGate } from '@/contexts/AuthGateContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 import AuthGateModal from '@/components/auth/AuthGateModal';
+import DraftConflictModal from '@/components/auth/DraftConflictModal';
 import ToastStack from '@/components/ui/Toast';
 import { useDraftMigration } from '@/hooks/useDraftMigration';
 import OfflineBanner from '@/components/layout/OfflineBanner';
@@ -17,7 +18,7 @@ import OfflineBanner from '@/components/layout/OfflineBanner';
 function ShellInner({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isOpen, close } = useAuthGate();
-  useDraftMigration();
+  const { conflict, resolveKeepDevice, resolveKeepAccount } = useDraftMigration();
 
   return (
     <>
@@ -28,6 +29,14 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       <PageLayout>{children}</PageLayout>
       <OfflineBanner />
       <AuthGateModal open={isOpen} onDismiss={close} />
+      {/* DEC-33 T3 — post-login draft collision (device draft vs. existing account draft) */}
+      <DraftConflictModal
+        open={!!conflict}
+        deviceDraft={conflict?.deviceDraft  ?? { stopCount: 0, lastModified: new Date().toISOString() }}
+        accountDraft={conflict?.accountDraft ?? { stopCount: 0, lastModified: new Date().toISOString() }}
+        onKeepDevice={resolveKeepDevice}
+        onKeepAccount={resolveKeepAccount}
+      />
       <ToastStack />
     </>
   );

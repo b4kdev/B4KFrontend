@@ -14,11 +14,12 @@ interface Props {
   onRemove:         (id: string) => void
   onDurationChange: (id: string, minutes: number) => void
   onPreviewPlan:    () => void
+  onDiscardPlan:    () => void
 }
 
 export default function LeftPanelPlanActive({
   stops, stopDurations, routeError = false,
-  onReorder, onRemove, onDurationChange, onPreviewPlan,
+  onReorder, onRemove, onDurationChange, onPreviewPlan, onDiscardPlan,
 }: Props) {
   const t = useTranslations('map.plan')
   const dragItem = useRef<number | null>(null)
@@ -165,6 +166,14 @@ export default function LeftPanelPlanActive({
           className="w-full min-h-touch flex items-center justify-center bg-lav text-bg rounded-xl font-body font-semibold text-sm hover:opacity-90 active:opacity-75 transition-opacity"
         >
           {t('previewPlan')}
+        </button>
+
+        {/* UF-6 (G5.6) — Discard draft */}
+        <button
+          onClick={onDiscardPlan}
+          className="w-full min-h-touch flex items-center justify-center text-muted hover:text-danger transition-colors font-body text-xs"
+        >
+          {t('discardDraft')}
         </button>
       </div>
     </div>

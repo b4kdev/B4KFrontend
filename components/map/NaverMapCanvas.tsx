@@ -38,6 +38,20 @@ function planMarkerHtml(index: number, selected: boolean): string {
   return `<div class="plan-marker${sel}">${index + 1}</div>`
 }
 
+function clusterMarkerHtml(count: number): string {
+  return `<div class="poi-cluster">${count}</div>`
+}
+
+// UF-10 (G3.1) — below this zoom, aggregate nearby POIs into cluster bubbles.
+const CLUSTER_ZOOM_THRESHOLD = 12
+
+// Grid resolution (degrees) per zoom level — coarser buckets when zoomed out.
+function clusterGridSize(zoom: number): number {
+  if (zoom <= 8)  return 0.20
+  if (zoom <= 10) return 0.08
+  return 0.03
+}
+
 export default function NaverMapCanvas({
   pois, selectedPoiId, planStopIds, onPoiSelect,
   showAiPill, onAiPillDismiss, onAiPillExpand,
@@ -53,6 +67,9 @@ export default function NaverMapCanvas({
   const polylineRef  = useRef<any>(null)
   const [mapReady, setMapReady]   = useState(false)
   const [scriptErr, setScriptErr] = useState(false)
+  const [zoom, setZoom]           = useState(12)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const clusterMarkersRef = useRef<any[]>([])
   const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID
 
   function initMap() {
@@ -71,24 +88,57 @@ export default function NaverMapCanvas({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     window.naver.maps.Event.addListener(map, 'click', (e: any) => {
       const target = e.domEvent?.target as HTMLElement | undefined
-      if (target?.closest?.('.poi-wrap, .plan-marker')) return
+      if (target?.closest?.('.poi-wrap, .plan-marker, .poi-cluster')) return
       onPoiSelect(null)
     })
+
+    // UF-10 (G3.1) — track zoom so the marker-sync effect can re-cluster on zoom change.
+    window.naver.maps.Event.addListener(map, 'zoom_changed', () => setZoom(map.getZoom()))
 
     setMapReady(true)
   }
 
-  // Sync markers — regular POIs + plan numbered markers
+  // Sync markers — regular POIs + plan numbered markers.
+  // Plan-stop POIs are never clustered — they're the numbered route, always visible.
   useEffect(() => {
     if (!mapReady || !mapRef.current || !window.naver?.maps) return
     const map = mapRef.current
-    const liveIds = new Set(pois.map(p => p.place_id))
+    const clusterActive = zoom <= CLUSTER_ZOOM_THRESHOLD
+
+    const planPois = pois.filter(p => planStopIds.includes(p.place_id))
+    const freePois = pois.filter(p => !planStopIds.includes(p.place_id))
+
+    // Bucket free POIs into a lat/lng grid at the current zoom's resolution.
+    // Cells with 2+ members become a cluster bubble; singletons render as normal dots.
+    const gridSize = clusterGridSize(zoom)
+    const buckets = new Map<string, MapPoi[]>()
+    if (clusterActive) {
+      freePois.forEach(poi => {
+        const key = `${Math.floor(poi.coords_lat / gridSize)}:${Math.floor(poi.coords_lng / gridSize)}`
+        const bucket = buckets.get(key)
+        if (bucket) bucket.push(poi); else buckets.set(key, [poi])
+      })
+    }
+
+    const clusteredIds = new Set<string>()
+    const clusterGroups: MapPoi[][] = []
+    if (clusterActive) {
+      buckets.forEach(members => {
+        if (members.length >= 2) {
+          clusterGroups.push(members)
+          members.forEach(m => clusteredIds.add(m.place_id))
+        }
+      })
+    }
+
+    const individualPois = [...planPois, ...freePois.filter(p => !clusteredIds.has(p.place_id))]
+    const liveIds = new Set(individualPois.map(p => p.place_id))
 
     markersRef.current.forEach((marker, id) => {
       if (!liveIds.has(id)) { marker.setMap(null); markersRef.current.delete(id) }
     })
 
-    pois.forEach(poi => {
+    individualPois.forEach(poi => {
       const selected   = poi.place_id === selectedPoiId
       const planIndex  = planStopIds.indexOf(poi.place_id)
       const isInPlan   = planIndex !== -1
@@ -120,7 +170,33 @@ export default function NaverMapCanvas({
       window.naver.maps.Event.addListener(marker, 'click', () => onPoiSelect(poi.place_id))
       markersRef.current.set(poi.place_id, marker)
     })
-  }, [mapReady, pois, selectedPoiId, planStopIds, onPoiSelect])
+
+    // Cluster bubbles — rebuilt fresh each pass (cheap: bounded by visible POI count).
+    clusterMarkersRef.current.forEach(m => m.setMap(null))
+    clusterMarkersRef.current = clusterGroups.map(members => {
+      const centerLat = members.reduce((sum, p) => sum + p.coords_lat, 0) / members.length
+      const centerLng = members.reduce((sum, p) => sum + p.coords_lng, 0) / members.length
+
+      const marker = new window.naver.maps.Marker({
+        position: new window.naver.maps.LatLng(centerLat, centerLng),
+        map,
+        icon: {
+          content: clusterMarkerHtml(members.length),
+          size:    new window.naver.maps.Size(32, 32),
+          anchor:  new window.naver.maps.Point(16, 16),
+        },
+        cursor: 'pointer',
+        zIndex: 50,
+      })
+
+      window.naver.maps.Event.addListener(marker, 'click', () => {
+        map.setCenter(new window.naver.maps.LatLng(centerLat, centerLng))
+        map.setZoom(Math.min(zoom + 2, 18))
+      })
+
+      return marker
+    })
+  }, [mapReady, pois, selectedPoiId, planStopIds, onPoiSelect, zoom])
 
   // MP_20 — Route polyline connecting plan stops
   useEffect(() => {
@@ -150,6 +226,8 @@ export default function NaverMapCanvas({
   useEffect(() => () => {
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current.clear()
+    clusterMarkersRef.current.forEach(m => m.setMap(null))
+    clusterMarkersRef.current = []
     polylineRef.current?.setMap(null)
   }, [])
 

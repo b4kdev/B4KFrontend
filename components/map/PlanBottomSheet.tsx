@@ -14,12 +14,13 @@ interface Props {
   onRemove:         (id: string) => void
   onDurationChange: (id: string, minutes: number) => void
   onSavePlan:       () => void
+  onDiscardPlan:    () => void
   onDismiss:        () => void
 }
 
 export default function PlanBottomSheet({
   isOpen, stops, stopDurations,
-  onReorder, onRemove, onDurationChange, onSavePlan, onDismiss,
+  onReorder, onRemove, onDurationChange, onSavePlan, onDiscardPlan, onDismiss,
 }: Props) {
   const t = useTranslations('map.plan')
 
@@ -199,6 +200,14 @@ export default function PlanBottomSheet({
           >
             {t('save')}
             <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
+          </button>
+
+          {/* UF-6 (G5.6) — Discard draft */}
+          <button
+            onClick={onDiscardPlan}
+            className="w-full min-h-touch flex items-center justify-center text-muted hover:text-danger transition-colors text-xs"
+          >
+            {t('discardDraft')}
           </button>
         </div>
       </div>

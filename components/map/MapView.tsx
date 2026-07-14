@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, AlertTriangle } from 'lucide-react'
 import NaverMapCanvas from './NaverMapCanvas'
 import LeftPanel from './LeftPanel/index'
 import AIOverlay from './AIOverlay'
@@ -68,6 +68,8 @@ export default function MapView() {
   const [pendingPoiId, setPendingPoiId] = useState<string | null>(null)
   // DEC-29: track saving state for PlanNamingSheet spinner
   const [namingSaving, setNamingSaving] = useState(false)
+  // UF-6 (G5.6) — discard-draft confirm dialog
+  const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false)
   const savedSeededRef  = useRef(false)
   // DEC-33 T1: track whether draft-conflict check has been resolved this session
   const t1CheckedRef    = useRef(false)
@@ -157,6 +159,34 @@ export default function MapView() {
     .map(id => pois.find(p => p.place_id === id) ?? loadedPlanPois.find(p => p.place_id === id))
     .filter((p): p is MapPoi => !!p)
 
+  // UF-1 (G5.2 / G5.3) — continuous autosave on every stop/reorder/duration
+  // change, not just at final "Save Plan". Guest → localStorage. Logged-in →
+  // DB draft (is_published=false) via the same endpoint useDraftMigration
+  // checks against. Skipped while editing an existing published plan
+  // (?plan=:id) — that flow has its own save/publish path, and while a
+  // draft-conflict prompt is unresolved (don't autosave over a pending pick).
+  useEffect(() => {
+    if (searchParams.get('plan')) return
+    if (draftConflict || draftResumeOpen) return
+    if (planStopIds.length === 0) return
+
+    const timer = setTimeout(() => {
+      const draft = { stops: planStops, durations: stopDurations }
+      if (session) {
+        fetch('/api/plans/draft', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(draft),
+        }).catch(() => { /* retried on next change; localStorage is not the fallback for logged-in users */ })
+      } else {
+        saveDraftPlan(draft)
+      }
+    }, 800)
+
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [planStopIds, stopDurations, session])
+
   const selectedPoi = selectedPoiId
     ? pois.find(p => p.place_id === selectedPoiId) ?? null
     : null
@@ -173,7 +203,12 @@ export default function MapView() {
   }
 
   function handleAddToPlan(poiId: string) {
-    if (planStopIds.includes(poiId) || planStopIds.length >= MAX_STOPS) return
+    if (planStopIds.includes(poiId)) return
+    // UF-7 (DEC-27 / G4.2) — enforce the 40-stop cap with visible feedback, not a silent no-op.
+    if (planStopIds.length >= MAX_STOPS) {
+      showToast(t('plan.maxStopsToast', { max: MAX_STOPS }), 'error')
+      return
+    }
 
     // DEC-33 T1: logged-in user, first plan interaction this session → check for existing DB draft
     if (session && !t1CheckedRef.current) {
@@ -332,6 +367,22 @@ export default function MapView() {
     setNamingSheetOpen(true)
   }
 
+  // UF-6 (G5.6) — discard the active draft: hard-delete the DB draft (if this
+  // session resumed one via T1), clear localStorage, reset builder state, and
+  // reset the map to its default (no ?plan param).
+  function handleConfirmDiscard() {
+    const dbDraftId = draftResumePlanId
+    setDiscardConfirmOpen(false)
+    clearDraftPlan()
+    setPlanStopIds([])
+    setStopDurations({})
+    setLoadedPlanPois([])
+    if (dbDraftId) {
+      fetch(`/api/plans/${dbDraftId}`, { method: 'DELETE' }).catch(() => {})
+    }
+    router.push('/map')
+  }
+
   // DEC-29: user confirmed title → POST draft then PATCH is_published=true → navigate IT_01
   async function handleConfirmNaming(title: string) {
     setNamingSaving(true)
@@ -414,6 +465,7 @@ export default function MapView() {
           onRemove={handleRemoveFromPlan}
           onDurationChange={handleDurationChange}
           onPreviewPlan={handlePreviewPlan}
+          onDiscardPlan={() => setDiscardConfirmOpen(true)}
         />
       </aside>
 
@@ -487,6 +539,7 @@ export default function MapView() {
         onRemove={handleRemoveFromPlan}
         onDurationChange={handleDurationChange}
         onSavePlan={handlePreviewPlan}
+        onDiscardPlan={() => setDiscardConfirmOpen(true)}
         onDismiss={() => setPlanSheetOpen(false)}
       />
 
@@ -524,6 +577,29 @@ export default function MapView() {
         onResume={handleResumeExistingDraft}
         onStartFresh={handleStartFresh}
       />
+
+      {/* UF-6 (G5.6) — discard draft confirm */}
+      {discardConfirmOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-sp-4" style={{ background: 'var(--backdrop-50)' }} role="dialog" aria-modal="true" aria-label={t('plan.discardTitle')}>
+          <div className="w-full max-w-[360px] rounded-none p-sp-6 flex flex-col gap-sp-4" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
+            <div className="flex items-start gap-sp-3">
+              <AlertTriangle size={20} strokeWidth={2} className="text-danger shrink-0 mt-0.5" aria-hidden="true" />
+              <div>
+                <p className="text-f-lg font-semibold text-fg">{t('plan.discardTitle')}</p>
+                <p className="text-f-md text-muted mt-sp-2">{t('plan.discardWarning', { count: planStopIds.length })}</p>
+              </div>
+            </div>
+            <div className="flex gap-sp-3">
+              <button onClick={() => setDiscardConfirmOpen(false)} className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-muted hover:text-fg transition-colors" style={{ border: '1px solid var(--bdr)' }}>
+                {t('plan.discardCancel')}
+              </button>
+              <button onClick={handleConfirmDiscard} className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-fg" style={{ background: 'var(--danger)' }}>
+                {t('plan.discardConfirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

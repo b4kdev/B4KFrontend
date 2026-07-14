@@ -44,6 +44,30 @@ const EXPLORE_CATEGORIES: SearchExplore[] = [
   { category: 'k-culture', label_key: 'kculture',href: '/explore/k-culture' },
 ]
 
+// UF-9 (G9.5): map a query to an Explore hub chip facet so a tapped explore
+// result lands on the hub with the relevant chip pre-selected.
+// Source of truth for these value lists: CATEGORIES[].filter in
+// app/[locale]/explore/_components/ExplorePage.tsx — keep in sync.
+const EXPLORE_FACETS: Record<string, { param: string; values: string[] } | undefined> = {
+  'k-pop':     { param: 'agency',   values: ['HYBE', 'SM', 'JYP', 'YG'] },
+  'k-beauty':  { param: 'district', values: ['Apgujeong', 'Myeongdong', 'Hongdae', 'Gangnam'] },
+  'k-culture': { param: 'region',   values: ['Seoul', 'Jeonju', 'Gyeongju', 'Andong'] },
+  'k-drama':   undefined,
+}
+
+// Build explore results with a facet query attached where the query implies one.
+function buildExploreResults(q: string): SearchExplore[] {
+  const needle = q.trim().toLowerCase()
+  return EXPLORE_CATEGORIES.map(cat => {
+    const facet = EXPLORE_FACETS[cat.category]
+    if (!needle || !facet) return { ...cat }
+    const match = facet.values.find(v => needle.includes(v.toLowerCase()))
+    return match
+      ? { ...cat, href: `${cat.href}?${facet.param}=${encodeURIComponent(match)}` }
+      : { ...cat }
+  })
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const q = searchParams.get('q') ?? ''
@@ -60,7 +84,7 @@ export async function GET(request: Request) {
   const wantAll = !type || type === 'all'
   let places = (wantAll || type === 'places') ? [...MOCK_POIS] : []
   let plans = (wantAll || type === 'plans') ? [...MOCK_PLANS] : []
-  const explore = (wantAll || type === 'explore') ? [...EXPLORE_CATEGORIES] : []
+  const explore = (wantAll || type === 'explore') ? buildExploreResults(q) : []
 
   if (sort === 'popularity') {
     places = places.sort((a, b) => b.save_count - a.save_count)

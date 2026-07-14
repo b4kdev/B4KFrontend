@@ -25,6 +25,7 @@ interface Props {
   onRemove:         (id: string) => void
   onDurationChange: (id: string, minutes: number) => void
   onPreviewPlan:    () => void
+  onDiscardPlan:    () => void
 }
 
 export default function LeftPanel({
@@ -32,7 +33,7 @@ export default function LeftPanel({
   activeRegion, activeFilters, onRegionToggle, onFilterToggle,
   planStops, stopDurations,
   isSaved, isInPlan, planFull, onAddToPlan, onToggleSave,
-  onReorder, onRemove, onDurationChange, onPreviewPlan,
+  onReorder, onRemove, onDurationChange, onPreviewPlan, onDiscardPlan,
 }: Props) {
   const [planStripExpanded, setPlanStripExpanded] = useState(false)
 
@@ -54,6 +55,7 @@ export default function LeftPanel({
             onRemove={onRemove}
             onDurationChange={onDurationChange}
             onPreviewPlan={onPreviewPlan}
+            onDiscardPlan={onDiscardPlan}
           />
         </div>
         <PlanStrip

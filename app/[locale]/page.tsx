@@ -1,3 +1,8 @@
+'use client'
+
+import type { ComponentType } from 'react'
+import useSWR from 'swr'
+import { fetcher } from '@/lib/fetcher'
 import MainCarousel from './_components/home/MainCarousel'
 import WeatherWidget from './_components/home/WeatherWidget'
 import TrendingSpots from './_components/home/TrendingSpots'
@@ -13,56 +18,70 @@ import PopularPlans from './_components/home/PopularPlans'
 import PartnerPackages from './_components/home/PartnerPackages'
 import UpcomingEvents from './_components/home/UpcomingEvents'
 import Promotions from './_components/home/Promotions'
+import type { HomeSectionOrder } from '@/app/api/home/section-order/route'
+
+// Personalizable content sections, keyed by the API's section keys.
+// Fixed sections (hero carousel, weather widget) are pinned outside this map.
+const CONTENT_SECTIONS: Record<string, ComponentType> = {
+  trending: TrendingSpots,
+  exploreHub: ExploreHub,
+  editorial: EditorialPicks,
+  new: NewOnB4K,
+  youMightLike: YouMightLike,
+  planTrip: PlanTrip,
+  continuePlan: ContinuePlan,
+  challenge: ChallengeCard,
+  leaderboardBadge: LeaderboardBadge,
+  popularPlans: PopularPlans,
+  partnerPackages: PartnerPackages,
+  upcomingEvents: UpcomingEvents,
+  promotions: Promotions,
+}
+
+// Default order — the source of truth for fallback. Must list every key in
+// CONTENT_SECTIONS. Used verbatim on loading / empty / error.
+const DEFAULT_ORDER = [
+  'trending',
+  'exploreHub',
+  'editorial',
+  'new',
+  'youMightLike',
+  'planTrip',
+  'continuePlan',
+  'challenge',
+  'leaderboardBadge',
+  'popularPlans',
+  'partnerPackages',
+  'upcomingEvents',
+  'promotions',
+]
 
 export default function HomePage() {
+  const { data } = useSWR<HomeSectionOrder>('/api/home/section-order', fetcher)
+
+  // Data-driven order (UF-8 · DEC-32). Fall back to DEFAULT_ORDER whenever the
+  // API is loading / empty / errored so the page never breaks. Unknown keys are
+  // dropped; any content section the API omits is appended in its default slot
+  // so no section can silently disappear.
+  const apiOrder = data?.order?.filter(key => key in CONTENT_SECTIONS) ?? []
+  const missing = DEFAULT_ORDER.filter(key => !apiOrder.includes(key))
+  const order = apiOrder.length > 0 ? [...apiOrder, ...missing] : DEFAULT_ORDER
+
   return (
     <div className="pb-sp-16">
-      {/* 1 — Hero: full bleed */}
+      {/* Hero: full bleed — pinned first, never reordered */}
       <MainCarousel />
 
       {/* Sections contained to max 1280px */}
       <div className="max-w-[1280px] mx-auto">
-        {/* 2 — Weather widget (hidden when no data) */}
+        {/* Weather widget — pinned, contextual (hidden when no data) */}
         <WeatherWidget />
 
-        {/* 3 — Trending Spots */}
-        <TrendingSpots />
-
-        {/* 4 — Explore Hub tiles */}
-        <ExploreHub />
-
-        {/* 5 — Editorial Picks */}
-        <EditorialPicks />
-
-        {/* 6 — New on B4K */}
-        <NewOnB4K />
-
-        {/* 7 — You Might Like (logged-in only) */}
-        <YouMightLike />
-
-        {/* 8 — Plan Your Trip CTA */}
-        <PlanTrip />
-
-        {/* 9 — Continue Your Plan (logged-in + active draft only) */}
-        <ContinuePlan />
-
-        {/* 10 — Challenge Card */}
-        <ChallengeCard />
-
-        {/* 11 — Leaderboard Snapshot + Badge Showcase */}
-        <LeaderboardBadge />
-
-        {/* 12 — Popular Plans */}
-        <PopularPlans />
-
-        {/* 13 — Partner Packages */}
-        <PartnerPackages />
-
-        {/* 14 — Upcoming Events */}
-        <UpcomingEvents />
-
-        {/* 15 — Promotions */}
-        <Promotions />
+        {/* Personalizable content sections — data-driven order */}
+        {order.map(key => {
+          const Section = CONTENT_SECTIONS[key]
+          return Section ? <Section key={key} /> : null
+        })}
       </div>
     </div>
   )

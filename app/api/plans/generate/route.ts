@@ -15,6 +15,7 @@ export interface GeneratedStop {
 }
 
 export interface GeneratedPlan {
+  id:        string
   stops:     GeneratedStop[]
   transport: 'car' | 'public'
 }
@@ -37,5 +38,7 @@ export async function POST(req: Request) {
     duration_min: 60,
   }))
 
-  return NextResponse.json({ stops, transport: 'public' } satisfies GeneratedPlan)
+  // Real impl: INSERT a new ai.plans draft (author = current user) and return its id.
+  // Mock: return a resolvable plan id so FL2 lands on a real IT_01 view.
+  return NextResponse.json({ id: 'it-demo', stops, transport: 'public' } satisfies GeneratedPlan)
 }

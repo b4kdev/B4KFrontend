@@ -236,6 +236,25 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 0 0 2.5px var(--lav), 0 2px 8px var(--lav-mid);
 }
 
+/* ─── Map POI Cluster Bubble (UF-10 · G3.1) ─────────────────── */
+.poi-cluster {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-2);
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid var(--bdr);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.poi-cluster:hover { transform: scale(1.08); }
+
 /* ─── Toast ─────────────────────────────────────────────────── */
 @keyframes toastIn {
   from { opacity: 0; transform: translateY(8px) scale(0.96); }

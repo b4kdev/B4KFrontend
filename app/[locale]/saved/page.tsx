@@ -54,6 +54,8 @@ export default function SavedPage() {
   // M5 — FL2 folder-level multi-select (DEC-24)
   const [selectMode,       setSelectMode]       = useState(false)
   const [selectedFolderIds,setSelectedFolderIds]= useState<Set<string>>(new Set())
+  // UF-3 — optimistic removal of a saved POI from the folder-detail list
+  const [removingPoiIds,   setRemovingPoiIds]   = useState<Set<string>>(new Set())
   // M4 — folder CRUD
   const [newFolderOpen,    setNewFolderOpen]    = useState(false)
   const [newFolderName,    setNewFolderName]    = useState('')
@@ -199,6 +201,21 @@ export default function SavedPage() {
     })
       .then(() => mutate())
       .catch(() => {})
+  }
+
+  // UF-3 — remove a saved POI (optimistic → DELETE → mutate, revert on failure)
+  function handleRemovePoi(placeId: string) {
+    if (removingPoiIds.has(placeId)) return
+    setRemovingPoiIds(prev => { const next = new Set(prev); next.add(placeId); return next })
+    fetch('/api/saved/poi', {
+      method:  'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ place_id: placeId }),
+    })
+      .then(res => { if (!res.ok) throw new Error(); return mutate() })
+      .catch(() => {
+        setRemovingPoiIds(prev => { const next = new Set(prev); next.delete(placeId); return next })
+      })
   }
 
   const visibleSavedPlans = (data?.plans ?? []).filter(p => !unsavedPlanIds.has(p.id))
@@ -371,19 +388,22 @@ export default function SavedPage() {
           </div>
 
         ) : placesView === 'folder-detail' && activeFolder ? (
+          (() => {
+            const visiblePois = activeFolder.pois.filter(p => !removingPoiIds.has(p.place_id))
+            return (
           <div>
             <button onClick={backToFolders} className="flex items-center gap-sp-2 text-muted hover:text-fg transition-colors text-f-base mb-sp-4 min-h-touch">
               <ArrowLeft size={14} strokeWidth={2} />{t('folder.back')}
             </button>
             <div className="flex items-center justify-between mb-sp-4">
               <h2 className="font-display font-bold text-fg text-f-lg">{activeFolder.name}</h2>
-              <span className="text-f-sm text-muted">{t('folder.poiCount', { count: activeFolder.pois.length })}</span>
+              <span className="text-f-sm text-muted">{t('folder.poiCount', { count: visiblePois.length })}</span>
             </div>
             <div className="rounded-none overflow-hidden mb-sp-4" style={{ border: '1px solid var(--bdr)' }}>
-              {activeFolder.pois.map((poi, idx) => {
+              {visiblePois.map((poi, idx) => {
                 const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
                 return (
-                  <div key={poi.place_id} className="flex items-center gap-sp-3 p-sp-4" style={idx < activeFolder.pois.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}>
+                  <div key={poi.place_id} className="flex items-center gap-sp-3 p-sp-4" style={idx < visiblePois.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}>
                     <div className="w-10 h-10 rounded-none flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
                       <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
                     </div>
@@ -391,18 +411,28 @@ export default function SavedPage() {
                       <p className="text-f-base font-semibold text-fg truncate">{name}</p>
                       <p className="text-f-sm text-muted mt-[2px]">{poi.display_region}</p>
                     </div>
+                    <button
+                      onClick={() => handleRemovePoi(poi.place_id)}
+                      aria-label={t('poi.removeAriaLabel', { name })}
+                      title={t('poi.removeLabel')}
+                      className="min-w-touch min-h-touch flex items-center justify-center shrink-0 text-muted hover:text-danger transition-colors"
+                    >
+                      <Trash2 size={16} strokeWidth={2} aria-hidden="true" />
+                    </button>
                   </div>
                 )
               })}
             </div>
             <button
               onClick={() => { setPlacesView('folders'); enterSelectMode(activeFolder) }}
-              disabled={activeFolder.pois.length === 0}
+              disabled={visiblePois.length === 0}
               className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-none font-semibold text-f-base hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40"
             >
               <Sparkles size={16} strokeWidth={2} aria-hidden="true" />{t('folder.generatePlan')}
             </button>
           </div>
+            )
+          })()
         ) : null
       )}
 
