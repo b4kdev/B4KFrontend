@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from '@/i18n/navigation'
 import { Link } from '@/i18n/navigation'
 import {
@@ -38,7 +38,7 @@ export default function SavedPage() {
   const t      = useTranslations('saved')
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { status } = useSession()
+  const { user, loading } = useAuth()
   const { open: openAuthGate } = useAuthGate()
   const isOnline = useOnline() // SC-21 (OFF_03)
 
@@ -67,10 +67,10 @@ export default function SavedPage() {
 
   // GAP H8 — proactive auth gate when unauthenticated
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (!loading && !user) {
       openAuthGate('saved_tab')
     }
-  }, [status, openAuthGate])
+  }, [loading, user, openAuthGate])
 
   // GAP H17 — ?select=1 URL param → auto-enter folder-select mode (M5)
   useEffect(() => {

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/contexts/AuthContext'
 import { X, Minus, ArrowLeft, Send, Sparkles, Plus, Check, Loader2, ArrowRight } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { saveDraftPlan } from '@/lib/draft-plan'
@@ -174,7 +174,7 @@ export default function AIOverlay({
   open, pois, planStopIds, onAddToPlan, onMinimize, onClose,
 }: Props) {
   const t = useTranslations('map.aiOverlay')
-  const { data: session } = useSession()
+  const { session } = useAuth()
   const { open: openAuthGate } = useAuthGate()
   const [messages, setMessages]     = useState<ChatMessage[]>([])
   const [input, setInput]           = useState('')

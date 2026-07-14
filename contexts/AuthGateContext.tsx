@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/contexts/AuthContext';
 import { usePathname, useRouter } from '@/i18n/navigation';
 
 export type GateReason =
@@ -43,7 +43,7 @@ export function AuthGateProvider({ children }: { children: React.ReactNode }) {
   const [reason,  setReason]  = useState<GateReason>(null);
   const pendingRef            = useRef<(() => void | Promise<void>) | null>(null);
 
-  const { status } = useSession();
+  const { user, loading } = useAuth();
   const pathname   = usePathname();
   const router     = useRouter();
   const resumed    = useRef(false);
@@ -81,7 +81,7 @@ export function AuthGateProvider({ children }: { children: React.ReactNode }) {
 
   // On return from OAuth: read the persisted descriptor, resume, clear.
   useEffect(() => {
-    if (status !== 'authenticated' || resumed.current) return;
+    if (!user || loading || resumed.current) return;
     resumed.current = true;
 
     let pending: PersistedPending | null = null;
@@ -100,7 +100,7 @@ export function AuthGateProvider({ children }: { children: React.ReactNode }) {
       pending.returnTo;
 
     if (target && target !== pathname) router.push(target);
-  }, [status, pathname, router]);
+  }, [user, loading, pathname, router]);
 
   return (
     <AuthGateContext.Provider value={{ isOpen, reason, open, close, executePendingAction, persistPendingAction }}>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from '@/i18n/navigation'
 import useSWR from 'swr'
 import { Route, X, ArrowRight } from 'lucide-react'
@@ -21,28 +21,28 @@ function relativeTime(iso: string, t: ReturnType<typeof useTranslations>): strin
 
 export default function ContinuePlan() {
   const t = useTranslations('home.continuePlan')
-  const { data: session, status } = useSession()
+  const { user, loading } = useAuth()
   const router = useRouter()
   const [dismissed, setDismissed] = useState(false)
   const [guestStopCount, setGuestStopCount] = useState<number | null>(null)
 
   // Logged-in: fetch draft from server via SWR
   const { data: serverDraft } = useSWR<PlanDraft | null>(
-    session ? '/api/plans/draft' : null,
+    user ? '/api/plans/draft' : null,
     fetcher
   )
 
-  // Guest: read localStorage draft once session status is known
+  // Guest: read localStorage draft once auth status is known
   useEffect(() => {
-    if (status === 'loading' || session) return
+    if (loading || user) return
     const draft = getDraftPlan()
     setGuestStopCount(draft && draft.stops.length > 0 ? draft.stops.length : null)
-  }, [session, status])
+  }, [user, loading])
 
   if (dismissed) return null
 
   // Logged-in path
-  if (session && serverDraft) {
+  if (user && serverDraft) {
     return (
       <div
         className="mx-sp-4 lg:mx-sp-8 mt-sp-10 p-sp-4 flex items-center gap-sp-4"
@@ -82,7 +82,7 @@ export default function ContinuePlan() {
   }
 
   // Guest path — localStorage draft
-  if (!session && guestStopCount !== null) {
+  if (!user && guestStopCount !== null) {
     return (
       <div
         className="mx-sp-4 lg:mx-sp-8 mt-sp-10 p-sp-4 flex items-center gap-sp-4"

@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/contexts/AuthContext'
 import useSWR from 'swr'
 import { fetcher } from '@/lib/fetcher'
 import SectionHead from './SectionHead'
@@ -11,14 +11,14 @@ import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 
 export default function YouMightLike() {
   const t = useTranslations('home.youMightLike')
-  const { data: session } = useSession()
+  const { user } = useAuth()
   const { data, isLoading } = useSWR<HomeTrendingPoi[]>(
-    session ? '/api/home/recommended' : null,
+    user ? '/api/home/recommended' : null,
     fetcher,
   )
 
   // Hidden for guest or zero results
-  if (!session) return null
+  if (!user) return null
   if (!isLoading && (!data || data.length === 0)) return null
 
   return (

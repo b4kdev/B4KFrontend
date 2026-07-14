@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { useSWRConfig } from 'swr'
 import { useRouter, usePathname } from '@/i18n/navigation'
-import { signOut } from 'next-auth/react'
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { Car, Train, Check, AlertTriangle, Eye, EyeOff, Upload, Trash2, User } from 'lucide-react'
 import { useProfile } from '@/hooks/useProfile'
 import { useToast } from '@/contexts/ToastContext'
@@ -411,7 +411,9 @@ export default function SettingsPage() {
     try {
       const res = await fetch('/api/account/signout-all', { method: 'POST' })
       if (!res.ok) throw new Error()
-      await signOut({ callbackUrl: '/' })
+      const supabase = createSupabaseBrowserClient()
+      await supabase.auth.signOut()
+      router.push(`/${locale}`)
     } catch {
       setSignOutAllBusy(false)
       showToast(t('settings.signOutAllError'), 'error')
@@ -473,7 +475,9 @@ export default function SettingsPage() {
     try {
       const res = await fetch('/api/account/delete', { method: 'POST' })
       if (!res.ok) throw new Error()
-      await signOut({ callbackUrl: '/' })
+      const supabase = createSupabaseBrowserClient()
+      await supabase.auth.signOut()
+      router.push(`/${locale}`)
     } catch {
       // Keep the modal open so the failure is visible and retryable.
       setDeleting(false)
@@ -974,7 +978,11 @@ export default function SettingsPage() {
           <div className="flex flex-col gap-sp-2">
             {/* Sign out */}
             <button
-              onClick={() => signOut({ callbackUrl: '/' })}
+              onClick={async () => {
+                const supabase = createSupabaseBrowserClient()
+                await supabase.auth.signOut()
+                router.push(`/${locale}`)
+              }}
               className="w-full min-h-touch rounded-none text-f-sm font-semibold text-fg text-left px-sp-4 hover:opacity-80 transition-opacity"
               style={{ border: '1px solid var(--bdr)', background: 'var(--bg-2)' }}
             >

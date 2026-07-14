@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import createIntlMiddleware from 'next-intl/middleware'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
+import { createServerClient } from '@supabase/ssr'
 import { routing } from './i18n/routing'
 
 // ── Rate limiters ──────────────────────────────────────────────────────────────
@@ -102,8 +103,33 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
     return NextResponse.next()
   }
 
-  // ── Non-API routes: intl routing as before ────────────────────────────────
-  return intlMiddleware(req)
+  // ── Non-API routes: Supabase session refresh + intl routing ──────────────
+  // Build the intl response first so we can pass its headers through.
+  let response = intlMiddleware(req)
+
+  // Refresh the Supabase auth token so SSR can read the session on every page.
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name) { return req.cookies.get(name)?.value },
+        set(name, value, options) {
+          req.cookies.set({ name, value, ...options })
+          response = NextResponse.next({ request: { headers: req.headers } })
+          response.cookies.set({ name, value, ...options })
+        },
+        remove(name, options) {
+          req.cookies.set({ name, value: '', ...options })
+          response = NextResponse.next({ request: { headers: req.headers } })
+          response.cookies.set({ name, value: '', ...options })
+        },
+      },
+    }
+  )
+
+  await supabase.auth.getUser()
+  return response
 }
 
 export const config = {

@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/contexts/AuthContext'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import { PenLine, Wand2, MessageSquare } from 'lucide-react'
 
@@ -14,14 +14,14 @@ const OPTIONS = [
 
 export default function PlanTrip() {
   const t = useTranslations('home.planTrip')
-  const { data: session } = useSession()
+  const { user } = useAuth()
   const { open: openAuthGate } = useAuthGate()
   const router = useRouter()
 
   // AG-1 (locked): only FL2 (auto-generate, needs saved POIs → requires login) gates.
   // FL1 (manual) and FL3 (AI chat) stay guest-free — navigate straight through.
   function handleOption(key: string, href: string) {
-    if (key === 'auto' && !session) { openAuthGate('save_plan'); return }
+    if (key === 'auto' && !user) { openAuthGate('save_plan'); return }
     router.push(href)
   }
 
