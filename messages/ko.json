@@ -654,7 +654,8 @@
       "like": "좋아요",
       "liked": "좋아요됨",
       "unlike": "좋아요 취소",
-      "website": "웹사이트 방문"
+      "website": "웹사이트 방문",
+      "close": "장소 상세 닫기"
     },
     "plan": {
       "title": "내 플랜",

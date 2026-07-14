@@ -489,6 +489,7 @@ export default function MapView() {
           stopDays={stopDays}
           activeDay={activeDay}
           onDayChange={setActiveDay}
+          onClosePoi={() => setSelectedPoiId(null)}
         />
       </aside>
 

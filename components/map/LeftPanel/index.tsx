@@ -29,6 +29,7 @@ interface Props {
   stopDays:         Record<string, number>
   activeDay:        number
   onDayChange:      (day: number) => void
+  onClosePoi:       () => void
 }
 
 export default function LeftPanel({
@@ -37,7 +38,7 @@ export default function LeftPanel({
   planStops, stopDurations,
   isSaved, isInPlan, planFull, onAddToPlan, onToggleSave,
   onReorder, onRemove, onDurationChange, onPreviewPlan, onDiscardPlan,
-  stopDays, activeDay, onDayChange,
+  stopDays, activeDay, onDayChange, onClosePoi,
 }: Props) {
   const [planStripExpanded, setPlanStripExpanded] = useState(false)
 
@@ -86,6 +87,7 @@ export default function LeftPanel({
             planFull={planFull}
             onAddToPlan={() => onAddToPlan(selectedPoi.place_id)}
             onToggleSave={() => onToggleSave(selectedPoi)}
+            onClose={onClosePoi}
           />
         ) : (
           <LeftPanelDefault

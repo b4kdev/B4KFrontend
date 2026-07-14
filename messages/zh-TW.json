@@ -654,7 +654,8 @@
       "like": "Like",
       "liked": "Liked",
       "unlike": "Unlike",
-      "website": "Visit website"
+      "website": "Visit website",
+      "close": "Close POI details"
     },
     "plan": {
       "title": "Your Plan",

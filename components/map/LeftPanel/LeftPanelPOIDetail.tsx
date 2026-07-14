@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { Heart, Plus, Check, Clock } from 'lucide-react'
+import { Heart, Plus, Check, Clock, X } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import type { MapPoi } from '@/hooks/useMapPois'
 
@@ -12,6 +12,7 @@ interface Props {
   planFull:     boolean
   onAddToPlan:  () => void
   onToggleSave: () => void
+  onClose:      () => void
 }
 
 function formatCount(n: number): string {
@@ -19,7 +20,7 @@ function formatCount(n: number): string {
 }
 
 export default function LeftPanelPOIDetail({
-  poi, isSaved, isInPlan, planFull, onAddToPlan, onToggleSave,
+  poi, isSaved, isInPlan, planFull, onAddToPlan, onToggleSave, onClose,
 }: Props) {
   const t = useTranslations('map.poiDetail')
   const name = getDisplayName(poi)
@@ -30,6 +31,15 @@ export default function LeftPanelPOIDetail({
 
       {/* Header — LP_04-07, LP_10 */}
       <div className="p-sp-4 flex flex-col gap-sp-3" style={{ borderBottom: '1px solid var(--bdr)' }}>
+
+        {/* SC-24 — back to default state */}
+        <button
+          onClick={onClose}
+          aria-label={t('close')}
+          className="self-end -mt-sp-1 -mr-sp-1 min-w-touch min-h-touch flex items-center justify-center text-muted hover:text-fg transition-colors"
+        >
+          <X size={18} strokeWidth={2} aria-hidden="true" />
+        </button>
 
         {/* LP_10 — Sponsored label */}
         {poi.is_partner && (
@@ -48,6 +58,11 @@ export default function LeftPanelPOIDetail({
           <p className="text-muted text-f-xs tabular-nums">
             {formatCount(poi.save_count)} {t('saves')}
           </p>
+        )}
+
+        {/* SC-24 (S-DEVEQK) — one-line description in core meta */}
+        {poi.description && (
+          <p className="text-muted text-f-sm leading-snug line-clamp-2">{poi.description}</p>
         )}
 
         {/* LP_06 — Category + district + open status */}
