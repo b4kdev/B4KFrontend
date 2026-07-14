@@ -1672,7 +1672,8 @@
     "seeAllPlaces": "장소 {count}개 모두 보기",
     "seeAllPlans": "플랜 {count}개 모두 보기",
     "seeAllExplore": "콘텐츠 {count}개 모두 보기",
-    "showLess": "간략히 보기"
+    "showLess": "간략히 보기",
+    "minChars": "검색하려면 최소 2자를 입력하세요"
   },
   "footer": {
     "help": "도움말",

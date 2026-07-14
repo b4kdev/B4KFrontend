@@ -1672,7 +1672,8 @@
     "seeAllPlaces": "See all {count} places",
     "seeAllPlans": "See all {count} plans",
     "seeAllExplore": "See all {count} contents",
-    "showLess": "Show less"
+    "showLess": "Show less",
+    "minChars": "Type at least 2 characters to search"
   },
   "footer": {
     "help": "Help",

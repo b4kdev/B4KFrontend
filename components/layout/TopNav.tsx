@@ -3,9 +3,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter, usePathname, Link } from '@/i18n/navigation';
-import { Search, Globe, HelpCircle, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Globe, HelpCircle, Menu, X, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/fetcher';
+import { useToast } from '@/contexts/ToastContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -115,7 +116,7 @@ function SearchDropdown({
     return () => clearTimeout(id);
   }, [searchVal]);
 
-  const { data, isLoading } = useSWR<{ suggestions: string[] }>(
+  const { data, isLoading, error, mutate } = useSWR<{ suggestions: string[] }>(
     debouncedQ ? `/api/search/suggestions?q=${encodeURIComponent(debouncedQ)}` : null,
     fetcher,
   );
@@ -211,6 +212,18 @@ function SearchDropdown({
                 </li>
               ))}
             </ul>
+          ) : error ? (
+            /* SC-20 (S-AOOFIE) — error branch, was silently swallowed */
+            <div className="py-sp-4 px-sp-3 flex items-center justify-between gap-sp-3" role="alert">
+              <p className="text-f-sm text-muted">{t('error')}</p>
+              <button
+                onClick={() => mutate()}
+                className="flex items-center gap-1 text-f-sm text-lav hover:opacity-80 transition-opacity min-h-touch shrink-0"
+              >
+                <RefreshCw size={12} strokeWidth={2} aria-hidden="true" />
+                {t('retry')}
+              </button>
+            </div>
           ) : suggestions.length === 0 ? (
             <div className="py-sp-4 px-sp-3 text-center">
               <p className="text-f-sm text-muted">{tNav('noResults', { query: searchVal })}</p>
@@ -243,6 +256,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
   const t       = useTranslations('topNav');
   const tSearch = useTranslations('search');
   const tNav    = useTranslations('nav');
+  const { showToast } = useToast();
   const { data: unreadData } = useSWR<{ count: number }>(
     '/api/notifications/unread-count', fetcher, { refreshInterval: 60_000 },
   );
@@ -309,8 +323,13 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
   // Submit handler
   const handleSubmit = useCallback((e?: React.FormEvent) => {
     e?.preventDefault();
+    // SC-20 (S-IXYKZG / DEC-10) — block submit below 2 chars, show guidance instead
+    if (searchVal.trim().length > 0 && searchVal.trim().length < 2) {
+      showToast(tSearch('minChars'), 'info');
+      return;
+    }
     navigateSearch(searchVal);
-  }, [searchVal, navigateSearch]);
+  }, [searchVal, navigateSearch, showToast, tSearch]);
 
   // Handle keyboard navigation in dropdown
   const handleKeyDownInput = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -500,6 +519,7 @@ function MobileSearchOverlay({
   const t       = useTranslations('search');
   const tSearch = useTranslations('topNav');
   const tCommon = useTranslations('common');
+  const { showToast } = useToast();
 
   const [searchVal, setSearchVal]   = useState('');
   const [recents, setRecents]       = useState<string[]>(getRecents);
@@ -514,7 +534,7 @@ function MobileSearchOverlay({
     return () => clearTimeout(id);
   }, [searchVal]);
 
-  const { data, isLoading } = useSWR<{ suggestions: string[] }>(
+  const { data, isLoading, error, mutate } = useSWR<{ suggestions: string[] }>(
     debouncedQ ? `/api/search/suggestions?q=${encodeURIComponent(debouncedQ)}` : null,
     fetcher,
   );
@@ -524,6 +544,11 @@ function MobileSearchOverlay({
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!searchVal.trim()) return;
+    // SC-20 (S-IXYKZG / DEC-10) — block submit below 2 chars, show guidance instead
+    if (searchVal.trim().length < 2) {
+      showToast(t('minChars'), 'info');
+      return;
+    }
     navigateSearch(searchVal.trim());
   };
 
@@ -675,6 +700,18 @@ function MobileSearchOverlay({
                   </li>
                 ))}
               </ul>
+            ) : error ? (
+              /* SC-20 (S-AOOFIE) — error branch, was silently swallowed */
+              <div className="py-sp-8 px-sp-4 flex items-center justify-between gap-sp-3" role="alert">
+                <p className="text-f-base text-muted">{t('error')}</p>
+                <button
+                  onClick={() => mutate()}
+                  className="flex items-center gap-1 text-f-base text-lav hover:opacity-80 transition-opacity min-h-touch shrink-0"
+                >
+                  <RefreshCw size={14} strokeWidth={2} aria-hidden="true" />
+                  {t('retry')}
+                </button>
+              </div>
             ) : suggestions.length === 0 ? (
               <div className="py-sp-8 px-sp-4 text-center">
                 <p className="text-f-base text-muted">{tSearch('noResults', { query: searchVal })}</p>
