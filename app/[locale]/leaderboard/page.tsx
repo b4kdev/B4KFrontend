@@ -146,10 +146,11 @@ export default function LeaderboardPage() {
                       <span className="text-f-md font-bold text-muted">{entry.rank}</span>
                     )}
                   </div>
-                  {/* Avatar */}
+                  {/* Avatar — SC-16: 28px base, 36px for rank 1 only */}
                   <div
                     className={[
-                      'w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-f-md font-bold',
+                      entry.rank === 1 ? 'w-9 h-9' : 'w-7 h-7',
+                      'rounded-full flex items-center justify-center shrink-0 text-f-md font-bold',
                       isTop ? `${style?.ring ?? ''} ${style?.bg ?? 'bg-bg-3'}` : 'bg-bg-3',
                     ].join(' ')}
                     style={!isTop ? { border: 'var(--bdr)' } : {}}

@@ -158,8 +158,7 @@ export default function BadgesPage() {
       {/* Loading */}
       {isLoading && (
         <div
-          className="grid gap-sp-6"
-          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))' }}
+          className="grid grid-cols-3 lg:grid-cols-4 gap-sp-6"
           aria-busy="true"
           aria-label={t('badges.loading')}
         >
@@ -205,8 +204,7 @@ export default function BadgesPage() {
       {/* Success — badge grid — PR_30 */}
       {!isLoading && !error && displayBadges.length > 0 && (
         <div
-          className="grid gap-sp-6"
-          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))' }}
+          className="grid grid-cols-3 lg:grid-cols-4 gap-sp-6"
         >
           {displayBadges.map((badge) => {
             const style = RARITY_STYLES[badge.rarity] ?? RARITY_STYLES.common

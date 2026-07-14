@@ -123,19 +123,25 @@ function TripCard({
           )}
         </div>
 
-        {/* Stats — PR_12 (published only) */}
-        {trip.is_published && (
-          <div className="flex items-center gap-sp-3 text-f-sm text-muted">
-            <span className="flex items-center gap-1">
-              <Heart size={12} strokeWidth={2} className="text-danger" />
-              {trip.like_count} {t('trips.card.likes')}
-            </span>
-            <span className="flex items-center gap-1">
-              <Bookmark size={12} strokeWidth={2} className="text-lav" />
-              {trip.save_count} {t('trips.card.saves')}
-            </span>
-          </div>
-        )}
+        {/* Stats — SC-18: stop count always shown; likes/saves published-only (PR_12) */}
+        <div className="flex items-center gap-sp-3 text-f-sm text-muted">
+          <span className="flex items-center gap-1">
+            <Route size={12} strokeWidth={2} className="text-muted" />
+            {trip.stop_count} {t('trips.card.stops')}
+          </span>
+          {trip.is_published && (
+            <>
+              <span className="flex items-center gap-1">
+                <Heart size={12} strokeWidth={2} className="text-danger" />
+                {trip.like_count} {t('trips.card.likes')}
+              </span>
+              <span className="flex items-center gap-1">
+                <Bookmark size={12} strokeWidth={2} className="text-lav" />
+                {trip.save_count} {t('trips.card.saves')}
+              </span>
+            </>
+          )}
+        </div>
 
         {/* Actions — PR_13 + PR_14 */}
         <div className="flex gap-sp-2 mt-auto pt-sp-1">

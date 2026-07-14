@@ -132,15 +132,12 @@ function LegRow({
         {t(`transport.${mode}`)}
       </button>
       {saving ? (
-        <span className="flex items-center gap-1 text-f-xs text-muted-2">
-          <Loader2 size={11} strokeWidth={2} className="animate-spin shrink-0" aria-hidden="true" />
-          {t('leg.calculating')}
-        </span>
+        <span className="text-f-xs text-muted-2 font-mono">{t('leg.calculating')}</span>
       ) : (
         <span className="text-f-xs text-muted-2">
           {formatDuration(t, Math.max(1, Math.round(leg.estimated_duration_s / 60)))}
-          {' · '}
-          {formatDistance(t, leg.distance_m)}
+          {/* SC-14 (S-GUUJBG) — distance only shown past 500m */}
+          {leg.distance_m > 500 && <>{' · '}{formatDistance(t, leg.distance_m)}</>}
         </span>
       )}
     </div>

@@ -353,17 +353,26 @@ export default function AIOverlay({
         {/* Typing indicator */}
         {status === 'typing' && <TypingIndicator />}
 
-        {/* UF-15 (ERR_02 / G12.4) — system code first, human explanation second (DESIGN.md error voice) */}
+        {/* UF-15/SC-19 (ERR_02 / G12.4) — system code first, human explanation second (DESIGN.md error voice) */}
         {status === 'error' && (
           <div className="flex flex-col gap-sp-2">
             <p className="text-fg text-xs font-mono tracking-wide uppercase">{t('errorCode')}</p>
             <p className="text-muted text-sm">{t('error')}</p>
-            <button
-              onClick={handleRetry}
-              className="text-lav text-sm hover:underline text-left"
-            >
-              {t('retry')}
-            </button>
+            <div className="flex items-center gap-sp-4">
+              <button
+                onClick={handleRetry}
+                className="text-lav text-sm hover:underline text-left"
+              >
+                {t('retry')}
+              </button>
+              {/* SC-19 (S-QTTOBQ) — second CTA: close the overlay, drop into the bare map builder */}
+              <button
+                onClick={onClose}
+                className="text-muted text-sm hover:underline text-left"
+              >
+                {t('planManually')}
+              </button>
+            </div>
           </div>
         )}
       </div>
