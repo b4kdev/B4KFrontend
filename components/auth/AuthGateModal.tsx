@@ -309,7 +309,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
               <button
                 onClick={() => handleOAuth('google')}
                 disabled={status === 'loading'}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-3 bg-fg text-bg rounded-none font-mono text-f-sm uppercase tracking-[0.06em] transition-[background,color] duration-[80ms] disabled:opacity-60 hover:bg-royal-600 hover:text-fg active:opacity-75"
+                className="w-full min-h-touch flex items-center justify-center gap-sp-3 bg-fg text-bg rounded-none font-semibold text-f-base transition-[background,color] duration-[80ms] disabled:opacity-60 hover:bg-royal-600 hover:text-fg active:opacity-75"
               >
                 {status === 'loading'
                   ? <span className="w-5 h-5 border-2 border-bg border-t-transparent rounded-full animate-spin" aria-hidden="true" />
@@ -326,7 +326,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
               <button
                 onClick={() => handleOAuth('apple')}
                 disabled={status === 'loading'}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-none font-mono text-f-sm uppercase tracking-[0.06em] transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
+                className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
                 style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)', color: 'var(--fg)' }}
               >
                 <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
@@ -339,7 +339,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
               <button
                 onClick={() => handleOAuth('azure')}
                 disabled={status === 'loading'}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-none font-mono text-f-sm uppercase tracking-[0.06em] transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
+                className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
                 style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)', color: 'var(--fg)' }}
               >
                 <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
@@ -352,7 +352,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
               <button
                 onClick={() => setView('email')}
                 disabled={status === 'loading'}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-none font-mono text-f-sm uppercase tracking-[0.06em] transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
+                className="w-full min-h-touch flex items-center justify-center gap-sp-3 rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75"
                 style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)', color: 'var(--fg)' }}
               >
                 <Mail size={18} strokeWidth={2} aria-hidden="true" />
@@ -371,7 +371,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
                     type="button"
                     onClick={() => { setMode(m); setError(null); }}
                     aria-pressed={mode === m}
-                    className={`flex-1 min-h-touch text-f-sm font-mono uppercase tracking-[0.06em] transition-colors ${
+                    className={`flex-1 min-h-touch text-f-base font-semibold transition-colors ${
                       mode === m ? 'text-lav' : 'text-muted hover:text-fg'
                     }`}
                     style={mode === m ? { boxShadow: 'inset 0 -2px 0 var(--lav)' } : undefined}
@@ -404,7 +404,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
               <button
                 type="submit"
                 disabled={status === 'loading' || !email || !password}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-fg text-bg rounded-none font-mono text-f-sm uppercase tracking-[0.06em] transition-[background,color] duration-[80ms] disabled:opacity-60 hover:bg-royal-600 hover:text-fg active:opacity-75"
+                className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-fg text-bg rounded-none font-semibold text-f-base transition-[background,color] duration-[80ms] disabled:opacity-60 hover:bg-royal-600 hover:text-fg active:opacity-75"
               >
                 {status === 'loading'
                   ? <span className="w-5 h-5 border-2 border-bg border-t-transparent rounded-full animate-spin" aria-hidden="true" />
@@ -445,7 +445,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
               <button
                 type="submit"
                 disabled={status === 'loading' || !email}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-fg text-bg rounded-none font-mono text-f-sm uppercase tracking-[0.06em] transition-[background,color] duration-[80ms] disabled:opacity-60 hover:bg-royal-600 hover:text-fg active:opacity-75"
+                className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-fg text-bg rounded-none font-semibold text-f-base transition-[background,color] duration-[80ms] disabled:opacity-60 hover:bg-royal-600 hover:text-fg active:opacity-75"
               >
                 {status === 'loading'
                   ? <span className="w-5 h-5 border-2 border-bg border-t-transparent rounded-full animate-spin" aria-hidden="true" />
@@ -469,7 +469,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
                 type="button"
                 onClick={handleResend}
                 disabled={status === 'loading' || resendLeft > 0}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-none font-mono text-f-sm uppercase tracking-[0.06em] bg-transparent text-muted transition-[border-color,color] duration-[80ms] disabled:opacity-60 hover:text-fg hover:border-muted-3 active:opacity-75"
+                className="w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-none font-semibold text-f-base bg-transparent text-muted transition-[border-color,color] duration-[80ms] disabled:opacity-60 hover:text-fg hover:border-muted-3 active:opacity-75"
                 style={{ border: '1px solid transparent' }}
               >
                 {resendLeft > 0 ? t('resendIn', { seconds: resendLeft }) : t('resend')}

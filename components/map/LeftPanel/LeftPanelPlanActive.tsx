@@ -207,7 +207,7 @@ export default function LeftPanelPlanActive({
         {/* LP_15 — Preview plan */}
         <button
           onClick={onPreviewPlan}
-          className="w-full min-h-touch flex items-center justify-center rounded-none bg-fg text-bg font-mono text-f-sm uppercase tracking-[0.06em] px-sp-5 hover:bg-royal-600 hover:text-fg transition-[background,color] duration-[80ms]"
+          className="w-full min-h-touch flex items-center justify-center rounded-none bg-fg text-bg font-body font-semibold text-sm px-sp-5 hover:bg-royal-600 hover:text-fg transition-[background,color] duration-[80ms]"
         >
           {t('previewPlan')}
         </button>

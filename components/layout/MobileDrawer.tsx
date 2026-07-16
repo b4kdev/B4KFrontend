@@ -47,7 +47,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
   const isGuest = !loading && !session;
 
   const rowClass =
-    'flex items-center gap-sp-3 w-full min-h-touch px-sp-4 text-f-base font-mono uppercase tracking-[0.12em] text-fg hover:bg-muted-3';
+    'flex items-center gap-sp-3 w-full min-h-touch px-sp-4 text-f-base font-medium text-fg hover:bg-muted-3';
 
   const rowStyle: CSSProperties = {
     transitionProperty: 'background-color',
@@ -85,14 +85,14 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
         <div className="fixed inset-0 bg-backdrop-50 z-[55] lg:hidden" onClick={onClose} aria-hidden="true" />
       )}
 
-      {/* Drawer — slides in from the right */}
+      {/* Drawer — slides in from the left */}
       <aside
         className={[
-          'fixed right-0 top-0 h-screen w-[300px] max-w-[85vw] z-[60] flex flex-col bg-bg-2 lg:hidden',
+          'fixed left-0 top-0 h-screen w-[300px] max-w-[85vw] z-[60] flex flex-col bg-bg-2 lg:hidden',
           'transition-transform ease-out',
-          open ? 'translate-x-0' : 'translate-x-full',
+          open ? 'translate-x-0' : '-translate-x-full',
         ].join(' ')}
-        style={{ borderLeft: 'var(--bdr)', transitionDuration: 'var(--dur-reveal)' }}
+        style={{ borderRight: 'var(--bdr)', transitionDuration: 'var(--dur-reveal)' }}
         role="dialog"
         aria-label={t('mainNavigation')}
       >
@@ -184,7 +184,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
                 <button
                   key={loc}
                   type="button"
-                  className="min-h-touch pl-[52px] pr-sp-4 text-left text-f-md font-mono text-muted hover:text-fg"
+                  className="min-h-touch pl-[52px] pr-sp-4 text-left text-f-md text-muted hover:text-fg"
                   style={{ transitionProperty: 'color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}
                   onClick={() => changeLocale(loc)}
                 >
@@ -223,7 +223,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
                 <Link
                   key={key}
                   href={href}
-                  className="min-h-touch pl-[52px] pr-sp-4 flex items-center text-f-md font-mono text-muted hover:text-fg"
+                  className="min-h-touch pl-[52px] pr-sp-4 flex items-center text-f-md text-muted hover:text-fg"
                   style={{ transitionProperty: 'color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}
                   onClick={onClose}
                 >
@@ -239,7 +239,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
           <div className="p-sp-2 shrink-0" style={{ borderTop: 'var(--bdr)' }}>
             <button
               type="button"
-              className="flex items-center gap-sp-3 w-full min-h-touch px-sp-4 text-f-base font-mono uppercase tracking-[0.12em] text-danger hover:bg-muted-3"
+              className="flex items-center gap-sp-3 w-full min-h-touch px-sp-4 text-f-base font-medium text-danger hover:bg-muted-3"
               style={{ transitionProperty: 'background-color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}
               onClick={async () => { onClose(); await createSupabaseBrowserClient().auth.signOut(); router.push('/'); }}
             >

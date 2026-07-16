@@ -53,7 +53,7 @@ export default function LeftPanelPOIDetail({
 
         {/* LP_10 — Sponsored label */}
         {poi.is_partner && (
-          <p className="font-mono text-f-xxs text-muted uppercase tracking-[0.22em] -mb-sp-1">
+          <p className="text-f-xxs text-muted uppercase tracking-widest -mb-sp-1">
             {t('sponsored')}
           </p>
         )}
@@ -113,7 +113,7 @@ export default function LeftPanelPOIDetail({
           title={addDisabled ? t('planFull') : undefined}
           className={[
             'w-full min-h-touch flex items-center justify-center gap-sp-2',
-            'rounded-none font-mono text-f-sm uppercase tracking-[0.06em]',
+            'rounded-none font-body font-semibold text-sm',
             isInPlan
               ? 'bg-lav-dim text-lav cursor-default transition-none'
               : addDisabled
@@ -132,7 +132,7 @@ export default function LeftPanelPOIDetail({
           onClick={onToggleSave}
           aria-label={isSaved ? t('unsave') : t('save')}
           aria-pressed={isSaved}
-          className="w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-none font-mono text-f-sm uppercase tracking-[0.06em] bg-transparent text-muted border border-transparent hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
+          className="w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-none font-medium bg-transparent text-muted border border-transparent hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
         >
           <Heart
             size={16}

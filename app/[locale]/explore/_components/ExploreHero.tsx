@@ -50,7 +50,7 @@ export default function ExploreHero({ slides }: { slides: ExploreHeroSlide[] }) 
           className="absolute inset-0 bg-bg-3"
           style={{
             opacity: i === idx ? 1 : 0,
-            transition: prefersReduced ? 'none' : 'opacity 300ms var(--ease-linear)',
+            transition: prefersReduced ? 'none' : 'opacity var(--dur-reveal) var(--ease-linear)',
             backgroundImage: s.image_url ? `url(${s.image_url})` : undefined,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
@@ -78,7 +78,7 @@ export default function ExploreHero({ slides }: { slides: ExploreHeroSlide[] }) 
         </p>
         <Link
           href={slide.cta_href}
-          className="inline-flex items-center min-h-touch px-sp-5 bg-fg text-bg text-f-sm font-semibold tracking-[0.02em] rounded-none w-fit"
+          className="inline-flex items-center min-h-touch px-sp-5 bg-fg text-bg text-f-sm font-semibold tracking-[0.02em] rounded-none hover:bg-royal-600 hover:text-fg transition-[background,color] duration-[80ms] w-fit"
         >
           {slide.cta_label}
         </Link>

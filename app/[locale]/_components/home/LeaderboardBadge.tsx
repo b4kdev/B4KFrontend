@@ -88,7 +88,7 @@ export default function LeaderboardBadge() {
               </div>
               <div>
                 {RARITY_LABEL[badge.rarity] && (
-                  <p className="text-f-xxs font-mono tracking-[0.22em] uppercase text-lav mb-[3px]">
+                  <p className="text-f-xxs font-bold tracking-[0.1em] uppercase text-lav mb-[3px]">
                     {RARITY_LABEL[badge.rarity]}
                   </p>
                 )}

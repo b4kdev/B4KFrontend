@@ -24,7 +24,7 @@ export default function ExploreChipFilter({ config, active, onChange }: Props) {
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className="shrink-0 flex items-center min-h-touch px-sp-4 rounded-full text-f-sm font-semibold whitespace-nowrap transition-colors"
+      className="shrink-0 flex items-center min-h-touch px-sp-4 rounded-full text-f-sm font-semibold whitespace-nowrap transition-colors duration-[80ms]"
       style={
         selected
           ? { background: 'var(--lav)', color: 'var(--bg)' }

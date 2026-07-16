@@ -56,14 +56,14 @@ function DeleteModal({
         <div className="flex gap-sp-3 mt-sp-2">
           <button
             onClick={onCancel}
-            className="flex-1 min-h-touch rounded-none bg-transparent text-muted font-mono text-f-sm uppercase tracking-[0.06em] px-sp-5 hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
+            className="flex-1 min-h-touch rounded-none bg-transparent text-muted font-semibold text-f-sm px-sp-5 hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
             style={{ border: '1px solid transparent' }}
           >
             {t('trips.deleteModal.cancel')}
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 min-h-touch rounded-none bg-danger text-bg font-mono text-f-sm uppercase tracking-[0.06em] px-sp-5 hover:opacity-90 transition-opacity duration-[80ms]"
+            className="flex-1 min-h-touch rounded-none bg-danger text-bg font-semibold text-f-sm px-sp-5 hover:opacity-90 transition-opacity duration-[80ms]"
           >
             {t('trips.deleteModal.confirm')}
           </button>
@@ -234,7 +234,7 @@ export default function TripsPage() {
           <p className="text-f-lg font-semibold text-fg">{t('trips.error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-none bg-transparent text-muted font-mono text-f-sm uppercase tracking-[0.06em] border border-transparent hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
+            className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-none bg-transparent text-muted font-semibold text-f-sm border border-transparent hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
           >
             <RefreshCw size={14} strokeWidth={2} />
             {t('trips.error.cta')}

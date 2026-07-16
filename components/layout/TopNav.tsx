@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter, usePathname, Link } from '@/i18n/navigation';
-import { Search, Globe, HelpCircle, Menu, X, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
+import { Search, Globe, HelpCircle, Menu, X, ChevronRight } from 'lucide-react';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/fetcher';
 import { useToast } from '@/contexts/ToastContext';
@@ -267,7 +267,6 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
 
   const [searchVal, setSearchVal]               = useState('');
   const [dropdownOpen, setDropdownOpen]         = useState(false);
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [localeOpen, setLocaleOpen]             = useState(false);
   const [recents, setRecents]                   = useState<string[]>([]);
   const [highlightIdx, setHighlightIdx]         = useState(-1);
@@ -384,9 +383,9 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
           )}
         </button>
 
-        {/* Search — desktop */}
+        {/* Search — mobile + desktop */}
         <div
-          className="hidden lg:flex flex-1 max-w-[480px] relative ml-sp-4"
+          className="flex flex-1 max-w-[480px] relative ml-sp-2 lg:ml-sidebar"
           ref={searchRef}
           role="combobox"
           aria-expanded={dropdownOpen}
@@ -487,260 +486,9 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
         </div>
 
         {/* Mobile actions */}
-        <div className="flex lg:hidden items-center gap-1 ml-auto mr-4 shrink-0">
-          <button
-            className="min-w-touch min-h-touch flex items-center justify-center rounded-none text-muted"
-            onClick={() => { setMobileSearchOpen(true); setRecents(getRecents()); }}
-            aria-label={tSearch('placeholder')}
-          >
-            <Search size={24} strokeWidth={2} />
-          </button>
-        </div>
+        <div className="flex lg:hidden items-center mr-sp-2 shrink-0" />
       </header>
 
-      {/* Mobile search overlay */}
-      {mobileSearchOpen && (
-        <MobileSearchOverlay
-          onClose={() => { setMobileSearchOpen(false); setSearchVal(''); }}
-          navigateSearch={(q) => { setMobileSearchOpen(false); navigateSearch(q); }}
-        />
-      )}
     </>
-  );
-}
-
-// ─── Mobile Search Overlay ────────────────────────────────────────────────────
-
-function MobileSearchOverlay({
-  onClose,
-  navigateSearch,
-}: {
-  onClose: () => void;
-  navigateSearch: (q: string) => void;
-}) {
-  const t       = useTranslations('search');
-  const tSearch = useTranslations('topNav');
-  const tCommon = useTranslations('common');
-  const { showToast } = useToast();
-
-  const [searchVal, setSearchVal]   = useState('');
-  const [recents, setRecents]       = useState<string[]>(getRecents);
-  const [highlightIdx, setHighlightIdx] = useState(-1);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Debounced query
-  const [debouncedQ, setDebouncedQ] = useState('');
-  useEffect(() => {
-    if (searchVal.trim().length < 2) { setDebouncedQ(''); return; }
-    const id = setTimeout(() => setDebouncedQ(searchVal.trim()), 300);
-    return () => clearTimeout(id);
-  }, [searchVal]);
-
-  const { data, isLoading, error, mutate } = useSWR<{ suggestions: string[] }>(
-    debouncedQ ? `/api/search/suggestions?q=${encodeURIComponent(debouncedQ)}` : null,
-    fetcher,
-  );
-  const suggestions = data?.suggestions ?? [];
-  const showSuggestions = searchVal.trim().length >= 2;
-
-  const handleSubmit = (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (!searchVal.trim()) return;
-    // SC-20 (S-IXYKZG / DEC-10) — block submit below 2 chars, show guidance instead
-    if (searchVal.trim().length < 2) {
-      showToast(t('minChars'), 'info');
-      return;
-    }
-    navigateSearch(searchVal.trim());
-  };
-
-  const handleSelect = (q: string) => {
-    navigateSearch(q);
-  };
-
-  const handleRecentRemove = (q: string) => {
-    removeRecent(q);
-    setRecents(getRecents());
-  };
-
-  const handleClearAll = () => {
-    clearRecents();
-    setRecents([]);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const items = showSuggestions ? suggestions : recents;
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setHighlightIdx(i => Math.min(i + 1, items.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setHighlightIdx(i => Math.max(i - 1, -1));
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (highlightIdx >= 0 && highlightIdx < items.length) {
-        handleSelect(items[highlightIdx]);
-      } else {
-        handleSubmit();
-      }
-    } else if (e.key === 'Escape') {
-      onClose();
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-bg z-[200] flex flex-col lg:hidden" role="dialog" aria-modal="true" aria-label={t('placeholder')}>
-      {/* Header */}
-      <div className="flex items-center gap-sp-2 px-sp-3 py-sp-2" style={{ borderBottom: 'var(--bdr)' }}>
-        <button
-          className="text-muted min-h-touch min-w-touch flex items-center justify-center rounded-none"
-          onClick={onClose}
-          aria-label={tCommon('back')}
-        >
-          <ChevronLeft size={24} strokeWidth={2} />
-        </button>
-        <form onSubmit={handleSubmit} className="flex-1 relative">
-          <input
-            ref={inputRef}
-            autoFocus
-            type="search"
-            value={searchVal}
-            onChange={e => { setSearchVal(e.target.value); setHighlightIdx(-1); }}
-            onKeyDown={handleKeyDown}
-            placeholder={t('placeholder')}
-            className="w-full h-9 rounded-none px-sp-4 text-f-base text-fg placeholder:text-muted outline-none bg-bg-3"
-            style={{ border: '1px solid var(--bdr)' }}
-            aria-label={t('placeholder')}
-          />
-        </form>
-        {searchVal && (
-          <button
-            onClick={() => { setSearchVal(''); inputRef.current?.focus(); }}
-            className="text-muted min-h-touch min-w-touch flex items-center justify-center rounded-none"
-            aria-label={tSearch('clearSearch')}
-          >
-            <X size={16} strokeWidth={2} />
-          </button>
-        )}
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto">
-        {!showSuggestions ? (
-          /* Empty state: recents + chips */
-          <>
-            {recents.length > 0 && (
-              <>
-                <div
-                  className="flex items-center justify-between px-sp-4 py-sp-2"
-                  style={{ borderBottom: '1px solid var(--bdr)' }}
-                >
-                  <p className="text-f-xs font-semibold uppercase tracking-[0.08em] text-muted">
-                    {t('recentTitle')}
-                  </p>
-                  <button
-                    onClick={handleClearAll}
-                    className="text-f-xs text-lav min-h-touch flex items-center px-sp-2"
-                  >
-                    {t('clearAll')}
-                  </button>
-                </div>
-                <ul>
-                  {recents.map((q, idx) => (
-                    <li key={q}>
-                      <div
-                        className="flex items-center gap-sp-3 px-sp-4"
-                        style={{
-                          borderBottom: '1px solid var(--bdr)',
-                          background: idx === highlightIdx ? 'var(--muted-3)' : undefined,
-                        }}
-                      >
-                        <button
-                          className="flex-1 flex items-center gap-sp-3 py-sp-3 text-left min-h-touch"
-                          onClick={() => handleSelect(q)}
-                        >
-                          <Search size={16} strokeWidth={2} className="text-muted shrink-0" aria-hidden="true" />
-                          <span className="text-f-base text-fg truncate">{q}</span>
-                        </button>
-                        <button
-                          className="text-muted shrink-0 min-h-touch min-w-touch flex items-center justify-center"
-                          onClick={() => handleRecentRemove(q)}
-                          aria-label={t('removeRecent', { query: q })}
-                        >
-                          <X size={14} strokeWidth={2} />
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-
-            {/* Category chips */}
-            <div className="flex flex-wrap gap-sp-2 px-sp-4 py-sp-4">
-              {CATEGORY_CHIPS.map(chip => (
-                <button
-                  key={chip.key}
-                  onClick={() => navigateSearch(chip.query)}
-                  className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-lav min-h-touch flex items-center"
-                  style={{ border: '1px solid var(--lav-border)' }}
-                >
-                  {t(`categories.${chip.key}`)}
-                </button>
-              ))}
-            </div>
-          </>
-        ) : (
-          /* Typing state: suggestions */
-          <>
-            {isLoading ? (
-              <ul>
-                {[0, 1, 2].map(i => (
-                  <li key={i} className="flex items-center gap-sp-3 px-sp-4 py-sp-3 animate-pulse" style={{ borderBottom: '1px solid var(--bdr)' }}>
-                    <div className="w-4 h-4 rounded-none shrink-0" style={{ background: 'var(--muted-3)' }} />
-                    <div className="flex-1 h-3 rounded-none" style={{ background: 'var(--muted-3)', width: '60%' }} />
-                  </li>
-                ))}
-              </ul>
-            ) : error ? (
-              /* SC-20 (S-AOOFIE) — error branch, was silently swallowed */
-              <div className="py-sp-8 px-sp-4 flex items-center justify-between gap-sp-3" role="alert">
-                <p className="text-f-base text-muted">{t('error')}</p>
-                <button
-                  onClick={() => mutate()}
-                  className="flex items-center gap-1 text-f-base text-lav hover:opacity-80 transition-opacity min-h-touch shrink-0"
-                >
-                  <RefreshCw size={14} strokeWidth={2} aria-hidden="true" />
-                  {t('retry')}
-                </button>
-              </div>
-            ) : suggestions.length === 0 ? (
-              <div className="py-sp-8 px-sp-4 text-center">
-                <p className="text-f-base text-muted">{tSearch('noResults', { query: searchVal })}</p>
-              </div>
-            ) : (
-              <ul>
-                {suggestions.map((s, idx) => (
-                  <li key={s}>
-                    <button
-                      className="w-full flex items-center gap-sp-3 px-sp-4 py-sp-3 text-left min-h-touch"
-                      style={{
-                        borderBottom: '1px solid var(--bdr)',
-                        background: idx === highlightIdx ? 'var(--muted-3)' : undefined,
-                      }}
-                      onClick={() => handleSelect(s)}
-                    >
-                      <Search size={16} strokeWidth={2} className="text-muted shrink-0" aria-hidden="true" />
-                      <span className="flex-1 text-f-base text-fg truncate">{s}</span>
-                      <ChevronRight size={14} strokeWidth={2} className="text-muted shrink-0" aria-hidden="true" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </>
-        )}
-      </div>
-    </div>
   );
 }

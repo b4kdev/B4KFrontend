@@ -65,7 +65,7 @@ export default function ContinuePlan() {
         </div>
         <button
           onClick={() => router.push(`/map?plan=${serverDraft.id}`)}
-          className="flex items-center gap-1 text-f-sm font-mono uppercase tracking-[0.06em] text-lav hover:opacity-80 transition-opacity duration-[80ms] shrink-0 min-h-touch px-sp-3"
+          className="flex items-center gap-1 text-f-sm font-semibold text-lav hover:opacity-80 transition-opacity duration-[80ms] shrink-0 min-h-touch px-sp-3"
         >
           {t('cta')}
           <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />
@@ -105,7 +105,7 @@ export default function ContinuePlan() {
         </div>
         <button
           onClick={() => router.push('/map')}
-          className="flex items-center gap-1 text-f-sm font-mono uppercase tracking-[0.06em] text-lav hover:opacity-80 transition-opacity duration-[80ms] shrink-0 min-h-touch px-sp-3"
+          className="flex items-center gap-1 text-f-sm font-semibold text-lav hover:opacity-80 transition-opacity duration-[80ms] shrink-0 min-h-touch px-sp-3"
         >
           {t('cta')}
           <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />

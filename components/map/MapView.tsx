@@ -502,7 +502,7 @@ export default function MapView() {
       </aside>
 
       {/* Map canvas */}
-      <div className="absolute inset-0 lg:left-[224px]">
+      <div className="absolute inset-0 lg:left-sidebar">
         <NaverMapCanvas
           pois={pois}
           selectedPoiId={selectedPoiId}

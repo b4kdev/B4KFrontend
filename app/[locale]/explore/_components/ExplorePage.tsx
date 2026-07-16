@@ -119,7 +119,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
     <div className="flex">
       {/* Desktop sidebar */}
       <aside
-        className="hidden lg:flex flex-col w-[196px] shrink-0 sticky top-[50px] self-start h-[calc(100vh-50px)] overflow-y-auto py-sp-4 pr-sp-3"
+        className="hidden lg:flex flex-col w-sidebar shrink-0 sticky top-[50px] self-start h-[calc(100vh-50px)] overflow-y-auto py-sp-4 px-sp-3 bg-bg-2"
         style={{ borderRight: 'var(--bdr)' }}
         aria-label={t('sidebar.ariaLabel')}
       >

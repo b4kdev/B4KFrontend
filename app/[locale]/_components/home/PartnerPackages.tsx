@@ -57,7 +57,7 @@ export default function PartnerPackages() {
                   <img src={pkg.cover_image_url} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
                 )}
                 <span
-                  className="absolute top-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.08em] uppercase text-bg bg-lav px-[6px] py-[3px]"
+                  className="absolute top-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.1em] uppercase text-bg bg-lav px-[6px] py-[3px]"
                   aria-label={t('sponsored')}
                 >
                   {t('sponsored')}

@@ -41,7 +41,7 @@ export default function LeftPanelDefault({
     <div className="flex flex-col h-full overflow-y-auto themed-scrollbar">
       {/* LP_01 — Region list */}
       <div className="p-sp-4" style={{ borderBottom: '1px solid var(--bdr)' }}>
-        <p className="font-mono text-f-xxs uppercase tracking-[0.22em] text-muted mb-sp-3">
+        <p className="text-f-xxs font-semibold uppercase tracking-widest text-muted mb-sp-3">
           {t('regions.title')}
         </p>
         <div className="flex flex-col gap-0.5">
@@ -53,7 +53,7 @@ export default function LeftPanelDefault({
                 onClick={() => onRegionToggle(region)}
                 aria-pressed={isActive}
                 className={[
-                  'catalogue-row text-left w-full min-h-touch px-sp-3 rounded-none font-mono text-f-sm uppercase tracking-[0.06em]',
+                  'catalogue-row text-left w-full min-h-touch px-sp-3 rounded-none text-sm font-medium',
                   isActive
                     ? 'bg-lav-dim text-lav'
                     : 'text-fg',
@@ -63,7 +63,7 @@ export default function LeftPanelDefault({
               </button>
             )
           })}
-          <button className="catalogue-row text-left w-full min-h-touch px-sp-3 rounded-none font-mono text-f-sm uppercase tracking-[0.06em] text-muted hover:text-fg">
+          <button className="catalogue-row text-left w-full min-h-touch px-sp-3 rounded-none text-sm text-muted hover:text-fg hover:bg-overlay-10">
             {t('regions.more')}
           </button>
         </div>
@@ -71,7 +71,7 @@ export default function LeftPanelDefault({
 
       {/* LP_02 + LP_03 — Category filter chips */}
       <div className="p-sp-4">
-        <p className="font-mono text-f-xxs uppercase tracking-[0.22em] text-muted mb-sp-3">
+        <p className="text-f-xxs font-semibold uppercase tracking-widest text-muted mb-sp-3">
           {t('filters.title')}
         </p>
         <div className="flex flex-wrap gap-2">
@@ -99,7 +99,7 @@ export default function LeftPanelDefault({
 
       {/* LP_04–10 — Recommended POI list (S-ZKAIGJ: cold-start = popular fallback) */}
       <div className="p-sp-4 flex-1">
-        <p className="font-mono text-f-xxs uppercase tracking-[0.22em] text-muted mb-sp-3">
+        <p className="text-f-xxs font-semibold uppercase tracking-widest text-muted mb-sp-3">
           {t('recommended.title')}
         </p>
 

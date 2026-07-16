@@ -34,7 +34,7 @@ export default function ChallengeCard() {
           <Trophy size={22} strokeWidth={2} className="text-lav" />
         </span>
         <div className="flex-1 min-w-0">
-          <p className="text-f-xxs font-mono tracking-[0.22em] uppercase text-lav mb-[4px]">{t('label')}</p>
+          <p className="text-f-xxs font-bold tracking-[0.1em] uppercase text-lav mb-[4px]">{t('label')}</p>
           <p className="text-f-lg font-semibold text-fg mb-[4px]">{data.title}</p>
           <p className="text-f-sm text-muted leading-relaxed">{data.description}</p>
         </div>
@@ -43,7 +43,7 @@ export default function ChallengeCard() {
           <p className="text-f-sm font-semibold text-fg">{data.badge_name}</p>
           <button
             onClick={handleCta}
-            className="mt-sp-2 flex items-center gap-1 text-f-sm font-mono uppercase tracking-[0.06em] text-lav hover:opacity-80 transition-opacity duration-[80ms] min-h-touch"
+            className="mt-sp-2 flex items-center gap-1 text-f-sm font-semibold text-lav hover:opacity-80 transition-opacity duration-[80ms] min-h-touch"
           >
             {t('cta')}
             <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />

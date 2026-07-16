@@ -173,7 +173,7 @@ export default function BadgesPage() {
           <p className="text-f-lg font-semibold text-fg">{t('badges.error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-none bg-transparent text-muted font-mono text-f-sm uppercase tracking-[0.06em] border border-transparent hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
+            className="flex items-center gap-sp-2 min-h-touch px-sp-5 rounded-none bg-transparent text-muted font-semibold text-f-sm border border-transparent hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
           >
             <RefreshCw size={14} strokeWidth={2} />
             {t('badges.error.cta')}

@@ -52,7 +52,7 @@ export default function Promotions() {
                 <p className="flex-1 text-f-sm text-fg leading-snug">{promo.headline}</p>
                 <Tag2
                   {...(extraProps as Record<string, string>)}
-                  className="shrink-0 text-f-xs font-semibold text-lav hover:opacity-80 transition-opacity flex items-center gap-1 min-h-touch px-sp-2"
+                  className="shrink-0 text-f-xs font-semibold text-lav hover:opacity-80 transition-opacity duration-[80ms] flex items-center gap-1 min-h-touch px-sp-2"
                   aria-label={`${promo.cta_label}: ${promo.headline}`}
                 >
                   {promo.cta_label}

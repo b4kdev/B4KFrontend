@@ -24,7 +24,7 @@ export default function OfflinePage() {
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="flex items-center gap-sp-2 rounded-none bg-transparent text-muted font-mono text-f-sm uppercase tracking-[0.06em] border border-transparent min-h-touch px-sp-5 hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
+          className="flex items-center gap-sp-2 rounded-none bg-transparent text-muted font-semibold text-f-sm border border-transparent min-h-touch px-sp-5 hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
         >
           <RefreshCw size={14} strokeWidth={2} />
           {t('retry')}

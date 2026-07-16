@@ -154,7 +154,7 @@ export function useBottomSheetSnap({ open, initialSnap = 'mid', onDismiss, onSna
   // handle, 'pan-y' + overscroll-contain on the scrollable body, so the body
   // can still scroll while the handle owns the drag gesture.
   const sheetStyle: React.CSSProperties = {
-    transform: `translateY(${open ? offset : (height || 1000)}px)`,
+    transform: `translateY(${open ? (dragging ? offset : offsetFor(snap, height)) : (height || 1000)}px)`,
     transition: dragging || reducedMotion ? 'none' : 'transform var(--dur-reveal) var(--ease-out)',
   }
 

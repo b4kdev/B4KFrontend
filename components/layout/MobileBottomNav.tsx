@@ -47,7 +47,7 @@ export default function MobileBottomNav() {
             aria-current={active ? 'page' : undefined}
           >
             <Icon size={20} strokeWidth={2} aria-hidden="true" />
-            <span className="text-f-xxs font-mono uppercase tracking-[0.12em]">{t(labelKey)}</span>
+            <span className="text-f-xxs font-semibold tracking-[0.04em]">{t(labelKey)}</span>
           </Link>
         );
       })}

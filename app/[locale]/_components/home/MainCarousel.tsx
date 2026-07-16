@@ -103,7 +103,7 @@ export default function MainCarousel() {
         </p>
         <Link
           href={slide.cta_href}
-          className="inline-flex items-center min-h-touch px-sp-5 bg-fg text-bg text-f-sm font-mono uppercase tracking-[0.06em] rounded-none hover:bg-royal-600 hover:text-fg transition-[background,color] duration-[80ms] w-fit"
+          className="inline-flex items-center min-h-touch px-sp-5 bg-fg text-bg text-f-sm font-semibold rounded-none hover:bg-royal-600 hover:text-fg transition-[background,color] duration-[80ms] w-fit"
         >
           {slide.cta_label}
         </Link>
