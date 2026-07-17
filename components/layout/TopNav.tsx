@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter, usePathname, Link } from '@/i18n/navigation';
-import { Search, Globe, HelpCircle, Menu, X, ChevronRight } from 'lucide-react';
+import { Search, Globe, HelpCircle, Menu, X, ChevronRight, RefreshCw } from 'lucide-react';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/fetcher';
 import { useToast } from '@/contexts/ToastContext';
