@@ -473,7 +473,7 @@ export default function SettingsPage() {
   const handleDeleteAccount = async () => {
     setDeleting(true)
     try {
-      const res = await fetch('/api/account/delete', { method: 'POST' })
+      const res = await fetch('/api/account/delete', { method: 'DELETE' })
       if (!res.ok) throw new Error()
       const supabase = createSupabaseBrowserClient()
       await supabase.auth.signOut()
