@@ -1054,7 +1054,8 @@
       "loading": "Loading saved places…",
       "empty": "No saved places yet",
       "error": "Failed to load saved places",
-      "retry": "Try again"
+      "retry": "Try again",
+      "openOnMapAria": "Open {name} on the map"
     },
     "notFound": "Profile not found",
     "anonymousUser": "User",

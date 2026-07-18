@@ -35,9 +35,12 @@ export default function MobileBottomNav() {
       {TABS.map(({ href, icon: Icon, labelKey }) => {
         const active = isActive(href);
         return (
+          // prefetch={false} — this bar renders on every page; see Sidebar.tsx
+          // for why prefetching Home/Map's heavy uncached fetches is wasteful here.
           <Link
             key={href}
             href={href}
+            prefetch={false}
             className={[
               'flex flex-col items-center gap-sp-1 px-sp-4 py-sp-1 flex-1 min-h-touch justify-center',
               active ? 'text-lav' : 'text-fg',

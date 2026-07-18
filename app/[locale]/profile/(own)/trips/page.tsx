@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { mutate as globalMutate } from 'swr'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import {
@@ -186,7 +187,9 @@ export default function TripsPage() {
   const handleDelete = async () => {
     if (!deleteId) return
     await fetch(`/api/profile/trips?id=${deleteId}`, { method: 'DELETE' })
-    mutate()
+    // The deleted trip may be the one home's "Continue" card is showing —
+    // that page holds its own SWR cache (revalidateOnFocus disabled).
+    await Promise.all([mutate(), globalMutate('/api/plans/draft')])
     setDeleteId(null)
   }
 
@@ -242,8 +245,9 @@ export default function TripsPage() {
         </div>
       )}
 
-      {/* Empty — PR_16 auto-gen nudge */}
-      {!isLoading && !error && trips?.length === 0 && (
+      {/* Empty — PR_16 auto-gen nudge. Also covers signed-out (trips is
+          undefined since the fetch is gated on `user` in useProfileTrips). */}
+      {!isLoading && !error && !trips?.length && (
         <div className="flex flex-col items-center text-center py-sp-16 px-sp-4 gap-sp-6">
           <Route size={40} strokeWidth={2} className="text-muted-2" />
           <div>

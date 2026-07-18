@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
+import { mutate as globalMutate } from 'swr'
 import { useTranslations } from 'next-intl'
 import { useAuth } from '@/contexts/AuthContext'
 import { RefreshCw, Lock, Route, Trash2, AlertTriangle, Loader2 } from 'lucide-react'
@@ -48,28 +49,40 @@ export default function ItineraryDetailView({ id }: { id: string }) {
   const isLiked = likedOverride ?? itinerary?.viewer.is_liked ?? false
   const isSaved = savedOverride ?? itinerary?.viewer.is_saved ?? false
 
-  const stopPois    = itinerary ? stopsToMapPois(itinerary) : []
-  const planStopIds = itinerary ? itinerary.stops.map(s => s.poi.poi_id) : []
+  // Stable references — recomputed only when `itinerary` itself changes, not
+  // on every render (e.g. a stop click that only updates selectedPoiId). The
+  // map's marker/polyline effects depend on these arrays, so a fresh
+  // reference each render was tearing down and redrawing the whole map on
+  // every click.
+  const stopPois = useMemo(
+    () => (itinerary ? stopsToMapPois(itinerary) : []),
+    [itinerary]
+  )
+  const planStopIds = useMemo(
+    () => (itinerary ? itinerary.stops.map(s => s.poi.poi_id) : []),
+    [itinerary]
+  )
 
   // Real road path per leg (routing.route_leg via lib/itinerary.ts) — falls
   // back to a straight connector between the two stops only if the backend
   // itself fell back (empty path, e.g. road network not loaded for that area).
-  const routeLegs = itinerary
-    ? itinerary.legs
-        .map(leg => {
-          if (leg.path.length >= 2) return { path: leg.path }
-          const from = itinerary.stops.find(s => s.stop_order === leg.from_stop_order)
-          const to   = itinerary.stops.find(s => s.stop_order === leg.to_stop_order)
-          if (!from || !to) return { path: [] }
-          return {
-            path: [
-              { lat: from.poi.coords_lat, lng: from.poi.coords_lng },
-              { lat: to.poi.coords_lat,   lng: to.poi.coords_lng },
-            ],
-          }
-        })
-        .filter(l => l.path.length >= 2)
-    : []
+  const routeLegs = useMemo(() => {
+    if (!itinerary) return []
+    return itinerary.legs
+      .map(leg => {
+        if (leg.path.length >= 2) return { path: leg.path }
+        const from = itinerary.stops.find(s => s.stop_order === leg.from_stop_order)
+        const to   = itinerary.stops.find(s => s.stop_order === leg.to_stop_order)
+        if (!from || !to) return { path: [] }
+        return {
+          path: [
+            { lat: from.poi.coords_lat, lng: from.poi.coords_lng },
+            { lat: to.poi.coords_lat,   lng: to.poi.coords_lng },
+          ],
+        }
+      })
+      .filter(l => l.path.length >= 2)
+  }, [itinerary])
 
   const handlePoiSelect = useCallback((poiId: string | null) => {
     setSelectedPoiId(poiId)
@@ -144,6 +157,13 @@ export default function ItineraryDetailView({ id }: { id: string }) {
     try {
       const res = await fetch(`/api/plans/${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error('delete_failed')
+      // Other pages (home's "Continue" card, profile trips list) hold their
+      // own SWR cache for this data with revalidateOnFocus disabled — without
+      // this they'd keep showing the deleted plan until a hard refresh.
+      await Promise.all([
+        globalMutate('/api/plans/draft'),
+        globalMutate('/api/profile/trips'),
+      ])
       router.push('/map')
     } catch {
       showToast(t('actions.deleteErrorToast'))

@@ -82,8 +82,17 @@ export default function NaverMapCanvas({
   const clusterMarkersRef = useRef<any[]>([])
   const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID
 
+  // The SDK <script> only fires onLoad once per browser session — remounting
+  // this component (e.g. navigating away and back) after it already loaded
+  // elsewhere means onLoad never fires again, leaving mapReady stuck false
+  // forever. Check for the already-loaded SDK on every mount as a fallback.
+  useEffect(() => {
+    if (window.naver?.maps && !mapRef.current) initMap()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   function initMap() {
-    if (!containerRef.current || !window.naver?.maps) return
+    if (!containerRef.current || !window.naver?.maps || mapRef.current) return
     const map = new window.naver.maps.Map(containerRef.current, {
       center:         new window.naver.maps.LatLng(SEOUL.lat, SEOUL.lng),
       zoom:           12,

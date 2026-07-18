@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useAuth } from '@/contexts/AuthContext'
 import useSWR from 'swr'
 import { MapPin } from 'lucide-react'
+import { Link } from '@/i18n/navigation'
 import { fetcher } from '@/lib/fetcher'
 import { getDisplayName } from '@/lib/display-name'
 import type { ProfileSavedPoi } from '@/app/api/profile/saved/route'
@@ -61,23 +62,26 @@ export default function ProfileSavedPage() {
 
   return (
     <div className="flex flex-col gap-sp-2 p-sp-4">
-      {data.items.map((poi) => (
-        <div
-          key={poi.poi_id}
-          className="flex items-center gap-sp-3 p-sp-3 bg-bg-2 rounded-none"
-          style={{ border: '1px solid var(--bdr)' }}
-        >
-          <MapPin size={16} strokeWidth={2} className="text-muted shrink-0" aria-hidden="true" />
-          <div className="min-w-0">
-            <p className="text-fg text-f-base truncate">
-              {getDisplayName({ name_preferred: poi.name_preferred, name_en: poi.name_en, name_ko: poi.name_ko, id: poi.poi_id })}
-            </p>
-            {poi.display_region && (
-              <p className="text-muted text-f-xs truncate">{poi.display_region}</p>
-            )}
-          </div>
-        </div>
-      ))}
+      {data.items.map((poi) => {
+        const name = getDisplayName({ name_preferred: poi.name_preferred, name_en: poi.name_en, name_ko: poi.name_ko, id: poi.poi_id })
+        return (
+          <Link
+            key={poi.poi_id}
+            href={`/map?poi=${encodeURIComponent(poi.poi_id)}`}
+            className="flex items-center gap-sp-3 p-sp-3 bg-bg-2 rounded-none hover:bg-bg-3 transition-colors min-h-touch"
+            style={{ border: '1px solid var(--bdr)' }}
+            aria-label={t('saved.openOnMapAria', { name })}
+          >
+            <MapPin size={16} strokeWidth={2} className="text-muted shrink-0" aria-hidden="true" />
+            <div className="min-w-0">
+              <p className="text-fg text-f-base truncate">{name}</p>
+              {poi.display_region && (
+                <p className="text-muted text-f-xs truncate">{poi.display_region}</p>
+              )}
+            </div>
+          </Link>
+        )
+      })}
     </div>
   )
 }

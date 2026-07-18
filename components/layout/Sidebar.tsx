@@ -64,7 +64,7 @@ export default function Sidebar() {
     >
       {/* Logo */}
       <div className="flex items-center justify-center h-[50px] shrink-0" style={{ borderBottom: 'var(--bdr)' }}>
-        <Link href="/" className="flex items-center justify-center w-full h-full" aria-label={t('logoHome')}>
+        <Link href="/" prefetch={false} className="flex items-center justify-center w-full h-full" aria-label={t('logoHome')}>
           <Image src="/logo.svg" alt="B4K" width={28} height={26} className="object-contain" />
         </Link>
       </div>
@@ -76,9 +76,14 @@ export default function Sidebar() {
           // embedded Saved Hub instead of navigating to the standalone page.
           const target = href === '/saved' && isActive('/map') ? '/map?saved=1' : href;
           return (
+            // prefetch={false} — this rail renders on every page, so the
+            // default Link prefetch would otherwise re-run Home's 13
+            // uncached widget fetches (and Map/Saved's own fetches) in the
+            // background on every single page view.
             <Link
               key={href}
               href={target}
+              prefetch={false}
               aria-label={t(labelKey)}
               aria-current={isActive(href) ? 'page' : undefined}
               className={railClass(isActive(href))}
@@ -105,6 +110,7 @@ export default function Sidebar() {
         ) : (
           <Link
             href="/notifications"
+            prefetch={false}
             aria-label={t('notifications')}
             aria-current={isActive('/notifications') ? 'page' : undefined}
             className={railClass(isActive('/notifications'))}
@@ -135,6 +141,7 @@ export default function Sidebar() {
         ) : (
           <Link
             href="/profile"
+            prefetch={false}
             aria-label={t('profile')}
             aria-current={isActive('/profile') ? 'page' : undefined}
             className={railClass(isActive('/profile'))}
