@@ -431,8 +431,11 @@ export default function ItineraryPanelContent({
                 </div>
               </button>
 
-              {/* Leg row to next stop */}
-              {nextStop && (
+              {/* Leg row to next stop — only within the same day. The backend never
+                  computes a leg across a day boundary (overnight, not a touring
+                  route), so treat that as a day divider instead of a perpetual
+                  "calculating route" spinner (there is nothing to calculate). */}
+              {nextStop && stop.day === nextStop.day && (
                 <LegRow
                   leg={findLeg(stop.stop_order, nextStop.stop_order)}
                   fromOrder={stop.stop_order}
@@ -442,6 +445,14 @@ export default function ItineraryPanelContent({
                   planId={planId}
                   onModeChange={handleLegModeChange}
                 />
+              )}
+              {nextStop && stop.day !== nextStop.day && nextStop.day !== null && (
+                <div
+                  className="flex items-center gap-sp-2 py-sp-2 pl-sp-2 ml-sp-2 text-f-xs font-semibold text-muted-2"
+                  role="separator"
+                >
+                  {t('tabs.day', { n: nextStop.day })}
+                </div>
               )}
             </li>
           )
