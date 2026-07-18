@@ -1,12 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
 
-// PATCH /api/badges/:id/pin — toggle pin state for an earned badge (own profile only).
-// Real impl (dev friend): UPDATE social.user_badges SET is_pinned = $is_pinned
-//   WHERE user_id = <me> AND badge_id = $id;  (enforce max 3 pinned server-side)
+// PATCH /api/badges/:id/pin  body: { is_pinned: boolean }
+//   → BFF PUT /me/badges/:id/pin (max 3 pins + "earned only" enforced server-side).
 export async function PATCH(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  void params.id
-  return NextResponse.json({ ok: true })
+  const auth = await getSessionAuth()
+  if (!auth) return unauthorized()
+
+  if (!/^\d+$/.test(params.id)) {
+    return NextResponse.json({ error: 'invalid_badge_id' }, { status: 400 })
+  }
+  const body = await req.json().catch(() => ({}))
+  if (typeof body.is_pinned !== 'boolean') {
+    return NextResponse.json({ error: 'invalid_is_pinned' }, { status: 400 })
+  }
+
+  try {
+    await bffFetch(`/me/badges/${params.id}/pin`, {
+      method: 'PUT',
+      body: JSON.stringify({ is_pinned: body.is_pinned }),
+      token: auth.token,
+    })
+    return NextResponse.json({ ok: true })
+  } catch (e) {
+    return bffErrorResponse(e)
+  }
 }

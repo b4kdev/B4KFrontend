@@ -10,7 +10,7 @@ import type { MapPoi } from '@/hooks/useMapPois'
 
 interface Props {
   pois:             MapPoi[]
-  selectedPoiId:    string | null
+  selectedPoi:      MapPoi | null
   activeRegion:     string | null
   activeFilters:    string[]
   planStops:        MapPoi[]
@@ -40,7 +40,7 @@ interface Props {
 }
 
 export default function LeftPanel({
-  pois, selectedPoiId,
+  pois, selectedPoi,
   activeRegion, activeFilters, onRegionToggle, onFilterToggle,
   planStops, stopDurations,
   isSaved, isInPlan, planFull, onAddToPlan, onToggleSave,
@@ -52,10 +52,6 @@ export default function LeftPanel({
   const [planStripExpanded, setPlanStripExpanded] = useState(false)
 
   const hasPlan = planStops.length > 0
-
-  const selectedPoi = selectedPoiId
-    ? pois.find(p => p.poi_id === selectedPoiId) ?? null
-    : null
 
   // State B: plan strip expanded → full-height plan active panel
   if (hasPlan && planStripExpanded) {

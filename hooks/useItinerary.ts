@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 import { fetcher, type FetchError } from '@/lib/fetcher'
-import type { ItineraryDetail, ItineraryLeg } from '@/app/api/plans/[id]/route'
+import type { ItineraryDetail, ItineraryLeg } from '@/lib/itinerary'
 import type { PlanMeta } from '@/app/api/plans/[id]/meta/route'
 
 export type { ItineraryDetail, ItineraryLeg }

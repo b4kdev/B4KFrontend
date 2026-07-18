@@ -1,86 +1,98 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized, BffError } from '@/lib/bff'
+import {
+  isNumericId,
+  toBffMode,
+  flattenBffDays,
+  daysToPutPayload,
+  mapBffToDetail,
+  type BffItinerary,
+} from '@/lib/itinerary'
 
-export interface ItineraryStop {
-  stop_order: number
-  day: number | null
-  duration_min: number
-  transport_mode: 'car' | 'public' | 'walk' | null
-  notes: string | null
-  poi: {
-    poi_id: string
-    name_preferred: string | null
-    name_en: string
-    name_ko: string
-    primary_image_url: string | null
-    display_domain: string
-    coords_lat: number
-    coords_lng: number
-  }
-}
-
-export interface ItineraryLeg {
-  from_stop_order: number
-  to_stop_order: number
-  estimated_duration_s: number
-  distance_m: number
-  transport_mode: 'car' | 'public' | 'walk'
-}
-
-export interface ItineraryRelated {
-  id: string
-  title: string
-  like_count: number
-  save_count: number
-  stop_count: number
-  thumbnail_url: string | null
-}
-
-export interface ItineraryDetail {
-  id: string
-  title: string
-  is_partner: boolean
-  is_published: boolean
-  share_url: string | null
-  like_count: number
-  save_count: number
-  total_duration_min: number
-  distance_m: number | null
-  author: {
-    id: string
-    name_preferred: string | null
-    name_en: string | null
-    name_ko: string | null
-    avatar_url: string | null
-  }
-  stops: ItineraryStop[]
-  legs: ItineraryLeg[]
-  related: ItineraryRelated[]
-  viewer: {
-    is_liked: boolean
-    is_saved: boolean
-  }
-}
-
-// No data store wired yet — every id is honestly "not found" until a real
-// plan can actually be looked up.
+// GET /api/plans/:id — itinerary detail for any viewer.
+// BFF GET /itineraries/public/:id serves every case: public plans (anyone,
+// incl. anonymous share links) and the owner's own private/draft plans
+// (get_public_itinerary lets the owner through), and it is the only endpoint
+// that carries author + viewer.is_liked/is_saved. 404 = missing or private
+// non-owner, matching the stub's not_found contract.
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-  void params
-  return NextResponse.json({ error: 'not_found' }, { status: 404 })
+  const { id } = params
+  if (!id || !isNumericId(id)) {
+    return NextResponse.json({ error: 'not_found' }, { status: 404 })
+  }
+  try {
+    const bff = await bffFetch<BffItinerary>(`/itineraries/public/${id}`)
+    return NextResponse.json(mapBffToDetail(bff))
+  } catch (e) {
+    if (e instanceof BffError && e.status === 404) {
+      return NextResponse.json({ error: 'not_found' }, { status: 404 })
+    }
+    return bffErrorResponse(e)
+  }
 }
 
-// Owner sets transport mode per leg (DEC-13) — real impl recomputes via TMAP (24h cache)
+// PATCH /api/plans/:id — two consumer shapes:
+//  · { from_stop_order, transport_mode } (IT_01 LegRow, DEC-13): the BFF has no
+//    per-stop endpoint, so read the itinerary, update that stop's travel_mode
+//    and write the whole structure back (status preserved).
+//  · { is_published } (MapView DEC-29 publish step) → BFF POST /itineraries/:id/publish.
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  void params
+  const { id } = params
+  const auth = await getSessionAuth()
+  if (!auth) return unauthorized()
+
   const body = await req.json().catch(() => null) as
-    { from_stop_order?: number; transport_mode?: string } | null
+    { from_stop_order?: number; transport_mode?: string; is_published?: boolean } | null
+
+  if (!id || !isNumericId(id)) {
+    return NextResponse.json({ error: 'not_found' }, { status: 404 })
+  }
+
+  // Publish toggle (naming-sheet confirm publishes the freshly created plan)
+  if (typeof body?.is_published === 'boolean' && body.from_stop_order === undefined) {
+    try {
+      await bffFetch(`/itineraries/${id}/publish`, {
+        method: 'POST',
+        body:   JSON.stringify({ is_public: body.is_published }),
+        token:  auth.token,
+      })
+      return NextResponse.json({ success: true, is_published: body.is_published })
+    } catch (e) {
+      return bffErrorResponse(e)
+    }
+  }
+
   const mode = body?.transport_mode
   const from = body?.from_stop_order
   if (typeof from !== 'number' || !mode || !['car', 'public', 'walk'].includes(mode)) {
     return NextResponse.json({ error: 'invalid_body' }, { status: 400 })
   }
 
-  // No data store wired yet — no plan exists to apply this to.
-  return NextResponse.json({ error: 'not_found' }, { status: 404 })
+  try {
+    // Owner check happens in the BFF: GET /itineraries/:id is owner-scoped, 404 = not mine.
+    const bff = await bffFetch<BffItinerary>(`/itineraries/${id}`, { token: auth.token })
+    const flat = flattenBffDays(bff.days)
+    const target = flat.find(s => s.order === from)
+    if (!target) {
+      return NextResponse.json({ error: 'not_found' }, { status: 404 })
+    }
+    target.place.travel_mode = toBffMode(mode)
+
+    await bffFetch(`/itineraries/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        days:   daysToPutPayload(bff.days),
+        status: bff.status === 'draft' ? 'draft' : 'confirmed',   // keep whatever it was
+      }),
+      token: auth.token,
+    })
+    return NextResponse.json({ success: true, from_stop_order: from, transport_mode: mode })
+  } catch (e) {
+    if (e instanceof BffError && e.status === 404) {
+      return NextResponse.json({ error: 'not_found' }, { status: 404 })
+    }
+    return bffErrorResponse(e)
+  }
 }
 
 export async function DELETE(
@@ -89,6 +101,15 @@ export async function DELETE(
 ) {
   const { id } = params
   if (!id) return NextResponse.json({ error: 'missing_id' }, { status: 400 })
-  // No data store wired yet — no plan exists to delete.
-  return NextResponse.json({ error: 'not_found' }, { status: 404 })
+  const auth = await getSessionAuth()
+  if (!auth) return unauthorized()
+  if (!isNumericId(id)) {
+    return NextResponse.json({ error: 'not_found' }, { status: 404 })
+  }
+  try {
+    await bffFetch(`/itineraries/${id}`, { method: 'DELETE', token: auth.token })
+    return NextResponse.json({ success: true })
+  } catch (e) {
+    return bffErrorResponse(e)
+  }
 }

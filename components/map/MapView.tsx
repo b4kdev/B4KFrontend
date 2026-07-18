@@ -17,6 +17,7 @@ import DraftConflictModal from '@/components/auth/DraftConflictModal'
 import PlanNamingSheet from './PlanNamingSheet'
 import DraftResumeFreshModal from './DraftResumeFreshModal'
 import { useMapPois } from '@/hooks/useMapPois'
+import { usePlaceDetail } from '@/hooks/usePlaceDetail'
 import { useSaved } from '@/hooks/useSaved'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useToast } from '@/contexts/ToastContext'
@@ -24,7 +25,7 @@ import { getDraftPlan, saveDraftPlan, clearDraftPlan } from '@/lib/draft-plan'
 import { MAX_STOPS } from '@/lib/plan-constants'
 import type { MapPoi } from '@/hooks/useMapPois'
 import type { DraftMeta } from '@/components/auth/DraftConflictModal'
-import type { ItineraryDetail } from '@/app/api/plans/[id]/route'
+import type { ItineraryDetail } from '@/lib/itinerary'
 
 type PendingPlan = {
   deviceDraft:  DraftMeta
@@ -195,9 +196,13 @@ export default function MapView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [planStopIds, stopDurations, session])
 
-  const selectedPoi = selectedPoiId
+  // List data shows immediately (already loaded); detail (address/description/
+  // website_url) fills in once GET /places/:id resolves — see hooks/usePlaceDetail.ts.
+  const listPoi = selectedPoiId
     ? pois.find(p => p.poi_id === selectedPoiId) ?? null
     : null
+  const { detail: selectedPoiDetail } = usePlaceDetail(selectedPoiId)
+  const selectedPoi = listPoi ? { ...listPoi, ...selectedPoiDetail } : null
 
   function handleRegionToggle(region: string) {
     setActiveRegion(prev => prev === region ? null : region)
@@ -471,7 +476,7 @@ export default function MapView() {
       >
         <LeftPanel
           pois={pois}
-          selectedPoiId={selectedPoiId}
+          selectedPoi={selectedPoi}
           activeRegion={activeRegion}
           activeFilters={activeFilters}
           planStops={planStops}

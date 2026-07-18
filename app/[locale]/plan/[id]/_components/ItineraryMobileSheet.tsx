@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import { MapPin, Clock } from 'lucide-react'
 import { useBottomSheetSnap } from '@/hooks/useBottomSheetSnap'
 import ItineraryPanelContent, { formatDuration } from './ItineraryPanelContent'
-import type { ItineraryDetail } from '@/app/api/plans/[id]/route'
+import type { ItineraryDetail } from '@/lib/itinerary'
 
 interface Props {
   itinerary: ItineraryDetail

@@ -20,7 +20,7 @@ export default function TwitterImage() {
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse (edge OG renderer) can't use next/image */}
         <img
-          src={`${process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'}/brand/B4K_BrandLogo_Horizontal_White.svg`}
+          src={`${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/brand/B4K_BrandLogo_Horizontal_White.svg`}
           alt={alt}
           width={400}
           height={90}

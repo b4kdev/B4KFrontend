@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { bffFetch, bffErrorResponse } from '@/lib/bff'
 
 export interface SearchPoi {
   poi_id: string
@@ -26,10 +27,34 @@ export interface SearchExplore {
   href: string
 }
 
-// No data yet — real results come from service.search_index (query-time) and ai.plans.
-const MOCK_POIS: SearchPoi[] = []
+// BFF GET /places item (api.list_places)
+interface BffPlace {
+  poi_id: number
+  name_ko: string
+  primary_image_url: string | null
+  like_count: number
+  save_count: number
+  coords_lat: number
+  coords_lng: number
+  display_region: string | null
+  domains: string[] | null
+  translations: Record<string, { name?: string; description?: string }> | null
+}
 
-const MOCK_PLANS: SearchPlan[] = []
+// BFF GET /itineraries/public item (api.list_public_itineraries)
+interface BffPublicItinerary {
+  itinerary_id: number
+  title: string
+  is_partner: boolean
+  region: string | null
+  total_days: number
+  total_places: number
+  like_count: number
+  save_count: number
+  cover_image_url: string | null
+  author: { user_id: number; name: string | null; avatar_url: string | null } | null
+  published_at: string | null
+}
 
 const EXPLORE_CATEGORIES: SearchExplore[] = [
   { category: 'k-pop',     label_key: 'kpop',    href: '/explore/k-pop' },
@@ -68,7 +93,8 @@ export async function GET(request: Request) {
   const type = searchParams.get('type') // 'places' | 'plans' | 'explore' | null = all
   const sort = searchParams.get('sort') ?? 'relevance'
 
-  // M14 area + tag filters — accepted + echoed; rough/no filtering in MVP mock.
+  // M14 area + tag filters — accepted + echoed; the BFF has no area/tag facets
+  // yet, so they don't narrow results (same as the previous stub behavior).
   const areaLv1 = searchParams.get('area_lv1') ?? null
   const areaLv2 = searchParams.get('area_lv2') ?? null
   const tags = searchParams.get('tags')
@@ -76,20 +102,60 @@ export async function GET(request: Request) {
     : []
 
   const wantAll = !type || type === 'all'
-  let places = (wantAll || type === 'places') ? [...MOCK_POIS] : []
-  let plans = (wantAll || type === 'plans') ? [...MOCK_PLANS] : []
+  const wantPlaces = wantAll || type === 'places'
+  const wantPlans = wantAll || type === 'plans'
   const explore = (wantAll || type === 'explore') ? buildExploreResults(q) : []
 
-  if (sort === 'popularity') {
-    places = places.sort((a, b) => b.save_count - a.save_count)
-    plans = plans.sort((a, b) => b.save_count - a.save_count)
-  }
+  const needle = q.trim().toLowerCase()
 
-  return NextResponse.json({
-    places,
-    plans,
-    explore,
-    query: q,
-    filters: { area_lv1: areaLv1, area_lv2: areaLv2, tags },
-  })
+  try {
+    const [rawPlaces, rawPlans] = await Promise.all([
+      wantPlaces && needle
+        ? bffFetch<BffPlace[]>(`/places?q=${encodeURIComponent(q.trim())}&limit=20`)
+        : Promise.resolve<BffPlace[]>([]),
+      // The BFF has no plan text search — fetch the public list and match
+      // titles here (covers the top 50 public itineraries only).
+      wantPlans && needle
+        ? bffFetch<BffPublicItinerary[]>('/itineraries/public?sort=popular&limit=50')
+        : Promise.resolve<BffPublicItinerary[]>([]),
+    ])
+
+    let places: SearchPoi[] = (rawPlaces ?? []).map(p => ({
+      poi_id: String(p.poi_id),
+      name_ko: p.name_ko,
+      // Display-name rule: translations[lang].name ?? name_ko
+      name_en: p.translations?.en?.name ?? p.name_ko,
+      display_region: p.display_region ?? '',
+      display_domain: p.domains?.[0] ?? '',
+      save_count: p.save_count ?? 0,
+      primary_image_url: p.primary_image_url ?? '',
+    }))
+
+    let plans: SearchPlan[] = (rawPlans ?? [])
+      .filter(p => (p.title ?? '').toLowerCase().includes(needle))
+      .map(p => ({
+        id: String(p.itinerary_id),
+        title: p.title,
+        author_name: p.author?.name ?? '',
+        stop_count: p.total_places ?? 0,
+        save_count: p.save_count ?? 0,
+        cover_image_url: p.cover_image_url ?? '',
+        is_partner: !!p.is_partner,
+      }))
+
+    if (sort === 'popularity') {
+      places = places.sort((a, b) => b.save_count - a.save_count)
+      plans = plans.sort((a, b) => b.save_count - a.save_count)
+    }
+
+    return NextResponse.json({
+      places,
+      plans,
+      explore,
+      query: q,
+      filters: { area_lv1: areaLv1, area_lv2: areaLv2, tags },
+    })
+  } catch (e) {
+    return bffErrorResponse(e)
+  }
 }

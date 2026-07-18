@@ -12,7 +12,7 @@ import NaverMapCanvas from '@/components/map/NaverMapCanvas'
 import ItineraryPanelContent from './ItineraryPanelContent'
 import ItineraryMobileSheet from './ItineraryMobileSheet'
 import type { MapPoi } from '@/hooks/useMapPois'
-import type { ItineraryDetail } from '@/app/api/plans/[id]/route'
+import type { ItineraryDetail } from '@/lib/itinerary'
 
 function stopsToMapPois(detail: ItineraryDetail): MapPoi[] {
   return detail.stops.map(s => ({

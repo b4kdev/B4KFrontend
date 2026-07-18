@@ -10,7 +10,7 @@ import {
 import { Link } from '@/i18n/navigation'
 import { getDisplayName } from '@/lib/display-name'
 import { useOnline } from '@/hooks/useOnline'
-import type { ItineraryDetail, ItineraryLeg } from '@/app/api/plans/[id]/route'
+import type { ItineraryDetail, ItineraryLeg } from '@/lib/itinerary'
 
 type TransportMode = 'car' | 'public' | 'walk'
 const MODES: TransportMode[] = ['car', 'public', 'walk']

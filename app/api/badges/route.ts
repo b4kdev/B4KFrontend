@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { bffFetch, bffErrorResponse, getSessionAuth } from '@/lib/bff'
 
 export type BadgeRarity = 'common' | 'rare' | 'epic' | 'legendary'
 
@@ -11,7 +12,7 @@ export interface Badge {
   earned: boolean
   earned_at: string | null
   is_pinned: boolean
-  // social.badge_definitions.unlock_criteria (JSONB) — description surfaced in detail sheet
+  // service.badge_definitions.unlock_criteria (JSONB) — description surfaced in detail sheet
   unlock_criteria: { description: string }
 }
 
@@ -21,9 +22,10 @@ export interface BadgesData {
   total_count: number
 }
 
-// Badge catalog (social.badge_definitions) — these definitions exist regardless of any
-// individual user's progress, so the full catalog is kept. Per-user earn status is not
-// fabricated: no user has earned anything yet, so every badge is unearned and unpinned.
+// Signed-out fallback: /badges is a public page (useBadges → badges/page.tsx
+// renders the catalog for anonymous visitors), but BFF GET /me/badges requires
+// auth. Mirrors the seeded service.badge_definitions catalog (migration 011/015),
+// all unearned/unpinned.
 const CATALOG: Omit<Badge, 'earned' | 'earned_at' | 'is_pinned'>[] = [
   { id: 'b-01', slug: 'first-save',      name: 'First Save',         category: 'explorer', rarity: 'common',    unlock_criteria: { description: 'Save your first place to Saved.' } },
   { id: 'b-02', slug: 'map-maker',       name: 'Map Maker',          category: 'creator',  rarity: 'common',    unlock_criteria: { description: 'Create and publish your first trip plan.' } },
@@ -39,12 +41,53 @@ const CATALOG: Omit<Badge, 'earned' | 'earned_at' | 'is_pinned'>[] = [
   { id: 'b-12', slug: 'legendary-guide', name: 'Legendary Guide',    category: 'creator',  rarity: 'legendary', unlock_criteria: { description: 'Publish 50 plans that each earn at least 10 saves.' } },
 ]
 
-const EMPTY: BadgesData = {
+const ANON_CATALOG: BadgesData = {
   earned_count: 0,
   total_count: CATALOG.length,
   badges: CATALOG.map((b) => ({ ...b, earned: false, earned_at: null, is_pinned: false })),
 }
 
+interface BffBadge {
+  badge_id: number
+  slug: string
+  name: string
+  category: string
+  rarity: BadgeRarity
+  unlock_criteria: { description?: string } | null
+  earned: boolean
+  earned_at: string | null
+  is_pinned: boolean
+}
+
+interface BffBadgesData {
+  badges: BffBadge[]
+  earned_count: number
+  total_count: number
+}
+
+// GET /api/badges → BFF GET /me/badges (signed in) | seeded catalog (signed out)
 export async function GET() {
-  return NextResponse.json(EMPTY)
+  const auth = await getSessionAuth()
+  if (!auth) return NextResponse.json(ANON_CATALOG)
+  try {
+    const data = await bffFetch<BffBadgesData>('/me/badges', { token: auth.token })
+    const result: BadgesData = {
+      earned_count: data.earned_count,
+      total_count: data.total_count,
+      badges: (data.badges ?? []).map((b) => ({
+        id: String(b.badge_id),
+        slug: b.slug,
+        name: b.name,
+        category: b.category,
+        rarity: b.rarity,
+        earned: b.earned,
+        earned_at: b.earned_at,
+        is_pinned: b.is_pinned,
+        unlock_criteria: { description: b.unlock_criteria?.description ?? '' },
+      })),
+    }
+    return NextResponse.json(result)
+  } catch (e) {
+    return bffErrorResponse(e)
+  }
 }

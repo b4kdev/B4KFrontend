@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { bffFetch, bffErrorResponse } from '@/lib/bff'
 
 export interface ExplorePoi {
   poi_id: string
@@ -54,32 +55,29 @@ export interface ExploreData {
   packages?: ExplorePackage[]
 }
 
-// No data yet — real POI content comes from service.places_snapshot.
-// Section ids per category kept in sync with app/[locale]/explore/_components/ExplorePage.tsx
-// CATEGORIES[].sections so headers/labels render correctly once items exist.
-type MockExplorePoi = Omit<ExplorePoi, 'coords_lat' | 'coords_lng'>
-type MockExploreData = Omit<ExploreData, 'sections'> & {
-  sections: { id: string; items: MockExplorePoi[] }[]
+// BFF GET /places item (api.list_places)
+interface BffPlace {
+  poi_id: number
+  name_ko: string
+  primary_image_url: string | null
+  like_count: number
+  save_count: number
+  coords_lat: number
+  coords_lng: number
+  display_region: string | null
+  domains: string[] | null
+  translations: Record<string, { name?: string; description?: string }> | null
 }
 
+// Section ids per category kept in sync with app/[locale]/explore/_components/ExplorePage.tsx
+// CATEGORIES[].sections so headers/labels render correctly once items exist.
+// Category slugs coincide with BFF domain values (k-pop | k-drama | k-beauty | k-culture).
 const SECTIONS_BY_CATEGORY: Record<string, string[]> = {
   'k-pop': ['concerts', 'tours', 'agencies', 'merchandise'],
   'k-drama': ['filming', 'tours', 'historical', 'ostCafes'],
   'k-beauty': ['skincare', 'makeup', 'spa', 'salon'],
   'k-culture': ['traditional', 'food', 'festivals', 'crafts'],
 }
-
-const MOCK: Record<string, MockExploreData> = Object.fromEntries(
-  Object.entries(SECTIONS_BY_CATEGORY).map(([category, sectionIds]) => [
-    category,
-    {
-      category,
-      hero: [],
-      sections: sectionIds.map((id) => ({ id, items: [] })),
-      packages: [],
-    },
-  ])
-)
 
 /** Facet key per category — the single query param that hub's chips drive. */
 const FACET_BY_CATEGORY: Record<string, keyof ExplorePoi | undefined> = {
@@ -89,39 +87,77 @@ const FACET_BY_CATEGORY: Record<string, keyof ExplorePoi | undefined> = {
   'k-drama': undefined,
 }
 
+function mapPlace(p: BffPlace): ExplorePoi {
+  return {
+    poi_id: String(p.poi_id),
+    name_ko: p.name_ko,
+    // Display-name rule: translations[lang].name ?? name_ko (consumers pick
+    // via getDisplayName({ name_en, name_ko })).
+    name_en: p.translations?.en?.name ?? p.name_ko,
+    primary_image_url: p.primary_image_url,
+    display_region: p.display_region ?? '',
+    quality_score: 0, // not exposed by BFF list_places
+    is_trending: false, // no backing flag — the trending row is like-ordered instead
+    coords_lat: p.coords_lat,
+    coords_lng: p.coords_lng,
+  }
+}
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { category: string } }
 ) {
-  const rawBase = MOCK[params.category]
-  if (!rawBase) return NextResponse.json({ error: 'not_found' }, { status: 404 })
+  const sectionIds = SECTIONS_BY_CATEGORY[params.category]
+  if (!sectionIds) return NextResponse.json({ error: 'not_found' }, { status: 404 })
 
-  // No items yet, so no coords enrichment needed (service.places_snapshot
-  // carries coords_lat/coords_lng for real POIs).
+  let items: ExplorePoi[]
+  try {
+    // BFF domain values match the category slugs 1:1.
+    const places = await bffFetch<BffPlace[]>(
+      `/places?domain=${encodeURIComponent(params.category)}&limit=40`
+    )
+    items = (places ?? []).map(mapPlace)
+  } catch (e) {
+    return bffErrorResponse(e)
+  }
+
+  // Thematic sections stay empty for now — the BFF has no per-section facet
+  // (concerts/tours/skincare/…) on places yet. Real POIs surface in the
+  // like-ordered Trending Now row below. Hero/packages have no backend either.
   const base: ExploreData = {
-    ...rawBase,
-    sections: rawBase.sections.map(s => ({ ...s, items: [] as ExplorePoi[] })),
+    category: params.category,
+    hero: [],
+    sections: sectionIds.map(id => ({ id, items: [] as ExplorePoi[] })),
+    packages: [],
   }
 
   const facet = FACET_BY_CATEGORY[params.category]
   const filterValue = facet ? req.nextUrl.searchParams.get(facet) : null
 
-  // Derive Trending Now from the UNFILTERED sections — the trending row (KP/KB/KC_02)
-  // sits above the chip-scoped section and must not collapse under a filter.
+  // Trending Now (KP/KB/KC_02) is built from the UNFILTERED data — the trending
+  // row sits above the chip-scoped sections and must not collapse under a
+  // filter. Items flagged is_trending in sections take priority; otherwise the
+  // BFF like-count ordering (list_places sorts like_count DESC) stands in.
   const seen = new Set<string>()
-  const trendingItems: ExplorePoi[] = []
+  const flagged: ExplorePoi[] = []
   for (const s of base.sections) {
     for (const it of s.items) {
       if (it.is_trending && !seen.has(it.poi_id)) {
         seen.add(it.poi_id)
-        trendingItems.push(it)
+        flagged.push(it)
       }
     }
   }
-  const trendingSection: ExploreSection = { id: 'trending', items: trendingItems.slice(0, 8) }
+  const trendingSection: ExploreSection = {
+    id: 'trending',
+    items: (flagged.length > 0 ? flagged : items).slice(0, 8),
+  }
 
   // Apply chip filter only to sections whose items carry the facet (the chip is
   // spec-scoped to those sections). Untagged sections pass through unchanged.
+  // Note: BFF places don't carry agency/district/region facets yet, so this is
+  // a pass-through until that data exists (BFF region= expects Korean
+  // display_region values — the English chip values wouldn't match).
   let sections = base.sections
   if (facet && filterValue) {
     sections = base.sections.map((s) => {

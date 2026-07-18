@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
-import { isNumericId } from '@/app/api/plans/[id]/route'
+import { isNumericId } from '@/lib/itinerary'
 
 export interface ProfileTrip {
   id: string

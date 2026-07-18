@@ -1,16 +1,12 @@
 import { NextResponse } from 'next/server'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
-// STUB — real implementation (S-JNCTDV Flow 1): Supabase Auth sign-up with
-// email verification:
-//   const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!)
-//   const { error } = await supabase.auth.signUp({
-//     email,
-//     password,
-//     options: { emailRedirectTo: `${origin}/auth/callback` },
-//   })
-// Verification link → accounts.users row created on confirm → auto-sign-in →
-// interrupted action resumes. Returns a duplicate-safe generic response
-// (never reveal whether the email is already registered).
+// Supabase Auth sign-up with email verification (S-JNCTDV Flow 1).
+// Verification link → user confirms → auto-sign-in → interrupted action resumes.
+// Response is intentionally generic on both new and already-registered emails
+// (Supabase itself withholds the "already exists" signal for a confirmed
+// email — signUp returns no error and a user with an empty `identities`
+// array — so this route never needs to special-case it to avoid enumeration).
 export async function POST(req: Request) {
   const { email, password } = await req.json().catch(() => ({}))
 
@@ -19,6 +15,19 @@ export async function POST(req: Request) {
   }
   if (typeof password !== 'string' || password.length < 8) {
     return NextResponse.json({ error: 'Password too short' }, { status: 400 })
+  }
+
+  const origin = new URL(req.url).origin
+  const supabase = createSupabaseServerClient()
+
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { emailRedirectTo: `${origin}/auth/callback` },
+  })
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: error.status ?? 400 })
   }
 
   return NextResponse.json({ ok: true })

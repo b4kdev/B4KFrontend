@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { bffFetch, getSessionAuth, BffError } from '@/lib/bff'
+import { isNumericId, type BffItinerary } from '@/lib/itinerary'
 
 export interface PlanMeta {
   isOwner: boolean
@@ -10,10 +12,30 @@ export interface PlanMeta {
 // client-trusted owner flag. This route re-derives it from the real session
 // on every call.
 //
-// No data store wired yet — there is no real plan to check ownership against,
-// so the honest fallback is always `false` (no one owns a plan that doesn't
-// exist). Contract (API-CONTRACT.md) returns 200 always, never 401/404 here.
+// Contract (API-CONTRACT.md): returns 200 always, never 401/404 here.
+// Derivation: BFF GET /itineraries/:id is owner-scoped (404 = not mine), so a
+// 2xx means the session user owns the plan. On 404 fall back to the public
+// endpoint's viewer.is_owner; anything else resolves to false.
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-  void params
-  return NextResponse.json({ isOwner: false } satisfies PlanMeta)
+  const { id } = params
+  const notOwner = NextResponse.json({ isOwner: false } satisfies PlanMeta)
+
+  if (!id || !isNumericId(id)) return notOwner
+
+  const auth = await getSessionAuth()
+  if (!auth) return notOwner
+
+  try {
+    await bffFetch<BffItinerary>(`/itineraries/${id}`, { token: auth.token })
+    return NextResponse.json({ isOwner: true } satisfies PlanMeta)
+  } catch (e) {
+    if (!(e instanceof BffError) || e.status !== 404) return notOwner
+  }
+
+  try {
+    const pub = await bffFetch<BffItinerary>(`/itineraries/public/${id}`, { token: auth.token })
+    return NextResponse.json({ isOwner: pub.viewer?.is_owner ?? false } satisfies PlanMeta)
+  } catch {
+    return notOwner
+  }
 }
