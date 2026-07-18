@@ -105,7 +105,7 @@ body {
   /* Typography */
   --f-display: 'MODERNIZ', system-ui, -apple-system, sans-serif;
   --f-body:    var(--font-work-sans, 'Work Sans'), system-ui, -apple-system, sans-serif;
-  --f-mono:    'IBM Plex Mono', 'Courier New', monospace;
+  --f-mono:    var(--font-ibm-plex-mono, 'IBM Plex Mono', 'Courier New', monospace);
 
   /* Font sizes */
   --f-xxs:  10px;

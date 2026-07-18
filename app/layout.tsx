@@ -1,11 +1,18 @@
 import type { Metadata } from 'next';
-import { Work_Sans } from 'next/font/google';
+import { Work_Sans, IBM_Plex_Mono } from 'next/font/google';
 import { SITE_URL } from '@/lib/site-url';
 import './globals.css';
 
 const workSans = Work_Sans({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-work-sans',
+  display: 'swap',
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-ibm-plex-mono',
   display: 'swap',
 });
 
@@ -33,7 +40,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html suppressHydrationWarning className={workSans.variable}>
+    <html suppressHydrationWarning className={`${workSans.variable} ${ibmPlexMono.variable}`}>
       <body className="antialiased">{children}</body>
     </html>
   );
