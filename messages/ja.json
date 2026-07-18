@@ -601,7 +601,9 @@
     },
     "callback": {
       "verifying": "Verifying…",
-      "redirecting": "Redirecting to home…"
+      "redirecting": "Redirecting to home…",
+      "error": "Sign-in failed",
+      "errorRetry": "Please try signing in again"
     }
   },
   "map": {

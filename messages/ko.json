@@ -601,7 +601,9 @@
     },
     "callback": {
       "verifying": "인증 중…",
-      "redirecting": "홈으로 이동 중…"
+      "redirecting": "홈으로 이동 중…",
+      "error": "로그인 실패",
+      "errorRetry": "다시 로그인해 주세요"
     }
   },
   "map": {
