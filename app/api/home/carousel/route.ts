@@ -15,35 +15,7 @@ export interface HomeCarouselSlide {
   cta_label: string
 }
 
-const MOCK: HomeCarouselSlide[] = [
-  {
-    id: 'slide-kculture',
-    badge: 'New Release',
-    title: 'K-Culture\nImmersive 2024',
-    subtitle: 'From backstreet jazz bars in Hongdae to private tea ceremonies in Insadong.',
-    image_url: null,
-    cta_href: '/explore/k-culture',
-    cta_label: 'Discover Private Access',
-  },
-  {
-    id: 'slide-boseong',
-    badge: 'Seasonal',
-    title: 'Boseong Tea\nFields in Mist',
-    subtitle: "Rolling green terraces blanketed in morning fog. Korea's most serene landscape.",
-    image_url: null,
-    cta_href: '/map',
-    cta_label: 'Explore Boseong',
-  },
-  {
-    id: 'slide-seoul',
-    badge: 'Nightlife',
-    title: 'Seoul After\nMidnight',
-    subtitle: 'The city transforms when the sun sets. Rooftop bars, lantern-lit alleys, neon horizons.',
-    image_url: null,
-    cta_href: '/map',
-    cta_label: 'Plan the Night',
-  },
-]
+const MOCK: HomeCarouselSlide[] = []
 
 export async function GET() {
   return NextResponse.json(MOCK)

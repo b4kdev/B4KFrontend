@@ -9,15 +9,7 @@ export interface HomeChallengeData {
   cta_href: string
 }
 
-const MOCK: HomeChallengeData = {
-  slug: 'week-explorer-july',
-  title: 'Weekly Explorer Challenge',
-  description: 'Visit 3 K-Culture spots this week and earn the Cultural Navigator badge.',
-  badge_slug: 'cultural-navigator',
-  badge_name: 'Cultural Navigator',
-  cta_href: '/explore/k-culture',
-}
-
 export async function GET() {
-  return NextResponse.json(MOCK)
+  // No active challenge yet — client hides the card on a falsy response.
+  return NextResponse.json<HomeChallengeData | null>(null)
 }

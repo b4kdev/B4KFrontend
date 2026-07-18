@@ -4,21 +4,8 @@ import type { Plan } from '@/app/api/plans/route'
 // type check rejects any named export from a route.ts file that isn't
 // GET/POST/etc. or a recognized config key. app/sitemap.ts imports this to
 // list published plans without duplicating mock data.
-export const MOCK_PLANS: Plan[] = [
-  {
-    id:          'plan-001',
-    title:       'Seoul Highlights',
-    stop_count:  4,
-    is_published: true,
-    is_partner:  false,
-    created_at:  new Date(Date.now() - 86400000 * 2).toISOString(),
-  },
-  {
-    id:          'plan-002',
-    title:       'Bukchon & Insadong Walk',
-    stop_count:  3,
-    is_published: false,
-    is_partner:  false,
-    created_at:  new Date(Date.now() - 86400000 * 5).toISOString(),
-  },
-]
+//
+// No data store wired yet — kept as an empty array (rather than deleted)
+// because app/sitemap.ts (out of scope for this task) still imports it.
+// Honest state: no published plans exist yet, so the sitemap emits none.
+export const MOCK_PLANS: Plan[] = []

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { MOCK } from '@/lib/mock/plan-detail'
 
 export interface ItineraryStop {
   stop_order: number
@@ -62,18 +61,16 @@ export interface ItineraryDetail {
   }
 }
 
+// No data store wired yet — every id is honestly "not found" until a real
+// plan can actually be looked up.
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-  const plan = MOCK[params.id]
-  if (!plan) return NextResponse.json({ error: 'not_found' }, { status: 404 })
-  if (!plan.is_published) return NextResponse.json({ error: 'private' }, { status: 403 })
-  return NextResponse.json(plan)
+  void params
+  return NextResponse.json({ error: 'not_found' }, { status: 404 })
 }
 
 // Owner sets transport mode per leg (DEC-13) — real impl recomputes via TMAP (24h cache)
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const plan = MOCK[params.id]
-  if (!plan) return NextResponse.json({ error: 'not_found' }, { status: 404 })
-
+  void params
   const body = await req.json().catch(() => null) as
     { from_stop_order?: number; transport_mode?: string } | null
   const mode = body?.transport_mode
@@ -82,10 +79,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     return NextResponse.json({ error: 'invalid_body' }, { status: 400 })
   }
 
-  const leg = plan.legs.find(l => l.from_stop_order === from)
-  if (!leg) return NextResponse.json({ error: 'leg_not_found' }, { status: 404 })
-  leg.transport_mode = mode as ItineraryLeg['transport_mode']
-  return NextResponse.json({ success: true, leg })
+  // No data store wired yet — no plan exists to apply this to.
+  return NextResponse.json({ error: 'not_found' }, { status: 404 })
 }
 
 export async function DELETE(
@@ -94,5 +89,6 @@ export async function DELETE(
 ) {
   const { id } = params
   if (!id) return NextResponse.json({ error: 'missing_id' }, { status: 400 })
-  return NextResponse.json({ success: true, id })
+  // No data store wired yet — no plan exists to delete.
+  return NextResponse.json({ error: 'not_found' }, { status: 404 })
 }

@@ -28,17 +28,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'poi_ids required' }, { status: 400 })
   }
 
-  // FL2_02 clustering algorithm = dev friend (BLK-04). Stub: fixed 1.6s delay,
-  // returns POIs in received order with 60-min default durations.
-  await new Promise(r => setTimeout(r, 1600))
-
+  // FL2_02 clustering algorithm = dev friend (BLK-04). No data store wired yet —
+  // derive stops from the actual poi_ids sent, in received order. duration_min
+  // is an honest placeholder (no real per-POI estimate available yet).
   const stops: GeneratedStop[] = poi_ids.map((id, i) => ({
     poi_id:       id,
     stop_order:   i + 1,
-    duration_min: 60,
+    duration_min: 0,
   }))
 
   // Real impl: INSERT a new ai.plans draft (author = current user) and return its id.
-  // Mock: return a resolvable plan id so FL2 lands on a real IT_01 view.
-  return NextResponse.json({ id: 'it-demo', stops, transport: 'public' } satisfies GeneratedPlan)
+  // No plan is actually persisted yet, so this id will not resolve on GET /api/plans/[id]
+  // (honest 404) until a real data store is wired.
+  return NextResponse.json({ id: `draft-${Date.now()}`, stops, transport: 'public' } satisfies GeneratedPlan)
 }

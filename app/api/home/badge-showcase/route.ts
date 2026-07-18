@@ -8,14 +8,7 @@ export interface HomeBadgeShowcase {
   image_url: string | null
 }
 
-const MOCK: HomeBadgeShowcase = {
-  badge_id: 'badge-01',
-  badge_name: 'Cultural Navigator',
-  rarity: 'rare',
-  earner_name: '@yuna_travels',
-  image_url: null,
-}
-
 export async function GET() {
-  return NextResponse.json(MOCK)
+  // No badge earner data yet — hide the showcase card (LeaderboardBadge handles null).
+  return NextResponse.json<HomeBadgeShowcase | null>(null)
 }

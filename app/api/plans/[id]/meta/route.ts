@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
-import { MOCK } from '@/lib/mock/plan-detail'
 
 export interface PlanMeta {
   isOwner: boolean
@@ -11,13 +9,11 @@ export interface PlanMeta {
 // same for every viewer (share links, previews) and must never carry a
 // client-trusted owner flag. This route re-derives it from the real session
 // on every call.
+//
+// No data store wired yet — there is no real plan to check ownership against,
+// so the honest fallback is always `false` (no one owns a plan that doesn't
+// exist). Contract (API-CONTRACT.md) returns 200 always, never 401/404 here.
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-  const plan = MOCK[params.id]
-  if (!plan) return NextResponse.json({ error: 'not_found' }, { status: 404 })
-
-  const supabase = createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  const isOwner = !!user && user.id === plan.author.id
-  return NextResponse.json({ isOwner } satisfies PlanMeta)
+  void params
+  return NextResponse.json({ isOwner: false } satisfies PlanMeta)
 }

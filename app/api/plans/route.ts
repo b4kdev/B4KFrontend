@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { MOCK_PLANS } from '@/lib/mock/plans-list'
 
 export interface PlanStop {
   poi_id:      string
@@ -22,7 +21,8 @@ export interface PlansData {
 }
 
 export async function GET() {
-  return NextResponse.json({ plans: MOCK_PLANS })
+  // No data store wired yet — honest response: no plans exist.
+  return NextResponse.json({ plans: [] } satisfies PlansData)
 }
 
 export async function POST(req: Request) {

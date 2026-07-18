@@ -8,5 +8,5 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   // TODO: SELECT COUNT(*) FROM social.notifications WHERE user_id = user.id AND is_read = false
-  return NextResponse.json({ count: 2 })
+  return NextResponse.json({ count: 0 })
 }

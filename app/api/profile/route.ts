@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 export interface PinnedBadge {
   id: string
@@ -25,35 +26,38 @@ export interface ProfileData {
   saved_public: boolean
 }
 
-// Stub — real impl:
+// Real impl (dev friend, backend hookup):
 //   trips_count  = COUNT(ai.plans WHERE author_id = user AND is_published = TRUE AND deleted_at IS NULL)
 //   saves_count  = COUNT(social.poi_saves WHERE user_id = user)
 //   badges_count = COUNT(social.user_badges WHERE user_id = user)
-const MOCK: ProfileData = {
-  id: 'user-1',
-  name: 'Sun Min',
-  email: 'sunmin@example.com',
-  avatar_url: null,
-  bio: 'Chasing K-drama filming spots across Seoul.',
-  trips_count: 3,
-  saves_count: 18,
-  badges_count: 3,
-  likes_received: 24,
-  pinned_badges: [
-    { id: 'b1', slug: 'first-itinerary', name: 'First Steps', rarity: 'common' },
-    { id: 'b3', slug: 'bts-trail', name: 'BTS Trail', rarity: 'epic' },
-  ],
-  preferred_lang: 'en',
-  transport_default: 'car',
-  interests: ['k-pop', 'k-drama'],
-  trips_public: true,
-  saved_public: false,
+// No backing store wired yet — content fields honestly zeroed/empty until then.
+async function buildEmptyProfile(): Promise<ProfileData> {
+  const supabase = createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  return {
+    id: user?.id ?? '',
+    name: user?.email ?? '',
+    email: user?.email ?? '',
+    avatar_url: null,
+    bio: null,
+    trips_count: 0,
+    saves_count: 0,
+    badges_count: 0,
+    likes_received: 0,
+    pinned_badges: [],
+    preferred_lang: 'en',
+    transport_default: 'car',
+    interests: [],
+    trips_public: true,
+    saved_public: false,
+  }
 }
 
 export async function GET() {
-  return NextResponse.json(MOCK)
+  return NextResponse.json(await buildEmptyProfile())
 }
 
 export async function PATCH() {
-  return NextResponse.json(MOCK)
+  return NextResponse.json(await buildEmptyProfile())
 }

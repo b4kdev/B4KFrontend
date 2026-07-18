@@ -13,38 +13,8 @@ export interface ProfileBadge {
   unlock_criteria: { description: string }
 }
 
-const MOCK: ProfileBadge[] = [
-  {
-    id: 'b1',
-    slug: 'first-itinerary',
-    name: 'First Steps',
-    category: 'Milestone',
-    rarity: 'common',
-    earned_at: '2026-05-20T10:00:00Z',
-    is_pinned: true,
-    unlock_criteria: { description: 'Save your first itinerary.' },
-  },
-  {
-    id: 'b2',
-    slug: 'k-pop-pilgrim',
-    name: 'K-Pop Pilgrim',
-    category: 'Category',
-    rarity: 'rare',
-    earned_at: '2026-05-25T12:00:00Z',
-    is_pinned: false,
-    unlock_criteria: { description: 'Visit 3 K-Pop related POIs.' },
-  },
-  {
-    id: 'b3',
-    slug: 'bts-trail',
-    name: 'BTS Trail',
-    category: 'Special',
-    rarity: 'epic',
-    earned_at: '2026-06-01T08:00:00Z',
-    is_pinned: true,
-    unlock_criteria: { description: 'Complete the full BTS Seoul trail itinerary.' },
-  },
-]
+// No backing store wired yet (social.user_badges) — honest empty list until then.
+const MOCK: ProfileBadge[] = []
 
 export async function GET() {
   return NextResponse.json(MOCK)

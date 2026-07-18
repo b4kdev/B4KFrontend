@@ -26,16 +26,10 @@ export interface SearchExplore {
   href: string
 }
 
-const MOCK_POIS: SearchPoi[] = [
-  { poi_id: 'p1', name_ko: '경복궁', name_en: 'Gyeongbokgung Palace', display_region: 'Seoul · Jongno', display_domain: 'k-culture', save_count: 1240, primary_image_url: 'https://images.unsplash.com/photo-1548115184-bc6544d06a58?w=400' },
-  { poi_id: 'p2', name_ko: '하이브 사옥', name_en: 'HYBE HQ', display_region: 'Seoul · Yongsan', display_domain: 'k-pop', save_count: 892, primary_image_url: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400' },
-  { poi_id: 'p3', name_ko: '홍대 걷고 싶은 거리', name_en: 'Hongdae Walking Street', display_region: 'Seoul · Mapo', display_domain: 'k-pop', save_count: 756, primary_image_url: 'https://images.unsplash.com/photo-1551892374-ecf8754cf8b0?w=400' },
-]
+// No data yet — real results come from service.search_index (query-time) and ai.plans.
+const MOCK_POIS: SearchPoi[] = []
 
-const MOCK_PLANS: SearchPlan[] = [
-  { id: 'plan1', title: 'K-Pop Pilgrimage — 1 Day Seoul', author_name: 'b4k_editor', stop_count: 8, save_count: 412, cover_image_url: 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?w=400', is_partner: false },
-  { id: 'plan2', title: 'K-Drama Filming Spots', author_name: 'drama_fan', stop_count: 6, save_count: 278, cover_image_url: 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=400', is_partner: true },
-]
+const MOCK_PLANS: SearchPlan[] = []
 
 const EXPLORE_CATEGORIES: SearchExplore[] = [
   { category: 'k-pop',     label_key: 'kpop',    href: '/explore/k-pop' },
