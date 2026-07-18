@@ -258,8 +258,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                 <p className="text-f-md text-muted max-w-[320px] mb-sp-4">{t(`${cat.tKey}.empty.desc`)}</p>
                 <Link
                   href="/map"
-                  className="flex items-center min-h-touch px-sp-5 rounded-none text-f-md font-semibold text-bg"
-                  style={{ background: 'var(--lav)' }}
+                  className="cta-primary"
                 >
                   {t('aiCta.button')}
                 </Link>

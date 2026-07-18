@@ -523,8 +523,7 @@ export default function ItineraryPanelContent({
           <button
             onClick={onEdit}
             aria-label={t('actions.editAria')}
-            className="flex-1 flex items-center justify-center gap-1 min-h-touch px-sp-3 rounded-none text-f-sm font-semibold text-lav hover:bg-lav-dim transition-colors"
-            style={{ border: '1px solid var(--lav-border)' }}
+            className="cta-secondary flex-1 gap-1"
           >
             <Edit2 size={13} strokeWidth={2} aria-hidden="true" />
             {t('actions.edit')}
