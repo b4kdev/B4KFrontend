@@ -91,9 +91,10 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
       if (!success) return tooManyRequests(reset)
     }
 
-    // ── Mock data layer (unchanged) ──────────────────────────────────────
+    // ── Mock data layer — dev only, never rewrite in production ─────────────
     const isMockable =
-      pathname === '/api/home' || pathname.startsWith('/api/explore/')
+      process.env.NODE_ENV === 'development' &&
+      (pathname === '/api/home' || pathname.startsWith('/api/explore/'))
     if (isMockable && req.cookies.get('x-b4k-mock')?.value === '1') {
       const url = req.nextUrl.clone()
       url.pathname = pathname.replace('/api/', '/api/mock/')

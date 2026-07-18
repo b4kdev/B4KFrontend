@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { Trophy, RefreshCw, AlertTriangle, Award, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { useLeaderboard } from '@/hooks/useLeaderboard'
@@ -41,6 +41,7 @@ function RowSkeleton() {
 
 export default function LeaderboardPage() {
   const t = useTranslations('leaderboard')
+  const locale = useLocale()
   const [window, setWindow] = useState<LeaderboardWindow>('weekly')
   const { data, isLoading, isError, mutate } = useLeaderboard(window)
 
@@ -180,7 +181,7 @@ export default function LeaderboardPage() {
                     <span
                       className={['text-f-md font-bold', isTop ? (style?.icon ?? 'text-fg') : 'text-fg'].join(' ')}
                     >
-                      {entry.score.toLocaleString()}
+                      {entry.score.toLocaleString(locale)}
                     </span>
                     <p className="text-f-xxs text-muted">{t('scoreUnit')}</p>
                   </div>
@@ -204,7 +205,7 @@ export default function LeaderboardPage() {
           <TrendIndicator trend={data.your_rank.trend} label={t(`trend.${data.your_rank.trend}`)} />
           <div className="flex-1" />
           <div className="text-right shrink-0">
-            <span className="text-f-md font-bold text-fg">{data.your_rank.score.toLocaleString()}</span>
+            <span className="text-f-md font-bold text-fg">{data.your_rank.score.toLocaleString(locale)}</span>
             <p className="text-f-xxs text-muted">{t('scoreUnit')}</p>
           </div>
         </div>
@@ -212,7 +213,7 @@ export default function LeaderboardPage() {
 
       {data && (
         <p className="text-f-xs text-muted text-center mt-sp-4">
-          {t('computedAt', { date: new Date(data.computed_at).toLocaleDateString() })}
+          {t('computedAt', { date: new Date(data.computed_at).toLocaleDateString(locale) })}
         </p>
       )}
     </main>

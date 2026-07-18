@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import { Link } from '@/i18n/navigation'
 import { Award, Lock, RefreshCw, AlertTriangle, X, Trophy, Pin, PinOff } from 'lucide-react'
@@ -48,12 +48,14 @@ function BadgeDetailSheet({
   onTogglePin,
   pinnedCount,
   t,
+  locale,
 }: {
   badge: Badge
   onClose: () => void
   onTogglePin: (badge: Badge) => void
   pinnedCount: number
   t: ReturnType<typeof useTranslations>
+  locale: string
 }) {
   const color = RARITY_COLOR[badge.rarity] ?? 'text-muted'
   const ring  = RARITY_RING[badge.rarity] ?? ''
@@ -144,7 +146,7 @@ function BadgeDetailSheet({
 
         {badge.earned && badge.earned_at && (
           <p className="text-f-xs text-muted text-center">
-            {t('badges.detail.earnedOn', { date: new Date(badge.earned_at).toLocaleDateString() })}
+            {t('badges.detail.earnedOn', { date: new Date(badge.earned_at).toLocaleDateString(locale) })}
           </p>
         )}
 
@@ -182,6 +184,7 @@ function BadgeDetailSheet({
 
 export default function BadgesPage() {
   const t = useTranslations()
+  const locale = useLocale()
   const [filter, setFilter] = useState<Filter>('all')
   const [selected, setSelected] = useState<Badge | null>(null)
   const { data, isLoading, isError, mutate } = useBadges()
@@ -376,7 +379,7 @@ export default function BadgesPage() {
                   )}
                   {badge.earned && badge.earned_at && (
                     <p className="text-f-xxs text-muted-2 text-center">
-                      {t('badges.badge.earnedOn', { date: new Date(badge.earned_at).toLocaleDateString() })}
+                      {t('badges.badge.earnedOn', { date: new Date(badge.earned_at).toLocaleDateString(locale) })}
                     </p>
                   )}
                   {!badge.earned && (
@@ -397,6 +400,7 @@ export default function BadgesPage() {
           onTogglePin={handleTogglePin}
           pinnedCount={pinnedCount}
           t={t}
+          locale={locale}
         />
       )}
     </main>

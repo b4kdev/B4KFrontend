@@ -391,6 +391,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
           aria-expanded={dropdownOpen}
           aria-haspopup="listbox"
           aria-owns="search-listbox"
+          aria-controls="search-listbox"
         >
           <form onSubmit={handleSubmit} className="w-full relative">
             <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none z-10" aria-hidden="true">
