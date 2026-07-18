@@ -1,16 +1,17 @@
 'use client';
 
-import type { CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import Image from 'next/image';
 import useSWR from 'swr';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/contexts/AuthContext';
-import { Link } from '@/i18n/navigation';
-import { Home, Map, LayoutGrid, Bookmark, User, Bell } from 'lucide-react';
+import { Link, useRouter } from '@/i18n/navigation';
+import { Home, Map, LayoutGrid, Bookmark, User, Bell, Settings, LogOut } from 'lucide-react';
 import { fetcher } from '@/lib/fetcher';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuthGate } from '@/contexts/AuthGateContext';
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 
 // Desktop-only SideNav rail (SN_01–07). The mobile hamburger menu is a
 // separate component (MobileDrawer) per DEC-06 — this rail is hidden < lg.
@@ -27,7 +28,9 @@ const NAV_ITEMS = [
 
 export default function Sidebar() {
   const t = useTranslations('nav');
+  const tProfile = useTranslations('profile');
   const pathname = usePathname();
+  const router = useRouter();
   const { session, loading } = useAuth();
   const { open } = useAuthGate();
   const { data: profile } = useProfile();
@@ -36,6 +39,31 @@ export default function Sidebar() {
     '/api/notifications/unread-count', fetcher, { refreshInterval: 60_000 },
   );
   const hasUnread = (unreadData?.count ?? 0) > 0;
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    function handlePointer(e: PointerEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setMenuOpen(false);
+    }
+    document.addEventListener('pointerdown', handlePointer);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointer);
+      document.removeEventListener('keydown', handleKey);
+    };
+  }, [menuOpen]);
+
+  const handleSignOut = async () => {
+    setMenuOpen(false);
+    await createSupabaseBrowserClient().auth.signOut();
+    router.push('/');
+  };
 
   const isActive = (href: string) => {
     if (href === '/') return /^\/[a-z-]+\/?$/.test(pathname);
@@ -158,7 +186,7 @@ export default function Sidebar() {
             ) : (
               <User size={24} strokeWidth={2} className="shrink-0" style={iconStyle(isActive('/profile'))} />
             )}
-          </Link>
+          </div>
         )}
       </div>
     </aside>
