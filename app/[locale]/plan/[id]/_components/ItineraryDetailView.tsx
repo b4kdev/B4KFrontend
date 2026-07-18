@@ -51,6 +51,26 @@ export default function ItineraryDetailView({ id }: { id: string }) {
   const stopPois    = itinerary ? stopsToMapPois(itinerary) : []
   const planStopIds = itinerary ? itinerary.stops.map(s => s.poi.poi_id) : []
 
+  // Real road path per leg (routing.route_leg via lib/itinerary.ts) — falls
+  // back to a straight connector between the two stops only if the backend
+  // itself fell back (empty path, e.g. road network not loaded for that area).
+  const routeLegs = itinerary
+    ? itinerary.legs
+        .map(leg => {
+          if (leg.path.length >= 2) return { path: leg.path }
+          const from = itinerary.stops.find(s => s.stop_order === leg.from_stop_order)
+          const to   = itinerary.stops.find(s => s.stop_order === leg.to_stop_order)
+          if (!from || !to) return { path: [] }
+          return {
+            path: [
+              { lat: from.poi.coords_lat, lng: from.poi.coords_lng },
+              { lat: to.poi.coords_lat,   lng: to.poi.coords_lng },
+            ],
+          }
+        })
+        .filter(l => l.path.length >= 2)
+    : []
+
   const handlePoiSelect = useCallback((poiId: string | null) => {
     setSelectedPoiId(poiId)
     if (poiId && panelScrollRef.current) {
@@ -220,6 +240,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
           pois={stopPois}
           selectedPoiId={selectedPoiId}
           planStopIds={planStopIds}
+          routeLegs={routeLegs}
           onPoiSelect={handlePoiSelect}
           showAiPill={false}
           onAiPillDismiss={() => {}}

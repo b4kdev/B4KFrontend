@@ -15,6 +15,10 @@ interface Props {
   pois:          MapPoi[]
   selectedPoiId: string | null
   planStopIds:   string[]
+  // Real per-leg road paths for a saved itinerary (see lib/itinerary.ts
+  // ItineraryLeg.path) — when provided, draws one polyline per leg instead of
+  // a single straight connector through planStopIds.
+  routeLegs?:    Array<{ path: Array<{ lat: number; lng: number }> }>
   onPoiSelect:   (id: string | null) => void
   showAiPill:    boolean
   onAiPillDismiss: () => void
@@ -56,7 +60,7 @@ function clusterGridSize(zoom: number): number {
 }
 
 export default function NaverMapCanvas({
-  pois, selectedPoiId, planStopIds, onPoiSelect,
+  pois, selectedPoiId, planStopIds, routeLegs, onPoiSelect,
   showAiPill, onAiPillDismiss, onAiPillExpand,
   aiOverlayOpen, onAiOpen,
   savedFolderPoiIds = null,
@@ -69,6 +73,8 @@ export default function NaverMapCanvas({
   const markersRef   = useRef<Map<string, any>>(new Map())
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const polylineRef  = useRef<any>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const routeLegPolylinesRef = useRef<any[]>([])
   const [mapReady, setMapReady]   = useState(false)
   const [scriptErr, setScriptErr] = useState(false)
   const [zoom, setZoom]           = useState(12)
@@ -206,11 +212,32 @@ export default function NaverMapCanvas({
     })
   }, [mapReady, pois, selectedPoiId, planStopIds, onPoiSelect, zoom, savedFolderPoiIds])
 
-  // MP_20 — Route polyline connecting plan stops
+  // MP_20 — Route polyline connecting plan stops.
+  // routeLegs (from a saved itinerary's real routing.route_leg results) draws
+  // one polyline per leg along its actual road path; day boundaries are
+  // already excluded upstream (no leg entry = no line drawn between them).
+  // Without routeLegs (the live map builder, no computed route yet), fall
+  // back to a single straight connector through planStopIds in order.
   useEffect(() => {
     if (!mapReady || !window.naver?.maps) return
     polylineRef.current?.setMap(null)
     polylineRef.current = null
+    routeLegPolylinesRef.current.forEach(pl => pl.setMap(null))
+    routeLegPolylinesRef.current = []
+
+    if (routeLegs && routeLegs.length > 0) {
+      routeLegPolylinesRef.current = routeLegs
+        .filter(leg => leg.path.length >= 2)
+        .map(leg => new window.naver.maps.Polyline({
+          path:          leg.path.map(p => new window.naver.maps.LatLng(p.lat, p.lng)),
+          strokeColor:   LAV_HEX,
+          strokeOpacity: 0.85,
+          strokeWeight:  3,
+          strokeStyle:   'solid',
+          map:           mapRef.current,
+        }))
+      return
+    }
 
     if (planStopIds.length < 2) return
 
@@ -229,7 +256,7 @@ export default function NaverMapCanvas({
       strokeStyle:    'solid',
       map:            mapRef.current,
     })
-  }, [mapReady, planStopIds, pois])
+  }, [mapReady, planStopIds, pois, routeLegs])
 
   useEffect(() => () => {
     markersRef.current.forEach(m => m.setMap(null))
@@ -237,6 +264,7 @@ export default function NaverMapCanvas({
     clusterMarkersRef.current.forEach(m => m.setMap(null))
     clusterMarkersRef.current = []
     polylineRef.current?.setMap(null)
+    routeLegPolylinesRef.current.forEach(pl => pl.setMap(null))
   }, [])
 
   function zoomIn()  { mapRef.current?.setZoom(Math.min(mapRef.current.getZoom() + 1, 18)) }

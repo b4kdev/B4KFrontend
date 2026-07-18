@@ -27,6 +27,10 @@ export interface ItineraryLeg {
   estimated_duration_s: number
   distance_m: number
   transport_mode: 'car' | 'public' | 'walk'
+  // Real road path from routing.route_leg (pgRouting) when available — ordered
+  // [lat, lng] points to draw on the map instead of a straight connector.
+  // Absent/empty when the backend fell back to a straight-line approximation.
+  path: Array<{ lat: number; lng: number }>
 }
 
 export interface ItineraryRelated {
@@ -66,10 +70,18 @@ export interface ItineraryDetail {
 
 // ─── BFF (Supabase Edge Function) response shapes — see B4KBackend/API_FRONTEND.md ───
 
+// GeoJSON LineString — coordinates are [lng, lat] pairs per the GeoJSON spec.
+export interface GeoJsonLineString {
+  type: 'LineString'
+  coordinates: Array<[number, number]>
+}
+
 export interface BffLegToNext {
   to_poi_id: number
   distance_m: number
   duration_sec: number
+  geometry?: GeoJsonLineString | null
+  method?: string | null   // 'pgr' | 'approx' | 'approx_nosnap' | 'approx_nopath'
 }
 
 export interface BffPlace {
@@ -185,20 +197,25 @@ export function mapBffToDetail(bff: BffItinerary): ItineraryDetail {
     },
   }))
 
-  // Legs come from leg_to_next (walking estimate between consecutive stops of
-  // the same day). transport_mode of the leg = travel_mode of the FROM stop.
+  // Legs come from leg_to_next (routing.route_leg — real road path when the
+  // POIs fall inside the loaded road network, straight-line approximation
+  // otherwise) between consecutive stops of the same day. transport_mode of
+  // the leg = travel_mode of the FROM stop.
   const legs: ItineraryLeg[] = []
   for (let i = 0; i < flat.length - 1; i++) {
     const from = flat[i]
     const next = flat[i + 1]
     const leg = from.place.leg_to_next
     if (!leg || from.day !== next.day) continue
+    const coords = leg.geometry?.coordinates ?? []
     legs.push({
       from_stop_order:      from.order,
       to_stop_order:        next.order,
       estimated_duration_s: leg.duration_sec,
       distance_m:           leg.distance_m,
       transport_mode:       toFrontMode(from.place.travel_mode),
+      // GeoJSON coordinates are [lng, lat] — flip to {lat, lng} for map SDKs.
+      path:                 coords.map(([lng, lat]) => ({ lat, lng })),
     })
   }
 
