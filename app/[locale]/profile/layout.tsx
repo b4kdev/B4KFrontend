@@ -75,14 +75,14 @@ function HeaderContent({ profile, t }: { profile: ProfileData; t: ReturnType<typ
               className="w-full h-full object-cover"
             />
           ) : (
-            <span className="font-display font-black text-lav text-2xl">{initial}</span>
+            <span className="font-display text-lav text-2xl">{initial}</span>
           )}
         </div>
       </div>
 
       {/* Name + stats */}
       <div className="flex-1 min-w-0 pt-1">
-        <h1 className="font-display font-black text-fg text-[clamp(18px,2.2vw,26px)] leading-tight truncate">
+        <h1 className="font-display text-fg text-f-display-tile leading-tight truncate">
           {profile.name}
         </h1>
 

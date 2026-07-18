@@ -70,7 +70,7 @@ export default function ExploreHero({ slides }: { slides: ExploreHeroSlide[] }) 
         <span className="inline-flex items-center bg-fg text-bg text-f-xxs font-extrabold tracking-[0.12em] uppercase px-sp-2 py-[4px] rounded-none mb-sp-3 w-fit">
           {slide.badge}
         </span>
-        <h2 className="text-fg font-display font-black text-[clamp(22px,3vw,40px)] leading-[1.05] tracking-[-0.02em] mb-sp-2 max-w-[520px]">
+        <h2 className="text-fg font-display text-f-display-feature tracking-[-0.02em] mb-sp-2 max-w-[520px]">
           {slide.title}
         </h2>
         <p className="hidden md:block text-f-md text-muted leading-relaxed mb-sp-4 max-w-[400px]">

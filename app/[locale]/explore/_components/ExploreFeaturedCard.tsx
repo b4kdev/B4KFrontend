@@ -4,11 +4,12 @@ import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { TrendingUp, MapPin, ExternalLink } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
+import FieldImage from '@/components/ui/FieldImage'
 import type { ExplorePoi } from '@/app/api/explore/[category]/route'
 
 // SC-36 (KD_04/KB_04, S-OIRFKM/S-ZVKQUS) — 1 featured wide card above the
 // section's horizontal scroll row. Same fields as ExplorePoiCard, wide layout.
-export default function ExploreFeaturedCard({ poi }: { poi: ExplorePoi }) {
+export default function ExploreFeaturedCard({ poi, domain }: { poi: ExplorePoi; domain?: string }) {
   const t = useTranslations('explore')
   const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
   const isPartner = !!(poi.is_partner && poi.partner_url && /^https?:\/\//.test(poi.partner_url))
@@ -22,15 +23,21 @@ export default function ExploreFeaturedCard({ poi }: { poi: ExplorePoi }) {
       style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       aria-label={t('card.ariaLabel', { name })}
     >
-      <div
-        className="relative sm:w-[42%] shrink-0 flex items-center justify-center"
-        style={{ background: 'var(--bg-3)', aspectRatio: '16/9' }}
-      >
+      <div className="relative sm:w-[42%] shrink-0">
         {poi.primary_image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={poi.primary_image_url} alt={name} className="w-full h-full object-cover" />
+          <FieldImage
+            src={poi.primary_image_url}
+            alt={name}
+            domain={domain}
+            aspectRatio="16/9"
+          />
         ) : (
-          <MapPin size={28} strokeWidth={2} className="text-muted-2" />
+          <div
+            className="flex items-center justify-center"
+            style={{ background: 'var(--bg-3)', aspectRatio: '16/9' }}
+          >
+            <MapPin size={28} strokeWidth={2} className="text-muted-2" />
+          </div>
         )}
         {isPartner && (
           <span

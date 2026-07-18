@@ -58,7 +58,7 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
       {/* Header */}
       <div className="shrink-0">
         <div className="flex items-center gap-sp-2 p-sp-4 pb-sp-2 min-h-touch">
-          <h2 className="flex-1 text-fg font-display font-bold text-f-xl leading-tight truncate">
+          <h2 className="flex-1 text-fg font-display text-f-xl leading-tight truncate">
             {t('title')}
           </h2>
           <button

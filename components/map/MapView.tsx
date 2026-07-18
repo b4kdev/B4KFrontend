@@ -530,7 +530,7 @@ export default function MapView() {
           <button
             onClick={() => setAiOverlayOpen(true)}
             aria-label={t('aiOverlay.openButton')}
-            className="lg:hidden absolute bottom-sp-4 right-sp-4 z-20 w-touch h-touch rounded-full bg-lav text-bg flex items-center justify-center shadow-lg transition-opacity hover:opacity-90"
+            className="lg:hidden absolute bottom-sp-4 right-sp-4 z-20 w-touch h-touch rounded-full bg-lav text-bg flex items-center justify-center transition-opacity hover:opacity-90"
           >
             <Sparkles size={20} strokeWidth={2} aria-hidden="true" />
           </button>

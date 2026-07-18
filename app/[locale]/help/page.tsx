@@ -64,7 +64,7 @@ export default function HelpPage() {
 
       <div className="flex items-center gap-sp-3 mb-sp-8">
         <HelpCircle size={22} strokeWidth={2} className="text-lav shrink-0" />
-        <h1 className="font-display font-black text-fg text-f-2xl">
+        <h1 className="font-display text-fg text-f-2xl">
           {t('title')}
         </h1>
       </div>

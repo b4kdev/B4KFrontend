@@ -66,7 +66,7 @@ export default function DraftConflictModal({
           <div className="w-10 h-1 rounded-full bg-muted-2" />
         </div>
 
-        <h2 className="text-fg font-display font-bold text-f-lg text-center mb-sp-5 leading-snug">
+        <h2 className="text-fg font-display text-f-lg text-center mb-sp-5 leading-snug">
           {t('title')}
         </h2>
 

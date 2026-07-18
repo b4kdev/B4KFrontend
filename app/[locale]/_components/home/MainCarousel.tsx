@@ -6,6 +6,7 @@ import { Link } from '@/i18n/navigation';
 import useSWR from 'swr';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { fetcher } from '@/lib/fetcher';
+import FieldImage from '@/components/ui/FieldImage';
 import type { HomeCarouselSlide } from '@/app/api/home/carousel/route';
 
 function CarouselSkeleton() {
@@ -76,12 +77,18 @@ export default function MainCarousel() {
           style={{
             opacity: i === idx ? 1 : 0,
             transition: prefersReduced ? 'none' : 'opacity var(--dur-reveal) ease',
-            backgroundImage: s.image_url ? `url(${s.image_url})` : undefined,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
           }}
           aria-hidden
-        />
+        >
+          {s.image_url && (
+            <FieldImage
+              src={s.image_url}
+              alt=""
+              fillContainer
+              priority={i === 0}
+            />
+          )}
+        </div>
       ))}
       {/* Scrim */}
       <div
@@ -95,7 +102,7 @@ export default function MainCarousel() {
         <span className="inline-flex items-center bg-fg text-bg text-f-xxs font-extrabold tracking-[0.12em] uppercase px-2.5 py-1 rounded-none mb-3.5 w-fit">
           {slide.badge}
         </span>
-        <h1 className="text-fg font-display font-black text-[clamp(26px,3.5vw,48px)] leading-[1.05] tracking-[-0.02em] mb-3 whitespace-pre-line max-w-[520px]">
+        <h1 className="text-fg font-display text-f-display-hero tracking-[-0.02em] mb-3 whitespace-pre-line max-w-[520px]">
           {slide.title}
         </h1>
         <p className="hidden md:block text-f-md text-muted leading-relaxed mb-6 max-w-[400px]">

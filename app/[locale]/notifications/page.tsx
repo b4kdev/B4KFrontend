@@ -98,7 +98,7 @@ export default function NotificationsPage() {
       </div>
 
       <div className="flex items-center justify-between mb-sp-5">
-        <h1 className="font-display font-black text-fg text-[clamp(22px,2.5vw,32px)]">
+        <h1 className="font-display text-fg text-f-display-tile">
           {t('title')}
         </h1>
         {data && data.unread_count > 0 && (

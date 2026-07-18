@@ -88,8 +88,8 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
         role="dialog"
         aria-modal={snap !== 'peek'}
         aria-label={t('title')}
-        className="lg:hidden fixed bottom-14 left-0 right-0 z-40 h-[85vh] flex flex-col bg-bg-2 rounded-none"
-        style={{ ...sheetStyle, borderTop: '1px solid var(--bdr)' }}
+        className="lg:hidden fixed bottom-14 left-0 right-0 z-40 h-[85vh] flex flex-col rounded-none"
+        style={{ ...sheetStyle, background: 'rgba(17,17,17,0.92)', backdropFilter: 'blur(12px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}
       >
         {/* Peek zone: handle + title + close — owns the gesture */}
         <div className="shrink-0" style={{ touchAction: 'none' }} {...handleProps}>
@@ -97,7 +97,7 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
             <div className="w-8 h-1 rounded-full bg-muted-2" />
           </div>
           <div className="flex items-center gap-sp-2 px-sp-4 pb-sp-2 min-h-touch">
-            <h2 className="flex-1 text-fg font-display font-bold text-f-xl leading-tight truncate">
+            <h2 className="flex-1 text-fg font-display text-f-xl leading-tight truncate">
               {t('title')}
             </h2>
             <button

@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'MODERNIZ';
+  src: url('/fonts/moderniz.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -108,6 +116,11 @@ body {
   --f-lg:   15px;
   --f-xl:   16px;
   --f-2xl:  17px;
+
+  /* Display type scale — MODERNIZ only (see DESIGN.md §Typography) */
+  --f-display-tile:    26px;
+  --f-display-feature: 36px;
+  --f-display-hero:    72px;
 }
 
 /* ─── Light mode overrides ──────────────────────────────────── */

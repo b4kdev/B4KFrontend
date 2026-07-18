@@ -54,7 +54,7 @@ export default function ItineraryMobileSheet({
   return (
     <div
       ref={sheetRef}
-      className="absolute inset-x-0 bottom-0 z-20 lg:hidden rounded-t-2xl flex flex-col bg-bg-2"
+      className="absolute inset-x-0 bottom-0 z-20 lg:hidden rounded-none flex flex-col bg-bg-2"
       style={{ ...sheetStyle, height: '95%', borderTop: '1px solid var(--bdr)' }}
       role="dialog"
       aria-label={t('sheet.ariaLabel')}

@@ -41,7 +41,7 @@ export default function LeftPanelDefault({
     <div className="flex flex-col h-full overflow-y-auto themed-scrollbar">
       {/* LP_01 — Region list */}
       <div className="p-sp-4" style={{ borderBottom: '1px solid var(--bdr)' }}>
-        <p className="text-f-xxs font-semibold uppercase tracking-widest text-muted mb-sp-3">
+        <p className="divrow mb-sp-3">
           {t('regions.title')}
         </p>
         <div className="flex flex-col gap-0.5">
@@ -71,7 +71,7 @@ export default function LeftPanelDefault({
 
       {/* LP_02 + LP_03 — Category filter chips */}
       <div className="p-sp-4">
-        <p className="text-f-xxs font-semibold uppercase tracking-widest text-muted mb-sp-3">
+        <p className="divrow mb-sp-3">
           {t('filters.title')}
         </p>
         <div className="flex flex-wrap gap-2">
@@ -99,7 +99,7 @@ export default function LeftPanelDefault({
 
       {/* LP_04–10 — Recommended POI list (S-ZKAIGJ: cold-start = popular fallback) */}
       <div className="p-sp-4 flex-1">
-        <p className="text-f-xxs font-semibold uppercase tracking-widest text-muted mb-sp-3">
+        <p className="divrow mb-sp-3">
           {t('recommended.title')}
         </p>
 

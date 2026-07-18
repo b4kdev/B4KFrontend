@@ -60,7 +60,7 @@ export default function LeaderboardPage() {
         <span className="text-fg">{t('breadcrumb')}</span>
       </div>
 
-      <h1 className="font-display font-black text-fg text-[clamp(22px,2.5vw,32px)] mb-sp-5">
+      <h1 className="font-display text-fg text-f-display-tile mb-sp-5">
         {t('title')}
       </h1>
 
@@ -89,7 +89,7 @@ export default function LeaderboardPage() {
         <div
           aria-busy="true"
           aria-label={t('loading')}
-          className="rounded-lg overflow-hidden"
+          className="rounded-none overflow-hidden"
           style={{ border: '1px solid var(--bdr)' }}
         >
           {Array.from({ length: 8 }, (_, i) => <RowSkeleton key={i} />)}
@@ -98,7 +98,7 @@ export default function LeaderboardPage() {
 
       {isError && !isLoading && (
         <div
-          className="flex flex-col items-center justify-center text-center py-16 rounded-lg"
+          className="flex flex-col items-center justify-center text-center py-16 rounded-none"
           style={{ background: 'var(--bg-2)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
           role="alert"
         >
@@ -116,7 +116,7 @@ export default function LeaderboardPage() {
       {!isLoading && !isError && data && (
         data.entries.length === 0 ? (
           <div
-            className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-lg"
+            className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-none"
             style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
           >
             <Trophy size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
@@ -124,7 +124,7 @@ export default function LeaderboardPage() {
             <p className="text-f-md text-muted max-w-[300px]">{t('empty.desc')}</p>
           </div>
         ) : (
-          <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--bdr)' }}>
+          <div className="rounded-none overflow-hidden" style={{ border: '1px solid var(--bdr)' }}>
             {data.entries.map((entry, idx) => {
               const isTop = entry.rank <= 3
               const style = RANK_STYLE[entry.rank]

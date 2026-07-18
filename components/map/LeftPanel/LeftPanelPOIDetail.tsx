@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { Heart, Plus, Check, Clock, X, ImageOff } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
+import FieldImage from '@/components/ui/FieldImage'
 import type { MapPoi } from '@/hooks/useMapPois'
 
 interface Props {
@@ -42,24 +43,29 @@ export default function LeftPanelPOIDetail({
         </button>
 
         {/* LP_11-16 — Media (primary image, placeholder if none) */}
-        <div className="-mx-sp-4 -mt-sp-2 bg-bg-3 flex items-center justify-center overflow-hidden" style={{ aspectRatio: '4/3' }}>
-          {poi.primary_image_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={poi.primary_image_url} alt="" className="w-full h-full object-cover" />
-          ) : (
+        {poi.primary_image_url ? (
+          <FieldImage
+            src={poi.primary_image_url}
+            alt={name}
+            domain={poi.display_domain ?? undefined}
+            aspectRatio="4/3"
+            className="-mx-sp-4 -mt-sp-2"
+          />
+        ) : (
+          <div className="-mx-sp-4 -mt-sp-2 bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '4/3' }}>
             <ImageOff size={28} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
-          )}
-        </div>
+          </div>
+        )}
 
         {/* LP_10 — Sponsored label */}
         {poi.is_partner && (
-          <p className="text-f-xxs text-muted uppercase tracking-widest -mb-sp-1">
+          <p className="divrow -mb-sp-1">
             {t('sponsored')}
           </p>
         )}
 
         {/* LP_04 — POI name */}
-        <h2 className="text-fg font-display font-bold text-lg leading-tight line-clamp-2">
+        <h2 className="text-fg font-display text-lg leading-tight line-clamp-2">
           {name}
         </h2>
 

@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { X, Heart, Plus, Check, Clock, Share2, MapPin, ExternalLink, ImageOff } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
+import FieldImage from '@/components/ui/FieldImage'
 import { useBottomSheetSnap, type SheetSnap } from '@/hooks/useBottomSheetSnap'
 import type { MapPoi } from '@/hooks/useMapPois'
 
@@ -86,7 +87,7 @@ export default function POIBottomSheet({
             <div className="w-8 h-1 rounded-full bg-muted-2" />
           </div>
           <div className="flex items-center gap-sp-2 px-sp-4 pb-sp-2 min-h-touch">
-            <h2 className="flex-1 text-fg font-display font-bold text-f-2xl leading-tight truncate">
+            <h2 className="flex-1 text-fg font-display text-f-2xl leading-tight truncate">
               {name}
             </h2>
             <button
@@ -112,14 +113,19 @@ export default function POIBottomSheet({
           style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}
         >
           {/* LP_11-16 — Media (primary image, placeholder if none) */}
-          <div className="-mx-sp-4 mb-sp-3 bg-bg-3 flex items-center justify-center overflow-hidden" style={{ aspectRatio: '16/9' }}>
-            {poi.primary_image_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={poi.primary_image_url} alt="" className="w-full h-full object-cover" />
-            ) : (
+          {poi.primary_image_url ? (
+            <FieldImage
+              src={poi.primary_image_url}
+              alt={name}
+              domain={poi.display_domain ?? undefined}
+              aspectRatio="16/9"
+              className="-mx-sp-4 mb-sp-3"
+            />
+          ) : (
+            <div className="-mx-sp-4 mb-sp-3 bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '16/9' }}>
               <ImageOff size={28} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Sponsored */}
           {poi.is_partner && (

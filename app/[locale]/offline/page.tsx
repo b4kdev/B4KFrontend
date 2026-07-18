@@ -16,7 +16,7 @@ export default function OfflinePage() {
         style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       >
         <WifiOff size={48} strokeWidth={2} className="text-muted-2 mb-sp-5" />
-        <p className="font-display font-black text-fg text-[clamp(18px,2vw,24px)] mb-sp-3">
+        <p className="font-display text-fg text-f-display-tile mb-sp-3">
           {t('title')}
         </p>
         <p className="text-f-md text-muted max-w-[280px] leading-relaxed mb-sp-6">

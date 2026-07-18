@@ -58,7 +58,7 @@ export default function ResetPasswordPage() {
       <div className="min-h-screen flex items-center justify-center px-sp-4 bg-bg">
         <div className="w-full max-w-[400px] text-center flex flex-col items-center gap-sp-4">
           <CheckCircle size={48} strokeWidth={2} className="text-success" aria-hidden="true" />
-          <p className="text-fg font-display font-bold text-f-2xl">{t('success')}</p>
+          <p className="text-fg font-display text-f-2xl">{t('success')}</p>
           <p className="text-muted text-f-base">{t('redirecting')}</p>
         </div>
       </div>
@@ -79,11 +79,11 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex items-center justify-center px-sp-4 bg-bg">
       <div className="w-full max-w-[400px]">
         <div className="mb-sp-8 text-center">
-          <span className="text-lav font-display font-bold text-f-2xl tracking-tight select-none">B4K</span>
+          <span className="text-lav font-display text-f-2xl tracking-tight select-none">B4K</span>
         </div>
 
         <div className="bg-bg-2 rounded-none p-sp-6" style={{ border: '1px solid var(--bdr)' }}>
-          <h1 className="text-fg font-display font-bold text-f-2xl mb-sp-2">{t('title')}</h1>
+          <h1 className="text-fg font-display text-f-2xl mb-sp-2">{t('title')}</h1>
           <p className="text-muted text-f-base mb-sp-5">{t('subtitle')}</p>
 
           {errorMessage() && (

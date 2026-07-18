@@ -24,7 +24,7 @@ export default function ExploreHubPage() {
         <span className="text-fg">{t('breadcrumb')}</span>
       </div>
 
-      <h1 className="font-display font-black text-fg text-[clamp(22px,2.5vw,34px)] mb-sp-2">
+      <h1 className="font-display text-fg text-f-display-feature mb-sp-2">
         {t('hub.title')}
       </h1>
       <p className="text-f-base text-muted mb-sp-8">{t('hub.subtitle')}</p>

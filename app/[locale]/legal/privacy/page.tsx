@@ -13,7 +13,7 @@ export default function Page() {
         <span>›</span>
         <span className="text-fg">{t('breadcrumb')}</span>
       </div>
-      <h1 className="text-fg font-display font-black text-[clamp(20px,2.5vw,32px)] mb-sp-6">{t('title')}</h1>
+      <h1 className="text-fg font-display text-f-display-tile mb-sp-6">{t('title')}</h1>
       <div
         className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-none"
         style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}

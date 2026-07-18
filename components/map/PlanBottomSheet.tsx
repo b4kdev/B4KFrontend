@@ -78,11 +78,11 @@ export default function PlanBottomSheet({
         aria-modal="true"
         aria-label={t('title')}
         className={[
-          'lg:hidden fixed bottom-14 left-0 right-0 z-40 bg-bg-2 rounded-none',
+          'lg:hidden fixed bottom-14 left-0 right-0 z-40 rounded-none',
           'transition-transform duration-[250ms] ease-out max-h-[70vh] flex flex-col',
           isOpen ? 'translate-y-0' : 'translate-y-full',
         ].join(' ')}
-        style={{ borderTop: '1px solid var(--bdr)' }}
+        style={{ background: 'rgba(17,17,17,0.92)', backdropFilter: 'blur(12px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}
       >
         {/* Drag indicator */}
         <div className="flex justify-center pt-sp-2 pb-sp-1 shrink-0" aria-hidden="true">
@@ -94,7 +94,7 @@ export default function PlanBottomSheet({
           className="px-sp-4 py-sp-3 flex items-center justify-between shrink-0"
           style={{ borderBottom: '1px solid var(--bdr)' }}
         >
-          <p className="text-f-xxs font-semibold uppercase tracking-widest text-muted">
+          <p className="divrow">
             {t('title')}
           </p>
           <div className="flex items-center gap-sp-3">

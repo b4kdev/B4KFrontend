@@ -170,7 +170,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
         {/* Page heading */}
         <div className="flex items-center gap-sp-3 mb-sp-5">
           <CatIcon size={22} strokeWidth={2} className="text-lav shrink-0" />
-          <h1 className="font-display font-black text-fg text-[clamp(20px,2.5vw,28px)]">
+          <h1 className="font-display text-fg text-f-display-tile">
             {t(`${cat.tKey}.title`)}
           </h1>
         </div>
@@ -298,7 +298,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                           <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />
                         </Link>
                       </div>
-                      {featured && <ExploreFeaturedCard poi={featured} />}
+                      {featured && <ExploreFeaturedCard poi={featured} domain={category.toUpperCase()} />}
                       {rest.length > 0 && (
                         <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-sp-4 lg:-mx-sp-6 px-sp-4 lg:px-sp-6">
                           <div className="flex gap-sp-3 pb-[4px]" style={{ width: 'max-content' }}>

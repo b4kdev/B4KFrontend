@@ -237,8 +237,8 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
       <div
         ref={panelRef}
         tabIndex={-1}
-        className="relative w-full lg:w-[420px] bg-bg-2 rounded-none p-sp-6 outline-none"
-        style={{ borderTop: '1px solid var(--bdr)' }}
+        className="relative w-full lg:w-[420px] rounded-none p-sp-6 outline-none"
+        style={{ background: 'rgba(17,17,17,0.92)', backdropFilter: 'blur(12px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}
       >
         {/* Drag handle — mobile only */}
         <div className="lg:hidden flex justify-center mb-sp-4" aria-hidden="true">
@@ -257,13 +257,13 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
         <div className="flex flex-col items-center text-center gap-sp-4 pt-sp-2">
 
           {/* Brand mark */}
-          <span className="text-lav font-display font-bold text-f-2xl tracking-tight select-none">
+          <span className="text-lav font-display text-f-2xl tracking-tight select-none">
             B4K
           </span>
 
           {/* Title + subline per view */}
           <div>
-            <h2 className="text-fg font-display font-bold text-f-2xl mb-sp-2">
+            <h2 className="text-fg font-display text-f-2xl mb-sp-2">
               {viewTitle()}
             </h2>
             {(view === 'providers' || view === 'email') && (

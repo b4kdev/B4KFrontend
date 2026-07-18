@@ -231,7 +231,7 @@ export default function SavedPage() {
         <span className="text-fg">{t('breadcrumb')}</span>
       </div>
 
-      <h1 className="font-display font-black text-fg text-[clamp(22px,2.5vw,32px)] mb-sp-5">
+      <h1 className="font-display text-fg text-f-display-tile mb-sp-5">
         {t('title')}
       </h1>
 
@@ -403,7 +403,7 @@ export default function SavedPage() {
               <ArrowLeft size={14} strokeWidth={2} />{t('folder.back')}
             </button>
             <div className="flex items-center justify-between mb-sp-4">
-              <h2 className="font-display font-bold text-fg text-f-lg">{activeFolder.name}</h2>
+              <h2 className="font-display text-fg text-f-lg">{activeFolder.name}</h2>
               <span className="text-f-sm text-muted">{t('folder.poiCount', { count: visiblePois.length })}</span>
             </div>
             <div className="rounded-none overflow-hidden mb-sp-4" style={{ border: '1px solid var(--bdr)' }}>

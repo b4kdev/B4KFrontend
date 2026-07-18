@@ -429,8 +429,10 @@ export default function AIOverlay({
     <>
       {/* ── Desktop panel — FL3_01 / MP_30-35 ── */}
       <div
-        className="hidden lg:flex flex-col absolute bottom-0 right-0 z-20 w-[380px] bg-bg-2 rounded-none ai-overlay-panel"
+        className="hidden lg:flex flex-col absolute bottom-0 right-0 z-20 w-[380px] rounded-none ai-overlay-panel"
         style={{
+          background: 'rgba(17,17,17,0.92)',
+          backdropFilter: 'blur(12px)',
           border: '1px solid var(--lav-border)',
           borderRight: 'none',
           borderBottom: 'none',
@@ -468,7 +470,8 @@ export default function AIOverlay({
 
       {/* ── Mobile full-screen — FL3_02 ── */}
       <div
-        className="lg:hidden fixed inset-x-0 top-[50px] bottom-14 z-30 bg-bg flex flex-col ai-overlay-panel"
+        className="lg:hidden fixed inset-x-0 top-[50px] bottom-14 z-30 flex flex-col ai-overlay-panel"
+        style={{ background: 'rgba(17,17,17,0.92)', backdropFilter: 'blur(12px)' }}
         role="dialog"
         aria-label={t('title')}
         aria-modal="true"

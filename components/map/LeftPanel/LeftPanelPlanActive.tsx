@@ -65,7 +65,7 @@ export default function LeftPanelPlanActive({
         className="px-sp-4 py-sp-3 flex items-center justify-between shrink-0"
         style={{ borderBottom: '1px solid var(--bdr)' }}
       >
-        <p className="text-f-xxs font-semibold uppercase tracking-widest text-muted">
+        <p className="divrow">
           {t('title')}
         </p>
         <span className="text-xs text-muted tabular-nums">
