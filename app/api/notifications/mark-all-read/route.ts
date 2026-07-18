@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
 
 // SC-5 — spec mandates POST /api/notifications/mark-all-read (was PATCH /api/notifications).
-// social.notifications SET is_read = true WHERE user_id = user.id
+// → BFF POST /me/notifications/read-all
 export async function POST() {
-  const supabase = createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  // TODO: UPDATE social.notifications SET is_read = true WHERE user_id = user.id
-  return NextResponse.json({ ok: true })
+  const auth = await getSessionAuth()
+  if (!auth) return unauthorized()
+  try {
+    await bffFetch('/me/notifications/read-all', { method: 'POST', token: auth.token })
+    return NextResponse.json({ ok: true })
+  } catch (e) {
+    return bffErrorResponse(e)
+  }
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
 
 // not exported — Next.js route files may only export handlers + route config
 const NOTIF_TYPES = [
@@ -18,32 +18,39 @@ export interface NotificationPref {
   opt_out: boolean
 }
 
-// GET /api/account/notification-prefs
-// Real impl: SELECT notif_type, opt_out FROM social.notification_prefs
-//   WHERE user_id = user.id. Missing rows default to opt_out = FALSE (opted in).
+// GET /api/account/notification-prefs → BFF GET /me/notification-prefs
+// (6종 전부, 미설정=opt_out false 로 서버가 채워 반환)
 export async function GET() {
-  const supabase = createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const prefs: NotificationPref[] = NOTIF_TYPES.map((notif_type) => ({
-    notif_type,
-    opt_out: notif_type === 'promotion',
-  }))
-  return NextResponse.json({ prefs })
+  const auth = await getSessionAuth()
+  if (!auth) return unauthorized()
+  try {
+    const data = await bffFetch<{ prefs: NotificationPref[] }>('/me/notification-prefs', {
+      token: auth.token,
+    })
+    return NextResponse.json(data)
+  } catch (e) {
+    return bffErrorResponse(e)
+  }
 }
 
 // PATCH /api/account/notification-prefs   body: { notif_type: NotifType, opt_out: boolean }
-// Real impl: INSERT INTO social.notification_prefs (user_id, notif_type, opt_out)
-//   VALUES (user.id, $1, $2) ON CONFLICT (user_id, notif_type) DO UPDATE SET opt_out = $2
+// → BFF PUT /me/notification-prefs (upserts one notif_type at a time)
 export async function PATCH(req: NextRequest) {
-  const supabase = createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const auth = await getSessionAuth()
+  if (!auth) return unauthorized()
 
   const body = await req.json().catch(() => ({}))
   if (!NOTIF_TYPES.includes(body.notif_type) || typeof body.opt_out !== 'boolean') {
     return NextResponse.json({ ok: false, error: 'invalid_pref' }, { status: 400 })
   }
-  return NextResponse.json({ ok: true })
+  try {
+    await bffFetch('/me/notification-prefs', {
+      method: 'PUT',
+      token: auth.token,
+      body: JSON.stringify({ notif_type: body.notif_type, opt_out: body.opt_out }),
+    })
+    return NextResponse.json({ ok: true })
+  } catch (e) {
+    return bffErrorResponse(e)
+  }
 }

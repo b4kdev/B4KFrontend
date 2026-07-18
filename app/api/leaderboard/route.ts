@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { bffFetch, bffErrorResponse, getSessionAuth } from '@/lib/bff'
 
 export type LeaderboardWindow = 'weekly' | 'rising' | 'annual'
 
@@ -34,13 +35,47 @@ export interface LeaderboardData {
   computed_at: string
 }
 
-// No data yet — real rankings come from social.leaderboard_entries (Wilson score,
-// saves+likes) once backend computes them. Formula weights are an open blocker (BLK — UI only).
-function empty(window: LeaderboardWindow): LeaderboardData {
-  return { window, entries: [], your_rank: null, computed_at: new Date(0).toISOString() }
+// BFF GET /leaderboard item shape (api.get_leaderboard)
+interface BffLeaderboardEntry {
+  rank: number
+  score: number
+  trend: LeaderboardTrend
+  plans_count: number
+  badge_count: number
+  user: { id: number; name: string | null; avatar_url: string | null }
+}
+
+interface BffLeaderboardData {
+  window: LeaderboardWindow
+  computed_at: string
+  entries: BffLeaderboardEntry[]
+  your_rank: { rank: number; score: number; trend: LeaderboardTrend } | null
 }
 
 export async function GET(req: NextRequest) {
   const window = (req.nextUrl.searchParams.get('window') ?? 'weekly') as LeaderboardWindow
-  return NextResponse.json(empty(window))
+  const limit = req.nextUrl.searchParams.get('limit')
+  const auth = await getSessionAuth()
+  try {
+    const data = await bffFetch<BffLeaderboardData>(
+      `/leaderboard?window=${window}${limit ? `&limit=${limit}` : ''}`,
+      { token: auth?.token ?? null },
+    )
+    const result: LeaderboardData = {
+      window: data.window,
+      computed_at: data.computed_at,
+      entries: (data.entries ?? []).map((e) => ({
+        rank: e.rank,
+        score: e.score,
+        trend: e.trend,
+        plans_count: e.plans_count,
+        badge_count: e.badge_count,
+        user: { id: String(e.user.id), name: e.user.name ?? '', avatar_url: e.user.avatar_url },
+      })),
+      your_rank: data.your_rank,
+    }
+    return NextResponse.json(result)
+  } catch (e) {
+    return bffErrorResponse(e)
+  }
 }

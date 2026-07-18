@@ -1,21 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 
+const RECENT_WINDOW_MS = 10 * 60 * 1000
+
 // GET /api/account/recent-login → { recent: boolean }
-// Real impl: compare last_sign_in_at from Supabase auth user to now;
-//   recent = signed in within the last 10 minutes (SPEC-09 §Account deletion).
-// Stub returns false so the re-auth step is exercised in dev.
+// recent = signed in within the last 10 minutes (SPEC-09 §Account deletion).
 export async function GET() {
   const supabase = createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  return NextResponse.json({ recent: false })
+  const lastSignIn = user.last_sign_in_at ? new Date(user.last_sign_in_at).getTime() : 0
+  const recent = Date.now() - lastSignIn < RECENT_WINDOW_MS
+  return NextResponse.json({ recent })
 }
 
 // POST /api/account/recent-login   body: { password: string }
-// Re-auth verify. Real impl: supabase.auth.signInWithPassword(email, password)
-//   server-side; success refreshes the recent-login window. 401 on wrong password.
+// Re-auth verify via Supabase signInWithPassword. 401 on wrong password.
 export async function POST(req: NextRequest) {
   const supabase = createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -25,5 +26,12 @@ export async function POST(req: NextRequest) {
   if (typeof body.password !== 'string' || body.password.length === 0) {
     return NextResponse.json({ ok: false, error: 'invalid_password' }, { status: 400 })
   }
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: user.email!,
+    password: body.password,
+  })
+  if (error) return NextResponse.json({ ok: false, error: 'invalid_password' }, { status: 401 })
+
   return NextResponse.json({ ok: true })
 }

@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
 
-// PATCH /api/notifications/:id  → social.notifications SET is_read = true
+// PATCH /api/notifications/:id  → BFF POST /me/notifications/:id/read
 
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const supabase = createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  // TODO: UPDATE social.notifications SET is_read = true WHERE id = params.id AND user_id = user.id
-  void req
-  void params.id
-  return NextResponse.json({ ok: true })
+  const auth = await getSessionAuth()
+  if (!auth) return unauthorized()
+  try {
+    await bffFetch(`/me/notifications/${encodeURIComponent(params.id)}/read`, {
+      method: 'POST',
+      token: auth.token,
+    })
+    return NextResponse.json({ ok: true })
+  } catch (e) {
+    return bffErrorResponse(e)
+  }
 }
