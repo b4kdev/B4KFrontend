@@ -4,10 +4,9 @@ import { useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { useAuth } from '@/contexts/AuthContext'
 import { Link } from '@/i18n/navigation'
-import { MapPin, Bookmark, Heart, Plus, Check } from 'lucide-react'
+import { MapPin, Bookmark, Heart } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { useAuthGate } from '@/contexts/AuthGateContext'
-import { useQuickAddToPlan } from '@/hooks/useQuickAddToPlan'
 import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 
 interface Props {
@@ -27,16 +26,6 @@ export default function HomePoiCard({ poi, badge }: Props) {
 
   const [saved, setSaved] = useState(false)
   const [liked, setLiked] = useState(false)
-  const { inPlan, addToPlan } = useQuickAddToPlan({
-    id:                poi.poi_id,
-    name_ko:           poi.name_ko,
-    name_en:           poi.name_en,
-    coords_lat:        poi.coords_lat,
-    coords_lng:        poi.coords_lng,
-    display_region:    poi.display_region,
-    display_domain:    poi.display_domain,
-    primary_image_url: poi.primary_image_url,
-  })
 
   const handleSave = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -132,20 +121,6 @@ export default function HomePoiCard({ poi, badge }: Props) {
           <Heart size={15} strokeWidth={2} fill={liked ? 'currentColor' : 'none'} aria-hidden="true" />
         </button>
       </div>
-
-      {/* Add to Plan — bottom-right */}
-      <button
-        onClick={addToPlan}
-        disabled={inPlan}
-        aria-label={inPlan ? t('addedAria', { name }) : t('addAria', { name })}
-        aria-pressed={inPlan}
-        className="absolute bottom-sp-2 right-sp-2 flex items-center justify-center w-8 h-8 rounded-full transition-colors"
-        style={{ background: inPlan ? 'var(--lav)' : 'var(--backdrop-50)', color: inPlan ? 'var(--bg)' : 'var(--fg)' }}
-      >
-        {inPlan
-          ? <Check size={15} strokeWidth={2} aria-hidden="true" />
-          : <Plus size={15} strokeWidth={2} aria-hidden="true" />}
-      </button>
     </article>
   )
 }
