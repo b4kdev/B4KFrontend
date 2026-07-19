@@ -29,7 +29,7 @@ export default function ExploreAiCta({ category }: { category?: ExploreCategory 
       </div>
       <button
         onClick={() => router.push('/map?ai=open')}
-        className="shrink-0 flex items-center gap-sp-2 min-h-touch px-sp-5 text-f-md font-semibold text-energy rounded-none border border-[rgba(196,36,144,0.20)] bg-[rgba(196,36,144,0.05)] hover:bg-[rgba(196,36,144,0.12)] hover:border-energy transition-[background,border-color] duration-[80ms]"
+        className="cta-ai shrink-0 gap-sp-2"
       >
         <Sparkles size={16} strokeWidth={2} aria-hidden="true" />
         {t('aiCta.button')}
