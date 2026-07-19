@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { MapPin, Bookmark, AlertTriangle } from 'lucide-react'
+import { MapPin, Bookmark, AlertTriangle, Plus, Check } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import type { MapPoi } from '@/hooks/useMapPois'
 
@@ -28,12 +28,16 @@ interface Props {
   onSelectPoi:    (id: string) => void
   onToggleSave:   (poi: MapPoi) => void
   onOpenSaved:    () => void
+  isInPlan:       (id: string) => boolean
+  planFull:       boolean
+  onAddToPlan:    (id: string) => void
 }
 
 export default function LeftPanelDefault({
   pois, isLoading, isError,
   activeRegion, activeFilters, onRegionToggle, onFilterToggle,
   isSaved, onSelectPoi, onToggleSave, onOpenSaved,
+  isInPlan, planFull, onAddToPlan,
 }: Props) {
   const t = useTranslations('map')
   const recommended = [...pois].sort((a, b) => b.quality_score - a.quality_score).slice(0, RECOMMENDED_COUNT)
@@ -147,6 +151,8 @@ export default function LeftPanelDefault({
             {recommended.map(poi => {
               const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
               const saved = isSaved(poi.poi_id)
+              const inPlan = isInPlan(poi.poi_id)
+              const addDisabled = planFull && !inPlan
               return (
                 <div
                   key={poi.poi_id}
@@ -169,6 +175,26 @@ export default function LeftPanelDefault({
                         <span className="tabular-nums">{formatCount(poi.save_count ?? 0)}</span>
                       </span>
                     </span>
+                  </button>
+                  <button
+                    onClick={() => onAddToPlan(poi.poi_id)}
+                    disabled={addDisabled}
+                    aria-disabled={addDisabled}
+                    aria-pressed={inPlan}
+                    title={addDisabled ? t('poiDetail.planFull') : undefined}
+                    aria-label={inPlan ? t('poiDetail.added') : t('poiDetail.addToPlan')}
+                    className={[
+                      'shrink-0 w-8 h-8 flex items-center justify-center rounded-none transition-colors',
+                      inPlan
+                        ? 'text-lav cursor-default'
+                        : addDisabled
+                          ? 'text-muted-3 cursor-not-allowed'
+                          : 'text-muted-2 hover:bg-overlay-10 hover:text-fg',
+                    ].join(' ')}
+                  >
+                    {inPlan
+                      ? <Check size={16} strokeWidth={2} aria-hidden="true" />
+                      : <Plus size={16} strokeWidth={2} aria-hidden="true" />}
                   </button>
                   <button
                     onClick={() => onToggleSave(poi)}

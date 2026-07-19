@@ -22,6 +22,8 @@ interface Props {
   planFull:         boolean
   onAddToPlan:      (id: string) => void
   onToggleSave:     (poi: MapPoi) => void
+  isLiked:          boolean
+  onToggleLike:     () => void
   onReorder:        (newOrder: string[]) => void
   onRemove:         (id: string) => void
   onDurationChange: (id: string, minutes: number) => void
@@ -45,6 +47,7 @@ export default function LeftPanel({
   activeRegion, activeFilters, onRegionToggle, onFilterToggle,
   planStops, stopDurations,
   isSaved, isInPlan, planFull, onAddToPlan, onToggleSave,
+  isLiked, onToggleLike,
   onReorder, onRemove, onDurationChange, onPreviewPlan, onDiscardPlan,
   stopDays, activeDay, onDayChange, onClosePoi, onSelectPoi,
   poisLoading, poisError,
@@ -93,6 +96,8 @@ export default function LeftPanel({
             planFull={planFull}
             onAddToPlan={() => onAddToPlan(selectedPoi.poi_id)}
             onToggleSave={() => onToggleSave(selectedPoi)}
+            isLiked={isLiked}
+            onToggleLike={onToggleLike}
             onClose={onClosePoi}
           />
         ) : savedHubOpen ? (
@@ -114,6 +119,9 @@ export default function LeftPanel({
             onSelectPoi={onSelectPoi}
             onToggleSave={onToggleSave}
             onOpenSaved={onOpenSaved}
+            isInPlan={isInPlan}
+            planFull={planFull}
+            onAddToPlan={onAddToPlan}
           />
         )}
       </div>

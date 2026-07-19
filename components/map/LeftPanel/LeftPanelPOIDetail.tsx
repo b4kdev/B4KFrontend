@@ -13,6 +13,8 @@ interface Props {
   planFull:     boolean
   onAddToPlan:  () => void
   onToggleSave: () => void
+  isLiked:      boolean
+  onToggleLike: () => void
   onClose:      () => void
 }
 
@@ -21,7 +23,7 @@ function formatCount(n: number): string {
 }
 
 export default function LeftPanelPOIDetail({
-  poi, isSaved, isInPlan, planFull, onAddToPlan, onToggleSave, onClose,
+  poi, isSaved, isInPlan, planFull, onAddToPlan, onToggleSave, isLiked, onToggleLike, onClose,
 }: Props) {
   const t = useTranslations('map.poiDetail')
   const name = getDisplayName(poi)
@@ -133,24 +135,44 @@ export default function LeftPanelPOIDetail({
           }
         </button>
 
-        {/* LP_09 — Bookmark */}
-        <button
-          onClick={onToggleSave}
-          aria-label={isSaved ? t('unsave') : t('save')}
-          aria-pressed={isSaved}
-          className="w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-none font-medium bg-transparent text-muted border border-transparent hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
-        >
-          <Heart
-            size={16}
-            strokeWidth={2}
-            fill={isSaved ? 'currentColor' : 'none'}
-            className={isSaved ? 'text-danger' : 'text-muted'}
-            aria-hidden="true"
-          />
-          <span className={isSaved ? 'text-fg' : 'text-muted'}>
-            {isSaved ? t('saved') : t('save')}
-          </span>
-        </button>
+        {/* LP_09 — Bookmark + Like, side by side */}
+        <div className="flex gap-sp-3">
+          <button
+            onClick={onToggleSave}
+            aria-label={isSaved ? t('unsave') : t('save')}
+            aria-pressed={isSaved}
+            className="flex-1 min-h-touch flex items-center justify-center gap-sp-2 rounded-none font-medium bg-transparent text-muted border border-transparent hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
+          >
+            <Heart
+              size={16}
+              strokeWidth={2}
+              fill={isSaved ? 'currentColor' : 'none'}
+              className={isSaved ? 'text-danger' : 'text-muted'}
+              aria-hidden="true"
+            />
+            <span className={isSaved ? 'text-fg' : 'text-muted'}>
+              {isSaved ? t('saved') : t('save')}
+            </span>
+          </button>
+
+          <button
+            onClick={onToggleLike}
+            aria-label={isLiked ? t('unlike') : t('like')}
+            aria-pressed={isLiked}
+            className="flex-1 min-h-touch flex items-center justify-center gap-sp-2 rounded-none font-medium bg-transparent text-muted border border-transparent hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
+          >
+            <Heart
+              size={16}
+              strokeWidth={2}
+              fill={isLiked ? 'currentColor' : 'none'}
+              className={isLiked ? 'text-lav' : 'text-muted'}
+              aria-hidden="true"
+            />
+            <span className={isLiked ? 'text-fg' : 'text-muted'}>
+              {isLiked ? t('liked') : t('like')}
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   )

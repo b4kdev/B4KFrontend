@@ -488,6 +488,8 @@ export default function MapView() {
           planFull={planStopIds.length >= MAX_STOPS}
           onAddToPlan={handleAddToPlan}
           onToggleSave={handleToggleSave}
+          isLiked={selectedPoi ? likedPoiIds.has(selectedPoi.poi_id) : false}
+          onToggleLike={() => selectedPoi && handleToggleLike(selectedPoi)}
           onReorder={handleReorder}
           onRemove={handleRemoveFromPlan}
           onDurationChange={handleDurationChange}
