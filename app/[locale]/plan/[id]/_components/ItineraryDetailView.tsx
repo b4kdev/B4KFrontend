@@ -243,7 +243,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
 
       {/* Desktop LeftPanel (LP_16B) */}
       <aside
-        className="hidden lg:flex flex-col absolute left-0 top-0 bottom-0 w-[224px] bg-bg-2"
+        className="hidden lg:flex flex-col absolute left-0 top-0 bottom-0 w-sidebar bg-bg-2"
         style={{ borderRight: '1px solid var(--bdr)' }}
         aria-label={t('panel.ariaLabel')}
       >
@@ -254,7 +254,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
       </aside>
 
       {/* Map canvas */}
-      <div className="absolute inset-0 lg:left-[224px]">
+      <div className="absolute inset-0 lg:left-sidebar">
         <NaverMapCanvas
           pois={stopPois}
           selectedPoiId={selectedPoiId}
