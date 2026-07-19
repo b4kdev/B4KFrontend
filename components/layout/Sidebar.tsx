@@ -167,26 +167,69 @@ export default function Sidebar() {
             <User size={24} strokeWidth={2} style={{ opacity: 0.35 }} />
           </button>
         ) : (
-          <Link
-            href="/profile"
-            prefetch={false}
-            aria-label={t('profile')}
-            aria-current={isActive('/profile') ? 'page' : undefined}
-            className={railClass(isActive('/profile'))}
-            style={railStyle}
-          >
-            {profile?.avatar_url ? (
-              <Image
-                src={profile.avatar_url}
-                alt=""
-                width={24}
-                height={24}
-                className="rounded-full object-cover"
-              />
-            ) : (
-              <User size={24} strokeWidth={2} className="shrink-0" style={iconStyle(isActive('/profile'))} />
+          <div className="relative" ref={menuRef}>
+            <button
+              type="button"
+              aria-label={t('profile')}
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen(v => !v)}
+              className={railClass(isActive('/profile') || menuOpen)}
+              style={railStyle}
+            >
+              {profile?.avatar_url ? (
+                <Image
+                  src={profile.avatar_url}
+                  alt=""
+                  width={24}
+                  height={24}
+                  className="rounded-full object-cover"
+                />
+              ) : (
+                <User size={24} strokeWidth={2} className="shrink-0" style={iconStyle(isActive('/profile') || menuOpen)} />
+              )}
+            </button>
+
+            {menuOpen && (
+              <div
+                role="menu"
+                aria-label={t('profile')}
+                className="absolute left-full bottom-0 ml-sp-2 w-[180px] rounded-none bg-bg-2 py-sp-1 z-[70]"
+                style={{ border: 'var(--bdr)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+              >
+                <Link
+                  href="/profile"
+                  prefetch={false}
+                  role="menuitem"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-sp-3 min-h-touch px-sp-4 text-f-sm font-medium text-fg hover:bg-muted-3"
+                >
+                  <User size={18} strokeWidth={2} className="shrink-0 opacity-60" />
+                  {t('profile')}
+                </Link>
+                <Link
+                  href="/profile/settings"
+                  prefetch={false}
+                  role="menuitem"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-sp-3 min-h-touch px-sp-4 text-f-sm font-medium text-fg hover:bg-muted-3"
+                >
+                  <Settings size={18} strokeWidth={2} className="shrink-0 opacity-60" />
+                  {tProfile('tabs.settings')}
+                </Link>
+                <div style={{ borderTop: 'var(--bdr)' }} className="my-sp-1" />
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={handleSignOut}
+                  className="flex items-center gap-sp-3 w-full min-h-touch px-sp-4 text-f-sm font-medium text-danger hover:bg-muted-3"
+                >
+                  <LogOut size={18} strokeWidth={2} className="shrink-0" />
+                  {t('signOut')}
+                </button>
+              </div>
             )}
-          </Link>
+          </div>
         )}
       </div>
     </aside>
