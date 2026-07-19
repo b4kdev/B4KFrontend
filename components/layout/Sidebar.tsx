@@ -186,7 +186,7 @@ export default function Sidebar() {
             ) : (
               <User size={24} strokeWidth={2} className="shrink-0" style={iconStyle(isActive('/profile'))} />
             )}
-          </div>
+          </Link>
         )}
       </div>
     </aside>
