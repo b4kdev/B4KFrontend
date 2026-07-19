@@ -40,7 +40,7 @@ export default function LeftPanelDefault({
   isInPlan, planFull, onAddToPlan,
 }: Props) {
   const t = useTranslations('map')
-  const recommended = [...pois].sort((a, b) => b.quality_score - a.quality_score).slice(0, RECOMMENDED_COUNT)
+  const recommended = [...pois].sort((a, b) => (b.quality_score ?? 0) - (a.quality_score ?? 0)).slice(0, RECOMMENDED_COUNT)
 
   return (
     <div className="flex flex-col h-full overflow-y-auto themed-scrollbar">
@@ -161,7 +161,7 @@ export default function LeftPanelDefault({
                   <button
                     onClick={() => onSelectPoi(poi.poi_id)}
                     className="flex items-center gap-sp-2 flex-1 min-w-0 text-left"
-                    aria-label={t('recommended.cardAriaLabel', { name, region: poi.display_region })}
+                    aria-label={t('recommended.cardAriaLabel', { name, region: poi.display_region ?? '' })}
                   >
                     <span className="w-12 h-12 shrink-0 bg-bg-3 flex items-center justify-center overflow-hidden">
                       <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
