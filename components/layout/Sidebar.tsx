@@ -98,7 +98,7 @@ export default function Sidebar() {
       </div>
 
       {/* Main nav */}
-      <nav className="flex flex-col gap-[2px] flex-1 px-[6px] pt-sp-3" aria-label={t('mainNavigation')}>
+      <nav className="flex flex-col gap-[2px] flex-1 px-[3px] pt-sp-3" aria-label={t('mainNavigation')}>
         {NAV_ITEMS.map(({ href, icon: Icon, labelKey }) => {
           return (
             // prefetch={false} — this rail renders on every page, so the
@@ -121,7 +121,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom anchors: Notifications + Profile — M18: guests are gated (variant #6) */}
-      <div className="p-sp-2 flex flex-col gap-[2px] shrink-0" style={{ borderTop: 'var(--bdr)' }}>
+      <div className="px-[3px] py-sp-2 flex flex-col gap-[2px] shrink-0" style={{ borderTop: 'var(--bdr)' }}>
         {isGuest ? (
           <button
             type="button"
@@ -130,7 +130,7 @@ export default function Sidebar() {
             className={railClass(false)}
             style={railStyle}
           >
-            <Bell size={24} strokeWidth={2} style={{ opacity: 0.35 }} />
+            <Bell size={24} strokeWidth={2} className="shrink-0" style={{ opacity: 0.35 }} />
           </button>
         ) : (
           <Link
@@ -161,7 +161,7 @@ export default function Sidebar() {
             className={railClass(false)}
             style={railStyle}
           >
-            <User size={24} strokeWidth={2} style={{ opacity: 0.35 }} />
+            <User size={24} strokeWidth={2} className="shrink-0" style={{ opacity: 0.35 }} />
           </button>
         ) : (
           <div className="relative" ref={menuRef}>
