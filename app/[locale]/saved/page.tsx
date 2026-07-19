@@ -345,7 +345,7 @@ export default function SavedPage() {
 
             {data.folders.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-none" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
-                <FolderOpen size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
+                <FolderOpen size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
                 <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.places.title')}</p>
                 <p className="text-f-md text-muted max-w-[320px] mb-sp-5">{t('empty.places.desc')}</p>
                 <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-none text-f-md font-semibold text-bg min-h-touch" style={{ background: 'var(--lav)' }}>
@@ -412,7 +412,7 @@ export default function SavedPage() {
                 return (
                   <div key={poi.poi_id} className="flex items-center gap-sp-3 p-sp-4" style={idx < visiblePois.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}>
                     <div className="w-10 h-10 rounded-none flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
-                      <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                      <MapPin size={16} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-f-base font-semibold text-fg truncate">{name}</p>
@@ -497,7 +497,7 @@ export default function SavedPage() {
       {!isLoading && !isError && data && tab === 'myPlans' && (
         data.myPlans.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-none" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
-            <FileText size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
+            <FileText size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
             <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.myPlans.title')}</p>
             <p className="text-f-md text-muted max-w-[320px] mb-sp-5">{t('empty.myPlans.desc')}</p>
             <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-none text-f-md font-semibold text-bg min-h-touch" style={{ background: 'var(--lav)' }}>
@@ -546,7 +546,7 @@ export default function SavedPage() {
                     style={{ background: 'var(--bg-3)' }}
                     aria-label={t('myPlan.ariaLabel', { title: plan.title })}
                   >
-                    <MapPin size={22} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                    <MapPin size={22} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                   </Link>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-sp-2 mb-[4px]">
@@ -608,7 +608,7 @@ export default function SavedPage() {
       {!isLoading && !isError && data && tab === 'savedPlans' && (
         visibleSavedPlans.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-none" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
-            <Bookmark size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
+            <Bookmark size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
             <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.savedPlans.title')}</p>
             <p className="text-f-md text-muted max-w-[320px] mb-sp-5">{t('empty.savedPlans.desc')}</p>
             <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-none text-f-md font-semibold text-bg min-h-touch" style={{ background: 'var(--lav)' }}>
@@ -629,7 +629,7 @@ export default function SavedPage() {
                   style={{ background: 'var(--bg-3)' }}
                   aria-label={t('plan.ariaLabel', { title: plan.title })}
                 >
-                  <MapPin size={22} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                  <MapPin size={22} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                 </Link>
                 <div className="flex-1 min-w-0">
                   <Link href={`/plan/${plan.id}`} className="block text-f-base font-semibold text-fg leading-snug mb-[4px] line-clamp-2 hover:text-lav transition-colors">

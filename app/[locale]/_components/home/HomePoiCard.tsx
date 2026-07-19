@@ -64,7 +64,7 @@ export default function HomePoiCard({ poi, badge }: Props) {
         aria-label={t('ariaLabel', { name, region: poi.display_region })}
       >
         <div className="relative bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '4/3' }}>
-          <MapPin size={28} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+          <MapPin size={28} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
           {poi.primary_image_url && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={poi.primary_image_url} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />

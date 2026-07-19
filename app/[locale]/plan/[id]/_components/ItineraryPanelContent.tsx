@@ -91,7 +91,7 @@ function LegRow({
         style={{ borderLeft: '1px solid var(--muted-3)' }}
         aria-label={t('leg.ariaLabel', { from: fromOrder, to: toOrder })}
       >
-        <Loader2 size={11} strokeWidth={2} className="animate-spin shrink-0 text-muted-2" aria-hidden="true" />
+        <Loader2 size={11} strokeWidth={2} className="animate-spin shrink-0 text-fg opacity-[0.15]" aria-hidden="true" />
         <span className="text-f-xs text-muted-2">{t('leg.calculating')}</span>
       </div>
     )
@@ -425,7 +425,7 @@ export default function ItineraryPanelContent({
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <MapPin size={14} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                      <MapPin size={14} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                     </div>
                   )}
                 </div>
@@ -485,7 +485,7 @@ export default function ItineraryPanelContent({
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={rel.thumbnail_url} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <Route size={14} strokeWidth={2} className="text-muted-2" />
+                    <Route size={14} strokeWidth={2} className="text-fg opacity-[0.15]" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">

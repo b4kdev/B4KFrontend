@@ -184,7 +184,7 @@ export default function BadgesPage() {
       {/* Empty */}
       {!isLoading && !error && displayBadges.length === 0 && (
         <div className="flex flex-col items-center text-center py-sp-16 px-sp-4 gap-sp-6">
-          <Award size={40} strokeWidth={2} className="text-muted-2" />
+          <Award size={40} strokeWidth={2} className="text-fg opacity-[0.15]" />
           <div>
             <p className="text-f-xl font-semibold text-fg mb-1">{t('badges.empty.title')}</p>
             <p className="text-f-md text-muted max-w-[280px]">{t('badges.empty.desc')}</p>

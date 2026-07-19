@@ -104,9 +104,9 @@ export default function PlanBottomSheet({
             <button
               onClick={onDismiss}
               aria-label={t('close')}
-              className="min-w-[28px] min-h-[28px] flex items-center justify-center text-muted hover:text-fg transition-colors"
+              className="min-w-[28px] min-h-[28px] flex items-center justify-center text-fg hover:bg-muted-3 transition-colors"
             >
-              <X size={16} strokeWidth={2} />
+              <X size={16} strokeWidth={2} style={{ opacity: 0.35 }} />
             </button>
           </div>
         </div>

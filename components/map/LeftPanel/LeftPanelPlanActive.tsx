@@ -133,7 +133,7 @@ export default function LeftPanelPlanActive({
                 {/* LP_12 — Drag handle (visible on hover) */}
                 <button
                   aria-label={t('dragHandle', { n: i + 1 })}
-                  className="cursor-grab active:cursor-grabbing text-muted opacity-0 group-hover:opacity-100 transition-opacity shrink-0 min-w-[20px] min-h-[20px] flex items-center justify-center"
+                  className="cursor-grab active:cursor-grabbing text-fg opacity-0 group-hover:opacity-[0.35] transition-opacity shrink-0 min-w-[20px] min-h-[20px] flex items-center justify-center"
                 >
                   <GripVertical size={13} strokeWidth={2} />
                 </button>
@@ -168,9 +168,9 @@ export default function LeftPanelPlanActive({
                 <button
                   onClick={() => onRemove(poi.poi_id)}
                   aria-label={t('removeStop', { n: i + 1 })}
-                  className="text-muted hover:text-danger transition-colors shrink-0 min-w-touch min-h-touch flex items-center justify-center"
+                  className="group text-fg hover:text-danger transition-colors shrink-0 min-w-touch min-h-touch flex items-center justify-center"
                 >
-                  <X size={13} strokeWidth={2} />
+                  <X size={13} strokeWidth={2} className="opacity-[0.35] group-hover:opacity-100 transition-opacity" />
                 </button>
               </div>
 

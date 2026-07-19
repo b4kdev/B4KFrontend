@@ -466,7 +466,7 @@ export default function MapView() {
   }
 
   return (
-    <div className="fixed top-[50px] left-0 right-0 bottom-14 lg:left-[50px] lg:bottom-0 z-10">
+    <div className="fixed top-[50px] lg:top-[56px] left-0 right-0 bottom-14 lg:left-[56px] lg:bottom-0 z-10">
 
       {/* LeftPanel — desktop only */}
       <aside

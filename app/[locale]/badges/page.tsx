@@ -102,7 +102,7 @@ function BadgeDetailSheet({
             {badge.earned ? (
               <Trophy size={28} strokeWidth={2} className={color} aria-hidden="true" />
             ) : (
-              <Lock size={22} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+              <Lock size={22} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
             )}
           </div>
 
@@ -327,7 +327,7 @@ export default function BadgesPage() {
             className="flex flex-col items-center justify-center text-center py-16 px-6"
             style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
           >
-            <Award size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
+            <Award size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
             <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('badges.empty.title')}</p>
             <p className="text-f-md text-muted max-w-[300px]">{t('badges.empty.desc')}</p>
           </div>
@@ -353,7 +353,7 @@ export default function BadgesPage() {
                     {badge.earned ? (
                       <Award size={24} strokeWidth={2} className={color} />
                     ) : (
-                      <Lock size={18} strokeWidth={2} className="text-muted-2" />
+                      <Lock size={18} strokeWidth={2} className="text-fg opacity-[0.15]" />
                     )}
                     {badge.is_pinned && (
                       <span

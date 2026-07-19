@@ -249,9 +249,9 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
         <button
           onClick={onDismiss}
           aria-label={t('close')}
-          className="absolute top-sp-3 right-sp-3 min-w-touch min-h-touch flex items-center justify-center text-muted hover:text-fg transition-colors rounded-none"
+          className="absolute top-sp-3 right-sp-3 min-w-touch min-h-touch flex items-center justify-center text-fg hover:bg-muted-3 transition-colors rounded-none"
         >
-          <X size={20} strokeWidth={2} />
+          <X size={20} strokeWidth={2} style={{ opacity: 0.35 }} />
         </button>
 
         <div className="flex flex-col items-center text-center gap-sp-4 pt-sp-2">

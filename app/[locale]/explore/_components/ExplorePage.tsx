@@ -119,7 +119,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
     <div className="flex">
       {/* Desktop sidebar */}
       <aside
-        className="hidden lg:flex flex-col w-sidebar shrink-0 sticky top-[50px] self-start h-[calc(100vh-50px)] overflow-y-auto py-sp-4 px-sp-3 bg-bg-2"
+        className="hidden lg:flex flex-col w-sidebar shrink-0 sticky top-[56px] self-start h-[calc(100vh-56px)] overflow-y-auto py-sp-4 px-sp-3 bg-bg-2"
         style={{ borderRight: 'var(--bdr)' }}
         aria-label={t('sidebar.ariaLabel')}
       >
@@ -253,7 +253,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                 className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-none"
                 style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
               >
-                <CatIcon size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
+                <CatIcon size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
                 <p className="text-f-xl font-semibold text-fg mb-sp-2">{t(`${cat.tKey}.empty.title`)}</p>
                 <p className="text-f-md text-muted max-w-[320px] mb-sp-4">{t(`${cat.tKey}.empty.desc`)}</p>
                 <Link

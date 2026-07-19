@@ -103,9 +103,9 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
             <button
               onClick={onClose}
               aria-label={t('folder.back')}
-              className="min-w-touch min-h-touch flex items-center justify-center text-muted hover:text-fg transition-colors shrink-0"
+              className="min-w-touch min-h-touch flex items-center justify-center text-fg hover:bg-muted-3 transition-colors shrink-0"
             >
-              <X size={18} strokeWidth={2} />
+              <X size={18} strokeWidth={2} style={{ opacity: 0.35 }} />
             </button>
           </div>
           {/* Tabs (hidden while inside a folder) */}
@@ -149,7 +149,7 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
                           className="flex-1 min-w-0 flex items-center gap-sp-3 text-left min-h-touch"
                         >
                           <div className="w-10 h-10 rounded-none flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
-                            <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                            <MapPin size={16} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-f-base font-semibold text-fg truncate">{name}</p>
@@ -171,7 +171,7 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
               </div>
             ) : (data?.folders?.length ?? 0) === 0 ? (
               <div className="flex flex-col items-center text-center p-sp-10">
-                <FolderOpen size={32} strokeWidth={2} className="text-muted-2 mb-sp-3" aria-hidden="true" />
+                <FolderOpen size={32} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-3" aria-hidden="true" />
                 <p className="text-f-md text-muted">{t('empty.places.title')}</p>
               </div>
             ) : (
@@ -185,7 +185,7 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
                     style={idx < data!.folders.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}
                   >
                     <div className="w-10 h-10 rounded-none flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
-                      <FolderOpen size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                      <FolderOpen size={16} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-f-base font-semibold text-fg truncate">{folder.name}</p>
@@ -199,7 +199,7 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
             /* My Plans */
             (data?.myPlans?.length ?? 0) === 0 ? (
               <div className="flex flex-col items-center text-center p-sp-10">
-                <FileText size={32} strokeWidth={2} className="text-muted-2 mb-sp-3" aria-hidden="true" />
+                <FileText size={32} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-3" aria-hidden="true" />
                 <p className="text-f-md text-muted">{t('empty.myPlans.title')}</p>
               </div>
             ) : (
@@ -213,7 +213,7 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
                     style={idx < data!.myPlans.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}
                   >
                     <div className="w-10 h-10 rounded-none flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
-                      <FileText size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                      <FileText size={16} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-f-base font-semibold text-fg truncate">{plan.title}</p>

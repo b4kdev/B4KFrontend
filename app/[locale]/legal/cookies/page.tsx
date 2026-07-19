@@ -18,7 +18,7 @@ export default function Page() {
         className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-none"
         style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       >
-        <Cookie size={40} strokeWidth={2} className="text-muted-2 mb-4" />
+        <Cookie size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-4" />
         <p className="text-f-xl font-semibold text-fg mb-2">{t('empty.title')}</p>
         <p className="text-f-md text-muted max-w-[320px]">{t('empty.desc')}</p>
       </div>

@@ -171,11 +171,11 @@ function SearchDropdown({
                         <span className="text-f-sm text-fg truncate">{q}</span>
                       </button>
                       <button
-                        className="text-muted hover:text-fg shrink-0 min-h-touch min-w-[32px] flex items-center justify-center"
+                        className="text-fg shrink-0 min-h-touch min-w-[32px] flex items-center justify-center"
                         onClick={() => onRecentRemove(q)}
                         aria-label={t('removeRecent', { query: q })}
                       >
-                        <X size={12} strokeWidth={2} />
+                        <X size={12} strokeWidth={2} style={{ opacity: 0.35 }} />
                       </button>
                     </div>
                   </li>
@@ -366,16 +366,16 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
   return (
     <>
       <header
-        className="fixed top-0 right-0 z-50 h-[50px] flex items-center gap-2.5 bg-bg-2 lg:left-[50px] left-0"
+        className="fixed top-0 right-0 z-50 h-[50px] lg:h-[56px] flex items-center gap-2.5 bg-bg-2 lg:left-[56px] left-0"
         style={{ borderBottom: 'var(--bdr)' }}
       >
         {/* Mobile hamburger */}
         <button
-          className="lg:hidden relative min-w-touch min-h-touch ml-4 flex items-center justify-center rounded-none text-muted hover:text-fg shrink-0"
+          className="lg:hidden relative min-w-touch min-h-touch ml-4 flex items-center justify-center rounded-none text-fg hover:bg-muted-3 shrink-0"
           onClick={onMobileMenuOpen}
           aria-label={tNav('menuOpen')}
         >
-          <Menu size={24} strokeWidth={2} />
+          <Menu size={24} strokeWidth={2} style={{ opacity: 0.35 }} />
           {notifCount > 0 && (
             <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-danger text-fg text-f-xxs font-bold flex items-center justify-center">
               {notifCount}
@@ -390,8 +390,8 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
           role="combobox"
           aria-expanded={dropdownOpen}
           aria-haspopup="listbox"
-          aria-owns="search-listbox"
-          aria-controls="search-listbox"
+          aria-owns={dropdownOpen ? 'search-listbox' : undefined}
+          aria-controls={dropdownOpen ? 'search-listbox' : undefined}
         >
           <form onSubmit={handleSubmit} className="w-full relative">
             <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none z-10" aria-hidden="true">
@@ -409,16 +409,16 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
               style={{ border: '1px solid var(--bdr)' }}
               aria-label={tSearch('placeholder')}
               aria-autocomplete="list"
-              aria-controls="search-listbox"
+              aria-controls={dropdownOpen ? 'search-listbox' : undefined}
             />
             {searchVal && (
               <button
                 type="button"
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted hover:text-fg z-10"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-fg z-10"
                 onClick={() => { setSearchVal(''); setDropdownOpen(true); inputRef.current?.focus(); }}
                 aria-label={t('clearSearch')}
               >
-                <X size={12} strokeWidth={2} />
+                <X size={12} strokeWidth={2} style={{ opacity: 0.35 }} />
               </button>
             )}
           </form>
@@ -442,14 +442,14 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
           {/* Locale switcher */}
           <div className="relative" ref={localeRef}>
             <button
-              className="min-w-touch min-h-touch flex items-center justify-center rounded-none text-muted hover:text-fg hover:bg-muted-3"
-              style={{ transitionProperty: 'color, background-color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}
+              className="min-w-touch min-h-touch flex items-center justify-center rounded-none text-fg hover:bg-muted-3"
+              style={{ transitionProperty: 'background-color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}
               aria-label={tNav('language')}
               aria-expanded={localeOpen}
               aria-haspopup="listbox"
               onClick={() => setLocaleOpen(o => !o)}
             >
-              <Globe size={24} strokeWidth={2} />
+              <Globe size={24} strokeWidth={2} style={{ opacity: 0.35 }} />
             </button>
             {localeOpen && (
               <div
@@ -478,11 +478,11 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
 
           <Link
             href="/help"
-            className="min-w-touch min-h-touch flex items-center justify-center rounded-none text-muted hover:text-fg hover:bg-muted-3"
-            style={{ transitionProperty: 'color, background-color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}
+            className="min-w-touch min-h-touch flex items-center justify-center rounded-none text-fg hover:bg-muted-3"
+            style={{ transitionProperty: 'background-color', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)' }}
             aria-label={tNav('help')}
           >
-            <HelpCircle size={24} strokeWidth={2} />
+            <HelpCircle size={24} strokeWidth={2} style={{ opacity: 0.35 }} />
           </Link>
         </div>
 

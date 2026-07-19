@@ -633,7 +633,7 @@ export default function SearchPage() {
       <div className="lg:flex">
         {/* Desktop filter sidebar */}
         <aside
-          className="hidden lg:flex flex-col w-sidebar shrink-0 sticky top-[50px] h-[calc(100vh-50px)] overflow-y-auto py-sp-6 px-sp-4"
+          className="hidden lg:flex flex-col w-sidebar shrink-0 sticky top-[56px] h-[calc(100vh-56px)] overflow-y-auto py-sp-6 px-sp-4"
           style={{ borderRight: 'var(--bdr)', background: 'var(--bg-2)' }}
         >
           <SearchFilterPanel state={filterState} />

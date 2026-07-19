@@ -51,7 +51,7 @@ export default function PartnerPackages() {
               aria-label={t('card.ariaLabel', { title: pkg.title, partner: pkg.partner_name })}
             >
               <div className="relative bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '4/3' }}>
-                <Package size={28} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                <Package size={28} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                 {pkg.cover_image_url && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={pkg.cover_image_url} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />

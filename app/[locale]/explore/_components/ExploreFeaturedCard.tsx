@@ -36,7 +36,7 @@ export default function ExploreFeaturedCard({ poi, domain }: { poi: ExplorePoi; 
             className="flex items-center justify-center"
             style={{ background: 'var(--bg-3)', aspectRatio: '16/9' }}
           >
-            <MapPin size={28} strokeWidth={2} className="text-muted-2" />
+            <MapPin size={28} strokeWidth={2} className="text-fg opacity-[0.15]" />
           </div>
         )}
         {isPartner && (

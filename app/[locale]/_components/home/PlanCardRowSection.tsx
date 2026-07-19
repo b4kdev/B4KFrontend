@@ -36,7 +36,7 @@ function PlanCard({ plan, t }: { plan: HomePopularPlan; t: ReturnType<typeof use
       aria-label={t('card.ariaLabel', { title, author: plan.author_name })}
     >
       <div className="relative bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '4/3' }}>
-        <Route size={28} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+        <Route size={28} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
         {plan.cover_image_url && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={plan.cover_image_url} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />

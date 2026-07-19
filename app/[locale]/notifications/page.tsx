@@ -150,7 +150,7 @@ export default function NotificationsPage() {
             className="flex flex-col items-center justify-center text-center py-16 px-6 rounded-none"
             style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
           >
-            <Bell size={40} strokeWidth={2} className="text-muted-2 mb-sp-4" />
+            <Bell size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
             <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.title')}</p>
             <p className="text-f-md text-muted max-w-[300px]">{t('empty.desc')}</p>
           </div>

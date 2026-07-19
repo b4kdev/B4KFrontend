@@ -30,7 +30,7 @@ export default function FolderCard({
     <div className="w-full grid grid-cols-2 gap-[2px] bg-bg-3 aspect-[2/1] overflow-hidden">
       {thumbnails.length === 0 ? (
         <div className="col-span-2 row-span-2 flex items-center justify-center bg-bg-3">
-          <FolderOpen size={32} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+          <FolderOpen size={32} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
         </div>
       ) : (
         thumbnails.map((poi, i) => (
@@ -39,7 +39,7 @@ export default function FolderCard({
               // eslint-disable-next-line @next/next/no-img-element
               <img src={poi.primary_image_url} alt="" className="w-full h-full object-cover" />
             ) : (
-              <MapPin size={16} strokeWidth={2} className="text-muted-3" aria-hidden="true" />
+              <MapPin size={16} strokeWidth={2} className="text-fg opacity-[0.06]" aria-hidden="true" />
             )}
             {i === 3 && extraCount > 0 && (
               <div className="absolute inset-0 flex items-center justify-center bg-backdrop-50">
@@ -108,9 +108,9 @@ export default function FolderCard({
               onClick={() => setMenuOpen(v => !v)}
               aria-label={t('folderMenu', { name: folder.name })}
               aria-expanded={menuOpen}
-              className="min-w-touch min-h-touch flex items-center justify-center text-muted hover:text-fg transition-colors -mr-sp-2 -mt-sp-1"
+              className="min-w-touch min-h-touch flex items-center justify-center text-fg hover:bg-muted-3 transition-colors -mr-sp-2 -mt-sp-1"
             >
-              <MoreVertical size={18} strokeWidth={2} />
+              <MoreVertical size={18} strokeWidth={2} style={{ opacity: 0.35 }} />
             </button>
             {menuOpen && (
               <>

@@ -16,7 +16,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 // Desktop-only SideNav rail (SN_01–07). The mobile hamburger menu is a
 // separate component (MobileDrawer) per DEC-06 — this rail is hidden < lg.
 // TODO(L8): collapsible '>>' toggle deferred — expanding the rail would
-// require converting the hardcoded `lg:left-[50px]` content offset (used in
+// require converting the hardcoded `lg:left-[56px]` content offset (used in
 // TopNav, MapView, ItineraryDetailView) to a shared variable; low priority.
 
 const NAV_ITEMS = [
@@ -87,11 +87,11 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="hidden lg:flex fixed left-0 top-0 h-screen z-[60] flex-col w-[50px] bg-bg-2"
+      className="hidden lg:flex fixed left-0 top-0 h-screen z-[60] flex-col w-[56px] bg-bg-2"
       style={{ borderRight: 'var(--bdr)' }}
     >
       {/* Logo */}
-      <div className="flex items-center justify-center h-[50px] shrink-0" style={{ borderBottom: 'var(--bdr)' }}>
+      <div className="flex items-center justify-center h-[56px] shrink-0" style={{ borderBottom: 'var(--bdr)' }}>
         <Link href="/" prefetch={false} className="flex items-center justify-center w-full h-full" aria-label={t('logoHome')}>
           <Image src="/logo.svg" alt="B4K" width={28} height={26} className="object-contain" />
         </Link>

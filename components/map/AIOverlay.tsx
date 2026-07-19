@@ -453,16 +453,16 @@ export default function AIOverlay({
           <button
             onClick={onMinimize}
             aria-label={t('minimize')}
-            className="min-w-touch min-h-touch flex items-center justify-center text-muted hover:text-fg transition-colors"
+            className="min-w-touch min-h-touch flex items-center justify-center text-fg hover:bg-muted-3 transition-colors"
           >
-            <Minus size={16} strokeWidth={2} />
+            <Minus size={16} strokeWidth={2} style={{ opacity: 0.35 }} />
           </button>
           <button
             onClick={onClose}
             aria-label={t('close')}
-            className="min-w-touch min-h-touch flex items-center justify-center text-muted hover:text-fg transition-colors"
+            className="min-w-touch min-h-touch flex items-center justify-center text-fg hover:bg-muted-3 transition-colors"
           >
-            <X size={16} strokeWidth={2} />
+            <X size={16} strokeWidth={2} style={{ opacity: 0.35 }} />
           </button>
         </div>
         {chatContent}
@@ -485,9 +485,9 @@ export default function AIOverlay({
           <button
             onClick={onClose}
             aria-label={t('back')}
-            className="min-w-touch min-h-touch flex items-center justify-center text-muted hover:text-fg transition-colors"
+            className="min-w-touch min-h-touch flex items-center justify-center text-fg hover:bg-muted-3 transition-colors"
           >
-            <ArrowLeft size={20} strokeWidth={2} />
+            <ArrowLeft size={20} strokeWidth={2} style={{ opacity: 0.35 }} />
           </button>
           <Sparkles size={16} strokeWidth={2} className="text-lav" aria-hidden="true" />
           <span className="text-fg text-sm font-semibold flex-1">{t('title')}</span>

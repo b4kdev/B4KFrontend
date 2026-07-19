@@ -81,7 +81,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
               className="w-full h-full object-cover"
             />
           ) : (
-            <MapPin size={22} strokeWidth={2} className="text-muted-2" />
+            <MapPin size={22} strokeWidth={2} className="text-fg opacity-[0.15]" />
           )}
           {/* D-Day countdown badge — event/festival/merch items */}
           {dDay && (

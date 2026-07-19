@@ -93,16 +93,16 @@ export default function POIBottomSheet({
             <button
               onClick={handleShare}
               aria-label={t('share')}
-              className="min-w-touch min-h-touch flex items-center justify-center text-muted hover:text-fg transition-colors shrink-0"
+              className="min-w-touch min-h-touch flex items-center justify-center text-fg hover:bg-muted-3 transition-colors shrink-0"
             >
-              <Share2 size={18} strokeWidth={2} />
+              <Share2 size={18} strokeWidth={2} style={{ opacity: 0.35 }} />
             </button>
             <button
               onClick={onDismiss}
               aria-label={t('dismiss')}
-              className="min-w-touch min-h-touch flex items-center justify-center text-muted hover:text-fg transition-colors shrink-0"
+              className="min-w-touch min-h-touch flex items-center justify-center text-fg hover:bg-muted-3 transition-colors shrink-0"
             >
-              <X size={18} strokeWidth={2} />
+              <X size={18} strokeWidth={2} style={{ opacity: 0.35 }} />
             </button>
           </div>
         </div>
@@ -123,7 +123,7 @@ export default function POIBottomSheet({
             />
           ) : (
             <div className="-mx-sp-4 mb-sp-3 bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '16/9' }}>
-              <ImageOff size={28} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+              <ImageOff size={28} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
             </div>
           )}
 

@@ -104,7 +104,7 @@ function TripCard({
             className="w-full h-full object-cover"
           />
         ) : (
-          <Route size={28} strokeWidth={2} className="text-muted-2" />
+          <Route size={28} strokeWidth={2} className="text-fg opacity-[0.15]" />
         )}
       </div>
 
@@ -249,7 +249,7 @@ export default function TripsPage() {
           undefined since the fetch is gated on `user` in useProfileTrips). */}
       {!isLoading && !error && !trips?.length && (
         <div className="flex flex-col items-center text-center py-sp-16 px-sp-4 gap-sp-6">
-          <Route size={40} strokeWidth={2} className="text-muted-2" />
+          <Route size={40} strokeWidth={2} className="text-fg opacity-[0.15]" />
           <div>
             <p className="text-f-xl font-semibold text-fg mb-1">{t('trips.empty.title')}</p>
             <p className="text-f-md text-muted max-w-[280px]">{t('trips.empty.desc')}</p>

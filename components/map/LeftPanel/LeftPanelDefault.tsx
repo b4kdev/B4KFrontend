@@ -51,9 +51,9 @@ export default function LeftPanelDefault({
           onClick={onOpenSaved}
           aria-label={t('leftPanel.viewSaved')}
           title={t('leftPanel.viewSaved')}
-          className="flex items-center justify-center min-w-touch min-h-touch rounded-none text-muted hover:text-lav hover:bg-overlay-10 transition-colors"
+          className="group flex items-center justify-center min-w-touch min-h-touch rounded-none text-fg hover:text-lav hover:bg-overlay-10 transition-colors"
         >
-          <Bookmark size={24} strokeWidth={2} aria-hidden="true" />
+          <Bookmark size={24} strokeWidth={2} aria-hidden="true" className="opacity-[0.35] group-hover:opacity-100 transition-opacity" />
         </button>
       </div>
 
@@ -137,7 +137,7 @@ export default function LeftPanelDefault({
 
         {!isLoading && isError && (
           <div className="flex flex-col items-center text-center gap-sp-2 py-sp-6">
-            <AlertTriangle size={20} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+            <AlertTriangle size={20} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
             <p className="text-f-xs text-muted">{t('recommended.error')}</p>
           </div>
         )}
@@ -164,7 +164,7 @@ export default function LeftPanelDefault({
                     aria-label={t('recommended.cardAriaLabel', { name, region: poi.display_region ?? '' })}
                   >
                     <span className="w-12 h-12 shrink-0 bg-bg-3 flex items-center justify-center overflow-hidden">
-                      <MapPin size={16} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                      <MapPin size={16} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                     </span>
                     <span className="flex-1 min-w-0 flex flex-col gap-[2px]">
                       <span className="text-f-sm font-medium text-fg leading-snug line-clamp-1">{name}</span>

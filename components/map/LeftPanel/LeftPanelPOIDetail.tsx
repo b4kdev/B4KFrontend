@@ -39,9 +39,9 @@ export default function LeftPanelPOIDetail({
         <button
           onClick={onClose}
           aria-label={t('close')}
-          className="self-end -mt-sp-1 -mr-sp-1 min-w-touch min-h-touch flex items-center justify-center text-muted hover:text-fg transition-colors"
+          className="self-end -mt-sp-1 -mr-sp-1 min-w-touch min-h-touch flex items-center justify-center text-fg hover:bg-muted-3 transition-colors"
         >
-          <X size={18} strokeWidth={2} aria-hidden="true" />
+          <X size={18} strokeWidth={2} aria-hidden="true" style={{ opacity: 0.35 }} />
         </button>
 
         {/* LP_11-16 — Media (primary image, placeholder if none) */}
@@ -55,7 +55,7 @@ export default function LeftPanelPOIDetail({
           />
         ) : (
           <div className="-mx-sp-4 -mt-sp-2 bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '4/3' }}>
-            <ImageOff size={28} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+            <ImageOff size={28} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
           </div>
         )}
 

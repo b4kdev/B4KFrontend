@@ -100,11 +100,11 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
         <div className="flex items-center justify-end h-[50px] shrink-0 px-sp-2" style={{ borderBottom: 'var(--bdr)' }}>
           <button
             type="button"
-            className="min-w-touch min-h-touch flex items-center justify-center text-muted"
+            className="min-w-touch min-h-touch flex items-center justify-center text-fg"
             onClick={onClose}
             aria-label={t('menuClose')}
           >
-            <X size={24} strokeWidth={2} />
+            <X size={24} strokeWidth={2} style={{ opacity: 0.35 }} />
           </button>
         </div>
 

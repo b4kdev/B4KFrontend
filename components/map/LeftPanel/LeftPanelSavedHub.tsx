@@ -64,9 +64,9 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
           <button
             onClick={onClose}
             aria-label={t('folder.back')}
-            className="min-w-touch min-h-touch flex items-center justify-center text-muted hover:text-fg transition-colors shrink-0"
+            className="min-w-touch min-h-touch flex items-center justify-center text-fg hover:bg-muted-3 transition-colors shrink-0"
           >
-            <X size={18} strokeWidth={2} aria-hidden="true" />
+            <X size={18} strokeWidth={2} aria-hidden="true" style={{ opacity: 0.35 }} />
           </button>
         </div>
         {!activeFolder && (
@@ -92,16 +92,16 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
             <div>
               <button
                 onClick={() => setActiveFolder(null)}
-                className="flex items-center gap-sp-2 text-muted hover:text-fg transition-colors text-f-sm m-sp-4 min-h-touch"
+                className="group flex items-center gap-sp-2 hover:text-fg transition-colors text-f-sm m-sp-4 min-h-touch text-muted"
               >
-                <ArrowLeft size={14} strokeWidth={2} aria-hidden="true" />{activeFolder.name}
+                <ArrowLeft size={14} strokeWidth={2} aria-hidden="true" className="text-fg opacity-[0.35] group-hover:opacity-100 transition-opacity" />{activeFolder.name}
               </button>
               {(() => {
                 const visiblePois = activeFolder.pois.filter(p => !removingPoiIds.has(p.poi_id))
                 if (visiblePois.length === 0) {
                   return (
                     <div className="flex flex-col items-center text-center p-sp-8">
-                      <FolderOpen size={28} strokeWidth={2} className="text-muted-2 mb-sp-2" aria-hidden="true" />
+                      <FolderOpen size={28} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-2" aria-hidden="true" />
                       <p className="text-f-sm text-muted">{t('empty.places.title')}</p>
                     </div>
                   )
@@ -119,7 +119,7 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
                         className="flex-1 min-w-0 flex items-center gap-sp-2 text-left min-h-touch"
                       >
                         <div className="w-8 h-8 flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
-                          <MapPin size={14} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                          <MapPin size={14} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-f-sm font-semibold text-fg truncate">{name}</p>
@@ -130,9 +130,9 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
                         onClick={() => handleRemovePoi(poi.poi_id)}
                         aria-label={t('poi.removeAriaLabel', { name })}
                         title={t('poi.removeLabel')}
-                        className="min-w-touch min-h-touch flex items-center justify-center shrink-0 text-muted hover:text-danger transition-colors"
+                        className="group min-w-touch min-h-touch flex items-center justify-center shrink-0 text-fg hover:text-danger transition-colors"
                       >
-                        <Trash2 size={14} strokeWidth={2} aria-hidden="true" />
+                        <Trash2 size={14} strokeWidth={2} aria-hidden="true" className="opacity-[0.35] group-hover:opacity-100 transition-opacity" />
                       </button>
                     </div>
                   )
@@ -141,7 +141,7 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
             </div>
           ) : (data?.folders?.length ?? 0) === 0 ? (
             <div className="flex flex-col items-center text-center p-sp-8">
-              <FolderOpen size={28} strokeWidth={2} className="text-muted-2 mb-sp-2" aria-hidden="true" />
+              <FolderOpen size={28} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-2" aria-hidden="true" />
               <p className="text-f-sm text-muted">{t('empty.places.title')}</p>
             </div>
           ) : (
@@ -154,7 +154,7 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
                   style={idx < data!.folders.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}
                 >
                   <div className="w-8 h-8 flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
-                    <FolderOpen size={14} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                    <FolderOpen size={14} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-f-sm font-semibold text-fg truncate">{folder.name}</p>
@@ -166,7 +166,7 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
           )
         ) : (data?.myPlans?.length ?? 0) === 0 ? (
           <div className="flex flex-col items-center text-center p-sp-8">
-            <FileText size={28} strokeWidth={2} className="text-muted-2 mb-sp-2" aria-hidden="true" />
+            <FileText size={28} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-2" aria-hidden="true" />
             <p className="text-f-sm text-muted">{t('empty.myPlans.title')}</p>
           </div>
         ) : (
@@ -180,7 +180,7 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
                 style={idx < data!.myPlans.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}
               >
                 <div className="w-8 h-8 flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
-                  <FileText size={14} strokeWidth={2} className="text-muted-2" aria-hidden="true" />
+                  <FileText size={14} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-f-sm font-semibold text-fg truncate">{plan.title}</p>
