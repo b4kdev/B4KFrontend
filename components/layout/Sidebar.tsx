@@ -100,9 +100,6 @@ export default function Sidebar() {
       {/* Main nav */}
       <nav className="flex flex-col gap-[2px] flex-1 px-[6px] pt-sp-3" aria-label={t('mainNavigation')}>
         {NAV_ITEMS.map(({ href, icon: Icon, labelKey }) => {
-          // SC-31 (S-HDTVGP) — already on /map: keep map context, open the
-          // embedded Saved Hub instead of navigating to the standalone page.
-          const target = href === '/saved' && isActive('/map') ? '/map?saved=1' : href;
           return (
             // prefetch={false} — this rail renders on every page, so the
             // default Link prefetch would otherwise re-run Home's 13
@@ -110,7 +107,7 @@ export default function Sidebar() {
             // background on every single page view.
             <Link
               key={href}
-              href={target}
+              href={href}
               prefetch={false}
               aria-label={t(labelKey)}
               aria-current={isActive(href) ? 'page' : undefined}

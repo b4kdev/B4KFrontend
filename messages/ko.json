@@ -615,7 +615,8 @@
     "zoomIn": "확대",
     "zoomOut": "축소",
     "leftPanel": {
-      "ariaLabel": "탐색 패널"
+      "ariaLabel": "탐색 패널",
+      "viewSaved": "저장한 장소 보기"
     },
     "regions": {
       "title": "지역별 탐색",

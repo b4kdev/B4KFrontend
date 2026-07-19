@@ -501,6 +501,7 @@ export default function MapView() {
           poisLoading={poisLoading}
           poisError={poisError}
           savedHubOpen={savedSheetOpen}
+          onOpenSaved={() => router.replace('/map?saved=1')}
           onCloseSavedHub={() => { setSavedSheetOpen(false); router.replace('/map') }}
           onSavedFolderChange={setSavedFolderPoiIds}
         />

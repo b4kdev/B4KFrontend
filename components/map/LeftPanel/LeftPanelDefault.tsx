@@ -27,18 +27,32 @@ interface Props {
   isSaved:        (id: string) => boolean
   onSelectPoi:    (id: string) => void
   onToggleSave:   (poi: MapPoi) => void
+  onOpenSaved:    () => void
 }
 
 export default function LeftPanelDefault({
   pois, isLoading, isError,
   activeRegion, activeFilters, onRegionToggle, onFilterToggle,
-  isSaved, onSelectPoi, onToggleSave,
+  isSaved, onSelectPoi, onToggleSave, onOpenSaved,
 }: Props) {
   const t = useTranslations('map')
   const recommended = [...pois].sort((a, b) => b.quality_score - a.quality_score).slice(0, RECOMMENDED_COUNT)
 
   return (
     <div className="flex flex-col h-full overflow-y-auto themed-scrollbar">
+      {/* View Saved entry point — opens the map-embedded Saved Hub */}
+      <div className="flex justify-end p-sp-2" style={{ borderBottom: '1px solid var(--bdr)' }}>
+        <button
+          type="button"
+          onClick={onOpenSaved}
+          aria-label={t('leftPanel.viewSaved')}
+          title={t('leftPanel.viewSaved')}
+          className="flex items-center justify-center min-w-touch min-h-touch rounded-none text-muted hover:text-lav hover:bg-overlay-10 transition-colors"
+        >
+          <Bookmark size={24} strokeWidth={2} aria-hidden="true" />
+        </button>
+      </div>
+
       {/* LP_01 — Region list */}
       <div className="p-sp-4" style={{ borderBottom: '1px solid var(--bdr)' }}>
         <p className="divrow mb-sp-3">

@@ -35,6 +35,7 @@ interface Props {
   poisLoading:      boolean
   poisError:        boolean
   savedHubOpen:        boolean
+  onOpenSaved:         () => void
   onCloseSavedHub:     () => void
   onSavedFolderChange: (poiIds: string[] | null) => void
 }
@@ -47,7 +48,7 @@ export default function LeftPanel({
   onReorder, onRemove, onDurationChange, onPreviewPlan, onDiscardPlan,
   stopDays, activeDay, onDayChange, onClosePoi, onSelectPoi,
   poisLoading, poisError,
-  savedHubOpen, onCloseSavedHub, onSavedFolderChange,
+  savedHubOpen, onOpenSaved, onCloseSavedHub, onSavedFolderChange,
 }: Props) {
   const [planStripExpanded, setPlanStripExpanded] = useState(false)
 
@@ -112,6 +113,7 @@ export default function LeftPanel({
             isSaved={isSaved}
             onSelectPoi={onSelectPoi}
             onToggleSave={onToggleSave}
+            onOpenSaved={onOpenSaved}
           />
         )}
       </div>

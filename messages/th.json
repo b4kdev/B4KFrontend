@@ -615,7 +615,8 @@
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
     "leftPanel": {
-      "ariaLabel": "Explore panel"
+      "ariaLabel": "Explore panel",
+      "viewSaved": "View saved places"
     },
     "regions": {
       "title": "Explore by Region",
