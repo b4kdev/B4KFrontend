@@ -5,7 +5,7 @@
 
 ## ⚡ RIGHT NOW
 
-- Check `B4K-FRD-v2.0.xlsx` for screen requirements before touching anything
+- Check `B4K-FRD-v2.1.xlsx` for screen requirements before touching anything
 - Every screen = all 7 DoD gates passed (root CLAUDE.md Section 11)
 - Visual reference: open `docs/prototype/Home_RefFrame.html` in browser — target look
 - Prototype: `docs/prototype/*.jsx` + `tokens.css` — port the pattern, not the code verbatim
@@ -24,7 +24,7 @@ When writing or editing any component or screen:
 
 | What | Path |
 |---|---|
-| Features / screens | `B4K-FRD-v2.0.xlsx` |
+| Features / screens | `B4K-FRD-v2.1.xlsx` |
 | Database schema | `B4K-Schema-v2.0.md` |
 | UI / components / tokens | `../DESIGN.md` (supersedes archived HTML files) |
 | Visual prototype | `docs/prototype/Home_RefFrame.html` |
@@ -41,7 +41,7 @@ When writing or editing any component or screen:
 ## Quick start for a new screen
 
 1. `/clear` to start fresh context
-2. Check `B4K-FRD-v2.0.xlsx` for the screen ID requirements
+2. Check `B4K-FRD-v2.1.xlsx` for the screen ID requirements
 3. `/b4k-screen <ID>` to load FRD + DoD + Laws of UX
 4. Build: Mobile.tsx + Desktop.tsx + index.tsx (if architecturally distinct)
 5. Wire: SWR hook → `app/api/[route]`

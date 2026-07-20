@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import useSWR from 'swr'
 import { Link, usePathname } from '@/i18n/navigation'
-import { Music, Tv, Sparkles, Globe, RefreshCw, AlertTriangle, ArrowRight } from 'lucide-react'
+import { Music, Tv, Sparkles, Globe, RefreshCw, AlertTriangle, ArrowRight, Compass } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
 import type { ExploreData } from '@/app/api/explore/[category]/route'
 import ExplorePoiCard from './ExplorePoiCard'
@@ -253,14 +253,14 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                 className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-none"
                 style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
               >
-                <CatIcon size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
+                <Compass size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
                 <p className="text-f-xl font-semibold text-fg mb-sp-2">{t(`${cat.tKey}.empty.title`)}</p>
                 <p className="text-f-md text-muted max-w-[320px] mb-sp-4">{t(`${cat.tKey}.empty.desc`)}</p>
                 <Link
                   href="/map"
                   className="cta-primary"
                 >
-                  {t('aiCta.button')}
+                  {t('empty.cta')}
                 </Link>
               </div>
             ) : (

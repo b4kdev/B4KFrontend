@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter, usePathname, Link } from '@/i18n/navigation';
 import { Search, Globe, HelpCircle, Menu, X, RefreshCw } from 'lucide-react';
@@ -93,6 +93,10 @@ interface SearchDropdownProps {
   onCategoryChip: (query: string) => void;
   highlightIdx: number;
   dropdownId: string;
+  suggestions: string[];
+  suggestionsLoading: boolean;
+  suggestionsError: unknown;
+  onRetrySuggestions: () => void;
 }
 
 function SearchDropdown({
@@ -104,23 +108,14 @@ function SearchDropdown({
   onCategoryChip,
   highlightIdx,
   dropdownId,
+  suggestions,
+  suggestionsLoading: isLoading,
+  suggestionsError: error,
+  onRetrySuggestions: mutate,
 }: SearchDropdownProps) {
   const t = useTranslations('search');
   const tNav = useTranslations('topNav');
 
-  // Debounced query for suggestions
-  const [debouncedQ, setDebouncedQ] = useState('');
-  useEffect(() => {
-    if (searchVal.trim().length < 2) { setDebouncedQ(''); return; }
-    const id = setTimeout(() => setDebouncedQ(searchVal.trim()), 300);
-    return () => clearTimeout(id);
-  }, [searchVal]);
-
-  const { data, isLoading, error, mutate } = useSWR<{ suggestions: string[] }>(
-    debouncedQ ? `/api/search/suggestions?q=${encodeURIComponent(debouncedQ)}` : null,
-    fetcher,
-  );
-  const suggestions = data?.suggestions ?? [];
   const showSuggestions = searchVal.trim().length >= 2;
 
   return (
@@ -131,7 +126,6 @@ function SearchDropdown({
       className="absolute top-[calc(100%+6px)] left-0 right-0 z-50 overflow-hidden"
       style={{
         background: 'var(--bg-2)',
-        border: '1px solid var(--bdr)',
         maxHeight: 400,
         overflowY: 'auto',
         boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
@@ -144,7 +138,6 @@ function SearchDropdown({
             <div>
               <div
                 className="flex items-center justify-between px-sp-3 py-sp-2"
-                style={{ borderBottom: '1px solid var(--bdr)' }}
               >
                 <p className="text-f-xs font-semibold uppercase tracking-[0.08em] text-muted">
                   {t('recentTitle')}
@@ -186,7 +179,6 @@ function SearchDropdown({
 
           <div
             className="flex flex-wrap gap-sp-2 px-sp-3 py-sp-3"
-            style={{ borderTop: recents.length > 0 ? '1px solid var(--bdr)' : undefined }}
           >
             {CATEGORY_CHIPS.map(chip => (
               <button
@@ -275,6 +267,21 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
   const localeRef  = useRef<HTMLDivElement>(null);
   const inputRef   = useRef<HTMLInputElement>(null);
 
+  // Debounced suggestions fetch — lifted from SearchDropdown so keyboard nav
+  // (handleKeyDownInput below) can see the same list it's navigating (was
+  // always empty during typing: child fetched its own copy, parent never saw it).
+  const [debouncedQ, setDebouncedQ] = useState('');
+  useEffect(() => {
+    if (searchVal.trim().length < 2) { setDebouncedQ(''); return; }
+    const id = setTimeout(() => setDebouncedQ(searchVal.trim()), 300);
+    return () => clearTimeout(id);
+  }, [searchVal]);
+  const { data: suggestData, isLoading: suggestLoading, error: suggestError, mutate: mutateSuggest } = useSWR<{ suggestions: string[] }>(
+    debouncedQ ? `/api/search/suggestions?q=${encodeURIComponent(debouncedQ)}` : null,
+    fetcher,
+  );
+  const suggestions = useMemo(() => suggestData?.suggestions ?? [], [suggestData]);
+
   // Load recents from localStorage (client-only)
   useEffect(() => {
     setRecents(getRecents());
@@ -332,7 +339,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
 
   // Handle keyboard navigation in dropdown
   const handleKeyDownInput = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    const items = searchVal.trim().length < 2 ? recents : []; // suggestion length unknown at this level, treated by sub
+    const items = searchVal.trim().length < 2 ? recents : suggestions;
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       setHighlightIdx(i => Math.min(i + 1, items.length - 1));
@@ -347,7 +354,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
         handleSubmit();
       }
     }
-  }, [searchVal, recents, highlightIdx, navigateSearch, handleSubmit]);
+  }, [searchVal, recents, suggestions, highlightIdx, navigateSearch, handleSubmit]);
 
   const handleRecentRemove = useCallback((q: string) => {
     removeRecent(q);
@@ -367,7 +374,6 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
     <>
       <header
         className="fixed top-0 right-0 z-50 h-[50px] lg:h-[56px] flex items-center gap-2.5 bg-bg-2 lg:left-[56px] left-0"
-        style={{ borderBottom: 'var(--bdr)' }}
       >
         {/* Mobile hamburger */}
         <button
@@ -433,6 +439,10 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
               onClearAll={handleClearAll}
               onCategoryChip={handleCategoryChip}
               highlightIdx={highlightIdx}
+              suggestions={suggestions}
+              suggestionsLoading={suggestLoading}
+              suggestionsError={suggestError}
+              onRetrySuggestions={() => mutateSuggest()}
             />
           )}
         </div>
@@ -454,7 +464,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
             {localeOpen && (
               <div
                 className="absolute right-0 top-[calc(100%+4px)] z-50 overflow-hidden min-w-[140px]"
-                style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                style={{ background: 'var(--bg-2)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
                 role="listbox"
                 aria-label={tNav('language')}
               >

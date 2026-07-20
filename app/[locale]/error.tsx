@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { AlertTriangle } from 'lucide-react';
 
 export default function ErrorBoundary({
@@ -21,13 +22,22 @@ export default function ErrorBoundary({
         <AlertTriangle size={48} strokeWidth={2} className="text-danger mb-4" />
         <p className="text-f-2xl font-bold text-fg mb-2">{t('title')}</p>
         <p className="text-f-md text-muted mb-5 max-w-[320px]">{t('desc')}</p>
-        <button
-          onClick={reset}
-          className="inline-flex items-center min-h-touch px-4 rounded-full text-f-sm font-semibold text-lav"
-          style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
-        >
-          {t('cta')}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={reset}
+            className="inline-flex items-center min-h-touch px-4 rounded-full text-f-sm font-semibold text-lav"
+            style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
+          >
+            {t('cta')}
+          </button>
+          <Link
+            href="/"
+            className="inline-flex items-center min-h-touch px-4 rounded-full text-f-sm font-semibold text-fg"
+            style={{ border: '1px solid var(--bdr)' }}
+          >
+            {t('goHome')}
+          </Link>
+        </div>
       </div>
     </main>
   );

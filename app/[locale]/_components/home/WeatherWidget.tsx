@@ -1,6 +1,7 @@
 'use client'
 
 import useSWR from 'swr'
+import { useTranslations } from 'next-intl'
 import { Sun, Cloud, CloudRain, CloudSnow, CloudDrizzle, CloudLightning } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
 import type { HomeWeather } from '@/app/api/home/weather/route'
@@ -20,6 +21,7 @@ function ConditionIcon({ condition }: { condition: string }) {
 
 // Silently hide if no data — OQ-HM-03 (provider not yet selected)
 export default function WeatherWidget() {
+  const t = useTranslations('home.weather')
   const { data } = useSWR<HomeWeather | null>('/api/home/weather', fetcher)
   if (!data) return null
 
@@ -27,7 +29,7 @@ export default function WeatherWidget() {
     <div
       className="mx-sp-4 lg:mx-sp-8 mt-sp-4 px-sp-4 py-sp-3 flex items-center gap-sp-6"
       style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
-      aria-label={`Seoul ${data.temp_c}°C, ${data.condition}`}
+      aria-label={t('ariaLabel', { temp: data.temp_c, condition: data.condition })}
     >
       <div>
         <p className="text-f-2xl font-bold text-fg tabular-nums">{data.temp_c}°C</p>

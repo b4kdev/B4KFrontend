@@ -49,6 +49,9 @@
   },
   "home": {
     "breadcrumb": "홈",
+    "weather": {
+      "ariaLabel": "서울 {temp}°C, {condition}"
+    },
     "carousel": {
       "ariaLabel": "추천 콘텐츠",
       "slideN": "슬라이드 {n}",
@@ -205,7 +208,8 @@
       "ariaLabel": "리더보드 및 배지 쇼케이스",
       "leaderboard": {
         "title": "이번 주 TOP",
-        "viewAll": "전체 보기"
+        "viewAll": "전체 보기",
+        "empty": "이번 주 순위가 아직 없습니다"
       },
       "badge": {
         "title": "최신 배지",
@@ -513,7 +517,8 @@
     "error": {
       "title": "오류가 발생했습니다",
       "desc": "다시 시도해 주세요. 문제가 계속되면 지원팀에 문의하세요.",
-      "cta": "다시 시도"
+      "cta": "다시 시도",
+      "goHome": "홈으로 이동"
     },
     "offline": {
       "title": "오프라인 상태입니다",
@@ -927,6 +932,7 @@
       "pinAria": "{name} 고정",
       "unpinAria": "{name} 고정 해제",
       "pinLimitError": "최대 3개까지 고정할 수 있습니다. 하나를 해제한 후 고정하세요.",
+      "locked": "잠김",
       "earnedOn": "{date}에 획득",
       "modal": {
         "close": "배지 상세 닫기",
@@ -1082,6 +1088,9 @@
     "breadcrumb": "탐험",
     "loading": "로딩 중…",
     "sectionEmpty": "아직 등록된 장소가 없습니다",
+    "empty": {
+      "cta": "지도에서 둘러보기"
+    },
     "sidebar": {
       "ariaLabel": "콘텐츠 카테고리 탐색"
     },
@@ -1269,6 +1278,7 @@
     "myPlan": {
       "ariaLabel": "플랜 {title} 보기",
       "draft": "초안",
+      "lastEdited": "{date} 수정됨",
       "edit": "편집",
       "share": "공유",
       "delete": "삭제",
@@ -1312,7 +1322,7 @@
       "renameTitle": "폴더 이름 변경",
       "save": "저장",
       "deleteTitle": "폴더를 삭제할까요?",
-      "deleteWarning": "\"{name}\" 폴더가 삭제됩니다. 저장된 장소는 전체 저장으로 이동하며 사라지지 않습니다.",
+      "deleteWarning": "\"{name}\" 폴더와 저장된 장소가 모두 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다.",
       "deleteCancel": "취소",
       "offlineNote": "오프라인 상태입니다. 연결 후 다시 시도하세요."
     },
@@ -1327,6 +1337,7 @@
     "title": "알림",
     "unread": "읽지 않은 알림 {count}개",
     "loading": "알림을 불러오는 중…",
+    "loadMore": "더 보기",
     "error": {
       "title": "알림을 불러올 수 없습니다",
       "retry": "다시 시도"
@@ -1609,6 +1620,7 @@
     "skip": "나중에"
   },
   "search": {
+    "title": "검색",
     "placeholder": "일정, 장소 검색...",
     "recentTitle": "최근 검색",
     "clearAll": "전체 삭제",
@@ -1706,6 +1718,7 @@
     "copyright": "© {year} B4K. All rights reserved."
   },
   "toast": {
-    "dismiss": "닫기"
+    "dismiss": "닫기",
+    "actionFailed": "문제가 발생했습니다. 다시 시도해 주세요."
   }
 }

@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import {
   Star, Map, RefreshCw, AlertTriangle, X,
-  Trophy, Zap, Award,
+  Trophy, Zap, Award, Lock,
 } from 'lucide-react'
 import { useProfileBadges } from '@/hooks/useProfileBadges'
 import type { ProfileBadge } from '@/app/api/profile/badges/route'
@@ -51,7 +51,7 @@ function BadgeDetailModal({
 }) {
   const style = RARITY_STYLES[badge.rarity] ?? RARITY_STYLES.common
   const Icon = categoryIcon(badge.category)
-  const earned = new Date(badge.earned_at).toLocaleDateString()
+  const earnedDate = badge.earned && badge.earned_at ? new Date(badge.earned_at).toLocaleDateString() : null
 
   return (
     <div
@@ -97,34 +97,36 @@ function BadgeDetailModal({
           </div>
           <div>
             <p className="text-muted uppercase tracking-widest text-f-xxs font-semibold mb-0.5">{t('badges.modal.earned')}</p>
-            <p className="text-fg font-semibold">{earned}</p>
+            <p className="text-fg font-semibold">{earnedDate ?? t('badges.locked')}</p>
           </div>
         </div>
 
-        {/* Pin toggle — PR_32 */}
-        {pinLimitHit && !badge.is_pinned ? (
-          <p className="text-f-sm text-warning text-center py-sp-2" role="alert">
-            {t('badges.pinLimitError')}
-          </p>
-        ) : (
-          <button
-            onClick={() => onPin(badge.id, !badge.is_pinned)}
-            className={[
-              'min-h-touch w-full rounded-none text-f-md font-semibold flex items-center justify-center gap-sp-2 transition-colors',
-              badge.is_pinned
-                ? 'text-lav hover:bg-lav-dim'
-                : 'text-muted hover:text-fg',
-            ].join(' ')}
-            style={{ border: '1px solid var(--bdr)' }}
-            aria-label={badge.is_pinned
-              ? t('badges.unpinAria', { name: badge.name })
-              : t('badges.pinAria', { name: badge.name })
-            }
-            aria-pressed={badge.is_pinned}
-          >
-            <Star size={15} strokeWidth={2} fill={badge.is_pinned ? 'currentColor' : 'none'} />
-            {badge.is_pinned ? t('badges.unpinAria', { name: '' }).trim() : t('badges.pinAria', { name: '' }).trim()}
-          </button>
+        {/* Pin toggle — PR_32 — earned badges only, locked ones can't be pinned */}
+        {badge.earned && (
+          pinLimitHit && !badge.is_pinned ? (
+            <p className="text-f-sm text-warning text-center py-sp-2" role="alert">
+              {t('badges.pinLimitError')}
+            </p>
+          ) : (
+            <button
+              onClick={() => onPin(badge.id, !badge.is_pinned)}
+              className={[
+                'min-h-touch w-full rounded-none text-f-md font-semibold flex items-center justify-center gap-sp-2 transition-colors',
+                badge.is_pinned
+                  ? 'text-lav hover:bg-lav-dim'
+                  : 'text-muted hover:text-fg',
+              ].join(' ')}
+              style={{ border: '1px solid var(--bdr)' }}
+              aria-label={badge.is_pinned
+                ? t('badges.unpinAria', { name: badge.name })
+                : t('badges.pinAria', { name: badge.name })
+              }
+              aria-pressed={badge.is_pinned}
+            >
+              <Star size={15} strokeWidth={2} fill={badge.is_pinned ? 'currentColor' : 'none'} />
+              {badge.is_pinned ? t('badges.unpinAria', { name: '' }).trim() : t('badges.pinAria', { name: '' }).trim()}
+            </button>
+          )
         )}
       </div>
     </div>
@@ -212,12 +214,16 @@ export default function BadgesPage() {
               <button
                 key={badge.id}
                 onClick={() => setSelected(badge)}
-                className="flex flex-col items-center gap-sp-2 group"
-                aria-label={badge.name}
+                className={`flex flex-col items-center gap-sp-2 group ${badge.earned ? '' : 'opacity-50'}`}
+                aria-label={badge.earned ? badge.name : `${badge.name} — ${t('badges.locked')}`}
               >
                 {/* Badge icon */}
-                <div className={`relative w-16 h-16 rounded-full flex items-center justify-center transition-transform group-hover:scale-105 ${style.bg} ${style.ring}`}>
-                  <Icon size={26} strokeWidth={2} className={style.icon} />
+                <div className={`relative w-16 h-16 rounded-full flex items-center justify-center transition-transform group-hover:scale-105 ${badge.earned ? `${style.bg} ${style.ring}` : 'bg-muted-3 ring-1 ring-white/10'}`}>
+                  {badge.earned ? (
+                    <Icon size={26} strokeWidth={2} className={style.icon} />
+                  ) : (
+                    <Lock size={22} strokeWidth={2} className="text-fg opacity-[0.35]" aria-hidden="true" />
+                  )}
                   {/* Pinned star — PR_32 */}
                   {badge.is_pinned && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-bg flex items-center justify-center">

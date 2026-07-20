@@ -1,10 +1,13 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import { Link } from '@/i18n/navigation'
 import { User, MapPin, Bookmark, Award, RefreshCw, AlertTriangle } from 'lucide-react'
 import { useProfile } from '@/hooks/useProfile'
+import { useAuth } from '@/contexts/AuthContext'
+import { useAuthGate } from '@/contexts/AuthGateContext'
 import type { ProfileData } from '@/app/api/profile/route'
 
 const RARITY_STYLES: Record<string, { ring: string; icon: string }> = {
@@ -147,6 +150,15 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   const t = useTranslations('profile')
   const pathname = usePathname()
   const { data: profile, isLoading, error, mutate } = useProfile()
+  const { user, loading: authLoading } = useAuth()
+  const { open: openAuthGate } = useAuthGate()
+
+  // SPEC-09: guest hitting /profile → auth gate (spec-vs-code gap, was missing entirely)
+  useEffect(() => {
+    if (!authLoading && !user) {
+      openAuthGate('profile_nav')
+    }
+  }, [authLoading, user, openAuthGate])
 
   const TABS = [
     { href: '/profile',          label: t('tabs.trips') },

@@ -21,6 +21,8 @@ export default function LeaderboardBadge() {
   const { data: lb } = useSWR<HomeLeaderboardEntry[]>('/api/home/leaderboard', fetcher)
   const { data: badge } = useSWR<HomeBadgeShowcase | null>('/api/home/badge-showcase', fetcher)
 
+  // Section hides only when both sub-cards have nothing to show. A loaded-but-empty
+  // `lb` (`[]`) still renders the leaderboard card — with EMP_04 copy, not a bare header.
   if (!lb && !badge) return null
 
   return (
@@ -28,38 +30,42 @@ export default function LeaderboardBadge() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-sp-4">
 
         {/* SEC-12 Leaderboard Snapshot */}
-        <div style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
-          <div className="flex items-center justify-between px-sp-4 pt-sp-4 pb-sp-3" style={{ borderBottom: '1px solid var(--bdr)' }}>
-            <div className="flex items-center gap-sp-2">
-              <Trophy size={16} strokeWidth={2} className="text-lav" aria-hidden="true" />
-              <h2 className="text-f-base font-semibold text-fg">{t('leaderboard.title')}</h2>
-            </div>
-            <Link href="/leaderboard" className="flex items-center gap-1 text-f-xs text-lav hover:opacity-80 transition-opacity">
-              {t('leaderboard.viewAll')}
-              <ArrowRight size={11} strokeWidth={2} aria-hidden="true" />
-            </Link>
-          </div>
-          <div className="p-sp-3 flex flex-col gap-[2px]">
-            {(lb ?? []).map(entry => (
-              <div key={entry.user_id} className="flex items-center gap-sp-3 p-sp-2">
-                <RankIcon rank={entry.rank} />
-                <div
-                  className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
-                  style={{ background: 'var(--bg-3)' }}
-                  aria-hidden="true"
-                >
-                  {entry.avatar_url
-                    // eslint-disable-next-line @next/next/no-img-element
-                    ? <img src={entry.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
-                    : <User size={14} strokeWidth={2} className="text-muted" />
-                  }
-                </div>
-                <span className="flex-1 text-f-sm text-fg truncate">{entry.display_name}</span>
-                <span className="text-f-xs text-muted tabular-nums shrink-0">{entry.score.toLocaleString()}</span>
+        {lb && (
+          <div style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
+            <div className="flex items-center justify-between px-sp-4 pt-sp-4 pb-sp-3" style={{ borderBottom: '1px solid var(--bdr)' }}>
+              <div className="flex items-center gap-sp-2">
+                <Trophy size={16} strokeWidth={2} className="text-lav" aria-hidden="true" />
+                <h2 className="text-f-base font-semibold text-fg">{t('leaderboard.title')}</h2>
               </div>
-            ))}
+              <Link href="/leaderboard" className="flex items-center gap-1 text-f-xs text-lav hover:opacity-80 transition-opacity">
+                {t('leaderboard.viewAll')}
+                <ArrowRight size={11} strokeWidth={2} aria-hidden="true" />
+              </Link>
+            </div>
+            <div className="p-sp-3 flex flex-col gap-[2px]">
+              {lb.length === 0 ? (
+                <p className="text-f-sm text-muted text-center py-sp-4">{t('leaderboard.empty')}</p>
+              ) : lb.map(entry => (
+                <div key={entry.user_id} className="flex items-center gap-sp-3 p-sp-2">
+                  <RankIcon rank={entry.rank} />
+                  <div
+                    className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+                    style={{ background: 'var(--bg-3)' }}
+                    aria-hidden="true"
+                  >
+                    {entry.avatar_url
+                      // eslint-disable-next-line @next/next/no-img-element
+                      ? <img src={entry.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                      : <User size={14} strokeWidth={2} className="text-muted" />
+                    }
+                  </div>
+                  <span className="flex-1 text-f-sm text-fg truncate">{entry.display_name}</span>
+                  <span className="text-f-xs text-muted tabular-nums shrink-0">{entry.score.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* SEC-13 Badge Showcase */}
         {badge && (

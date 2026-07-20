@@ -7,12 +7,15 @@ import { Link } from '@/i18n/navigation'
 import { TrendingUp, MapPin, Bookmark, Heart, ExternalLink } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { useAuthGate } from '@/contexts/AuthGateContext'
+import { useToast } from '@/contexts/ToastContext'
 import type { ExplorePoi } from '@/app/api/explore/[category]/route'
 
 export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
   const t = useTranslations('explore')
+  const tToast = useTranslations('toast')
   const { user } = useAuth()
   const { open: openAuthGate } = useAuthGate()
+  const { showToast } = useToast()
 
   const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
 
@@ -41,8 +44,8 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
       method:  next ? 'POST' : 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ poi_id: poi.poi_id }),
-    }).catch(() => setSaved(!next))
-  }, [user, saved, openAuthGate, poi.poi_id])
+    }).catch(() => { setSaved(!next); showToast(tToast('actionFailed'), 'error') })
+  }, [user, saved, openAuthGate, poi.poi_id, showToast, tToast])
 
   const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -54,8 +57,8 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
       method:  next ? 'POST' : 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ poi_id: poi.poi_id }),
-    }).catch(() => setLiked(!next))
-  }, [user, liked, openAuthGate, poi.poi_id])
+    }).catch(() => { setLiked(!next); showToast(tToast('actionFailed'), 'error') })
+  }, [user, liked, openAuthGate, poi.poi_id, showToast, tToast])
 
   return (
     <article

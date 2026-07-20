@@ -1,6 +1,22 @@
+import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Cookie } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
+import { hreflangAlternates, localizedUrl } from '@/lib/site-url';
+
+export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+  const t = await getTranslations({ locale: params.locale, namespace: 'routes.legalCookies' });
+  const title = `${t('title')} | B4K`;
+  const description = t('empty.desc');
+  const url = localizedUrl(params.locale, '/legal/cookies');
+  return {
+    title,
+    description,
+    alternates: { canonical: url, languages: hreflangAlternates('/legal/cookies') },
+    openGraph: { title, description, url, siteName: 'B4K', locale: params.locale, type: 'article' },
+  };
+}
 
 export default function Page() {
   const t = useTranslations('routes.legalCookies');

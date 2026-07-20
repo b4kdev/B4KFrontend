@@ -63,7 +63,6 @@ export default function LeftPanelPlanActive({
       {/* Header */}
       <div
         className="px-sp-4 py-sp-3 flex items-center justify-between shrink-0"
-        style={{ borderBottom: '1px solid var(--bdr)' }}
       >
         <p className="divrow">
           {t('title')}
@@ -74,7 +73,7 @@ export default function LeftPanelPlanActive({
       </div>
 
       {/* UF-5 (G4.2) — Day tabs */}
-      <div className="flex gap-1 px-sp-3 py-sp-2 shrink-0 overflow-x-auto" style={{ borderBottom: '1px solid var(--bdr)' }}>
+      <div className="flex gap-1 px-sp-3 py-sp-2 shrink-0 overflow-x-auto">
         {Array.from({ length: dayCount }, (_, i) => i + 1).map(day => (
           <button
             key={day}
@@ -94,7 +93,7 @@ export default function LeftPanelPlanActive({
       {routeError && !errorDismissed && (
         <div
           className="flex items-start gap-sp-2 px-sp-3 py-sp-2 shrink-0"
-          style={{ background: 'color-mix(in srgb, var(--danger) 8%, transparent)', borderBottom: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}
+          style={{ background: 'color-mix(in srgb, var(--danger) 8%, transparent)' }}
           role="alert"
         >
           <AlertTriangle size={14} strokeWidth={2} className="text-danger mt-0.5 shrink-0" aria-hidden="true" />
@@ -128,7 +127,6 @@ export default function LeftPanelPlanActive({
                   'flex items-center gap-sp-2 px-sp-2 py-2 group transition-opacity',
                   dragging === i ? 'opacity-40' : 'opacity-100',
                 ].join(' ')}
-                style={{ borderBottom: '1px solid var(--bdr)' }}
               >
                 {/* LP_12 — Drag handle (visible on hover) */}
                 <button
@@ -194,7 +192,6 @@ export default function LeftPanelPlanActive({
       {/* Footer — LP_14, LP_15, MP_23 */}
       <div
         className="p-sp-4 flex flex-col gap-sp-3 shrink-0"
-        style={{ borderTop: '1px solid var(--bdr)' }}
       >
         {/* MP_23 — Total duration */}
         <div className="flex items-center gap-sp-2 text-muted text-xs">

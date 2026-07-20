@@ -49,6 +49,9 @@
   },
   "home": {
     "breadcrumb": "หน้าหลัก",
+    "weather": {
+      "ariaLabel": "Seoul {temp}°C, {condition}"
+    },
     "carousel": {
       "ariaLabel": "Featured content",
       "slideN": "Slide {n}",
@@ -136,7 +139,8 @@
       "ariaLabel": "Leaderboard and badge showcase",
       "leaderboard": {
         "title": "This Week's Top",
-        "viewAll": "View all"
+        "viewAll": "View all",
+        "empty": "No rankings yet this week"
       },
       "badge": {
         "title": "Latest Badge",
@@ -513,7 +517,8 @@
     "error": {
       "title": "Something went wrong",
       "desc": "Try again. If the problem persists, contact support.",
-      "cta": "Try again"
+      "cta": "Try again",
+      "goHome": "Go home"
     },
     "offline": {
       "title": "You're offline",
@@ -927,6 +932,7 @@
       "pinAria": "Pin {name}",
       "unpinAria": "Unpin {name}",
       "pinLimitError": "You can pin up to 3 badges. Unpin one to pin another.",
+      "locked": "Locked",
       "earnedOn": "Earned on {date}",
       "modal": {
         "close": "Close badge detail",
@@ -1082,6 +1088,9 @@
     "breadcrumb": "Explore",
     "loading": "Loading…",
     "sectionEmpty": "No places yet",
+    "empty": {
+      "cta": "Explore the map"
+    },
     "sidebar": {
       "ariaLabel": "Content category navigation"
     },
@@ -1269,6 +1278,7 @@
     "myPlan": {
       "ariaLabel": "View plan {title}",
       "draft": "Draft",
+      "lastEdited": "Edited {date}",
       "edit": "Edit",
       "share": "Share",
       "delete": "Delete",
@@ -1312,7 +1322,7 @@
       "renameTitle": "Rename folder",
       "save": "Save",
       "deleteTitle": "Delete folder?",
-      "deleteWarning": "\"{name}\" will be deleted. Its saved places move to All Saved — nothing is lost.",
+      "deleteWarning": "\"{name}\" and all its saved places will be permanently deleted. This cannot be undone.",
       "deleteCancel": "Cancel",
       "offlineNote": "You're offline. Try again when connected."
     },
@@ -1327,6 +1337,7 @@
     "title": "Notifications",
     "unread": "{count, plural, one {# unread} other {# unread}}",
     "loading": "Loading notifications…",
+    "loadMore": "Load more",
     "error": {
       "title": "Couldn't load notifications",
       "retry": "Try again"
@@ -1616,6 +1627,7 @@
     "copyright": "© {year} B4K. All rights reserved."
   },
   "search": {
+    "title": "Search",
     "placeholder": "Search itineraries, places...",
     "recentTitle": "Recent searches",
     "clearAll": "Clear all",
@@ -1706,6 +1718,7 @@
     "minChars": "Type at least 2 characters to search"
   },
   "toast": {
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "actionFailed": "Something went wrong. Try again."
   }
 }

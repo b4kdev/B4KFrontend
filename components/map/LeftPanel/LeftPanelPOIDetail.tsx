@@ -33,7 +33,7 @@ export default function LeftPanelPOIDetail({
     <div className="flex flex-col h-full overflow-y-auto themed-scrollbar">
 
       {/* Header — LP_04-07, LP_10 */}
-      <div className="p-sp-4 flex flex-col gap-sp-3" style={{ borderBottom: '1px solid var(--bdr)' }}>
+      <div className="p-sp-4 flex flex-col gap-sp-3">
 
         {/* SC-24 — back to default state */}
         <button
