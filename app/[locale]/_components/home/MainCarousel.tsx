@@ -55,9 +55,13 @@ export default function MainCarousel() {
   }, [total, idx]);
 
   if (isLoading) return <CarouselSkeleton />;
-  // Hide the hero entirely on empty/error (Hero is page-critical, but with no
-  // slides there is nothing to render — the rest of the page still loads).
-  if (error || !data || total === 0) return null;
+  // SPEC-01: every other section hides itself on fetch failure; Hero is the
+  // one exception — its errors escalate to the page-level error boundary
+  // (app/[locale]/error.tsx) instead of silently disappearing.
+  if (error) throw error;
+  // Genuinely empty (loaded, zero slides) is not an error — hide like any
+  // other section, rest of the page still loads.
+  if (!data || total === 0) return null;
 
   const prev = () => setIdx((i) => (i - 1 + total) % total);
   const next = () => setIdx((i) => (i + 1) % total);
