@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
 
-// SC-6 — earned-only badge list for the profile badges tab (earned_at is
-// non-null by contract; the page always renders the earn date).
+// SC-6 — full 12-slot badge list for the profile badges tab (SPEC-09 §Badges
+// tab / SPEC-10 BD_01: all slots shown, unearned = locked placeholder). Was
+// filtered to earned-only — fixed 2026-07-20 spec-vs-code audit, mirrors the
+// standalone /api/badges pattern which already did this correctly.
 export interface ProfileBadge {
   id: string
   slug: string
   name: string
   category: string
   rarity: 'common' | 'rare' | 'epic' | 'legendary'
-  earned_at: string
+  earned: boolean
+  earned_at: string | null
   is_pinned: boolean
   unlock_criteria: { description: string }
 }
@@ -26,7 +29,7 @@ interface BffBadge {
   is_pinned: boolean
 }
 
-// GET /api/profile/badges → BFF GET /me/badges, filtered to earned badges.
+// GET /api/profile/badges → BFF GET /me/badges, all 12 slots (earned + locked).
 // Soft guard preserved: signed out → [] (the tab shows its empty state instead
 // of an error, matching the previous stub behavior).
 export async function GET() {
@@ -34,19 +37,19 @@ export async function GET() {
   if (!auth) return NextResponse.json([])
   try {
     const data = await bffFetch<{ badges: BffBadge[] }>('/me/badges', { token: auth.token })
-    const earned: ProfileBadge[] = (data.badges ?? [])
-      .filter((b) => b.earned && b.earned_at)
+    const all: ProfileBadge[] = (data.badges ?? [])
       .map((b) => ({
         id: String(b.badge_id),
         slug: b.slug,
         name: b.name,
         category: b.category,
         rarity: b.rarity,
-        earned_at: b.earned_at as string,
+        earned: b.earned,
+        earned_at: b.earned_at,
         is_pinned: b.is_pinned,
         unlock_criteria: { description: b.unlock_criteria?.description ?? '' },
       }))
-    return NextResponse.json(earned)
+    return NextResponse.json(all)
   } catch (e) {
     return bffErrorResponse(e)
   }
