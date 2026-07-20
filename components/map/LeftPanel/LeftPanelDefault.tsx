@@ -45,7 +45,7 @@ export default function LeftPanelDefault({
   return (
     <div className="flex flex-col h-full overflow-y-auto themed-scrollbar">
       {/* View Saved entry point — opens the map-embedded Saved Hub */}
-      <div className="flex justify-end p-sp-2" style={{ borderBottom: '1px solid var(--bdr)' }}>
+      <div className="flex justify-end p-sp-2">
         <button
           type="button"
           onClick={onOpenSaved}
@@ -58,7 +58,7 @@ export default function LeftPanelDefault({
       </div>
 
       {/* LP_01 — Region list */}
-      <div className="p-sp-4" style={{ borderBottom: '1px solid var(--bdr)' }}>
+      <div className="p-sp-4">
         <p className="divrow mb-sp-3">
           {t('regions.title')}
         </p>

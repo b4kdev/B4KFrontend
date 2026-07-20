@@ -70,7 +70,7 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
           </button>
         </div>
         {!activeFolder && (
-          <div className="flex px-sp-4" style={{ borderBottom: '1px solid var(--bdr)' }}>
+          <div className="flex px-sp-4">
             <button onClick={() => setTab('places')} className={tabClass(tab === 'places')} aria-current={tab === 'places' ? 'page' : undefined}>
               {t('tabs.places')}
             </button>
@@ -106,13 +106,12 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
                     </div>
                   )
                 }
-                return visiblePois.map((poi, idx) => {
+                return visiblePois.map((poi) => {
                   const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
                   return (
                     <div
                       key={poi.poi_id}
                       className="w-full flex items-center gap-sp-2 px-sp-4 py-sp-3 hover:bg-bg-3 transition-colors"
-                      style={idx < visiblePois.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}
                     >
                       <button
                         onClick={() => onSelectPoi(poi.poi_id)}
@@ -146,12 +145,11 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
             </div>
           ) : (
             <div>
-              {data!.folders.map((folder, idx) => (
+              {data!.folders.map((folder) => (
                 <button
                   key={folder.id}
                   onClick={() => setActiveFolder(folder)}
                   className="w-full flex items-center gap-sp-2 px-sp-4 py-sp-3 text-left hover:bg-bg-3 transition-colors"
-                  style={idx < data!.folders.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}
                 >
                   <div className="w-8 h-8 flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
                     <FolderOpen size={14} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
@@ -171,13 +169,12 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
           </div>
         ) : (
           <div>
-            {data!.myPlans.map((plan, idx) => (
+            {data!.myPlans.map((plan) => (
               <Link
                 key={plan.id}
                 href={`/plan/${plan.id}`}
                 onClick={onClose}
                 className="w-full flex items-center gap-sp-2 px-sp-4 py-sp-3 hover:bg-bg-3 transition-colors"
-                style={idx < data!.myPlans.length - 1 ? { borderBottom: '1px solid var(--bdr)' } : undefined}
               >
                 <div className="w-8 h-8 flex items-center justify-center shrink-0" style={{ background: 'var(--bg-3)' }}>
                   <FileText size={14} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />

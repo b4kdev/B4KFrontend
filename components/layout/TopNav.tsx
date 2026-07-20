@@ -126,7 +126,6 @@ function SearchDropdown({
       className="absolute top-[calc(100%+6px)] left-0 right-0 z-50 overflow-hidden"
       style={{
         background: 'var(--bg-2)',
-        border: '1px solid var(--bdr)',
         maxHeight: 400,
         overflowY: 'auto',
         boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
@@ -139,7 +138,6 @@ function SearchDropdown({
             <div>
               <div
                 className="flex items-center justify-between px-sp-3 py-sp-2"
-                style={{ borderBottom: '1px solid var(--bdr)' }}
               >
                 <p className="text-f-xs font-semibold uppercase tracking-[0.08em] text-muted">
                   {t('recentTitle')}
@@ -181,7 +179,6 @@ function SearchDropdown({
 
           <div
             className="flex flex-wrap gap-sp-2 px-sp-3 py-sp-3"
-            style={{ borderTop: recents.length > 0 ? '1px solid var(--bdr)' : undefined }}
           >
             {CATEGORY_CHIPS.map(chip => (
               <button
@@ -377,7 +374,6 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
     <>
       <header
         className="fixed top-0 right-0 z-50 h-[50px] lg:h-[56px] flex items-center gap-2.5 bg-bg-2 lg:left-[56px] left-0"
-        style={{ borderBottom: 'var(--bdr)' }}
       >
         {/* Mobile hamburger */}
         <button
@@ -468,7 +464,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
             {localeOpen && (
               <div
                 className="absolute right-0 top-[calc(100%+4px)] z-50 overflow-hidden min-w-[140px]"
-                style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                style={{ background: 'var(--bg-2)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
                 role="listbox"
                 aria-label={tNav('language')}
               >

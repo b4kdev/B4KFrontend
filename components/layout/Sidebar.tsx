@@ -88,10 +88,9 @@ export default function Sidebar() {
   return (
     <aside
       className="hidden lg:flex fixed left-0 top-0 h-screen z-[60] flex-col w-[56px] bg-bg-2"
-      style={{ borderRight: 'var(--bdr)' }}
     >
       {/* Logo */}
-      <div className="flex items-center justify-center h-[56px] shrink-0" style={{ borderBottom: 'var(--bdr)' }}>
+      <div className="flex items-center justify-center h-[56px] shrink-0">
         <Link href="/" prefetch={false} className="flex items-center justify-center w-full h-full" aria-label={t('logoHome')}>
           <Image src="/logo.svg" alt="B4K" width={28} height={26} className="object-contain" />
         </Link>
@@ -121,7 +120,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom anchors: Notifications + Profile — M18: guests are gated (variant #6) */}
-      <div className="px-[3px] py-sp-2 flex flex-col gap-[2px] shrink-0" style={{ borderTop: 'var(--bdr)' }}>
+      <div className="px-[3px] py-sp-2 flex flex-col gap-[2px] shrink-0">
         {isGuest ? (
           <button
             type="button"
@@ -164,7 +163,7 @@ export default function Sidebar() {
             <User size={24} strokeWidth={2} className="shrink-0" style={{ opacity: 0.35 }} />
           </button>
         ) : (
-          <div className="relative" ref={menuRef}>
+          <div className="relative flex items-center justify-center" ref={menuRef}>
             <button
               type="button"
               aria-label={t('profile')}
@@ -192,7 +191,7 @@ export default function Sidebar() {
                 role="menu"
                 aria-label={t('profile')}
                 className="absolute left-full bottom-0 ml-sp-2 w-[180px] rounded-none bg-bg-2 py-sp-1 z-[70]"
-                style={{ border: 'var(--bdr)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
               >
                 <Link
                   href="/profile"
@@ -214,7 +213,6 @@ export default function Sidebar() {
                   <Settings size={18} strokeWidth={2} className="shrink-0 opacity-60" />
                   {tProfile('tabs.settings')}
                 </Link>
-                <div style={{ borderTop: 'var(--bdr)' }} className="my-sp-1" />
                 <button
                   type="button"
                   role="menuitem"
