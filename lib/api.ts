@@ -2,7 +2,10 @@
 // The frontend never calls Supabase Postgres directly — every data read/write goes through this.
 import { createSupabaseBrowserClient } from './supabase-browser'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL!
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+if (!API_URL) {
+  throw new Error('NEXT_PUBLIC_API_URL is not set — map/POI reads will fail. Set it in .env.local / Vercel env.')
+}
 
 export class ApiError extends Error {
   status: number
