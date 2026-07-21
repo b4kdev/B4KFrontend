@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { bffFetch, bffErrorResponse } from '@/lib/bff'
 
 export interface HomeTopPlan {
@@ -54,6 +55,10 @@ interface BffPlace {
 }
 
 export async function GET() {
+  // next-intl locales (i18n/routing.ts) — translations JSONB keys must match this
+  // exact casing (e.g. 'zh-CN' not 'zh_CN') or the lookup below silently misses.
+  const locale = cookies().get('NEXT_LOCALE')?.value ?? 'en'
+
   try {
     const [plans, places] = await Promise.all([
       bffFetch<BffPublicItinerary[]>('/itineraries/public?sort=popular&limit=6'),
@@ -72,9 +77,12 @@ export async function GET() {
     const seasonalPois: HomeSeasonalPoi[] = (places ?? []).map(p => ({
       poi_id: String(p.poi_id),
       name_ko: p.name_ko,
-      // Display-name rule: translations[lang].name ?? name_ko (consumers pick
-      // via getDisplayName({ name_en, name_ko })).
-      name_en: p.translations?.en?.name ?? p.name_ko,
+      // Display-name rule: translations[locale].name, falling back to English
+      // then Korean — matches hooks/useMapPois.ts's mapPlace(). Note: this
+      // whole seasonalPois field is currently dead code — TrendingSpots.tsx
+      // calls /api/home/trending instead, which is a stub. Fixed anyway for
+      // consistency; not independently testable until that section is wired up.
+      name_en: p.translations?.[locale]?.name ?? (locale === 'ko' ? p.name_ko : p.translations?.en?.name) ?? p.name_ko,
       display_region: p.display_region ?? '',
       category: p.domains?.[0] ?? '',
       primary_image_url: p.primary_image_url,

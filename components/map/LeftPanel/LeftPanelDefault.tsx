@@ -149,7 +149,9 @@ export default function LeftPanelDefault({
         {!isLoading && !isError && recommended.length > 0 && (
           <div className="flex flex-col gap-1">
             {recommended.map(poi => {
-              const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
+              // name_preferred is the locale-aware field useMapPois already computes —
+              // must be passed through or this silently falls back to name_en always.
+              const name = getDisplayName({ name_preferred: poi.name_preferred, name_en: poi.name_en, name_ko: poi.name_ko })
               const saved = isSaved(poi.poi_id)
               const inPlan = isInPlan(poi.poi_id)
               const addDisabled = planFull && !inPlan

@@ -52,7 +52,9 @@ function mapPlace(row: RawPlace, locale: string): MapPoi {
     poi_id:             String(row.poi_id),
     name_ko:            row.name_ko,
     name_en:            en.name,
-    name_preferred:     cur.name ?? en.name,
+    // translations rarely has an explicit 'ko' key (Korean lives in name_ko) —
+    // without this, ko-locale users would see English for untranslated POIs.
+    name_preferred:     cur.name ?? (locale === 'ko' ? row.name_ko : en.name),
     coords_lat:         row.coords_lat,
     coords_lng:         row.coords_lng,
     display_domain:     row.domains?.[0] ?? null,

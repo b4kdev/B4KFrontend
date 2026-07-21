@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { bffFetch, bffErrorResponse } from '@/lib/bff'
 
 export interface ExplorePoi {
@@ -87,13 +88,15 @@ const FACET_BY_CATEGORY: Record<string, keyof ExplorePoi | undefined> = {
   'k-drama': undefined,
 }
 
-function mapPlace(p: BffPlace): ExplorePoi {
+// next-intl locales (i18n/routing.ts) — translations JSONB keys must match this
+// exact casing (e.g. 'zh-CN' not 'zh_CN') or the lookup below silently misses.
+function mapPlace(p: BffPlace, locale: string): ExplorePoi {
   return {
     poi_id: String(p.poi_id),
     name_ko: p.name_ko,
-    // Display-name rule: translations[lang].name ?? name_ko (consumers pick
-    // via getDisplayName({ name_en, name_ko })).
-    name_en: p.translations?.en?.name ?? p.name_ko,
+    // Display-name rule: translations[locale].name, falling back to English
+    // then Korean — matches hooks/useMapPois.ts's mapPlace().
+    name_en: p.translations?.[locale]?.name ?? (locale === 'ko' ? p.name_ko : p.translations?.en?.name) ?? p.name_ko,
     primary_image_url: p.primary_image_url,
     display_region: p.display_region ?? '',
     quality_score: 0, // not exposed by BFF list_places
@@ -110,13 +113,15 @@ export async function GET(
   const sectionIds = SECTIONS_BY_CATEGORY[params.category]
   if (!sectionIds) return NextResponse.json({ error: 'not_found' }, { status: 404 })
 
+  const locale = cookies().get('NEXT_LOCALE')?.value ?? 'en'
+
   let items: ExplorePoi[]
   try {
     // BFF domain values match the category slugs 1:1.
     const places = await bffFetch<BffPlace[]>(
       `/places?domain=${encodeURIComponent(params.category)}&limit=40`
     )
-    items = (places ?? []).map(mapPlace)
+    items = (places ?? []).map(p => mapPlace(p, locale))
   } catch (e) {
     return bffErrorResponse(e)
   }
