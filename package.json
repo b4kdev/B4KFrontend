@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "a11y:check": "node b4k-a11y-audit.mjs"
+    "a11y:check": "node b4k-a11y-audit.mjs",
+    "a11y:interactive": "node b4k-a11y-interactive-audit.mjs",
+    "i18n:overflow": "node b4k-i18n-overflow-audit.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.1",
