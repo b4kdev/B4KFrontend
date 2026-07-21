@@ -3,7 +3,7 @@ import { routing } from '@/i18n/routing'
 // SC-28 — single source of truth for absolute URLs (sitemap, robots, OG tags,
 // JSON-LD). Falls back to prod domain so dev/preview builds still emit valid
 // (if inaccurate) metadata rather than throwing.
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://b4k.app').replace(/\/$/, '')
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.b4korea.com').replace(/\/$/, '')
 
 export function localizedUrl(locale: string, path: string = ''): string {
   return `${SITE_URL}/${locale}${path}`
