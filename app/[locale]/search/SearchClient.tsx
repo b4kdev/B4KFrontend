@@ -208,8 +208,9 @@ function SkeletonCard() {
 }
 
 function LoadingState() {
+  const t = useTranslations('search')
   return (
-    <div role="status" aria-label="Searching…">
+    <div role="status" aria-label={t('loading')}>
       {Array.from({ length: 4 }).map((_, i) => (
         <SkeletonCard key={i} />
       ))}
@@ -494,7 +495,7 @@ function MobileFilterSheet({
         className="absolute inset-0 w-full h-full"
         style={{ background: 'var(--backdrop-50)' }}
         onClick={onClose}
-        aria-label="Close filters"
+        aria-label={t('close')}
         tabIndex={-1}
       />
       <div
@@ -506,7 +507,7 @@ function MobileFilterSheet({
           <button
             onClick={onClose}
             className="text-muted min-h-touch min-w-touch flex items-center justify-center"
-            aria-label="Close filters"
+            aria-label={t('close')}
           >
             <X size={20} strokeWidth={2} />
           </button>

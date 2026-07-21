@@ -867,7 +867,8 @@
       "savesLabel": "저장",
       "badgesLabel": "배지",
       "savesCountAria": "저장 {count}개",
-      "badgesCountAria": "배지 {count}개"
+      "badgesCountAria": "배지 {count}개",
+      "loading": "프로필 불러오는 중"
     },
     "tabs": {
       "ariaLabel": "프로필 섹션",
@@ -1685,7 +1686,8 @@
         "history": "역사",
         "nightlife": "나이트라이프"
       },
-      "apply": "적용"
+      "apply": "적용",
+      "close": "필터 닫기"
     },
     "results": {
       "poi": "장소",
@@ -1708,7 +1710,8 @@
     "seeAllPlans": "플랜 {count}개 모두 보기",
     "seeAllExplore": "콘텐츠 {count}개 모두 보기",
     "showLess": "간략히 보기",
-    "minChars": "검색하려면 최소 2자를 입력하세요"
+    "minChars": "검색하려면 최소 2자를 입력하세요",
+    "loadingSuggestions": "추천 검색어 불러오는 중"
   },
   "footer": {
     "help": "도움말",
