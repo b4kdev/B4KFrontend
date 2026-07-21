@@ -631,6 +631,7 @@ export default function SearchClient() {
 
   return (
     <div style={{ background: 'var(--bg)' }}>
+      <h1 className="sr-only">{t('title')}</h1>
       <div className="lg:flex">
         {/* Desktop filter sidebar */}
         <aside

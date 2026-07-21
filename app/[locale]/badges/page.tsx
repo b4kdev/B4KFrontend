@@ -253,7 +253,7 @@ export default function BadgesPage() {
   }, [data, pinnedCount, mutate, showToast, t])
 
   return (
-    <main
+    <div
       className="max-w-[1200px] mx-auto px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-20"
       aria-label={t('badges.ariaLabel')}
     >
@@ -403,6 +403,6 @@ export default function BadgesPage() {
           locale={locale}
         />
       )}
-    </main>
+    </div>
   )
 }

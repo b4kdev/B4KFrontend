@@ -868,7 +868,8 @@
       "badgesLabel": "배지",
       "savesCountAria": "저장 {count}개",
       "badgesCountAria": "배지 {count}개",
-      "loading": "프로필 불러오는 중"
+      "loading": "프로필 불러오는 중",
+      "namePlaceholder": "B4K 여행자"
     },
     "tabs": {
       "ariaLabel": "프로필 섹션",
