@@ -85,6 +85,8 @@ function TripCard({
   onShare: (trip: ProfileTrip) => void
   t: ReturnType<typeof useTranslations>
 }) {
+  const displayTitle = trip.title || t('untitledPlan')
+
   return (
     <article
       className="rounded-none overflow-hidden flex flex-col"
@@ -94,13 +96,13 @@ function TripCard({
       <div
         className="aspect-video flex items-center justify-center"
         style={{ background: 'var(--bg-3)' }}
-        aria-label={t('trips.card.thumbnailAlt', { title: trip.title })}
+        aria-label={t('trips.card.thumbnailAlt', { title: displayTitle })}
       >
         {trip.thumbnail_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={trip.thumbnail_url}
-            alt={t('trips.card.thumbnailAlt', { title: trip.title })}
+            alt={t('trips.card.thumbnailAlt', { title: displayTitle })}
             className="w-full h-full object-cover"
           />
         ) : (
@@ -112,7 +114,7 @@ function TripCard({
         {/* Title + draft badge — PR_11 */}
         <div className="flex items-start gap-sp-2">
           <h2 className="text-f-base font-semibold text-fg leading-snug line-clamp-2 flex-1">
-            {trip.title}
+            {displayTitle}
           </h2>
           {!trip.is_published && (
             <span
@@ -150,7 +152,7 @@ function TripCard({
             href={`/map?plan=${trip.id}`}
             className="flex-1 min-h-touch flex items-center justify-center gap-1.5 rounded-none text-f-sm font-semibold text-lav transition-colors hover:bg-lav-dim"
             style={{ border: '1px solid var(--lav-border)' }}
-            aria-label={t('trips.card.editAria', { title: trip.title })}
+            aria-label={t('trips.card.editAria', { title: displayTitle })}
           >
             <Edit2 size={14} strokeWidth={2} />
             {t('trips.card.edit')}
@@ -160,7 +162,7 @@ function TripCard({
             onClick={() => onShare(trip)}
             className="min-h-touch min-w-touch flex items-center justify-center rounded-none text-muted hover:text-fg transition-colors"
             style={{ border: '1px solid var(--bdr)' }}
-            aria-label={t('trips.card.shareAria', { title: trip.title })}
+            aria-label={t('trips.card.shareAria', { title: displayTitle })}
           >
             <Share2 size={15} strokeWidth={2} />
           </button>
@@ -168,7 +170,7 @@ function TripCard({
             onClick={() => onDelete(trip.id)}
             className="min-h-touch min-w-touch flex items-center justify-center rounded-none text-muted hover:text-danger transition-colors"
             style={{ border: '1px solid var(--bdr)' }}
-            aria-label={t('trips.card.deleteAria', { title: trip.title })}
+            aria-label={t('trips.card.deleteAria', { title: displayTitle })}
           >
             <Trash2 size={15} strokeWidth={2} />
           </button>
