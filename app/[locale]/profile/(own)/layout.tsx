@@ -59,7 +59,8 @@ function HeaderError({ onRetry, t }: { onRetry: () => void; t: ReturnType<typeof
 }
 
 function HeaderContent({ profile, t }: { profile: ProfileData; t: ReturnType<typeof useTranslations> }) {
-  const initial = profile.name?.charAt(0).toUpperCase() ?? '?'
+  const displayName = profile.name || t('header.namePlaceholder')
+  const initial = displayName.charAt(0).toUpperCase()
 
   return (
     <div className="flex items-start gap-sp-4">
@@ -68,13 +69,13 @@ function HeaderContent({ profile, t }: { profile: ProfileData; t: ReturnType<typ
         <div
           className="w-[72px] h-[72px] md:w-[88px] md:h-[88px] rounded-full flex items-center justify-center overflow-hidden"
           style={{ background: 'var(--lav-dim)', border: '2px solid var(--lav-border)' }}
-          aria-label={t('header.avatarAlt', { name: profile.name })}
+          aria-label={t('header.avatarAlt', { name: displayName })}
         >
           {profile.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={profile.avatar_url}
-              alt={t('header.avatarAlt', { name: profile.name })}
+              alt={t('header.avatarAlt', { name: displayName })}
               className="w-full h-full object-cover"
             />
           ) : (
@@ -86,7 +87,7 @@ function HeaderContent({ profile, t }: { profile: ProfileData; t: ReturnType<typ
       {/* Name + stats */}
       <div className="flex-1 min-w-0 pt-1">
         <h1 className="font-display text-fg text-f-display-tile leading-tight truncate">
-          {profile.name}
+          {displayName}
         </h1>
 
         {/* Stats row — PR_05 + PR_06 · Trips · Saves · Badges (SPEC-09 header) */}

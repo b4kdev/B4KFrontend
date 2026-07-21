@@ -86,7 +86,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
       )}
 
       {/* Drawer — slides in from the left */}
-      <aside
+      <div
         className={[
           'fixed left-0 top-0 h-screen w-[300px] max-w-[85vw] z-[60] flex flex-col bg-bg-2 lg:hidden',
           'transition-transform ease-out',
@@ -248,7 +248,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
             </button>
           </div>
         )}
-      </aside>
+      </div>
     </>
   );
 }
