@@ -867,7 +867,8 @@
       "savesLabel": "저장",
       "badgesLabel": "배지",
       "savesCountAria": "저장 {count}개",
-      "badgesCountAria": "배지 {count}개"
+      "badgesCountAria": "배지 {count}개",
+      "loading": "프로필 불러오는 중"
     },
     "tabs": {
       "ariaLabel": "프로필 섹션",
@@ -1494,8 +1495,8 @@
         "title": "문의하기",
         "desc": "찾으시는 내용이 없으신가요? 연락 주시면 답변 드리겠습니다.",
         "ctaEmail": "이메일 문의",
-        "ctaEmailHref": "mailto:support@b4k.app",
-        "emailAddress": "support@b4k.app",
+        "ctaEmailHref": "mailto:support@b4korea.com",
+        "emailAddress": "support@b4korea.com",
         "copyEmail": "이메일 주소 복사",
         "copyEmailCopied": "복사됨",
         "copyEmailAriaLabel": "이메일 주소를 클립보드에 복사"
@@ -1685,7 +1686,8 @@
         "history": "역사",
         "nightlife": "나이트라이프"
       },
-      "apply": "적용"
+      "apply": "적용",
+      "close": "필터 닫기"
     },
     "results": {
       "poi": "장소",
@@ -1708,7 +1710,8 @@
     "seeAllPlans": "플랜 {count}개 모두 보기",
     "seeAllExplore": "콘텐츠 {count}개 모두 보기",
     "showLess": "간략히 보기",
-    "minChars": "검색하려면 최소 2자를 입력하세요"
+    "minChars": "검색하려면 최소 2자를 입력하세요",
+    "loadingSuggestions": "추천 검색어 불러오는 중"
   },
   "footer": {
     "help": "도움말",
@@ -1716,6 +1719,24 @@
     "terms": "이용약관",
     "cookies": "쿠키 정책",
     "copyright": "© {year} B4K. All rights reserved."
+  },
+  "cookieConsent": {
+    "banner": {
+      "title": "쿠키 안내",
+      "message": "B4K는 서비스 개선을 위해 분석 쿠키를 사용합니다.",
+      "learnMore": "자세히 보기",
+      "accept": "동의",
+      "decline": "거부",
+      "dismiss": "닫기"
+    },
+    "preferences": {
+      "title": "분석 쿠키",
+      "desc": "이 기기에서 B4K의 분석 쿠키 사용 여부를 설정합니다.",
+      "statusAccepted": "동의함",
+      "statusDeclined": "거부함",
+      "accept": "동의",
+      "decline": "거부"
+    }
   },
   "toast": {
     "dismiss": "닫기",

@@ -17,9 +17,9 @@ const RARITY_STYLES: Record<string, { ring: string; icon: string }> = {
   legendary: { ring: 'ring-1 ring-warning/50',        icon: 'text-warning' },
 }
 
-function HeaderSkeleton() {
+function HeaderSkeleton({ t }: { t: ReturnType<typeof useTranslations> }) {
   return (
-    <div className="flex items-start gap-sp-4 animate-pulse" aria-busy="true" aria-label="Loading profile">
+    <div className="flex items-start gap-sp-4 animate-pulse" aria-busy="true" aria-label={t('header.loading')}>
       <div className="w-[72px] h-[72px] rounded-full bg-muted-3 shrink-0" />
       <div className="flex-1 space-y-sp-2 pt-1">
         <div className="h-5 w-32 rounded bg-muted-3" />
@@ -188,7 +188,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
       {/* Profile header — PR_01–08 */}
       <div className="mb-sp-6" aria-label={t('header.ariaLabel')}>
         {isLoading ? (
-          <HeaderSkeleton />
+          <HeaderSkeleton t={t} />
         ) : error ? (
           <HeaderError onRetry={() => mutate()} t={t} />
         ) : profile ? (

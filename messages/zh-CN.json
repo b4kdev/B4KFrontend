@@ -867,7 +867,8 @@
       "savesLabel": "Saves",
       "badgesLabel": "Badges",
       "savesCountAria": "{count} saves",
-      "badgesCountAria": "{count} badges"
+      "badgesCountAria": "{count} badges",
+      "loading": "Loading profile"
     },
     "tabs": {
       "ariaLabel": "Profile sections",
@@ -1494,8 +1495,8 @@
         "title": "Contact",
         "desc": "Can't find what you're looking for? Reach out and we'll get back to you.",
         "ctaEmail": "Email support",
-        "ctaEmailHref": "mailto:support@b4k.app",
-        "emailAddress": "support@b4k.app",
+        "ctaEmailHref": "mailto:support@b4korea.com",
+        "emailAddress": "support@b4korea.com",
         "copyEmail": "Copy email address",
         "copyEmailCopied": "Copied",
         "copyEmailAriaLabel": "Copy email address to clipboard"
@@ -1626,6 +1627,24 @@
     "cookies": "Cookie政策",
     "copyright": "© {year} B4K. All rights reserved."
   },
+  "cookieConsent": {
+    "banner": {
+      "title": "Cookie notice",
+      "message": "We use cookies for analytics to improve B4K.",
+      "learnMore": "Learn more",
+      "accept": "Accept",
+      "decline": "Decline",
+      "dismiss": "Dismiss"
+    },
+    "preferences": {
+      "title": "Analytics cookies",
+      "desc": "Control whether B4K can use analytics cookies on this device.",
+      "statusAccepted": "Accepted",
+      "statusDeclined": "Declined",
+      "accept": "Accept",
+      "decline": "Decline"
+    }
+  },
   "search": {
     "title": "Search",
     "placeholder": "Search itineraries, places...",
@@ -1692,7 +1711,8 @@
         "history": "History",
         "nightlife": "Nightlife"
       },
-      "apply": "Apply"
+      "apply": "Apply",
+      "close": "Close filters"
     },
     "results": {
       "poi": "Places",
@@ -1715,7 +1735,8 @@
     "seeAllPlans": "See all {count} plans",
     "seeAllExplore": "See all {count} contents",
     "showLess": "Show less",
-    "minChars": "Type at least 2 characters to search"
+    "minChars": "Type at least 2 characters to search",
+    "loadingSuggestions": "Loading suggestions"
   },
   "toast": {
     "dismiss": "Dismiss",
