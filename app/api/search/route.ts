@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { bffFetch, bffErrorResponse } from '@/lib/bff'
 
 export interface SearchPoi {
@@ -107,6 +108,9 @@ export async function GET(request: Request) {
   const explore = (wantAll || type === 'explore') ? buildExploreResults(q) : []
 
   const needle = q.trim().toLowerCase()
+  // next-intl locales (i18n/routing.ts) — translations JSONB keys must match this
+  // exact casing (e.g. 'zh-CN' not 'zh_CN') or the lookup below silently misses.
+  const locale = cookies().get('NEXT_LOCALE')?.value ?? 'en'
 
   try {
     const [rawPlaces, rawPlans] = await Promise.all([
@@ -123,8 +127,9 @@ export async function GET(request: Request) {
     let places: SearchPoi[] = (rawPlaces ?? []).map(p => ({
       poi_id: String(p.poi_id),
       name_ko: p.name_ko,
-      // Display-name rule: translations[lang].name ?? name_ko
-      name_en: p.translations?.en?.name ?? p.name_ko,
+      // Display-name rule: translations[locale].name, falling back to English
+      // then Korean — matches hooks/useMapPois.ts's mapPlace().
+      name_en: p.translations?.[locale]?.name ?? (locale === 'ko' ? p.name_ko : p.translations?.en?.name) ?? p.name_ko,
       display_region: p.display_region ?? '',
       display_domain: p.domains?.[0] ?? '',
       save_count: p.save_count ?? 0,

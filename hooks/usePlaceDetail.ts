@@ -37,7 +37,9 @@ function mapDetail(row: RawPlaceDetail, locale: string): Partial<MapPoi> {
 
   return {
     name_en:            en.name,
-    name_preferred:     cur.name ?? en.name,
+    // translations rarely has an explicit 'ko' key (Korean lives in name_ko) —
+    // without this, ko-locale users would see English for untranslated POIs.
+    name_preferred:     cur.name ?? (locale === 'ko' ? row.name_ko : en.name),
     description:        cur.description ?? en.description,
     address,
     display_domain:     row.display_domain ?? row.domains?.[0] ?? null,
