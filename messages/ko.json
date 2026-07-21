@@ -1717,6 +1717,24 @@
     "cookies": "쿠키 정책",
     "copyright": "© {year} B4K. All rights reserved."
   },
+  "cookieConsent": {
+    "banner": {
+      "title": "쿠키 안내",
+      "message": "B4K는 서비스 개선을 위해 분석 쿠키를 사용합니다.",
+      "learnMore": "자세히 보기",
+      "accept": "동의",
+      "decline": "거부",
+      "dismiss": "닫기"
+    },
+    "preferences": {
+      "title": "분석 쿠키",
+      "desc": "이 기기에서 B4K의 분석 쿠키 사용 여부를 설정합니다.",
+      "statusAccepted": "동의함",
+      "statusDeclined": "거부함",
+      "accept": "동의",
+      "decline": "거부"
+    }
+  },
   "toast": {
     "dismiss": "닫기",
     "actionFailed": "문제가 발생했습니다. 다시 시도해 주세요."

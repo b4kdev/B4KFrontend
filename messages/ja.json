@@ -1626,6 +1626,24 @@
     "cookies": "クッキーポリシー",
     "copyright": "© {year} B4K. All rights reserved."
   },
+  "cookieConsent": {
+    "banner": {
+      "title": "Cookie notice",
+      "message": "We use cookies for analytics to improve B4K.",
+      "learnMore": "Learn more",
+      "accept": "Accept",
+      "decline": "Decline",
+      "dismiss": "Dismiss"
+    },
+    "preferences": {
+      "title": "Analytics cookies",
+      "desc": "Control whether B4K can use analytics cookies on this device.",
+      "statusAccepted": "Accepted",
+      "statusDeclined": "Declined",
+      "accept": "Accept",
+      "decline": "Decline"
+    }
+  },
   "search": {
     "title": "Search",
     "placeholder": "Search itineraries, places...",
