@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter, usePathname, Link } from '@/i18n/navigation';
+import { routing } from '@/i18n/routing';
 import { Search, Globe, HelpCircle, Menu, X, RefreshCw } from 'lucide-react';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/fetcher';
@@ -60,18 +61,6 @@ function removeRecent(query: string) {
 function clearRecents() {
   try { localStorage.removeItem(RECENTS_KEY); } catch { /* ignore */ }
 }
-
-// ─── Locale label map ─────────────────────────────────────────────────────────
-
-const LOCALE_LABELS: Record<string, string> = {
-  en:      'English',
-  ko:      '한국어',
-  ja:      '日本語',
-  'zh-CN': '中文(简)',
-  'zh-TW': '中文(繁)',
-  th:      'ภาษาไทย',
-  'pt-BR': 'Português',
-};
 
 // ─── Category chips (always shown in empty/short state) ───────────────────────
 
@@ -196,7 +185,7 @@ function SearchDropdown({
         /* Typing state: suggestions */
         <>
           {isLoading ? (
-            <ul aria-label="Loading suggestions">
+            <ul aria-label={t('loadingSuggestions')}>
               {[0, 1, 2].map(i => (
                 <li key={i} className="flex items-center gap-sp-3 px-sp-3 py-sp-3 animate-pulse">
                   <div className="w-3.5 h-3.5 rounded-none shrink-0" style={{ background: 'var(--muted-3)' }} />
@@ -248,6 +237,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
   const t       = useTranslations('topNav');
   const tSearch = useTranslations('search');
   const tNav    = useTranslations('nav');
+  const tLangs  = useTranslations('profile.settings.languages');
   const { showToast } = useToast();
   const { data: unreadData } = useSWR<{ count: number }>(
     '/api/notifications/unread-count', fetcher, { refreshInterval: 60_000 },
@@ -468,7 +458,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
                 role="listbox"
                 aria-label={tNav('language')}
               >
-                {Object.entries(LOCALE_LABELS).map(([loc, label]) => (
+                {routing.locales.map((loc) => (
                   <button
                     key={loc}
                     role="option"
@@ -479,7 +469,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
                     ].join(' ')}
                     onClick={() => { router.replace(pathname, { locale: loc }); setLocaleOpen(false); }}
                   >
-                    {label}
+                    {tLangs(loc)}
                   </button>
                 ))}
               </div>

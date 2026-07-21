@@ -867,7 +867,8 @@
       "savesLabel": "Saves",
       "badgesLabel": "Badges",
       "savesCountAria": "{count} saves",
-      "badgesCountAria": "{count} badges"
+      "badgesCountAria": "{count} badges",
+      "loading": "Loading profile"
     },
     "tabs": {
       "ariaLabel": "Profile sections",
@@ -1685,7 +1686,8 @@
         "history": "History",
         "nightlife": "Nightlife"
       },
-      "apply": "Apply"
+      "apply": "Apply",
+      "close": "Close filters"
     },
     "results": {
       "poi": "Places",
@@ -1708,7 +1710,8 @@
     "seeAllPlans": "See all {count} plans",
     "seeAllExplore": "See all {count} contents",
     "showLess": "Show less",
-    "minChars": "Type at least 2 characters to search"
+    "minChars": "Type at least 2 characters to search",
+    "loadingSuggestions": "Loading suggestions"
   },
   "footer": {
     "help": "Help",
@@ -1716,6 +1719,24 @@
     "terms": "Terms of Use",
     "cookies": "Cookie Policy",
     "copyright": "© {year} B4K. All rights reserved."
+  },
+  "cookieConsent": {
+    "banner": {
+      "title": "Cookie notice",
+      "message": "We use cookies for analytics to improve B4K.",
+      "learnMore": "Learn more",
+      "accept": "Accept",
+      "decline": "Decline",
+      "dismiss": "Dismiss"
+    },
+    "preferences": {
+      "title": "Analytics cookies",
+      "desc": "Control whether B4K can use analytics cookies on this device.",
+      "statusAccepted": "Accepted",
+      "statusDeclined": "Declined",
+      "accept": "Accept",
+      "decline": "Decline"
+    }
   },
   "toast": {
     "dismiss": "Dismiss",
