@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { bffFetch, bffErrorResponse } from '@/lib/bff'
 
 // BFF GET /places item (api.list_places)
@@ -29,9 +30,10 @@ interface BffPublicItinerary {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const q = (searchParams.get('q') ?? '').trim()
-  // Optional lang (consumers don't send one today) — display-name rule:
-  // translations[lang].name ?? name_ko
-  const lang = searchParams.get('lang') ?? 'en'
+  // Callers don't send ?lang= today, so fall back to the locale cookie
+  // next-intl's middleware already sets on every page. Display-name rule:
+  // translations[lang].name, falling back to English then Korean.
+  const lang = searchParams.get('lang') ?? cookies().get('NEXT_LOCALE')?.value ?? 'en'
 
   if (!q) return NextResponse.json({ suggestions: [] })
 
@@ -43,7 +45,7 @@ export async function GET(request: Request) {
     ])
 
     const placeNames = (places ?? [])
-      .map(p => p.translations?.[lang]?.name ?? p.name_ko)
+      .map(p => p.translations?.[lang]?.name ?? p.translations?.en?.name ?? p.name_ko)
       .filter(Boolean)
       .slice(0, 5)
 

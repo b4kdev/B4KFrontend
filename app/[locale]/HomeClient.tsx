@@ -2,6 +2,7 @@
 
 import type { ComponentType } from 'react'
 import useSWR from 'swr'
+import { useTranslations } from 'next-intl'
 import { fetcher } from '@/lib/fetcher'
 import MainCarousel from './_components/home/MainCarousel'
 import WeatherWidget from './_components/home/WeatherWidget'
@@ -57,6 +58,7 @@ const DEFAULT_ORDER = [
 ]
 
 export default function HomeClient() {
+  const tNav = useTranslations('nav')
   const { data } = useSWR<HomeSectionOrder>('/api/home/section-order', fetcher)
 
   // Data-driven order (UF-8 · DEC-32). Fall back to DEFAULT_ORDER whenever the
@@ -69,6 +71,7 @@ export default function HomeClient() {
 
   return (
     <div className="pb-sp-16">
+      <h1 className="sr-only">{tNav('home')}</h1>
       {/* Hero: full bleed — pinned first, never reordered */}
       <MainCarousel />
 

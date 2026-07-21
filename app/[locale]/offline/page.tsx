@@ -7,7 +7,7 @@ export default function OfflinePage() {
   const t = useTranslations('boundary.offline')
 
   return (
-    <main
+    <div
       className="min-h-[calc(100vh-50px)] lg:min-h-[calc(100vh-56px)] flex items-center justify-center px-sp-6"
       aria-label={t('title')}
     >
@@ -16,9 +16,9 @@ export default function OfflinePage() {
         style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       >
         <WifiOff size={48} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-5" />
-        <p className="font-display text-fg text-f-display-tile mb-sp-3">
+        <h1 className="font-display text-fg text-f-display-tile mb-sp-3">
           {t('title')}
-        </p>
+        </h1>
         <p className="text-f-md text-muted max-w-[280px] leading-relaxed mb-sp-6">
           {t('desc')}
         </p>
@@ -30,6 +30,6 @@ export default function OfflinePage() {
           {t('retry')}
         </button>
       </div>
-    </main>
+    </div>
   )
 }

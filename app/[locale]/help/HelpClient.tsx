@@ -52,7 +52,7 @@ export default function HelpClient() {
   }
 
   return (
-    <main
+    <div
       className="max-w-[720px] mx-auto px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-20"
       aria-label={t('ariaLabel')}
     >
@@ -184,6 +184,6 @@ export default function HelpClient() {
           </nav>
         </footer>
       </div>
-    </main>
+    </div>
   )
 }

@@ -51,7 +51,7 @@ export default function LeaderboardPage() {
   ].join(' ')
 
   return (
-    <main
+    <div
       className="max-w-[720px] mx-auto px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-20"
       aria-label={t('ariaLabel')}
     >
@@ -216,6 +216,6 @@ export default function LeaderboardPage() {
           {t('computedAt', { date: new Date(data.computed_at).toLocaleDateString(locale) })}
         </p>
       )}
-    </main>
+    </div>
   )
 }

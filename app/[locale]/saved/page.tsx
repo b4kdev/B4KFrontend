@@ -66,7 +66,7 @@ export default function SavedPage() {
   const visibleSavedPlans = (data?.plans ?? []).filter(p => !unsavedPlanIds.has(p.id))
 
   return (
-    <main
+    <div
       className="max-w-[1200px] mx-auto px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-20"
       aria-label={t('ariaLabel')}
     >
@@ -304,6 +304,6 @@ export default function SavedPage() {
           </div>
         )
       )}
-    </main>
+    </div>
   )
 }

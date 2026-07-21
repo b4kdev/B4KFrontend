@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { bffFetch, bffErrorResponse, getSessionAuth } from '@/lib/bff'
 
 export interface SavedPoi {
@@ -118,11 +119,15 @@ interface BffMyItinerary {
   updated_at: string
 }
 
-function toSavedPoi(b: BffBookmark): SavedPoi {
+// next-intl locales (i18n/routing.ts) — translations JSONB keys must match this
+// exact casing (e.g. 'zh-CN' not 'zh_CN') or the lookup below silently misses.
+function toSavedPoi(b: BffBookmark, locale: string): SavedPoi {
   return {
     poi_id:            String(b.poi_id),
     name_ko:           b.name_ko ?? '',
-    name_en:           b.translations?.en?.name ?? b.name_ko ?? '',
+    // Display-name rule: translations[locale].name, falling back to English
+    // then Korean — matches hooks/useMapPois.ts's mapPlace().
+    name_en:           b.translations?.[locale]?.name ?? (locale === 'ko' ? b.name_ko : b.translations?.en?.name) ?? b.name_ko ?? '',
     display_region:    b.display_region ?? '',
     primary_image_url: b.primary_image_url,
     quality_score:     0, // not exposed by BFF bookmark list
@@ -137,6 +142,8 @@ export async function GET() {
   // Signed out — same shape the stub returned; the page's auth gate handles prompting.
   if (!auth) return NextResponse.json(EMPTY)
 
+  const locale = cookies().get('NEXT_LOCALE')?.value ?? 'en'
+
   try {
     const [bookmarks, folders, savedItins, myItins] = await Promise.all([
       bffFetch<BffBookmark[]>('/me/bookmarks?limit=100',       { token: auth.token }),
@@ -145,12 +152,12 @@ export async function GET() {
       bffFetch<BffMyItinerary[]>('/me/itineraries',            { token: auth.token }),
     ])
 
-    const pois = bookmarks.map(toSavedPoi)
+    const pois = bookmarks.map(b => toSavedPoi(b, locale))
 
     const poisByFolder = new Map<string, SavedPoi[]>()
     for (const b of bookmarks) {
       const list = poisByFolder.get(b.folder_id) ?? []
-      list.push(toSavedPoi(b))
+      list.push(toSavedPoi(b, locale))
       poisByFolder.set(b.folder_id, list)
     }
 

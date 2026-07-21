@@ -22,7 +22,7 @@ export default function Page() {
   const t = useTranslations('routes.legalTerms');
 
   return (
-    <main className="px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-16 max-w-[1200px] mx-auto" aria-label={t('title')}>
+    <div className="px-sp-4 md:px-sp-8 pt-sp-6 pb-sp-16 max-w-[1200px] mx-auto" aria-label={t('title')}>
       <div className="flex items-center gap-1.5 text-f-xxs font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
         <Link href="/" className="text-muted-2 hover:text-fg">B4K</Link>
 
@@ -38,6 +38,6 @@ export default function Page() {
         <p className="text-f-xl font-semibold text-fg mb-2">{t('empty.title')}</p>
         <p className="text-f-md text-muted max-w-[320px]">{t('empty.desc')}</p>
       </div>
-    </main>
+    </div>
   );
 }
