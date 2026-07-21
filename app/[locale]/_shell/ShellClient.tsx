@@ -14,6 +14,8 @@ import DraftConflictModal from '@/components/auth/DraftConflictModal';
 import ToastStack from '@/components/ui/Toast';
 import { useDraftMigration } from '@/hooks/useDraftMigration';
 import OfflineBanner from '@/components/layout/OfflineBanner';
+import Analytics from '@/components/analytics/Analytics';
+import CookieBanner from '@/components/analytics/CookieBanner';
 
 function ShellInner({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -28,6 +30,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       <MobileBottomNav />
       <PageLayout>{children}</PageLayout>
       <OfflineBanner />
+      <Analytics />
+      <CookieBanner />
       <AuthGateModal open={isOpen} onDismiss={close} />
       {/* DEC-33 T3 — post-login draft collision (device draft vs. existing account draft) */}
       <DraftConflictModal
