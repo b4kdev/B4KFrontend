@@ -1495,8 +1495,8 @@
         "title": "문의하기",
         "desc": "찾으시는 내용이 없으신가요? 연락 주시면 답변 드리겠습니다.",
         "ctaEmail": "이메일 문의",
-        "ctaEmailHref": "mailto:support@b4k.app",
-        "emailAddress": "support@b4k.app",
+        "ctaEmailHref": "mailto:support@b4korea.com",
+        "emailAddress": "support@b4korea.com",
         "copyEmail": "이메일 주소 복사",
         "copyEmailCopied": "복사됨",
         "copyEmailAriaLabel": "이메일 주소를 클립보드에 복사"

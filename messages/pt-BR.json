@@ -1495,8 +1495,8 @@
         "title": "Contact",
         "desc": "Can't find what you're looking for? Reach out and we'll get back to you.",
         "ctaEmail": "Email support",
-        "ctaEmailHref": "mailto:support@b4k.app",
-        "emailAddress": "support@b4k.app",
+        "ctaEmailHref": "mailto:support@b4korea.com",
+        "emailAddress": "support@b4korea.com",
         "copyEmail": "Copy email address",
         "copyEmailCopied": "Copied",
         "copyEmailAriaLabel": "Copy email address to clipboard"
