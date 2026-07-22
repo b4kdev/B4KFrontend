@@ -88,6 +88,7 @@ export default function Sidebar() {
   return (
     <aside
       className="hidden lg:flex fixed left-0 top-0 h-screen z-[60] flex-col w-[56px] bg-bg-2"
+      aria-label={t('sidebarRegion')}
     >
       {/* Logo */}
       <div className="flex items-center justify-center h-[56px] shrink-0">

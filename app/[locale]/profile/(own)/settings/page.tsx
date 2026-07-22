@@ -973,7 +973,7 @@ export default function SettingsPage() {
         {/* Account actions — sign out + delete */}
         <section aria-labelledby="actions-heading">
           <h2 id="actions-heading" className={sectionHeading}>
-            {t('settings.account.heading')}
+            {t('settings.actions.heading')}
           </h2>
           <div className="flex flex-col gap-sp-2">
             {/* Sign out */}
