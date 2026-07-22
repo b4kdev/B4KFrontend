@@ -15,3 +15,7 @@ Sentry.init({
     return event;
   },
 });
+
+// Required by the SDK to instrument client-side route transitions — this is
+// navigation/performance tracking, not additional PII collection.
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

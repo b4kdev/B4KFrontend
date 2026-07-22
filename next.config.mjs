@@ -18,6 +18,8 @@ export default withSentryConfig(withNextIntl(nextConfig), {
   project: 'javascript-nextjs',
   silent: !process.env.CI,
   widenClientFileUpload: false,
-  disableLogger: true,
-  automaticVercelMonitors: false,
+  webpack: {
+    automaticVercelMonitors: false,
+    treeshake: { removeDebugLogging: true },
+  },
 });
