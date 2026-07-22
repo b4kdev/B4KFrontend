@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# B4KFrontend pre-commit secret scan
+# B4KFrontend pre-commit: protected-branch guard + worktree guard + secret scan
 # Activate (one-time): git config core.hooksPath .githooks
 # Install gitleaks: brew install gitleaks
 
@@ -7,6 +7,33 @@ set -e
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 CONFIG="$REPO_ROOT/.gitleaks.toml"
+
+# ── Protected-branch guard — DEC-44/workflow.md PR Regulations ──────────────
+# No direct commit to main/devtest. Bypass: git commit --no-verify (visible,
+# deliberate — not meant to stop a real exception, only an accidental slip).
+CURRENT_BRANCH="$(git symbolic-ref --short HEAD 2>/dev/null || echo "")"
+if [[ "$CURRENT_BRANCH" == "main" || "$CURRENT_BRANCH" == "devtest" ]]; then
+  printf '\n\033[31m❌ Direct commit to protected branch "%s" blocked.\033[0m\n' "$CURRENT_BRANCH"
+  printf '   Branch first: git checkout -b fix/<slug> (or feature/, preview/)\n'
+  printf '   Bypass (deliberate exceptions only): git commit --no-verify\n'
+  exit 1
+fi
+
+# ── Worktree guard — DEC-44 (2026-07-22) ────────────────────────────────────
+# B4KFrontend/B4KBackend code work must happen in a linked worktree, not the
+# shared main checkout — confirmed collision incidents this week (branch
+# swapped under a session mid-edit, uncommitted hunks from two sessions
+# landing in the same file, a file silently reverted with no conflict ever
+# surfacing). Bypass: git commit --no-verify.
+GIT_DIR_ABS="$(git rev-parse --path-format=absolute --git-dir)"
+GIT_COMMON_DIR_ABS="$(git rev-parse --path-format=absolute --git-common-dir)"
+if [[ "$GIT_DIR_ABS" == "$GIT_COMMON_DIR_ABS" ]]; then
+  printf '\n\033[31m❌ Commit blocked — this is the main checkout, not a git worktree.\033[0m\n'
+  printf '   See B4KVault/decisions/DEC-44-mandatory-worktree-isolation.md\n'
+  printf '   git worktree add ../B4KFrontend-<slug> -b fix/<slug> origin/devtest\n'
+  printf '   Bypass (deliberate exceptions only): git commit --no-verify\n'
+  exit 1
+fi
 
 if ! command -v gitleaks >/dev/null 2>&1; then
   printf '\033[33m⚠️  gitleaks not installed — skipping secret scan.\033[0m\n'
