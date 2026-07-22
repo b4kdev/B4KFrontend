@@ -1,17 +1,23 @@
 'use client';
 
+import { useEffect } from 'react';
+import * as Sentry from '@sentry/nextjs';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { AlertTriangle } from 'lucide-react';
 
 export default function ErrorBoundary({
-  error: _error,
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
   const t = useTranslations('boundary.error');
+
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
 
   return (
     <main className="px-3.5 md:px-8 pt-7 pb-16 max-w-[1200px]" aria-label={t('title')}>

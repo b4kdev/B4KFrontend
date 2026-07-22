@@ -12,6 +12,7 @@
     "i18n:overflow": "node b4k-i18n-overflow-audit.mjs"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.67.0",
     "@supabase/ssr": "^0.12.1",
     "@supabase/supabase-js": "^2.107.0",
     "@upstash/ratelimit": "^2.0.8",
