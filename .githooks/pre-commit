@@ -35,6 +35,27 @@ if [[ "$GIT_DIR_ABS" == "$GIT_COMMON_DIR_ABS" ]]; then
   exit 1
 fi
 
+# ── Scratch/temp file guard ──────────────────────────────────────────────────
+# Catches obvious scratch/debug files accidentally left staged (e.g. a
+# standalone throwaway test script forgotten before commit). Deliberately
+# conservative — only clear scratch-naming patterns and editor/OS junk, never
+# anything that could be a real source file (.test.ts/.spec.ts excluded).
+SCRATCH_FOUND=""
+while IFS= read -r staged_file; do
+  [[ -z "$staged_file" ]] && continue
+  base="$(basename "$staged_file")"
+  if [[ "$base" =~ ^(scratch|tmp|temp|wip)[-_.] ]] || [[ "$base" == ".DS_Store" ]] || [[ "$base" == *~ ]] || [[ "$base" == *.swp ]] || [[ "$base" == *.orig ]]; then
+    SCRATCH_FOUND="${SCRATCH_FOUND}  ${staged_file}\n"
+  fi
+done < <(git diff --cached --name-only --diff-filter=ACM)
+
+if [[ -n "$SCRATCH_FOUND" ]]; then
+  printf '\n\033[31m❌ Scratch/temp file(s) staged — commit blocked.\033[0m\n'
+  printf "$SCRATCH_FOUND"
+  printf '   If intentional: git commit --no-verify\n'
+  exit 1
+fi
+
 if ! command -v gitleaks >/dev/null 2>&1; then
   printf '\033[33m⚠️  gitleaks not installed — skipping secret scan.\033[0m\n'
   printf '   Install: brew install gitleaks\n'
