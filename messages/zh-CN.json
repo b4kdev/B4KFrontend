@@ -20,6 +20,7 @@
     "logoHome": "B4K Home",
     "about": "About",
     "bottomNav": "Bottom navigation",
+    "sidebarRegion": "Sidebar",
     "explore": "Explore",
     "saved": "Saved",
     "settings": "Settings",
@@ -948,6 +949,9 @@
         "heading": "Account",
         "email": "Email",
         "emailNote": "Sign-in address — cannot be changed here"
+      },
+      "actions": {
+        "heading": "Actions"
       },
       "preferences": {
         "heading": "Preferences",

@@ -637,6 +637,7 @@ export default function SearchClient() {
         <aside
           className="hidden lg:flex flex-col w-sidebar shrink-0 sticky top-[56px] h-[calc(100vh-56px)] overflow-y-auto py-sp-6 px-sp-4"
           style={{ borderRight: 'var(--bdr)', background: 'var(--bg-2)' }}
+          aria-label={t('filters.title')}
         >
           <SearchFilterPanel state={filterState} />
         </aside>

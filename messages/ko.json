@@ -22,6 +22,7 @@
     "logoHome": "B4K 홈",
     "about": "소개",
     "bottomNav": "하단 내비게이션",
+    "sidebarRegion": "사이드바",
     "settings": "설정",
     "legal": "약관 및 정책",
     "legalTerms": "서비스 약관",
@@ -948,6 +949,9 @@
         "heading": "계정",
         "email": "이메일",
         "emailNote": "로그인 주소 — 여기서 변경 불가"
+      },
+      "actions": {
+        "heading": "작업"
       },
       "preferences": {
         "heading": "환경설정",
