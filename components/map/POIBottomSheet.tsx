@@ -78,8 +78,8 @@ export default function POIBottomSheet({
         role="dialog"
         aria-modal={snap !== 'peek'}
         aria-label={name}
-        className="lg:hidden fixed bottom-14 left-0 right-0 z-40 h-[85vh] flex flex-col bg-bg-2 rounded-none"
-        style={{ ...sheetStyle, borderTop: '1px solid var(--bdr)' }}
+        className="lg:hidden fixed left-0 right-0 z-40 h-[85vh] flex flex-col bg-bg-2 rounded-none"
+        style={{ ...sheetStyle, bottom: 'calc(var(--sp-12) + env(safe-area-inset-bottom))', borderTop: '1px solid var(--bdr)' }}
       >
         {/* Peek zone: drag handle + header (title + Share + dismiss) — owns the gesture */}
         <div className="shrink-0" style={{ touchAction: 'none' }} {...handleProps}>

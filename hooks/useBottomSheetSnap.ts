@@ -90,6 +90,9 @@ export function useBottomSheetSnap({ open, initialSnap = 'mid', onDismiss, onSna
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     if (height === 0) return
+    // Header zone spans interactive children (Share/X/tabs) too — let taps on
+    // those pass through untouched instead of entering the drag state machine.
+    if ((e.target as HTMLElement).closest('button, a')) return
     ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
     startY.current = e.clientY
     startOffset.current = offset
