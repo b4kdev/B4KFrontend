@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const BASE = 'http://localhost:3001';
+const BASE = process.env.A11Y_BASE_URL || 'http://localhost:3001';
 const AXE_PATH = join(__dirname, 'node_modules/axe-core/axe.min.js');
 const REPORT_DATE = new Date().toISOString().split('T')[0];
 const OUT_DIR = join(__dirname, 'reports/a11y');
