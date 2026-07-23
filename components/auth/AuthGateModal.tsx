@@ -207,11 +207,8 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
       persistPendingAction(); // L9 — survive the OAuth redirect
       const supabase = createSupabaseBrowserClient();
       const redirectTo = `${window.location.origin}/auth/callback`;
-      if (provider === 'azure') {
-        await supabase.auth.signInWithOAuth({ provider: 'azure', options: { scopes: 'email', redirectTo } });
-      } else {
-        await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
-      }
+      const scopes = provider === 'apple' ? 'name email' : 'email profile';
+      await supabase.auth.signInWithOAuth({ provider, options: { scopes, redirectTo } });
     } catch {
       setError('error');
       setStatus('idle');
