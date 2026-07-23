@@ -5,6 +5,30 @@ import { Redis } from '@upstash/redis'
 import { createServerClient } from '@supabase/ssr'
 import { routing } from './i18n/routing'
 
+// ── Security headers ────────────────────────────────────────────────────────────
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://oapi.map.naver.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https://res.cloudinary.com https://lh3.googleusercontent.com https://*.pstatic.net https://*.map.naver.com",
+  "font-src 'self' data:",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://www.clarity.ms https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com",
+  "frame-ancestors 'none'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join('; ')
+
+function withSecurityHeaders(res: NextResponse): NextResponse {
+  res.headers.set('Content-Security-Policy', CSP)
+  res.headers.set('X-Content-Type-Options', 'nosniff')
+  res.headers.set('X-Frame-Options', 'DENY')
+  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  res.headers.set('Permissions-Policy', 'geolocation=(self), camera=(), microphone=()')
+  res.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
+  return res
+}
+
 // ── Rate limiters ──────────────────────────────────────────────────────────────
 // Fail-open when env vars are missing (dev machines without Upstash creds).
 // In production Vercel will have the real values; missing = 429 risk, not safety risk.
@@ -123,7 +147,7 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
   // ── Maintenance gate — checked before rate-limiting/auth/intl work ────────
   const isPreview = process.env.VERCEL_ENV === 'preview'
   if (MAINTENANCE_MODE && !isPreview && pathname !== BYPASS_PATH && !isBypassed(req)) {
-    return maintenanceResponse()
+    return withSecurityHeaders(maintenanceResponse())
   }
 
   // ── API routes: rate-limit then exit ──────────────────────────────────────
@@ -134,16 +158,16 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
     // Only one limiter fires per request.
     if (pathname === '/api/plans/generate' && rlAiGenerate) {
       const { success, reset } = await rlAiGenerate.limit(ip)
-      if (!success) return tooManyRequests(reset)
+      if (!success) return withSecurityHeaders(tooManyRequests(reset))
     } else if (pathname.startsWith('/api/auth/') && rlAuth) {
       const { success, reset } = await rlAuth.limit(ip)
-      if (!success) return tooManyRequests(reset)
+      if (!success) return withSecurityHeaders(tooManyRequests(reset))
     } else if (rlGlobal) {
       const { success, reset } = await rlGlobal.limit(ip)
-      if (!success) return tooManyRequests(reset)
+      if (!success) return withSecurityHeaders(tooManyRequests(reset))
     }
 
-    return NextResponse.next()
+    return withSecurityHeaders(NextResponse.next())
   }
 
   // ── Non-API routes: Supabase session refresh + intl routing ──────────────
@@ -170,7 +194,7 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
   )
 
   await supabase.auth.getUser()
-  return response
+  return withSecurityHeaders(response)
 }
 
 export const config = {
