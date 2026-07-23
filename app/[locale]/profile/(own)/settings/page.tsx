@@ -8,6 +8,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { Car, Train, Check, AlertTriangle, Eye, EyeOff, Upload, Trash2, User } from 'lucide-react'
 import { useProfile } from '@/hooks/useProfile'
 import { useToast } from '@/contexts/ToastContext'
+import CookiePreferences from '@/app/[locale]/legal/cookies/_CookiePreferences'
 
 const LOCALES = ['en', 'ko', 'ja', 'zh-CN', 'zh-TW', 'th', 'pt-BR'] as const
 const INTERESTS = ['kpop', 'kdrama', 'kbeauty', 'kculture'] as const
@@ -839,6 +840,17 @@ export default function SettingsPage() {
               />
             </div>
           </div>
+        </section>
+
+        {/* Data & privacy consent — surfaces the same control as /legal/cookies so
+            logged-in users can manage it without leaving their account. Shares
+            lib/consent.ts's localStorage state; not a separate/parallel system. */}
+        <section aria-labelledby="consent-heading">
+          <h2 id="consent-heading" className={sectionHeading}>
+            {t('settings.dataConsent.heading')}
+          </h2>
+          <p className={`${sublabel} mb-sp-3`}>{t('settings.dataConsent.note')}</p>
+          <CookiePreferences />
         </section>
 
         {/* Password change — C9 / feature 5.1.3 */}

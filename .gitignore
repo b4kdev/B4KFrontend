@@ -44,3 +44,7 @@ B4K-DesignSystem-v2.0.html
 B4K-ColorPalette-v2.0.html
 B4K-FontSystem-v2.0.html
 B4K-IconSystem-v2.0.html
+
+# Untracked from repo (present locally, not in fresh clones) — see history-rewrite plan
+.claude/CLAUDE.md
+docs/prototype/

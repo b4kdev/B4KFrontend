@@ -1049,6 +1049,10 @@
         "private": "Private",
         "error": "Could not update. Try again."
       },
+      "dataConsent": {
+        "heading": "Data & Privacy Consent",
+        "note": "Manage your analytics and tracking consent — the same setting as the Cookie Preferences page."
+      },
       "signOutAll": "Log out from all devices",
       "signOutAllNote": "Ends your session everywhere you're signed in.",
       "signOutAllError": "Could not log out everywhere. Try again.",
