@@ -49,6 +49,52 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
 // ── Intl middleware (non-api routes only) ──────────────────────────────────────
 const intlMiddleware = createIntlMiddleware(routing)
 
+// ── Maintenance mode ─────────────────────────────────────────────────────────────
+// Gate everything behind a 503 when MAINTENANCE_MODE=1. Never gates Preview deploys
+// (team needs those to keep working). Bypass: GET /api/maintenance-bypass?token=...
+const MAINTENANCE_MODE = process.env.MAINTENANCE_MODE === '1'
+const BYPASS_TOKEN = process.env.MAINTENANCE_BYPASS_TOKEN
+const BYPASS_COOKIE = 'b4k_bypass'
+const BYPASS_PATH = '/api/maintenance-bypass'
+
+function isBypassed(req: NextRequest): boolean {
+  return Boolean(BYPASS_TOKEN) && req.cookies.get(BYPASS_COOKIE)?.value === BYPASS_TOKEN
+}
+
+function maintenanceResponse(): NextResponse {
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>B4K — Under Maintenance</title>
+<style>
+  html,body{height:100%;margin:0}
+  body{background:#0a0a0a;color:#ffffff;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+  .card{max-width:420px}
+  h1{font-size:20px;font-weight:600;margin:0 0 12px;color:#C4A8E0}
+  p{font-size:14px;line-height:1.7;color:rgba(255,255,255,0.55);margin:0 0 8px}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>B4K is getting ready</h1>
+    <p>We&rsquo;re putting the finishing touches on things. Check back shortly.</p>
+    <p lang="ko">잠시 점검 중입니다. 곧 돌아오겠습니다.</p>
+  </div>
+</body>
+</html>`
+
+  return new NextResponse(html, {
+    status: 503,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Retry-After': '3600',
+      'Cache-Control': 'no-store',
+    },
+  })
+}
+
 // ── IP extraction ──────────────────────────────────────────────────────────────
 function getIp(req: NextRequest): string {
   return (
@@ -73,6 +119,12 @@ function tooManyRequests(resetMs: number): NextResponse {
 // ── Middleware ─────────────────────────────────────────────────────────────────
 export default async function middleware(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl
+
+  // ── Maintenance gate — checked before rate-limiting/auth/intl work ────────
+  const isPreview = process.env.VERCEL_ENV === 'preview'
+  if (MAINTENANCE_MODE && !isPreview && pathname !== BYPASS_PATH && !isBypassed(req)) {
+    return maintenanceResponse()
+  }
 
   // ── API routes: rate-limit then exit ──────────────────────────────────────
   if (pathname.startsWith('/api/')) {
