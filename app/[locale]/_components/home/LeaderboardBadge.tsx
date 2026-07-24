@@ -18,18 +18,36 @@ const RARITY_LABEL: Record<string, string> = { common: '', rare: 'Rare', epic: '
 
 export default function LeaderboardBadge() {
   const t = useTranslations('home.leaderboardBadge')
-  const { data: lb } = useSWR<HomeLeaderboardEntry[]>('/api/home/leaderboard', fetcher)
+  const { data: lb, isLoading: lbLoading } = useSWR<HomeLeaderboardEntry[]>('/api/home/leaderboard', fetcher)
   const { data: badge } = useSWR<HomeBadgeShowcase | null>('/api/home/badge-showcase', fetcher)
 
   // Section hides only when both sub-cards have nothing to show. A loaded-but-empty
   // `lb` (`[]`) still renders the leaderboard card — with EMP_04 copy, not a bare header.
-  if (!lb && !badge) return null
+  if (!lbLoading && !lb && !badge) return null
 
   return (
     <section className="pt-sp-10 px-sp-4 lg:px-sp-8" aria-label={t('ariaLabel')}>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-sp-4">
 
-        {/* SEC-12 Leaderboard Snapshot */}
+        {/* SEC-12 Leaderboard Snapshot — skeleton reserves the same shape while loading */}
+        {lbLoading && (
+          <div className="animate-pulse" aria-hidden="true" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
+            <div className="flex items-center justify-between px-sp-4 pt-sp-4 pb-sp-3" style={{ borderBottom: '1px solid var(--bdr)' }}>
+              <div className="h-[16px] w-1/3 bg-muted-3" />
+              <div className="h-[13px] w-[60px] bg-muted-3" />
+            </div>
+            <div className="p-sp-3 flex flex-col gap-[2px]">
+              {[0, 1, 2].map(i => (
+                <div key={i} className="flex items-center gap-sp-3 p-sp-2">
+                  <div className="w-7 h-7 rounded-full bg-muted-3 shrink-0" />
+                  <div className="flex-1 h-[13px] bg-muted-3" />
+                  <div className="w-8 h-[13px] bg-muted-3 shrink-0" />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {lb && (
           <div style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
             <div className="flex items-center justify-between px-sp-4 pt-sp-4 pb-sp-3" style={{ borderBottom: '1px solid var(--bdr)' }}>

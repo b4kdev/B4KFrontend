@@ -198,11 +198,17 @@ export default function MapView() {
 
   // List data shows immediately (already loaded); detail (address/description/
   // website_url) fills in once GET /places/:id resolves — see hooks/usePlaceDetail.ts.
+  // Falls back to detail alone when the selected POI isn't in the currently-loaded
+  // list (e.g. navigated in from Home/Explore, outside the default/filtered set) —
+  // usePlaceDetail's shape is a complete MapPoi, so this still has coords for the
+  // pin and everything LeftPanel/POIBottomSheet need.
   const listPoi = selectedPoiId
     ? pois.find(p => p.poi_id === selectedPoiId) ?? null
     : null
   const { detail: selectedPoiDetail } = usePlaceDetail(selectedPoiId)
-  const selectedPoi = listPoi ? { ...listPoi, ...selectedPoiDetail } : null
+  const selectedPoi = listPoi
+    ? { ...listPoi, ...selectedPoiDetail }
+    : selectedPoiDetail
 
   function handleRegionToggle(region: string) {
     setActiveRegion(prev => prev === region ? null : region)

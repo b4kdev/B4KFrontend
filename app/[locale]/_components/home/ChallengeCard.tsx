@@ -12,13 +12,36 @@ export default function ChallengeCard() {
   const router = useRouter()
   const { data, isLoading } = useSWR<HomeChallengeData>('/api/home/challenge', fetcher)
 
-  if (isLoading || !data) return null
-
   // S-FYFMTY / AG-1 (locked): this CTA is navigation, not a write — it never
   // gates. The mission page itself gates at the actual user-keyed write.
   function handleCta() {
     router.push(data!.cta_href)
   }
+
+  if (isLoading) {
+    return (
+      <section className="pt-sp-10 px-sp-4 lg:px-sp-8" aria-hidden="true">
+        <div
+          className="p-sp-6 flex flex-col lg:flex-row lg:items-center gap-sp-4 animate-pulse"
+          style={{ background: 'var(--bg-2)', border: '1px solid var(--lav-border)' }}
+        >
+          <span className="w-12 h-12 rounded-full shrink-0 bg-muted-3" />
+          <div className="flex-1 min-w-0 flex flex-col gap-sp-2">
+            <div className="h-[11px] w-1/4 bg-muted-3" />
+            <div className="h-[15px] w-2/3 bg-muted-3" />
+            <div className="h-[12px] w-full bg-muted-3" />
+          </div>
+          <div className="flex flex-col gap-[3px] shrink-0 w-[120px]">
+            <div className="h-[10px] w-2/3 bg-muted-3" />
+            <div className="h-[12px] w-1/2 bg-muted-3" />
+            <div className="h-[12px] w-1/3 mt-sp-2 bg-muted-3" />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (!data) return null
 
   return (
     <section className="pt-sp-10 px-sp-4 lg:px-sp-8" aria-label={t('ariaLabel')}>

@@ -25,7 +25,7 @@ interface RawPlaceDetail {
   context:           unknown
 }
 
-function mapDetail(row: RawPlaceDetail, locale: string): Partial<MapPoi> {
+function mapDetail(row: RawPlaceDetail, locale: string): MapPoi {
   const t   = row.translations ?? {}
   const cur = t[locale] ?? {}
   const en  = t['en'] ?? {}
@@ -36,6 +36,13 @@ function mapDetail(row: RawPlaceDetail, locale: string): Partial<MapPoi> {
   }
 
   return {
+    // poi_id/name_ko/coords are here (not just in useMapPois' list shape) so
+    // `detail` alone is a complete MapPoi — MapView falls back to it directly
+    // when the selected POI isn't in the currently-loaded list (see MapView.tsx).
+    poi_id:             String(row.poi_id),
+    name_ko:            row.name_ko,
+    coords_lat:         row.coords_lat,
+    coords_lng:         row.coords_lng,
     name_en:            en.name,
     // translations rarely has an explicit 'ko' key (Korean lives in name_ko) —
     // without this, ko-locale users would see English for untranslated POIs.
