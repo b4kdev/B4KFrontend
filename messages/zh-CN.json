@@ -630,7 +630,9 @@
     "zoomOut": "缩小",
     "leftPanel": {
       "ariaLabel": "探索面板",
-      "viewSaved": "查看收藏的地点"
+      "viewSaved": "查看收藏的地点",
+      "tagline": "Find your place",
+      "savedLabel": "Saved"
     },
     "regions": {
       "title": "按地区探索",

@@ -214,6 +214,18 @@ body {
 /* ─── Link reset ────────────────────────────────────────────── */
 a { color: inherit; text-decoration: none; }
 
+/* ─── Naver Map Dark Mode ───────────────────────────────────── */
+/* Naver Maps JS v3 (web) has no built-in dark/night tile theme — only the
+   mobile native SDKs expose that. invert+hue-rotate flips tile lightness
+   while preserving hue (roads/water/land keep their correct relative
+   colors), which is the standard technique for dark-theming raster slippy
+   maps. Scoped to <img> so it only touches the raster tile images — our own
+   marker overlays (poi-wrap/plan-marker/poi-cluster, plain divs) and Naver's
+   vector overlays (polylines) are untouched and keep their true colors. */
+.naver-map-dark img {
+  filter: invert(100%) hue-rotate(180deg) brightness(0.95) contrast(0.9);
+}
+
 /* ─── Map POI Markers ───────────────────────────────────────── */
 .poi-wrap {
   width: 24px;

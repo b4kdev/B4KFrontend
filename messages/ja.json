@@ -630,7 +630,9 @@
     "zoomOut": "ズームアウト",
     "leftPanel": {
       "ariaLabel": "探索パネル",
-      "viewSaved": "保存済みの場所を見る"
+      "viewSaved": "保存済みの場所を見る",
+      "tagline": "Find your place",
+      "savedLabel": "Saved"
     },
     "regions": {
       "title": "地域から探す",

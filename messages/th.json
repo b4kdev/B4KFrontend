@@ -630,7 +630,9 @@
     "zoomOut": "ซูมออก",
     "leftPanel": {
       "ariaLabel": "แผงสำรวจ",
-      "viewSaved": "ดูสถานที่ที่บันทึกไว้"
+      "viewSaved": "ดูสถานที่ที่บันทึกไว้",
+      "tagline": "Find your place",
+      "savedLabel": "Saved"
     },
     "regions": {
       "title": "สำรวจตามภูมิภาค",
