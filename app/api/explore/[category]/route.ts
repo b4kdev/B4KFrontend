@@ -145,6 +145,8 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
     ],
     historical: [
       { poi_id: 'KD020-011', name_ko: '전주한옥마을', name_en: 'Jeonju Hanok Stay', primary_image_url: null, display_region: 'Jeonju, Jeonbuk', quality_score: 0, is_trending: false, coords_lat: 35.81477744329797, coords_lng: 127.1525570014218 },
+      { poi_id: 'KD028-014', name_ko: '운현궁', name_en: 'Unhyeongung Palace', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.576226410093, coords_lng: 126.987085596535 },
+      { poi_id: 'KD005-014', name_ko: '수원화성', name_en: 'Suwon Hwaseong Fortress', primary_image_url: null, display_region: 'Suwon, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 37.2869569586225, coords_lng: 127.011795743342 },
     ],
     ostCafes: [
       { poi_id: 'KD002-009', name_ko: '제물포구락부', name_en: 'New Jemulpo Club', primary_image_url: null, display_region: 'Incheon Jung-gu', quality_score: 0, is_trending: false, coords_lat: 37.47463623198604, coords_lng: 126.6225221142413 },
@@ -162,6 +164,9 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
     ],
     makeup: [
       { poi_id: 'KB-MU-MD-001', name_ko: 'Makeup House Myeongdong', name_en: 'Makeup House Myeongdong', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, district: 'Myeongdong', coords_lat: 37.5627516321022, coords_lng: 126.983907441043 },
+      { poi_id: 'KB-MU-GN-003', name_ko: 'Cocory Color Seoul', name_en: 'Cocory Color Seoul', primary_image_url: null, display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 37.56377089583383, coords_lng: 126.985749889034 },
+      { poi_id: 'KB-MU-GN-012', name_ko: 'Jung Saem Mool Inspiration West', name_en: 'Jung Saem Mool Inspiration West', primary_image_url: null, display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 37.52529441862385, coords_lng: 127.0487773089321 },
+      { poi_id: 'KB-FLAG-SU-001', name_ko: 'AMUSE Seongsu Flagship Store', name_en: 'AMUSE Seongsu Flagship Store', primary_image_url: null, display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5438137552044, coords_lng: 127.050522918312 },
     ],
     spa: [
       { poi_id: 'KB-DER-GN-005', name_ko: 'Abijou Clinic Gangnam', name_en: 'Abijou Clinic Gangnam', primary_image_url: null, display_region: 'Seocho-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 37.49864716138882, coords_lng: 127.0262645904912 },
@@ -171,6 +176,9 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
     ],
     salon: [
       { poi_id: 'KB-NEW-209', name_ko: '박승철헤어스투디오 압구정점', name_en: 'Park Seung Chul Hair Studio Apgujeong', primary_image_url: null, display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Apgujeong', coords_lat: 37.5267841995603, coords_lng: 127.028092451888 },
+      { poi_id: 'KB-HAIR-AC-003', name_ko: 'JENNY HOUSE Cheongdam Hill', name_en: 'JENNY HOUSE Cheongdam Hill', primary_image_url: null, display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Apgujeong', coords_lat: 37.5213380930685, coords_lng: 127.0442623043087 },
+      { poi_id: 'KB-HAIR-GN-003', name_ko: 'CHAHONG Room Gangnam', name_en: 'CHAHONG Room Gangnam', primary_image_url: null, display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 37.49652472851307, coords_lng: 127.0286838528369 },
+      { poi_id: 'KB-HAIR-MD-001', name_ko: 'JUNO Hair Myeongdong', name_en: 'JUNO Hair Myeongdong', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, district: 'Myeongdong', coords_lat: 37.5615686368221, coords_lng: 126.9840050325429 },
     ],
   },
   'k-culture': {
@@ -179,15 +187,21 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
       { poi_id: 'KC-SEO-184', name_ko: '조계사', name_en: 'Jogyesa Temple', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.57395881968132, coords_lng: 126.98185608504 },
       { poi_id: 'KC-SEO-182', name_ko: '종묘', name_en: 'Jongmyo Shrine', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5761080433804, coords_lng: 126.994212979827 },
       { poi_id: 'KD016-001', name_ko: '창덕궁', name_en: 'Changdeokgung Palace', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.57964694739535, coords_lng: 126.9909998067713 },
+      { poi_id: 'KD028-014', name_ko: '운현궁', name_en: 'Unhyeongung Palace', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.576226410093, coords_lng: 126.987085596535 },
     ],
     food: [
       { poi_id: 'KD016-007', name_ko: '광장시장', name_en: 'Gwangjang Market', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, region: 'Seoul', coords_lat: 37.57005529646949, coords_lng: 126.9989472822363 },
+      { poi_id: 'KC-SEO-148', name_ko: '남대문시장', name_en: 'Namdaemun Market', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.55918176072071, coords_lng: 126.9776267740439 },
+      { poi_id: 'KC-SEO-149', name_ko: '통인시장', name_en: 'Tongin Market', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.58076970747926, coords_lng: 126.9699479604657 },
     ],
     festivals: [
       { poi_id: 'KD029-014', name_ko: '한국민속촌', name_en: 'Korean Folk Village', primary_image_url: null, display_region: 'Yongin, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 37.25961522542851, coords_lng: 127.1198007202516 },
+      { poi_id: 'KC-GSB-101', name_ko: '안동민속촌', name_en: 'Andong Folk Village', primary_image_url: null, display_region: 'Andong, Gyeongbuk', quality_score: 0, is_trending: false, region: 'Andong', coords_lat: 36.57675373532396, coords_lng: 128.765295003501 },
     ],
     crafts: [
       { poi_id: 'KC-SEO-270', name_ko: '경복궁 - 체험 예약 포인트', name_en: 'Palace-Gate Experiences', primary_image_url: null, display_region: 'Gwangjin-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.53604245097937, coords_lng: 127.0958748426305 },
+      { poi_id: 'KC-SEO-281', name_ko: '청계천 - 체험 예약 포인트', name_en: 'Cheonggyecheon Experience Point', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5691469686793, coords_lng: 126.978647068151 },
+      { poi_id: 'KC-GGI-241', name_ko: '에버랜드 - 전통공예 체험', name_en: 'Everland Traditional Craft Experience', primary_image_url: null, display_region: 'Yongin, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 37.2756257163761, coords_lng: 127.030623743794 },
     ],
   },
 }
