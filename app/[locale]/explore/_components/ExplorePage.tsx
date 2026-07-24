@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import useSWR from 'swr'
 import { Link, usePathname } from '@/i18n/navigation'
 import { Music, Tv, Sparkles, Globe, RefreshCw, AlertTriangle, ArrowRight, Compass } from 'lucide-react'
@@ -94,6 +94,7 @@ function HeroSkeleton() {
 
 export default function ExplorePage({ category }: { category: ExploreCategory }) {
   const t = useTranslations('explore')
+  const locale = useLocale()
   const pathname = usePathname()
 
   const cat = CATEGORIES.find(c => c.id === category)!
@@ -102,10 +103,14 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
 
   // Fetch directly (not via useExplore) so the chip filter can pass a query param.
+  // `locale` is part of the SWR key (not just the URL) so switching language via
+  // the in-app switcher busts the cache — the API route resolves display names
+  // from a NEXT_LOCALE cookie server-side, and an unchanged key would keep
+  // serving the previous locale's cached response indefinitely.
   const query = cat.filter && activeFilter ? `?${cat.filter.param}=${encodeURIComponent(activeFilter)}` : ''
   const { data, isLoading, error, mutate } = useSWR<ExploreData>(
-    `/api/explore/${category}${query}`,
-    fetcher,
+    [`/api/explore/${category}${query}`, locale],
+    ([url]) => fetcher<ExploreData>(url),
     { revalidateOnFocus: false, keepPreviousData: true },
   )
   const isError = !!error
