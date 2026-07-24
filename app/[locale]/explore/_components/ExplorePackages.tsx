@@ -27,7 +27,7 @@ export default function ExplorePackages({ packages }: { packages: ExplorePackage
             style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
             aria-label={t('packages.ariaLabel', { title: pkg.title, partner: pkg.partner_name })}
           >
-            <div className="relative bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '4/3' }}>
+            <div className="relative bg-bg-3 flex items-center justify-center overflow-hidden" style={{ aspectRatio: '4/3' }}>
               <Package size={28} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
               {pkg.cover_image_url && (
                 // eslint-disable-next-line @next/next/no-img-element

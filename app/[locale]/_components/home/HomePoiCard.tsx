@@ -63,7 +63,7 @@ export default function HomePoiCard({ poi, badge }: Props) {
         className="flex flex-col hover:opacity-90 transition-opacity"
         aria-label={t('ariaLabel', { name, region: poi.display_region })}
       >
-        <div className="relative bg-bg-3 flex flex-col items-center justify-center gap-sp-1" style={{ aspectRatio: '4/3' }}>
+        <div className="relative bg-bg-3 flex flex-col items-center justify-center gap-sp-1 overflow-hidden" style={{ aspectRatio: '4/3' }}>
           {!poi.primary_image_url && (
             <>
               <MapPin size={28} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
