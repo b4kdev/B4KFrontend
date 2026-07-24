@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { bffFetch, bffErrorResponse } from '@/lib/bff'
+import { bffFetch } from '@/lib/bff'
 
 export interface ExplorePoi {
   poi_id: string
@@ -233,15 +233,19 @@ export async function GET(
 
   const locale = cookies().get('NEXT_LOCALE')?.value ?? 'en'
 
-  let items: ExplorePoi[]
+  // BFF domain values match the category slugs 1:1. A BFF failure here must
+  // NOT kill the whole response — the interim content seed below (hero +
+  // thematic sections) still needs to render even when the real backend is
+  // unreachable/not-yet-wired. Only the live Trending Now row degrades to
+  // empty on failure; everything else falls back to the seed as normal.
+  let items: ExplorePoi[] = []
   try {
-    // BFF domain values match the category slugs 1:1.
     const places = await bffFetch<BffPlace[]>(
       `/places?domain=${encodeURIComponent(params.category)}&limit=40`
     )
     items = (places ?? []).map(p => mapPlace(p, locale))
-  } catch (e) {
-    return bffErrorResponse(e)
+  } catch {
+    items = []
   }
 
   // Thematic sections use the interim content seed above — the BFF has no
