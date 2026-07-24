@@ -187,7 +187,10 @@ export default function NaverMapCanvas({
         cursor: 'pointer',
       })
 
-      window.naver.maps.Event.addListener(marker, 'click', () => onPoiSelect(poi.poi_id))
+      window.naver.maps.Event.addListener(marker, 'click', () => {
+        map.panTo(new window.naver.maps.LatLng(poi.coords_lat, poi.coords_lng))
+        onPoiSelect(poi.poi_id)
+      })
       markersRef.current.set(poi.poi_id, marker)
     })
 
@@ -312,7 +315,7 @@ export default function NaverMapCanvas({
       {/* Map container */}
       <div
         ref={containerRef}
-        className="w-full h-full"
+        className="w-full h-full naver-map-dark"
         role="application"
         aria-label={t('ariaLabel')}
       />
