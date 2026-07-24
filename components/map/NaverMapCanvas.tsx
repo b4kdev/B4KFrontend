@@ -23,8 +23,6 @@ interface Props {
   showAiPill:    boolean
   onAiPillDismiss: () => void
   onAiPillExpand:  () => void
-  aiOverlayOpen:   boolean
-  onAiOpen:        () => void
   // SC-31 (S-HDTVGP) — when a Saved-hub folder is active, only its POIs stay
   // pinned (never clustered — spec: "all folder POIs pinned on map").
   savedFolderPoiIds?: string[] | null
@@ -62,7 +60,6 @@ function clusterGridSize(zoom: number): number {
 export default function NaverMapCanvas({
   pois, selectedPoiId, planStopIds, routeLegs, onPoiSelect,
   showAiPill, onAiPillDismiss, onAiPillExpand,
-  aiOverlayOpen, onAiOpen,
   savedFolderPoiIds = null,
 }: Props) {
   const t = useTranslations('map')
@@ -355,18 +352,7 @@ export default function NaverMapCanvas({
         </div>
       )}
 
-      {/* Desktop AI open button — MP_30, hidden when overlay open */}
-      {mapReady && !aiOverlayOpen && (
-        <button
-          onClick={onAiOpen}
-          aria-label={t('aiOverlay.openButton')}
-          className="hidden lg:flex absolute bottom-sp-8 right-[calc(var(--touch-min)+var(--sp-5))] z-10 items-center gap-sp-2 h-touch px-sp-3 bg-bg-2 rounded-full transition-colors hover:bg-bg-3"
-          style={{ border: '1px solid var(--lav-border)' }}
-        >
-          <Sparkles size={14} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
-          <span className="text-sm text-fg whitespace-nowrap">{t('aiOverlay.openButton')}</span>
-        </button>
-      )}
+      {/* Desktop AI open button — MP_30 — hidden, AI assistant not ready for launch */}
 
       {/* AI Pill — MP_06 */}
       {showAiPill && mapReady && (

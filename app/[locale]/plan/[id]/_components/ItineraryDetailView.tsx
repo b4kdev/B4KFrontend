@@ -264,8 +264,6 @@ export default function ItineraryDetailView({ id }: { id: string }) {
           showAiPill={false}
           onAiPillDismiss={() => {}}
           onAiPillExpand={() => {}}
-          aiOverlayOpen={false}
-          onAiOpen={() => {}}
         />
       </div>
 
