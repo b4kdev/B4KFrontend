@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { Heart, Plus, Check, Clock, X, ImageOff } from 'lucide-react'
+import { Heart, Bookmark, Plus, Check, Clock, X, ImageOff } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import FieldImage from '@/components/ui/FieldImage'
 import type { MapPoi } from '@/hooks/useMapPois'
@@ -136,26 +136,8 @@ export default function LeftPanelPOIDetail({
           }
         </button>
 
-        {/* LP_09 — Bookmark + Like, side by side */}
+        {/* LP_09 — Like + Bookmark, side by side */}
         <div className="flex gap-sp-3">
-          <button
-            onClick={onToggleSave}
-            aria-label={isSaved ? t('unsave') : t('save')}
-            aria-pressed={isSaved}
-            className="flex-1 min-h-touch flex items-center justify-center gap-sp-2 rounded-none font-medium bg-transparent text-muted border border-transparent hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
-          >
-            <Heart
-              size={16}
-              strokeWidth={2}
-              fill={isSaved ? 'currentColor' : 'none'}
-              className={isSaved ? 'text-danger' : 'text-muted'}
-              aria-hidden="true"
-            />
-            <span className={isSaved ? 'text-fg' : 'text-muted'}>
-              {isSaved ? t('saved') : t('save')}
-            </span>
-          </button>
-
           <button
             onClick={onToggleLike}
             aria-label={isLiked ? t('unlike') : t('like')}
@@ -166,11 +148,29 @@ export default function LeftPanelPOIDetail({
               size={16}
               strokeWidth={2}
               fill={isLiked ? 'currentColor' : 'none'}
-              className={isLiked ? 'text-lav' : 'text-muted'}
+              className={isLiked ? 'text-danger' : 'text-muted'}
               aria-hidden="true"
             />
             <span className={isLiked ? 'text-fg' : 'text-muted'}>
               {isLiked ? t('liked') : t('like')}
+            </span>
+          </button>
+
+          <button
+            onClick={onToggleSave}
+            aria-label={isSaved ? t('unsave') : t('save')}
+            aria-pressed={isSaved}
+            className="flex-1 min-h-touch flex items-center justify-center gap-sp-2 rounded-none font-medium bg-transparent text-muted border border-transparent hover:text-fg hover:border-muted-3 transition-[border-color,color] duration-[80ms]"
+          >
+            <Bookmark
+              size={16}
+              strokeWidth={2}
+              fill={isSaved ? 'currentColor' : 'none'}
+              className={isSaved ? 'text-lav' : 'text-muted'}
+              aria-hidden="true"
+            />
+            <span className={isSaved ? 'text-fg' : 'text-muted'}>
+              {isSaved ? t('saved') : t('save')}
             </span>
           </button>
         </div>
