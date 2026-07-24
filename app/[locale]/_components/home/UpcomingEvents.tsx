@@ -50,7 +50,7 @@ export default function UpcomingEvents() {
               className="flex flex-col overflow-hidden"
               style={{ width: 'clamp(220px, 60vw, 260px)', background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
             >
-              <div className="relative bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '4/3' }}>
+              <div className="relative bg-bg-3 flex items-center justify-center overflow-hidden" style={{ aspectRatio: '4/3' }}>
                 <Calendar size={28} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                 {evt.image_url && (
                   // eslint-disable-next-line @next/next/no-img-element

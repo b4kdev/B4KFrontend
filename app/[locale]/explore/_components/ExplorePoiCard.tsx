@@ -73,7 +73,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
         rel={isPartner ? 'noopener noreferrer' : undefined}
       >
         <div
-          className="w-full aspect-[4/3] flex items-center justify-center relative"
+          className="w-full aspect-[4/3] flex items-center justify-center relative overflow-hidden"
           style={{ background: 'var(--bg-3)' }}
         >
           {poi.primary_image_url ? (
