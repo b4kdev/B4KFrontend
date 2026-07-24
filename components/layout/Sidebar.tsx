@@ -3,10 +3,9 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import Image from 'next/image';
 import useSWR from 'swr';
-import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/contexts/AuthContext';
-import { Link, useRouter } from '@/i18n/navigation';
+import { Link, useRouter, usePathname } from '@/i18n/navigation';
 import { Home, Map, LayoutGrid, Bookmark, User, Bell, Settings, LogOut } from 'lucide-react';
 import { fetcher } from '@/lib/fetcher';
 import { useProfile } from '@/hooks/useProfile';
@@ -66,9 +65,8 @@ export default function Sidebar() {
   };
 
   const isActive = (href: string) => {
-    if (href === '/') return /^\/[a-z-]+\/?$/.test(pathname);
-    const segment = pathname.replace(/^\/[a-z-]+/, '');
-    return segment === href || segment.startsWith(`${href}/`);
+    if (href === '/') return pathname === '/';
+    return pathname === href || pathname.startsWith(`${href}/`);
   };
 
   const railStyle: CSSProperties = {
