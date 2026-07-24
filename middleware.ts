@@ -156,15 +156,22 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
 
     // Per-route limiters — most-specific first, then global.
     // Only one limiter fires per request.
-    if (pathname === '/api/plans/generate' && rlAiGenerate) {
-      const { success, reset } = await rlAiGenerate.limit(ip)
-      if (!success) return withSecurityHeaders(tooManyRequests(reset))
-    } else if (pathname.startsWith('/api/auth/') && rlAuth) {
-      const { success, reset } = await rlAuth.limit(ip)
-      if (!success) return withSecurityHeaders(tooManyRequests(reset))
-    } else if (rlGlobal) {
-      const { success, reset } = await rlGlobal.limit(ip)
-      if (!success) return withSecurityHeaders(tooManyRequests(reset))
+    // Fail-open on a live Upstash error (not just a missing env var) — a
+    // rate-limiter outage should degrade rate limiting, not 500 every request.
+    try {
+      if (pathname === '/api/plans/generate' && rlAiGenerate) {
+        const { success, reset } = await rlAiGenerate.limit(ip)
+        if (!success) return withSecurityHeaders(tooManyRequests(reset))
+      } else if (pathname.startsWith('/api/auth/') && rlAuth) {
+        const { success, reset } = await rlAuth.limit(ip)
+        if (!success) return withSecurityHeaders(tooManyRequests(reset))
+      } else if (rlGlobal) {
+        const { success, reset } = await rlGlobal.limit(ip)
+        if (!success) return withSecurityHeaders(tooManyRequests(reset))
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[B4K] Rate limiter check failed — continuing without it', err)
     }
 
     return withSecurityHeaders(NextResponse.next())
