@@ -1,9 +1,14 @@
 import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
-import { Shield } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { hreflangAlternates, localizedUrl } from '@/lib/site-url';
+import { LegalDocument } from '@/components/legal/LegalDocument';
+import {
+  privacyPolicySections,
+  privacyPolicyLastUpdated,
+  privacyPolicyContactEmail,
+} from '@/content/legal/privacy-policy-content';
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const t = await getTranslations({ locale: params.locale, namespace: 'routes.legalPrivacy' });
@@ -30,14 +35,11 @@ export default function Page() {
         <span className="text-fg">{t('breadcrumb')}</span>
       </div>
       <h1 className="text-fg font-display text-f-display-tile mb-sp-6">{t('title')}</h1>
-      <div
-        className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-none"
-        style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
-      >
-        <Shield size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-4" />
-        <p className="text-f-xl font-semibold text-fg mb-2">{t('empty.title')}</p>
-        <p className="text-f-md text-muted max-w-[320px]">{t('empty.desc')}</p>
-      </div>
+      <LegalDocument
+        lastUpdated={privacyPolicyLastUpdated}
+        contactEmail={privacyPolicyContactEmail}
+        sections={privacyPolicySections}
+      />
     </div>
   );
 }

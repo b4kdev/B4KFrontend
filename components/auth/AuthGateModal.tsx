@@ -29,6 +29,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
   const [checkKind,  setCheckKind]  = useState<'signup' | 'reset'>('signup');
   const [email,      setEmail]      = useState('');
   const [password,   setPassword]   = useState('');
+  const [ageConfirmed, setAgeConfirmed] = useState(false); // BLK-14 item 3 — signup-only self-attestation
   const [resendLeft, setResendLeft] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -67,6 +68,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
     setMode('signin');
     setEmail('');
     setPassword('');
+    setAgeConfirmed(false);
     setResendLeft(0);
   }, [open]);
 
@@ -121,6 +123,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
 
     if (mode === 'signup') {
       if (password.length < 8) { setError('errorWeak'); return; }
+      if (!ageConfirmed) { return; } // submit button is disabled in this case; defense in depth
       setStatus('loading');
       try {
         const res = await fetch('/api/auth/signup', {
@@ -207,11 +210,8 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
       persistPendingAction(); // L9 — survive the OAuth redirect
       const supabase = createSupabaseBrowserClient();
       const redirectTo = `${window.location.origin}/auth/callback`;
-      if (provider === 'azure') {
-        await supabase.auth.signInWithOAuth({ provider: 'azure', options: { scopes: 'email', redirectTo } });
-      } else {
-        await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
-      }
+      const scopes = provider === 'apple' ? 'name email' : 'email profile';
+      await supabase.auth.signInWithOAuth({ provider, options: { scopes, redirectTo } });
     } catch {
       setError('error');
       setStatus('idle');
@@ -401,9 +401,21 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
                 className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
                 style={{ border: '1px solid var(--bdr)' }}
               />
+              {mode === 'signup' && (
+                <label className="w-full flex items-center gap-sp-3 min-h-touch cursor-pointer text-left">
+                  <input
+                    type="checkbox"
+                    checked={ageConfirmed}
+                    onChange={e => setAgeConfirmed(e.target.checked)}
+                    className="w-5 h-5 shrink-0"
+                    style={{ accentColor: 'var(--lav)' }}
+                  />
+                  <span className="text-f-sm text-muted">{t('ageConfirm')}</span>
+                </label>
+              )}
               <button
                 type="submit"
-                disabled={status === 'loading' || !email || !password}
+                disabled={status === 'loading' || !email || !password || (mode === 'signup' && !ageConfirmed)}
                 className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-fg text-bg rounded-none font-semibold text-f-base transition-[background,color] duration-[80ms] disabled:opacity-60 hover:bg-royal-600 hover:text-fg active:opacity-75"
               >
                 {status === 'loading'

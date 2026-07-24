@@ -6,6 +6,15 @@
   font-display: swap;
 }
 
+/* Pretendard — SIL OFL 1.1, Kil Hyung-jin (github.com/orioncactus/pretendard) */
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/pretendard-variable.woff2') format('woff2-variations');
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -150,10 +159,10 @@ body {
 
 /* ─── Locale font stacks ────────────────────────────────────── */
 :lang(ko) { --f-display: 'Pretendard Variable', 'Apple SD Gothic Neo', sans-serif; line-height: 1.7; word-break: keep-all; }
-:lang(ja) { --f-display: 'M PLUS 1', 'Hiragino Sans', 'Yu Gothic', sans-serif; line-height: 1.8; word-break: keep-all; }
-:lang(zh-CN) { --f-display: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; line-height: 1.7; }
-:lang(zh-TW) { --f-display: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif; line-height: 1.7; }
-:lang(th) { --f-display: 'IBM Plex Sans Thai', 'Leelawadee UI', Tahoma, sans-serif; line-height: 1.85; line-break: strict; }
+:lang(ja) { --f-display: var(--font-m-plus-1, 'M PLUS 1'), 'Hiragino Sans', 'Yu Gothic', sans-serif; line-height: 1.8; word-break: keep-all; }
+:lang(zh-CN) { --f-display: var(--font-noto-sans-sc, 'Noto Sans SC'), 'PingFang SC', 'Microsoft YaHei', sans-serif; line-height: 1.7; }
+:lang(zh-TW) { --f-display: var(--font-noto-sans-tc, 'Noto Sans TC'), 'PingFang TC', 'Microsoft JhengHei', sans-serif; line-height: 1.7; }
+:lang(th) { --f-display: var(--font-ibm-plex-sans-thai, 'IBM Plex Sans Thai'), 'Leelawadee UI', Tahoma, sans-serif; line-height: 1.85; line-break: strict; }
 
 body {
   background: var(--bg);

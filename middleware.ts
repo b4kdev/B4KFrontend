@@ -5,6 +5,30 @@ import { Redis } from '@upstash/redis'
 import { createServerClient } from '@supabase/ssr'
 import { routing } from './i18n/routing'
 
+// ── Security headers ────────────────────────────────────────────────────────────
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://oapi.map.naver.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https://res.cloudinary.com https://lh3.googleusercontent.com https://*.pstatic.net https://*.map.naver.com",
+  "font-src 'self' data:",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://www.clarity.ms https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com",
+  "frame-ancestors 'none'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join('; ')
+
+function withSecurityHeaders(res: NextResponse): NextResponse {
+  res.headers.set('Content-Security-Policy', CSP)
+  res.headers.set('X-Content-Type-Options', 'nosniff')
+  res.headers.set('X-Frame-Options', 'DENY')
+  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  res.headers.set('Permissions-Policy', 'geolocation=(self), camera=(), microphone=()')
+  res.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
+  return res
+}
+
 // ── Rate limiters ──────────────────────────────────────────────────────────────
 // Fail-open when env vars are missing (dev machines without Upstash creds).
 // In production Vercel will have the real values; missing = 429 risk, not safety risk.
@@ -123,7 +147,7 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
   // ── Maintenance gate — checked before rate-limiting/auth/intl work ────────
   const isPreview = process.env.VERCEL_ENV === 'preview'
   if (MAINTENANCE_MODE && !isPreview && pathname !== BYPASS_PATH && !isBypassed(req)) {
-    return maintenanceResponse()
+    return withSecurityHeaders(maintenanceResponse())
   }
 
   // ── API routes: rate-limit then exit ──────────────────────────────────────
@@ -132,45 +156,64 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
 
     // Per-route limiters — most-specific first, then global.
     // Only one limiter fires per request.
-    if (pathname === '/api/plans/generate' && rlAiGenerate) {
-      const { success, reset } = await rlAiGenerate.limit(ip)
-      if (!success) return tooManyRequests(reset)
-    } else if (pathname.startsWith('/api/auth/') && rlAuth) {
-      const { success, reset } = await rlAuth.limit(ip)
-      if (!success) return tooManyRequests(reset)
-    } else if (rlGlobal) {
-      const { success, reset } = await rlGlobal.limit(ip)
-      if (!success) return tooManyRequests(reset)
+    // Fail-open on a live Upstash error (not just a missing env var) — a
+    // rate-limiter outage should degrade rate limiting, not 500 every request.
+    try {
+      if (pathname === '/api/plans/generate' && rlAiGenerate) {
+        const { success, reset } = await rlAiGenerate.limit(ip)
+        if (!success) return withSecurityHeaders(tooManyRequests(reset))
+      } else if (pathname.startsWith('/api/auth/') && rlAuth) {
+        const { success, reset } = await rlAuth.limit(ip)
+        if (!success) return withSecurityHeaders(tooManyRequests(reset))
+      } else if (rlGlobal) {
+        const { success, reset } = await rlGlobal.limit(ip)
+        if (!success) return withSecurityHeaders(tooManyRequests(reset))
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[B4K] Rate limiter check failed — continuing without it', err)
     }
 
-    return NextResponse.next()
+    return withSecurityHeaders(NextResponse.next())
   }
 
   // ── Non-API routes: Supabase session refresh + intl routing ──────────────
   // Build the intl response first so we can pass its headers through.
-  let response = intlMiddleware(req)
+  const response = intlMiddleware(req)
 
   // Refresh the Supabase auth token so SSR can read the session on every page.
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name) { return req.cookies.get(name)?.value },
-        set(name, value, options) {
-          req.cookies.set({ name, value, ...options })
-          response.cookies.set({ name, value, ...options })
-        },
-        remove(name, options) {
-          req.cookies.set({ name, value: '', ...options })
-          response.cookies.set({ name, value: '', ...options })
-        },
-      },
-    }
-  )
+  // Fail-open on missing/invalid config — a bad env var should degrade auth,
+  // not 500 every page (mirrors the Upstash fail-open pattern above).
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  await supabase.auth.getUser()
-  return response
+  if (supabaseUrl && supabaseAnonKey) {
+    try {
+      const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+        cookies: {
+          get(name) { return req.cookies.get(name)?.value },
+          set(name, value, options) {
+            req.cookies.set({ name, value, ...options })
+            response.cookies.set({ name, value, ...options })
+          },
+          remove(name, options) {
+            req.cookies.set({ name, value: '', ...options })
+            response.cookies.set({ name, value: '', ...options })
+          },
+        },
+      })
+
+      await supabase.auth.getUser()
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[B4K] Supabase session refresh failed — continuing without it', err)
+    }
+  } else {
+    // eslint-disable-next-line no-console
+    console.warn('[B4K] Supabase env vars missing — session refresh skipped (fail-open)')
+  }
+
+  return withSecurityHeaders(response)
 }
 
 export const config = {

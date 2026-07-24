@@ -150,6 +150,7 @@ function PlanResult({ stops }: { stops: MapPoi[] }) {
 
   return (
     <div className="flex flex-col gap-sp-2">
+      <p className="text-muted text-f-xs leading-snug">{t('disclaimer')}</p>
       {stops.map((poi, i) => (
         <div key={poi.poi_id} className="flex items-center gap-sp-2">
           <span className="w-5 h-5 rounded-full bg-lav text-bg text-f-xxs font-bold flex items-center justify-center shrink-0">
