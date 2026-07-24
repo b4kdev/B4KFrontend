@@ -172,28 +172,40 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
 
   // ── Non-API routes: Supabase session refresh + intl routing ──────────────
   // Build the intl response first so we can pass its headers through.
-  let response = intlMiddleware(req)
+  const response = intlMiddleware(req)
 
   // Refresh the Supabase auth token so SSR can read the session on every page.
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name) { return req.cookies.get(name)?.value },
-        set(name, value, options) {
-          req.cookies.set({ name, value, ...options })
-          response.cookies.set({ name, value, ...options })
-        },
-        remove(name, options) {
-          req.cookies.set({ name, value: '', ...options })
-          response.cookies.set({ name, value: '', ...options })
-        },
-      },
-    }
-  )
+  // Fail-open on missing/invalid config — a bad env var should degrade auth,
+  // not 500 every page (mirrors the Upstash fail-open pattern above).
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  await supabase.auth.getUser()
+  if (supabaseUrl && supabaseAnonKey) {
+    try {
+      const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+        cookies: {
+          get(name) { return req.cookies.get(name)?.value },
+          set(name, value, options) {
+            req.cookies.set({ name, value, ...options })
+            response.cookies.set({ name, value, ...options })
+          },
+          remove(name, options) {
+            req.cookies.set({ name, value: '', ...options })
+            response.cookies.set({ name, value: '', ...options })
+          },
+        },
+      })
+
+      await supabase.auth.getUser()
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[B4K] Supabase session refresh failed — continuing without it', err)
+    }
+  } else {
+    // eslint-disable-next-line no-console
+    console.warn('[B4K] Supabase env vars missing — session refresh skipped (fail-open)')
+  }
+
   return withSecurityHeaders(response)
 }
 
