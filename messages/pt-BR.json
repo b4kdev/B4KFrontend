@@ -7,6 +7,8 @@
     "home": "Início",
     "map": "Mapa",
     "contents": "Conteúdo",
+    "explore": "Explorar",
+    "saved": "Salvos",
     "plan": "Plano",
     "profile": "Perfil",
     "help": "Ajuda",
@@ -14,50 +16,48 @@
     "language": "Idioma",
     "signIn": "Entrar",
     "signOut": "Sair",
-    "menuOpen": "Open menu",
-    "menuClose": "Close menu",
-    "mainNavigation": "Main navigation",
-    "logoHome": "B4K Home",
-    "about": "About",
-    "bottomNav": "Bottom navigation",
-    "sidebarRegion": "Sidebar",
-    "explore": "Explore",
-    "saved": "Saved",
-    "settings": "Settings",
-    "legal": "Legal",
-    "legalTerms": "Terms of Service",
-    "legalPrivacy": "Privacy Policy",
-    "legalCookies": "Cookie Policy",
-    "guestSubtitle": "Sign in to save places and plan trips"
+    "menuOpen": "Abrir menu",
+    "menuClose": "Fechar menu",
+    "mainNavigation": "Navegação principal",
+    "logoHome": "Início do B4K",
+    "about": "Sobre",
+    "bottomNav": "Navegação inferior",
+    "sidebarRegion": "Barra lateral",
+    "settings": "Configurações",
+    "legal": "Jurídico",
+    "legalTerms": "Termos de Serviço",
+    "legalPrivacy": "Política de Privacidade",
+    "legalCookies": "Política de Cookies",
+    "guestSubtitle": "Entre para salvar lugares e planejar viagens"
   },
   "topNav": {
     "searchPlaceholder": "Pesquise roteiros, lugares, criadores…",
     "searchPlaceholderMobile": "B4K · Pesquisar...",
     "recentSearches": "Pesquisas recentes",
-    "clearSearch": "Clear search",
-    "noRecents": "No recent searches",
+    "clearSearch": "Limpar pesquisa",
+    "noRecents": "Nenhuma pesquisa recente",
     "searchFilters": {
-      "all": "All",
-      "places": "Places",
-      "itineraries": "Itineraries",
+      "all": "Todos",
+      "places": "Lugares",
+      "itineraries": "Roteiros",
       "kpop": "K-Pop",
       "kdrama": "K-Drama",
       "kbeauty": "K-Beauty"
     },
-    "noResults": "No results for \"{query}\"",
-    "noResultsDesc": "Try a different search or explore the map",
+    "noResults": "Nenhum resultado para \"{query}\"",
+    "noResultsDesc": "Tente outra pesquisa ou explore o mapa",
     "searchResultAriaLabel": "{name}, {type}"
   },
   "home": {
     "breadcrumb": "Início",
     "weather": {
-      "ariaLabel": "Seoul {temp}°C, {condition}"
+      "ariaLabel": "Seul {temp}°C, {condition}"
     },
     "carousel": {
-      "ariaLabel": "Featured content",
+      "ariaLabel": "Conteúdo em destaque",
       "slideN": "Slide {n}",
-      "prev": "Previous slide",
-      "next": "Next slide",
+      "prev": "Slide anterior",
+      "next": "Próximo slide",
       "slides": {
         "kCulture": {
           "badge": "Novo Lançamento",
@@ -85,14 +85,14 @@
       "seeAll": "Ver Todos",
       "badge": "Roteiro",
       "card": {
-        "ariaLabel": "{title} by {creator}",
-        "likesLabel": "{count} likes",
-        "savesLabel": "{count} saves"
+        "ariaLabel": "{title} por {creator}",
+        "likesLabel": "{count} curtidas",
+        "savesLabel": "{count} salvos"
       },
       "empty": {
-        "title": "No plans yet this week",
-        "desc": "Share your Korea trip and inspire other travelers.",
-        "cta": "Create a plan"
+        "title": "Nenhum plano ainda esta semana",
+        "desc": "Compartilhe sua viagem à Coreia e inspire outros viajantes.",
+        "cta": "Criar um plano"
       }
     },
     "leaderboard": {
@@ -108,141 +108,141 @@
         "ariaLabel": "{name}, {region}"
       },
       "empty": {
-        "title": "No seasonal picks yet",
-        "desc": "Curators are gathering this season's must-see locations.",
-        "cta": "Open the map"
-      }
-    },
-    "continuePlan": {
-      "ariaLabel": "Continue your draft plan",
-      "cta": "Continue",
-      "dismiss": "Dismiss",
-      "stopCount": "{n} stops",
-      "timeAgo": {
-        "minutes": "{n}m ago",
-        "hours": "{n}h ago",
-        "days": "{n}d ago"
-      },
-      "guestTitle": "Continue your plan"
-    },
-    "youMightLike": {
-      "title": "You Might Like",
-      "viewAll": "View all"
-    },
-    "newOnB4K": {
-      "title": "New on B4K",
-      "viewAll": "View all",
-      "newBadge": "New",
-      "error": "Failed to load",
-      "retry": "Retry"
-    },
-    "leaderboardBadge": {
-      "ariaLabel": "Leaderboard and badge showcase",
-      "leaderboard": {
-        "title": "This Week's Top",
-        "viewAll": "View all",
-        "empty": "No rankings yet this week"
-      },
-      "badge": {
-        "title": "Latest Badge",
-        "viewAll": "View all",
-        "earnedBy": "Earned by {name}"
+        "title": "Nenhuma seleção sazonal ainda",
+        "desc": "Os curadores estão reunindo os locais imperdíveis da estação.",
+        "cta": "Abrir o mapa"
       }
     },
     "poiCard": {
       "ariaLabel": "{name}, {region}",
-      "saveAria": "Save {name}",
-      "unsaveAria": "Unsave {name}",
-      "likeAria": "Like {name}",
-      "unlikeAria": "Unlike {name}",
-      "addAria": "Add {name} to plan",
-      "addedAria": "{name} added to plan",
-      "imagePending": "Image being prepared"
+      "saveAria": "Salvar {name}",
+      "unsaveAria": "Remover {name} dos salvos",
+      "likeAria": "Curtir {name}",
+      "unlikeAria": "Descurtir {name}",
+      "addAria": "Adicionar {name} ao plano",
+      "addedAria": "{name} adicionado ao plano",
+      "imagePending": "Imagem sendo preparada"
+    },
+    "trending": {
+      "title": "Locais em Alta",
+      "viewAll": "Ver tudo",
+      "error": "Falha ao carregar",
+      "retry": "Tentar novamente"
     },
     "exploreHub": {
-      "ariaLabel": "Explore by category",
-      "title": "Explore K-Culture",
+      "ariaLabel": "Explorar por categoria",
+      "title": "Explorar Cultura Coreana",
       "kPop": {
         "label": "K-Pop",
-        "sub": "Concerts, studios & fan spots"
+        "sub": "Shows, estúdios e pontos de fãs"
       },
       "kDrama": {
         "label": "K-Drama",
-        "sub": "Filming locations & scenes"
+        "sub": "Locações de filmagem e cenas"
       },
       "kBeauty": {
         "label": "K-Beauty",
-        "sub": "Shops, clinics & trends"
+        "sub": "Lojas, clínicas e tendências"
       },
       "kCulture": {
         "label": "K-Culture",
-        "sub": "Heritage, art & tradition"
+        "sub": "Patrimônio, arte e tradição"
       }
-    },
-    "trending": {
-      "title": "Trending Spots",
-      "viewAll": "View all",
-      "error": "Failed to load",
-      "retry": "Retry"
-    },
-    "planTrip": {
-      "ariaLabel": "Plan your trip",
-      "title": "Plan Your Trip",
-      "subtitle": "Start planning your Korea journey",
-      "manual": {
-        "label": "Manual Plan",
-        "sub": "Add stops one by one"
-      },
-      "auto": {
-        "label": "From Saved",
-        "sub": "Auto-generate from saved places"
-      },
-      "ai": {
-        "label": "AI Chat Plan",
-        "sub": "Let AI plan for you"
-      }
-    },
-    "challenge": {
-      "ariaLabel": "Weekly challenge",
-      "label": "Weekly Challenge",
-      "badgeReward": "Badge reward",
-      "cta": "Start challenge"
-    },
-    "popularPlans": {
-      "title": "Popular Plans",
-      "viewAll": "View all",
-      "error": "Failed to load",
-      "retry": "Retry",
-      "sponsored": "Sponsored",
-      "card": {
-        "ariaLabel": "{title} by {author}",
-        "stops": "{n} stops"
-      }
-    },
-    "promotions": {
-      "title": "Promotions"
     },
     "editorial": {
-      "title": "Editor's Picks",
-      "viewAll": "View all",
-      "error": "Failed to load",
-      "retry": "Retry",
-      "catAll": "All",
+      "title": "Escolhas do Editor",
+      "viewAll": "Ver tudo",
+      "error": "Falha ao carregar",
+      "retry": "Tentar novamente",
+      "catAll": "Todos",
       "catKPop": "K-Pop",
       "catKDrama": "K-Drama",
       "catKBeauty": "K-Beauty",
       "catKCulture": "K-Culture"
     },
-    "events": {
-      "title": "Upcoming Events"
+    "newOnB4K": {
+      "title": "Novo no B4K",
+      "viewAll": "Ver tudo",
+      "newBadge": "Novo",
+      "error": "Falha ao carregar",
+      "retry": "Tentar novamente"
+    },
+    "youMightLike": {
+      "title": "Você Pode Gostar",
+      "viewAll": "Ver tudo"
+    },
+    "planTrip": {
+      "ariaLabel": "Planejar sua viagem",
+      "title": "Planeje Sua Viagem",
+      "subtitle": "Comece a planejar sua jornada pela Coreia",
+      "manual": {
+        "label": "Plano Manual",
+        "sub": "Adicione paradas uma a uma"
+      },
+      "auto": {
+        "label": "A Partir dos Salvos",
+        "sub": "Gere automaticamente a partir de lugares salvos"
+      },
+      "ai": {
+        "label": "Plano por Chat com IA",
+        "sub": "Deixe a IA planejar para você"
+      }
+    },
+    "continuePlan": {
+      "ariaLabel": "Continuar seu rascunho de plano",
+      "cta": "Continuar",
+      "dismiss": "Dispensar",
+      "stopCount": "{n} paradas",
+      "timeAgo": {
+        "minutes": "{n}min atrás",
+        "hours": "{n}h atrás",
+        "days": "{n}d atrás"
+      },
+      "guestTitle": "Continue seu plano"
+    },
+    "challenge": {
+      "ariaLabel": "Desafio semanal",
+      "label": "Desafio Semanal",
+      "badgeReward": "Recompensa de emblema",
+      "cta": "Iniciar desafio"
+    },
+    "leaderboardBadge": {
+      "ariaLabel": "Ranking e vitrine de emblemas",
+      "leaderboard": {
+        "title": "Top da Semana",
+        "viewAll": "Ver tudo",
+        "empty": "Ainda não há classificações esta semana"
+      },
+      "badge": {
+        "title": "Emblema Mais Recente",
+        "viewAll": "Ver tudo",
+        "earnedBy": "Conquistado por {name}"
+      }
+    },
+    "popularPlans": {
+      "title": "Planos Populares",
+      "viewAll": "Ver tudo",
+      "error": "Falha ao carregar",
+      "retry": "Tentar novamente",
+      "sponsored": "Patrocinado",
+      "card": {
+        "ariaLabel": "{title} por {author}",
+        "stops": "{n} paradas"
+      }
     },
     "partnerPackages": {
-      "title": "Partner Packages",
-      "sponsored": "Sponsored",
-      "viewCta": "View",
+      "title": "Pacotes Parceiros",
+      "sponsored": "Patrocinado",
+      "viewCta": "Ver",
       "card": {
-        "ariaLabel": "{title} by {partner}"
+        "ariaLabel": "{title} por {partner}"
       }
+    },
+    "events": {
+      "title": "Próximos Eventos"
+    },
+    "promotions": {
+      "title": "Promoções"
     }
   },
   "common": {
@@ -254,726 +254,726 @@
   },
   "routes": {
     "map": {
-      "breadcrumb": "Map",
-      "title": "Map",
+      "breadcrumb": "Mapa",
+      "title": "Mapa",
       "empty": {
-        "title": "Coming soon",
-        "desc": "The Korea map will land here once Naver Map canvas is wired."
+        "title": "Em breve",
+        "desc": "O mapa da Coreia aparecerá aqui assim que o canvas do Naver Map estiver integrado."
       }
     },
     "contents": {
-      "breadcrumb": "Contents",
-      "title": "Contents",
+      "breadcrumb": "Conteúdo",
+      "title": "Conteúdo",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Four hubs: K-Pop, K-Drama, K-Beauty, K-Culture. Pick one to dive in."
+        "title": "Em breve",
+        "desc": "Quatro seções: K-Pop, K-Drama, K-Beauty, K-Culture. Escolha uma para explorar."
+      }
+    },
+    "explore": {
+      "breadcrumb": "Explorar",
+      "title": "Explorar",
+      "empty": {
+        "title": "Em breve",
+        "desc": "Quatro seções: K-Pop, K-Drama, K-Beauty, K-Culture. Escolha uma para explorar."
+      }
+    },
+    "saved": {
+      "breadcrumb": "Salvos",
+      "title": "Salvos",
+      "empty": {
+        "title": "Nada salvo ainda",
+        "desc": "Marque lugares e roteiros para encontrá-los aqui."
       }
     },
     "contentsKpop": {
       "breadcrumb": "K-Pop",
       "title": "K-Pop",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Pop hub coming soon. Artists, venues, tours."
+        "title": "Em breve",
+        "desc": "Seção K-Pop em breve. Artistas, locais e passeios."
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "Conteúdo",
+        "explore": "Explorar"
       }
     },
     "contentsKdrama": {
       "breadcrumb": "K-Drama",
       "title": "K-Drama",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Drama hub coming soon. Filming locations, drama trails."
+        "title": "Em breve",
+        "desc": "Seção K-Drama em breve. Locações de filmagem, trilhas de doramas."
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "Conteúdo",
+        "explore": "Explorar"
       }
     },
     "contentsKbeauty": {
       "breadcrumb": "K-Beauty",
       "title": "K-Beauty",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Beauty hub coming soon. Skincare, treatments, brand origin stores."
+        "title": "Em breve",
+        "desc": "Seção K-Beauty em breve. Skincare, tratamentos, lojas oficiais de marcas."
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "Conteúdo",
+        "explore": "Explorar"
       }
     },
     "contentsKculture": {
       "breadcrumb": "K-Culture",
       "title": "K-Culture",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Culture hub coming soon. Heritage, food, traditional crafts."
+        "title": "Em breve",
+        "desc": "Seção K-Culture em breve. Patrimônio, gastronomia, artesanato tradicional."
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "Conteúdo",
+        "explore": "Explorar"
       }
     },
     "profile": {
-      "breadcrumb": "Profile",
-      "title": "Profile",
+      "breadcrumb": "Perfil",
+      "title": "Perfil",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Your B4K hub. Trips, saves, badges, community."
+        "title": "Em breve",
+        "desc": "Seu espaço B4K. Viagens, salvos, emblemas, comunidade."
       }
     },
     "profileTrips": {
-      "breadcrumb": "My Trips",
-      "title": "My Trips",
+      "breadcrumb": "Minhas Viagens",
+      "title": "Minhas Viagens",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Plans you have created or saved will live here."
+        "title": "Em breve",
+        "desc": "Os planos que você criou ou salvou aparecerão aqui."
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "Perfil"
       }
     },
     "profileSaved": {
-      "breadcrumb": "Saved",
-      "title": "Saved",
+      "breadcrumb": "Salvos",
+      "title": "Salvos",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Places and plans you have bookmarked."
+        "title": "Em breve",
+        "desc": "Lugares e planos que você marcou."
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "Perfil"
       }
     },
     "profileBadges": {
-      "breadcrumb": "Badges",
-      "title": "Badges",
+      "breadcrumb": "Emblemas",
+      "title": "Emblemas",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Badges earned through community contributions."
+        "title": "Em breve",
+        "desc": "Emblemas conquistados através de contribuições da comunidade."
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "Perfil"
       }
     },
     "profileCommunity": {
-      "breadcrumb": "Community",
-      "title": "Community",
+      "breadcrumb": "Comunidade",
+      "title": "Comunidade",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Followers, following, and creator activity."
+        "title": "Em breve",
+        "desc": "Seguidores, seguindo e atividade de criadores."
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "Perfil"
       }
     },
     "profileSettings": {
-      "breadcrumb": "Settings",
-      "title": "Settings",
+      "breadcrumb": "Configurações",
+      "title": "Configurações",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Account, language, notifications, and privacy preferences."
+        "title": "Em breve",
+        "desc": "Conta, idioma, notificações e preferências de privacidade."
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "Perfil"
       }
     },
     "plan": {
-      "breadcrumb": "Plan",
-      "title": "Plan",
+      "breadcrumb": "Plano",
+      "title": "Plano",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Choose a planning flow: manual, auto, or AI chat."
+        "title": "Em breve",
+        "desc": "Escolha um fluxo de planejamento: manual, automático ou chat com IA."
       }
     },
     "planManual": {
-      "breadcrumb": "Manual Plan",
-      "title": "Manual Plan",
+      "breadcrumb": "Plano Manual",
+      "title": "Plano Manual",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Drag-and-drop builder for power users."
+        "title": "Em breve",
+        "desc": "Construtor de arrastar e soltar para usuários avançados."
       },
       "crumb": {
-        "plan": "Plan"
+        "plan": "Plano"
       }
     },
     "planAuto": {
-      "breadcrumb": "Auto Plan",
-      "title": "Auto Plan",
+      "breadcrumb": "Plano Automático",
+      "title": "Plano Automático",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Tell us your dates and we generate a starting itinerary."
+        "title": "Em breve",
+        "desc": "Informe suas datas e geramos um roteiro inicial."
       },
       "crumb": {
-        "plan": "Plan"
+        "plan": "Plano"
       }
     },
     "planAi": {
-      "breadcrumb": "AI Chat Plan",
-      "title": "AI Chat Plan",
+      "breadcrumb": "Plano por Chat com IA",
+      "title": "Plano por Chat com IA",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Conversational AI builds your Korea trip turn by turn."
+        "title": "Em breve",
+        "desc": "IA conversacional constrói sua viagem à Coreia passo a passo."
       },
       "crumb": {
-        "plan": "Plan"
+        "plan": "Plano"
       }
     },
     "leaderboard": {
-      "breadcrumb": "Leaderboard",
-      "title": "Leaderboard",
+      "breadcrumb": "Ranking",
+      "title": "Ranking",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Weekly community ranking. Wilson score on saves + likes."
+        "title": "Em breve",
+        "desc": "Ranking semanal da comunidade. Pontuação de Wilson com base em salvos e curtidas."
       }
     },
     "badges": {
-      "breadcrumb": "Badges Gallery",
-      "title": "Badges Gallery",
+      "breadcrumb": "Galeria de Emblemas",
+      "title": "Galeria de Emblemas",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Browse the full badge collection."
+        "title": "Em breve",
+        "desc": "Navegue pela coleção completa de emblemas."
       }
     },
     "onboarding": {
-      "breadcrumb": "Welcome to B4K",
-      "title": "Welcome to B4K",
+      "breadcrumb": "Bem-vindo ao B4K",
+      "title": "Bem-vindo ao B4K",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Quick interest tags to personalise your first trip."
+        "title": "Em breve",
+        "desc": "Tags de interesse rápidas para personalizar sua primeira viagem."
       }
     },
     "help": {
-      "breadcrumb": "Help",
-      "title": "Help",
+      "breadcrumb": "Ajuda",
+      "title": "Ajuda",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Guides, FAQ, contact support."
+        "title": "Em breve",
+        "desc": "Guias, perguntas frequentes, contato do suporte."
       }
     },
     "notifications": {
-      "breadcrumb": "Notifications",
-      "title": "Notifications",
+      "breadcrumb": "Notificações",
+      "title": "Notificações",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Platform notifications. Social pings deferred to v1.1."
+        "title": "Em breve",
+        "desc": "Notificações da plataforma. Interações sociais adiadas para v1.1."
       }
     },
     "legalPrivacy": {
-      "breadcrumb": "Privacy Policy",
-      "title": "Privacy Policy",
+      "breadcrumb": "Política de Privacidade",
+      "title": "Política de Privacidade",
       "empty": {
-        "title": "Coming soon",
-        "desc": "How we handle your data. PIPA compliant."
+        "title": "Em breve",
+        "desc": "Como tratamos seus dados. Em conformidade com a PIPA."
       }
     },
     "legalTerms": {
-      "breadcrumb": "Terms of Service",
-      "title": "Terms of Service",
+      "breadcrumb": "Termos de Serviço",
+      "title": "Termos de Serviço",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Rules for using B4K."
+        "title": "Em breve",
+        "desc": "Regras para usar o B4K."
       }
     },
     "legalCookies": {
-      "breadcrumb": "Cookie Policy",
-      "title": "Cookie Policy",
+      "breadcrumb": "Política de Cookies",
+      "title": "Política de Cookies",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Cookies we use and why."
+        "title": "Em breve",
+        "desc": "Cookies que usamos e por quê."
       }
     },
     "sitemap": {
-      "breadcrumb": "About B4K",
-      "title": "About B4K",
+      "breadcrumb": "Sobre o B4K",
+      "title": "Sobre o B4K",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Story, team, mission."
-      }
-    },
-    "explore": {
-      "breadcrumb": "Explore",
-      "title": "Explore",
-      "empty": {
-        "title": "Coming soon",
-        "desc": "Four hubs: K-Pop, K-Drama, K-Beauty, K-Culture. Pick one to dive in."
-      }
-    },
-    "saved": {
-      "breadcrumb": "Saved",
-      "title": "Saved",
-      "empty": {
-        "title": "Nothing saved yet",
-        "desc": "Bookmark places and itineraries to find them here."
+        "title": "Em breve",
+        "desc": "História, equipe, missão."
       }
     }
   },
   "boundary": {
     "notFound": {
-      "title": "Page not found",
-      "desc": "The page you're looking for doesn't exist or has moved.",
-      "cta": "Back to home"
+      "title": "Página não encontrada",
+      "desc": "A página que você procura não existe ou foi movida.",
+      "cta": "Voltar ao início"
     },
     "error": {
-      "title": "Something went wrong",
-      "desc": "Try again. If the problem persists, contact support.",
-      "cta": "Try again",
-      "goHome": "Go home"
+      "title": "Algo deu errado",
+      "desc": "Tente novamente. Se o problema persistir, entre em contato com o suporte.",
+      "cta": "Tentar novamente",
+      "goHome": "Ir para o início"
     },
     "offline": {
-      "title": "You're offline",
-      "desc": "Reconnect to keep planning. Your saved trips are kept locally.",
-      "retry": "Try again",
-      "titleMap": "You're offline. Map may be outdated."
+      "title": "Você está offline",
+      "desc": "Reconecte-se para continuar planejando. Suas viagens salvas ficam armazenadas localmente.",
+      "retry": "Tentar novamente",
+      "titleMap": "Você está offline. O mapa pode estar desatualizado."
     }
   },
   "auth": {
     "gate": {
-      "title": "Sign in to B4K",
-      "valueProp": "Save your plan · Unlock leaderboards · Earn badges",
+      "title": "Entrar no B4K",
+      "valueProp": "Salve seu plano · Desbloqueie rankings · Ganhe emblemas",
       "context": {
-        "save_poi": "Sign in to save places",
-        "like": "Sign in to like",
-        "save_plan": "Sign in to save your plan",
-        "save_plan_other": "Sign in to save this plan to your trips",
-        "saved_tab": "Sign in to see your saved places",
-        "profile_nav": "Sign in to view your profile",
-        "fl3_cap": "Sign in to keep planning"
+        "save_poi": "Entre para salvar lugares",
+        "like": "Entre para curtir",
+        "save_plan": "Entre para salvar seu plano",
+        "save_plan_other": "Entre para salvar este plano nas suas viagens",
+        "saved_tab": "Entre para ver seus lugares salvos",
+        "profile_nav": "Entre para ver seu perfil",
+        "fl3_cap": "Entre para continuar planejando"
       },
-      "google": "Continue with Google",
-      "apple": "Continue with Apple",
-      "microsoft": "Continue with Microsoft",
-      "email": "Sign in with email",
-      "emailPlaceholder": "Email address",
-      "passwordPlaceholder": "Password",
-      "signIn": "Sign in",
-      "backToProviders": "← Other sign-in options",
-      "dismiss": "Continue as guest",
-      "loading": "Signing in…",
-      "error": "Sign-in failed. Try again.",
-      "ariaLabel": "Sign in modal",
-      "close": "Close sign-in modal",
-      "planPreserved": "Your current plan is preserved — sign in to save it permanently.",
-      "fl3Preserved": "Your chat and plan are saved — sign in to keep planning.",
-      "emailContinue": "Continue with email",
-      "signInTab": "Sign in",
-      "signUpTab": "Sign up",
-      "signUp": "Create account",
-      "errorCredentials": "Email or password incorrect",
-      "errorWeak": "Password must be at least 8 characters",
-      "errorSignup": "Sign-up failed. Try again.",
-      "forgotPassword": "Forgot password?",
-      "forgotTitle": "Reset your password",
-      "forgotSubtitle": "Enter your email and we'll send you a reset link.",
-      "forgotSubmit": "Send reset link",
-      "errorForgot": "Couldn't send the email. Try again.",
-      "backToSignIn": "← Back to sign in",
-      "checkEmailTitle": "Check your email",
-      "checkEmailBodySignup": "We sent a verification link to {email}. Open it to finish creating your account.",
-      "checkEmailBodyReset": "We sent a password reset link to {email}.",
-      "resend": "Resend email",
-      "resendIn": "Resend in {seconds}s",
-      "tosFooter": "By continuing, you agree to B4K's <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
-      "ageConfirm": "I confirm I'm at least 14 years old"
+      "google": "Continuar com Google",
+      "apple": "Continuar com Apple",
+      "microsoft": "Continuar com Microsoft",
+      "email": "Entrar com e-mail",
+      "emailPlaceholder": "Endereço de e-mail",
+      "passwordPlaceholder": "Senha",
+      "signIn": "Entrar",
+      "backToProviders": "← Outras opções de login",
+      "dismiss": "Continuar como visitante",
+      "loading": "Entrando…",
+      "error": "Falha ao entrar. Tente novamente.",
+      "ariaLabel": "Modal de login",
+      "close": "Fechar modal de login",
+      "planPreserved": "Seu plano atual está preservado — entre para salvá-lo permanentemente.",
+      "fl3Preserved": "Seu chat e plano estão salvos — entre para continuar planejando.",
+      "emailContinue": "Continuar com e-mail",
+      "signInTab": "Entrar",
+      "signUpTab": "Criar conta",
+      "signUp": "Criar conta",
+      "errorCredentials": "E-mail ou senha incorretos",
+      "errorWeak": "A senha deve ter pelo menos 8 caracteres",
+      "errorSignup": "Falha ao criar conta. Tente novamente.",
+      "forgotPassword": "Esqueceu a senha?",
+      "forgotTitle": "Redefinir sua senha",
+      "forgotSubtitle": "Digite seu e-mail e enviaremos um link de redefinição.",
+      "forgotSubmit": "Enviar link de redefinição",
+      "errorForgot": "Não foi possível enviar o e-mail. Tente novamente.",
+      "backToSignIn": "← Voltar para login",
+      "checkEmailTitle": "Verifique seu e-mail",
+      "checkEmailBodySignup": "Enviamos um link de verificação para {email}. Abra-o para concluir a criação da sua conta.",
+      "checkEmailBodyReset": "Enviamos um link de redefinição de senha para {email}.",
+      "resend": "Reenviar e-mail",
+      "resendIn": "Reenviar em {seconds}s",
+      "tosFooter": "Ao continuar, você concorda com os <terms>Termos de Serviço</terms> e a <privacy>Política de Privacidade</privacy> do B4K.",
+      "ageConfirm": "Confirmo que tenho pelo menos 14 anos"
     },
     "conflict": {
-      "ariaLabel": "Draft conflict — pick one modal",
-      "title": "You have two drafts — which one would you like to keep?",
-      "deviceDraft": "On this device",
-      "accountDraft": "In your account",
-      "stops": "{count, plural, one {# stop} other {# stops}}",
-      "lastModified": "Last modified {time}",
-      "keep": "Keep this one",
-      "discardNote": "The other draft will be permanently deleted."
+      "ariaLabel": "Conflito de rascunho — escolha um modal",
+      "title": "Você tem dois rascunhos — qual deles gostaria de manter?",
+      "deviceDraft": "Neste dispositivo",
+      "accountDraft": "Na sua conta",
+      "stops": "{count, plural, one {# parada} other {# paradas}}",
+      "lastModified": "Última modificação {time}",
+      "keep": "Manter este",
+      "discardNote": "O outro rascunho será excluído permanentemente."
     },
     "resetPassword": {
-      "title": "Set new password",
-      "subtitle": "Enter your new password below.",
-      "passwordLabel": "New password",
-      "passwordPlaceholder": "New password",
-      "confirmLabel": "Confirm password",
-      "confirmPlaceholder": "Confirm password",
-      "submit": "Set password",
-      "loading": "Saving…",
-      "success": "Password updated — signing you in",
-      "redirecting": "Redirecting to home…",
-      "errorMismatch": "Passwords don't match",
-      "errorWeak": "Password must be at least 8 characters",
-      "errorExpired": "This link has expired. Request a new one.",
-      "errorGeneric": "Something went wrong. Try again.",
-      "showPw": "Show password",
-      "hidePw": "Hide password",
-      "backToHome": "Back to home"
+      "title": "Definir nova senha",
+      "subtitle": "Digite sua nova senha abaixo.",
+      "passwordLabel": "Nova senha",
+      "passwordPlaceholder": "Nova senha",
+      "confirmLabel": "Confirmar senha",
+      "confirmPlaceholder": "Confirmar senha",
+      "submit": "Definir senha",
+      "loading": "Salvando…",
+      "success": "Senha atualizada — entrando",
+      "redirecting": "Redirecionando para o início…",
+      "errorMismatch": "As senhas não coincidem",
+      "errorWeak": "A senha deve ter pelo menos 8 caracteres",
+      "errorExpired": "Este link expirou. Solicite um novo.",
+      "errorGeneric": "Algo deu errado. Tente novamente.",
+      "showPw": "Mostrar senha",
+      "hidePw": "Ocultar senha",
+      "backToHome": "Voltar ao início"
     },
     "callback": {
-      "verifying": "Verifying…",
-      "redirecting": "Redirecting to home…",
-      "error": "Sign-in failed",
-      "errorRetry": "Please try signing in again"
+      "verifying": "Verificando…",
+      "redirecting": "Redirecionando para o início…",
+      "error": "Falha ao entrar",
+      "errorRetry": "Tente entrar novamente"
     }
   },
   "legalGate": {
-    "ariaLabel": "Terms acceptance",
-    "title": "Before you continue",
-    "message": "By using B4K, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
-    "accept": "Accept & Continue"
+    "ariaLabel": "Aceite dos termos",
+    "title": "Antes de continuar",
+    "message": "Ao usar o B4K, você concorda com nossos <terms>Termos de Serviço</terms> e <privacy>Política de Privacidade</privacy>.",
+    "accept": "Aceitar e Continuar"
   },
   "map": {
-    "ariaLabel": "Interactive map of Korea",
-    "loading": "Loading map…",
-    "error": "Map could not load",
-    "retry": "Try again",
-    "noKey": "Map API key not configured",
-    "zoomIn": "Zoom in",
-    "zoomOut": "Zoom out",
+    "ariaLabel": "Mapa interativo da Coreia",
+    "loading": "Carregando mapa…",
+    "error": "Não foi possível carregar o mapa",
+    "retry": "Tentar novamente",
+    "noKey": "Chave da API do mapa não configurada",
+    "zoomIn": "Aumentar zoom",
+    "zoomOut": "Diminuir zoom",
     "leftPanel": {
-      "ariaLabel": "Explore panel",
-      "viewSaved": "View saved places"
+      "ariaLabel": "Painel de exploração",
+      "viewSaved": "Ver lugares salvos"
     },
     "regions": {
-      "title": "Explore by Region",
-      "seoul": "Seoul",
+      "title": "Explorar por Região",
+      "seoul": "Seul",
       "busan": "Busan",
       "jeju": "Jeju",
       "incheon": "Incheon",
       "gyeongju": "Gyeongju",
-      "more": "More regions"
+      "more": "Mais regiões"
     },
     "filters": {
-      "title": "Filter by Type",
-      "palaces": "Palaces",
-      "temples": "Temples",
+      "title": "Filtrar por Tipo",
+      "palaces": "Palácios",
+      "temples": "Templos",
       "cafes": "Cafés",
-      "parks": "Parks",
-      "restaurants": "Restaurants",
-      "hotels": "Hotels",
-      "shopping": "Shopping",
-      "museums": "Museums"
+      "parks": "Parques",
+      "restaurants": "Restaurantes",
+      "hotels": "Hotéis",
+      "shopping": "Compras",
+      "museums": "Museus"
     },
     "aiPill": {
-      "label": "AI Assistant ·",
-      "dismiss": "Dismiss AI assistant",
-      "expand": "Expand AI assistant"
+      "label": "Assistente de IA ·",
+      "dismiss": "Dispensar assistente de IA",
+      "expand": "Expandir assistente de IA"
     },
     "poiDetail": {
-      "sponsored": "Sponsored",
-      "reviews": "reviews",
-      "saves": "saves",
-      "openNow": "Open now",
-      "closed": "Closed",
-      "addToPlan": "Add to Plan",
-      "added": "Added ✓",
-      "planFull": "Maximum 40 stops reached",
-      "save": "Save",
-      "saved": "Saved",
-      "unsave": "Remove from saved",
-      "savedToast": "Place saved!",
-      "removedSave": "Removed from saved",
-      "addedToast": "Added to plan",
-      "dismiss": "Close",
-      "share": "Share",
-      "like": "Like",
-      "liked": "Liked",
-      "unlike": "Unlike",
-      "website": "Visit website",
-      "close": "Close POI details",
-      "imagePending": "Image being prepared"
+      "sponsored": "Patrocinado",
+      "reviews": "avaliações",
+      "saves": "salvos",
+      "openNow": "Aberto agora",
+      "closed": "Fechado",
+      "addToPlan": "Adicionar ao Plano",
+      "added": "Adicionado ✓",
+      "planFull": "Máximo de 40 paradas atingido",
+      "save": "Salvar",
+      "saved": "Salvo",
+      "unsave": "Remover dos salvos",
+      "savedToast": "Lugar salvo!",
+      "removedSave": "Removido dos salvos",
+      "addedToast": "Adicionado ao plano",
+      "dismiss": "Fechar",
+      "share": "Compartilhar",
+      "like": "Curtir",
+      "liked": "Curtido",
+      "unlike": "Descurtir",
+      "website": "Visitar site",
+      "close": "Fechar detalhes do lugar",
+      "imagePending": "Imagem sendo preparada"
     },
     "plan": {
-      "title": "Your Plan",
-      "stops": "stops",
-      "removeStop": "Remove stop {n}",
-      "dragHandle": "Drag to reorder stop {n}",
+      "title": "Seu Plano",
+      "stops": "paradas",
+      "removeStop": "Remover parada {n}",
+      "dragHandle": "Arraste para reordenar a parada {n}",
       "durationLabel": "min",
-      "durationAriaLabel": "Duration for {name}",
+      "durationAriaLabel": "Duração de {name}",
       "total": "total",
       "transport": {
-        "label": "Transport mode",
-        "car": "Car",
-        "public": "Public"
+        "label": "Modo de transporte",
+        "car": "Carro",
+        "public": "Transporte público"
       },
-      "save": "Save Plan",
-      "savedToast": "Plan saved!",
-      "previewPlan": "Preview Plan",
-      "close": "Close plan sheet",
-      "stripExpand": "Expand plan panel",
-      "stripCollapse": "Collapse plan panel",
-      "routeError": "Route couldn't be generated. Stops are preserved.",
-      "routeRetry": "Retry",
-      "saveError": "Failed to save. Please try again.",
-      "maxStopsToast": "You've reached the {max}-stop limit for one plan.",
-      "discardDraft": "Discard draft",
-      "discardTitle": "Discard draft?",
-      "discardWarning": "This removes all {count, plural, one {# stop} other {# stops}} from the current draft. This cannot be undone.",
-      "discardCancel": "Cancel",
-      "discardConfirm": "Discard draft",
-      "dayTab": "Day {n}",
-      "legEstimate": "est {min}m",
-      "legAriaLabel": "Estimated travel time from stop {from} to stop {to}"
+      "save": "Salvar Plano",
+      "savedToast": "Plano salvo!",
+      "previewPlan": "Pré-visualizar Plano",
+      "close": "Fechar painel do plano",
+      "stripExpand": "Expandir painel do plano",
+      "stripCollapse": "Recolher painel do plano",
+      "routeError": "Não foi possível gerar a rota. As paradas foram preservadas.",
+      "routeRetry": "Tentar novamente",
+      "saveError": "Falha ao salvar. Tente novamente.",
+      "maxStopsToast": "Você atingiu o limite de {max} paradas para um plano.",
+      "discardDraft": "Descartar rascunho",
+      "discardTitle": "Descartar rascunho?",
+      "discardWarning": "Isso remove {count, plural, one {# parada} other {# paradas}} do rascunho atual. Esta ação não pode ser desfeita.",
+      "discardCancel": "Cancelar",
+      "discardConfirm": "Descartar rascunho",
+      "dayTab": "Dia {n}",
+      "legEstimate": "aprox {min}min",
+      "legAriaLabel": "Tempo estimado de viagem da parada {from} até a parada {to}"
     },
     "namingSheet": {
-      "ariaLabel": "Name your plan",
-      "title": "Name your plan",
-      "inputLabel": "Plan title",
-      "placeholder": "e.g. Seoul K-Pop day trip",
-      "cancel": "Cancel",
-      "save": "Save plan"
+      "ariaLabel": "Nomeie seu plano",
+      "title": "Nomeie seu plano",
+      "inputLabel": "Título do plano",
+      "placeholder": "ex.: Dia de K-Pop em Seul",
+      "cancel": "Cancelar",
+      "save": "Salvar plano"
     },
     "draftResume": {
-      "ariaLabel": "Unfinished plan found",
-      "title": "You have an unfinished plan",
-      "stopCount": "{count, plural, one {# stop} other {# stops}}",
-      "resume": "Resume this plan",
-      "startFresh": "Start fresh"
+      "ariaLabel": "Plano não finalizado encontrado",
+      "title": "Você tem um plano não finalizado",
+      "stopCount": "{count, plural, one {# parada} other {# paradas}}",
+      "resume": "Retomar este plano",
+      "startFresh": "Começar do zero"
     },
     "aiOverlay": {
-      "title": "AI Travel Assistant",
-      "openButton": "AI Assistant",
-      "inputPlaceholder": "Ask about Korea…",
-      "send": "Send message",
-      "minimize": "Minimize AI assistant",
-      "disclaimer": "AI-generated suggestions — verify details independently before traveling.",
-      "close": "Close AI assistant",
-      "back": "Back to map",
-      "greeting": "Ask me anything about Korea — places, plans, and K-culture.",
+      "title": "Assistente de Viagem IA",
+      "openButton": "Assistente IA",
+      "inputPlaceholder": "Pergunte sobre a Coreia…",
+      "send": "Enviar mensagem",
+      "minimize": "Minimizar assistente de IA",
+      "disclaimer": "Sugestões geradas por IA — verifique os detalhes de forma independente antes de viajar.",
+      "close": "Fechar assistente de IA",
+      "back": "Voltar ao mapa",
+      "greeting": "Pergunte-me qualquer coisa sobre a Coreia — lugares, planos e cultura coreana.",
       "chips": {
-        "bts": "BTS landmarks near me",
-        "kdrama": "K-Drama filming spots",
-        "food": "Best street food today"
+        "bts": "Locais do BTS perto de mim",
+        "kdrama": "Locações de filmagem de K-Drama",
+        "food": "Melhor comida de rua hoje"
       },
-      "error": "Connection lost. Retry when ready.",
-      "retry": "Retry",
-      "addToPlan": "Add",
-      "added": "Added",
-      "usePlan": "Use this plan",
-      "usePlanLoaded": "Plan loaded ✓",
-      "poiFound": "Here are some places:",
-      "planBuilt": "Here's a plan for you:",
-      "previewPlan": "Preview Plan",
-      "capReached": "You've reached the free plan limit",
-      "signInToContinue": "Sign in to keep planning",
+      "error": "Conexão perdida. Tente novamente quando estiver pronto.",
+      "retry": "Tentar novamente",
+      "addToPlan": "Adicionar",
+      "added": "Adicionado",
+      "usePlan": "Usar este plano",
+      "usePlanLoaded": "Plano carregado ✓",
+      "poiFound": "Aqui estão alguns lugares:",
+      "planBuilt": "Aqui está um plano para você:",
+      "previewPlan": "Pré-visualizar Plano",
+      "capReached": "Você atingiu o limite do plano gratuito",
+      "signInToContinue": "Entre para continuar planejando",
       "errorCode": "SYS·ERR · AI·TIMEOUT",
-      "planManually": "Plan manually"
+      "planManually": "Planejar manualmente"
     },
     "planPill": {
-      "ariaLabel": "View your plan · {count} stops",
-      "label": "Plan · {count} stops",
-      "aiLabel": "AI Plan · {count} stops"
+      "ariaLabel": "Ver seu plano · {count} paradas",
+      "label": "Plano · {count} paradas",
+      "aiLabel": "Plano IA · {count} paradas"
     },
     "recommended": {
-      "title": "Popular Spots",
-      "empty": "No spots match your filters",
-      "error": "Couldn't load recommendations",
-      "save": "Save",
-      "unsave": "Remove from saved",
+      "title": "Lugares Populares",
+      "empty": "Nenhum lugar corresponde aos seus filtros",
+      "error": "Não foi possível carregar as recomendações",
+      "save": "Salvar",
+      "unsave": "Remover dos salvos",
       "cardAriaLabel": "{name}, {region}"
     }
   },
   "itinerary": {
-    "loading": "Loading itinerary…",
-    "notFound": "Itinerary not found",
-    "private": "This itinerary is private",
-    "privateDesc": "The creator has set this itinerary to private.",
+    "loading": "Carregando roteiro…",
+    "notFound": "Roteiro não encontrado",
+    "private": "Este roteiro é privado",
+    "privateDesc": "O criador definiu este roteiro como privado.",
     "error": {
-      "title": "Couldn't load itinerary",
-      "cta": "Try again"
+      "title": "Não foi possível carregar o roteiro",
+      "cta": "Tentar novamente"
     },
     "stats": {
-      "stops": "{count} stops",
+      "stops": "{count} paradas",
       "min": "{min} min",
       "km": "{km} km"
     },
     "transport": {
-      "car": "By car",
-      "public": "Public transport",
-      "walk": "On foot",
-      "changeMode": "Change transport mode (current: {mode})",
-      "mode": "Transport: {mode}",
-      "offlineNote": "Try again when online"
+      "car": "De carro",
+      "public": "Transporte público",
+      "walk": "A pé",
+      "changeMode": "Mudar modo de transporte (atual: {mode})",
+      "mode": "Transporte: {mode}",
+      "offlineNote": "Tente novamente quando estiver online"
     },
     "actions": {
-      "like": "Like",
-      "liked": "Liked",
-      "save": "Save",
-      "saved": "Saved",
-      "share": "Share",
-      "edit": "Edit",
-      "makePrivate": "Make private",
-      "makePublic": "Make public",
-      "likeAria": "Like this itinerary",
-      "saveAria": "Save this itinerary",
-      "shareAria": "Share this itinerary",
-      "editAria": "Edit this itinerary",
-      "likedToast": "Added to liked",
-      "unlikedToast": "Removed from liked",
-      "savedToast": "Saved!",
-      "unsavedToast": "Removed from saved",
-      "deleteTitle": "Delete itinerary?",
-      "deleteConfirmText": "This will permanently delete the itinerary. This cannot be undone.",
-      "deleteCancel": "Cancel",
-      "deleteConfirm": "Delete",
-      "deleteAria": "Confirm delete itinerary",
-      "deleting": "Deleting…",
-      "deleteErrorToast": "Failed to delete. Please try again."
+      "like": "Curtir",
+      "liked": "Curtido",
+      "save": "Salvar",
+      "saved": "Salvo",
+      "share": "Compartilhar",
+      "edit": "Editar",
+      "makePrivate": "Tornar privado",
+      "makePublic": "Tornar público",
+      "likeAria": "Curtir este roteiro",
+      "saveAria": "Salvar este roteiro",
+      "shareAria": "Compartilhar este roteiro",
+      "editAria": "Editar este roteiro",
+      "likedToast": "Adicionado aos curtidos",
+      "unlikedToast": "Removido dos curtidos",
+      "savedToast": "Salvo!",
+      "unsavedToast": "Removido dos salvos",
+      "deleteTitle": "Excluir roteiro?",
+      "deleteConfirmText": "Isso excluirá permanentemente o roteiro. Esta ação não pode ser desfeita.",
+      "deleteCancel": "Cancelar",
+      "deleteConfirm": "Excluir",
+      "deleteAria": "Confirmar exclusão do roteiro",
+      "deleting": "Excluindo…",
+      "deleteErrorToast": "Falha ao excluir. Tente novamente."
     },
     "tabs": {
-      "all": "All",
-      "day": "Day {n}"
+      "all": "Todos",
+      "day": "Dia {n}"
     },
     "stopList": {
-      "ariaLabel": "Itinerary stops"
+      "ariaLabel": "Paradas do roteiro"
     },
     "stopItem": {
-      "ariaLabel": "Stop {n}: {name}",
+      "ariaLabel": "Parada {n}: {name}",
       "min": "{min} min",
-      "fromStart": "{time} from start"
+      "fromStart": "{time} desde o início"
     },
-    "sponsored": "Sponsored",
+    "sponsored": "Patrocinado",
     "related": {
-      "title": "More itineraries",
-      "stops": "{count} stops",
-      "likes": "{count} likes"
+      "title": "Mais roteiros",
+      "stops": "{count} paradas",
+      "likes": "{count} curtidas"
     },
     "panel": {
-      "ariaLabel": "Itinerary details"
+      "ariaLabel": "Detalhes do roteiro"
     },
     "sheet": {
-      "handle": "Drag to resize",
-      "ariaLabel": "Itinerary detail"
+      "handle": "Arraste para redimensionar",
+      "ariaLabel": "Detalhe do roteiro"
     },
-    "copiedToast": "Link copied!",
-    "mapAriaLabel": "Itinerary route map",
-    "createdBy": "by {name}",
+    "copiedToast": "Link copiado!",
+    "mapAriaLabel": "Mapa da rota do roteiro",
+    "createdBy": "por {name}",
     "duration": {
-      "hoursMinutes": "{h}h {m}m",
+      "hoursMinutes": "{h}h {m}min",
       "hours": "{h}h",
-      "minutes": "{m}m"
+      "minutes": "{m}min"
     },
     "leg": {
-      "calculating": "Calculating route…",
+      "calculating": "Calculando rota…",
       "km": "{km} km",
       "m": "{m} m",
-      "ariaLabel": "Travel from stop {from} to stop {to}"
+      "ariaLabel": "Trajeto da parada {from} até a parada {to}"
     },
     "footer": {
-      "totalDuration": "Total duration"
+      "totalDuration": "Duração total"
     },
-    "notFoundRedirect": "Taking you back to the map…"
+    "notFoundRedirect": "Levando você de volta ao mapa…"
   },
   "profile": {
     "header": {
-      "ariaLabel": "Profile header",
-      "breadcrumb": "Profile",
-      "avatarAlt": "Profile photo of {name}",
-      "statsLabel": "Profile stats",
-      "tripsLabel": "Trips",
-      "tripsCountAria": "{count} trips created",
-      "likesLabel": "Likes",
-      "likesAria": "{count} likes received",
-      "pinnedBadgesLabel": "Pinned badges",
-      "errorTitle": "Couldn't load profile",
-      "errorRetry": "Try again",
-      "savesLabel": "Saves",
-      "badgesLabel": "Badges",
-      "savesCountAria": "{count} saves",
-      "badgesCountAria": "{count} badges",
-      "loading": "Loading profile",
-      "namePlaceholder": "B4K Traveler"
+      "ariaLabel": "Cabeçalho do perfil",
+      "breadcrumb": "Perfil",
+      "avatarAlt": "Foto de perfil de {name}",
+      "statsLabel": "Estatísticas do perfil",
+      "tripsLabel": "Viagens",
+      "tripsCountAria": "{count} viagens criadas",
+      "likesLabel": "Curtidas",
+      "likesAria": "{count} curtidas recebidas",
+      "pinnedBadgesLabel": "Emblemas fixados",
+      "errorTitle": "Não foi possível carregar o perfil",
+      "errorRetry": "Tentar novamente",
+      "savesLabel": "Salvos",
+      "badgesLabel": "Emblemas",
+      "savesCountAria": "{count} salvos",
+      "badgesCountAria": "{count} emblemas",
+      "loading": "Carregando perfil",
+      "namePlaceholder": "Viajante B4K"
     },
     "tabs": {
-      "ariaLabel": "Profile sections",
-      "trips": "My Trips",
-      "badges": "Badges",
-      "settings": "Settings",
-      "saved": "Saved"
+      "ariaLabel": "Seções do perfil",
+      "trips": "Minhas Viagens",
+      "badges": "Emblemas",
+      "settings": "Configurações",
+      "saved": "Salvos"
     },
     "trips": {
-      "loading": "Loading trips…",
+      "loading": "Carregando viagens…",
       "empty": {
-        "title": "No trips yet",
-        "desc": "Create your first Korea itinerary.",
-        "cta": "Open the map"
+        "title": "Nenhuma viagem ainda",
+        "desc": "Crie seu primeiro roteiro na Coreia.",
+        "cta": "Abrir o mapa"
       },
       "error": {
-        "title": "Couldn't load trips",
-        "cta": "Try again"
+        "title": "Não foi possível carregar as viagens",
+        "cta": "Tentar novamente"
       },
       "nudge": {
-        "title": "Or explore saved places",
-        "cta": "View saved"
+        "title": "Ou explore lugares salvos",
+        "cta": "Ver salvos"
       },
       "card": {
-        "draft": "Draft",
-        "edit": "Edit",
-        "editAria": "Edit trip {title}",
-        "delete": "Delete",
-        "deleteAria": "Delete trip {title}",
-        "likes": "likes",
-        "saves": "saves",
-        "stops": "stops",
-        "thumbnailAlt": "Thumbnail for {title}",
-        "shareAria": "Share trip {title}",
-        "shareCopiedToast": "Link copied to clipboard"
+        "draft": "Rascunho",
+        "edit": "Editar",
+        "editAria": "Editar viagem {title}",
+        "delete": "Excluir",
+        "deleteAria": "Excluir viagem {title}",
+        "likes": "curtidas",
+        "saves": "salvos",
+        "stops": "paradas",
+        "thumbnailAlt": "Miniatura de {title}",
+        "shareAria": "Compartilhar viagem {title}",
+        "shareCopiedToast": "Link copiado para a área de transferência"
       },
       "deleteModal": {
-        "title": "Delete trip?",
-        "desc": "This will permanently delete \"{title}\". This cannot be undone.",
-        "confirm": "Delete",
-        "cancel": "Cancel",
-        "ariaLabel": "Confirm delete trip"
+        "title": "Excluir viagem?",
+        "desc": "Isso excluirá permanentemente \"{title}\". Esta ação não pode ser desfeita.",
+        "confirm": "Excluir",
+        "cancel": "Cancelar",
+        "ariaLabel": "Confirmar exclusão da viagem"
       }
     },
     "badges": {
-      "loading": "Loading badges…",
+      "loading": "Carregando emblemas…",
       "empty": {
-        "title": "No badges yet",
-        "desc": "Complete trips and contribute to the community to earn badges.",
-        "cta": "Start exploring"
+        "title": "Nenhum emblema ainda",
+        "desc": "Complete viagens e contribua com a comunidade para ganhar emblemas.",
+        "cta": "Começar a explorar"
       },
       "error": {
-        "title": "Couldn't load badges",
-        "cta": "Try again"
+        "title": "Não foi possível carregar os emblemas",
+        "cta": "Tentar novamente"
       },
       "rarity": {
-        "common": "Common",
-        "rare": "Rare",
-        "epic": "Epic",
-        "legendary": "Legendary"
+        "common": "Comum",
+        "rare": "Raro",
+        "epic": "Épico",
+        "legendary": "Lendário"
       },
-      "pinAria": "Pin {name}",
-      "unpinAria": "Unpin {name}",
-      "pinLimitError": "You can pin up to 3 badges. Unpin one to pin another.",
-      "locked": "Locked",
-      "earnedOn": "Earned on {date}",
+      "pinAria": "Fixar {name}",
+      "unpinAria": "Desafixar {name}",
+      "pinLimitError": "Você pode fixar até 3 emblemas. Desafixe um para fixar outro.",
+      "locked": "Bloqueado",
+      "earnedOn": "Conquistado em {date}",
       "modal": {
-        "close": "Close badge detail",
-        "category": "Category",
-        "rarity": "Rarity",
-        "earned": "Earned"
+        "close": "Fechar detalhes do emblema",
+        "category": "Categoria",
+        "rarity": "Raridade",
+        "earned": "Conquistado"
       }
     },
     "settings": {
       "account": {
-        "heading": "Account",
-        "email": "Email",
-        "emailNote": "Sign-in address — cannot be changed here"
+        "heading": "Conta",
+        "email": "E-mail",
+        "emailNote": "Endereço de login — não pode ser alterado aqui"
       },
       "actions": {
-        "heading": "Actions"
+        "heading": "Ações"
       },
       "preferences": {
-        "heading": "Preferences",
-        "language": "Language",
-        "transport": "Default transport",
-        "transportCar": "Car",
-        "transportPublic": "Transit",
-        "interests": "Interests",
-        "interestsNote": "Used to personalise recommendations",
-        "save": "Save changes",
-        "saving": "Saving…",
-        "saved": "Saved"
+        "heading": "Preferências",
+        "language": "Idioma",
+        "transport": "Transporte padrão",
+        "transportCar": "Carro",
+        "transportPublic": "Transporte público",
+        "interests": "Interesses",
+        "interestsNote": "Usado para personalizar recomendações",
+        "save": "Salvar alterações",
+        "saving": "Salvando…",
+        "saved": "Salvo"
       },
       "interests": {
         "kpop": "K-Pop",
@@ -990,246 +990,246 @@
         "th": "ภาษาไทย",
         "pt-BR": "Português (BR)"
       },
-      "signOut": "Sign out",
-      "changePassword": "Change password",
-      "deleteAccount": "Delete account",
-      "deleteWarning": "Your account will be permanently deleted after 30 days. This cannot be undone.",
-      "deleteConfirm": "Yes, delete my account",
-      "deleteCancel": "Cancel",
-      "deleteTypePrompt": "Type \"DELETE\" to confirm",
-      "deleteTypeHint": "You must type DELETE (all caps) to enable the confirm button",
+      "signOut": "Sair",
+      "changePassword": "Alterar senha",
+      "deleteAccount": "Excluir conta",
+      "deleteWarning": "Sua conta será excluída permanentemente após 30 dias. Esta ação não pode ser desfeita.",
+      "deleteConfirm": "Sim, excluir minha conta",
+      "deleteCancel": "Cancelar",
+      "deleteTypePrompt": "Digite \"DELETE\" para confirmar",
+      "deleteTypeHint": "Você deve digitar DELETE (em maiúsculas) para habilitar o botão de confirmação",
       "password": {
-        "heading": "Change password",
-        "current": "Current password",
-        "new": "New password",
-        "confirm": "Confirm new password",
-        "hint": "At least 8 characters",
-        "show": "Show password",
-        "hide": "Hide password",
-        "submit": "Update password",
-        "submitting": "Updating…",
-        "success": "Password updated",
-        "mismatch": "Passwords do not match"
+        "heading": "Alterar senha",
+        "current": "Senha atual",
+        "new": "Nova senha",
+        "confirm": "Confirmar nova senha",
+        "hint": "Pelo menos 8 caracteres",
+        "show": "Mostrar senha",
+        "hide": "Ocultar senha",
+        "submit": "Atualizar senha",
+        "submitting": "Atualizando…",
+        "success": "Senha atualizada",
+        "mismatch": "As senhas não coincidem"
       },
-      "passwordError": "Failed to update password. Check your current password and try again.",
+      "passwordError": "Falha ao atualizar a senha. Verifique sua senha atual e tente novamente.",
       "avatar": {
-        "heading": "Profile photo",
-        "alt": "Your profile photo",
-        "upload": "Upload photo",
-        "remove": "Remove",
-        "uploading": "Uploading…",
-        "hint": "JPG, PNG or WebP. Max 2MB.",
-        "uploaded": "Photo updated",
-        "removed": "Photo removed",
-        "error": "Could not update photo. Try again."
+        "heading": "Foto de perfil",
+        "alt": "Sua foto de perfil",
+        "upload": "Enviar foto",
+        "remove": "Remover",
+        "uploading": "Enviando…",
+        "hint": "JPG, PNG ou WebP. Máx. 2MB.",
+        "uploaded": "Foto atualizada",
+        "removed": "Foto removida",
+        "error": "Não foi possível atualizar a foto. Tente novamente."
       },
       "identity": {
-        "heading": "Name & bio",
-        "displayName": "Display name",
-        "displayNamePlaceholder": "Your name",
+        "heading": "Nome e bio",
+        "displayName": "Nome de exibição",
+        "displayNamePlaceholder": "Seu nome",
         "bio": "Bio",
-        "bioPlaceholder": "Tell others a little about you",
+        "bioPlaceholder": "Conte um pouco sobre você",
         "bioCounter": "{count}/150",
-        "save": "Save",
-        "saving": "Saving…",
-        "saved": "Saved",
-        "error": "Could not save. Try again."
+        "save": "Salvar",
+        "saving": "Salvando…",
+        "saved": "Salvo",
+        "error": "Não foi possível salvar. Tente novamente."
       },
       "notifications": {
-        "heading": "Notifications",
-        "note": "Turn off the notifications you don't want to receive.",
-        "error": "Could not update. Try again.",
+        "heading": "Notificações",
+        "note": "Desative as notificações que você não deseja receber.",
+        "error": "Não foi possível atualizar. Tente novamente.",
         "types": {
-          "event_drop": "New event drops",
-          "deal_expiring": "Deals expiring soon",
-          "editorial_pick": "Editor's picks",
-          "badge_earned": "Badges earned",
-          "challenge_new": "New challenges",
-          "promotion": "Promotions"
+          "event_drop": "Novos eventos",
+          "deal_expiring": "Ofertas expirando em breve",
+          "editorial_pick": "Escolhas do editor",
+          "badge_earned": "Emblemas conquistados",
+          "challenge_new": "Novos desafios",
+          "promotion": "Promoções"
         }
       },
       "privacy": {
-        "heading": "Privacy",
-        "note": "Control which tabs other people can see on your profile.",
-        "trips": "Trips",
-        "tripsNote": "Show your trips on your public profile",
-        "saved": "Saved",
-        "savedNote": "Show your saved places on your public profile",
-        "public": "Public",
-        "private": "Private",
-        "error": "Could not update. Try again."
+        "heading": "Privacidade",
+        "note": "Controle quais abas outras pessoas podem ver no seu perfil.",
+        "trips": "Viagens",
+        "tripsNote": "Mostrar suas viagens no seu perfil público",
+        "saved": "Salvos",
+        "savedNote": "Mostrar seus lugares salvos no seu perfil público",
+        "public": "Público",
+        "private": "Privado",
+        "error": "Não foi possível atualizar. Tente novamente."
       },
       "dataConsent": {
-        "heading": "Data & Privacy Consent",
-        "note": "Manage your analytics and tracking consent — the same setting as the Cookie Preferences page."
+        "heading": "Consentimento de Dados e Privacidade",
+        "note": "Gerencie seu consentimento de análise e rastreamento — a mesma configuração da página de Preferências de Cookies."
       },
-      "signOutAll": "Log out from all devices",
-      "signOutAllNote": "Ends your session everywhere you're signed in.",
-      "signOutAllError": "Could not log out everywhere. Try again.",
+      "signOutAll": "Sair de todos os dispositivos",
+      "signOutAllNote": "Encerra sua sessão em todos os lugares onde você está conectado.",
+      "signOutAllError": "Não foi possível sair de todos os lugares. Tente novamente.",
       "reauth": {
-        "heading": "Confirm it's you",
-        "note": "For your security, re-enter your password to continue.",
-        "password": "Password",
-        "continue": "Continue",
-        "verifying": "Verifying…",
-        "cancel": "Cancel",
-        "error": "Incorrect password. Try again."
+        "heading": "Confirme que é você",
+        "note": "Por segurança, digite novamente sua senha para continuar.",
+        "password": "Senha",
+        "continue": "Continuar",
+        "verifying": "Verificando…",
+        "cancel": "Cancelar",
+        "error": "Senha incorreta. Tente novamente."
       },
-      "deleteError": "Couldn't delete your account. Please try again."
+      "deleteError": "Não foi possível excluir sua conta. Tente novamente."
     },
     "saved": {
-      "loading": "Loading saved places…",
-      "empty": "No saved places yet",
-      "error": "Failed to load saved places",
-      "retry": "Try again",
-      "openOnMapAria": "Open {name} on the map"
+      "loading": "Carregando lugares salvos…",
+      "empty": "Nenhum lugar salvo ainda",
+      "error": "Falha ao carregar lugares salvos",
+      "retry": "Tentar novamente",
+      "openOnMapAria": "Abrir {name} no mapa"
     },
-    "notFound": "Profile not found",
-    "anonymousUser": "User",
-    "avatarAlt": "{name}'s profile photo",
-    "tabsLabel": "Profile sections",
-    "privateTab": "This tab is private",
-    "untitledPlan": "Untitled plan",
+    "notFound": "Perfil não encontrado",
+    "anonymousUser": "Usuário",
+    "avatarAlt": "Foto de perfil de {name}",
+    "tabsLabel": "Seções do perfil",
+    "privateTab": "Esta aba é privada",
+    "untitledPlan": "Plano sem título",
     "otherTrips": {
-      "stops": "{count} stops",
-      "days": "{count} days",
-      "save": "Save",
-      "saved": "Saved",
-      "saveAria": "Save plan {title}",
-      "unsaveAria": "Remove saved plan {title}",
-      "openAria": "Open plan {title}"
+      "stops": "{count} paradas",
+      "days": "{count} dias",
+      "save": "Salvar",
+      "saved": "Salvo",
+      "saveAria": "Salvar plano {title}",
+      "unsaveAria": "Remover plano salvo {title}",
+      "openAria": "Abrir plano {title}"
     },
     "otherBadges": {
-      "lockedAria": "Locked badge: {name}"
+      "lockedAria": "Emblema bloqueado: {name}"
     }
   },
   "explore": {
-    "title": "Explore",
-    "breadcrumb": "Explore",
-    "loading": "Loading…",
-    "sectionEmpty": "No places yet",
+    "title": "Explorar",
+    "breadcrumb": "Explorar",
+    "loading": "Carregando…",
+    "sectionEmpty": "Nenhum lugar ainda",
     "empty": {
-      "cta": "Explore the map"
+      "cta": "Explorar o mapa"
     },
     "sidebar": {
-      "ariaLabel": "Content category navigation"
+      "ariaLabel": "Navegação de categorias de conteúdo"
     },
     "pills": {
-      "ariaLabel": "Content category tabs"
+      "ariaLabel": "Abas de categoria de conteúdo"
     },
     "error": {
-      "title": "Failed to load",
-      "retry": "Try again"
+      "title": "Falha ao carregar",
+      "retry": "Tentar novamente"
     },
     "card": {
-      "trending": "Trending",
-      "ariaLabel": "View {name} on map",
-      "saveAria": "Save {name}",
-      "unsaveAria": "Unsave {name}",
-      "likeAria": "Like {name}",
-      "unlikeAria": "Unlike {name}",
-      "sponsored": "Sponsored",
+      "trending": "Em Alta",
+      "ariaLabel": "Ver {name} no mapa",
+      "saveAria": "Salvar {name}",
+      "unsaveAria": "Remover {name} dos salvos",
+      "likeAria": "Curtir {name}",
+      "unlikeAria": "Descurtir {name}",
+      "sponsored": "Patrocinado",
       "dDay": "D-{days}",
-      "dDayToday": "D-DAY",
-      "dDayPast": "Ended",
-      "featured": "Featured",
-      "addAria": "Add {name} to plan",
-      "addedAria": "{name} added to plan",
-      "imagePending": "Image being prepared"
+      "dDayToday": "D-DIA",
+      "dDayPast": "Encerrado",
+      "featured": "Destaque",
+      "addAria": "Adicionar {name} ao plano",
+      "addedAria": "{name} adicionado ao plano",
+      "imagePending": "Imagem sendo preparada"
     },
-    "hub": {
-      "title": "Explore Korea",
-      "subtitle": "Dive into K-Pop, K-Drama, K-Beauty, and K-Culture",
+    "aiCta": {
+      "text": "Deixe a IA planejar sua jornada pela cultura coreana",
+      "button": "Experimentar Planejamento com IA",
       "kpop": {
-        "desc": "Artists, concert venues, agency tours, and merchandise"
+        "text": "Planeje sua viagem de K-Pop com IA"
       },
       "kdrama": {
-        "desc": "Filming locations, drama trails, and iconic sets"
+        "text": "Planejar minha viagem de K-Drama"
       },
       "kbeauty": {
-        "desc": "Skincare districts, clinics, and brand flagship stores"
+        "text": "Planejar meu dia de K-Beauty"
       },
       "kculture": {
-        "desc": "Cuisine, traditional markets, and heritage experiences"
+        "text": "Planejar minha viagem cultural"
+      }
+    },
+    "hub": {
+      "title": "Explorar a Coreia",
+      "subtitle": "Mergulhe em K-Pop, K-Drama, K-Beauty e K-Culture",
+      "kpop": {
+        "desc": "Artistas, locais de shows, tours de agências e produtos"
+      },
+      "kdrama": {
+        "desc": "Locações de filmagem, trilhas de doramas e cenários icônicos"
+      },
+      "kbeauty": {
+        "desc": "Distritos de skincare, clínicas e lojas oficiais de marcas"
+      },
+      "kculture": {
+        "desc": "Culinária, mercados tradicionais e experiências de patrimônio"
       }
     },
     "kpop": {
       "title": "K-Pop",
       "empty": {
-        "title": "No K-Pop spots yet",
-        "desc": "K-Pop content is coming soon."
+        "title": "Nenhum local de K-Pop ainda",
+        "desc": "O conteúdo de K-Pop está chegando em breve."
       }
     },
     "kdrama": {
       "title": "K-Drama",
       "empty": {
-        "title": "No K-Drama spots yet",
-        "desc": "K-Drama content is coming soon."
+        "title": "Nenhum local de K-Drama ainda",
+        "desc": "O conteúdo de K-Drama está chegando em breve."
       }
     },
     "kbeauty": {
       "title": "K-Beauty",
       "empty": {
-        "title": "No K-Beauty spots yet",
-        "desc": "K-Beauty content is coming soon."
+        "title": "Nenhum local de K-Beauty ainda",
+        "desc": "O conteúdo de K-Beauty está chegando em breve."
       }
     },
     "kculture": {
       "title": "K-Culture",
       "empty": {
-        "title": "No K-Culture spots yet",
-        "desc": "K-Culture content is coming soon."
+        "title": "Nenhum local de K-Culture ainda",
+        "desc": "O conteúdo de K-Culture está chegando em breve."
       }
     },
     "sections": {
-      "concerts": "Concerts",
+      "concerts": "Shows",
       "tours": "Tours",
-      "agencies": "Agencies",
-      "merchandise": "Merchandise",
-      "filming": "Filming Locations",
-      "historical": "Historical Sets",
-      "ostCafes": "OST Cafés",
+      "agencies": "Agências",
+      "merchandise": "Produtos",
+      "filming": "Locações de Filmagem",
+      "historical": "Cenários Históricos",
+      "ostCafes": "Cafés Temáticos de OST",
       "skincare": "Skincare",
-      "makeup": "Makeup",
-      "spa": "Spa & Wellness",
-      "salon": "Salon Experiences",
-      "cuisine": "Korean Cuisine",
-      "markets": "Traditional Markets",
-      "historic": "Historic Places",
-      "experiences": "Traditional Experiences",
-      "traditional": "Traditional",
-      "food": "Food",
-      "festivals": "Festivals",
-      "crafts": "Crafts",
-      "trending": "Trending Now"
+      "makeup": "Maquiagem",
+      "spa": "Spa e Bem-Estar",
+      "salon": "Experiências em Salão",
+      "cuisine": "Culinária Coreana",
+      "markets": "Mercados Tradicionais",
+      "historic": "Lugares Históricos",
+      "experiences": "Experiências Tradicionais",
+      "traditional": "Tradicional",
+      "food": "Comida",
+      "festivals": "Festivais",
+      "crafts": "Artesanato",
+      "trending": "Em Alta Agora"
     },
-    "aiCta": {
-      "text": "Let AI plan your K-culture journey",
-      "button": "Try AI Planning",
-      "kpop": {
-        "text": "Plan your K-Pop trip with AI"
-      },
-      "kdrama": {
-        "text": "Plan my K-Drama trip"
-      },
-      "kbeauty": {
-        "text": "Plan my K-Beauty day"
-      },
-      "kculture": {
-        "text": "Plan my cultural trip"
-      }
-    },
-    "viewAll": "View all",
-    "viewAllAria": "View all {section}",
+    "viewAll": "Ver tudo",
+    "viewAllAria": "Ver tudo de {section}",
     "hero": {
-      "ariaLabel": "Featured highlights",
+      "ariaLabel": "Destaques em evidência",
       "slideN": "Slide {n}",
-      "prev": "Previous slide",
-      "next": "Next slide"
+      "prev": "Slide anterior",
+      "next": "Próximo slide"
     },
     "filters": {
-      "ariaLabel": "Filter",
-      "all": "All",
+      "ariaLabel": "Filtro",
+      "all": "Todos",
       "agency": {
         "HYBE": "HYBE",
         "SM": "SM",
@@ -1243,436 +1243,411 @@
         "Gangnam": "Gangnam"
       },
       "region": {
-        "Seoul": "Seoul",
+        "Seoul": "Seul",
         "Jeonju": "Jeonju",
         "Gyeongju": "Gyeongju",
         "Andong": "Andong"
       }
     },
     "packages": {
-      "title": "B4K Best Packages",
-      "sponsored": "Sponsored",
-      "viewCta": "View",
-      "ariaLabel": "{title} by {partner}"
+      "title": "Melhores Pacotes B4K",
+      "sponsored": "Patrocinado",
+      "viewCta": "Ver",
+      "ariaLabel": "{title} por {partner}"
     }
   },
   "saved": {
-    "ariaLabel": "Saved page",
-    "breadcrumb": "Saved",
-    "title": "Saved",
+    "ariaLabel": "Página de salvos",
+    "breadcrumb": "Salvos",
+    "title": "Salvos",
     "tabs": {
-      "ariaLabel": "Content tabs",
-      "places": "Places",
-      "myPlans": "My Plans",
-      "savedPlans": "Saved Plans"
+      "ariaLabel": "Abas de conteúdo",
+      "places": "Lugares",
+      "myPlans": "Meus Planos",
+      "savedPlans": "Planos Salvos"
     },
-    "loading": "Loading saved items…",
+    "loading": "Carregando itens salvos…",
     "error": {
-      "title": "Couldn't load saved items",
-      "retry": "Try again"
+      "title": "Não foi possível carregar os itens salvos",
+      "retry": "Tentar novamente"
     },
     "empty": {
       "places": {
-        "title": "No saved places yet",
-        "desc": "Tap the bookmark icon on any place to save it here.",
-        "cta": "Explore the map"
+        "title": "Nenhum lugar salvo ainda",
+        "desc": "Toque no ícone de marcador em qualquer lugar para salvá-lo aqui.",
+        "cta": "Explorar o mapa"
       },
       "myPlans": {
-        "title": "No plans yet",
-        "desc": "Create your first plan on the map.",
-        "cta": "Open the map"
+        "title": "Nenhum plano ainda",
+        "desc": "Crie seu primeiro plano no mapa.",
+        "cta": "Abrir o mapa"
       },
       "savedPlans": {
-        "title": "No saved plans yet",
-        "desc": "Save plans you love to revisit them anytime.",
-        "cta": "Explore the map"
+        "title": "Nenhum plano salvo ainda",
+        "desc": "Salve planos que você adora para revisitá-los quando quiser.",
+        "cta": "Explorar o mapa"
       }
     },
     "place": {
-      "ariaLabel": "View {name} on map"
+      "ariaLabel": "Ver {name} no mapa"
     },
     "plan": {
-      "ariaLabel": "View itinerary {title}",
-      "stops": "{count, plural, one {# stop} other {# stops}}",
-      "days": "{count, plural, one {# day} other {# days}}"
+      "ariaLabel": "Ver roteiro {title}",
+      "stops": "{count, plural, one {# parada} other {# paradas}}",
+      "days": "{count, plural, one {# dia} other {# dias}}"
     },
     "myPlan": {
-      "ariaLabel": "View plan {title}",
-      "draft": "Draft",
-      "lastEdited": "Edited {date}",
-      "edit": "Edit",
-      "share": "Share",
-      "delete": "Delete",
-      "editAriaLabel": "Edit plan {title}",
-      "shareAriaLabel": "Share plan {title}",
-      "deleteAriaLabel": "Delete plan {title}"
+      "ariaLabel": "Ver plano {title}",
+      "draft": "Rascunho",
+      "lastEdited": "Editado em {date}",
+      "edit": "Editar",
+      "share": "Compartilhar",
+      "delete": "Excluir",
+      "editAriaLabel": "Editar plano {title}",
+      "shareAriaLabel": "Compartilhar plano {title}",
+      "deleteAriaLabel": "Excluir plano {title}"
     },
     "unsave": {
-      "label": "Unsave",
-      "ariaLabel": "Unsave plan {title}"
+      "label": "Remover dos salvos",
+      "ariaLabel": "Remover plano salvo {title}"
     },
     "confirmDelete": {
-      "title": "Delete plan?",
-      "desc": "This plan will be permanently removed.",
-      "confirm": "Delete",
-      "cancel": "Cancel"
+      "title": "Excluir plano?",
+      "desc": "Este plano será removido permanentemente.",
+      "confirm": "Excluir",
+      "cancel": "Cancelar"
     },
     "folder": {
-      "openAriaLabel": "Open folder {name}",
-      "poiCount": "{count, plural, one {# place} other {# places}}",
-      "generatePlan": "Generate Plan",
-      "back": "Back to folders",
-      "selectHint": "Select places for your plan",
-      "selectAll": "Select All",
-      "deselectAll": "Deselect All",
-      "selectAriaLabel": "Select {name}",
-      "generate": "Generate ({count} places)",
-      "generating": "Generating…",
-      "generateError": "Couldn't generate plan. Please try again.",
-      "newFolder": "New folder",
-      "createPlan": "Create plan",
-      "cancel": "Cancel",
-      "selectFoldersHint": "Select folders to plan from",
-      "newFolderPlaceholder": "Folder name",
-      "create": "Create",
-      "generateFolders": "Generate plan from {count, plural, one {# folder} other {# folders}}",
-      "selectFolderAria": "Select folder {name}",
-      "folderMenu": "Options for {name}",
-      "rename": "Rename",
-      "delete": "Delete",
-      "renameTitle": "Rename folder",
-      "save": "Save",
-      "deleteTitle": "Delete folder?",
-      "deleteWarning": "\"{name}\" and all its saved places will be permanently deleted. This cannot be undone.",
-      "deleteCancel": "Cancel",
-      "offlineNote": "You're offline. Try again when connected."
+      "openAriaLabel": "Abrir pasta {name}",
+      "poiCount": "{count, plural, one {# lugar} other {# lugares}}",
+      "generatePlan": "Gerar Plano",
+      "back": "Voltar às pastas",
+      "selectHint": "Selecione lugares para seu plano",
+      "selectAll": "Selecionar Todos",
+      "deselectAll": "Desmarcar Todos",
+      "selectAriaLabel": "Selecionar {name}",
+      "generate": "Gerar ({count} lugares)",
+      "generating": "Gerando…",
+      "generateError": "Não foi possível gerar o plano. Tente novamente.",
+      "newFolder": "Nova pasta",
+      "createPlan": "Criar plano",
+      "cancel": "Cancelar",
+      "selectFoldersHint": "Selecione pastas para planejar a partir delas",
+      "newFolderPlaceholder": "Nome da pasta",
+      "create": "Criar",
+      "generateFolders": "Gerar plano a partir de {count, plural, one {# pasta} other {# pastas}}",
+      "selectFolderAria": "Selecionar pasta {name}",
+      "folderMenu": "Opções para {name}",
+      "rename": "Renomear",
+      "delete": "Excluir",
+      "renameTitle": "Renomear pasta",
+      "save": "Salvar",
+      "deleteTitle": "Excluir pasta?",
+      "deleteWarning": "\"{name}\" e todos os lugares salvos nela serão excluídos permanentemente. Esta ação não pode ser desfeita.",
+      "deleteCancel": "Cancelar",
+      "offlineNote": "Você está offline. Tente novamente quando estiver conectado."
     },
     "poi": {
-      "removeAriaLabel": "Remove {name} from folder",
-      "removeLabel": "Remove"
+      "removeAriaLabel": "Remover {name} da pasta",
+      "removeLabel": "Remover"
     }
   },
   "notifications": {
-    "ariaLabel": "Notifications page",
-    "breadcrumb": "Notifications",
-    "title": "Notifications",
-    "unread": "{count, plural, one {# unread} other {# unread}}",
-    "loading": "Loading notifications…",
-    "loadMore": "Load more",
+    "ariaLabel": "Página de notificações",
+    "breadcrumb": "Notificações",
+    "title": "Notificações",
+    "unread": "{count, plural, one {# não lida} other {# não lidas}}",
+    "markAllRead": "Marcar todas como lidas",
+    "loading": "Carregando notificações…",
+    "loadMore": "Carregar mais",
     "error": {
-      "title": "Couldn't load notifications",
-      "retry": "Try again"
+      "title": "Não foi possível carregar as notificações",
+      "retry": "Tentar novamente"
     },
     "empty": {
-      "title": "You're all caught up",
-      "desc": "Notifications about events, deals, and badges will appear here."
+      "title": "Você está em dia",
+      "desc": "Notificações sobre eventos, ofertas e emblemas aparecerão aqui."
     },
     "groups": {
-      "today": "Today",
-      "yesterday": "Yesterday",
-      "earlier": "Earlier"
-    },
-    "markAllRead": "Mark all read"
+      "today": "Hoje",
+      "yesterday": "Ontem",
+      "earlier": "Anteriormente"
+    }
   },
   "badges": {
-    "ariaLabel": "Badges page",
-    "breadcrumb": "Badges",
-    "title": "Badges",
-    "stats": "{earned} / {total} earned",
+    "ariaLabel": "Página de emblemas",
+    "breadcrumb": "Emblemas",
+    "title": "Emblemas",
+    "stats": "{earned} / {total} conquistados",
     "filter": {
-      "ariaLabel": "Filter by rarity",
-      "all": "All",
-      "common": "Common",
-      "rare": "Rare",
-      "epic": "Epic",
-      "legendary": "Legendary"
+      "ariaLabel": "Filtrar por raridade",
+      "all": "Todos",
+      "common": "Comum",
+      "rare": "Raro",
+      "epic": "Épico",
+      "legendary": "Lendário"
     },
-    "loading": "Loading badges…",
+    "loading": "Carregando emblemas…",
     "error": {
-      "title": "Couldn't load badges",
-      "retry": "Try again"
+      "title": "Não foi possível carregar os emblemas",
+      "retry": "Tentar novamente"
     },
     "empty": {
-      "title": "No badges found",
-      "desc": "Explore Korea and complete challenges to earn badges."
+      "title": "Nenhum emblema encontrado",
+      "desc": "Explore a Coreia e complete desafios para ganhar emblemas."
     },
     "badge": {
       "ariaLabel": "{name} — {rarity}",
-      "pinned": "Pinned badge",
-      "earnedOn": "Earned {date}",
-      "locked": "Locked"
+      "pinned": "Emblema fixado",
+      "earnedOn": "Conquistado {date}",
+      "locked": "Bloqueado"
     },
     "detail": {
-      "ariaLabel": "Badge details",
-      "close": "Close",
-      "category": "Category",
+      "ariaLabel": "Detalhes do emblema",
+      "close": "Fechar",
+      "category": "Categoria",
       "status": "Status",
-      "earned": "Earned",
-      "earnedOn": "Earned on {date}",
-      "unlockToast": "New badge unlocked: {name}",
-      "unlockCriteria": "How to unlock",
-      "pin": "Pin to profile",
-      "unpin": "Unpin from profile",
-      "pinLimit": "You can pin up to 3 badges. Unpin one first.",
-      "pinError": "Could not update pin. Please try again.",
-      "unlockToastView": "View badge"
+      "earned": "Conquistado",
+      "earnedOn": "Conquistado em {date}",
+      "unlockToast": "Novo emblema desbloqueado: {name}",
+      "unlockCriteria": "Como desbloquear",
+      "pin": "Fixar no perfil",
+      "unpin": "Desafixar do perfil",
+      "pinLimit": "Você pode fixar até 3 emblemas. Desafixe um primeiro.",
+      "pinError": "Não foi possível atualizar a fixação. Tente novamente.",
+      "unlockToastView": "Ver emblema"
     },
     "rarity": {
-      "common": "Common",
-      "rare": "Rare",
-      "epic": "Epic",
-      "legendary": "Legendary"
+      "common": "Comum",
+      "rare": "Raro",
+      "epic": "Épico",
+      "legendary": "Lendário"
     }
   },
   "leaderboard": {
-    "ariaLabel": "Leaderboard page",
-    "breadcrumb": "Leaderboard",
-    "title": "Leaderboard",
+    "ariaLabel": "Página de ranking",
+    "breadcrumb": "Ranking",
+    "title": "Ranking",
     "windows": {
-      "ariaLabel": "Time window",
-      "weekly": "Weekly",
-      "rising": "Rising",
-      "annual": "Annual"
+      "ariaLabel": "Período",
+      "weekly": "Semanal",
+      "rising": "Em Ascensão",
+      "annual": "Anual"
     },
-    "loading": "Loading leaderboard…",
+    "loading": "Carregando ranking…",
     "error": {
-      "title": "Couldn't load leaderboard",
-      "retry": "Try again"
+      "title": "Não foi possível carregar o ranking",
+      "retry": "Tentar novamente"
     },
     "empty": {
-      "title": "No rankings yet this week.",
-      "desc": "Publish your first itinerary to appear here."
+      "title": "Ainda não há classificações esta semana.",
+      "desc": "Publique seu primeiro roteiro para aparecer aqui."
     },
-    "rank": "Rank {rank}",
-    "plans": "{count, plural, one {# plan} other {# plans}}",
+    "rank": "Posição {rank}",
+    "plans": "{count, plural, one {# plano} other {# planos}}",
     "scoreUnit": "pts",
-    "computedAt": "Updated {date}",
+    "computedAt": "Atualizado em {date}",
     "yourRank": {
-      "label": "Your rank: #{rank}",
-      "ariaLabel": "Your rank is number {rank}"
+      "label": "Sua posição: #{rank}",
+      "ariaLabel": "Sua posição é número {rank}"
     },
     "trend": {
-      "up": "Rank up",
-      "down": "Rank down",
-      "same": "No change"
+      "up": "Subiu no ranking",
+      "down": "Desceu no ranking",
+      "same": "Sem alteração"
     }
   },
   "help": {
-    "ariaLabel": "Help page",
-    "breadcrumb": "Help",
-    "title": "Help & FAQ",
-    "expandAriaLabel": "Expand: {question}",
-    "collapseAriaLabel": "Collapse: {question}",
+    "ariaLabel": "Página de ajuda",
+    "breadcrumb": "Ajuda",
+    "title": "Ajuda e Perguntas Frequentes",
+    "expandAriaLabel": "Expandir: {question}",
+    "collapseAriaLabel": "Recolher: {question}",
     "sections": {
       "gettingStarted": {
-        "title": "Getting started",
+        "title": "Primeiros passos",
         "items": {
           "q1": {
-            "q": "What is B4K?",
-            "a": "B4K is a K-culture travel discovery platform for foreign tourists visiting Korea. Find K-Pop venues, K-Drama filming locations, beauty spots, and more — then build your own itinerary."
+            "q": "O que é o B4K?",
+            "a": "B4K é uma plataforma de descoberta de viagens focada na cultura coreana para turistas estrangeiros visitando a Coreia. Encontre locais de K-Pop, locações de filmagem de K-Drama, pontos de beleza e muito mais — depois monte seu próprio roteiro."
           },
           "q2": {
-            "q": "Do I need an account to use B4K?",
-            "a": "You can explore the map without an account. Saving places, creating itineraries, and joining the leaderboard require signing in with Google."
+            "q": "Preciso de uma conta para usar o B4K?",
+            "a": "Você pode explorar o mapa sem uma conta. Salvar lugares, criar roteiros e participar do ranking exigem login com o Google."
           },
           "q3": {
-            "q": "Which languages does B4K support?",
-            "a": "B4K is available in Korean, English, Japanese, Chinese (Simplified & Traditional), Thai, and Portuguese (Brazil)."
+            "q": "Quais idiomas o B4K suporta?",
+            "a": "O B4K está disponível em coreano, inglês, japonês, chinês (simplificado e tradicional), tailandês e português (Brasil)."
           }
         }
       },
       "map": {
-        "title": "Using the map",
+        "title": "Usando o mapa",
         "items": {
           "q1": {
-            "q": "How do I save a place?",
-            "a": "Tap any pin on the map to open the place panel, then tap the bookmark icon to save it. Saved places appear in your Saved tab."
+            "q": "Como salvo um lugar?",
+            "a": "Toque em qualquer marcador no mapa para abrir o painel do lugar, depois toque no ícone de marcador para salvá-lo. Os lugares salvos aparecem na sua aba Salvos."
           },
           "q2": {
-            "q": "How do I build an itinerary?",
-            "a": "Open a place on the map and tap 'Add to plan' in the panel. You can add multiple stops, reorder them, and let B4K calculate the best route."
+            "q": "Como monto um roteiro?",
+            "a": "Abra um lugar no mapa e toque em 'Adicionar ao plano' no painel. Você pode adicionar várias paradas, reordená-las e deixar o B4K calcular a melhor rota."
           }
         }
       },
       "account": {
-        "title": "Account",
+        "title": "Conta",
         "items": {
           "q1": {
-            "q": "How do I change my profile?",
-            "a": "Go to your profile (the icon at the bottom of the sidebar), then tap the edit icon to update your display name and language preference."
+            "q": "Como altero meu perfil?",
+            "a": "Vá até seu perfil (o ícone na parte inferior da barra lateral), depois toque no ícone de edição para atualizar seu nome de exibição e preferência de idioma."
           },
           "q2": {
-            "q": "How do I delete my account?",
-            "a": "In Profile → Settings, tap 'Delete account'. Your data is held for 30 days before permanent deletion, in line with Korean privacy law (PIPA)."
+            "q": "Como excluo minha conta?",
+            "a": "Em Perfil → Configurações, toque em 'Excluir conta'. Seus dados ficam retidos por 30 dias antes da exclusão permanente, em conformidade com a lei de privacidade coreana (PIPA)."
           },
           "q3": {
-            "q": "How do I change my password?",
-            "a": "If you signed up with email, go to Profile → Settings to update your password. If you signed in with Google, Apple, or Microsoft, manage your password with that provider — B4K does not store it."
+            "q": "Como altero minha senha?",
+            "a": "Se você se cadastrou com e-mail, vá até Perfil → Configurações para atualizar sua senha. Se você entrou com Google, Apple ou Microsoft, gerencie sua senha com esse provedor — o B4K não a armazena."
           }
         }
       },
       "contact": {
-        "title": "Contact",
-        "desc": "Can't find what you're looking for? Reach out and we'll get back to you.",
-        "ctaEmail": "Email support",
+        "title": "Contato",
+        "desc": "Não encontrou o que procurava? Entre em contato e responderemos em breve.",
+        "ctaEmail": "E-mail de suporte",
         "ctaEmailHref": "mailto:support@b4korea.com",
         "emailAddress": "support@b4korea.com",
-        "copyEmail": "Copy email address",
-        "copyEmailCopied": "Copied",
-        "copyEmailAriaLabel": "Copy email address to clipboard"
+        "copyEmail": "Copiar endereço de e-mail",
+        "copyEmailCopied": "Copiado",
+        "copyEmailAriaLabel": "Copiar endereço de e-mail para a área de transferência"
       },
       "getting-started": {
-        "title": "Getting started",
+        "title": "Primeiros passos",
         "items": {
           "q1": {
-            "q": "What is B4K?",
-            "a": "B4K is a K-culture travel discovery platform for foreign tourists visiting Korea. Explore K-Pop venues, K-Drama filming locations, K-Beauty spots, and K-Culture landmarks on an interactive map, then build your own trip plan."
+            "q": "O que é o B4K?",
+            "a": "B4K é uma plataforma de descoberta de viagens focada na cultura coreana para turistas estrangeiros visitando a Coreia. Explore locais de K-Pop, locações de filmagem de K-Drama, pontos de K-Beauty e marcos de K-Culture em um mapa interativo, depois monte seu próprio plano de viagem."
           },
           "q2": {
-            "q": "How do I create an account?",
-            "a": "Sign up with your email and a password, or continue with Google, Apple, or Microsoft. There is no separate onboarding — once you sign up you land straight on the Home page."
+            "q": "Como crio uma conta?",
+            "a": "Cadastre-se com seu e-mail e uma senha, ou continue com Google, Apple ou Microsoft. Não há onboarding separado — assim que você se cadastra, vai direto para a página inicial."
           },
           "q3": {
-            "q": "What languages are supported?",
-            "a": "B4K is available in Korean, English, Japanese, Chinese (Simplified and Traditional), Thai, and Brazilian Portuguese. You can change your language anytime in Profile settings."
+            "q": "Quais idiomas são suportados?",
+            "a": "O B4K está disponível em coreano, inglês, japonês, chinês (simplificado e tradicional), tailandês e português brasileiro. Você pode mudar seu idioma a qualquer momento nas configurações do Perfil."
           }
         }
       },
       "planning": {
-        "title": "Planning",
+        "title": "Planejamento",
         "items": {
           "q1": {
-            "q": "How do I create a trip plan?",
-            "a": "Open a place on the map and add it to your plan. Add stops, reorder them, and each leg shows an estimated travel time. When you are happy with it, tap Save Plan. You can also ask the AI assistant to draft a plan for you."
+            "q": "Como crio um plano de viagem?",
+            "a": "Abra um lugar no mapa e adicione-o ao seu plano. Adicione paradas, reordene-as, e cada trecho mostra um tempo estimado de viagem. Quando estiver satisfeito, toque em Salvar Plano. Você também pode pedir ao assistente de IA para elaborar um plano para você."
           },
           "q2": {
-            "q": "Can I use B4K without an account?",
-            "a": "Yes. You can explore the map and build a plan as a guest — your draft is kept in your browser so it survives a refresh. You only need to sign in when you tap Save Plan, and your draft moves to your account automatically."
+            "q": "Posso usar o B4K sem uma conta?",
+            "a": "Sim. Você pode explorar o mapa e montar um plano como visitante — seu rascunho fica salvo no navegador, então sobrevive a uma atualização de página. Você só precisa entrar quando tocar em Salvar Plano, e seu rascunho é movido para sua conta automaticamente."
           },
           "q3": {
-            "q": "Is there a limit on how many stops a plan can have?",
-            "a": "A single plan can hold up to 40 stops. Once you reach the limit the Add button is disabled and a message lets you know. There is no in-app payment — partner plans simply link out to the partner's website."
+            "q": "Há um limite de paradas que um plano pode ter?",
+            "a": "Um único plano pode ter até 40 paradas. Ao atingir o limite, o botão Adicionar é desativado e uma mensagem avisa você. Não há pagamento no aplicativo — os planos de parceiros apenas direcionam para o site do parceiro."
           }
         }
       },
       "saved": {
-        "title": "Saved",
+        "title": "Salvos",
         "items": {
           "q1": {
-            "q": "How do I save a place?",
-            "a": "Open any place from the map and tap the bookmark icon. Saved places appear in your Saved tab, where you can browse them all in one list."
+            "q": "Como salvo um lugar?",
+            "a": "Abra qualquer lugar a partir do mapa e toque no ícone de marcador. Os lugares salvos aparecem na sua aba Salvos, onde você pode navegar por todos eles em uma única lista."
           },
           "q2": {
-            "q": "What are folders?",
-            "a": "Folders let you organize your saved places into single-level groups — for example one folder per city or per interest. Folders are for saved places only; saved plans stay in a single flat list."
+            "q": "O que são pastas?",
+            "a": "As pastas permitem organizar seus lugares salvos em grupos de nível único — por exemplo, uma pasta por cidade ou por interesse. As pastas são só para lugares salvos; os planos salvos ficam em uma única lista simples."
           },
           "q3": {
-            "q": "How do I generate a plan from saved places?",
-            "a": "In the Saved tab, select the places you want with the checkboxes, then choose Generate plan. B4K arranges them into a suggested route and opens the new plan so you can fine-tune it."
+            "q": "Como gero um plano a partir de lugares salvos?",
+            "a": "Na aba Salvos, selecione os lugares que deseja com as caixas de seleção e depois escolha Gerar plano. O B4K organiza-os em uma rota sugerida e abre o novo plano para que você possa ajustá-lo."
           }
         }
       },
       "technical": {
-        "title": "Technical",
+        "title": "Técnico",
         "items": {
           "q1": {
-            "q": "The map isn't loading.",
-            "a": "First try refreshing the page. If the map still doesn't appear, check your internet connection and disable any ad or script blockers, which can interfere with the map. If the problem continues, contact us using the email below."
+            "q": "O mapa não está carregando.",
+            "a": "Primeiro, tente atualizar a página. Se o mapa ainda não aparecer, verifique sua conexão com a internet e desative bloqueadores de anúncios ou scripts, que podem interferir no mapa. Se o problema continuar, entre em contato usando o e-mail abaixo."
           },
           "q2": {
-            "q": "The app is in the wrong language.",
-            "a": "B4K picks a language from your browser settings and falls back to English if your language isn't supported. To set it yourself, open Profile → Settings and choose your preferred language."
+            "q": "O aplicativo está no idioma errado.",
+            "a": "O B4K seleciona um idioma a partir das configurações do seu navegador e usa o inglês como padrão caso seu idioma não seja suportado. Para definir você mesmo, abra Perfil → Configurações e escolha seu idioma preferido."
           },
           "q3": {
-            "q": "How do I report a problem?",
-            "a": "Use the email address in the Contact section below to report bugs or send feedback. Please include what you were doing, your device, and your browser so we can help faster."
+            "q": "Como reporto um problema?",
+            "a": "Use o endereço de e-mail na seção Contato abaixo para reportar bugs ou enviar feedback. Inclua o que você estava fazendo, seu dispositivo e seu navegador para que possamos ajudar mais rápido."
           }
         }
       }
     },
     "legal": {
-      "title": "Legal",
-      "terms": "Terms of Service",
-      "privacy": "Privacy Policy",
-      "cookies": "Cookie Policy"
+      "title": "Jurídico",
+      "terms": "Termos de Serviço",
+      "privacy": "Política de Privacidade",
+      "cookies": "Política de Cookies"
     }
   },
   "onboarding": {
-    "ariaLabel": "Onboarding — choose your interests",
-    "title": "What brings you to Korea?",
-    "subtitle": "Personalise your B4K experience.",
-    "desc": "Select the things you're most excited about. You can change this later.",
+    "ariaLabel": "Onboarding — escolha seus interesses",
+    "title": "O que te traz à Coreia?",
+    "subtitle": "Personalize sua experiência no B4K.",
+    "desc": "Selecione as coisas que mais te empolgam. Você pode alterar isso depois.",
     "interests": {
-      "label": "Pick your interests",
+      "label": "Escolha seus interesses",
       "kpop": {
         "label": "K-Pop",
-        "desc": "Concerts, venues & fandom"
+        "desc": "Shows, locais e fandom"
       },
       "kdrama": {
         "label": "K-Drama",
-        "desc": "Filming locations & tours"
+        "desc": "Locações de filmagem e tours"
       },
       "kbeauty": {
         "label": "K-Beauty",
-        "desc": "Skincare, makeup & spas"
+        "desc": "Skincare, maquiagem e spas"
       },
       "kculture": {
         "label": "K-Culture",
-        "desc": "Food, markets & traditions"
+        "desc": "Comida, mercados e tradições"
       },
       "food": {
-        "label": "Food",
-        "desc": "Street food & local dining"
+        "label": "Comida",
+        "desc": "Comida de rua e gastronomia local"
       },
       "nature": {
-        "label": "Nature",
-        "desc": "Parks, trails & outdoors"
+        "label": "Natureza",
+        "desc": "Parques, trilhas e ar livre"
       },
       "nightlife": {
-        "label": "Nightlife",
-        "desc": "Bars, clubs & late nights"
+        "label": "Vida Noturna",
+        "desc": "Bares, baladas e noites badaladas"
       },
       "history": {
-        "label": "History",
-        "desc": "Palaces, temples & heritage"
+        "label": "História",
+        "desc": "Palácios, templos e patrimônio"
       }
     },
-    "cta": "Continue",
-    "skip": "Skip for now"
-  },
-  "footer": {
-    "help": "Ajuda",
-    "privacy": "Política de Privacidade",
-    "terms": "Termos de Uso",
-    "cookies": "Política de Cookies",
-    "copyright": "© {year} B4K. Todos os direitos reservados."
-  },
-  "cookieConsent": {
-    "banner": {
-      "title": "Cookie notice",
-      "message": "We use cookies for analytics to improve B4K.",
-      "learnMore": "Learn more",
-      "accept": "Accept",
-      "decline": "Decline",
-      "dismiss": "Dismiss"
-    },
-    "preferences": {
-      "title": "Analytics cookies",
-      "desc": "Control whether B4K can use analytics cookies on this device.",
-      "statusAccepted": "Accepted",
-      "statusDeclined": "Declined",
-      "accept": "Accept",
-      "decline": "Decline"
-    }
+    "cta": "Continuar",
+    "skip": "Pular por enquanto"
   },
   "search": {
-    "title": "Search",
-    "placeholder": "Search itineraries, places...",
-    "recentTitle": "Recent searches",
-    "clearAll": "Clear all",
-    "noResults": "No results for \"{query}\"",
-    "noResultsSubtitle": "Try exploring by category",
-    "suggestions": "Suggestions",
+    "title": "Buscar",
+    "placeholder": "Buscar roteiros, lugares...",
+    "recentTitle": "Buscas recentes",
+    "clearAll": "Limpar tudo",
+    "noResults": "Nenhum resultado para \"{query}\"",
+    "noResultsSubtitle": "Tente explorar por categoria",
+    "suggestions": "Sugestões",
     "categories": {
       "kpop": "K-Pop",
       "kdrama": "K-Drama",
@@ -1680,35 +1655,35 @@
       "kculture": "K-Culture"
     },
     "sections": {
-      "places": "Places",
-      "plans": "Plans",
-      "explore": "Explore"
+      "places": "Lugares",
+      "plans": "Planos",
+      "explore": "Explorar"
     },
-    "seeAll": "See all",
-    "removeRecent": "Remove {query} from recents",
+    "seeAll": "Ver todos",
+    "removeRecent": "Remover {query} das buscas recentes",
     "filters": {
-      "title": "Filters",
-      "sections": "Show",
-      "section_all": "All",
-      "section_places": "Places",
-      "section_plans": "Plans",
-      "section_explore": "Explore",
+      "title": "Filtros",
+      "sections": "Mostrar",
+      "section_all": "Todos",
+      "section_places": "Lugares",
+      "section_plans": "Planos",
+      "section_explore": "Explorar",
       "sort": {
-        "label": "Sort by",
-        "relevance": "Relevance",
-        "popularity": "Popularity"
+        "label": "Ordenar por",
+        "relevance": "Relevância",
+        "popularity": "Popularidade"
       },
       "area": {
-        "label": "Area",
-        "lv1Label": "Region",
-        "lv2Label": "District",
-        "chipAriaLabel": "Filter by {name}"
+        "label": "Área",
+        "lv1Label": "Região",
+        "lv2Label": "Distrito",
+        "chipAriaLabel": "Filtrar por {name}"
       },
       "tags": {
-        "label": "Theme"
+        "label": "Tema"
       },
       "region": {
-        "seoul": "Seoul",
+        "seoul": "Seul",
         "busan": "Busan",
         "jeju": "Jeju"
       },
@@ -1725,41 +1700,66 @@
         "kpop": "K-Pop",
         "kdrama": "K-Drama",
         "kbeauty": "K-Beauty",
-        "food": "Food",
-        "nature": "Nature",
-        "shopping": "Shopping",
-        "history": "History",
-        "nightlife": "Nightlife"
+        "food": "Comida",
+        "nature": "Natureza",
+        "shopping": "Compras",
+        "history": "História",
+        "nightlife": "Vida Noturna"
       },
-      "apply": "Apply",
-      "close": "Close filters"
+      "apply": "Aplicar",
+      "close": "Fechar filtros"
     },
     "results": {
-      "poi": "Places",
-      "plans": "Plans",
-      "explore": "Explore categories"
+      "poi": "Lugares",
+      "plans": "Planos",
+      "explore": "Categorias de Explorar"
     },
     "poiAriaLabel": "{name}, {region}",
-    "planAriaLabel": "{title} by {author}",
-    "exploreAriaLabel": "Explore {category}",
-    "mapCta": "Explore on map",
-    "sponsored": "Sponsored",
-    "stops": "{count} stops",
-    "saves": "{count} saves",
-    "mobileFilter": "Filter",
-    "mobileSort": "Sort",
-    "loading": "Searching…",
-    "error": "Search failed. Try again.",
-    "retry": "Try again",
-    "seeAllPlaces": "See all {count} places",
-    "seeAllPlans": "See all {count} plans",
-    "seeAllExplore": "See all {count} contents",
-    "showLess": "Show less",
-    "minChars": "Type at least 2 characters to search",
-    "loadingSuggestions": "Loading suggestions"
+    "planAriaLabel": "{title} por {author}",
+    "exploreAriaLabel": "Explorar {category}",
+    "mapCta": "Explorar no mapa",
+    "sponsored": "Patrocinado",
+    "stops": "{count} paradas",
+    "saves": "{count} salvos",
+    "mobileFilter": "Filtro",
+    "mobileSort": "Ordenar",
+    "loading": "Buscando…",
+    "error": "Falha na busca. Tente novamente.",
+    "retry": "Tentar novamente",
+    "seeAllPlaces": "Ver todos os {count} lugares",
+    "seeAllPlans": "Ver todos os {count} planos",
+    "seeAllExplore": "Ver todos os {count} conteúdos",
+    "showLess": "Mostrar menos",
+    "minChars": "Digite pelo menos 2 caracteres para buscar",
+    "loadingSuggestions": "Carregando sugestões"
+  },
+  "footer": {
+    "help": "Ajuda",
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Uso",
+    "cookies": "Política de Cookies",
+    "copyright": "© {year} B4K. Todos os direitos reservados."
+  },
+  "cookieConsent": {
+    "banner": {
+      "title": "Aviso de cookies",
+      "message": "Usamos cookies para análise a fim de melhorar o B4K.",
+      "learnMore": "Saiba mais",
+      "accept": "Aceitar",
+      "decline": "Recusar",
+      "dismiss": "Dispensar"
+    },
+    "preferences": {
+      "title": "Cookies de análise",
+      "desc": "Controle se o B4K pode usar cookies de análise neste dispositivo.",
+      "statusAccepted": "Aceito",
+      "statusDeclined": "Recusado",
+      "accept": "Aceitar",
+      "decline": "Recusar"
+    }
   },
   "toast": {
-    "dismiss": "Dismiss",
-    "actionFailed": "Something went wrong. Try again."
+    "dismiss": "Dispensar",
+    "actionFailed": "Algo deu errado. Tente novamente."
   }
 }
