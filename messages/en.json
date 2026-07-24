@@ -574,7 +574,8 @@
       "checkEmailBodyReset": "We sent a password reset link to {email}.",
       "resend": "Resend email",
       "resendIn": "Resend in {seconds}s",
-      "tosFooter": "By continuing, you agree to B4K's <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>."
+      "tosFooter": "By continuing, you agree to B4K's <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+      "ageConfirm": "I confirm I'm at least 14 years old"
     },
     "conflict": {
       "ariaLabel": "Draft conflict — pick one modal",
@@ -611,6 +612,12 @@
       "error": "Sign-in failed",
       "errorRetry": "Please try signing in again"
     }
+  },
+  "legalGate": {
+    "ariaLabel": "Terms acceptance",
+    "title": "Before you continue",
+    "message": "By using B4K, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+    "accept": "Accept & Continue"
   },
   "map": {
     "ariaLabel": "Interactive map of Korea",
@@ -725,6 +732,7 @@
       "inputPlaceholder": "Ask about Korea…",
       "send": "Send message",
       "minimize": "Minimize AI assistant",
+      "disclaimer": "AI-generated suggestions — verify details independently before traveling.",
       "close": "Close AI assistant",
       "back": "Back to map",
       "greeting": "Ask me anything about Korea — places, plans, and K-culture.",

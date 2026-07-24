@@ -16,6 +16,7 @@ import { useDraftMigration } from '@/hooks/useDraftMigration';
 import OfflineBanner from '@/components/layout/OfflineBanner';
 import Analytics from '@/components/analytics/Analytics';
 import CookieBanner from '@/components/analytics/CookieBanner';
+import TermsGate from '@/components/legal/TermsGate';
 
 function ShellInner({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -24,6 +25,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <TermsGate />
       <Sidebar />
       <MobileDrawer open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       <TopNav onMobileMenuOpen={() => setMobileMenuOpen(true)} />
