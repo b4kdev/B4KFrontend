@@ -630,7 +630,9 @@
     "zoomOut": "Diminuir zoom",
     "leftPanel": {
       "ariaLabel": "Painel de exploração",
-      "viewSaved": "Ver lugares salvos"
+      "viewSaved": "Ver lugares salvos",
+      "tagline": "Encontre seu lugar",
+      "savedLabel": "Salvo"
     },
     "regions": {
       "title": "Explorar por Região",

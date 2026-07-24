@@ -630,7 +630,9 @@
     "zoomOut": "Zoom out",
     "leftPanel": {
       "ariaLabel": "Explore panel",
-      "viewSaved": "View saved places"
+      "viewSaved": "View saved places",
+      "tagline": "Find your place",
+      "savedLabel": "Saved"
     },
     "regions": {
       "title": "Explore by Region",
