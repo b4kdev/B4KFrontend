@@ -16,9 +16,12 @@ import ExploreAiCta from './ExploreAiCta'
 
 export type ExploreCategory = 'k-pop' | 'k-drama' | 'k-beauty' | 'k-culture'
 
-// SC-36 (KD_04 Tours / KB_04 Makeup) — the only two sections spec'd for a
-// featured wide card above the row.
-const FEATURED_SECTIONS = new Set(['tours', 'makeup'])
+// SC-36 (KD_04 Tours / KB_04 Makeup) originally spec'd only these two.
+// Widened same-session: with tours/makeup as the only featured slots, 3 of 4
+// category pages (k-culture, and half of k-pop/k-drama/k-beauty) rendered as
+// flat uniform card rows with zero visual break — one featured section per
+// category now, each with a real is_featured POI already in the seed data.
+const FEATURED_SECTIONS = new Set(['tours', 'makeup', 'food', 'agencies', 'ostCafes', 'spa'])
 
 interface CategoryConfig {
   id: ExploreCategory
