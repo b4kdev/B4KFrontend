@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useAuth } from '@/contexts/AuthContext'
 import { Link } from '@/i18n/navigation'
@@ -77,11 +78,12 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
           style={{ background: 'var(--bg-3)' }}
         >
           {poi.primary_image_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={poi.primary_image_url}
               alt={name}
-              className="w-full h-full object-cover"
+              fill
+              sizes="(max-width: 1024px) 72vw, 260px"
+              className="object-cover"
             />
           ) : (
             <div className="flex flex-col items-center justify-center gap-sp-1">

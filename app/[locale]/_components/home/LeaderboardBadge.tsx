@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import useSWR from 'swr'
@@ -67,13 +68,12 @@ export default function LeaderboardBadge() {
                 <div key={entry.user_id} className="flex items-center gap-sp-3 p-sp-2">
                   <RankIcon rank={entry.rank} />
                   <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+                    className="relative w-7 h-7 rounded-full flex items-center justify-center shrink-0"
                     style={{ background: 'var(--bg-3)' }}
                     aria-hidden="true"
                   >
                     {entry.avatar_url
-                      // eslint-disable-next-line @next/next/no-img-element
-                      ? <img src={entry.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                      ? <Image src={entry.avatar_url} alt="" fill sizes="28px" className="rounded-full object-cover" />
                       : <User size={14} strokeWidth={2} className="text-muted" />
                     }
                   </div>
@@ -100,13 +100,12 @@ export default function LeaderboardBadge() {
             </div>
             <div className="p-sp-4 flex items-center gap-sp-4">
               <div
-                className="w-16 h-16 rounded-full flex items-center justify-center shrink-0"
+                className="relative w-16 h-16 rounded-full flex items-center justify-center shrink-0"
                 style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
                 aria-hidden="true"
               >
                 {badge.image_url
-                  // eslint-disable-next-line @next/next/no-img-element
-                  ? <img src={badge.image_url} alt="" className="w-full h-full rounded-full object-contain" />
+                  ? <Image src={badge.image_url} alt="" fill sizes="64px" className="rounded-full object-contain" />
                   : <Star size={28} strokeWidth={2} className="text-lav" />
                 }
               </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import useSWR from 'swr'
 import { Link } from '@/i18n/navigation'
@@ -246,10 +247,11 @@ export default function OtherUserProfilePage({ params }: { params: { id: string 
         aria-label={t('header.ariaLabel')}
       >
         {profile.avatar_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={profile.avatar_url}
             alt={t('avatarAlt', { name: displayName })}
+            width={64}
+            height={64}
             className="w-16 h-16 rounded-full object-cover"
           />
         ) : (

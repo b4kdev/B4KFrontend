@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { mutate as globalMutate } from 'swr'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
@@ -94,16 +95,17 @@ function TripCard({
     >
       {/* Thumbnail — PR_10 */}
       <div
-        className="aspect-video flex items-center justify-center"
+        className="relative aspect-video flex items-center justify-center"
         style={{ background: 'var(--bg-3)' }}
         aria-label={t('trips.card.thumbnailAlt', { title: displayTitle })}
       >
         {trip.thumbnail_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={trip.thumbnail_url}
             alt={t('trips.card.thumbnailAlt', { title: displayTitle })}
-            className="w-full h-full object-cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover"
           />
         ) : (
           <Route size={28} strokeWidth={2} className="text-fg opacity-[0.15]" />
