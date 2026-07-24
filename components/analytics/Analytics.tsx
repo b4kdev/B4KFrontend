@@ -21,29 +21,31 @@ export default function Analytics() {
     return () => window.removeEventListener('b4k-consent-change', onChange)
   }, [])
 
-  if (!GA_ID) return null
-
   return (
     <>
       {/* Reads consent directly from localStorage at execution time — avoids a React
           round-trip race between mount and the gtag() consent default call. */}
-      <Script id="ga4-init" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          window.gtag = gtag;
-          var consent = localStorage.getItem('b4k_analytics_consent');
-          gtag('consent', 'default', {
-            analytics_storage: consent === 'accepted' ? 'granted' : 'denied',
-            ad_storage: 'denied',
-            ad_user_data: 'denied',
-            ad_personalization: 'denied'
-          });
-          gtag('js', new Date());
-          gtag('config', '${GA_ID}');
-        `}
-      </Script>
-      <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+      {GA_ID && (
+        <>
+          <Script id="ga4-init" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              window.gtag = gtag;
+              var consent = localStorage.getItem('b4k_analytics_consent');
+              gtag('consent', 'default', {
+                analytics_storage: consent === 'accepted' ? 'granted' : 'denied',
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied'
+              });
+              gtag('js', new Date());
+              gtag('config', '${GA_ID}');
+            `}
+          </Script>
+          <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+        </>
+      )}
 
       {clarityGranted && CLARITY_ID && (
         <Script id="clarity-init" strategy="afterInteractive">

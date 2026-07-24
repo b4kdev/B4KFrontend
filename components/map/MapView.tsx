@@ -5,10 +5,9 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { Sparkles, AlertTriangle } from 'lucide-react'
+import { AlertTriangle } from 'lucide-react'
 import NaverMapCanvas from './NaverMapCanvas'
 import LeftPanel from './LeftPanel/index'
-import AIOverlay from './AIOverlay'
 import POIBottomSheet from './POIBottomSheet'
 import PlanPill from './PlanPill'
 import PlanBottomSheet from './PlanBottomSheet'
@@ -111,11 +110,9 @@ export default function MapView() {
     setSavedSheetOpen(searchParams.get('saved') === '1')
   }, [searchParams])
 
-  // URL param handling — ?plan=:id loads plan into edit mode; ?ai=open opens AI overlay
+  // URL param handling — ?plan=:id loads plan into edit mode
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-
-    if (params.get('ai') === 'open') setAiOverlayOpen(true)
 
     const poiId = params.get('poi')
     if (poiId) setSelectedPoiId(poiId)
@@ -524,8 +521,6 @@ export default function MapView() {
           showAiPill={showAiPill}
           onAiPillDismiss={() => setShowAiPill(false)}
           onAiPillExpand={() => setAiOverlayOpen(true)}
-          aiOverlayOpen={aiOverlayOpen}
-          onAiOpen={() => setAiOverlayOpen(true)}
           savedFolderPoiIds={savedFolderPoiIds}
         />
 
@@ -538,26 +533,7 @@ export default function MapView() {
           />
         )}
 
-        {/* Mobile AI FAB — AI_01 */}
-        {!aiOverlayOpen && (
-          <button
-            onClick={() => setAiOverlayOpen(true)}
-            aria-label={t('aiOverlay.openButton')}
-            className="lg:hidden absolute bottom-sp-4 right-sp-4 z-20 w-touch h-touch rounded-full bg-lav text-bg flex items-center justify-center transition-opacity hover:opacity-90"
-          >
-            <Sparkles size={20} strokeWidth={2} aria-hidden="true" />
-          </button>
-        )}
-
-        {/* AI Overlay — MP_30–35, FL3_01–08 */}
-        <AIOverlay
-          open={aiOverlayOpen}
-          pois={pois}
-          planStopIds={planStopIds}
-          onAddToPlan={(poiId) => handleAddToPlan(poiId, 'ai')}
-          onMinimize={() => { setAiOverlayOpen(false); setShowAiPill(true) }}
-          onClose={() => setAiOverlayOpen(false)}
-        />
+        {/* Mobile AI FAB + AI Overlay (MP_30–35, FL3_01–08) — hidden, not ready for launch */}
       </div>
 
       {/* Mobile POI bottom sheet — BS_01–08 */}

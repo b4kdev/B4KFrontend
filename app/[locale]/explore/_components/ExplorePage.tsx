@@ -12,7 +12,6 @@ import ExploreFeaturedCard from './ExploreFeaturedCard'
 import ExploreHero from './ExploreHero'
 import ExploreChipFilter, { ChipFilterConfig } from './ExploreChipFilter'
 import ExplorePackages from './ExplorePackages'
-import ExploreAiCta from './ExploreAiCta'
 
 export type ExploreCategory = 'k-pop' | 'k-drama' | 'k-beauty' | 'k-culture'
 
@@ -323,8 +322,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
             {/* H5 B4K Best Packages */}
             {data.packages && data.packages.length > 0 && <ExplorePackages packages={data.packages} />}
 
-            {/* H6 Per-hub AI Planner CTA */}
-            <ExploreAiCta category={category} />
+            {/* H6 Per-hub AI Planner CTA — hidden, not ready for launch */}
           </>
         )}
       </div>
