@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 import { X, Mail, MailCheck, Route } from 'lucide-react';
@@ -256,9 +257,13 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
         <div className="flex flex-col items-center text-center gap-sp-4 pt-sp-2">
 
           {/* Brand mark */}
-          <span className="text-lav font-display text-f-2xl tracking-tight select-none">
-            B4K
-          </span>
+          <Image
+            src="/brand/B4K_BrandLogo_Horizontal_White.svg"
+            alt="B4K"
+            width={108}
+            height={24}
+            className="select-none"
+          />
 
           {/* Title + subline per view */}
           <div>
