@@ -30,7 +30,7 @@ interface Props {
 
 const SEOUL = { lat: 37.5665, lng: 126.9780 }
 // Naver Maps API requires hex — cannot use CSS var here
-const LAV_HEX = '#C4A8E0' // allow-hex — map SDK marker colour
+const LAV_HEX = '#DCC2F7' // allow-hex — map SDK route colour, matches --lav-map
 
 function poiMarkerHtml(poi: MapPoi, selected: boolean): string {
   const sel = selected ? ' poi-selected' : ''
@@ -333,7 +333,7 @@ export default function NaverMapCanvas({
             style={{ background: 'rgba(17,17,17,0.92)', backdropFilter: 'blur(12px)', border: '1px solid var(--bdr)' }}
           >
             <p className="text-fg text-sm font-semibold">{t('error')}</p>
-            <button onClick={() => setScriptErr(false)} className="text-lav text-sm hover:underline min-h-touch flex items-center">
+            <button onClick={() => setScriptErr(false)} className="text-lav-map text-sm hover:underline min-h-touch flex items-center">
               {t('retry')}
             </button>
           </div>
@@ -343,10 +343,10 @@ export default function NaverMapCanvas({
       {/* Zoom controls — MP_07, MP_08 — desktop only */}
       {mapReady && (
         <div className="hidden lg:flex absolute bottom-sp-8 right-sp-4 flex-col z-10" style={{ filter: 'drop-shadow(0 2px 4px var(--backdrop-50))' }}>
-          <button onClick={zoomIn} aria-label={t('zoomIn')} className="w-touch h-touch flex items-center justify-center bg-bg-2 text-fg rounded-none hover:bg-bg-3 transition-colors" style={{ border: '1px solid var(--bdr)' }}>
+          <button onClick={zoomIn} aria-label={t('zoomIn')} className="w-touch h-touch flex items-center justify-center bg-bg-2 text-lav-map rounded-none hover:bg-bg-3 transition-colors" style={{ border: '1px solid var(--lav-map-dim)' }}>
             <Plus size={16} strokeWidth={2} />
           </button>
-          <button onClick={zoomOut} aria-label={t('zoomOut')} className="w-touch h-touch flex items-center justify-center bg-bg-2 text-fg rounded-none hover:bg-bg-3 transition-colors" style={{ border: '1px solid var(--bdr)', borderTop: 'none' }}>
+          <button onClick={zoomOut} aria-label={t('zoomOut')} className="w-touch h-touch flex items-center justify-center bg-bg-2 text-lav-map rounded-none hover:bg-bg-3 transition-colors" style={{ border: '1px solid var(--lav-map-dim)', borderTop: 'none' }}>
             <Minus size={16} strokeWidth={2} />
           </button>
         </div>
@@ -356,9 +356,9 @@ export default function NaverMapCanvas({
 
       {/* AI Pill — MP_06 */}
       {showAiPill && mapReady && (
-        <div className="absolute bottom-sp-8 right-[calc(var(--touch-min)+var(--sp-5))] z-10 flex items-center gap-sp-2 h-touch px-sp-3 bg-bg-2 rounded-full" style={{ border: '1px solid var(--lav-border)' }}>
-          <Sparkles size={14} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
-          <button onClick={onAiPillExpand} className="text-sm text-fg hover:text-lav transition-colors whitespace-nowrap" aria-label={t('aiPill.expand')}>
+        <div className="absolute bottom-sp-8 right-[calc(var(--touch-min)+var(--sp-5))] z-10 flex items-center gap-sp-2 h-touch px-sp-3 bg-bg-2 rounded-full" style={{ border: '1px solid var(--lav-map-mid)' }}>
+          <Sparkles size={14} strokeWidth={2} className="text-lav-map shrink-0" aria-hidden="true" />
+          <button onClick={onAiPillExpand} className="text-sm text-fg hover:text-lav-map transition-colors whitespace-nowrap" aria-label={t('aiPill.expand')}>
             {t('aiPill.label')}
           </button>
           <button onClick={onAiPillDismiss} aria-label={t('aiPill.dismiss')} className="text-muted hover:text-fg transition-colors">
