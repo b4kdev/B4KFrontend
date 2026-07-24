@@ -118,7 +118,7 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
     ],
     agencies: [
       { poi_id: 'KP-075', name_ko: 'JYP 센터', name_en: 'JYP Center', primary_image_url: '/images/explore/kpop/KP-075_jyp-center.png', display_region: 'Gangdong-gu, Seoul', quality_score: 0, is_trending: false, agency: 'JYP', coords_lat: 37.524129269795, coords_lng: 127.129131076272 },
-      { poi_id: 'KP-192', name_ko: 'SM엔터테인먼트 사옥', name_en: 'SM Entertainment HQ', primary_image_url: '/images/explore/kpop/KP-192_sm-hq.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, agency: 'SM', coords_lat: 37.54414907499344, coords_lng: 127.0433501688011 },
+      { poi_id: 'KP-192', name_ko: 'SM엔터테인먼트 사옥', name_en: 'SM Entertainment HQ', primary_image_url: '/images/explore/kpop/KP-192_sm-hq.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, agency: 'SM', coords_lat: 37.54414907499344, coords_lng: 127.0433501688011 },
       { poi_id: 'KP-199', name_ko: 'YG엔터테인먼트 사옥', name_en: 'YG Entertainment HQ', primary_image_url: '/images/explore/kpop/KP-199_yg-hq.png', display_region: 'Mapo-gu, Seoul', quality_score: 0, is_trending: false, agency: 'YG', coords_lat: 37.5502023926174, coords_lng: 126.918287778213 },
       { poi_id: 'KP-159', name_ko: '큐브엔터테인먼트', name_en: 'CUBE Entertainment', primary_image_url: '/images/explore/kpop/KP-159_cube-entertainment.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5456099572053, coords_lng: 127.053456066552 },
     ],
@@ -150,7 +150,7 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
     ],
     ostCafes: [
       { poi_id: 'KD002-009', name_ko: '제물포구락부', name_en: 'New Jemulpo Club', primary_image_url: '/images/explore/kdrama/KD002-009_new-jemulpo-club.png', display_region: 'Incheon Jung-gu', quality_score: 0, is_trending: false, coords_lat: 37.47463623198604, coords_lng: 126.6225221142413 },
-      { poi_id: 'KD010-009', name_ko: '학림다방', name_en: 'Hakrim Dabang', primary_image_url: '/images/home/new/KD010-009_hakrim-dabang.png', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.58195021892664, coords_lng: 127.0016574451341 },
+      { poi_id: 'KD010-009', name_ko: '학림다방', name_en: 'Hakrim Dabang', primary_image_url: '/images/home/new/KD010-009_hakrim-dabang.png', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, coords_lat: 37.58195021892664, coords_lng: 127.0016574451341 },
       { poi_id: 'KD017-010', name_ko: '청하공진시장', name_en: 'Cheongha Gongjin Market Café', primary_image_url: '/images/explore/kdrama/KD017-010_cheongha-gongjin-market-cafe.png', display_region: 'Pohang, Gyeongbuk', quality_score: 0, is_trending: false, coords_lat: 36.19705421304869, coords_lng: 129.3397715303084 },
     ],
   },
@@ -169,7 +169,7 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
       { poi_id: 'KB-FLAG-SU-001', name_ko: 'AMUSE Seongsu Flagship Store', name_en: 'AMUSE Seongsu Flagship Store', primary_image_url: null, display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5438137552044, coords_lng: 127.050522918312 },
     ],
     spa: [
-      { poi_id: 'KB-DER-GN-005', name_ko: 'Abijou Clinic Gangnam', name_en: 'Abijou Clinic Gangnam', primary_image_url: '/images/home/trending/KB-DER-GN-005_abijou-clinic-gangnam.png', display_region: 'Seocho-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 37.49864716138882, coords_lng: 127.0262645904912 },
+      { poi_id: 'KB-DER-GN-005', name_ko: 'Abijou Clinic Gangnam', name_en: 'Abijou Clinic Gangnam', primary_image_url: '/images/home/trending/KB-DER-GN-005_abijou-clinic-gangnam.png', display_region: 'Seocho-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, district: 'Gangnam', coords_lat: 37.49864716138882, coords_lng: 127.0262645904912 },
       { poi_id: 'KB-DER-MD-005', name_ko: 'Lienjang Clinic Myeongdong', name_en: 'Lienjang Clinic Myeongdong', primary_image_url: '/images/explore/kbeauty/KB-DER-MD-005_lienjang-clinic-myeongdong.png', display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, district: 'Myeongdong', coords_lat: 37.563410116935, coords_lng: 126.982886367076 },
       { poi_id: 'KB-NEW-416', name_ko: '아이디병원', name_en: 'ID Hospital', primary_image_url: '/images/explore/kbeauty/KB-NEW-416_id-hospital.png', display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 37.5177642310409, coords_lng: 127.024157143362 },
       { poi_id: 'KB-DER-MD-003', name_ko: 'Muse Clinic Myeongdong', name_en: 'Muse Clinic Myeongdong', primary_image_url: '/images/explore/kbeauty/KB-DER-MD-003_muse-clinic-myeongdong.png', display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, district: 'Myeongdong', coords_lat: 37.5609593565496, coords_lng: 126.982547382568 },
