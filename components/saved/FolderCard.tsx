@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { FolderOpen, MapPin, MoreVertical, Edit2, Trash2, Check } from 'lucide-react'
 import type { SavedFolder } from '@/app/api/saved/route'
@@ -36,8 +37,7 @@ export default function FolderCard({
         thumbnails.map((poi, i) => (
           <div key={poi.poi_id} className="relative flex items-center justify-center bg-bg-3">
             {poi.primary_image_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={poi.primary_image_url} alt="" className="w-full h-full object-cover" />
+              <Image src={poi.primary_image_url} alt="" fill sizes="160px" className="object-cover" />
             ) : (
               <MapPin size={16} strokeWidth={2} className="text-fg opacity-[0.06]" aria-hidden="true" />
             )}

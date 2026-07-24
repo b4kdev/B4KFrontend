@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import { Link } from '@/i18n/navigation'
@@ -67,16 +68,17 @@ function HeaderContent({ profile, t }: { profile: ProfileData; t: ReturnType<typ
       {/* Avatar — PR_01 */}
       <div className="relative shrink-0">
         <div
-          className="w-[72px] h-[72px] md:w-[88px] md:h-[88px] rounded-full flex items-center justify-center overflow-hidden"
+          className="relative w-[72px] h-[72px] md:w-[88px] md:h-[88px] rounded-full flex items-center justify-center overflow-hidden"
           style={{ background: 'var(--lav-dim)', border: '2px solid var(--lav-border)' }}
           aria-label={t('header.avatarAlt', { name: displayName })}
         >
           {profile.avatar_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={profile.avatar_url}
               alt={t('header.avatarAlt', { name: displayName })}
-              className="w-full h-full object-cover"
+              fill
+              sizes="88px"
+              className="object-cover"
             />
           ) : (
             <span className="font-display text-lav text-2xl">{initial}</span>

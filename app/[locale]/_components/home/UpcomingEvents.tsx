@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import useSWR from 'swr'
 import { Calendar, MapPin } from 'lucide-react'
@@ -53,8 +54,14 @@ export default function UpcomingEvents() {
               <div className="relative bg-bg-3 flex items-center justify-center overflow-hidden" style={{ aspectRatio: '4/3' }}>
                 <Calendar size={28} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                 {evt.image_url && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={evt.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
+                  <Image
+                    src={evt.image_url}
+                    alt=""
+                    fill
+                    sizes="(max-width: 1024px) 60vw, 260px"
+                    className="object-cover"
+                    aria-hidden="true"
+                  />
                 )}
                 <span
                   className="absolute top-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.08em] uppercase text-fg"

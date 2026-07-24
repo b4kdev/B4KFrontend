@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { Trophy, RefreshCw, AlertTriangle, Award, TrendingUp, TrendingDown, Minus } from 'lucide-react'
@@ -150,6 +151,7 @@ export default function LeaderboardPage() {
                   {/* Avatar — SC-16: 28px base, 36px for rank 1 only */}
                   <div
                     className={[
+                      'relative',
                       entry.rank === 1 ? 'w-9 h-9' : 'w-7 h-7',
                       'rounded-full flex items-center justify-center shrink-0 text-f-md font-bold',
                       isTop ? `${style?.ring ?? ''} ${style?.bg ?? 'bg-bg-3'}` : 'bg-bg-3',
@@ -158,8 +160,7 @@ export default function LeaderboardPage() {
                     aria-hidden
                   >
                     {entry.user.avatar_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={entry.user.avatar_url} alt={entry.user.name} className="w-full h-full rounded-full object-cover" />
+                      <Image src={entry.user.avatar_url} alt={entry.user.name} fill sizes="36px" className="rounded-full object-cover" />
                     ) : (
                       <span className={isTop ? (style?.icon ?? 'text-muted') : 'text-muted'}>{initial}</span>
                     )}

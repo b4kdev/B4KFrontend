@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { useTranslations, useLocale } from 'next-intl'
 import { useSWRConfig } from 'swr'
 import { useRouter, usePathname } from '@/i18n/navigation'
@@ -538,12 +539,11 @@ export default function SettingsPage() {
             {/* Avatar — H15 */}
             <div className="px-sp-4 py-sp-4 flex items-center gap-sp-4" aria-labelledby="avatar-label">
               <div
-                className="w-16 h-16 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-bg-3"
+                className="relative w-16 h-16 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-bg-3"
                 style={{ border: '1px solid var(--bdr)' }}
               >
                 {avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={avatarUrl} alt={t('settings.avatar.alt')} className="w-full h-full object-cover" />
+                  <Image src={avatarUrl} alt={t('settings.avatar.alt')} fill sizes="64px" className="object-cover" />
                 ) : (
                   <User size={28} strokeWidth={2} className="text-muted" aria-hidden="true" />
                 )}
