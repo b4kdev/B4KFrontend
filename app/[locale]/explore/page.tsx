@@ -1,7 +1,6 @@
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { Music, Tv, Sparkles, Globe } from 'lucide-react'
-import ExploreAiCta from './_components/ExploreAiCta'
 
 const CATEGORIES = [
   { id: 'k-pop',     href: '/explore/k-pop',     icon: Music,    tKey: 'kpop',     color: 'text-lav' },
@@ -55,8 +54,6 @@ export default function ExploreHubPage() {
           </Link>
         ))}
       </div>
-
-      <ExploreAiCta />
     </main>
   )
 }
