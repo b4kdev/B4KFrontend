@@ -630,7 +630,9 @@
     "zoomOut": "축소",
     "leftPanel": {
       "ariaLabel": "탐색 패널",
-      "viewSaved": "저장한 장소 보기"
+      "viewSaved": "저장한 장소 보기",
+      "tagline": "나만의 장소 찾기",
+      "savedLabel": "저장됨"
     },
     "regions": {
       "title": "지역별 탐색",

@@ -44,16 +44,18 @@ export default function LeftPanelDefault({
 
   return (
     <div className="flex flex-col h-full overflow-y-auto themed-scrollbar">
-      {/* View Saved entry point — opens the map-embedded Saved Hub */}
-      <div className="flex justify-end p-sp-2">
+      {/* Panel tagline + View Saved entry point — opens the map-embedded Saved Hub */}
+      <div className="flex items-center justify-between p-sp-2">
+        <p className="pl-sp-2 text-f-lg font-medium text-fg">{t('leftPanel.tagline')}</p>
         <button
           type="button"
           onClick={onOpenSaved}
           aria-label={t('leftPanel.viewSaved')}
           title={t('leftPanel.viewSaved')}
-          className="group flex items-center justify-center min-w-touch min-h-touch rounded-none text-fg hover:text-lav hover:bg-overlay-10 transition-colors"
+          className="group flex items-center gap-1 min-h-touch px-sp-2 rounded-none text-fg hover:text-lav hover:bg-overlay-10 transition-colors"
         >
           <Bookmark size={24} strokeWidth={2} aria-hidden="true" className="opacity-[0.35] group-hover:opacity-100 transition-opacity" />
+          <span className="text-f-sm">{t('leftPanel.savedLabel')}</span>
         </button>
       </div>
 
