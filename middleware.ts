@@ -8,11 +8,11 @@ import { routing } from './i18n/routing'
 // ── Security headers ────────────────────────────────────────────────────────────
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://oapi.map.naver.com",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://oapi.map.naver.com https://*.pstatic.net",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://res.cloudinary.com https://lh3.googleusercontent.com https://*.pstatic.net https://*.map.naver.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://www.clarity.ms https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://www.clarity.ms https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://*.nelo.navercorp.com",
   "frame-ancestors 'none'",
   "object-src 'none'",
   "base-uri 'self'",

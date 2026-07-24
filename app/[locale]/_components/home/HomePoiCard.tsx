@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useAuth } from '@/contexts/AuthContext'
 import { Link } from '@/i18n/navigation'
@@ -71,8 +72,14 @@ export default function HomePoiCard({ poi, badge }: Props) {
             </>
           )}
           {poi.primary_image_url && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={poi.primary_image_url} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
+            <Image
+              src={poi.primary_image_url}
+              alt=""
+              fill
+              sizes="(max-width: 1024px) 44vw, 280px"
+              className="object-cover"
+              aria-hidden="true"
+            />
           )}
           {badge && (
             <span

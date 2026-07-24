@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, RefObject } from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import {
   Heart, Bookmark, Share2, Edit2, Trash2,
@@ -412,16 +413,17 @@ export default function ItineraryPanelContent({
 
                 {/* Thumbnail placeholder */}
                 <div
-                  className="shrink-0 w-10 h-10 rounded-none overflow-hidden"
+                  className="relative shrink-0 w-10 h-10 rounded-none overflow-hidden"
                   style={{ background: 'var(--bg-2)' }}
                   aria-hidden="true"
                 >
                   {stop.poi.primary_image_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={stop.poi.primary_image_url}
                       alt=""
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="40px"
+                      className="object-cover"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
@@ -477,13 +479,12 @@ export default function ItineraryPanelContent({
                 style={{ border: '1px solid var(--bdr)' }}
               >
                 <div
-                  className="shrink-0 w-10 h-10 rounded-none flex items-center justify-center overflow-hidden"
+                  className="relative shrink-0 w-10 h-10 rounded-none flex items-center justify-center overflow-hidden"
                   style={{ background: 'var(--bg-3)' }}
                   aria-hidden="true"
                 >
                   {rel.thumbnail_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={rel.thumbnail_url} alt="" className="w-full h-full object-cover" />
+                    <Image src={rel.thumbnail_url} alt="" fill sizes="40px" className="object-cover" />
                   ) : (
                     <Route size={14} strokeWidth={2} className="text-fg opacity-[0.15]" />
                   )}

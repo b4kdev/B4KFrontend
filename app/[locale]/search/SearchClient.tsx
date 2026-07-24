@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useRouter, Link } from '@/i18n/navigation'
@@ -344,16 +345,17 @@ function PoiSection({
                 aria-label={t('poiAriaLabel', { name, region: poi.display_region })}
               >
                 <div
-                  className="w-[56px] h-[56px] shrink-0 rounded-none overflow-hidden"
+                  className="relative w-[56px] h-[56px] shrink-0 rounded-none overflow-hidden"
                   style={{ background: 'var(--muted-3)' }}
                 >
                   {poi.primary_image_url && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={poi.primary_image_url}
                       alt=""
                       aria-hidden="true"
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="56px"
+                      className="object-cover"
                     />
                   )}
                 </div>
@@ -401,16 +403,17 @@ function PlanSection({
               aria-label={t('planAriaLabel', { title: plan.title, author: plan.author_name })}
             >
               <div
-                className="w-[56px] h-[56px] shrink-0 rounded-none overflow-hidden"
+                className="relative w-[56px] h-[56px] shrink-0 rounded-none overflow-hidden"
                 style={{ background: 'var(--muted-3)' }}
               >
                 {plan.cover_image_url && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={plan.cover_image_url}
                     alt=""
                     aria-hidden="true"
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="56px"
+                    className="object-cover"
                   />
                 )}
               </div>

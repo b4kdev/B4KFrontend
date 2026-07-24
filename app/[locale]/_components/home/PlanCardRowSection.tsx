@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import useSWR from 'swr'
@@ -38,8 +39,14 @@ function PlanCard({ plan, t }: { plan: HomePopularPlan; t: ReturnType<typeof use
       <div className="relative bg-bg-3 flex items-center justify-center overflow-hidden" style={{ aspectRatio: '4/3' }}>
         <Route size={28} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
         {plan.cover_image_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={plan.cover_image_url} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
+          <Image
+            src={plan.cover_image_url}
+            alt=""
+            fill
+            sizes="(max-width: 1024px) 64vw, 280px"
+            className="object-cover"
+            aria-hidden="true"
+          />
         )}
         {plan.is_partner && (
           <span
