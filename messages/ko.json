@@ -120,7 +120,8 @@
       "likeAria": "{name} 좋아요",
       "unlikeAria": "{name} 좋아요 취소",
       "addAria": "{name} 일정에 추가",
-      "addedAria": "{name} 일정에 추가됨"
+      "addedAria": "{name} 일정에 추가됨",
+      "imagePending": "이미지 준비 중"
     },
     "trending": {
       "title": "트렌딩 스팟",
@@ -677,7 +678,8 @@
       "liked": "좋아요됨",
       "unlike": "좋아요 취소",
       "website": "웹사이트 방문",
-      "close": "장소 상세 닫기"
+      "close": "장소 상세 닫기",
+      "imagePending": "이미지 준비 중"
     },
     "plan": {
       "title": "내 플랜",
@@ -1132,7 +1134,8 @@
       "dDayPast": "종료",
       "featured": "추천",
       "addAria": "{name} 일정에 추가",
-      "addedAria": "{name} 일정에 추가됨"
+      "addedAria": "{name} 일정에 추가됨",
+      "imagePending": "이미지 준비 중"
     },
     "aiCta": {
       "text": "AI로 나만의 K-컬처 여행을 계획해보세요",

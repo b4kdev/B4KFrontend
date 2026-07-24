@@ -120,7 +120,8 @@
       "likeAria": "Like {name}",
       "unlikeAria": "Unlike {name}",
       "addAria": "Add {name} to plan",
-      "addedAria": "{name} added to plan"
+      "addedAria": "{name} added to plan",
+      "imagePending": "Image being prepared"
     },
     "trending": {
       "title": "Trending Spots",
@@ -677,7 +678,8 @@
       "liked": "Liked",
       "unlike": "Unlike",
       "website": "Visit website",
-      "close": "Close POI details"
+      "close": "Close POI details",
+      "imagePending": "Image being prepared"
     },
     "plan": {
       "title": "Your Plan",
@@ -1132,7 +1134,8 @@
       "dDayPast": "Ended",
       "featured": "Featured",
       "addAria": "Add {name} to plan",
-      "addedAria": "{name} added to plan"
+      "addedAria": "{name} added to plan",
+      "imagePending": "Image being prepared"
     },
     "aiCta": {
       "text": "Let AI plan your K-culture journey",

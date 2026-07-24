@@ -33,10 +33,11 @@ export default function ExploreFeaturedCard({ poi, domain }: { poi: ExplorePoi; 
           />
         ) : (
           <div
-            className="flex items-center justify-center"
+            className="flex flex-col items-center justify-center gap-sp-2"
             style={{ background: 'var(--bg-3)', aspectRatio: '16/9' }}
           >
             <MapPin size={28} strokeWidth={2} className="text-fg opacity-[0.15]" />
+            <span className="text-f-xs text-muted">{t('card.imagePending')}</span>
           </div>
         )}
         {isPartner && (
