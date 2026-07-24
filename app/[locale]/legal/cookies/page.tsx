@@ -2,6 +2,12 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { hreflangAlternates, localizedUrl } from '@/lib/site-url';
+import { LegalDocument } from '@/components/legal/LegalDocument';
+import {
+  cookiePolicySections,
+  cookiePolicyLastUpdated,
+  cookiePolicyContactEmail,
+} from '@/content/legal/cookie-policy-content';
 import CookiePreferences from './_CookiePreferences';
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
@@ -28,8 +34,16 @@ export default async function Page({ params }: { params: { locale: string } }) {
         <span className="text-fg">{t('breadcrumb')}</span>
       </div>
       <h1 className="text-fg font-display text-f-display-tile mb-sp-6">{t('title')}</h1>
-      <p className="text-f-md text-muted max-w-[640px] mb-sp-8">{t('empty.desc')}</p>
-      <CookiePreferences />
+      <LegalDocument
+        lastUpdated={cookiePolicyLastUpdated}
+        contactEmail={cookiePolicyContactEmail}
+        sections={cookiePolicySections}
+      />
+      <div className="max-w-[720px] mt-sp-8">
+        <div style={{ borderTop: 'var(--bdr)' }} className="mb-sp-8" />
+        <h2 className="text-fg font-display text-f-lg font-semibold mb-sp-3">Manage Your Preferences</h2>
+        <CookiePreferences />
+      </div>
     </div>
   );
 }
