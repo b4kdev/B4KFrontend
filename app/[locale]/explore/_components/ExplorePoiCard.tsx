@@ -84,7 +84,10 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
               className="w-full h-full object-cover"
             />
           ) : (
-            <MapPin size={22} strokeWidth={2} className="text-fg opacity-[0.15]" />
+            <div className="flex flex-col items-center justify-center gap-sp-1">
+              <MapPin size={22} strokeWidth={2} className="text-fg opacity-[0.15]" />
+              <span className="text-f-xxs text-muted">{t('card.imagePending')}</span>
+            </div>
           )}
           {/* D-Day countdown badge — event/festival/merch items */}
           {dDay && (

@@ -63,8 +63,13 @@ export default function HomePoiCard({ poi, badge }: Props) {
         className="flex flex-col hover:opacity-90 transition-opacity"
         aria-label={t('ariaLabel', { name, region: poi.display_region })}
       >
-        <div className="relative bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '4/3' }}>
-          <MapPin size={28} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
+        <div className="relative bg-bg-3 flex flex-col items-center justify-center gap-sp-1" style={{ aspectRatio: '4/3' }}>
+          {!poi.primary_image_url && (
+            <>
+              <MapPin size={28} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
+              <span className="text-f-xxs text-muted">{t('imagePending')}</span>
+            </>
+          )}
           {poi.primary_image_url && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={poi.primary_image_url} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />

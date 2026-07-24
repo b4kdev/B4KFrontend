@@ -122,8 +122,9 @@ export default function POIBottomSheet({
               className="-mx-sp-4 mb-sp-3"
             />
           ) : (
-            <div className="-mx-sp-4 mb-sp-3 bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '16/9' }}>
+            <div className="-mx-sp-4 mb-sp-3 bg-bg-3 flex flex-col items-center justify-center gap-sp-2" style={{ aspectRatio: '16/9' }}>
               <ImageOff size={28} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
+              <span className="text-f-xs text-muted">{t('imagePending')}</span>
             </div>
           )}
 
