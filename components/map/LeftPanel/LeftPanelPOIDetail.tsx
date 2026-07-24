@@ -54,8 +54,9 @@ export default function LeftPanelPOIDetail({
             className="-mx-sp-4 -mt-sp-2"
           />
         ) : (
-          <div className="-mx-sp-4 -mt-sp-2 bg-bg-3 flex items-center justify-center" style={{ aspectRatio: '4/3' }}>
+          <div className="-mx-sp-4 -mt-sp-2 bg-bg-3 flex flex-col items-center justify-center gap-sp-2" style={{ aspectRatio: '4/3' }}>
             <ImageOff size={28} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
+            <span className="text-f-xs text-muted">{t('imagePending')}</span>
           </div>
         )}
 
