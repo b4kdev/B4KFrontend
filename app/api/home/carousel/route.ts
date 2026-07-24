@@ -23,7 +23,7 @@ const SEED: HomeCarouselSlide[] = [
     badge: 'FEATURED SPOT',
     title: 'Gyeongbokgung Palace',
     subtitle: "종로구 사직로 161 — Korea's grandest royal palace, still guarded by a changing-of-the-guard ceremony.",
-    image_url: null,
+    image_url: '/images/home/hero/KD016-014_gyeongbokgung-hero-wide.png',
     cta_href: '/explore/k-culture',
     cta_label: 'EXPLORE K-CULTURE',
   },
