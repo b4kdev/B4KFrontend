@@ -42,10 +42,15 @@ body {
   --lav-mid:     rgba(196,168,224,0.25);
   --lav-border:  rgba(196,168,224,0.18);
 
-  /* Map-only brighter lavender — pins/markers/controls need more pop against the dark map canvas */
+  /* Map-only brighter lavender — zoom/AI-pill/PlanPill controls need more pop against the dark map canvas */
   --lav-map:      #DCC2F7;
   --lav-map-mid:  rgba(220,194,247,0.35);
   --lav-map-dim:  rgba(220,194,247,0.15);
+
+  /* Map-only pin/route accent — POI dots, plan markers, route line */
+  --map-pin:      #FB2BDD;
+  --map-pin-mid:  rgba(251,43,221,0.35);
+  --map-pin-dim:  rgba(251,43,221,0.15);
 
   /* Backgrounds */
   --bg:          #0a0a0a;
@@ -245,13 +250,13 @@ a { color: inherit; text-decoration: none; }
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--lav-map);
+  background: var(--map-pin);
   border: 2px solid var(--fg);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .poi-selected .poi-dot {
   transform: scale(1.6);
-  box-shadow: 0 0 0 2.5px var(--lav-map), 0 2px 8px var(--lav-map-dim);
+  box-shadow: 0 0 0 2.5px var(--map-pin), 0 2px 8px var(--map-pin-dim);
 }
 .poi-trending::after {
   content: '';
@@ -259,7 +264,7 @@ a { color: inherit; text-decoration: none; }
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 1.5px solid var(--lav-map);
+  border: 1.5px solid var(--map-pin);
   animation: poi-pulse 2s ease-out infinite;
   pointer-events: none;
 }
@@ -274,7 +279,7 @@ a { color: inherit; text-decoration: none; }
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: var(--lav-map);
+  background: var(--map-pin);
   color: var(--bg);
   display: flex;
   align-items: center;
@@ -284,12 +289,12 @@ a { color: inherit; text-decoration: none; }
   border: 2px solid var(--fg);
   cursor: pointer;
   font-family: system-ui, sans-serif;
-  box-shadow: 0 2px 6px var(--lav-map-mid);
+  box-shadow: 0 2px 6px var(--map-pin-mid);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .plan-marker--selected {
   transform: scale(1.25);
-  box-shadow: 0 0 0 2.5px var(--lav-map), 0 2px 8px var(--lav-map-mid);
+  box-shadow: 0 0 0 2.5px var(--map-pin), 0 2px 8px var(--map-pin-mid);
 }
 
 /* ─── Map POI Cluster Bubble (UF-10 · G3.1) ─────────────────── */
