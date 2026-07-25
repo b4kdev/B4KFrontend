@@ -2,13 +2,14 @@
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { mutate as globalMutate } from 'swr'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useAuth } from '@/contexts/AuthContext'
 import { RefreshCw, Lock, Route, Trash2, AlertTriangle, Loader2 } from 'lucide-react'
 import { useRouter } from '@/i18n/navigation'
 import { useItinerary, useItineraryMeta } from '@/hooks/useItinerary'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useToast } from '@/contexts/ToastContext'
+import { track } from '@/lib/analytics'
 import NaverMapCanvas from '@/components/map/NaverMapCanvas'
 import ItineraryPanelContent from './ItineraryPanelContent'
 import ItineraryMobileSheet from './ItineraryMobileSheet'
@@ -32,6 +33,7 @@ function stopsToMapPois(detail: ItineraryDetail): MapPoi[] {
 
 export default function ItineraryDetailView({ id }: { id: string }) {
   const t = useTranslations('itinerary')
+  const locale = useLocale()
   const { user } = useAuth()
   const { open: openAuthGate } = useAuthGate()
   const { showToast } = useToast()
@@ -122,6 +124,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
 
   const handleShare = useCallback(async () => {
     if (typeof window === 'undefined') return
+    track('plan_share', { plan_id: id, locale, screen_id: 'IT_01' })
     // Shared URL always carries ?ref=share (S-BMGOFW)
     const url = new URL(itinerary?.share_url ?? window.location.href, window.location.origin)
     url.searchParams.set('ref', 'share')
@@ -139,7 +142,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
     }
     await navigator.clipboard.writeText(shareUrl).catch(() => {})
     showToast(t('copiedToast'))
-  }, [itinerary, showToast, t])
+  }, [itinerary, showToast, t, id, locale])
 
   const handleEdit = useCallback(() => {
     router.push(`/map?plan=${id}`)

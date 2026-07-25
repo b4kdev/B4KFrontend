@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useAuth } from '@/contexts/AuthContext'
 import { Link } from '@/i18n/navigation'
 import { TrendingUp, MapPin, Bookmark, Heart, ExternalLink } from 'lucide-react'
@@ -10,11 +10,13 @@ import { getDisplayName } from '@/lib/display-name'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useToast } from '@/contexts/ToastContext'
 import { useSaved } from '@/hooks/useSaved'
+import { track } from '@/lib/analytics'
 import type { ExplorePoi } from '@/app/api/explore/[category]/route'
 
 export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
   const t = useTranslations('explore')
   const tToast = useTranslations('toast')
+  const locale = useLocale()
   const { user } = useAuth()
   const { open: openAuthGate } = useAuthGate()
   const { showToast } = useToast()
@@ -52,13 +54,14 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
     if (!user) { openAuthGate('save_poi'); return }
     const next = !saved
     setSavedOverride(next)
+    if (next) track('poi_save', { poi_id: poi.poi_id, locale, screen_id: 'explore' })
     await fetch('/api/saved/poi', {
       method:  next ? 'POST' : 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ poi_id: poi.poi_id }),
     }).then(() => mutateSaved())
       .catch(() => { setSavedOverride(!next); showToast(tToast('actionFailed'), 'error') })
-  }, [user, saved, openAuthGate, poi.poi_id, showToast, tToast, hasRealId, mutateSaved])
+  }, [user, saved, openAuthGate, poi.poi_id, showToast, tToast, hasRealId, mutateSaved, locale])
 
   const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()

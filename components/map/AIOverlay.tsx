@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { X, Minus, ArrowLeft, Send, Sparkles, Plus, Check, Loader2, ArrowRight } from 'lucide-react'
@@ -9,6 +9,7 @@ import { getDisplayName } from '@/lib/display-name'
 import { saveDraftPlan } from '@/lib/draft-plan'
 import { MAX_STOPS } from '@/lib/plan-constants'
 import { useAuthGate } from '@/contexts/AuthGateContext'
+import { track } from '@/lib/analytics'
 import type { MapPoi } from '@/hooks/useMapPois'
 
 // ─── Types ──────────────────────────────────────────────────────
@@ -175,6 +176,7 @@ export default function AIOverlay({
   open, pois, planStopIds, onAddToPlan, onMinimize, onClose,
 }: Props) {
   const t = useTranslations('map.aiOverlay')
+  const locale = useLocale()
   const { session } = useAuth()
   const { open: openAuthGate } = useAuthGate()
   const [messages, setMessages]     = useState<ChatMessage[]>([])
@@ -242,6 +244,9 @@ export default function AIOverlay({
       const response = await getMockResponse(text.trim(), pois)
       setMessages(prev => [...prev, response])
       setStatus('idle')
+      if (isMajorIntent(text)) {
+        track('ai_generate', { is_guest: !session, locale, screen_id: 'MP_01' })
+      }
       // Count major requests for guests after successful response
       if (!session && isMajorIntent(text)) {
         incrementFL3Count()

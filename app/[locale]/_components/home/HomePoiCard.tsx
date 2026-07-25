@@ -2,13 +2,14 @@
 
 import { useState, useCallback } from 'react'
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useAuth } from '@/contexts/AuthContext'
 import { Link } from '@/i18n/navigation'
 import { MapPin, Bookmark, Heart } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useSaved } from '@/hooks/useSaved'
+import { track } from '@/lib/analytics'
 import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 
 interface Props {
@@ -22,6 +23,7 @@ function formatCount(n: number) {
 
 export default function HomePoiCard({ poi, badge }: Props) {
   const t = useTranslations('home.poiCard')
+  const locale = useLocale()
   const { user } = useAuth()
   const { open: openAuthGate } = useAuthGate()
   const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
@@ -45,13 +47,14 @@ export default function HomePoiCard({ poi, badge }: Props) {
     if (!user) { openAuthGate('save_poi'); return }
     const next = !saved
     setSavedOverride(next)
+    if (next) track('poi_save', { poi_id: poi.poi_id, locale, screen_id: 'HM_01' })
     await fetch('/api/saved/poi', {
       method:  next ? 'POST' : 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ poi_id: poi.poi_id }),
     }).then(() => mutateSaved())
       .catch(() => setSavedOverride(!next))
-  }, [user, saved, openAuthGate, poi.poi_id, hasRealId, mutateSaved])
+  }, [user, saved, openAuthGate, poi.poi_id, hasRealId, mutateSaved, locale])
 
   const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()

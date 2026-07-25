@@ -1,12 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import useSWR from 'swr'
 import { Link, usePathname } from '@/i18n/navigation'
 import { Music, Tv, Sparkles, Globe, RefreshCw, AlertTriangle, ArrowRight, Compass } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
+import { track } from '@/lib/analytics'
 import type { ExploreData } from '@/app/api/explore/[category]/route'
+
+const HUB_DOMAIN: Record<ExploreCategory, 'kpop' | 'kdrama' | 'kbeauty' | 'kculture'> = {
+  'k-pop': 'kpop', 'k-drama': 'kdrama', 'k-beauty': 'kbeauty', 'k-culture': 'kculture',
+}
 import ExplorePoiCard from './ExplorePoiCard'
 import ExploreFeaturedCard from './ExploreFeaturedCard'
 import ExploreHero from './ExploreHero'
@@ -103,6 +108,11 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
   const CatIcon = cat.icon
 
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
+
+  useEffect(() => {
+    track('content_hub_view', { domain: HUB_DOMAIN[category], locale, screen_id: `CT_${category}` })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category])
 
   // Fetch directly (not via useExplore) so the chip filter can pass a query param.
   // `locale` is part of the SWR key (not just the URL) so switching language via

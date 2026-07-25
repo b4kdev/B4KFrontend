@@ -3,7 +3,7 @@
 import { useState, type CSSProperties } from 'react';
 import Image from 'next/image';
 import useSWR from 'swr';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useAuth } from '@/contexts/AuthContext';
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
@@ -13,6 +13,7 @@ import {
 import { fetcher } from '@/lib/fetcher';
 import { useAuthGate } from '@/contexts/AuthGateContext';
 import { useProfile } from '@/hooks/useProfile';
+import { track } from '@/lib/analytics';
 
 const LOCALES = ['en', 'ko', 'ja', 'zh-CN', 'zh-TW', 'th', 'pt-BR'] as const;
 
@@ -32,6 +33,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
   const tProfile = useTranslations('profile');
   const pathname = usePathname();
   const router = useRouter();
+  const locale = useLocale();
   const { session, loading } = useAuth();
   const { data: profile } = useProfile();
   const { open: openGate } = useAuthGate();
@@ -73,9 +75,10 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
       </Link>
     );
 
-  const changeLocale = (locale: string) => {
+  const changeLocale = (newLocale: string) => {
+    track('lang_switch', { from: locale, to: newLocale, locale, screen_id: 'nav' });
     onClose();
-    router.replace(pathname, { locale });
+    router.replace(pathname, { locale: newLocale });
   };
 
   return (
