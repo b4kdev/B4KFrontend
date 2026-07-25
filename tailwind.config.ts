@@ -34,6 +34,9 @@ const config: Config = {
         "lav-map":     "var(--lav-map)",
         "lav-map-mid": "var(--lav-map-mid)",
         "lav-map-dim": "var(--lav-map-dim)",
+        "map-pin":     "var(--map-pin)",
+        "map-pin-mid": "var(--map-pin-mid)",
+        "map-pin-dim": "var(--map-pin-dim)",
         // Backgrounds
         "bg":         "var(--bg)",
         "bg-2":       "var(--bg-2)",

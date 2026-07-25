@@ -30,7 +30,7 @@ interface Props {
 
 const SEOUL = { lat: 37.5665, lng: 126.9780 }
 // Naver Maps API requires hex — cannot use CSS var here
-const LAV_HEX = '#DCC2F7' // allow-hex — map SDK route colour, matches --lav-map
+const MAP_PIN_HEX = '#FB2BDD' // allow-hex — map SDK route colour, matches --map-pin
 
 function poiMarkerHtml(poi: MapPoi, selected: boolean): string {
   const sel = selected ? ' poi-selected' : ''
@@ -239,7 +239,7 @@ export default function NaverMapCanvas({
         .filter(leg => leg.path.length >= 2)
         .map(leg => new window.naver.maps.Polyline({
           path:          leg.path.map(p => new window.naver.maps.LatLng(p.lat, p.lng)),
-          strokeColor:   LAV_HEX,
+          strokeColor:   MAP_PIN_HEX,
           strokeOpacity: 0.85,
           strokeWeight:  3,
           strokeStyle:   'solid',
@@ -259,7 +259,7 @@ export default function NaverMapCanvas({
 
     polylineRef.current = new window.naver.maps.Polyline({
       path:           coords,
-      strokeColor:    LAV_HEX,
+      strokeColor:    MAP_PIN_HEX,
       strokeOpacity:  0.85,
       strokeWeight:   3,
       strokeStyle:    'solid',
