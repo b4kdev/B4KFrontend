@@ -253,7 +253,11 @@ export default function NaverMapCanvas({
       const p = map.getProjection?.()
       if (p && typeof p.fromCoordToOffset === 'function') projection = p
     } catch { /* fall back below */ }
-    const PIXEL_CELL = 48
+    // 80px, not the ~32px bubble diameter — live-verified on prod that 48px
+    // still left two bubbles touching at a corner (4px gap): a merge/no-merge
+    // decision this close to a bubble's own size reads as "overlapping" even
+    // when the bounding boxes technically don't intersect. Generous margin.
+    const PIXEL_CELL = 80
     const gridSize = clusterGridSize(zoom)
     if (clusterActive) {
       const buckets = new Map<string, MapPoi[]>()
@@ -292,8 +296,12 @@ export default function NaverMapCanvas({
       }
       keys.forEach(k => {
         const [gx, gy] = bucketCoords.get(k)!
-        for (let dx = -1; dx <= 1; dx++) {
-          for (let dy = -1; dy <= 1; dy++) {
+        // Radius 2 (not 1) — a point near the far edge of its cell and another
+        // near the far edge of a cell 2 away can still be closer on screen than
+        // two points in the same cell would be. Widening the search catches
+        // that grid-phase edge case without needing true distance math.
+        for (let dx = -2; dx <= 2; dx++) {
+          for (let dy = -2; dy <= 2; dy++) {
             if (dx === 0 && dy === 0) continue
             const nk = `${gx + dx}:${gy + dy}`
             if (buckets.has(nk)) union(k, nk)
