@@ -120,7 +120,7 @@ function TripCard({
           </h2>
           {!trip.is_published && (
             <span
-              className="shrink-0 text-f-xxs font-bold uppercase tracking-widest px-sp-2 py-0.5 rounded-full text-warning"
+              className="shrink-0 text-f-xxs font-bold uppercase tracking-widest px-sp-2 py-0.5 rounded-full text-warning leading-none"
               style={{ background: 'color-mix(in srgb, var(--warning) 12%, transparent)' }}
             >
               {t('trips.card.draft')}

@@ -202,6 +202,13 @@ body {
 .locale-zh-CN, .locale-zh-TW { word-break: break-all; line-break: normal; }
 .locale-th { word-break: break-word; overflow-wrap: break-word; }
 
+/* ─── DEC-45 rule 2 — hero subtitle: modest per-locale step-down (13px → 11.5px),
+   real line-height token kept. ja/zh-CN/zh-TW/th only — ko ships real translations. ─── */
+:lang(ja) .hero-subtitle,
+:lang(zh-CN) .hero-subtitle,
+:lang(zh-TW) .hero-subtitle,
+:lang(th) .hero-subtitle { font-size: 11.5px; }
+
 /* ─── Scrollbar ─────────────────────────────────────────────── */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
