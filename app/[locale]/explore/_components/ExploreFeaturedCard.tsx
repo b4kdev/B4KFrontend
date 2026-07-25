@@ -54,11 +54,11 @@ export default function ExploreFeaturedCard({ poi, domain }: { poi: ExplorePoi; 
           {t('card.featured')}
         </span>
         <div className="flex items-start justify-between gap-sp-2">
-          <span className="text-f-xl font-semibold text-fg leading-tight">{name}</span>
+          <span className="text-f-xl font-semibold text-fg leading-tight line-clamp-2 min-w-0">{name}</span>
           {isPartner && <ExternalLink size={14} strokeWidth={2} className="text-muted shrink-0" aria-hidden="true" />}
         </div>
         <div className="flex items-center gap-sp-3">
-          <span className="text-f-sm text-muted">{poi.display_region}</span>
+          <span className="text-f-sm text-muted truncate">{poi.display_region}</span>
           {poi.is_trending && (
             <span
               className="flex items-center gap-[3px] text-f-xxs font-semibold text-lav px-[6px] py-[2px] rounded-full"

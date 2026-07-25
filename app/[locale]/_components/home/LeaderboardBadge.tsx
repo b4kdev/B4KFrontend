@@ -109,14 +109,14 @@ export default function LeaderboardBadge() {
                   : <Star size={28} strokeWidth={2} className="text-lav" />
                 }
               </div>
-              <div>
+              <div className="min-w-0">
                 {RARITY_LABEL[badge.rarity] && (
                   <p className="text-f-xxs font-bold tracking-[0.1em] uppercase text-lav mb-[3px]">
                     {RARITY_LABEL[badge.rarity]}
                   </p>
                 )}
-                <p className="text-f-base font-semibold text-fg">{badge.badge_name}</p>
-                <p className="text-f-xs text-muted mt-[3px]">{t('badge.earnedBy', { name: badge.earner_name })}</p>
+                <p className="text-f-base font-semibold text-fg truncate">{badge.badge_name}</p>
+                <p className="text-f-xs text-muted mt-[3px] truncate">{t('badge.earnedBy', { name: badge.earner_name })}</p>
               </div>
             </div>
           </div>

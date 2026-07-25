@@ -168,11 +168,12 @@ body {
 }
 
 /* ─── Locale font stacks ────────────────────────────────────── */
-:lang(ko) { --f-display: 'Pretendard Variable', 'Apple SD Gothic Neo', sans-serif; line-height: 1.7; word-break: keep-all; }
-:lang(ja) { --f-display: var(--font-m-plus-1, 'M PLUS 1'), 'Hiragino Sans', 'Yu Gothic', sans-serif; line-height: 1.8; word-break: keep-all; }
-:lang(zh-CN) { --f-display: var(--font-noto-sans-sc, 'Noto Sans SC'), 'PingFang SC', 'Microsoft YaHei', sans-serif; line-height: 1.7; }
-:lang(zh-TW) { --f-display: var(--font-noto-sans-tc, 'Noto Sans TC'), 'PingFang TC', 'Microsoft JhengHei', sans-serif; line-height: 1.7; }
-:lang(th) { --f-display: var(--font-ibm-plex-sans-thai, 'IBM Plex Sans Thai'), 'Leelawadee UI', Tahoma, sans-serif; line-height: 1.85; line-break: strict; }
+:lang(ko) { --f-display: 'Pretendard Variable', 'Apple SD Gothic Neo', sans-serif; line-height: 1.7; word-break: keep-all; overflow-wrap: break-word; }
+:lang(ja) { --f-display: var(--font-m-plus-1, 'M PLUS 1'), 'Hiragino Sans', 'Yu Gothic', sans-serif; line-height: 1.8; word-break: keep-all; overflow-wrap: break-word; }
+/* zh-CN/zh-TW: break-all, never keep-all — keep-all on Chinese overflows at 375px (see antipatterns.md) */
+:lang(zh-CN) { --f-display: var(--font-noto-sans-sc, 'Noto Sans SC'), 'PingFang SC', 'Microsoft YaHei', sans-serif; line-height: 1.7; word-break: break-all; line-break: normal; }
+:lang(zh-TW) { --f-display: var(--font-noto-sans-tc, 'Noto Sans TC'), 'PingFang TC', 'Microsoft JhengHei', sans-serif; line-height: 1.7; word-break: break-all; line-break: normal; }
+:lang(th) { --f-display: var(--font-ibm-plex-sans-thai, 'IBM Plex Sans Thai'), 'Leelawadee UI', Tahoma, sans-serif; line-height: 1.85; line-break: strict; word-break: break-word; overflow-wrap: break-word; }
 
 body {
   background: var(--bg);

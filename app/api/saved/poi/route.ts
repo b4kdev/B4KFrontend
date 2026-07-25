@@ -36,6 +36,9 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}))
   const { poi_id, folder_id } = body
   if (!poi_id) return NextResponse.json({ error: 'missing_poi_id' }, { status: 400 })
+  // Home/Explore seed content ships content-sheet codes ('KP-207') as a display id,
+  // not the live DB's numeric poi_id — Number(poi_id) would silently collapse to NaN/null.
+  if (!Number.isFinite(Number(poi_id))) return NextResponse.json({ error: 'invalid_poi_id' }, { status: 400 })
   try {
     const res = await syncOp(auth.token, 'bookmark_add', poi_id, folder_id)
     const result = res.results?.[0]
@@ -54,6 +57,7 @@ export async function DELETE(req: NextRequest) {
   const body = await req.json().catch(() => ({}))
   const { poi_id } = body
   if (!poi_id) return NextResponse.json({ error: 'missing_poi_id' }, { status: 400 })
+  if (!Number.isFinite(Number(poi_id))) return NextResponse.json({ error: 'invalid_poi_id' }, { status: 400 })
   try {
     const res = await syncOp(auth.token, 'bookmark_remove', poi_id)
     const result = res.results?.[0]

@@ -10,10 +10,10 @@ interface Props {
 
 export default function SectionHead({ title, subtitle, viewAllLabel, viewAllHref }: Props) {
   return (
-    <div className="flex items-end justify-between mb-sp-4">
-      <div>
-        <h2 className="text-f-xl font-semibold text-fg">{title}</h2>
-        {subtitle && <p className="text-f-sm text-muted mt-[2px]">{subtitle}</p>}
+    <div className="flex items-end justify-between mb-sp-4 gap-sp-4">
+      <div className="min-w-0">
+        <h2 className="text-f-xl font-semibold text-fg truncate">{title}</h2>
+        {subtitle && <p className="text-f-sm text-muted mt-[2px] truncate">{subtitle}</p>}
       </div>
       {viewAllLabel && viewAllHref && (
         <Link
