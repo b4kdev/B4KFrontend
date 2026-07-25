@@ -7,6 +7,8 @@
     "home": "หน้าหลัก",
     "map": "แผนที่",
     "contents": "เนื้อหา",
+    "explore": "สำรวจ",
+    "saved": "รายการที่บันทึก",
     "plan": "แผนการ",
     "profile": "โปรไฟล์",
     "help": "ช่วยเหลือ",
@@ -14,54 +16,52 @@
     "language": "ภาษา",
     "signIn": "เข้าสู่ระบบ",
     "signOut": "ออกจากระบบ",
-    "menuOpen": "Open menu",
-    "menuClose": "Close menu",
-    "mainNavigation": "Main navigation",
-    "logoHome": "B4K Home",
-    "about": "About",
-    "bottomNav": "Bottom navigation",
-    "sidebarRegion": "Sidebar",
-    "explore": "Explore",
-    "saved": "Saved",
-    "settings": "Settings",
-    "legal": "Legal",
-    "legalTerms": "Terms of Service",
-    "legalPrivacy": "Privacy Policy",
-    "legalCookies": "Cookie Policy",
-    "guestSubtitle": "Sign in to save places and plan trips"
+    "menuOpen": "เปิดเมนู",
+    "menuClose": "ปิดเมนู",
+    "mainNavigation": "เมนูนำทางหลัก",
+    "logoHome": "หน้าหลัก B4K",
+    "about": "เกี่ยวกับ",
+    "bottomNav": "แถบนำทางด้านล่าง",
+    "sidebarRegion": "แถบด้านข้าง",
+    "settings": "การตั้งค่า",
+    "legal": "ข้อมูลทางกฎหมาย",
+    "legalTerms": "ข้อกำหนดการใช้บริการ",
+    "legalPrivacy": "นโยบายความเป็นส่วนตัว",
+    "legalCookies": "นโยบายคุกกี้",
+    "guestSubtitle": "เข้าสู่ระบบเพื่อบันทึกสถานที่และวางแผนการเดินทาง"
   },
   "topNav": {
     "searchPlaceholder": "ค้นหาแผนการเดินทาง สถานที่ ครีเอเตอร์…",
     "searchPlaceholderMobile": "B4K · ค้นหา...",
     "recentSearches": "การค้นหาล่าสุด",
-    "clearSearch": "Clear search",
-    "noRecents": "No recent searches",
+    "clearSearch": "ล้างการค้นหา",
+    "noRecents": "ไม่มีการค้นหาล่าสุด",
     "searchFilters": {
-      "all": "All",
-      "places": "Places",
-      "itineraries": "Itineraries",
+      "all": "ทั้งหมด",
+      "places": "สถานที่",
+      "itineraries": "แผนการเดินทาง",
       "kpop": "K-Pop",
       "kdrama": "K-Drama",
       "kbeauty": "K-Beauty"
     },
-    "noResults": "No results for \"{query}\"",
-    "noResultsDesc": "Try a different search or explore the map",
+    "noResults": "ไม่พบผลลัพธ์สำหรับ \"{query}\"",
+    "noResultsDesc": "ลองค้นหาด้วยคำอื่น หรือสำรวจแผนที่",
     "searchResultAriaLabel": "{name}, {type}"
   },
   "home": {
     "breadcrumb": "หน้าหลัก",
     "weather": {
-      "ariaLabel": "Seoul {temp}°C, {condition}"
+      "ariaLabel": "โซล {temp}°C, {condition}"
     },
     "carousel": {
-      "ariaLabel": "Featured content",
-      "slideN": "Slide {n}",
-      "prev": "Previous slide",
-      "next": "Next slide",
+      "ariaLabel": "เนื้อหาแนะนำ",
+      "slideN": "สไลด์ {n}",
+      "prev": "สไลด์ก่อนหน้า",
+      "next": "สไลด์ถัดไป",
       "slides": {
         "kCulture": {
           "badge": "ใหม่",
-          "title": "เคเคเชอร์\nอิมเมอร์ซีฟ 2024",
+          "title": "เคคัลเจอร์\nอิมเมอร์ซีฟ 2024",
           "desc": "จากบาร์แจ๊สในฮงแดถึงพิธีชงชาส่วนตัวในอินซาดง",
           "cta": "ค้นพบการเข้าถึงพิเศษ"
         },
@@ -85,19 +85,19 @@
       "seeAll": "ดูทั้งหมด",
       "badge": "แผนการเดินทาง",
       "card": {
-        "ariaLabel": "{title} by {creator}",
-        "likesLabel": "{count} likes",
-        "savesLabel": "{count} saves"
+        "ariaLabel": "{title} โดย {creator}",
+        "likesLabel": "{count} ไลก์",
+        "savesLabel": "{count} การบันทึก"
       },
       "empty": {
-        "title": "No plans yet this week",
-        "desc": "Share your Korea trip and inspire other travelers.",
-        "cta": "Create a plan"
+        "title": "ยังไม่มีแผนการเดินทางในสัปดาห์นี้",
+        "desc": "แชร์ทริปเกาหลีของคุณและสร้างแรงบันดาลใจให้นักเดินทางคนอื่น",
+        "cta": "สร้างแผนการเดินทาง"
       }
     },
     "leaderboard": {
       "title": "ครีเอเตอร์อันดับต้นสัปดาห์นี้ — สัปดาห์ที่ {week}",
-      "desc": "ผู้มีส่วนร่วมสูงสุดจะได้รับแบดจ์ การแสดงผลที่มีลำดับความสำคัญ และสิทธิ์พิเศษจากพาร์ทเนอร์",
+      "desc": "ผู้มีส่วนร่วมสูงสุดจะได้รับแบดจ์ การแสดงผลที่มีลำดับความสำคัญ และสิทธิ์พิเศษจากพาร์ทเนอร์ ไต่อันดับกันเลย",
       "cta": "ดูอันดับ"
     },
     "seasonalPois": {
@@ -108,141 +108,141 @@
         "ariaLabel": "{name}, {region}"
       },
       "empty": {
-        "title": "No seasonal picks yet",
-        "desc": "Curators are gathering this season's must-see locations.",
-        "cta": "Open the map"
-      }
-    },
-    "continuePlan": {
-      "ariaLabel": "Continue your draft plan",
-      "cta": "Continue",
-      "dismiss": "Dismiss",
-      "stopCount": "{n} stops",
-      "timeAgo": {
-        "minutes": "{n}m ago",
-        "hours": "{n}h ago",
-        "days": "{n}d ago"
-      },
-      "guestTitle": "Continue your plan"
-    },
-    "youMightLike": {
-      "title": "You Might Like",
-      "viewAll": "View all"
-    },
-    "newOnB4K": {
-      "title": "New on B4K",
-      "viewAll": "View all",
-      "newBadge": "New",
-      "error": "Failed to load",
-      "retry": "Retry"
-    },
-    "leaderboardBadge": {
-      "ariaLabel": "Leaderboard and badge showcase",
-      "leaderboard": {
-        "title": "This Week's Top",
-        "viewAll": "View all",
-        "empty": "No rankings yet this week"
-      },
-      "badge": {
-        "title": "Latest Badge",
-        "viewAll": "View all",
-        "earnedBy": "Earned by {name}"
+        "title": "ยังไม่มีสถานที่แนะนำสำหรับฤดูกาลนี้",
+        "desc": "ทีมภัณฑารักษ์กำลังรวบรวมสถานที่ที่ห้ามพลาดของฤดูกาลนี้",
+        "cta": "เปิดแผนที่"
       }
     },
     "poiCard": {
       "ariaLabel": "{name}, {region}",
-      "saveAria": "Save {name}",
-      "unsaveAria": "Unsave {name}",
-      "likeAria": "Like {name}",
-      "unlikeAria": "Unlike {name}",
-      "addAria": "Add {name} to plan",
-      "addedAria": "{name} added to plan",
-      "imagePending": "Image being prepared"
+      "saveAria": "บันทึก {name}",
+      "unsaveAria": "ยกเลิกการบันทึก {name}",
+      "likeAria": "ไลก์ {name}",
+      "unlikeAria": "ยกเลิกไลก์ {name}",
+      "addAria": "เพิ่ม {name} ในแผนการเดินทาง",
+      "addedAria": "เพิ่ม {name} ในแผนการเดินทางแล้ว",
+      "imagePending": "กำลังเตรียมรูปภาพ"
+    },
+    "trending": {
+      "title": "สถานที่กำลังฮิต",
+      "viewAll": "ดูทั้งหมด",
+      "error": "โหลดไม่สำเร็จ",
+      "retry": "ลองอีกครั้ง"
     },
     "exploreHub": {
-      "ariaLabel": "Explore by category",
-      "title": "Explore K-Culture",
+      "ariaLabel": "สำรวจตามหมวดหมู่",
+      "title": "สำรวจเคคัลเจอร์",
       "kPop": {
         "label": "K-Pop",
-        "sub": "Concerts, studios & fan spots"
+        "sub": "คอนเสิร์ต สตูดิโอ และจุดถ่ายรูปของแฟนคลับ"
       },
       "kDrama": {
         "label": "K-Drama",
-        "sub": "Filming locations & scenes"
+        "sub": "สถานที่ถ่ายทำและฉากในซีรีส์"
       },
       "kBeauty": {
         "label": "K-Beauty",
-        "sub": "Shops, clinics & trends"
+        "sub": "ร้านค้า คลินิก และเทรนด์"
       },
       "kCulture": {
         "label": "K-Culture",
-        "sub": "Heritage, art & tradition"
+        "sub": "มรดกวัฒนธรรม ศิลปะ และประเพณี"
       }
-    },
-    "trending": {
-      "title": "Trending Spots",
-      "viewAll": "View all",
-      "error": "Failed to load",
-      "retry": "Retry"
-    },
-    "planTrip": {
-      "ariaLabel": "Plan your trip",
-      "title": "Plan Your Trip",
-      "subtitle": "Start planning your Korea journey",
-      "manual": {
-        "label": "Manual Plan",
-        "sub": "Add stops one by one"
-      },
-      "auto": {
-        "label": "From Saved",
-        "sub": "Auto-generate from saved places"
-      },
-      "ai": {
-        "label": "AI Chat Plan",
-        "sub": "Let AI plan for you"
-      }
-    },
-    "challenge": {
-      "ariaLabel": "Weekly challenge",
-      "label": "Weekly Challenge",
-      "badgeReward": "Badge reward",
-      "cta": "Start challenge"
-    },
-    "popularPlans": {
-      "title": "Popular Plans",
-      "viewAll": "View all",
-      "error": "Failed to load",
-      "retry": "Retry",
-      "sponsored": "Sponsored",
-      "card": {
-        "ariaLabel": "{title} by {author}",
-        "stops": "{n} stops"
-      }
-    },
-    "promotions": {
-      "title": "Promotions"
     },
     "editorial": {
-      "title": "Editor's Picks",
-      "viewAll": "View all",
-      "error": "Failed to load",
-      "retry": "Retry",
-      "catAll": "All",
+      "title": "คัดสรรโดยบรรณาธิการ",
+      "viewAll": "ดูทั้งหมด",
+      "error": "โหลดไม่สำเร็จ",
+      "retry": "ลองอีกครั้ง",
+      "catAll": "ทั้งหมด",
       "catKPop": "K-Pop",
       "catKDrama": "K-Drama",
       "catKBeauty": "K-Beauty",
       "catKCulture": "K-Culture"
     },
-    "events": {
-      "title": "Upcoming Events"
+    "newOnB4K": {
+      "title": "ใหม่ใน B4K",
+      "viewAll": "ดูทั้งหมด",
+      "newBadge": "ใหม่",
+      "error": "โหลดไม่สำเร็จ",
+      "retry": "ลองอีกครั้ง"
+    },
+    "youMightLike": {
+      "title": "คุณอาจจะชอบ",
+      "viewAll": "ดูทั้งหมด"
+    },
+    "planTrip": {
+      "ariaLabel": "วางแผนการเดินทางของคุณ",
+      "title": "วางแผนการเดินทางของคุณ",
+      "subtitle": "เริ่มวางแผนการเดินทางเกาหลีของคุณ",
+      "manual": {
+        "label": "วางแผนด้วยตนเอง",
+        "sub": "เพิ่มจุดหมายทีละจุด"
+      },
+      "auto": {
+        "label": "สร้างจากรายการที่บันทึก",
+        "sub": "สร้างอัตโนมัติจากสถานที่ที่บันทึกไว้"
+      },
+      "ai": {
+        "label": "แผนจากแชท AI",
+        "sub": "ให้ AI วางแผนให้คุณ"
+      }
+    },
+    "continuePlan": {
+      "ariaLabel": "ดำเนินการต่อกับแผนฉบับร่างของคุณ",
+      "cta": "ดำเนินการต่อ",
+      "dismiss": "ปิด",
+      "stopCount": "{n} จุดหมาย",
+      "timeAgo": {
+        "minutes": "{n} นาทีที่แล้ว",
+        "hours": "{n} ชั่วโมงที่แล้ว",
+        "days": "{n} วันที่แล้ว"
+      },
+      "guestTitle": "ดำเนินการต่อกับแผนของคุณ"
+    },
+    "challenge": {
+      "ariaLabel": "ภารกิจประจำสัปดาห์",
+      "label": "ภารกิจประจำสัปดาห์",
+      "badgeReward": "รางวัลแบดจ์",
+      "cta": "เริ่มภารกิจ"
+    },
+    "leaderboardBadge": {
+      "ariaLabel": "อันดับและแบดจ์แนะนำ",
+      "leaderboard": {
+        "title": "อันดับต้นสัปดาห์นี้",
+        "viewAll": "ดูทั้งหมด",
+        "empty": "ยังไม่มีการจัดอันดับในสัปดาห์นี้"
+      },
+      "badge": {
+        "title": "แบดจ์ล่าสุด",
+        "viewAll": "ดูทั้งหมด",
+        "earnedBy": "ได้รับโดย {name}"
+      }
+    },
+    "popularPlans": {
+      "title": "แผนการเดินทางยอดนิยม",
+      "viewAll": "ดูทั้งหมด",
+      "error": "โหลดไม่สำเร็จ",
+      "retry": "ลองอีกครั้ง",
+      "sponsored": "ได้รับการสนับสนุน",
+      "card": {
+        "ariaLabel": "{title} โดย {author}",
+        "stops": "{n} จุดหมาย"
+      }
     },
     "partnerPackages": {
-      "title": "Partner Packages",
-      "sponsored": "Sponsored",
-      "viewCta": "View",
+      "title": "แพ็กเกจพาร์ทเนอร์",
+      "sponsored": "ได้รับการสนับสนุน",
+      "viewCta": "ดู",
       "card": {
-        "ariaLabel": "{title} by {partner}"
+        "ariaLabel": "{title} โดย {partner}"
       }
+    },
+    "events": {
+      "title": "กิจกรรมที่กำลังจะมาถึง"
+    },
+    "promotions": {
+      "title": "โปรโมชั่น"
     }
   },
   "common": {
@@ -254,728 +254,728 @@
   },
   "routes": {
     "map": {
-      "breadcrumb": "Map",
-      "title": "Map",
+      "breadcrumb": "แผนที่",
+      "title": "แผนที่",
       "empty": {
-        "title": "Coming soon",
-        "desc": "The Korea map will land here once Naver Map canvas is wired."
+        "title": "เร็วๆ นี้",
+        "desc": "แผนที่เกาหลีจะปรากฏที่นี่เมื่อเชื่อมต่อกับ Naver Map เรียบร้อยแล้ว"
       }
     },
     "contents": {
-      "breadcrumb": "Contents",
-      "title": "Contents",
+      "breadcrumb": "เนื้อหา",
+      "title": "เนื้อหา",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Four hubs: K-Pop, K-Drama, K-Beauty, K-Culture. Pick one to dive in."
+        "title": "เร็วๆ นี้",
+        "desc": "สี่หมวดหมู่: K-Pop, K-Drama, K-Beauty, K-Culture เลือกหมวดที่สนใจเพื่อดำดิ่งเข้าไปสำรวจ"
+      }
+    },
+    "explore": {
+      "breadcrumb": "สำรวจ",
+      "title": "สำรวจ",
+      "empty": {
+        "title": "เร็วๆ นี้",
+        "desc": "สี่หมวดหมู่: K-Pop, K-Drama, K-Beauty, K-Culture เลือกหมวดที่สนใจเพื่อดำดิ่งเข้าไปสำรวจ"
+      }
+    },
+    "saved": {
+      "breadcrumb": "รายการที่บันทึก",
+      "title": "รายการที่บันทึก",
+      "empty": {
+        "title": "ยังไม่มีรายการที่บันทึกไว้",
+        "desc": "บันทึกสถานที่และแผนการเดินทางเพื่อดูได้ที่นี่"
       }
     },
     "contentsKpop": {
       "breadcrumb": "K-Pop",
       "title": "K-Pop",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Pop hub coming soon. Artists, venues, tours."
+        "title": "เร็วๆ นี้",
+        "desc": "หมวด K-Pop กำลังจะมาถึงเร็วๆ นี้ ศิลปิน สถานที่จัดแสดง ทัวร์"
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "เนื้อหา",
+        "explore": "สำรวจ"
       }
     },
     "contentsKdrama": {
       "breadcrumb": "K-Drama",
       "title": "K-Drama",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Drama hub coming soon. Filming locations, drama trails."
+        "title": "เร็วๆ นี้",
+        "desc": "หมวด K-Drama กำลังจะมาถึงเร็วๆ นี้ สถานที่ถ่ายทำ เส้นทางตามรอยละคร"
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "เนื้อหา",
+        "explore": "สำรวจ"
       }
     },
     "contentsKbeauty": {
       "breadcrumb": "K-Beauty",
       "title": "K-Beauty",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Beauty hub coming soon. Skincare, treatments, brand origin stores."
+        "title": "เร็วๆ นี้",
+        "desc": "หมวด K-Beauty กำลังจะมาถึงเร็วๆ นี้ สกินแคร์ ทรีตเมนต์ ร้านค้าแบรนด์ต้นทาง"
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "เนื้อหา",
+        "explore": "สำรวจ"
       }
     },
     "contentsKculture": {
       "breadcrumb": "K-Culture",
       "title": "K-Culture",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Culture hub coming soon. Heritage, food, traditional crafts."
+        "title": "เร็วๆ นี้",
+        "desc": "หมวด K-Culture กำลังจะมาถึงเร็วๆ นี้ มรดกวัฒนธรรม อาหาร งานฝีมือดั้งเดิม"
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "เนื้อหา",
+        "explore": "สำรวจ"
       }
     },
     "profile": {
-      "breadcrumb": "Profile",
-      "title": "Profile",
+      "breadcrumb": "โปรไฟล์",
+      "title": "โปรไฟล์",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Your B4K hub. Trips, saves, badges, community."
+        "title": "เร็วๆ นี้",
+        "desc": "พื้นที่ B4K ของคุณ ทริป รายการที่บันทึก แบดจ์ ชุมชน"
       }
     },
     "profileTrips": {
-      "breadcrumb": "My Trips",
-      "title": "My Trips",
+      "breadcrumb": "ทริปของฉัน",
+      "title": "ทริปของฉัน",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Plans you have created or saved will live here."
+        "title": "เร็วๆ นี้",
+        "desc": "แผนการเดินทางที่คุณสร้างหรือบันทึกไว้จะอยู่ที่นี่"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "โปรไฟล์"
       }
     },
     "profileSaved": {
-      "breadcrumb": "Saved",
-      "title": "Saved",
+      "breadcrumb": "รายการที่บันทึก",
+      "title": "รายการที่บันทึก",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Places and plans you have bookmarked."
+        "title": "เร็วๆ นี้",
+        "desc": "สถานที่และแผนการเดินทางที่คุณบันทึกไว้"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "โปรไฟล์"
       }
     },
     "profileBadges": {
-      "breadcrumb": "Badges",
-      "title": "Badges",
+      "breadcrumb": "แบดจ์",
+      "title": "แบดจ์",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Badges earned through community contributions."
+        "title": "เร็วๆ นี้",
+        "desc": "แบดจ์ที่ได้รับจากการมีส่วนร่วมในชุมชน"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "โปรไฟล์"
       }
     },
     "profileCommunity": {
-      "breadcrumb": "Community",
-      "title": "Community",
+      "breadcrumb": "ชุมชน",
+      "title": "ชุมชน",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Followers, following, and creator activity."
+        "title": "เร็วๆ นี้",
+        "desc": "ผู้ติดตาม กำลังติดตาม และกิจกรรมของครีเอเตอร์"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "โปรไฟล์"
       }
     },
     "profileSettings": {
-      "breadcrumb": "Settings",
-      "title": "Settings",
+      "breadcrumb": "การตั้งค่า",
+      "title": "การตั้งค่า",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Account, language, notifications, and privacy preferences."
+        "title": "เร็วๆ นี้",
+        "desc": "บัญชี ภาษา การแจ้งเตือน และการตั้งค่าความเป็นส่วนตัว"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "โปรไฟล์"
       }
     },
     "plan": {
-      "breadcrumb": "Plan",
-      "title": "Plan",
+      "breadcrumb": "แผนการ",
+      "title": "แผนการ",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Choose a planning flow: manual, auto, or AI chat."
+        "title": "เร็วๆ นี้",
+        "desc": "เลือกรูปแบบการวางแผน: ด้วยตนเอง อัตโนมัติ หรือแชท AI"
       }
     },
     "planManual": {
-      "breadcrumb": "Manual Plan",
-      "title": "Manual Plan",
+      "breadcrumb": "วางแผนด้วยตนเอง",
+      "title": "วางแผนด้วยตนเอง",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Drag-and-drop builder for power users."
+        "title": "เร็วๆ นี้",
+        "desc": "เครื่องมือลากและวางสำหรับผู้ใช้ขั้นสูง"
       },
       "crumb": {
-        "plan": "Plan"
+        "plan": "แผนการ"
       }
     },
     "planAuto": {
-      "breadcrumb": "Auto Plan",
-      "title": "Auto Plan",
+      "breadcrumb": "แผนอัตโนมัติ",
+      "title": "แผนอัตโนมัติ",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Tell us your dates and we generate a starting itinerary."
+        "title": "เร็วๆ นี้",
+        "desc": "บอกวันเดินทางของคุณ แล้วเราจะสร้างแผนการเดินทางเริ่มต้นให้"
       },
       "crumb": {
-        "plan": "Plan"
+        "plan": "แผนการ"
       }
     },
     "planAi": {
-      "breadcrumb": "AI Chat Plan",
-      "title": "AI Chat Plan",
+      "breadcrumb": "แผนจากแชท AI",
+      "title": "แผนจากแชท AI",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Conversational AI builds your Korea trip turn by turn."
+        "title": "เร็วๆ นี้",
+        "desc": "AI แบบสนทนาจะสร้างทริปเกาหลีของคุณทีละขั้นตอน"
       },
       "crumb": {
-        "plan": "Plan"
+        "plan": "แผนการ"
       }
     },
     "leaderboard": {
-      "breadcrumb": "Leaderboard",
-      "title": "Leaderboard",
+      "breadcrumb": "อันดับ",
+      "title": "อันดับ",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Weekly community ranking. Wilson score on saves + likes."
+        "title": "เร็วๆ นี้",
+        "desc": "การจัดอันดับชุมชนรายสัปดาห์ คะแนนวิลสันจากการบันทึกและไลก์"
       }
     },
     "badges": {
-      "breadcrumb": "Badges Gallery",
-      "title": "Badges Gallery",
+      "breadcrumb": "แกลเลอรีแบดจ์",
+      "title": "แกลเลอรีแบดจ์",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Browse the full badge collection."
+        "title": "เร็วๆ นี้",
+        "desc": "เรียกดูคอลเลกชันแบดจ์ทั้งหมด"
       }
     },
     "onboarding": {
-      "breadcrumb": "Welcome to B4K",
-      "title": "Welcome to B4K",
+      "breadcrumb": "ยินดีต้อนรับสู่ B4K",
+      "title": "ยินดีต้อนรับสู่ B4K",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Quick interest tags to personalise your first trip."
+        "title": "เร็วๆ นี้",
+        "desc": "แท็กความสนใจแบบรวดเร็วเพื่อปรับแต่งทริปแรกของคุณ"
       }
     },
     "help": {
-      "breadcrumb": "Help",
-      "title": "Help",
+      "breadcrumb": "ช่วยเหลือ",
+      "title": "ช่วยเหลือ",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Guides, FAQ, contact support."
+        "title": "เร็วๆ นี้",
+        "desc": "คู่มือ คำถามที่พบบ่อย ติดต่อฝ่ายสนับสนุน"
       }
     },
     "notifications": {
-      "breadcrumb": "Notifications",
-      "title": "Notifications",
+      "breadcrumb": "การแจ้งเตือน",
+      "title": "การแจ้งเตือน",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Platform notifications. Social pings deferred to v1.1."
+        "title": "เร็วๆ นี้",
+        "desc": "การแจ้งเตือนจากแพลตฟอร์ม การแจ้งเตือนโซเชียลจะเลื่อนไปเป็น v1.1"
       }
     },
     "legalPrivacy": {
-      "breadcrumb": "Privacy Policy",
-      "title": "Privacy Policy",
+      "breadcrumb": "นโยบายความเป็นส่วนตัว",
+      "title": "นโยบายความเป็นส่วนตัว",
       "empty": {
-        "title": "Coming soon",
-        "desc": "How we handle your data. PIPA compliant."
+        "title": "เร็วๆ นี้",
+        "desc": "วิธีที่เราจัดการข้อมูลของคุณ เป็นไปตามกฎหมาย PIPA"
       }
     },
     "legalTerms": {
-      "breadcrumb": "Terms of Service",
-      "title": "Terms of Service",
+      "breadcrumb": "ข้อกำหนดการใช้บริการ",
+      "title": "ข้อกำหนดการใช้บริการ",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Rules for using B4K."
+        "title": "เร็วๆ นี้",
+        "desc": "กฎการใช้งาน B4K"
       }
     },
     "legalCookies": {
-      "breadcrumb": "Cookie Policy",
-      "title": "Cookie Policy",
+      "breadcrumb": "นโยบายคุกกี้",
+      "title": "นโยบายคุกกี้",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Cookies we use and why."
+        "title": "เร็วๆ นี้",
+        "desc": "คุกกี้ที่เราใช้และเหตุผลที่ใช้"
       }
     },
     "sitemap": {
-      "breadcrumb": "About B4K",
-      "title": "About B4K",
+      "breadcrumb": "เกี่ยวกับ B4K",
+      "title": "เกี่ยวกับ B4K",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Story, team, mission."
-      }
-    },
-    "explore": {
-      "breadcrumb": "Explore",
-      "title": "Explore",
-      "empty": {
-        "title": "Coming soon",
-        "desc": "Four hubs: K-Pop, K-Drama, K-Beauty, K-Culture. Pick one to dive in."
-      }
-    },
-    "saved": {
-      "breadcrumb": "Saved",
-      "title": "Saved",
-      "empty": {
-        "title": "Nothing saved yet",
-        "desc": "Bookmark places and itineraries to find them here."
+        "title": "เร็วๆ นี้",
+        "desc": "เรื่องราว ทีมงาน พันธกิจ"
       }
     }
   },
   "boundary": {
     "notFound": {
-      "title": "Page not found",
-      "desc": "The page you're looking for doesn't exist or has moved.",
-      "cta": "Back to home"
+      "title": "ไม่พบหน้านี้",
+      "desc": "หน้าที่คุณกำลังมองหาไม่มีอยู่ หรืออาจถูกย้ายไปแล้ว",
+      "cta": "กลับสู่หน้าหลัก"
     },
     "error": {
-      "title": "Something went wrong",
-      "desc": "Try again. If the problem persists, contact support.",
-      "cta": "Try again",
-      "goHome": "Go home"
+      "title": "เกิดข้อผิดพลาด",
+      "desc": "ลองอีกครั้ง หากปัญหายังคงอยู่ กรุณาติดต่อฝ่ายสนับสนุน",
+      "cta": "ลองอีกครั้ง",
+      "goHome": "ไปที่หน้าหลัก"
     },
     "offline": {
-      "title": "You're offline",
-      "desc": "Reconnect to keep planning. Your saved trips are kept locally.",
-      "retry": "Try again",
-      "titleMap": "You're offline. Map may be outdated."
+      "title": "คุณออฟไลน์อยู่",
+      "desc": "เชื่อมต่อใหม่เพื่อวางแผนต่อ ทริปที่บันทึกไว้ของคุณยังคงอยู่ในเครื่อง",
+      "retry": "ลองอีกครั้ง",
+      "titleMap": "คุณออฟไลน์อยู่ แผนที่อาจไม่เป็นข้อมูลล่าสุด"
     }
   },
   "auth": {
     "gate": {
-      "title": "Sign in to B4K",
-      "valueProp": "Save your plan · Unlock leaderboards · Earn badges",
+      "title": "เข้าสู่ระบบ B4K",
+      "valueProp": "บันทึกแผนการเดินทางของคุณ · ปลดล็อกอันดับ · รับแบดจ์",
       "context": {
-        "save_poi": "Sign in to save places",
-        "like": "Sign in to like",
-        "save_plan": "Sign in to save your plan",
-        "save_plan_other": "Sign in to save this plan to your trips",
-        "saved_tab": "Sign in to see your saved places",
-        "profile_nav": "Sign in to view your profile",
-        "fl3_cap": "Sign in to keep planning"
+        "save_poi": "เข้าสู่ระบบเพื่อบันทึกสถานที่",
+        "like": "เข้าสู่ระบบเพื่อกดไลก์",
+        "save_plan": "เข้าสู่ระบบเพื่อบันทึกแผนการเดินทางของคุณ",
+        "save_plan_other": "เข้าสู่ระบบเพื่อบันทึกแผนนี้ไว้ในทริปของคุณ",
+        "saved_tab": "เข้าสู่ระบบเพื่อดูสถานที่ที่คุณบันทึกไว้",
+        "profile_nav": "เข้าสู่ระบบเพื่อดูโปรไฟล์ของคุณ",
+        "fl3_cap": "เข้าสู่ระบบเพื่อวางแผนต่อ"
       },
-      "google": "Continue with Google",
-      "apple": "Continue with Apple",
-      "microsoft": "Continue with Microsoft",
-      "email": "Sign in with email",
-      "emailPlaceholder": "Email address",
-      "passwordPlaceholder": "Password",
-      "signIn": "Sign in",
-      "backToProviders": "← Other sign-in options",
-      "dismiss": "Continue as guest",
-      "loading": "Signing in…",
-      "error": "Sign-in failed. Try again.",
-      "ariaLabel": "Sign in modal",
-      "close": "Close sign-in modal",
-      "planPreserved": "Your current plan is preserved — sign in to save it permanently.",
-      "fl3Preserved": "Your chat and plan are saved — sign in to keep planning.",
-      "emailContinue": "Continue with email",
-      "signInTab": "Sign in",
-      "signUpTab": "Sign up",
-      "signUp": "Create account",
-      "errorCredentials": "Email or password incorrect",
-      "errorWeak": "Password must be at least 8 characters",
-      "errorSignup": "Sign-up failed. Try again.",
-      "forgotPassword": "Forgot password?",
-      "forgotTitle": "Reset your password",
-      "forgotSubtitle": "Enter your email and we'll send you a reset link.",
-      "forgotSubmit": "Send reset link",
-      "errorForgot": "Couldn't send the email. Try again.",
-      "backToSignIn": "← Back to sign in",
-      "checkEmailTitle": "Check your email",
-      "checkEmailBodySignup": "We sent a verification link to {email}. Open it to finish creating your account.",
-      "checkEmailBodyReset": "We sent a password reset link to {email}.",
-      "resend": "Resend email",
-      "resendIn": "Resend in {seconds}s",
-      "tosFooter": "By continuing, you agree to B4K's <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
-      "ageConfirm": "I confirm I'm at least 14 years old"
+      "google": "ดำเนินการต่อด้วย Google",
+      "apple": "ดำเนินการต่อด้วย Apple",
+      "microsoft": "ดำเนินการต่อด้วย Microsoft",
+      "email": "เข้าสู่ระบบด้วยอีเมล",
+      "emailPlaceholder": "ที่อยู่อีเมล",
+      "passwordPlaceholder": "รหัสผ่าน",
+      "signIn": "เข้าสู่ระบบ",
+      "backToProviders": "← ตัวเลือกการเข้าสู่ระบบอื่นๆ",
+      "dismiss": "ดำเนินการต่อในฐานะผู้เยี่ยมชม",
+      "loading": "กำลังเข้าสู่ระบบ…",
+      "error": "เข้าสู่ระบบไม่สำเร็จ ลองอีกครั้ง",
+      "ariaLabel": "หน้าต่างเข้าสู่ระบบ",
+      "close": "ปิดหน้าต่างเข้าสู่ระบบ",
+      "planPreserved": "แผนการเดินทางปัจจุบันของคุณถูกเก็บไว้ — เข้าสู่ระบบเพื่อบันทึกอย่างถาวร",
+      "fl3Preserved": "แชทและแผนการเดินทางของคุณถูกบันทึกไว้ — เข้าสู่ระบบเพื่อวางแผนต่อ",
+      "emailContinue": "ดำเนินการต่อด้วยอีเมล",
+      "signInTab": "เข้าสู่ระบบ",
+      "signUpTab": "สมัครสมาชิก",
+      "signUp": "สร้างบัญชี",
+      "errorCredentials": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
+      "errorWeak": "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร",
+      "errorSignup": "สมัครสมาชิกไม่สำเร็จ ลองอีกครั้ง",
+      "forgotPassword": "ลืมรหัสผ่าน?",
+      "forgotTitle": "รีเซ็ตรหัสผ่านของคุณ",
+      "forgotSubtitle": "ป้อนอีเมลของคุณ แล้วเราจะส่งลิงก์รีเซ็ตให้",
+      "forgotSubmit": "ส่งลิงก์รีเซ็ต",
+      "errorForgot": "ไม่สามารถส่งอีเมลได้ ลองอีกครั้ง",
+      "backToSignIn": "← กลับไปเข้าสู่ระบบ",
+      "checkEmailTitle": "ตรวจสอบอีเมลของคุณ",
+      "checkEmailBodySignup": "เราได้ส่งลิงก์ยืนยันไปที่ {email} แล้ว เปิดลิงก์เพื่อทำการสร้างบัญชีให้เสร็จสมบูรณ์",
+      "checkEmailBodyReset": "เราได้ส่งลิงก์รีเซ็ตรหัสผ่านไปที่ {email} แล้ว",
+      "resend": "ส่งอีเมลอีกครั้ง",
+      "resendIn": "ส่งอีกครั้งได้ในอีก {seconds} วินาที",
+      "tosFooter": "การดำเนินการต่อถือว่าคุณยอมรับ<terms>ข้อกำหนดการใช้บริการ</terms>และ<privacy>นโยบายความเป็นส่วนตัว</privacy>ของ B4K",
+      "ageConfirm": "ฉันยืนยันว่าอายุอย่างน้อย 14 ปี"
     },
     "conflict": {
-      "ariaLabel": "Draft conflict — pick one modal",
-      "title": "You have two drafts — which one would you like to keep?",
-      "deviceDraft": "On this device",
-      "accountDraft": "In your account",
-      "stops": "{count, plural, one {# stop} other {# stops}}",
-      "lastModified": "Last modified {time}",
-      "keep": "Keep this one",
-      "discardNote": "The other draft will be permanently deleted."
+      "ariaLabel": "แผนฉบับร่างขัดแย้งกัน — เลือกฉบับที่ต้องการเก็บไว้",
+      "title": "คุณมีแผนฉบับร่าง 2 ฉบับ — ต้องการเก็บฉบับไหนไว้?",
+      "deviceDraft": "บนอุปกรณ์นี้",
+      "accountDraft": "ในบัญชีของคุณ",
+      "stops": "{count} จุดหมาย",
+      "lastModified": "แก้ไขล่าสุด {time}",
+      "keep": "เก็บฉบับนี้ไว้",
+      "discardNote": "แผนฉบับร่างอีกฉบับจะถูกลบอย่างถาวร"
     },
     "resetPassword": {
-      "title": "Set new password",
-      "subtitle": "Enter your new password below.",
-      "passwordLabel": "New password",
-      "passwordPlaceholder": "New password",
-      "confirmLabel": "Confirm password",
-      "confirmPlaceholder": "Confirm password",
-      "submit": "Set password",
-      "loading": "Saving…",
-      "success": "Password updated — signing you in",
-      "redirecting": "Redirecting to home…",
-      "errorMismatch": "Passwords don't match",
-      "errorWeak": "Password must be at least 8 characters",
-      "errorExpired": "This link has expired. Request a new one.",
-      "errorGeneric": "Something went wrong. Try again.",
-      "showPw": "Show password",
-      "hidePw": "Hide password",
-      "backToHome": "Back to home"
+      "title": "ตั้งรหัสผ่านใหม่",
+      "subtitle": "ป้อนรหัสผ่านใหม่ของคุณด้านล่าง",
+      "passwordLabel": "รหัสผ่านใหม่",
+      "passwordPlaceholder": "รหัสผ่านใหม่",
+      "confirmLabel": "ยืนยันรหัสผ่าน",
+      "confirmPlaceholder": "ยืนยันรหัสผ่าน",
+      "submit": "ตั้งรหัสผ่าน",
+      "loading": "กำลังบันทึก…",
+      "success": "อัปเดตรหัสผ่านแล้ว — กำลังเข้าสู่ระบบให้คุณ",
+      "redirecting": "กำลังนำคุณไปที่หน้าหลัก…",
+      "errorMismatch": "รหัสผ่านไม่ตรงกัน",
+      "errorWeak": "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร",
+      "errorExpired": "ลิงก์นี้หมดอายุแล้ว กรุณาขอลิงก์ใหม่",
+      "errorGeneric": "เกิดข้อผิดพลาด ลองอีกครั้ง",
+      "showPw": "แสดงรหัสผ่าน",
+      "hidePw": "ซ่อนรหัสผ่าน",
+      "backToHome": "กลับสู่หน้าหลัก"
     },
     "callback": {
-      "verifying": "Verifying…",
-      "redirecting": "Redirecting to home…",
-      "error": "Sign-in failed",
-      "errorRetry": "Please try signing in again"
+      "verifying": "กำลังตรวจสอบ…",
+      "redirecting": "กำลังนำคุณไปที่หน้าหลัก…",
+      "error": "เข้าสู่ระบบไม่สำเร็จ",
+      "errorRetry": "กรุณาลองเข้าสู่ระบบอีกครั้ง"
     }
   },
   "legalGate": {
-    "ariaLabel": "Terms acceptance",
-    "title": "Before you continue",
-    "message": "By using B4K, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
-    "accept": "Accept & Continue"
+    "ariaLabel": "การยอมรับข้อกำหนด",
+    "title": "ก่อนดำเนินการต่อ",
+    "message": "การใช้ B4K ถือว่าคุณยอมรับ<terms>ข้อกำหนดการใช้บริการ</terms>และ<privacy>นโยบายความเป็นส่วนตัว</privacy>ของเรา",
+    "accept": "ยอมรับและดำเนินการต่อ"
   },
   "map": {
-    "ariaLabel": "Interactive map of Korea",
-    "loading": "Loading map…",
-    "error": "Map could not load",
-    "retry": "Try again",
-    "noKey": "Map API key not configured",
-    "zoomIn": "Zoom in",
-    "zoomOut": "Zoom out",
+    "ariaLabel": "แผนที่เชิงโต้ตอบของเกาหลี",
+    "loading": "กำลังโหลดแผนที่…",
+    "error": "ไม่สามารถโหลดแผนที่ได้",
+    "retry": "ลองอีกครั้ง",
+    "noKey": "ยังไม่ได้ตั้งค่าคีย์ API ของแผนที่",
+    "zoomIn": "ซูมเข้า",
+    "zoomOut": "ซูมออก",
     "leftPanel": {
-      "ariaLabel": "Explore panel",
-      "viewSaved": "View saved places",
+      "ariaLabel": "แผงสำรวจ",
+      "viewSaved": "ดูสถานที่ที่บันทึกไว้",
       "tagline": "Find your place",
       "savedLabel": "Saved"
     },
     "regions": {
-      "title": "Explore by Region",
-      "seoul": "Seoul",
-      "busan": "Busan",
-      "jeju": "Jeju",
-      "incheon": "Incheon",
-      "gyeongju": "Gyeongju",
-      "more": "More regions"
+      "title": "สำรวจตามภูมิภาค",
+      "seoul": "โซล",
+      "busan": "ปูซาน",
+      "jeju": "เชจู",
+      "incheon": "อินชอน",
+      "gyeongju": "คย็องจู",
+      "more": "ภูมิภาคเพิ่มเติม"
     },
     "filters": {
-      "title": "Filter by Type",
-      "palaces": "Palaces",
-      "temples": "Temples",
-      "cafes": "Cafés",
-      "parks": "Parks",
-      "restaurants": "Restaurants",
-      "hotels": "Hotels",
-      "shopping": "Shopping",
-      "museums": "Museums"
+      "title": "กรองตามประเภท",
+      "palaces": "พระราชวัง",
+      "temples": "วัด",
+      "cafes": "คาเฟ่",
+      "parks": "สวนสาธารณะ",
+      "restaurants": "ร้านอาหาร",
+      "hotels": "โรงแรม",
+      "shopping": "ช้อปปิ้ง",
+      "museums": "พิพิธภัณฑ์"
     },
     "aiPill": {
-      "label": "AI Assistant ·",
-      "dismiss": "Dismiss AI assistant",
-      "expand": "Expand AI assistant"
+      "label": "ผู้ช่วย AI ·",
+      "dismiss": "ปิดผู้ช่วย AI",
+      "expand": "ขยายผู้ช่วย AI"
     },
     "poiDetail": {
-      "sponsored": "Sponsored",
-      "reviews": "reviews",
-      "saves": "saves",
-      "openNow": "Open now",
-      "closed": "Closed",
-      "addToPlan": "Add to Plan",
-      "added": "Added ✓",
-      "planFull": "Maximum 40 stops reached",
-      "save": "Save",
-      "saved": "Saved",
-      "unsave": "Remove from saved",
-      "savedToast": "Place saved!",
-      "removedSave": "Removed from saved",
-      "addedToast": "Added to plan",
-      "dismiss": "Close",
-      "share": "Share",
-      "like": "Like",
-      "liked": "Liked",
-      "unlike": "Unlike",
-      "website": "Visit website",
-      "close": "Close POI details",
-      "imagePending": "Image being prepared"
+      "sponsored": "ได้รับการสนับสนุน",
+      "reviews": "รีวิว",
+      "saves": "การบันทึก",
+      "openNow": "เปิดอยู่ตอนนี้",
+      "closed": "ปิดแล้ว",
+      "addToPlan": "เพิ่มในแผนการเดินทาง",
+      "added": "เพิ่มแล้ว ✓",
+      "planFull": "ถึงจำนวนสูงสุด 40 จุดหมายแล้ว",
+      "save": "บันทึก",
+      "saved": "บันทึกแล้ว",
+      "unsave": "ยกเลิกการบันทึก",
+      "savedToast": "บันทึกสถานที่แล้ว!",
+      "removedSave": "ยกเลิกการบันทึกแล้ว",
+      "addedToast": "เพิ่มในแผนการเดินทางแล้ว",
+      "dismiss": "ปิด",
+      "share": "แชร์",
+      "like": "ไลก์",
+      "liked": "ไลก์แล้ว",
+      "unlike": "ยกเลิกไลก์",
+      "website": "เยี่ยมชมเว็บไซต์",
+      "close": "ปิดรายละเอียดสถานที่",
+      "imagePending": "กำลังเตรียมรูปภาพ"
     },
     "plan": {
-      "title": "Your Plan",
-      "stops": "stops",
-      "removeStop": "Remove stop {n}",
-      "dragHandle": "Drag to reorder stop {n}",
-      "durationLabel": "min",
-      "durationAriaLabel": "Duration for {name}",
-      "total": "total",
+      "title": "แผนการเดินทางของคุณ",
+      "stops": "จุดหมาย",
+      "removeStop": "ลบจุดหมายที่ {n}",
+      "dragHandle": "ลากเพื่อจัดลำดับจุดหมายที่ {n} ใหม่",
+      "durationLabel": "นาที",
+      "durationAriaLabel": "ระยะเวลาสำหรับ {name}",
+      "total": "รวม",
       "transport": {
-        "label": "Transport mode",
-        "car": "Car",
-        "public": "Public"
+        "label": "รูปแบบการเดินทาง",
+        "car": "รถยนต์",
+        "public": "ขนส่งสาธารณะ"
       },
-      "save": "Save Plan",
-      "savedToast": "Plan saved!",
-      "previewPlan": "Preview Plan",
-      "close": "Close plan sheet",
-      "stripExpand": "Expand plan panel",
-      "stripCollapse": "Collapse plan panel",
-      "routeError": "Route couldn't be generated. Stops are preserved.",
-      "routeRetry": "Retry",
-      "saveError": "Failed to save. Please try again.",
-      "maxStopsToast": "You've reached the {max}-stop limit for one plan.",
-      "discardDraft": "Discard draft",
-      "discardTitle": "Discard draft?",
-      "discardWarning": "This removes all {count, plural, one {# stop} other {# stops}} from the current draft. This cannot be undone.",
-      "discardCancel": "Cancel",
-      "discardConfirm": "Discard draft",
-      "dayTab": "Day {n}",
-      "legEstimate": "est {min}m",
-      "legAriaLabel": "Estimated travel time from stop {from} to stop {to}"
+      "save": "บันทึกแผนการเดินทาง",
+      "savedToast": "บันทึกแผนการเดินทางแล้ว!",
+      "previewPlan": "ดูตัวอย่างแผนการเดินทาง",
+      "close": "ปิดแผงแผนการเดินทาง",
+      "stripExpand": "ขยายแผงแผนการเดินทาง",
+      "stripCollapse": "ย่อแผงแผนการเดินทาง",
+      "routeError": "ไม่สามารถสร้างเส้นทางได้ จุดหมายยังคงถูกเก็บไว้",
+      "routeRetry": "ลองอีกครั้ง",
+      "saveError": "บันทึกไม่สำเร็จ กรุณาลองอีกครั้ง",
+      "maxStopsToast": "คุณถึงขีดจำกัด {max} จุดหมายสำหรับหนึ่งแผนการเดินทางแล้ว",
+      "discardDraft": "ยกเลิกฉบับร่าง",
+      "discardTitle": "ยกเลิกฉบับร่าง?",
+      "discardWarning": "การดำเนินการนี้จะลบทั้งหมด {count} จุดหมายออกจากฉบับร่างปัจจุบัน ไม่สามารถย้อนกลับได้",
+      "discardCancel": "ยกเลิก",
+      "discardConfirm": "ยกเลิกฉบับร่าง",
+      "dayTab": "วันที่ {n}",
+      "legEstimate": "ประมาณ {min} นาที",
+      "legAriaLabel": "เวลาเดินทางโดยประมาณจากจุดหมายที่ {from} ไปยังจุดหมายที่ {to}"
     },
     "namingSheet": {
-      "ariaLabel": "Name your plan",
-      "title": "Name your plan",
-      "inputLabel": "Plan title",
-      "placeholder": "e.g. Seoul K-Pop day trip",
-      "cancel": "Cancel",
-      "save": "Save plan"
+      "ariaLabel": "ตั้งชื่อแผนการเดินทางของคุณ",
+      "title": "ตั้งชื่อแผนการเดินทางของคุณ",
+      "inputLabel": "ชื่อแผนการเดินทาง",
+      "placeholder": "เช่น ทริปวันเดียวเที่ยว K-Pop ที่โซล",
+      "cancel": "ยกเลิก",
+      "save": "บันทึกแผนการเดินทาง"
     },
     "draftResume": {
-      "ariaLabel": "Unfinished plan found",
-      "title": "You have an unfinished plan",
-      "stopCount": "{count, plural, one {# stop} other {# stops}}",
-      "resume": "Resume this plan",
-      "startFresh": "Start fresh"
+      "ariaLabel": "พบแผนการเดินทางที่ยังไม่เสร็จสมบูรณ์",
+      "title": "คุณมีแผนการเดินทางที่ยังไม่เสร็จสมบูรณ์",
+      "stopCount": "{count} จุดหมาย",
+      "resume": "ดำเนินการต่อกับแผนนี้",
+      "startFresh": "เริ่มต้นใหม่"
     },
     "aiOverlay": {
-      "title": "AI Travel Assistant",
-      "openButton": "AI Assistant",
-      "inputPlaceholder": "Ask about Korea…",
-      "send": "Send message",
-      "minimize": "Minimize AI assistant",
-      "disclaimer": "AI-generated suggestions — verify details independently before traveling.",
-      "close": "Close AI assistant",
-      "back": "Back to map",
-      "greeting": "Ask me anything about Korea — places, plans, and K-culture.",
+      "title": "ผู้ช่วยการเดินทาง AI",
+      "openButton": "ผู้ช่วย AI",
+      "inputPlaceholder": "ถามเกี่ยวกับเกาหลี…",
+      "send": "ส่งข้อความ",
+      "minimize": "ย่อผู้ช่วย AI",
+      "disclaimer": "ข้อเสนอแนะที่สร้างโดย AI — กรุณาตรวจสอบรายละเอียดด้วยตนเองก่อนเดินทาง",
+      "close": "ปิดผู้ช่วย AI",
+      "back": "กลับสู่แผนที่",
+      "greeting": "ถามฉันได้ทุกเรื่องเกี่ยวกับเกาหลี — สถานที่ แผนการเดินทาง และเคคัลเจอร์",
       "chips": {
-        "bts": "BTS landmarks near me",
-        "kdrama": "K-Drama filming spots",
-        "food": "Best street food today"
+        "bts": "สถานที่ของ BTS ใกล้ฉัน",
+        "kdrama": "สถานที่ถ่ายทำ K-Drama",
+        "food": "สตรีทฟู้ดแนะนำวันนี้"
       },
-      "error": "Connection lost. Retry when ready.",
-      "retry": "Retry",
-      "addToPlan": "Add",
-      "added": "Added",
-      "usePlan": "Use this plan",
-      "usePlanLoaded": "Plan loaded ✓",
-      "poiFound": "Here are some places:",
-      "planBuilt": "Here's a plan for you:",
-      "previewPlan": "Preview Plan",
-      "capReached": "You've reached the free plan limit",
-      "signInToContinue": "Sign in to keep planning",
+      "error": "การเชื่อมต่อขาดหาย ลองใหม่เมื่อพร้อม",
+      "retry": "ลองอีกครั้ง",
+      "addToPlan": "เพิ่ม",
+      "added": "เพิ่มแล้ว",
+      "usePlan": "ใช้แผนการเดินทางนี้",
+      "usePlanLoaded": "โหลดแผนการเดินทางแล้ว ✓",
+      "poiFound": "นี่คือสถานที่บางส่วนที่พบ:",
+      "planBuilt": "นี่คือแผนการเดินทางสำหรับคุณ:",
+      "previewPlan": "ดูตัวอย่างแผนการเดินทาง",
+      "capReached": "คุณถึงขีดจำกัดของแผนฟรีแล้ว",
+      "signInToContinue": "เข้าสู่ระบบเพื่อวางแผนต่อ",
       "errorCode": "SYS·ERR · AI·TIMEOUT",
-      "planManually": "Plan manually"
+      "planManually": "วางแผนด้วยตนเอง"
     },
     "planPill": {
-      "ariaLabel": "View your plan · {count} stops",
-      "label": "Plan · {count} stops",
-      "aiLabel": "AI Plan · {count} stops"
+      "ariaLabel": "ดูแผนการเดินทางของคุณ · {count} จุดหมาย",
+      "label": "แผนการเดินทาง · {count} จุดหมาย",
+      "aiLabel": "แผน AI · {count} จุดหมาย"
     },
     "recommended": {
-      "title": "Popular Spots",
-      "empty": "No spots match your filters",
-      "error": "Couldn't load recommendations",
-      "save": "Save",
-      "unsave": "Remove from saved",
+      "title": "สถานที่ยอดนิยม",
+      "empty": "ไม่มีสถานที่ที่ตรงกับตัวกรองของคุณ",
+      "error": "ไม่สามารถโหลดคำแนะนำได้",
+      "save": "บันทึก",
+      "unsave": "ยกเลิกการบันทึก",
       "cardAriaLabel": "{name}, {region}"
     }
   },
   "itinerary": {
-    "loading": "Loading itinerary…",
-    "notFound": "Itinerary not found",
-    "private": "This itinerary is private",
-    "privateDesc": "The creator has set this itinerary to private.",
+    "loading": "กำลังโหลดแผนการเดินทาง…",
+    "notFound": "ไม่พบแผนการเดินทาง",
+    "private": "แผนการเดินทางนี้เป็นส่วนตัว",
+    "privateDesc": "ผู้สร้างได้ตั้งค่าแผนการเดินทางนี้เป็นส่วนตัว",
     "error": {
-      "title": "Couldn't load itinerary",
-      "cta": "Try again"
+      "title": "ไม่สามารถโหลดแผนการเดินทางได้",
+      "cta": "ลองอีกครั้ง"
     },
     "stats": {
-      "stops": "{count} stops",
-      "min": "{min} min",
-      "km": "{km} km"
+      "stops": "{count} จุดหมาย",
+      "min": "{min} นาที",
+      "km": "{km} กม."
     },
     "transport": {
-      "car": "By car",
-      "public": "Public transport",
-      "walk": "On foot",
-      "changeMode": "Change transport mode (current: {mode})",
-      "mode": "Transport: {mode}",
-      "offlineNote": "Try again when online"
+      "car": "โดยรถยนต์",
+      "public": "ขนส่งสาธารณะ",
+      "walk": "เดินเท้า",
+      "changeMode": "เปลี่ยนรูปแบบการเดินทาง (ปัจจุบัน: {mode})",
+      "mode": "การเดินทาง: {mode}",
+      "offlineNote": "ลองอีกครั้งเมื่อออนไลน์"
     },
     "actions": {
-      "like": "Like",
-      "liked": "Liked",
-      "save": "Save",
-      "saved": "Saved",
-      "share": "Share",
-      "edit": "Edit",
-      "makePrivate": "Make private",
-      "makePublic": "Make public",
-      "likeAria": "Like this itinerary",
-      "saveAria": "Save this itinerary",
-      "shareAria": "Share this itinerary",
-      "editAria": "Edit this itinerary",
-      "likedToast": "Added to liked",
-      "unlikedToast": "Removed from liked",
-      "savedToast": "Saved!",
-      "unsavedToast": "Removed from saved",
-      "deleteTitle": "Delete itinerary?",
-      "deleteConfirmText": "This will permanently delete the itinerary. This cannot be undone.",
-      "deleteCancel": "Cancel",
-      "deleteConfirm": "Delete",
-      "deleteAria": "Confirm delete itinerary",
-      "deleting": "Deleting…",
-      "deleteErrorToast": "Failed to delete. Please try again."
+      "like": "ไลก์",
+      "liked": "ไลก์แล้ว",
+      "save": "บันทึก",
+      "saved": "บันทึกแล้ว",
+      "share": "แชร์",
+      "edit": "แก้ไข",
+      "makePrivate": "ตั้งเป็นส่วนตัว",
+      "makePublic": "ตั้งเป็นสาธารณะ",
+      "likeAria": "ไลก์แผนการเดินทางนี้",
+      "saveAria": "บันทึกแผนการเดินทางนี้",
+      "shareAria": "แชร์แผนการเดินทางนี้",
+      "editAria": "แก้ไขแผนการเดินทางนี้",
+      "likedToast": "เพิ่มในรายการไลก์แล้ว",
+      "unlikedToast": "ลบออกจากรายการไลก์แล้ว",
+      "savedToast": "บันทึกแล้ว!",
+      "unsavedToast": "ยกเลิกการบันทึกแล้ว",
+      "deleteTitle": "ลบแผนการเดินทาง?",
+      "deleteConfirmText": "การดำเนินการนี้จะลบแผนการเดินทางอย่างถาวร ไม่สามารถย้อนกลับได้",
+      "deleteCancel": "ยกเลิก",
+      "deleteConfirm": "ลบ",
+      "deleteAria": "ยืนยันการลบแผนการเดินทาง",
+      "deleting": "กำลังลบ…",
+      "deleteErrorToast": "ลบไม่สำเร็จ กรุณาลองอีกครั้ง"
     },
     "tabs": {
-      "all": "All",
-      "day": "Day {n}"
+      "all": "ทั้งหมด",
+      "day": "วันที่ {n}"
     },
     "stopList": {
-      "ariaLabel": "Itinerary stops"
+      "ariaLabel": "จุดหมายในแผนการเดินทาง"
     },
     "stopItem": {
-      "ariaLabel": "Stop {n}: {name}",
-      "min": "{min} min",
-      "fromStart": "{time} from start"
+      "ariaLabel": "จุดที่ {n}: {name}",
+      "min": "{min} นาที",
+      "fromStart": "{time} จากจุดเริ่มต้น"
     },
-    "sponsored": "Sponsored",
+    "sponsored": "ได้รับการสนับสนุน",
     "related": {
-      "title": "More itineraries",
-      "stops": "{count} stops",
-      "likes": "{count} likes"
+      "title": "แผนการเดินทางเพิ่มเติม",
+      "stops": "{count} จุดหมาย",
+      "likes": "{count} ไลก์"
     },
     "panel": {
-      "ariaLabel": "Itinerary details"
+      "ariaLabel": "รายละเอียดแผนการเดินทาง"
     },
     "sheet": {
-      "handle": "Drag to resize",
-      "ariaLabel": "Itinerary detail"
+      "handle": "ลากเพื่อปรับขนาด",
+      "ariaLabel": "รายละเอียดแผนการเดินทาง"
     },
-    "copiedToast": "Link copied!",
-    "mapAriaLabel": "Itinerary route map",
-    "createdBy": "by {name}",
+    "copiedToast": "คัดลอกลิงก์แล้ว!",
+    "mapAriaLabel": "แผนที่เส้นทางของแผนการเดินทาง",
+    "createdBy": "โดย {name}",
     "duration": {
-      "hoursMinutes": "{h}h {m}m",
-      "hours": "{h}h",
-      "minutes": "{m}m"
+      "hoursMinutes": "{h} ชม. {m} นาที",
+      "hours": "{h} ชม.",
+      "minutes": "{m} นาที"
     },
     "leg": {
-      "calculating": "Calculating route…",
-      "km": "{km} km",
-      "m": "{m} m",
-      "ariaLabel": "Travel from stop {from} to stop {to}"
+      "calculating": "กำลังคำนวณเส้นทาง…",
+      "km": "{km} กม.",
+      "m": "{m} ม.",
+      "ariaLabel": "การเดินทางจากจุดหมายที่ {from} ไปยังจุดหมายที่ {to}"
     },
     "footer": {
-      "totalDuration": "Total duration"
+      "totalDuration": "ระยะเวลารวม"
     },
-    "notFoundRedirect": "Taking you back to the map…"
+    "notFoundRedirect": "กำลังพาคุณกลับไปที่แผนที่…"
   },
   "profile": {
     "header": {
-      "ariaLabel": "Profile header",
-      "breadcrumb": "Profile",
-      "avatarAlt": "Profile photo of {name}",
-      "statsLabel": "Profile stats",
-      "tripsLabel": "Trips",
-      "tripsCountAria": "{count} trips created",
-      "likesLabel": "Likes",
-      "likesAria": "{count} likes received",
-      "pinnedBadgesLabel": "Pinned badges",
-      "errorTitle": "Couldn't load profile",
-      "errorRetry": "Try again",
-      "savesLabel": "Saves",
-      "badgesLabel": "Badges",
-      "savesCountAria": "{count} saves",
-      "badgesCountAria": "{count} badges",
-      "loading": "Loading profile",
-      "namePlaceholder": "B4K Traveler"
+      "ariaLabel": "ส่วนหัวโปรไฟล์",
+      "breadcrumb": "โปรไฟล์",
+      "avatarAlt": "รูปโปรไฟล์ของ {name}",
+      "statsLabel": "สถิติโปรไฟล์",
+      "tripsLabel": "ทริป",
+      "tripsCountAria": "สร้างทริปแล้ว {count} ทริป",
+      "likesLabel": "ไลก์",
+      "likesAria": "ได้รับไลก์ {count} ครั้ง",
+      "pinnedBadgesLabel": "แบดจ์ที่ปักหมุด",
+      "errorTitle": "ไม่สามารถโหลดโปรไฟล์ได้",
+      "errorRetry": "ลองอีกครั้ง",
+      "savesLabel": "การบันทึก",
+      "badgesLabel": "แบดจ์",
+      "savesCountAria": "บันทึกแล้ว {count} รายการ",
+      "badgesCountAria": "ได้รับแบดจ์ {count} อัน",
+      "loading": "กำลังโหลดโปรไฟล์",
+      "namePlaceholder": "นักเดินทาง B4K"
     },
     "tabs": {
-      "ariaLabel": "Profile sections",
-      "trips": "My Trips",
-      "badges": "Badges",
-      "settings": "Settings",
-      "saved": "Saved"
+      "ariaLabel": "หมวดหมู่โปรไฟล์",
+      "trips": "ทริปของฉัน",
+      "badges": "แบดจ์",
+      "settings": "การตั้งค่า",
+      "saved": "รายการที่บันทึก"
     },
     "trips": {
-      "loading": "Loading trips…",
+      "loading": "กำลังโหลดทริป…",
       "empty": {
-        "title": "No trips yet",
-        "desc": "Create your first Korea itinerary.",
-        "cta": "Open the map"
+        "title": "ยังไม่มีทริป",
+        "desc": "สร้างแผนการเดินทางเกาหลีแรกของคุณ",
+        "cta": "เปิดแผนที่"
       },
       "error": {
-        "title": "Couldn't load trips",
-        "cta": "Try again"
+        "title": "ไม่สามารถโหลดทริปได้",
+        "cta": "ลองอีกครั้ง"
       },
       "nudge": {
-        "title": "Or explore saved places",
-        "cta": "View saved"
+        "title": "หรือสำรวจสถานที่ที่บันทึกไว้",
+        "cta": "ดูรายการที่บันทึก"
       },
       "card": {
-        "draft": "Draft",
-        "edit": "Edit",
-        "editAria": "Edit trip {title}",
-        "delete": "Delete",
-        "deleteAria": "Delete trip {title}",
-        "likes": "likes",
-        "saves": "saves",
-        "stops": "stops",
-        "thumbnailAlt": "Thumbnail for {title}",
-        "shareAria": "Share trip {title}",
-        "shareCopiedToast": "Link copied to clipboard"
+        "draft": "ฉบับร่าง",
+        "edit": "แก้ไข",
+        "editAria": "แก้ไขทริป {title}",
+        "delete": "ลบ",
+        "deleteAria": "ลบทริป {title}",
+        "likes": "ไลก์",
+        "saves": "การบันทึก",
+        "stops": "จุดหมาย",
+        "thumbnailAlt": "ภาพขนาดย่อของ {title}",
+        "shareAria": "แชร์ทริป {title}",
+        "shareCopiedToast": "คัดลอกลิงก์ไปยังคลิปบอร์ดแล้ว"
       },
       "deleteModal": {
-        "title": "Delete trip?",
-        "desc": "This will permanently delete \"{title}\". This cannot be undone.",
-        "confirm": "Delete",
-        "cancel": "Cancel",
-        "ariaLabel": "Confirm delete trip"
+        "title": "ลบทริป?",
+        "desc": "การดำเนินการนี้จะลบ \"{title}\" อย่างถาวร ไม่สามารถย้อนกลับได้",
+        "confirm": "ลบ",
+        "cancel": "ยกเลิก",
+        "ariaLabel": "ยืนยันการลบทริป"
       }
     },
     "badges": {
-      "loading": "Loading badges…",
+      "loading": "กำลังโหลดแบดจ์…",
       "empty": {
-        "title": "No badges yet",
-        "desc": "Complete trips and contribute to the community to earn badges.",
-        "cta": "Start exploring"
+        "title": "ยังไม่มีแบดจ์",
+        "desc": "ทำทริปให้สำเร็จและมีส่วนร่วมในชุมชนเพื่อรับแบดจ์",
+        "cta": "เริ่มสำรวจ"
       },
       "error": {
-        "title": "Couldn't load badges",
-        "cta": "Try again"
+        "title": "ไม่สามารถโหลดแบดจ์ได้",
+        "cta": "ลองอีกครั้ง"
       },
       "rarity": {
-        "common": "Common",
-        "rare": "Rare",
-        "epic": "Epic",
-        "legendary": "Legendary"
+        "common": "ทั่วไป",
+        "rare": "หายาก",
+        "epic": "เอปิก",
+        "legendary": "ระดับตำนาน"
       },
-      "pinAria": "Pin {name}",
-      "unpinAria": "Unpin {name}",
-      "pinLimitError": "You can pin up to 3 badges. Unpin one to pin another.",
-      "locked": "Locked",
-      "earnedOn": "Earned on {date}",
+      "pinAria": "ปักหมุด {name}",
+      "unpinAria": "เลิกปักหมุด {name}",
+      "pinLimitError": "คุณสามารถปักหมุดได้สูงสุด 3 แบดจ์ เลิกปักหมุดหนึ่งอันเพื่อปักหมุดอันใหม่",
+      "locked": "ล็อกอยู่",
+      "earnedOn": "ได้รับเมื่อ {date}",
       "modal": {
-        "close": "Close badge detail",
-        "category": "Category",
-        "rarity": "Rarity",
-        "earned": "Earned"
+        "close": "ปิดรายละเอียดแบดจ์",
+        "category": "หมวดหมู่",
+        "rarity": "ระดับความหายาก",
+        "earned": "ได้รับแล้ว"
       }
     },
     "settings": {
       "account": {
-        "heading": "Account",
-        "email": "Email",
-        "emailNote": "Sign-in address — cannot be changed here"
+        "heading": "บัญชี",
+        "email": "อีเมล",
+        "emailNote": "ที่อยู่อีเมลสำหรับเข้าสู่ระบบ — ไม่สามารถเปลี่ยนได้ที่นี่"
       },
       "actions": {
-        "heading": "Actions"
+        "heading": "การดำเนินการ"
       },
       "preferences": {
-        "heading": "Preferences",
-        "language": "Language",
-        "transport": "Default transport",
-        "transportCar": "Car",
-        "transportPublic": "Transit",
-        "interests": "Interests",
-        "interestsNote": "Used to personalise recommendations",
-        "save": "Save changes",
-        "saving": "Saving…",
-        "saved": "Saved"
+        "heading": "การตั้งค่าที่ต้องการ",
+        "language": "ภาษา",
+        "transport": "รูปแบบการเดินทางเริ่มต้น",
+        "transportCar": "รถยนต์",
+        "transportPublic": "ขนส่งสาธารณะ",
+        "interests": "ความสนใจ",
+        "interestsNote": "ใช้เพื่อปรับแต่งคำแนะนำให้เหมาะกับคุณ",
+        "save": "บันทึกการเปลี่ยนแปลง",
+        "saving": "กำลังบันทึก…",
+        "saved": "บันทึกแล้ว"
       },
       "interests": {
         "kpop": "K-Pop",
@@ -992,246 +992,246 @@
         "th": "ภาษาไทย",
         "pt-BR": "Português (BR)"
       },
-      "signOut": "Sign out",
-      "changePassword": "Change password",
-      "deleteAccount": "Delete account",
-      "deleteWarning": "Your account will be permanently deleted after 30 days. This cannot be undone.",
-      "deleteConfirm": "Yes, delete my account",
-      "deleteCancel": "Cancel",
-      "deleteTypePrompt": "Type \"DELETE\" to confirm",
-      "deleteTypeHint": "You must type DELETE (all caps) to enable the confirm button",
+      "signOut": "ออกจากระบบ",
+      "changePassword": "เปลี่ยนรหัสผ่าน",
+      "deleteAccount": "ลบบัญชี",
+      "deleteWarning": "บัญชีของคุณจะถูกลบอย่างถาวรหลังจาก 30 วัน ไม่สามารถย้อนกลับได้",
+      "deleteConfirm": "ใช่ ลบบัญชีของฉัน",
+      "deleteCancel": "ยกเลิก",
+      "deleteTypePrompt": "พิมพ์ \"DELETE\" เพื่อยืนยัน",
+      "deleteTypeHint": "คุณต้องพิมพ์ DELETE (ตัวพิมพ์ใหญ่ทั้งหมด) เพื่อเปิดใช้งานปุ่มยืนยัน",
       "password": {
-        "heading": "Change password",
-        "current": "Current password",
-        "new": "New password",
-        "confirm": "Confirm new password",
-        "hint": "At least 8 characters",
-        "show": "Show password",
-        "hide": "Hide password",
-        "submit": "Update password",
-        "submitting": "Updating…",
-        "success": "Password updated",
-        "mismatch": "Passwords do not match"
+        "heading": "เปลี่ยนรหัสผ่าน",
+        "current": "รหัสผ่านปัจจุบัน",
+        "new": "รหัสผ่านใหม่",
+        "confirm": "ยืนยันรหัสผ่านใหม่",
+        "hint": "อย่างน้อย 8 ตัวอักษร",
+        "show": "แสดงรหัสผ่าน",
+        "hide": "ซ่อนรหัสผ่าน",
+        "submit": "อัปเดตรหัสผ่าน",
+        "submitting": "กำลังอัปเดต…",
+        "success": "อัปเดตรหัสผ่านแล้ว",
+        "mismatch": "รหัสผ่านไม่ตรงกัน"
       },
-      "passwordError": "Failed to update password. Check your current password and try again.",
+      "passwordError": "อัปเดตรหัสผ่านไม่สำเร็จ ตรวจสอบรหัสผ่านปัจจุบันแล้วลองอีกครั้ง",
       "avatar": {
-        "heading": "Profile photo",
-        "alt": "Your profile photo",
-        "upload": "Upload photo",
-        "remove": "Remove",
-        "uploading": "Uploading…",
-        "hint": "JPG, PNG or WebP. Max 2MB.",
-        "uploaded": "Photo updated",
-        "removed": "Photo removed",
-        "error": "Could not update photo. Try again."
+        "heading": "รูปโปรไฟล์",
+        "alt": "รูปโปรไฟล์ของคุณ",
+        "upload": "อัปโหลดรูปภาพ",
+        "remove": "ลบ",
+        "uploading": "กำลังอัปโหลด…",
+        "hint": "JPG, PNG หรือ WebP ขนาดไม่เกิน 2MB",
+        "uploaded": "อัปเดตรูปภาพแล้ว",
+        "removed": "ลบรูปภาพแล้ว",
+        "error": "ไม่สามารถอัปเดตรูปภาพได้ ลองอีกครั้ง"
       },
       "identity": {
-        "heading": "Name & bio",
-        "displayName": "Display name",
-        "displayNamePlaceholder": "Your name",
-        "bio": "Bio",
-        "bioPlaceholder": "Tell others a little about you",
+        "heading": "ชื่อและประวัติย่อ",
+        "displayName": "ชื่อที่แสดง",
+        "displayNamePlaceholder": "ชื่อของคุณ",
+        "bio": "ประวัติย่อ",
+        "bioPlaceholder": "เล่าเรื่องราวเล็กๆ น้อยๆ เกี่ยวกับตัวคุณให้คนอื่นฟัง",
         "bioCounter": "{count}/150",
-        "save": "Save",
-        "saving": "Saving…",
-        "saved": "Saved",
-        "error": "Could not save. Try again."
+        "save": "บันทึก",
+        "saving": "กำลังบันทึก…",
+        "saved": "บันทึกแล้ว",
+        "error": "ไม่สามารถบันทึกได้ ลองอีกครั้ง"
       },
       "notifications": {
-        "heading": "Notifications",
-        "note": "Turn off the notifications you don't want to receive.",
-        "error": "Could not update. Try again.",
+        "heading": "การแจ้งเตือน",
+        "note": "ปิดการแจ้งเตือนที่คุณไม่ต้องการรับ",
+        "error": "ไม่สามารถอัปเดตได้ ลองอีกครั้ง",
         "types": {
-          "event_drop": "New event drops",
-          "deal_expiring": "Deals expiring soon",
-          "editorial_pick": "Editor's picks",
-          "badge_earned": "Badges earned",
-          "challenge_new": "New challenges",
-          "promotion": "Promotions"
+          "event_drop": "กิจกรรมใหม่",
+          "deal_expiring": "โปรโมชั่นใกล้หมดเวลา",
+          "editorial_pick": "คัดสรรโดยบรรณาธิการ",
+          "badge_earned": "ได้รับแบดจ์",
+          "challenge_new": "ภารกิจใหม่",
+          "promotion": "โปรโมชั่น"
         }
       },
       "privacy": {
-        "heading": "Privacy",
-        "note": "Control which tabs other people can see on your profile.",
-        "trips": "Trips",
-        "tripsNote": "Show your trips on your public profile",
-        "saved": "Saved",
-        "savedNote": "Show your saved places on your public profile",
-        "public": "Public",
-        "private": "Private",
-        "error": "Could not update. Try again."
+        "heading": "ความเป็นส่วนตัว",
+        "note": "จัดการว่าแท็บใดที่คนอื่นสามารถเห็นได้บนโปรไฟล์ของคุณ",
+        "trips": "ทริป",
+        "tripsNote": "แสดงทริปของคุณบนโปรไฟล์สาธารณะ",
+        "saved": "รายการที่บันทึก",
+        "savedNote": "แสดงสถานที่ที่บันทึกไว้ของคุณบนโปรไฟล์สาธารณะ",
+        "public": "สาธารณะ",
+        "private": "ส่วนตัว",
+        "error": "ไม่สามารถอัปเดตได้ ลองอีกครั้ง"
       },
       "dataConsent": {
-        "heading": "Data & Privacy Consent",
-        "note": "Manage your analytics and tracking consent — the same setting as the Cookie Preferences page."
+        "heading": "ความยินยอมด้านข้อมูลและความเป็นส่วนตัว",
+        "note": "จัดการความยินยอมด้านการวิเคราะห์และการติดตามของคุณ — การตั้งค่าเดียวกับหน้าการตั้งค่าคุกกี้"
       },
-      "signOutAll": "Log out from all devices",
-      "signOutAllNote": "Ends your session everywhere you're signed in.",
-      "signOutAllError": "Could not log out everywhere. Try again.",
+      "signOutAll": "ออกจากระบบทุกอุปกรณ์",
+      "signOutAllNote": "จะยุติเซสชันของคุณในทุกที่ที่คุณเข้าสู่ระบบอยู่",
+      "signOutAllError": "ไม่สามารถออกจากระบบทุกที่ได้ ลองอีกครั้ง",
       "reauth": {
-        "heading": "Confirm it's you",
-        "note": "For your security, re-enter your password to continue.",
-        "password": "Password",
-        "continue": "Continue",
-        "verifying": "Verifying…",
-        "cancel": "Cancel",
-        "error": "Incorrect password. Try again."
+        "heading": "ยืนยันว่าเป็นคุณ",
+        "note": "เพื่อความปลอดภัยของคุณ กรุณาป้อนรหัสผ่านอีกครั้งเพื่อดำเนินการต่อ",
+        "password": "รหัสผ่าน",
+        "continue": "ดำเนินการต่อ",
+        "verifying": "กำลังตรวจสอบ…",
+        "cancel": "ยกเลิก",
+        "error": "รหัสผ่านไม่ถูกต้อง ลองอีกครั้ง"
       },
-      "deleteError": "Couldn't delete your account. Please try again."
+      "deleteError": "ไม่สามารถลบบัญชีของคุณได้ กรุณาลองอีกครั้ง"
     },
     "saved": {
-      "loading": "Loading saved places…",
-      "empty": "No saved places yet",
-      "error": "Failed to load saved places",
-      "retry": "Try again",
-      "openOnMapAria": "Open {name} on the map"
+      "loading": "กำลังโหลดสถานที่ที่บันทึกไว้…",
+      "empty": "ยังไม่มีสถานที่ที่บันทึกไว้",
+      "error": "โหลดสถานที่ที่บันทึกไว้ไม่สำเร็จ",
+      "retry": "ลองอีกครั้ง",
+      "openOnMapAria": "เปิด {name} บนแผนที่"
     },
-    "notFound": "Profile not found",
-    "anonymousUser": "User",
-    "avatarAlt": "{name}'s profile photo",
-    "tabsLabel": "Profile sections",
-    "privateTab": "This tab is private",
-    "untitledPlan": "Untitled plan",
+    "notFound": "ไม่พบโปรไฟล์นี้",
+    "anonymousUser": "ผู้ใช้",
+    "avatarAlt": "รูปโปรไฟล์ของ {name}",
+    "tabsLabel": "หมวดหมู่โปรไฟล์",
+    "privateTab": "แท็บนี้เป็นส่วนตัว",
+    "untitledPlan": "แผนการเดินทางที่ยังไม่มีชื่อ",
     "otherTrips": {
-      "stops": "{count} stops",
-      "days": "{count} days",
-      "save": "Save",
-      "saved": "Saved",
-      "saveAria": "Save plan {title}",
-      "unsaveAria": "Remove saved plan {title}",
-      "openAria": "Open plan {title}"
+      "stops": "{count} จุดหมาย",
+      "days": "{count} วัน",
+      "save": "บันทึก",
+      "saved": "บันทึกแล้ว",
+      "saveAria": "บันทึกแผนการเดินทาง {title}",
+      "unsaveAria": "ลบแผนการเดินทางที่บันทึกไว้ {title}",
+      "openAria": "เปิดแผนการเดินทาง {title}"
     },
     "otherBadges": {
-      "lockedAria": "Locked badge: {name}"
+      "lockedAria": "แบดจ์ที่ล็อกอยู่: {name}"
     }
   },
   "explore": {
-    "title": "Explore",
-    "breadcrumb": "Explore",
-    "loading": "Loading…",
-    "sectionEmpty": "No places yet",
+    "title": "สำรวจ",
+    "breadcrumb": "สำรวจ",
+    "loading": "กำลังโหลด…",
+    "sectionEmpty": "ยังไม่มีสถานที่",
     "empty": {
-      "cta": "Explore the map"
+      "cta": "สำรวจแผนที่"
     },
     "sidebar": {
-      "ariaLabel": "Content category navigation"
+      "ariaLabel": "การนำทางหมวดหมู่เนื้อหา"
     },
     "pills": {
-      "ariaLabel": "Content category tabs"
+      "ariaLabel": "แท็บหมวดหมู่เนื้อหา"
     },
     "error": {
-      "title": "Failed to load",
-      "retry": "Try again"
+      "title": "โหลดไม่สำเร็จ",
+      "retry": "ลองอีกครั้ง"
     },
     "card": {
-      "trending": "Trending",
-      "ariaLabel": "View {name} on map",
-      "saveAria": "Save {name}",
-      "unsaveAria": "Unsave {name}",
-      "likeAria": "Like {name}",
-      "unlikeAria": "Unlike {name}",
-      "sponsored": "Sponsored",
+      "trending": "กำลังฮิต",
+      "ariaLabel": "ดู {name} บนแผนที่",
+      "saveAria": "บันทึก {name}",
+      "unsaveAria": "ยกเลิกการบันทึก {name}",
+      "likeAria": "ไลก์ {name}",
+      "unlikeAria": "ยกเลิกไลก์ {name}",
+      "sponsored": "ได้รับการสนับสนุน",
       "dDay": "D-{days}",
-      "dDayToday": "D-DAY",
-      "dDayPast": "Ended",
-      "featured": "Featured",
-      "addAria": "Add {name} to plan",
-      "addedAria": "{name} added to plan",
-      "imagePending": "Image being prepared"
+      "dDayToday": "วันนี้เลย",
+      "dDayPast": "สิ้นสุดแล้ว",
+      "featured": "แนะนำ",
+      "addAria": "เพิ่ม {name} ในแผนการเดินทาง",
+      "addedAria": "เพิ่ม {name} ในแผนการเดินทางแล้ว",
+      "imagePending": "กำลังเตรียมรูปภาพ"
     },
-    "hub": {
-      "title": "Explore Korea",
-      "subtitle": "Dive into K-Pop, K-Drama, K-Beauty, and K-Culture",
+    "aiCta": {
+      "text": "ให้ AI วางแผนทริปเคคัลเจอร์ให้คุณ",
+      "button": "ลองวางแผนด้วย AI",
       "kpop": {
-        "desc": "Artists, concert venues, agency tours, and merchandise"
+        "text": "วางแผนทริป K-Pop ของคุณด้วย AI"
       },
       "kdrama": {
-        "desc": "Filming locations, drama trails, and iconic sets"
+        "text": "วางแผนทริป K-Drama ของฉัน"
       },
       "kbeauty": {
-        "desc": "Skincare districts, clinics, and brand flagship stores"
+        "text": "วางแผนวันเที่ยว K-Beauty ของฉัน"
       },
       "kculture": {
-        "desc": "Cuisine, traditional markets, and heritage experiences"
+        "text": "วางแผนทริปเชิงวัฒนธรรมของฉัน"
+      }
+    },
+    "hub": {
+      "title": "สำรวจเกาหลี",
+      "subtitle": "ดำดิ่งสู่ K-Pop, K-Drama, K-Beauty และ K-Culture",
+      "kpop": {
+        "desc": "ศิลปิน สถานที่จัดคอนเสิร์ต ทัวร์ค่ายเพลง และสินค้าที่ระลึก"
+      },
+      "kdrama": {
+        "desc": "สถานที่ถ่ายทำ เส้นทางตามรอยละคร และฉากอันเป็นเอกลักษณ์"
+      },
+      "kbeauty": {
+        "desc": "ย่านสกินแคร์ คลินิก และร้านแบรนด์เรือธง"
+      },
+      "kculture": {
+        "desc": "อาหาร ตลาดดั้งเดิม และประสบการณ์มรดกวัฒนธรรม"
       }
     },
     "kpop": {
       "title": "K-Pop",
       "empty": {
-        "title": "No K-Pop spots yet",
-        "desc": "K-Pop content is coming soon."
+        "title": "ยังไม่มีสถานที่ K-Pop",
+        "desc": "เนื้อหา K-Pop กำลังจะมาถึงเร็วๆ นี้"
       }
     },
     "kdrama": {
       "title": "K-Drama",
       "empty": {
-        "title": "No K-Drama spots yet",
-        "desc": "K-Drama content is coming soon."
+        "title": "ยังไม่มีสถานที่ K-Drama",
+        "desc": "เนื้อหา K-Drama กำลังจะมาถึงเร็วๆ นี้"
       }
     },
     "kbeauty": {
       "title": "K-Beauty",
       "empty": {
-        "title": "No K-Beauty spots yet",
-        "desc": "K-Beauty content is coming soon."
+        "title": "ยังไม่มีสถานที่ K-Beauty",
+        "desc": "เนื้อหา K-Beauty กำลังจะมาถึงเร็วๆ นี้"
       }
     },
     "kculture": {
       "title": "K-Culture",
       "empty": {
-        "title": "No K-Culture spots yet",
-        "desc": "K-Culture content is coming soon."
+        "title": "ยังไม่มีสถานที่ K-Culture",
+        "desc": "เนื้อหา K-Culture กำลังจะมาถึงเร็วๆ นี้"
       }
     },
     "sections": {
-      "concerts": "Concerts",
-      "tours": "Tours",
-      "agencies": "Agencies",
-      "merchandise": "Merchandise",
-      "filming": "Filming Locations",
-      "historical": "Historical Sets",
-      "ostCafes": "OST Cafés",
-      "skincare": "Skincare",
-      "makeup": "Makeup",
-      "spa": "Spa & Wellness",
-      "salon": "Salon Experiences",
-      "cuisine": "Korean Cuisine",
-      "markets": "Traditional Markets",
-      "historic": "Historic Places",
-      "experiences": "Traditional Experiences",
-      "traditional": "Traditional",
-      "food": "Food",
-      "festivals": "Festivals",
-      "crafts": "Crafts",
-      "trending": "Trending Now"
+      "concerts": "คอนเสิร์ต",
+      "tours": "ทัวร์",
+      "agencies": "ค่ายเพลง",
+      "merchandise": "สินค้าที่ระลึก",
+      "filming": "สถานที่ถ่ายทำ",
+      "historical": "ฉากประวัติศาสตร์",
+      "ostCafes": "คาเฟ่ธีมเพลงประกอบ",
+      "skincare": "สกินแคร์",
+      "makeup": "เมคอัพ",
+      "spa": "สปาและเวลเนส",
+      "salon": "ประสบการณ์ร้านทำผม",
+      "cuisine": "อาหารเกาหลี",
+      "markets": "ตลาดดั้งเดิม",
+      "historic": "สถานที่ทางประวัติศาสตร์",
+      "experiences": "ประสบการณ์ดั้งเดิม",
+      "traditional": "ดั้งเดิม",
+      "food": "อาหาร",
+      "festivals": "เทศกาล",
+      "crafts": "งานฝีมือ",
+      "trending": "กำลังฮิตตอนนี้"
     },
-    "aiCta": {
-      "text": "Let AI plan your K-culture journey",
-      "button": "Try AI Planning",
-      "kpop": {
-        "text": "Plan your K-Pop trip with AI"
-      },
-      "kdrama": {
-        "text": "Plan my K-Drama trip"
-      },
-      "kbeauty": {
-        "text": "Plan my K-Beauty day"
-      },
-      "kculture": {
-        "text": "Plan my cultural trip"
-      }
-    },
-    "viewAll": "View all",
-    "viewAllAria": "View all {section}",
+    "viewAll": "ดูทั้งหมด",
+    "viewAllAria": "ดูทั้งหมดของ {section}",
     "hero": {
-      "ariaLabel": "Featured highlights",
-      "slideN": "Slide {n}",
-      "prev": "Previous slide",
-      "next": "Next slide"
+      "ariaLabel": "ไฮไลต์แนะนำ",
+      "slideN": "สไลด์ {n}",
+      "prev": "สไลด์ก่อนหน้า",
+      "next": "สไลด์ถัดไป"
     },
     "filters": {
-      "ariaLabel": "Filter",
-      "all": "All",
+      "ariaLabel": "ตัวกรอง",
+      "all": "ทั้งหมด",
       "agency": {
         "HYBE": "HYBE",
         "SM": "SM",
@@ -1239,442 +1239,417 @@
         "YG": "YG"
       },
       "district": {
-        "Apgujeong": "Apgujeong",
-        "Myeongdong": "Myeongdong",
-        "Hongdae": "Hongdae",
-        "Gangnam": "Gangnam"
+        "Apgujeong": "อัพกูจอง",
+        "Myeongdong": "เมียงดง",
+        "Hongdae": "ฮงแด",
+        "Gangnam": "คังนัม"
       },
       "region": {
-        "Seoul": "Seoul",
-        "Jeonju": "Jeonju",
-        "Gyeongju": "Gyeongju",
-        "Andong": "Andong"
+        "Seoul": "โซล",
+        "Jeonju": "จอนจู",
+        "Gyeongju": "คย็องจู",
+        "Andong": "อันดง"
       }
     },
     "packages": {
-      "title": "B4K Best Packages",
-      "sponsored": "Sponsored",
-      "viewCta": "View",
-      "ariaLabel": "{title} by {partner}"
+      "title": "แพ็กเกจยอดเยี่ยมจาก B4K",
+      "sponsored": "ได้รับการสนับสนุน",
+      "viewCta": "ดู",
+      "ariaLabel": "{title} โดย {partner}"
     }
   },
   "saved": {
-    "ariaLabel": "Saved page",
-    "breadcrumb": "Saved",
-    "title": "Saved",
+    "ariaLabel": "หน้ารายการที่บันทึก",
+    "breadcrumb": "รายการที่บันทึก",
+    "title": "รายการที่บันทึก",
     "tabs": {
-      "ariaLabel": "Content tabs",
-      "places": "Places",
-      "myPlans": "My Plans",
-      "savedPlans": "Saved Plans"
+      "ariaLabel": "แท็บเนื้อหา",
+      "places": "สถานที่",
+      "myPlans": "แผนการเดินทางของฉัน",
+      "savedPlans": "แผนการเดินทางที่บันทึกไว้"
     },
-    "loading": "Loading saved items…",
+    "loading": "กำลังโหลดรายการที่บันทึกไว้…",
     "error": {
-      "title": "Couldn't load saved items",
-      "retry": "Try again"
+      "title": "ไม่สามารถโหลดรายการที่บันทึกไว้ได้",
+      "retry": "ลองอีกครั้ง"
     },
     "empty": {
       "places": {
-        "title": "No saved places yet",
-        "desc": "Tap the bookmark icon on any place to save it here.",
-        "cta": "Explore the map"
+        "title": "ยังไม่มีสถานที่ที่บันทึกไว้",
+        "desc": "แตะไอคอนบุ๊กมาร์กที่สถานที่ใดก็ได้เพื่อบันทึกไว้ที่นี่",
+        "cta": "สำรวจแผนที่"
       },
       "myPlans": {
-        "title": "No plans yet",
-        "desc": "Create your first plan on the map.",
-        "cta": "Open the map"
+        "title": "ยังไม่มีแผนการเดินทาง",
+        "desc": "สร้างแผนการเดินทางแรกของคุณบนแผนที่",
+        "cta": "เปิดแผนที่"
       },
       "savedPlans": {
-        "title": "No saved plans yet",
-        "desc": "Save plans you love to revisit them anytime.",
-        "cta": "Explore the map"
+        "title": "ยังไม่มีแผนการเดินทางที่บันทึกไว้",
+        "desc": "บันทึกแผนการเดินทางที่คุณชอบเพื่อกลับมาดูได้ทุกเมื่อ",
+        "cta": "สำรวจแผนที่"
       }
     },
     "place": {
-      "ariaLabel": "View {name} on map"
+      "ariaLabel": "ดู {name} บนแผนที่"
     },
     "plan": {
-      "ariaLabel": "View itinerary {title}",
-      "stops": "{count, plural, one {# stop} other {# stops}}",
-      "days": "{count, plural, one {# day} other {# days}}"
+      "ariaLabel": "ดูแผนการเดินทาง {title}",
+      "stops": "{count} จุดหมาย",
+      "days": "{count} วัน"
     },
     "myPlan": {
-      "ariaLabel": "View plan {title}",
-      "draft": "Draft",
-      "lastEdited": "Edited {date}",
-      "edit": "Edit",
-      "share": "Share",
-      "delete": "Delete",
-      "editAriaLabel": "Edit plan {title}",
-      "shareAriaLabel": "Share plan {title}",
-      "deleteAriaLabel": "Delete plan {title}"
+      "ariaLabel": "ดูแผนการเดินทาง {title}",
+      "draft": "ฉบับร่าง",
+      "lastEdited": "แก้ไขเมื่อ {date}",
+      "edit": "แก้ไข",
+      "share": "แชร์",
+      "delete": "ลบ",
+      "editAriaLabel": "แก้ไขแผนการเดินทาง {title}",
+      "shareAriaLabel": "แชร์แผนการเดินทาง {title}",
+      "deleteAriaLabel": "ลบแผนการเดินทาง {title}"
     },
     "unsave": {
-      "label": "Unsave",
-      "ariaLabel": "Unsave plan {title}"
+      "label": "ยกเลิกการบันทึก",
+      "ariaLabel": "ลบแผนการเดินทางที่บันทึกไว้ {title}"
     },
     "confirmDelete": {
-      "title": "Delete plan?",
-      "desc": "This plan will be permanently removed.",
-      "confirm": "Delete",
-      "cancel": "Cancel"
+      "title": "ลบแผนการเดินทาง?",
+      "desc": "แผนการเดินทางนี้จะถูกลบอย่างถาวร",
+      "confirm": "ลบ",
+      "cancel": "ยกเลิก"
     },
     "folder": {
-      "openAriaLabel": "Open folder {name}",
-      "poiCount": "{count, plural, one {# place} other {# places}}",
-      "generatePlan": "Generate Plan",
-      "back": "Back to folders",
-      "selectHint": "Select places for your plan",
-      "selectAll": "Select All",
-      "deselectAll": "Deselect All",
-      "selectAriaLabel": "Select {name}",
-      "generate": "Generate ({count} places)",
-      "generating": "Generating…",
-      "generateError": "Couldn't generate plan. Please try again.",
-      "newFolder": "New folder",
-      "createPlan": "Create plan",
-      "cancel": "Cancel",
-      "selectFoldersHint": "Select folders to plan from",
-      "newFolderPlaceholder": "Folder name",
-      "create": "Create",
-      "generateFolders": "Generate plan from {count, plural, one {# folder} other {# folders}}",
-      "selectFolderAria": "Select folder {name}",
-      "folderMenu": "Options for {name}",
-      "rename": "Rename",
-      "delete": "Delete",
-      "renameTitle": "Rename folder",
-      "save": "Save",
-      "deleteTitle": "Delete folder?",
-      "deleteWarning": "\"{name}\" and all its saved places will be permanently deleted. This cannot be undone.",
-      "deleteCancel": "Cancel",
-      "offlineNote": "You're offline. Try again when connected."
+      "openAriaLabel": "เปิดโฟลเดอร์ {name}",
+      "poiCount": "{count} สถานที่",
+      "generatePlan": "สร้างแผนการเดินทาง",
+      "back": "กลับไปที่โฟลเดอร์",
+      "selectHint": "เลือกสถานที่สำหรับแผนการเดินทางของคุณ",
+      "selectAll": "เลือกทั้งหมด",
+      "deselectAll": "ยกเลิกเลือกทั้งหมด",
+      "selectAriaLabel": "เลือก {name}",
+      "generate": "สร้าง ({count} สถานที่)",
+      "generating": "กำลังสร้าง…",
+      "generateError": "ไม่สามารถสร้างแผนการเดินทางได้ กรุณาลองอีกครั้ง",
+      "newFolder": "โฟลเดอร์ใหม่",
+      "createPlan": "สร้างแผนการเดินทาง",
+      "cancel": "ยกเลิก",
+      "selectFoldersHint": "เลือกโฟลเดอร์เพื่อวางแผน",
+      "newFolderPlaceholder": "ชื่อโฟลเดอร์",
+      "create": "สร้าง",
+      "generateFolders": "สร้างแผนการเดินทางจาก {count} โฟลเดอร์",
+      "selectFolderAria": "เลือกโฟลเดอร์ {name}",
+      "folderMenu": "ตัวเลือกสำหรับ {name}",
+      "rename": "เปลี่ยนชื่อ",
+      "delete": "ลบ",
+      "renameTitle": "เปลี่ยนชื่อโฟลเดอร์",
+      "save": "บันทึก",
+      "deleteTitle": "ลบโฟลเดอร์?",
+      "deleteWarning": "\"{name}\" และสถานที่ทั้งหมดที่บันทึกไว้ในนั้นจะถูกลบอย่างถาวร ไม่สามารถย้อนกลับได้",
+      "deleteCancel": "ยกเลิก",
+      "offlineNote": "คุณออฟไลน์อยู่ ลองอีกครั้งเมื่อเชื่อมต่อแล้ว"
     },
     "poi": {
-      "removeAriaLabel": "Remove {name} from folder",
-      "removeLabel": "Remove"
+      "removeAriaLabel": "ลบ {name} ออกจากโฟลเดอร์",
+      "removeLabel": "ลบ"
     }
   },
   "notifications": {
-    "ariaLabel": "Notifications page",
-    "breadcrumb": "Notifications",
-    "title": "Notifications",
-    "unread": "{count, plural, one {# unread} other {# unread}}",
-    "loading": "Loading notifications…",
-    "loadMore": "Load more",
+    "ariaLabel": "หน้าการแจ้งเตือน",
+    "breadcrumb": "การแจ้งเตือน",
+    "title": "การแจ้งเตือน",
+    "unread": "ยังไม่ได้อ่าน {count} รายการ",
+    "markAllRead": "ทำเครื่องหมายว่าอ่านแล้วทั้งหมด",
+    "loading": "กำลังโหลดการแจ้งเตือน…",
+    "loadMore": "โหลดเพิ่มเติม",
     "error": {
-      "title": "Couldn't load notifications",
-      "retry": "Try again"
+      "title": "ไม่สามารถโหลดการแจ้งเตือนได้",
+      "retry": "ลองอีกครั้ง"
     },
     "empty": {
-      "title": "You're all caught up",
-      "desc": "Notifications about events, deals, and badges will appear here."
+      "title": "คุณอ่านครบทุกรายการแล้ว",
+      "desc": "การแจ้งเตือนเกี่ยวกับกิจกรรม โปรโมชั่น และแบดจ์จะปรากฏที่นี่"
     },
     "groups": {
-      "today": "Today",
-      "yesterday": "Yesterday",
-      "earlier": "Earlier"
-    },
-    "markAllRead": "Mark all read"
+      "today": "วันนี้",
+      "yesterday": "เมื่อวาน",
+      "earlier": "ก่อนหน้านี้"
+    }
   },
   "badges": {
-    "ariaLabel": "Badges page",
-    "breadcrumb": "Badges",
-    "title": "Badges",
-    "stats": "{earned} / {total} earned",
+    "ariaLabel": "หน้าแบดจ์",
+    "breadcrumb": "แบดจ์",
+    "title": "แบดจ์",
+    "stats": "ได้รับแล้ว {earned} / {total}",
     "filter": {
-      "ariaLabel": "Filter by rarity",
-      "all": "All",
-      "common": "Common",
-      "rare": "Rare",
-      "epic": "Epic",
-      "legendary": "Legendary"
+      "ariaLabel": "กรองตามระดับความหายาก",
+      "all": "ทั้งหมด",
+      "common": "ทั่วไป",
+      "rare": "หายาก",
+      "epic": "เอปิก",
+      "legendary": "ระดับตำนาน"
     },
-    "loading": "Loading badges…",
+    "loading": "กำลังโหลดแบดจ์…",
     "error": {
-      "title": "Couldn't load badges",
-      "retry": "Try again"
+      "title": "ไม่สามารถโหลดแบดจ์ได้",
+      "retry": "ลองอีกครั้ง"
     },
     "empty": {
-      "title": "No badges found",
-      "desc": "Explore Korea and complete challenges to earn badges."
+      "title": "ไม่พบแบดจ์",
+      "desc": "สำรวจเกาหลีและทำภารกิจให้สำเร็จเพื่อรับแบดจ์"
     },
     "badge": {
       "ariaLabel": "{name} — {rarity}",
-      "pinned": "Pinned badge",
-      "earnedOn": "Earned {date}",
-      "locked": "Locked"
+      "pinned": "แบดจ์ที่ปักหมุด",
+      "earnedOn": "ได้รับเมื่อ {date}",
+      "locked": "ล็อกอยู่"
     },
     "detail": {
-      "ariaLabel": "Badge details",
-      "close": "Close",
-      "category": "Category",
-      "status": "Status",
-      "earned": "Earned",
-      "earnedOn": "Earned on {date}",
-      "unlockToast": "New badge unlocked: {name}",
-      "unlockCriteria": "How to unlock",
-      "pin": "Pin to profile",
-      "unpin": "Unpin from profile",
-      "pinLimit": "You can pin up to 3 badges. Unpin one first.",
-      "pinError": "Could not update pin. Please try again.",
-      "unlockToastView": "View badge"
+      "ariaLabel": "รายละเอียดแบดจ์",
+      "close": "ปิด",
+      "category": "หมวดหมู่",
+      "status": "สถานะ",
+      "earned": "ได้รับแล้ว",
+      "earnedOn": "ได้รับเมื่อ {date}",
+      "unlockToast": "ปลดล็อกแบดจ์ใหม่: {name}",
+      "unlockCriteria": "วิธีปลดล็อก",
+      "pin": "ปักหมุดในโปรไฟล์",
+      "unpin": "เลิกปักหมุดจากโปรไฟล์",
+      "pinLimit": "คุณสามารถปักหมุดได้สูงสุด 3 แบดจ์ กรุณาเลิกปักหมุดหนึ่งอันก่อน",
+      "pinError": "ไม่สามารถอัปเดตการปักหมุดได้ กรุณาลองอีกครั้ง",
+      "unlockToastView": "ดูแบดจ์"
     },
     "rarity": {
-      "common": "Common",
-      "rare": "Rare",
-      "epic": "Epic",
-      "legendary": "Legendary"
+      "common": "ทั่วไป",
+      "rare": "หายาก",
+      "epic": "เอปิก",
+      "legendary": "ระดับตำนาน"
     }
   },
   "leaderboard": {
-    "ariaLabel": "Leaderboard page",
-    "breadcrumb": "Leaderboard",
-    "title": "Leaderboard",
+    "ariaLabel": "หน้าอันดับ",
+    "breadcrumb": "อันดับ",
+    "title": "อันดับ",
     "windows": {
-      "ariaLabel": "Time window",
-      "weekly": "Weekly",
-      "rising": "Rising",
-      "annual": "Annual"
+      "ariaLabel": "ช่วงเวลา",
+      "weekly": "รายสัปดาห์",
+      "rising": "กำลังมาแรง",
+      "annual": "ประจำปี"
     },
-    "loading": "Loading leaderboard…",
+    "loading": "กำลังโหลดอันดับ…",
     "error": {
-      "title": "Couldn't load leaderboard",
-      "retry": "Try again"
+      "title": "ไม่สามารถโหลดอันดับได้",
+      "retry": "ลองอีกครั้ง"
     },
     "empty": {
-      "title": "No rankings yet this week.",
-      "desc": "Publish your first itinerary to appear here."
+      "title": "ยังไม่มีการจัดอันดับในสัปดาห์นี้",
+      "desc": "เผยแพร่แผนการเดินทางแรกของคุณเพื่อปรากฏที่นี่"
     },
-    "rank": "Rank {rank}",
-    "plans": "{count, plural, one {# plan} other {# plans}}",
-    "scoreUnit": "pts",
-    "computedAt": "Updated {date}",
+    "rank": "อันดับที่ {rank}",
+    "plans": "{count} แผนการเดินทาง",
+    "scoreUnit": "คะแนน",
+    "computedAt": "อัปเดตเมื่อ {date}",
     "yourRank": {
-      "label": "Your rank: #{rank}",
-      "ariaLabel": "Your rank is number {rank}"
+      "label": "อันดับของคุณ: #{rank}",
+      "ariaLabel": "อันดับของคุณคืออันดับที่ {rank}"
     },
     "trend": {
-      "up": "Rank up",
-      "down": "Rank down",
-      "same": "No change"
+      "up": "อันดับเพิ่มขึ้น",
+      "down": "อันดับลดลง",
+      "same": "ไม่เปลี่ยนแปลง"
     }
   },
   "help": {
-    "ariaLabel": "Help page",
-    "breadcrumb": "Help",
-    "title": "Help & FAQ",
-    "expandAriaLabel": "Expand: {question}",
-    "collapseAriaLabel": "Collapse: {question}",
+    "ariaLabel": "หน้าช่วยเหลือ",
+    "breadcrumb": "ช่วยเหลือ",
+    "title": "ช่วยเหลือและคำถามที่พบบ่อย",
+    "expandAriaLabel": "ขยาย: {question}",
+    "collapseAriaLabel": "ย่อ: {question}",
     "sections": {
       "gettingStarted": {
-        "title": "Getting started",
+        "title": "เริ่มต้นใช้งาน",
         "items": {
           "q1": {
-            "q": "What is B4K?",
-            "a": "B4K is a K-culture travel discovery platform for foreign tourists visiting Korea. Find K-Pop venues, K-Drama filming locations, beauty spots, and more — then build your own itinerary."
+            "q": "B4K คืออะไร?",
+            "a": "B4K เป็นแพลตฟอร์มค้นพบการท่องเที่ยวเชิงวัฒนธรรมเกาหลีสำหรับนักท่องเที่ยวต่างชาติที่มาเยือนเกาหลี ค้นหาสถานที่จัดแสดง K-Pop สถานที่ถ่ายทำ K-Drama จุดเช็คอินความงาม และอื่นๆ อีกมากมาย — จากนั้นสร้างแผนการเดินทางของคุณเอง"
           },
           "q2": {
-            "q": "Do I need an account to use B4K?",
-            "a": "You can explore the map without an account. Saving places, creating itineraries, and joining the leaderboard require signing in with Google."
+            "q": "ต้องมีบัญชีเพื่อใช้ B4K หรือไม่?",
+            "a": "คุณสามารถสำรวจแผนที่ได้โดยไม่ต้องมีบัญชี การบันทึกสถานที่ การสร้างแผนการเดินทาง และการเข้าร่วมอันดับต้องเข้าสู่ระบบด้วย Google"
           },
           "q3": {
-            "q": "Which languages does B4K support?",
-            "a": "B4K is available in Korean, English, Japanese, Chinese (Simplified & Traditional), Thai, and Portuguese (Brazil)."
+            "q": "B4K รองรับภาษาอะไรบ้าง?",
+            "a": "B4K พร้อมให้บริการในภาษาเกาหลี อังกฤษ ญี่ปุ่น จีน (ตัวย่อและตัวเต็ม) ไทย และโปรตุเกส (บราซิล)"
           }
         }
       },
       "map": {
-        "title": "Using the map",
+        "title": "การใช้งานแผนที่",
         "items": {
           "q1": {
-            "q": "How do I save a place?",
-            "a": "Tap any pin on the map to open the place panel, then tap the bookmark icon to save it. Saved places appear in your Saved tab."
+            "q": "ฉันจะบันทึกสถานที่ได้อย่างไร?",
+            "a": "แตะหมุดใดก็ได้บนแผนที่เพื่อเปิดแผงสถานที่ จากนั้นแตะไอคอนบุ๊กมาร์กเพื่อบันทึก สถานที่ที่บันทึกไว้จะปรากฏในแท็บรายการที่บันทึกของคุณ"
           },
           "q2": {
-            "q": "How do I build an itinerary?",
-            "a": "Open a place on the map and tap 'Add to plan' in the panel. You can add multiple stops, reorder them, and let B4K calculate the best route."
+            "q": "ฉันจะสร้างแผนการเดินทางได้อย่างไร?",
+            "a": "เปิดสถานที่บนแผนที่แล้วแตะ 'เพิ่มในแผนการเดินทาง' บนแผง คุณสามารถเพิ่มจุดหมายหลายจุด จัดลำดับใหม่ และให้ B4K คำนวณเส้นทางที่ดีที่สุดให้"
           }
         }
       },
       "account": {
-        "title": "Account",
+        "title": "บัญชี",
         "items": {
           "q1": {
-            "q": "How do I change my profile?",
-            "a": "Go to your profile (the icon at the bottom of the sidebar), then tap the edit icon to update your display name and language preference."
+            "q": "ฉันจะแก้ไขโปรไฟล์ของฉันได้อย่างไร?",
+            "a": "ไปที่โปรไฟล์ของคุณ (ไอคอนที่ด้านล่างของแถบด้านข้าง) จากนั้นแตะไอคอนแก้ไขเพื่ออัปเดตชื่อที่แสดงและการตั้งค่าภาษาของคุณ"
           },
           "q2": {
-            "q": "How do I delete my account?",
-            "a": "In Profile → Settings, tap 'Delete account'. Your data is held for 30 days before permanent deletion, in line with Korean privacy law (PIPA)."
+            "q": "ฉันจะลบบัญชีของฉันได้อย่างไร?",
+            "a": "ในโปรไฟล์ → การตั้งค่า แตะ 'ลบบัญชี' ข้อมูลของคุณจะถูกเก็บไว้ 30 วันก่อนถูกลบอย่างถาวร ตามกฎหมายคุ้มครองข้อมูลส่วนบุคคลของเกาหลี (PIPA)"
           },
           "q3": {
-            "q": "How do I change my password?",
-            "a": "If you signed up with email, go to Profile → Settings to update your password. If you signed in with Google, Apple, or Microsoft, manage your password with that provider — B4K does not store it."
+            "q": "ฉันจะเปลี่ยนรหัสผ่านของฉันได้อย่างไร?",
+            "a": "หากคุณสมัครสมาชิกด้วยอีเมล ไปที่โปรไฟล์ → การตั้งค่าเพื่ออัปเดตรหัสผ่านของคุณ หากคุณเข้าสู่ระบบด้วย Google, Apple หรือ Microsoft ให้จัดการรหัสผ่านของคุณกับผู้ให้บริการนั้น — B4K จะไม่เก็บรหัสผ่านของคุณ"
           }
         }
       },
       "contact": {
-        "title": "Contact",
-        "desc": "Can't find what you're looking for? Reach out and we'll get back to you.",
-        "ctaEmail": "Email support",
+        "title": "ติดต่อ",
+        "desc": "หาสิ่งที่คุณต้องการไม่พบใช่ไหม? ติดต่อเรา แล้วเราจะติดต่อกลับ",
+        "ctaEmail": "อีเมลฝ่ายสนับสนุน",
         "ctaEmailHref": "mailto:support@b4korea.com",
         "emailAddress": "support@b4korea.com",
-        "copyEmail": "Copy email address",
-        "copyEmailCopied": "Copied",
-        "copyEmailAriaLabel": "Copy email address to clipboard"
+        "copyEmail": "คัดลอกที่อยู่อีเมล",
+        "copyEmailCopied": "คัดลอกแล้ว",
+        "copyEmailAriaLabel": "คัดลอกที่อยู่อีเมลไปยังคลิปบอร์ด"
       },
       "getting-started": {
-        "title": "Getting started",
+        "title": "เริ่มต้นใช้งาน",
         "items": {
           "q1": {
-            "q": "What is B4K?",
-            "a": "B4K is a K-culture travel discovery platform for foreign tourists visiting Korea. Explore K-Pop venues, K-Drama filming locations, K-Beauty spots, and K-Culture landmarks on an interactive map, then build your own trip plan."
+            "q": "B4K คืออะไร?",
+            "a": "B4K เป็นแพลตฟอร์มค้นพบการท่องเที่ยวเชิงวัฒนธรรมเกาหลีสำหรับนักท่องเที่ยวต่างชาติที่มาเยือนเกาหลี สำรวจสถานที่จัดแสดง K-Pop สถานที่ถ่ายทำ K-Drama จุดเช็คอิน K-Beauty และสถานที่สำคัญ K-Culture บนแผนที่เชิงโต้ตอบ จากนั้นสร้างแผนการเดินทางของคุณเอง"
           },
           "q2": {
-            "q": "How do I create an account?",
-            "a": "Sign up with your email and a password, or continue with Google, Apple, or Microsoft. There is no separate onboarding — once you sign up you land straight on the Home page."
+            "q": "ฉันจะสร้างบัญชีได้อย่างไร?",
+            "a": "สมัครด้วยอีเมลและรหัสผ่าน หรือดำเนินการต่อด้วย Google, Apple หรือ Microsoft ไม่มีขั้นตอนแนะนำแยกต่างหาก — เมื่อสมัครแล้วคุณจะเข้าสู่หน้าหลักทันที"
           },
           "q3": {
-            "q": "What languages are supported?",
-            "a": "B4K is available in Korean, English, Japanese, Chinese (Simplified and Traditional), Thai, and Brazilian Portuguese. You can change your language anytime in Profile settings."
+            "q": "รองรับภาษาอะไรบ้าง?",
+            "a": "B4K พร้อมให้บริการในภาษาเกาหลี อังกฤษ ญี่ปุ่น จีน (ตัวย่อและตัวเต็ม) ไทย และโปรตุเกสแบบบราซิล คุณสามารถเปลี่ยนภาษาได้ทุกเมื่อในการตั้งค่าโปรไฟล์"
           }
         }
       },
       "planning": {
-        "title": "Planning",
+        "title": "การวางแผน",
         "items": {
           "q1": {
-            "q": "How do I create a trip plan?",
-            "a": "Open a place on the map and add it to your plan. Add stops, reorder them, and each leg shows an estimated travel time. When you are happy with it, tap Save Plan. You can also ask the AI assistant to draft a plan for you."
+            "q": "ฉันจะสร้างแผนการเดินทางได้อย่างไร?",
+            "a": "เปิดสถานที่บนแผนที่แล้วเพิ่มลงในแผนการเดินทางของคุณ เพิ่มจุดหมาย จัดลำดับใหม่ และแต่ละช่วงจะแสดงเวลาเดินทางโดยประมาณ เมื่อพอใจแล้วให้แตะบันทึกแผนการเดินทาง คุณยังสามารถขอให้ผู้ช่วย AI ร่างแผนการเดินทางให้คุณได้"
           },
           "q2": {
-            "q": "Can I use B4K without an account?",
-            "a": "Yes. You can explore the map and build a plan as a guest — your draft is kept in your browser so it survives a refresh. You only need to sign in when you tap Save Plan, and your draft moves to your account automatically."
+            "q": "ฉันสามารถใช้ B4K โดยไม่มีบัญชีได้หรือไม่?",
+            "a": "ได้ คุณสามารถสำรวจแผนที่และสร้างแผนการเดินทางในฐานะผู้เยี่ยมชม — ฉบับร่างของคุณจะถูกเก็บไว้ในเบราว์เซอร์ ดังนั้นจึงยังคงอยู่แม้รีเฟรชหน้า คุณต้องเข้าสู่ระบบเมื่อแตะบันทึกแผนการเดินทางเท่านั้น และฉบับร่างของคุณจะถูกย้ายไปยังบัญชีของคุณโดยอัตโนมัติ"
           },
           "q3": {
-            "q": "Is there a limit on how many stops a plan can have?",
-            "a": "A single plan can hold up to 40 stops. Once you reach the limit the Add button is disabled and a message lets you know. There is no in-app payment — partner plans simply link out to the partner's website."
+            "q": "แผนการเดินทางหนึ่งแผนมีจำนวนจุดหมายสูงสุดจำกัดหรือไม่?",
+            "a": "แผนการเดินทางหนึ่งแผนสามารถมีจุดหมายได้สูงสุด 40 จุด เมื่อถึงขีดจำกัด ปุ่มเพิ่มจะถูกปิดใช้งานและมีข้อความแจ้งให้ทราบ ไม่มีการชำระเงินภายในแอป — แผนการเดินทางของพาร์ทเนอร์เพียงแค่ลิงก์ไปยังเว็บไซต์ของพาร์ทเนอร์เท่านั้น"
           }
         }
       },
       "saved": {
-        "title": "Saved",
+        "title": "รายการที่บันทึก",
         "items": {
           "q1": {
-            "q": "How do I save a place?",
-            "a": "Open any place from the map and tap the bookmark icon. Saved places appear in your Saved tab, where you can browse them all in one list."
+            "q": "ฉันจะบันทึกสถานที่ได้อย่างไร?",
+            "a": "เปิดสถานที่ใดก็ได้จากแผนที่แล้วแตะไอคอนบุ๊กมาร์ก สถานที่ที่บันทึกไว้จะปรากฏในแท็บรายการที่บันทึกของคุณ ซึ่งคุณสามารถเรียกดูทั้งหมดในรายการเดียวได้"
           },
           "q2": {
-            "q": "What are folders?",
-            "a": "Folders let you organize your saved places into single-level groups — for example one folder per city or per interest. Folders are for saved places only; saved plans stay in a single flat list."
+            "q": "โฟลเดอร์คืออะไร?",
+            "a": "โฟลเดอร์ช่วยให้คุณจัดระเบียบสถานที่ที่บันทึกไว้เป็นกลุ่มระดับชั้นเดียว — เช่น หนึ่งโฟลเดอร์ต่อหนึ่งเมืองหรือหนึ่งความสนใจ โฟลเดอร์ใช้สำหรับสถานที่ที่บันทึกไว้เท่านั้น ส่วนแผนการเดินทางที่บันทึกไว้จะอยู่ในรายการแบบเรียบรายการเดียว"
           },
           "q3": {
-            "q": "How do I generate a plan from saved places?",
-            "a": "In the Saved tab, select the places you want with the checkboxes, then choose Generate plan. B4K arranges them into a suggested route and opens the new plan so you can fine-tune it."
+            "q": "ฉันจะสร้างแผนการเดินทางจากสถานที่ที่บันทึกไว้ได้อย่างไร?",
+            "a": "ในแท็บรายการที่บันทึก เลือกสถานที่ที่คุณต้องการด้วยกล่องกาเครื่องหมาย จากนั้นเลือกสร้างแผนการเดินทาง B4K จะจัดเรียงเป็นเส้นทางที่แนะนำและเปิดแผนการเดินทางใหม่ให้คุณปรับแต่งเพิ่มเติม"
           }
         }
       },
       "technical": {
-        "title": "Technical",
+        "title": "ปัญหาทางเทคนิค",
         "items": {
           "q1": {
-            "q": "The map isn't loading.",
-            "a": "First try refreshing the page. If the map still doesn't appear, check your internet connection and disable any ad or script blockers, which can interfere with the map. If the problem continues, contact us using the email below."
+            "q": "แผนที่ไม่โหลด",
+            "a": "ลองรีเฟรชหน้าก่อน หากแผนที่ยังไม่ปรากฏ ให้ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณ และปิดใช้งานตัวบล็อกโฆษณาหรือสคริปต์ใดๆ ที่อาจรบกวนแผนที่ หากปัญหายังคงอยู่ กรุณาติดต่อเราโดยใช้อีเมลด้านล่าง"
           },
           "q2": {
-            "q": "The app is in the wrong language.",
-            "a": "B4K picks a language from your browser settings and falls back to English if your language isn't supported. To set it yourself, open Profile → Settings and choose your preferred language."
+            "q": "แอปแสดงผลภาษาที่ไม่ถูกต้อง",
+            "a": "B4K เลือกภาษาจากการตั้งค่าเบราว์เซอร์ของคุณ และจะใช้ภาษาอังกฤษเป็นค่าเริ่มต้นหากไม่รองรับภาษาของคุณ หากต้องการตั้งค่าด้วยตนเอง ให้เปิดโปรไฟล์ → การตั้งค่า แล้วเลือกภาษาที่คุณต้องการ"
           },
           "q3": {
-            "q": "How do I report a problem?",
-            "a": "Use the email address in the Contact section below to report bugs or send feedback. Please include what you were doing, your device, and your browser so we can help faster."
+            "q": "ฉันจะรายงานปัญหาได้อย่างไร?",
+            "a": "ใช้ที่อยู่อีเมลในส่วนติดต่อด้านล่างเพื่อรายงานข้อผิดพลาดหรือส่งความคิดเห็น กรุณาระบุสิ่งที่คุณกำลังทำ อุปกรณ์ และเบราว์เซอร์ของคุณ เพื่อให้เราช่วยเหลือได้รวดเร็วยิ่งขึ้น"
           }
         }
       }
     },
     "legal": {
-      "title": "Legal",
-      "terms": "Terms of Service",
-      "privacy": "Privacy Policy",
-      "cookies": "Cookie Policy"
+      "title": "ข้อมูลทางกฎหมาย",
+      "terms": "ข้อกำหนดการใช้บริการ",
+      "privacy": "นโยบายความเป็นส่วนตัว",
+      "cookies": "นโยบายคุกกี้"
     }
   },
   "onboarding": {
-    "ariaLabel": "Onboarding — choose your interests",
-    "title": "What brings you to Korea?",
-    "subtitle": "Personalise your B4K experience.",
-    "desc": "Select the things you're most excited about. You can change this later.",
+    "ariaLabel": "การแนะนำเบื้องต้น — เลือกความสนใจของคุณ",
+    "title": "อะไรพาคุณมาเกาหลี?",
+    "subtitle": "ปรับแต่งประสบการณ์ B4K ของคุณ",
+    "desc": "เลือกสิ่งที่คุณตื่นเต้นที่สุด คุณสามารถเปลี่ยนแปลงในภายหลังได้",
     "interests": {
-      "label": "Pick your interests",
+      "label": "เลือกความสนใจของคุณ",
       "kpop": {
         "label": "K-Pop",
-        "desc": "Concerts, venues & fandom"
+        "desc": "คอนเสิร์ต สถานที่จัดแสดง และวงการแฟนคลับ"
       },
       "kdrama": {
         "label": "K-Drama",
-        "desc": "Filming locations & tours"
+        "desc": "สถานที่ถ่ายทำและทัวร์"
       },
       "kbeauty": {
         "label": "K-Beauty",
-        "desc": "Skincare, makeup & spas"
+        "desc": "สกินแคร์ เมคอัพ และสปา"
       },
       "kculture": {
         "label": "K-Culture",
-        "desc": "Food, markets & traditions"
+        "desc": "อาหาร ตลาด และประเพณี"
       },
       "food": {
-        "label": "Food",
-        "desc": "Street food & local dining"
+        "label": "อาหาร",
+        "desc": "สตรีทฟู้ดและอาหารท้องถิ่น"
       },
       "nature": {
-        "label": "Nature",
-        "desc": "Parks, trails & outdoors"
+        "label": "ธรรมชาติ",
+        "desc": "สวนสาธารณะ เส้นทางเดินป่า และกิจกรรมกลางแจ้ง"
       },
       "nightlife": {
-        "label": "Nightlife",
-        "desc": "Bars, clubs & late nights"
+        "label": "ไนท์ไลฟ์",
+        "desc": "บาร์ คลับ และค่ำคืนสุดพิเศษ"
       },
       "history": {
-        "label": "History",
-        "desc": "Palaces, temples & heritage"
+        "label": "ประวัติศาสตร์",
+        "desc": "พระราชวัง วัด และมรดกวัฒนธรรม"
       }
     },
-    "cta": "Continue",
-    "skip": "Skip for now"
-  },
-  "footer": {
-    "help": "ช่วยเหลือ",
-    "privacy": "นโยบายความเป็นส่วนตัว",
-    "terms": "เงื่อนไขการใช้งาน",
-    "cookies": "นโยบายคุกกี้",
-    "copyright": "© {year} B4K. All rights reserved."
-  },
-  "cookieConsent": {
-    "banner": {
-      "title": "Cookie notice",
-      "message": "We use cookies for analytics to improve B4K.",
-      "learnMore": "Learn more",
-      "accept": "Accept",
-      "decline": "Decline",
-      "dismiss": "Dismiss"
-    },
-    "preferences": {
-      "title": "Analytics cookies",
-      "desc": "Control whether B4K can use analytics cookies on this device.",
-      "statusAccepted": "Accepted",
-      "statusDeclined": "Declined",
-      "accept": "Accept",
-      "decline": "Decline"
-    }
+    "cta": "ดำเนินการต่อ",
+    "skip": "ข้ามไปก่อน"
   },
   "search": {
-    "title": "Search",
-    "placeholder": "Search itineraries, places...",
-    "recentTitle": "Recent searches",
-    "clearAll": "Clear all",
-    "noResults": "No results for \"{query}\"",
-    "noResultsSubtitle": "Try exploring by category",
-    "suggestions": "Suggestions",
+    "title": "ค้นหา",
+    "placeholder": "ค้นหาแผนการเดินทาง สถานที่...",
+    "recentTitle": "การค้นหาล่าสุด",
+    "clearAll": "ล้างทั้งหมด",
+    "noResults": "ไม่พบผลลัพธ์สำหรับ \"{query}\"",
+    "noResultsSubtitle": "ลองสำรวจตามหมวดหมู่",
+    "suggestions": "คำแนะนำ",
     "categories": {
       "kpop": "K-Pop",
       "kdrama": "K-Drama",
@@ -1682,86 +1657,111 @@
       "kculture": "K-Culture"
     },
     "sections": {
-      "places": "Places",
-      "plans": "Plans",
-      "explore": "Explore"
+      "places": "สถานที่",
+      "plans": "แผนการเดินทาง",
+      "explore": "สำรวจ"
     },
-    "seeAll": "See all",
-    "removeRecent": "Remove {query} from recents",
+    "seeAll": "ดูทั้งหมด",
+    "removeRecent": "ลบ {query} ออกจากการค้นหาล่าสุด",
     "filters": {
-      "title": "Filters",
-      "sections": "Show",
-      "section_all": "All",
-      "section_places": "Places",
-      "section_plans": "Plans",
-      "section_explore": "Explore",
+      "title": "ตัวกรอง",
+      "sections": "แสดง",
+      "section_all": "ทั้งหมด",
+      "section_places": "สถานที่",
+      "section_plans": "แผนการเดินทาง",
+      "section_explore": "สำรวจ",
       "sort": {
-        "label": "Sort by",
-        "relevance": "Relevance",
-        "popularity": "Popularity"
+        "label": "เรียงตาม",
+        "relevance": "ความเกี่ยวข้อง",
+        "popularity": "ความนิยม"
       },
       "area": {
-        "label": "Area",
-        "lv1Label": "Region",
-        "lv2Label": "District",
-        "chipAriaLabel": "Filter by {name}"
+        "label": "พื้นที่",
+        "lv1Label": "ภูมิภาค",
+        "lv2Label": "เขต",
+        "chipAriaLabel": "กรองตาม {name}"
       },
       "tags": {
-        "label": "Theme"
+        "label": "ธีม"
       },
       "region": {
-        "seoul": "Seoul",
-        "busan": "Busan",
-        "jeju": "Jeju"
+        "seoul": "โซล",
+        "busan": "ปูซาน",
+        "jeju": "เชจู"
       },
       "district": {
-        "gangnam": "Gangnam",
-        "hongdae": "Hongdae",
-        "myeongdong": "Myeongdong",
-        "haeundae": "Haeundae",
-        "seomyeon": "Seomyeon",
-        "jejuCity": "Jeju City",
-        "seogwipo": "Seogwipo"
+        "gangnam": "คังนัม",
+        "hongdae": "ฮงแด",
+        "myeongdong": "เมียงดง",
+        "haeundae": "แฮอึนแด",
+        "seomyeon": "ซอมยอน",
+        "jejuCity": "เมืองเชจู",
+        "seogwipo": "ซอกวีโป"
       },
       "tag": {
         "kpop": "K-Pop",
         "kdrama": "K-Drama",
         "kbeauty": "K-Beauty",
-        "food": "Food",
-        "nature": "Nature",
-        "shopping": "Shopping",
-        "history": "History",
-        "nightlife": "Nightlife"
+        "food": "อาหาร",
+        "nature": "ธรรมชาติ",
+        "shopping": "ช้อปปิ้ง",
+        "history": "ประวัติศาสตร์",
+        "nightlife": "ไนท์ไลฟ์"
       },
-      "apply": "Apply",
-      "close": "Close filters"
+      "apply": "นำไปใช้",
+      "close": "ปิดตัวกรอง"
     },
     "results": {
-      "poi": "Places",
-      "plans": "Plans",
-      "explore": "Explore categories"
+      "poi": "สถานที่",
+      "plans": "แผนการเดินทาง",
+      "explore": "หมวดหมู่สำรวจ"
     },
     "poiAriaLabel": "{name}, {region}",
-    "planAriaLabel": "{title} by {author}",
-    "exploreAriaLabel": "Explore {category}",
-    "mapCta": "Explore on map",
-    "sponsored": "Sponsored",
-    "stops": "{count} stops",
-    "saves": "{count} saves",
-    "mobileFilter": "Filter",
-    "mobileSort": "Sort",
-    "loading": "Searching…",
-    "error": "Search failed. Try again.",
-    "retry": "Try again",
-    "seeAllPlaces": "See all {count} places",
-    "seeAllPlans": "See all {count} plans",
-    "seeAllExplore": "See all {count} contents",
-    "showLess": "Show less",
-    "minChars": "Type at least 2 characters to search",
-    "loadingSuggestions": "Loading suggestions"
+    "planAriaLabel": "{title} โดย {author}",
+    "exploreAriaLabel": "สำรวจ {category}",
+    "mapCta": "สำรวจบนแผนที่",
+    "sponsored": "ได้รับการสนับสนุน",
+    "stops": "{count} จุดหมาย",
+    "saves": "{count} การบันทึก",
+    "mobileFilter": "ตัวกรอง",
+    "mobileSort": "เรียงลำดับ",
+    "loading": "กำลังค้นหา…",
+    "error": "การค้นหาล้มเหลว ลองอีกครั้ง",
+    "retry": "ลองอีกครั้ง",
+    "seeAllPlaces": "ดูสถานที่ทั้งหมด {count} แห่ง",
+    "seeAllPlans": "ดูแผนการเดินทางทั้งหมด {count} แผน",
+    "seeAllExplore": "ดูเนื้อหาทั้งหมด {count} รายการ",
+    "showLess": "แสดงน้อยลง",
+    "minChars": "พิมพ์อย่างน้อย 2 ตัวอักษรเพื่อค้นหา",
+    "loadingSuggestions": "กำลังโหลดคำแนะนำ"
+  },
+  "footer": {
+    "help": "ช่วยเหลือ",
+    "privacy": "นโยบายความเป็นส่วนตัว",
+    "terms": "เงื่อนไขการใช้งาน",
+    "cookies": "นโยบายคุกกี้",
+    "copyright": "© {year} B4K สงวนลิขสิทธิ์"
+  },
+  "cookieConsent": {
+    "banner": {
+      "title": "ประกาศเรื่องคุกกี้",
+      "message": "เราใช้คุกกี้เพื่อการวิเคราะห์สำหรับปรับปรุง B4K ให้ดียิ่งขึ้น",
+      "learnMore": "เรียนรู้เพิ่มเติม",
+      "accept": "ยอมรับ",
+      "decline": "ปฏิเสธ",
+      "dismiss": "ปิด"
+    },
+    "preferences": {
+      "title": "คุกกี้เพื่อการวิเคราะห์",
+      "desc": "จัดการว่า B4K สามารถใช้คุกกี้เพื่อการวิเคราะห์บนอุปกรณ์นี้ได้หรือไม่",
+      "statusAccepted": "ยอมรับแล้ว",
+      "statusDeclined": "ปฏิเสธแล้ว",
+      "accept": "ยอมรับ",
+      "decline": "ปฏิเสธ"
+    }
   },
   "toast": {
-    "dismiss": "Dismiss",
-    "actionFailed": "Something went wrong. Try again."
+    "dismiss": "ปิด",
+    "actionFailed": "เกิดข้อผิดพลาด ลองอีกครั้ง"
   }
 }
