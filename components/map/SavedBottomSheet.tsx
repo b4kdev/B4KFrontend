@@ -124,8 +124,18 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
         {/* Body */}
         <div className="flex-1 overflow-y-auto" style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}>
           {isLoading ? (
-            <div className="p-sp-4 flex flex-col gap-sp-2" aria-busy="true">
-              {[0, 1, 2].map(i => <div key={i} className="h-14 bg-bg-3 rounded-none animate-pulse" />)}
+            // Matches the real row shape below (w-10 h-10 icon + p-sp-4 + border
+            // divider) — a bare padded h-14 block mismatches it and shifts layout.
+            <div aria-busy="true">
+              {[0, 1, 2].map(i => (
+                <div key={i} className="flex items-center gap-sp-3 p-sp-4 animate-pulse" style={i < 2 ? { borderBottom: '1px solid var(--bdr)' } : undefined}>
+                  <div className="w-10 h-10 rounded-none bg-muted-3 shrink-0" />
+                  <div className="flex-1 space-y-sp-2">
+                    <div className="h-4 w-1/2 rounded bg-muted-3" />
+                    <div className="h-3 w-1/3 rounded bg-muted-3" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : tab === 'places' ? (
             activeFolder ? (

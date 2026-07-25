@@ -84,8 +84,17 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
       {/* Body */}
       <div className="flex-1 overflow-y-auto themed-scrollbar">
         {isLoading ? (
-          <div className="p-sp-4 flex flex-col gap-sp-2" aria-busy="true">
-            {[0, 1, 2].map(i => <div key={i} className="h-14 bg-bg-3 animate-pulse" />)}
+          // Matches the real row shape below (w-8 h-8 icon + px-sp-4 py-sp-3).
+          <div aria-busy="true">
+            {[0, 1, 2].map(i => (
+              <div key={i} className="flex items-center gap-sp-2 px-sp-4 py-sp-3 animate-pulse">
+                <div className="w-8 h-8 bg-muted-3 shrink-0" />
+                <div className="flex-1 space-y-sp-2">
+                  <div className="h-3.5 w-1/2 rounded bg-muted-3" />
+                  <div className="h-3 w-1/3 rounded bg-muted-3" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : tab === 'places' ? (
           activeFolder ? (
