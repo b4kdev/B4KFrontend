@@ -234,19 +234,41 @@ export default function NaverMapCanvas({
       })
     }
 
-    // Bucket the remaining free POIs into a lat/lng grid at the current zoom's
-    // resolution. Cells with 2+ members become a cluster bubble; singletons
-    // render as normal dots. Only active below CLUSTER_ZOOM_THRESHOLD — past
-    // that, individual buildings are legible so distinct-but-nearby POIs stay
-    // as separate pins (same-point grouping above still applies regardless).
+    // Bucket the remaining free POIs. Cells with 2+ members become a cluster
+    // bubble; singletons render as normal dots. Only active below
+    // CLUSTER_ZOOM_THRESHOLD — past that, individual buildings are legible so
+    // distinct-but-nearby POIs stay as separate pins (same-point grouping
+    // above still applies regardless).
+    //
+    // Bucketing happens in screen-pixel space (via the map's projection), not
+    // raw lat/lng degrees — a fixed-size cluster bubble is drawn at a fixed
+    // pixel size regardless of zoom, so two POIs can be geographically distinct
+    // (correctly placed in different degree-space cells) yet still project to
+    // overlapping screen positions at certain zoom levels. Pixel-space
+    // bucketing guarantees anything close enough on screen to visually overlap
+    // gets merged. Falls back to the old degree-based grid if the projection
+    // API isn't available for some reason (defensive, shouldn't normally fire).
+    let projection: { fromCoordToOffset: (c: unknown) => { x: number; y: number } } | null = null
+    try {
+      const p = map.getProjection?.()
+      if (p && typeof p.fromCoordToOffset === 'function') projection = p
+    } catch { /* fall back below */ }
+    const PIXEL_CELL = 48
     const gridSize = clusterGridSize(zoom)
     if (clusterActive) {
       const buckets = new Map<string, MapPoi[]>()
       const bucketCoords = new Map<string, [number, number]>()
       freePois.forEach(poi => {
         if (clusteredIds.has(poi.poi_id)) return
-        const gx = Math.floor(poi.coords_lat / gridSize)
-        const gy = Math.floor(poi.coords_lng / gridSize)
+        let gx: number, gy: number
+        if (projection) {
+          const pt = projection.fromCoordToOffset(new window.naver.maps.LatLng(poi.coords_lat, poi.coords_lng))
+          gx = Math.floor(pt.x / PIXEL_CELL)
+          gy = Math.floor(pt.y / PIXEL_CELL)
+        } else {
+          gx = Math.floor(poi.coords_lat / gridSize)
+          gy = Math.floor(poi.coords_lng / gridSize)
+        }
         const key = `${gx}:${gy}`
         bucketCoords.set(key, [gx, gy])
         const bucket = buckets.get(key)
