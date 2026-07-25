@@ -16,13 +16,16 @@ import type { SavedFolder } from '@/app/api/saved/route'
 
 type PlacesView = 'folders' | 'folder-detail'
 
-function RowSkeleton() {
+// Matches FolderCard.tsx's actual shape (aspect-[2/1] thumbnail grid + title/count
+// text block) — a flat list-row skeleton here would mismatch the real grid-of-cards
+// content and register as layout shift the instant useSaved() resolves.
+function FolderCardSkeleton() {
   return (
-    <div className="flex items-center gap-sp-3 p-sp-4 animate-pulse" style={{ borderBottom: '1px solid var(--bdr)' }}>
-      <div className="w-14 h-14 rounded-none bg-muted-3 shrink-0" />
-      <div className="flex-1 space-y-sp-2">
+    <div className="rounded-none overflow-hidden bg-bg-2 flex flex-col animate-pulse" style={{ border: '1px solid var(--bdr)' }}>
+      <div className="w-full aspect-[2/1] bg-muted-3" />
+      <div className="px-sp-3 pt-sp-3 pb-sp-3">
         <div className="h-4 w-2/3 rounded bg-muted-3" />
-        <div className="h-3 w-1/3 rounded bg-muted-3" />
+        <div className="h-3 w-1/3 rounded bg-muted-3 mt-sp-2" />
       </div>
     </div>
   )
@@ -191,8 +194,8 @@ export default function SavedPlacesPanel() {
 
   if (isLoading) {
     return (
-      <div aria-busy="true" aria-label={t('loading')} className="rounded-none overflow-hidden" style={{ border: '1px solid var(--bdr)' }}>
-        {Array.from({ length: 3 }, (_, i) => <RowSkeleton key={i} />)}
+      <div aria-busy="true" aria-label={t('loading')} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-sp-4">
+        {Array.from({ length: 3 }, (_, i) => <FolderCardSkeleton key={i} />)}
       </div>
     )
   }
