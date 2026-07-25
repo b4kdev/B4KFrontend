@@ -7,6 +7,8 @@
     "home": "首页",
     "map": "地图",
     "contents": "内容",
+    "explore": "探索",
+    "saved": "收藏",
     "plan": "行程",
     "profile": "个人",
     "help": "帮助",
@@ -14,50 +16,48 @@
     "language": "语言",
     "signIn": "登录",
     "signOut": "退出",
-    "menuOpen": "Open menu",
-    "menuClose": "Close menu",
-    "mainNavigation": "Main navigation",
-    "logoHome": "B4K Home",
-    "about": "About",
-    "bottomNav": "Bottom navigation",
-    "sidebarRegion": "Sidebar",
-    "explore": "Explore",
-    "saved": "Saved",
-    "settings": "Settings",
-    "legal": "Legal",
-    "legalTerms": "Terms of Service",
-    "legalPrivacy": "Privacy Policy",
-    "legalCookies": "Cookie Policy",
-    "guestSubtitle": "Sign in to save places and plan trips"
+    "menuOpen": "打开菜单",
+    "menuClose": "关闭菜单",
+    "mainNavigation": "主导航",
+    "logoHome": "B4K首页",
+    "about": "关于",
+    "bottomNav": "底部导航",
+    "sidebarRegion": "侧边栏",
+    "settings": "设置",
+    "legal": "法律信息",
+    "legalTerms": "服务条款",
+    "legalPrivacy": "隐私政策",
+    "legalCookies": "Cookie政策",
+    "guestSubtitle": "登录以保存地点并规划行程"
   },
   "topNav": {
     "searchPlaceholder": "搜索行程、地点、创作者…",
     "searchPlaceholderMobile": "B4K · 搜索...",
     "recentSearches": "最近搜索",
-    "clearSearch": "Clear search",
-    "noRecents": "No recent searches",
+    "clearSearch": "清除搜索",
+    "noRecents": "暂无最近搜索",
     "searchFilters": {
-      "all": "All",
-      "places": "Places",
-      "itineraries": "Itineraries",
+      "all": "全部",
+      "places": "地点",
+      "itineraries": "行程",
       "kpop": "K-Pop",
       "kdrama": "K-Drama",
       "kbeauty": "K-Beauty"
     },
-    "noResults": "No results for \"{query}\"",
-    "noResultsDesc": "Try a different search or explore the map",
-    "searchResultAriaLabel": "{name}, {type}"
+    "noResults": "没有找到「{query}」的结果",
+    "noResultsDesc": "尝试其他搜索词，或直接探索地图",
+    "searchResultAriaLabel": "{name}，{type}"
   },
   "home": {
     "breadcrumb": "首页",
     "weather": {
-      "ariaLabel": "Seoul {temp}°C, {condition}"
+      "ariaLabel": "首尔 {temp}°C，{condition}"
     },
     "carousel": {
-      "ariaLabel": "Featured content",
-      "slideN": "Slide {n}",
-      "prev": "Previous slide",
-      "next": "Next slide",
+      "ariaLabel": "精选内容",
+      "slideN": "第{n}张",
+      "prev": "上一张",
+      "next": "下一张",
       "slides": {
         "kCulture": {
           "badge": "新上线",
@@ -85,19 +85,19 @@
       "seeAll": "查看全部",
       "badge": "行程",
       "card": {
-        "ariaLabel": "{title} by {creator}",
-        "likesLabel": "{count} likes",
-        "savesLabel": "{count} saves"
+        "ariaLabel": "{creator}的{title}",
+        "likesLabel": "{count}个赞",
+        "savesLabel": "{count}次收藏"
       },
       "empty": {
-        "title": "No plans yet this week",
-        "desc": "Share your Korea trip and inspire other travelers.",
-        "cta": "Create a plan"
+        "title": "本周暂无行程",
+        "desc": "分享你的韩国之旅，启发其他旅行者。",
+        "cta": "创建行程"
       }
     },
     "leaderboard": {
       "title": "本周顶级创作者 — 第{week}周",
-      "desc": "顶级贡献者将获得徽章、优先展示和合作伙伴福利。",
+      "desc": "顶级贡献者将获得徽章、优先展示和合作伙伴福利。冲上排行榜吧。",
       "cta": "查看排行榜"
     },
     "seasonalPois": {
@@ -105,144 +105,144 @@
       "subtitle": "精选半岛变幻风景中的打卡地",
       "seeAll": "查看全部",
       "card": {
-        "ariaLabel": "{name}, {region}"
+        "ariaLabel": "{name}，{region}"
       },
       "empty": {
-        "title": "No seasonal picks yet",
-        "desc": "Curators are gathering this season's must-see locations.",
-        "cta": "Open the map"
-      }
-    },
-    "continuePlan": {
-      "ariaLabel": "Continue your draft plan",
-      "cta": "Continue",
-      "dismiss": "Dismiss",
-      "stopCount": "{n} stops",
-      "timeAgo": {
-        "minutes": "{n}m ago",
-        "hours": "{n}h ago",
-        "days": "{n}d ago"
-      },
-      "guestTitle": "Continue your plan"
-    },
-    "youMightLike": {
-      "title": "You Might Like",
-      "viewAll": "View all"
-    },
-    "newOnB4K": {
-      "title": "New on B4K",
-      "viewAll": "View all",
-      "newBadge": "New",
-      "error": "Failed to load",
-      "retry": "Retry"
-    },
-    "leaderboardBadge": {
-      "ariaLabel": "Leaderboard and badge showcase",
-      "leaderboard": {
-        "title": "This Week's Top",
-        "viewAll": "View all",
-        "empty": "No rankings yet this week"
-      },
-      "badge": {
-        "title": "Latest Badge",
-        "viewAll": "View all",
-        "earnedBy": "Earned by {name}"
+        "title": "暂无本季精选",
+        "desc": "策展人正在收集本季必去的地点。",
+        "cta": "打开地图"
       }
     },
     "poiCard": {
-      "ariaLabel": "{name}, {region}",
-      "saveAria": "Save {name}",
-      "unsaveAria": "Unsave {name}",
-      "likeAria": "Like {name}",
-      "unlikeAria": "Unlike {name}",
-      "addAria": "Add {name} to plan",
-      "addedAria": "{name} added to plan",
-      "imagePending": "Image being prepared"
+      "ariaLabel": "{name}，{region}",
+      "saveAria": "收藏{name}",
+      "unsaveAria": "取消收藏{name}",
+      "likeAria": "点赞{name}",
+      "unlikeAria": "取消点赞{name}",
+      "addAria": "将{name}加入行程",
+      "addedAria": "已将{name}加入行程",
+      "imagePending": "图片准备中"
+    },
+    "trending": {
+      "title": "热门地点",
+      "viewAll": "查看全部",
+      "error": "加载失败",
+      "retry": "重试"
     },
     "exploreHub": {
-      "ariaLabel": "Explore by category",
-      "title": "Explore K-Culture",
+      "ariaLabel": "按类别探索",
+      "title": "探索K文化",
       "kPop": {
         "label": "K-Pop",
-        "sub": "Concerts, studios & fan spots"
+        "sub": "演唱会、录音室与粉丝打卡地"
       },
       "kDrama": {
         "label": "K-Drama",
-        "sub": "Filming locations & scenes"
+        "sub": "拍摄地与场景"
       },
       "kBeauty": {
         "label": "K-Beauty",
-        "sub": "Shops, clinics & trends"
+        "sub": "店铺、诊所与潮流趋势"
       },
       "kCulture": {
         "label": "K-Culture",
-        "sub": "Heritage, art & tradition"
+        "sub": "传统、艺术与文化遗产"
       }
-    },
-    "trending": {
-      "title": "Trending Spots",
-      "viewAll": "View all",
-      "error": "Failed to load",
-      "retry": "Retry"
-    },
-    "planTrip": {
-      "ariaLabel": "Plan your trip",
-      "title": "Plan Your Trip",
-      "subtitle": "Start planning your Korea journey",
-      "manual": {
-        "label": "Manual Plan",
-        "sub": "Add stops one by one"
-      },
-      "auto": {
-        "label": "From Saved",
-        "sub": "Auto-generate from saved places"
-      },
-      "ai": {
-        "label": "AI Chat Plan",
-        "sub": "Let AI plan for you"
-      }
-    },
-    "challenge": {
-      "ariaLabel": "Weekly challenge",
-      "label": "Weekly Challenge",
-      "badgeReward": "Badge reward",
-      "cta": "Start challenge"
-    },
-    "popularPlans": {
-      "title": "Popular Plans",
-      "viewAll": "View all",
-      "error": "Failed to load",
-      "retry": "Retry",
-      "sponsored": "Sponsored",
-      "card": {
-        "ariaLabel": "{title} by {author}",
-        "stops": "{n} stops"
-      }
-    },
-    "promotions": {
-      "title": "Promotions"
     },
     "editorial": {
-      "title": "Editor's Picks",
-      "viewAll": "View all",
-      "error": "Failed to load",
-      "retry": "Retry",
-      "catAll": "All",
+      "title": "编辑精选",
+      "viewAll": "查看全部",
+      "error": "加载失败",
+      "retry": "重试",
+      "catAll": "全部",
       "catKPop": "K-Pop",
       "catKDrama": "K-Drama",
       "catKBeauty": "K-Beauty",
       "catKCulture": "K-Culture"
     },
-    "events": {
-      "title": "Upcoming Events"
+    "newOnB4K": {
+      "title": "B4K新上线",
+      "viewAll": "查看全部",
+      "newBadge": "新",
+      "error": "加载失败",
+      "retry": "重试"
+    },
+    "youMightLike": {
+      "title": "猜你喜欢",
+      "viewAll": "查看全部"
+    },
+    "planTrip": {
+      "ariaLabel": "规划你的旅程",
+      "title": "规划你的旅程",
+      "subtitle": "开始规划你的韩国之旅",
+      "manual": {
+        "label": "手动规划",
+        "sub": "逐个添加打卡地"
+      },
+      "auto": {
+        "label": "从收藏生成",
+        "sub": "根据收藏的地点自动生成"
+      },
+      "ai": {
+        "label": "AI对话规划",
+        "sub": "让AI为你规划"
+      }
+    },
+    "continuePlan": {
+      "ariaLabel": "继续你的草稿行程",
+      "cta": "继续",
+      "dismiss": "关闭",
+      "stopCount": "{n}个地点",
+      "timeAgo": {
+        "minutes": "{n}分钟前",
+        "hours": "{n}小时前",
+        "days": "{n}天前"
+      },
+      "guestTitle": "继续你的行程"
+    },
+    "challenge": {
+      "ariaLabel": "每周挑战",
+      "label": "每周挑战",
+      "badgeReward": "徽章奖励",
+      "cta": "开始挑战"
+    },
+    "leaderboardBadge": {
+      "ariaLabel": "排行榜与徽章展示",
+      "leaderboard": {
+        "title": "本周排名",
+        "viewAll": "查看全部",
+        "empty": "本周暂无排名"
+      },
+      "badge": {
+        "title": "最新徽章",
+        "viewAll": "查看全部",
+        "earnedBy": "由{name}获得"
+      }
+    },
+    "popularPlans": {
+      "title": "热门行程",
+      "viewAll": "查看全部",
+      "error": "加载失败",
+      "retry": "重试",
+      "sponsored": "推广",
+      "card": {
+        "ariaLabel": "{author}的{title}",
+        "stops": "{n}个地点"
+      }
     },
     "partnerPackages": {
-      "title": "Partner Packages",
-      "sponsored": "Sponsored",
-      "viewCta": "View",
+      "title": "合作套餐",
+      "sponsored": "推广",
+      "viewCta": "查看",
       "card": {
-        "ariaLabel": "{title} by {partner}"
+        "ariaLabel": "{partner}的{title}"
       }
+    },
+    "events": {
+      "title": "近期活动"
+    },
+    "promotions": {
+      "title": "优惠活动"
     }
   },
   "common": {
@@ -254,726 +254,728 @@
   },
   "routes": {
     "map": {
-      "breadcrumb": "Map",
-      "title": "Map",
+      "breadcrumb": "地图",
+      "title": "地图",
       "empty": {
-        "title": "Coming soon",
-        "desc": "The Korea map will land here once Naver Map canvas is wired."
+        "title": "即将上线",
+        "desc": "一旦接入Naver Map，韩国地图将在此显示。"
       }
     },
     "contents": {
-      "breadcrumb": "Contents",
-      "title": "Contents",
+      "breadcrumb": "内容",
+      "title": "内容",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Four hubs: K-Pop, K-Drama, K-Beauty, K-Culture. Pick one to dive in."
+        "title": "即将上线",
+        "desc": "四大板块：K-Pop、K-Drama、K-Beauty、K-Culture。选一个深入探索。"
+      }
+    },
+    "explore": {
+      "breadcrumb": "探索",
+      "title": "探索",
+      "empty": {
+        "title": "即将上线",
+        "desc": "四大板块：K-Pop、K-Drama、K-Beauty、K-Culture。选一个深入探索。"
+      }
+    },
+    "saved": {
+      "breadcrumb": "收藏",
+      "title": "收藏",
+      "empty": {
+        "title": "暂无收藏",
+        "desc": "收藏地点和行程后会显示在这里。"
       }
     },
     "contentsKpop": {
       "breadcrumb": "K-Pop",
       "title": "K-Pop",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Pop hub coming soon. Artists, venues, tours."
+        "title": "即将上线",
+        "desc": "K-Pop板块即将上线。艺人、场馆、行程路线。"
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "内容",
+        "explore": "探索"
       }
     },
     "contentsKdrama": {
       "breadcrumb": "K-Drama",
       "title": "K-Drama",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Drama hub coming soon. Filming locations, drama trails."
+        "title": "即将上线",
+        "desc": "K-Drama板块即将上线。拍摄地、剧集打卡路线。"
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "内容",
+        "explore": "探索"
       }
     },
     "contentsKbeauty": {
       "breadcrumb": "K-Beauty",
       "title": "K-Beauty",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Beauty hub coming soon. Skincare, treatments, brand origin stores."
+        "title": "即将上线",
+        "desc": "K-Beauty板块即将上线。护肤、疗程、品牌直营店。"
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "内容",
+        "explore": "探索"
       }
     },
     "contentsKculture": {
       "breadcrumb": "K-Culture",
       "title": "K-Culture",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Culture hub coming soon. Heritage, food, traditional crafts."
+        "title": "即将上线",
+        "desc": "K-Culture板块即将上线。文化遗产、美食、传统工艺。"
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "内容",
+        "explore": "探索"
       }
     },
     "profile": {
-      "breadcrumb": "Profile",
-      "title": "Profile",
+      "breadcrumb": "个人",
+      "title": "个人",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Your B4K hub. Trips, saves, badges, community."
+        "title": "即将上线",
+        "desc": "你的B4K专属空间。行程、收藏、徽章、社区。"
       }
     },
     "profileTrips": {
-      "breadcrumb": "My Trips",
-      "title": "My Trips",
+      "breadcrumb": "我的行程",
+      "title": "我的行程",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Plans you have created or saved will live here."
+        "title": "即将上线",
+        "desc": "你创建或收藏的行程将显示在这里。"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "个人"
       }
     },
     "profileSaved": {
-      "breadcrumb": "Saved",
-      "title": "Saved",
+      "breadcrumb": "收藏",
+      "title": "收藏",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Places and plans you have bookmarked."
+        "title": "即将上线",
+        "desc": "你收藏的地点和行程。"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "个人"
       }
     },
     "profileBadges": {
-      "breadcrumb": "Badges",
-      "title": "Badges",
+      "breadcrumb": "徽章",
+      "title": "徽章",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Badges earned through community contributions."
+        "title": "即将上线",
+        "desc": "通过社区贡献获得的徽章。"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "个人"
       }
     },
     "profileCommunity": {
-      "breadcrumb": "Community",
-      "title": "Community",
+      "breadcrumb": "社区",
+      "title": "社区",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Followers, following, and creator activity."
+        "title": "即将上线",
+        "desc": "粉丝、关注和创作者动态。"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "个人"
       }
     },
     "profileSettings": {
-      "breadcrumb": "Settings",
-      "title": "Settings",
+      "breadcrumb": "设置",
+      "title": "设置",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Account, language, notifications, and privacy preferences."
+        "title": "即将上线",
+        "desc": "账户、语言、通知和隐私偏好设置。"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "个人"
       }
     },
     "plan": {
-      "breadcrumb": "Plan",
-      "title": "Plan",
+      "breadcrumb": "行程",
+      "title": "行程",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Choose a planning flow: manual, auto, or AI chat."
+        "title": "即将上线",
+        "desc": "选择规划方式：手动、自动或AI对话。"
       }
     },
     "planManual": {
-      "breadcrumb": "Manual Plan",
-      "title": "Manual Plan",
+      "breadcrumb": "手动规划",
+      "title": "手动规划",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Drag-and-drop builder for power users."
+        "title": "即将上线",
+        "desc": "面向高级用户的拖放式构建器。"
       },
       "crumb": {
-        "plan": "Plan"
+        "plan": "行程"
       }
     },
     "planAuto": {
-      "breadcrumb": "Auto Plan",
-      "title": "Auto Plan",
+      "breadcrumb": "自动规划",
+      "title": "自动规划",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Tell us your dates and we generate a starting itinerary."
+        "title": "即将上线",
+        "desc": "告诉我们你的日期，我们将生成初步行程。"
       },
       "crumb": {
-        "plan": "Plan"
+        "plan": "行程"
       }
     },
     "planAi": {
-      "breadcrumb": "AI Chat Plan",
-      "title": "AI Chat Plan",
+      "breadcrumb": "AI对话规划",
+      "title": "AI对话规划",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Conversational AI builds your Korea trip turn by turn."
+        "title": "即将上线",
+        "desc": "对话式AI逐步为你构建韩国之旅。"
       },
       "crumb": {
-        "plan": "Plan"
+        "plan": "行程"
       }
     },
     "leaderboard": {
-      "breadcrumb": "Leaderboard",
-      "title": "Leaderboard",
+      "breadcrumb": "排行榜",
+      "title": "排行榜",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Weekly community ranking. Wilson score on saves + likes."
+        "title": "即将上线",
+        "desc": "每周社区排名。基于收藏和点赞的威尔逊评分。"
       }
     },
     "badges": {
-      "breadcrumb": "Badges Gallery",
-      "title": "Badges Gallery",
+      "breadcrumb": "徽章画廊",
+      "title": "徽章画廊",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Browse the full badge collection."
+        "title": "即将上线",
+        "desc": "浏览完整的徽章收藏。"
       }
     },
     "onboarding": {
-      "breadcrumb": "Welcome to B4K",
-      "title": "Welcome to B4K",
+      "breadcrumb": "欢迎来到B4K",
+      "title": "欢迎来到B4K",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Quick interest tags to personalise your first trip."
+        "title": "即将上线",
+        "desc": "快速兴趣标签，个性化你的第一次旅行。"
       }
     },
     "help": {
-      "breadcrumb": "Help",
-      "title": "Help",
+      "breadcrumb": "帮助",
+      "title": "帮助",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Guides, FAQ, contact support."
+        "title": "即将上线",
+        "desc": "指南、常见问题、联系支持。"
       }
     },
     "notifications": {
-      "breadcrumb": "Notifications",
-      "title": "Notifications",
+      "breadcrumb": "通知",
+      "title": "通知",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Platform notifications. Social pings deferred to v1.1."
+        "title": "即将上线",
+        "desc": "平台通知。社交提醒将在v1.1推出。"
       }
     },
     "legalPrivacy": {
-      "breadcrumb": "Privacy Policy",
-      "title": "Privacy Policy",
+      "breadcrumb": "隐私政策",
+      "title": "隐私政策",
       "empty": {
-        "title": "Coming soon",
-        "desc": "How we handle your data. PIPA compliant."
+        "title": "即将上线",
+        "desc": "我们如何处理你的数据。符合PIPA规定。"
       }
     },
     "legalTerms": {
-      "breadcrumb": "Terms of Service",
-      "title": "Terms of Service",
+      "breadcrumb": "服务条款",
+      "title": "服务条款",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Rules for using B4K."
+        "title": "即将上线",
+        "desc": "使用B4K的相关规则。"
       }
     },
     "legalCookies": {
-      "breadcrumb": "Cookie Policy",
-      "title": "Cookie Policy",
+      "breadcrumb": "Cookie政策",
+      "title": "Cookie政策",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Cookies we use and why."
+        "title": "即将上线",
+        "desc": "我们使用的Cookie及其用途。"
       }
     },
     "sitemap": {
-      "breadcrumb": "About B4K",
-      "title": "About B4K",
+      "breadcrumb": "关于B4K",
+      "title": "关于B4K",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Story, team, mission."
-      }
-    },
-    "explore": {
-      "breadcrumb": "Explore",
-      "title": "Explore",
-      "empty": {
-        "title": "Coming soon",
-        "desc": "Four hubs: K-Pop, K-Drama, K-Beauty, K-Culture. Pick one to dive in."
-      }
-    },
-    "saved": {
-      "breadcrumb": "Saved",
-      "title": "Saved",
-      "empty": {
-        "title": "Nothing saved yet",
-        "desc": "Bookmark places and itineraries to find them here."
+        "title": "即将上线",
+        "desc": "故事、团队、使命。"
       }
     }
   },
   "boundary": {
     "notFound": {
-      "title": "Page not found",
-      "desc": "The page you're looking for doesn't exist or has moved.",
-      "cta": "Back to home"
+      "title": "页面未找到",
+      "desc": "你要找的页面不存在或已被移动。",
+      "cta": "返回首页"
     },
     "error": {
-      "title": "Something went wrong",
-      "desc": "Try again. If the problem persists, contact support.",
-      "cta": "Try again",
-      "goHome": "Go home"
+      "title": "出错了",
+      "desc": "请重试。如果问题持续存在，请联系支持团队。",
+      "cta": "重试",
+      "goHome": "返回首页"
     },
     "offline": {
-      "title": "You're offline",
-      "desc": "Reconnect to keep planning. Your saved trips are kept locally.",
-      "retry": "Try again",
-      "titleMap": "You're offline. Map may be outdated."
+      "title": "你已离线",
+      "desc": "重新连接以继续规划。你收藏的行程仍保存在本地。",
+      "retry": "重试",
+      "titleMap": "你已离线。地图可能不是最新的。"
     }
   },
   "auth": {
     "gate": {
-      "title": "Sign in to B4K",
-      "valueProp": "Save your plan · Unlock leaderboards · Earn badges",
+      "title": "登录B4K",
+      "valueProp": "保存你的行程 · 解锁排行榜 · 获得徽章",
       "context": {
-        "save_poi": "Sign in to save places",
-        "like": "Sign in to like",
-        "save_plan": "Sign in to save your plan",
-        "save_plan_other": "Sign in to save this plan to your trips",
-        "saved_tab": "Sign in to see your saved places",
-        "profile_nav": "Sign in to view your profile",
-        "fl3_cap": "Sign in to keep planning"
+        "save_poi": "登录以收藏地点",
+        "like": "登录以点赞",
+        "save_plan": "登录以保存你的行程",
+        "save_plan_other": "登录以将此行程收藏到你的旅程中",
+        "saved_tab": "登录以查看你收藏的地点",
+        "profile_nav": "登录以查看你的个人主页",
+        "fl3_cap": "登录以继续规划"
       },
-      "google": "Continue with Google",
-      "apple": "Continue with Apple",
-      "microsoft": "Continue with Microsoft",
-      "email": "Sign in with email",
-      "emailPlaceholder": "Email address",
-      "passwordPlaceholder": "Password",
-      "signIn": "Sign in",
-      "backToProviders": "← Other sign-in options",
-      "dismiss": "Continue as guest",
-      "loading": "Signing in…",
-      "error": "Sign-in failed. Try again.",
-      "ariaLabel": "Sign in modal",
-      "close": "Close sign-in modal",
-      "planPreserved": "Your current plan is preserved — sign in to save it permanently.",
-      "fl3Preserved": "Your chat and plan are saved — sign in to keep planning.",
-      "emailContinue": "Continue with email",
-      "signInTab": "Sign in",
-      "signUpTab": "Sign up",
-      "signUp": "Create account",
-      "errorCredentials": "Email or password incorrect",
-      "errorWeak": "Password must be at least 8 characters",
-      "errorSignup": "Sign-up failed. Try again.",
-      "forgotPassword": "Forgot password?",
-      "forgotTitle": "Reset your password",
-      "forgotSubtitle": "Enter your email and we'll send you a reset link.",
-      "forgotSubmit": "Send reset link",
-      "errorForgot": "Couldn't send the email. Try again.",
-      "backToSignIn": "← Back to sign in",
-      "checkEmailTitle": "Check your email",
-      "checkEmailBodySignup": "We sent a verification link to {email}. Open it to finish creating your account.",
-      "checkEmailBodyReset": "We sent a password reset link to {email}.",
-      "resend": "Resend email",
-      "resendIn": "Resend in {seconds}s",
-      "tosFooter": "By continuing, you agree to B4K's <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
-      "ageConfirm": "I confirm I'm at least 14 years old"
+      "google": "使用Google继续",
+      "apple": "使用Apple继续",
+      "microsoft": "使用Microsoft继续",
+      "email": "使用邮箱登录",
+      "emailPlaceholder": "邮箱地址",
+      "passwordPlaceholder": "密码",
+      "signIn": "登录",
+      "backToProviders": "← 其他登录方式",
+      "dismiss": "以访客身份继续",
+      "loading": "登录中…",
+      "error": "登录失败，请重试。",
+      "ariaLabel": "登录弹窗",
+      "close": "关闭登录弹窗",
+      "planPreserved": "你当前的行程已保留 — 登录以永久保存。",
+      "fl3Preserved": "你的对话和行程已保存 — 登录以继续规划。",
+      "emailContinue": "使用邮箱继续",
+      "signInTab": "登录",
+      "signUpTab": "注册",
+      "signUp": "创建账户",
+      "errorCredentials": "邮箱或密码不正确",
+      "errorWeak": "密码必须至少8个字符",
+      "errorSignup": "注册失败，请重试。",
+      "forgotPassword": "忘记密码？",
+      "forgotTitle": "重置你的密码",
+      "forgotSubtitle": "输入你的邮箱，我们将发送重置链接。",
+      "forgotSubmit": "发送重置链接",
+      "errorForgot": "邮件发送失败，请重试。",
+      "backToSignIn": "← 返回登录",
+      "checkEmailTitle": "请查看你的邮箱",
+      "checkEmailBodySignup": "我们已向{email}发送了验证链接。打开它以完成账户创建。",
+      "checkEmailBodyReset": "我们已向{email}发送了密码重置链接。",
+      "resend": "重新发送邮件",
+      "resendIn": "{seconds}秒后可重新发送",
+      "tosFooter": "继续即表示你同意B4K的<terms>服务条款</terms>和<privacy>隐私政策</privacy>。",
+      "ageConfirm": "我确认我已年满14岁"
     },
     "conflict": {
-      "ariaLabel": "Draft conflict — pick one modal",
-      "title": "You have two drafts — which one would you like to keep?",
-      "deviceDraft": "On this device",
-      "accountDraft": "In your account",
-      "stops": "{count, plural, one {# stop} other {# stops}}",
-      "lastModified": "Last modified {time}",
-      "keep": "Keep this one",
-      "discardNote": "The other draft will be permanently deleted."
+      "ariaLabel": "草稿冲突 — 请选择保留哪一个",
+      "title": "你有两份草稿 — 你想保留哪一个？",
+      "deviceDraft": "本设备上的草稿",
+      "accountDraft": "账户中的草稿",
+      "stops": "{count}个地点",
+      "lastModified": "最后修改于{time}",
+      "keep": "保留此项",
+      "discardNote": "另一份草稿将被永久删除。"
     },
     "resetPassword": {
-      "title": "Set new password",
-      "subtitle": "Enter your new password below.",
-      "passwordLabel": "New password",
-      "passwordPlaceholder": "New password",
-      "confirmLabel": "Confirm password",
-      "confirmPlaceholder": "Confirm password",
-      "submit": "Set password",
-      "loading": "Saving…",
-      "success": "Password updated — signing you in",
-      "redirecting": "Redirecting to home…",
-      "errorMismatch": "Passwords don't match",
-      "errorWeak": "Password must be at least 8 characters",
-      "errorExpired": "This link has expired. Request a new one.",
-      "errorGeneric": "Something went wrong. Try again.",
-      "showPw": "Show password",
-      "hidePw": "Hide password",
-      "backToHome": "Back to home"
+      "title": "设置新密码",
+      "subtitle": "请在下方输入你的新密码。",
+      "passwordLabel": "新密码",
+      "passwordPlaceholder": "新密码",
+      "confirmLabel": "确认密码",
+      "confirmPlaceholder": "确认密码",
+      "submit": "设置密码",
+      "loading": "保存中…",
+      "success": "密码已更新 — 正在为你登录",
+      "redirecting": "正在跳转至首页…",
+      "errorMismatch": "两次密码不一致",
+      "errorWeak": "密码必须至少8个字符",
+      "errorExpired": "此链接已过期，请重新申请。",
+      "errorGeneric": "出错了，请重试。",
+      "showPw": "显示密码",
+      "hidePw": "隐藏密码",
+      "backToHome": "返回首页"
     },
     "callback": {
-      "verifying": "Verifying…",
-      "redirecting": "Redirecting to home…",
-      "error": "Sign-in failed",
-      "errorRetry": "Please try signing in again"
+      "verifying": "验证中…",
+      "redirecting": "正在跳转至首页…",
+      "error": "登录失败",
+      "errorRetry": "请重新尝试登录"
     }
   },
   "legalGate": {
-    "ariaLabel": "Terms acceptance",
-    "title": "Before you continue",
-    "message": "By using B4K, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
-    "accept": "Accept & Continue"
+    "ariaLabel": "接受条款",
+    "title": "继续之前",
+    "message": "使用B4K即表示你同意我们的<terms>服务条款</terms>和<privacy>隐私政策</privacy>。",
+    "accept": "接受并继续"
   },
   "map": {
-    "ariaLabel": "Interactive map of Korea",
-    "loading": "Loading map…",
-    "error": "Map could not load",
-    "retry": "Try again",
-    "noKey": "Map API key not configured",
-    "zoomIn": "Zoom in",
-    "zoomOut": "Zoom out",
+    "ariaLabel": "韩国互动地图",
+    "loading": "地图加载中…",
+    "error": "地图加载失败",
+    "retry": "重试",
+    "noKey": "地图API密钥未配置",
+    "zoomIn": "放大",
+    "zoomOut": "缩小",
     "leftPanel": {
-      "ariaLabel": "Explore panel",
-      "viewSaved": "View saved places"
+      "ariaLabel": "探索面板",
+      "viewSaved": "查看收藏的地点",
+      "tagline": "Find your place",
+      "savedLabel": "Saved"
     },
     "regions": {
-      "title": "Explore by Region",
-      "seoul": "Seoul",
-      "busan": "Busan",
-      "jeju": "Jeju",
-      "incheon": "Incheon",
-      "gyeongju": "Gyeongju",
-      "more": "More regions"
+      "title": "按地区探索",
+      "seoul": "首尔",
+      "busan": "釜山",
+      "jeju": "济州",
+      "incheon": "仁川",
+      "gyeongju": "庆州",
+      "more": "更多地区"
     },
     "filters": {
-      "title": "Filter by Type",
-      "palaces": "Palaces",
-      "temples": "Temples",
-      "cafes": "Cafés",
-      "parks": "Parks",
-      "restaurants": "Restaurants",
-      "hotels": "Hotels",
-      "shopping": "Shopping",
-      "museums": "Museums"
+      "title": "按类型筛选",
+      "palaces": "宫殿",
+      "temples": "寺庙",
+      "cafes": "咖啡厅",
+      "parks": "公园",
+      "restaurants": "餐厅",
+      "hotels": "酒店",
+      "shopping": "购物",
+      "museums": "博物馆"
     },
     "aiPill": {
-      "label": "AI Assistant ·",
-      "dismiss": "Dismiss AI assistant",
-      "expand": "Expand AI assistant"
+      "label": "AI助手 ·",
+      "dismiss": "关闭AI助手",
+      "expand": "展开AI助手"
     },
     "poiDetail": {
-      "sponsored": "Sponsored",
-      "reviews": "reviews",
-      "saves": "saves",
-      "openNow": "Open now",
-      "closed": "Closed",
-      "addToPlan": "Add to Plan",
-      "added": "Added ✓",
-      "planFull": "Maximum 40 stops reached",
-      "save": "Save",
-      "saved": "Saved",
-      "unsave": "Remove from saved",
-      "savedToast": "Place saved!",
-      "removedSave": "Removed from saved",
-      "addedToast": "Added to plan",
-      "dismiss": "Close",
-      "share": "Share",
-      "like": "Like",
-      "liked": "Liked",
-      "unlike": "Unlike",
-      "website": "Visit website",
-      "close": "Close POI details",
-      "imagePending": "Image being prepared"
+      "sponsored": "推广",
+      "reviews": "条评价",
+      "saves": "次收藏",
+      "openNow": "营业中",
+      "closed": "已打烊",
+      "addToPlan": "加入行程",
+      "added": "已添加 ✓",
+      "planFull": "已达到最多40个地点的上限",
+      "save": "收藏",
+      "saved": "已收藏",
+      "unsave": "取消收藏",
+      "savedToast": "地点已收藏！",
+      "removedSave": "已取消收藏",
+      "addedToast": "已加入行程",
+      "dismiss": "关闭",
+      "share": "分享",
+      "like": "点赞",
+      "liked": "已点赞",
+      "unlike": "取消点赞",
+      "website": "访问网站",
+      "close": "关闭地点详情",
+      "imagePending": "图片准备中"
     },
     "plan": {
-      "title": "Your Plan",
-      "stops": "stops",
-      "removeStop": "Remove stop {n}",
-      "dragHandle": "Drag to reorder stop {n}",
-      "durationLabel": "min",
-      "durationAriaLabel": "Duration for {name}",
-      "total": "total",
+      "title": "你的行程",
+      "stops": "个地点",
+      "removeStop": "移除第{n}个地点",
+      "dragHandle": "拖动以重新排序第{n}个地点",
+      "durationLabel": "分钟",
+      "durationAriaLabel": "{name}的所需时长",
+      "total": "总计",
       "transport": {
-        "label": "Transport mode",
-        "car": "Car",
-        "public": "Public"
+        "label": "出行方式",
+        "car": "自驾",
+        "public": "公共交通"
       },
-      "save": "Save Plan",
-      "savedToast": "Plan saved!",
-      "previewPlan": "Preview Plan",
-      "close": "Close plan sheet",
-      "stripExpand": "Expand plan panel",
-      "stripCollapse": "Collapse plan panel",
-      "routeError": "Route couldn't be generated. Stops are preserved.",
-      "routeRetry": "Retry",
-      "saveError": "Failed to save. Please try again.",
-      "maxStopsToast": "You've reached the {max}-stop limit for one plan.",
-      "discardDraft": "Discard draft",
-      "discardTitle": "Discard draft?",
-      "discardWarning": "This removes all {count, plural, one {# stop} other {# stops}} from the current draft. This cannot be undone.",
-      "discardCancel": "Cancel",
-      "discardConfirm": "Discard draft",
-      "dayTab": "Day {n}",
-      "legEstimate": "est {min}m",
-      "legAriaLabel": "Estimated travel time from stop {from} to stop {to}"
+      "save": "保存行程",
+      "savedToast": "行程已保存！",
+      "previewPlan": "预览行程",
+      "close": "关闭行程面板",
+      "stripExpand": "展开行程面板",
+      "stripCollapse": "收起行程面板",
+      "routeError": "无法生成路线，但地点已保留。",
+      "routeRetry": "重试",
+      "saveError": "保存失败，请重试。",
+      "maxStopsToast": "你已达到单个行程{max}个地点的上限。",
+      "discardDraft": "放弃草稿",
+      "discardTitle": "放弃草稿？",
+      "discardWarning": "这将从当前草稿中移除全部{count}个地点，此操作无法撤销。",
+      "discardCancel": "取消",
+      "discardConfirm": "放弃草稿",
+      "dayTab": "第{n}天",
+      "legEstimate": "约{min}分钟",
+      "legAriaLabel": "从第{from}个地点到第{to}个地点的预计所需时间"
     },
     "namingSheet": {
-      "ariaLabel": "Name your plan",
-      "title": "Name your plan",
-      "inputLabel": "Plan title",
-      "placeholder": "e.g. Seoul K-Pop day trip",
-      "cancel": "Cancel",
-      "save": "Save plan"
+      "ariaLabel": "为你的行程命名",
+      "title": "为你的行程命名",
+      "inputLabel": "行程标题",
+      "placeholder": "例如：首尔K-Pop一日游",
+      "cancel": "取消",
+      "save": "保存行程"
     },
     "draftResume": {
-      "ariaLabel": "Unfinished plan found",
-      "title": "You have an unfinished plan",
-      "stopCount": "{count, plural, one {# stop} other {# stops}}",
-      "resume": "Resume this plan",
-      "startFresh": "Start fresh"
+      "ariaLabel": "发现未完成的行程",
+      "title": "你有一份未完成的行程",
+      "stopCount": "{count}个地点",
+      "resume": "继续此行程",
+      "startFresh": "重新开始"
     },
     "aiOverlay": {
-      "title": "AI Travel Assistant",
-      "openButton": "AI Assistant",
-      "inputPlaceholder": "Ask about Korea…",
-      "send": "Send message",
-      "minimize": "Minimize AI assistant",
-      "disclaimer": "AI-generated suggestions — verify details independently before traveling.",
-      "close": "Close AI assistant",
-      "back": "Back to map",
-      "greeting": "Ask me anything about Korea — places, plans, and K-culture.",
+      "title": "AI旅行助手",
+      "openButton": "AI助手",
+      "inputPlaceholder": "询问关于韩国的问题…",
+      "send": "发送消息",
+      "minimize": "最小化AI助手",
+      "disclaimer": "以下为AI生成建议 — 出行前请自行核实详情。",
+      "close": "关闭AI助手",
+      "back": "返回地图",
+      "greeting": "问我任何关于韩国的问题 — 地点、行程和K文化。",
       "chips": {
-        "bts": "BTS landmarks near me",
-        "kdrama": "K-Drama filming spots",
-        "food": "Best street food today"
+        "bts": "我附近的BTS地标",
+        "kdrama": "K-Drama拍摄地",
+        "food": "今天最好吃的街头小吃"
       },
-      "error": "Connection lost. Retry when ready.",
-      "retry": "Retry",
-      "addToPlan": "Add",
-      "added": "Added",
-      "usePlan": "Use this plan",
-      "usePlanLoaded": "Plan loaded ✓",
-      "poiFound": "Here are some places:",
-      "planBuilt": "Here's a plan for you:",
-      "previewPlan": "Preview Plan",
-      "capReached": "You've reached the free plan limit",
-      "signInToContinue": "Sign in to keep planning",
+      "error": "连接已断开，准备好后请重试。",
+      "retry": "重试",
+      "addToPlan": "添加",
+      "added": "已添加",
+      "usePlan": "使用此行程",
+      "usePlanLoaded": "行程已加载 ✓",
+      "poiFound": "为你找到了这些地点：",
+      "planBuilt": "这是为你规划的行程：",
+      "previewPlan": "预览行程",
+      "capReached": "你已达到免费行程的上限",
+      "signInToContinue": "登录以继续规划",
       "errorCode": "SYS·ERR · AI·TIMEOUT",
-      "planManually": "Plan manually"
+      "planManually": "手动规划"
     },
     "planPill": {
-      "ariaLabel": "View your plan · {count} stops",
-      "label": "Plan · {count} stops",
-      "aiLabel": "AI Plan · {count} stops"
+      "ariaLabel": "查看你的行程 · {count}个地点",
+      "label": "行程 · {count}个地点",
+      "aiLabel": "AI行程 · {count}个地点"
     },
     "recommended": {
-      "title": "Popular Spots",
-      "empty": "No spots match your filters",
-      "error": "Couldn't load recommendations",
-      "save": "Save",
-      "unsave": "Remove from saved",
-      "cardAriaLabel": "{name}, {region}"
+      "title": "热门地点",
+      "empty": "没有符合筛选条件的地点",
+      "error": "无法加载推荐内容",
+      "save": "收藏",
+      "unsave": "取消收藏",
+      "cardAriaLabel": "{name}，{region}"
     }
   },
   "itinerary": {
-    "loading": "Loading itinerary…",
-    "notFound": "Itinerary not found",
-    "private": "This itinerary is private",
-    "privateDesc": "The creator has set this itinerary to private.",
+    "loading": "行程加载中…",
+    "notFound": "未找到行程",
+    "private": "此行程为私密行程",
+    "privateDesc": "创建者已将此行程设为私密。",
     "error": {
-      "title": "Couldn't load itinerary",
-      "cta": "Try again"
+      "title": "无法加载行程",
+      "cta": "重试"
     },
     "stats": {
-      "stops": "{count} stops",
-      "min": "{min} min",
-      "km": "{km} km"
+      "stops": "{count}个地点",
+      "min": "{min}分钟",
+      "km": "{km}公里"
     },
     "transport": {
-      "car": "By car",
-      "public": "Public transport",
-      "walk": "On foot",
-      "changeMode": "Change transport mode (current: {mode})",
-      "mode": "Transport: {mode}",
-      "offlineNote": "Try again when online"
+      "car": "自驾",
+      "public": "公共交通",
+      "walk": "步行",
+      "changeMode": "更改出行方式（当前：{mode}）",
+      "mode": "出行方式：{mode}",
+      "offlineNote": "恢复在线后请重试"
     },
     "actions": {
-      "like": "Like",
-      "liked": "Liked",
-      "save": "Save",
-      "saved": "Saved",
-      "share": "Share",
-      "edit": "Edit",
-      "makePrivate": "Make private",
-      "makePublic": "Make public",
-      "likeAria": "Like this itinerary",
-      "saveAria": "Save this itinerary",
-      "shareAria": "Share this itinerary",
-      "editAria": "Edit this itinerary",
-      "likedToast": "Added to liked",
-      "unlikedToast": "Removed from liked",
-      "savedToast": "Saved!",
-      "unsavedToast": "Removed from saved",
-      "deleteTitle": "Delete itinerary?",
-      "deleteConfirmText": "This will permanently delete the itinerary. This cannot be undone.",
-      "deleteCancel": "Cancel",
-      "deleteConfirm": "Delete",
-      "deleteAria": "Confirm delete itinerary",
-      "deleting": "Deleting…",
-      "deleteErrorToast": "Failed to delete. Please try again."
+      "like": "点赞",
+      "liked": "已点赞",
+      "save": "收藏",
+      "saved": "已收藏",
+      "share": "分享",
+      "edit": "编辑",
+      "makePrivate": "设为私密",
+      "makePublic": "设为公开",
+      "likeAria": "点赞此行程",
+      "saveAria": "收藏此行程",
+      "shareAria": "分享此行程",
+      "editAria": "编辑此行程",
+      "likedToast": "已加入点赞",
+      "unlikedToast": "已取消点赞",
+      "savedToast": "已收藏！",
+      "unsavedToast": "已取消收藏",
+      "deleteTitle": "删除行程？",
+      "deleteConfirmText": "这将永久删除该行程，此操作无法撤销。",
+      "deleteCancel": "取消",
+      "deleteConfirm": "删除",
+      "deleteAria": "确认删除行程",
+      "deleting": "删除中…",
+      "deleteErrorToast": "删除失败，请重试。"
     },
     "tabs": {
-      "all": "All",
-      "day": "Day {n}"
+      "all": "全部",
+      "day": "第{n}天"
     },
     "stopList": {
-      "ariaLabel": "Itinerary stops"
+      "ariaLabel": "行程地点"
     },
     "stopItem": {
-      "ariaLabel": "Stop {n}: {name}",
-      "min": "{min} min",
-      "fromStart": "{time} from start"
+      "ariaLabel": "第{n}站：{name}",
+      "min": "{min}分钟",
+      "fromStart": "距出发{time}"
     },
-    "sponsored": "Sponsored",
+    "sponsored": "推广",
     "related": {
-      "title": "More itineraries",
-      "stops": "{count} stops",
-      "likes": "{count} likes"
+      "title": "更多行程",
+      "stops": "{count}个地点",
+      "likes": "{count}个赞"
     },
     "panel": {
-      "ariaLabel": "Itinerary details"
+      "ariaLabel": "行程详情"
     },
     "sheet": {
-      "handle": "Drag to resize",
-      "ariaLabel": "Itinerary detail"
+      "handle": "拖动以调整大小",
+      "ariaLabel": "行程详情"
     },
-    "copiedToast": "Link copied!",
-    "mapAriaLabel": "Itinerary route map",
-    "createdBy": "by {name}",
+    "copiedToast": "链接已复制！",
+    "mapAriaLabel": "行程路线地图",
+    "createdBy": "由{name}创建",
     "duration": {
-      "hoursMinutes": "{h}h {m}m",
-      "hours": "{h}h",
-      "minutes": "{m}m"
+      "hoursMinutes": "{h}小时{m}分钟",
+      "hours": "{h}小时",
+      "minutes": "{m}分钟"
     },
     "leg": {
-      "calculating": "Calculating route…",
-      "km": "{km} km",
-      "m": "{m} m",
-      "ariaLabel": "Travel from stop {from} to stop {to}"
+      "calculating": "路线计算中…",
+      "km": "{km}公里",
+      "m": "{m}米",
+      "ariaLabel": "从第{from}站到第{to}站的行程"
     },
     "footer": {
-      "totalDuration": "Total duration"
+      "totalDuration": "总时长"
     },
-    "notFoundRedirect": "Taking you back to the map…"
+    "notFoundRedirect": "正在带你返回地图…"
   },
   "profile": {
     "header": {
-      "ariaLabel": "Profile header",
-      "breadcrumb": "Profile",
-      "avatarAlt": "Profile photo of {name}",
-      "statsLabel": "Profile stats",
-      "tripsLabel": "Trips",
-      "tripsCountAria": "{count} trips created",
-      "likesLabel": "Likes",
-      "likesAria": "{count} likes received",
-      "pinnedBadgesLabel": "Pinned badges",
-      "errorTitle": "Couldn't load profile",
-      "errorRetry": "Try again",
-      "savesLabel": "Saves",
-      "badgesLabel": "Badges",
-      "savesCountAria": "{count} saves",
-      "badgesCountAria": "{count} badges",
-      "loading": "Loading profile",
-      "namePlaceholder": "B4K Traveler"
+      "ariaLabel": "个人主页页头",
+      "breadcrumb": "个人",
+      "avatarAlt": "{name}的头像",
+      "statsLabel": "个人统计",
+      "tripsLabel": "行程",
+      "tripsCountAria": "已创建{count}个行程",
+      "likesLabel": "获赞",
+      "likesAria": "已获得{count}个赞",
+      "pinnedBadgesLabel": "已置顶徽章",
+      "errorTitle": "无法加载个人主页",
+      "errorRetry": "重试",
+      "savesLabel": "收藏",
+      "badgesLabel": "徽章",
+      "savesCountAria": "已收藏{count}项",
+      "badgesCountAria": "已获得{count}枚徽章",
+      "loading": "个人主页加载中",
+      "namePlaceholder": "B4K旅行者"
     },
     "tabs": {
-      "ariaLabel": "Profile sections",
-      "trips": "My Trips",
-      "badges": "Badges",
-      "settings": "Settings",
-      "saved": "Saved"
+      "ariaLabel": "个人主页分区",
+      "trips": "我的行程",
+      "badges": "徽章",
+      "settings": "设置",
+      "saved": "收藏"
     },
     "trips": {
-      "loading": "Loading trips…",
+      "loading": "行程加载中…",
       "empty": {
-        "title": "No trips yet",
-        "desc": "Create your first Korea itinerary.",
-        "cta": "Open the map"
+        "title": "暂无行程",
+        "desc": "创建你的第一份韩国行程。",
+        "cta": "打开地图"
       },
       "error": {
-        "title": "Couldn't load trips",
-        "cta": "Try again"
+        "title": "无法加载行程",
+        "cta": "重试"
       },
       "nudge": {
-        "title": "Or explore saved places",
-        "cta": "View saved"
+        "title": "或探索收藏的地点",
+        "cta": "查看收藏"
       },
       "card": {
-        "draft": "Draft",
-        "edit": "Edit",
-        "editAria": "Edit trip {title}",
-        "delete": "Delete",
-        "deleteAria": "Delete trip {title}",
-        "likes": "likes",
-        "saves": "saves",
-        "stops": "stops",
-        "thumbnailAlt": "Thumbnail for {title}",
-        "shareAria": "Share trip {title}",
-        "shareCopiedToast": "Link copied to clipboard"
+        "draft": "草稿",
+        "edit": "编辑",
+        "editAria": "编辑行程「{title}」",
+        "delete": "删除",
+        "deleteAria": "删除行程「{title}」",
+        "likes": "点赞",
+        "saves": "收藏",
+        "stops": "个地点",
+        "thumbnailAlt": "{title}的缩略图",
+        "shareAria": "分享行程「{title}」",
+        "shareCopiedToast": "链接已复制到剪贴板"
       },
       "deleteModal": {
-        "title": "Delete trip?",
-        "desc": "This will permanently delete \"{title}\". This cannot be undone.",
-        "confirm": "Delete",
-        "cancel": "Cancel",
-        "ariaLabel": "Confirm delete trip"
+        "title": "删除行程？",
+        "desc": "这将永久删除「{title}」，此操作无法撤销。",
+        "confirm": "删除",
+        "cancel": "取消",
+        "ariaLabel": "确认删除行程"
       }
     },
     "badges": {
-      "loading": "Loading badges…",
+      "loading": "徽章加载中…",
       "empty": {
-        "title": "No badges yet",
-        "desc": "Complete trips and contribute to the community to earn badges.",
-        "cta": "Start exploring"
+        "title": "暂无徽章",
+        "desc": "完成行程并参与社区互动来获得徽章。",
+        "cta": "开始探索"
       },
       "error": {
-        "title": "Couldn't load badges",
-        "cta": "Try again"
+        "title": "无法加载徽章",
+        "cta": "重试"
       },
       "rarity": {
-        "common": "Common",
-        "rare": "Rare",
-        "epic": "Epic",
-        "legendary": "Legendary"
+        "common": "普通",
+        "rare": "稀有",
+        "epic": "史诗",
+        "legendary": "传说"
       },
-      "pinAria": "Pin {name}",
-      "unpinAria": "Unpin {name}",
-      "pinLimitError": "You can pin up to 3 badges. Unpin one to pin another.",
-      "locked": "Locked",
-      "earnedOn": "Earned on {date}",
+      "pinAria": "置顶{name}",
+      "unpinAria": "取消置顶{name}",
+      "pinLimitError": "最多可置顶3枚徽章。请先取消置顶一枚再添加。",
+      "locked": "未解锁",
+      "earnedOn": "于{date}获得",
       "modal": {
-        "close": "Close badge detail",
-        "category": "Category",
-        "rarity": "Rarity",
-        "earned": "Earned"
+        "close": "关闭徽章详情",
+        "category": "类别",
+        "rarity": "稀有度",
+        "earned": "已获得"
       }
     },
     "settings": {
       "account": {
-        "heading": "Account",
-        "email": "Email",
-        "emailNote": "Sign-in address — cannot be changed here"
+        "heading": "账户",
+        "email": "邮箱",
+        "emailNote": "登录邮箱 — 无法在此处更改"
       },
       "actions": {
-        "heading": "Actions"
+        "heading": "操作"
       },
       "preferences": {
-        "heading": "Preferences",
-        "language": "Language",
-        "transport": "Default transport",
-        "transportCar": "Car",
-        "transportPublic": "Transit",
-        "interests": "Interests",
-        "interestsNote": "Used to personalise recommendations",
-        "save": "Save changes",
-        "saving": "Saving…",
-        "saved": "Saved"
+        "heading": "偏好设置",
+        "language": "语言",
+        "transport": "默认出行方式",
+        "transportCar": "自驾",
+        "transportPublic": "公共交通",
+        "interests": "兴趣",
+        "interestsNote": "用于个性化推荐",
+        "save": "保存更改",
+        "saving": "保存中…",
+        "saved": "已保存"
       },
       "interests": {
         "kpop": "K-Pop",
@@ -990,246 +992,246 @@
         "th": "ภาษาไทย",
         "pt-BR": "Português (BR)"
       },
-      "signOut": "Sign out",
-      "changePassword": "Change password",
-      "deleteAccount": "Delete account",
-      "deleteWarning": "Your account will be permanently deleted after 30 days. This cannot be undone.",
-      "deleteConfirm": "Yes, delete my account",
-      "deleteCancel": "Cancel",
-      "deleteTypePrompt": "Type \"DELETE\" to confirm",
-      "deleteTypeHint": "You must type DELETE (all caps) to enable the confirm button",
+      "signOut": "退出登录",
+      "changePassword": "修改密码",
+      "deleteAccount": "删除账户",
+      "deleteWarning": "你的账户将在30天后被永久删除，此操作无法撤销。",
+      "deleteConfirm": "是的，删除我的账户",
+      "deleteCancel": "取消",
+      "deleteTypePrompt": "输入「DELETE」以确认",
+      "deleteTypeHint": "你必须输入DELETE（全部大写）才能启用确认按钮",
       "password": {
-        "heading": "Change password",
-        "current": "Current password",
-        "new": "New password",
-        "confirm": "Confirm new password",
-        "hint": "At least 8 characters",
-        "show": "Show password",
-        "hide": "Hide password",
-        "submit": "Update password",
-        "submitting": "Updating…",
-        "success": "Password updated",
-        "mismatch": "Passwords do not match"
+        "heading": "修改密码",
+        "current": "当前密码",
+        "new": "新密码",
+        "confirm": "确认新密码",
+        "hint": "至少8个字符",
+        "show": "显示密码",
+        "hide": "隐藏密码",
+        "submit": "更新密码",
+        "submitting": "更新中…",
+        "success": "密码已更新",
+        "mismatch": "两次密码不一致"
       },
-      "passwordError": "Failed to update password. Check your current password and try again.",
+      "passwordError": "密码更新失败，请检查当前密码后重试。",
       "avatar": {
-        "heading": "Profile photo",
-        "alt": "Your profile photo",
-        "upload": "Upload photo",
-        "remove": "Remove",
-        "uploading": "Uploading…",
-        "hint": "JPG, PNG or WebP. Max 2MB.",
-        "uploaded": "Photo updated",
-        "removed": "Photo removed",
-        "error": "Could not update photo. Try again."
+        "heading": "头像",
+        "alt": "你的头像",
+        "upload": "上传照片",
+        "remove": "移除",
+        "uploading": "上传中…",
+        "hint": "JPG、PNG或WebP格式，最大2MB。",
+        "uploaded": "头像已更新",
+        "removed": "头像已移除",
+        "error": "无法更新头像，请重试。"
       },
       "identity": {
-        "heading": "Name & bio",
-        "displayName": "Display name",
-        "displayNamePlaceholder": "Your name",
-        "bio": "Bio",
-        "bioPlaceholder": "Tell others a little about you",
+        "heading": "姓名与简介",
+        "displayName": "显示名称",
+        "displayNamePlaceholder": "你的名字",
+        "bio": "简介",
+        "bioPlaceholder": "简单介绍一下自己",
         "bioCounter": "{count}/150",
-        "save": "Save",
-        "saving": "Saving…",
-        "saved": "Saved",
-        "error": "Could not save. Try again."
+        "save": "保存",
+        "saving": "保存中…",
+        "saved": "已保存",
+        "error": "无法保存，请重试。"
       },
       "notifications": {
-        "heading": "Notifications",
-        "note": "Turn off the notifications you don't want to receive.",
-        "error": "Could not update. Try again.",
+        "heading": "通知",
+        "note": "关闭你不想接收的通知类型。",
+        "error": "无法更新，请重试。",
         "types": {
-          "event_drop": "New event drops",
-          "deal_expiring": "Deals expiring soon",
-          "editorial_pick": "Editor's picks",
-          "badge_earned": "Badges earned",
-          "challenge_new": "New challenges",
-          "promotion": "Promotions"
+          "event_drop": "新活动上线",
+          "deal_expiring": "优惠即将到期",
+          "editorial_pick": "编辑精选",
+          "badge_earned": "获得徽章",
+          "challenge_new": "新挑战",
+          "promotion": "促销活动"
         }
       },
       "privacy": {
-        "heading": "Privacy",
-        "note": "Control which tabs other people can see on your profile.",
-        "trips": "Trips",
-        "tripsNote": "Show your trips on your public profile",
-        "saved": "Saved",
-        "savedNote": "Show your saved places on your public profile",
-        "public": "Public",
-        "private": "Private",
-        "error": "Could not update. Try again."
+        "heading": "隐私",
+        "note": "管理其他人可以在你个人主页看到的标签页。",
+        "trips": "行程",
+        "tripsNote": "在公开主页展示你的行程",
+        "saved": "收藏",
+        "savedNote": "在公开主页展示你收藏的地点",
+        "public": "公开",
+        "private": "私密",
+        "error": "无法更新，请重试。"
       },
       "dataConsent": {
-        "heading": "Data & Privacy Consent",
-        "note": "Manage your analytics and tracking consent — the same setting as the Cookie Preferences page."
+        "heading": "数据与隐私同意",
+        "note": "管理你的分析和追踪同意设置 — 与Cookie偏好页面相同。"
       },
-      "signOutAll": "Log out from all devices",
-      "signOutAllNote": "Ends your session everywhere you're signed in.",
-      "signOutAllError": "Could not log out everywhere. Try again.",
+      "signOutAll": "退出所有设备登录",
+      "signOutAllNote": "将结束你在所有已登录设备上的会话。",
+      "signOutAllError": "无法退出所有设备，请重试。",
       "reauth": {
-        "heading": "Confirm it's you",
-        "note": "For your security, re-enter your password to continue.",
-        "password": "Password",
-        "continue": "Continue",
-        "verifying": "Verifying…",
-        "cancel": "Cancel",
-        "error": "Incorrect password. Try again."
+        "heading": "确认是你本人",
+        "note": "出于安全考虑，请重新输入密码以继续。",
+        "password": "密码",
+        "continue": "继续",
+        "verifying": "验证中…",
+        "cancel": "取消",
+        "error": "密码不正确，请重试。"
       },
-      "deleteError": "Couldn't delete your account. Please try again."
+      "deleteError": "无法删除你的账户，请重试。"
     },
     "saved": {
-      "loading": "Loading saved places…",
-      "empty": "No saved places yet",
-      "error": "Failed to load saved places",
-      "retry": "Try again",
-      "openOnMapAria": "Open {name} on the map"
+      "loading": "收藏的地点加载中…",
+      "empty": "暂无收藏的地点",
+      "error": "无法加载收藏的地点",
+      "retry": "重试",
+      "openOnMapAria": "在地图上打开{name}"
     },
-    "notFound": "Profile not found",
-    "anonymousUser": "User",
-    "avatarAlt": "{name}'s profile photo",
-    "tabsLabel": "Profile sections",
-    "privateTab": "This tab is private",
-    "untitledPlan": "Untitled plan",
+    "notFound": "未找到该个人主页",
+    "anonymousUser": "用户",
+    "avatarAlt": "{name}的头像",
+    "tabsLabel": "个人主页分区",
+    "privateTab": "该标签页为私密内容",
+    "untitledPlan": "未命名行程",
     "otherTrips": {
-      "stops": "{count} stops",
-      "days": "{count} days",
-      "save": "Save",
-      "saved": "Saved",
-      "saveAria": "Save plan {title}",
-      "unsaveAria": "Remove saved plan {title}",
-      "openAria": "Open plan {title}"
+      "stops": "{count}个地点",
+      "days": "{count}天",
+      "save": "收藏",
+      "saved": "已收藏",
+      "saveAria": "收藏行程「{title}」",
+      "unsaveAria": "移除已收藏行程「{title}」",
+      "openAria": "打开行程「{title}」"
     },
     "otherBadges": {
-      "lockedAria": "Locked badge: {name}"
+      "lockedAria": "未解锁的徽章：{name}"
     }
   },
   "explore": {
-    "title": "Explore",
-    "breadcrumb": "Explore",
-    "loading": "Loading…",
-    "sectionEmpty": "No places yet",
+    "title": "探索",
+    "breadcrumb": "探索",
+    "loading": "加载中…",
+    "sectionEmpty": "暂无地点",
     "empty": {
-      "cta": "Explore the map"
+      "cta": "探索地图"
     },
     "sidebar": {
-      "ariaLabel": "Content category navigation"
+      "ariaLabel": "内容分类导航"
     },
     "pills": {
-      "ariaLabel": "Content category tabs"
+      "ariaLabel": "内容分类标签"
     },
     "error": {
-      "title": "Failed to load",
-      "retry": "Try again"
+      "title": "加载失败",
+      "retry": "重试"
     },
     "card": {
-      "trending": "Trending",
-      "ariaLabel": "View {name} on map",
-      "saveAria": "Save {name}",
-      "unsaveAria": "Unsave {name}",
-      "likeAria": "Like {name}",
-      "unlikeAria": "Unlike {name}",
-      "sponsored": "Sponsored",
+      "trending": "热门",
+      "ariaLabel": "在地图上查看{name}",
+      "saveAria": "收藏{name}",
+      "unsaveAria": "取消收藏{name}",
+      "likeAria": "点赞{name}",
+      "unlikeAria": "取消点赞{name}",
+      "sponsored": "推广",
       "dDay": "D-{days}",
-      "dDayToday": "D-DAY",
-      "dDayPast": "Ended",
-      "featured": "Featured",
-      "addAria": "Add {name} to plan",
-      "addedAria": "{name} added to plan",
-      "imagePending": "Image being prepared"
+      "dDayToday": "就是今天",
+      "dDayPast": "已结束",
+      "featured": "精选",
+      "addAria": "将{name}加入行程",
+      "addedAria": "已将{name}加入行程",
+      "imagePending": "图片准备中"
     },
-    "hub": {
-      "title": "Explore Korea",
-      "subtitle": "Dive into K-Pop, K-Drama, K-Beauty, and K-Culture",
+    "aiCta": {
+      "text": "让AI为你规划K文化之旅",
+      "button": "体验AI规划",
       "kpop": {
-        "desc": "Artists, concert venues, agency tours, and merchandise"
+        "text": "用AI规划你的K-Pop之旅"
       },
       "kdrama": {
-        "desc": "Filming locations, drama trails, and iconic sets"
+        "text": "规划我的K-Drama之旅"
       },
       "kbeauty": {
-        "desc": "Skincare districts, clinics, and brand flagship stores"
+        "text": "规划我的K-Beauty一日游"
       },
       "kculture": {
-        "desc": "Cuisine, traditional markets, and heritage experiences"
+        "text": "规划我的文化之旅"
+      }
+    },
+    "hub": {
+      "title": "探索韩国",
+      "subtitle": "沉浸在K-Pop、K-Drama、K-Beauty和K-Culture中",
+      "kpop": {
+        "desc": "艺人、演出场馆、经纪公司参观和周边商品"
+      },
+      "kdrama": {
+        "desc": "拍摄地、剧集打卡路线和经典场景"
+      },
+      "kbeauty": {
+        "desc": "护肤商圈、诊所与品牌旗舰店"
+      },
+      "kculture": {
+        "desc": "美食、传统市场与文化遗产体验"
       }
     },
     "kpop": {
       "title": "K-Pop",
       "empty": {
-        "title": "No K-Pop spots yet",
-        "desc": "K-Pop content is coming soon."
+        "title": "暂无K-Pop打卡地",
+        "desc": "K-Pop内容即将上线。"
       }
     },
     "kdrama": {
       "title": "K-Drama",
       "empty": {
-        "title": "No K-Drama spots yet",
-        "desc": "K-Drama content is coming soon."
+        "title": "暂无K-Drama打卡地",
+        "desc": "K-Drama内容即将上线。"
       }
     },
     "kbeauty": {
       "title": "K-Beauty",
       "empty": {
-        "title": "No K-Beauty spots yet",
-        "desc": "K-Beauty content is coming soon."
+        "title": "暂无K-Beauty打卡地",
+        "desc": "K-Beauty内容即将上线。"
       }
     },
     "kculture": {
       "title": "K-Culture",
       "empty": {
-        "title": "No K-Culture spots yet",
-        "desc": "K-Culture content is coming soon."
+        "title": "暂无K-Culture打卡地",
+        "desc": "K-Culture内容即将上线。"
       }
     },
     "sections": {
-      "concerts": "Concerts",
-      "tours": "Tours",
-      "agencies": "Agencies",
-      "merchandise": "Merchandise",
-      "filming": "Filming Locations",
-      "historical": "Historical Sets",
-      "ostCafes": "OST Cafés",
-      "skincare": "Skincare",
-      "makeup": "Makeup",
-      "spa": "Spa & Wellness",
-      "salon": "Salon Experiences",
-      "cuisine": "Korean Cuisine",
-      "markets": "Traditional Markets",
-      "historic": "Historic Places",
-      "experiences": "Traditional Experiences",
-      "traditional": "Traditional",
-      "food": "Food",
-      "festivals": "Festivals",
-      "crafts": "Crafts",
-      "trending": "Trending Now"
+      "concerts": "演唱会",
+      "tours": "参观行程",
+      "agencies": "经纪公司",
+      "merchandise": "周边商品",
+      "filming": "拍摄地",
+      "historical": "历史场景",
+      "ostCafes": "原声带主题咖啡厅",
+      "skincare": "护肤",
+      "makeup": "彩妆",
+      "spa": "水疗与养生",
+      "salon": "美发沙龙体验",
+      "cuisine": "韩国美食",
+      "markets": "传统市场",
+      "historic": "历史古迹",
+      "experiences": "传统体验",
+      "traditional": "传统",
+      "food": "美食",
+      "festivals": "节庆活动",
+      "crafts": "手工艺",
+      "trending": "当前热门"
     },
-    "aiCta": {
-      "text": "Let AI plan your K-culture journey",
-      "button": "Try AI Planning",
-      "kpop": {
-        "text": "Plan your K-Pop trip with AI"
-      },
-      "kdrama": {
-        "text": "Plan my K-Drama trip"
-      },
-      "kbeauty": {
-        "text": "Plan my K-Beauty day"
-      },
-      "kculture": {
-        "text": "Plan my cultural trip"
-      }
-    },
-    "viewAll": "View all",
-    "viewAllAria": "View all {section}",
+    "viewAll": "查看全部",
+    "viewAllAria": "查看{section}的全部内容",
     "hero": {
-      "ariaLabel": "Featured highlights",
-      "slideN": "Slide {n}",
-      "prev": "Previous slide",
-      "next": "Next slide"
+      "ariaLabel": "精选亮点",
+      "slideN": "第{n}张",
+      "prev": "上一张",
+      "next": "下一张"
     },
     "filters": {
-      "ariaLabel": "Filter",
-      "all": "All",
+      "ariaLabel": "筛选",
+      "all": "全部",
       "agency": {
         "HYBE": "HYBE",
         "SM": "SM",
@@ -1237,442 +1239,417 @@
         "YG": "YG"
       },
       "district": {
-        "Apgujeong": "Apgujeong",
-        "Myeongdong": "Myeongdong",
-        "Hongdae": "Hongdae",
-        "Gangnam": "Gangnam"
+        "Apgujeong": "狎鸥亭",
+        "Myeongdong": "明洞",
+        "Hongdae": "弘大",
+        "Gangnam": "江南"
       },
       "region": {
-        "Seoul": "Seoul",
-        "Jeonju": "Jeonju",
-        "Gyeongju": "Gyeongju",
-        "Andong": "Andong"
+        "Seoul": "首尔",
+        "Jeonju": "全州",
+        "Gyeongju": "庆州",
+        "Andong": "安东"
       }
     },
     "packages": {
-      "title": "B4K Best Packages",
-      "sponsored": "Sponsored",
-      "viewCta": "View",
-      "ariaLabel": "{title} by {partner}"
+      "title": "B4K精选套餐",
+      "sponsored": "推广",
+      "viewCta": "查看",
+      "ariaLabel": "{partner}的{title}"
     }
   },
   "saved": {
-    "ariaLabel": "Saved page",
-    "breadcrumb": "Saved",
-    "title": "Saved",
+    "ariaLabel": "收藏页面",
+    "breadcrumb": "收藏",
+    "title": "收藏",
     "tabs": {
-      "ariaLabel": "Content tabs",
-      "places": "Places",
-      "myPlans": "My Plans",
-      "savedPlans": "Saved Plans"
+      "ariaLabel": "内容标签页",
+      "places": "地点",
+      "myPlans": "我的行程",
+      "savedPlans": "收藏的行程"
     },
-    "loading": "Loading saved items…",
+    "loading": "收藏内容加载中…",
     "error": {
-      "title": "Couldn't load saved items",
-      "retry": "Try again"
+      "title": "无法加载收藏内容",
+      "retry": "重试"
     },
     "empty": {
       "places": {
-        "title": "No saved places yet",
-        "desc": "Tap the bookmark icon on any place to save it here.",
-        "cta": "Explore the map"
+        "title": "暂无收藏的地点",
+        "desc": "点击任意地点的书签图标即可收藏至此。",
+        "cta": "探索地图"
       },
       "myPlans": {
-        "title": "No plans yet",
-        "desc": "Create your first plan on the map.",
-        "cta": "Open the map"
+        "title": "暂无行程",
+        "desc": "在地图上创建你的第一个行程。",
+        "cta": "打开地图"
       },
       "savedPlans": {
-        "title": "No saved plans yet",
-        "desc": "Save plans you love to revisit them anytime.",
-        "cta": "Explore the map"
+        "title": "暂无收藏的行程",
+        "desc": "收藏喜欢的行程，随时重温。",
+        "cta": "探索地图"
       }
     },
     "place": {
-      "ariaLabel": "View {name} on map"
+      "ariaLabel": "在地图上查看{name}"
     },
     "plan": {
-      "ariaLabel": "View itinerary {title}",
-      "stops": "{count, plural, one {# stop} other {# stops}}",
-      "days": "{count, plural, one {# day} other {# days}}"
+      "ariaLabel": "查看行程「{title}」",
+      "stops": "{count}个地点",
+      "days": "{count}天"
     },
     "myPlan": {
-      "ariaLabel": "View plan {title}",
-      "draft": "Draft",
-      "lastEdited": "Edited {date}",
-      "edit": "Edit",
-      "share": "Share",
-      "delete": "Delete",
-      "editAriaLabel": "Edit plan {title}",
-      "shareAriaLabel": "Share plan {title}",
-      "deleteAriaLabel": "Delete plan {title}"
+      "ariaLabel": "查看行程「{title}」",
+      "draft": "草稿",
+      "lastEdited": "于{date}编辑",
+      "edit": "编辑",
+      "share": "分享",
+      "delete": "删除",
+      "editAriaLabel": "编辑行程「{title}」",
+      "shareAriaLabel": "分享行程「{title}」",
+      "deleteAriaLabel": "删除行程「{title}」"
     },
     "unsave": {
-      "label": "Unsave",
-      "ariaLabel": "Unsave plan {title}"
+      "label": "取消收藏",
+      "ariaLabel": "移除已收藏行程「{title}」"
     },
     "confirmDelete": {
-      "title": "Delete plan?",
-      "desc": "This plan will be permanently removed.",
-      "confirm": "Delete",
-      "cancel": "Cancel"
+      "title": "删除行程？",
+      "desc": "该行程将被永久删除。",
+      "confirm": "删除",
+      "cancel": "取消"
     },
     "folder": {
-      "openAriaLabel": "Open folder {name}",
-      "poiCount": "{count, plural, one {# place} other {# places}}",
-      "generatePlan": "Generate Plan",
-      "back": "Back to folders",
-      "selectHint": "Select places for your plan",
-      "selectAll": "Select All",
-      "deselectAll": "Deselect All",
-      "selectAriaLabel": "Select {name}",
-      "generate": "Generate ({count} places)",
-      "generating": "Generating…",
-      "generateError": "Couldn't generate plan. Please try again.",
-      "newFolder": "New folder",
-      "createPlan": "Create plan",
-      "cancel": "Cancel",
-      "selectFoldersHint": "Select folders to plan from",
-      "newFolderPlaceholder": "Folder name",
-      "create": "Create",
-      "generateFolders": "Generate plan from {count, plural, one {# folder} other {# folders}}",
-      "selectFolderAria": "Select folder {name}",
-      "folderMenu": "Options for {name}",
-      "rename": "Rename",
-      "delete": "Delete",
-      "renameTitle": "Rename folder",
-      "save": "Save",
-      "deleteTitle": "Delete folder?",
-      "deleteWarning": "\"{name}\" and all its saved places will be permanently deleted. This cannot be undone.",
-      "deleteCancel": "Cancel",
-      "offlineNote": "You're offline. Try again when connected."
+      "openAriaLabel": "打开文件夹「{name}」",
+      "poiCount": "{count}个地点",
+      "generatePlan": "生成行程",
+      "back": "返回文件夹",
+      "selectHint": "选择要加入行程的地点",
+      "selectAll": "全选",
+      "deselectAll": "取消全选",
+      "selectAriaLabel": "选择{name}",
+      "generate": "生成（{count}个地点）",
+      "generating": "生成中…",
+      "generateError": "无法生成行程，请重试。",
+      "newFolder": "新建文件夹",
+      "createPlan": "创建行程",
+      "cancel": "取消",
+      "selectFoldersHint": "选择要用于规划的文件夹",
+      "newFolderPlaceholder": "文件夹名称",
+      "create": "创建",
+      "generateFolders": "从{count}个文件夹生成行程",
+      "selectFolderAria": "选择文件夹「{name}」",
+      "folderMenu": "{name}的选项",
+      "rename": "重命名",
+      "delete": "删除",
+      "renameTitle": "重命名文件夹",
+      "save": "保存",
+      "deleteTitle": "删除文件夹？",
+      "deleteWarning": "「{name}」及其中收藏的所有地点将被永久删除，此操作无法撤销。",
+      "deleteCancel": "取消",
+      "offlineNote": "你已离线，联网后请重试。"
     },
     "poi": {
-      "removeAriaLabel": "Remove {name} from folder",
-      "removeLabel": "Remove"
+      "removeAriaLabel": "从文件夹中移除{name}",
+      "removeLabel": "移除"
     }
   },
   "notifications": {
-    "ariaLabel": "Notifications page",
-    "breadcrumb": "Notifications",
-    "title": "Notifications",
-    "unread": "{count, plural, one {# unread} other {# unread}}",
-    "loading": "Loading notifications…",
-    "loadMore": "Load more",
+    "ariaLabel": "通知页面",
+    "breadcrumb": "通知",
+    "title": "通知",
+    "unread": "{count}条未读",
+    "markAllRead": "全部标为已读",
+    "loading": "通知加载中…",
+    "loadMore": "加载更多",
     "error": {
-      "title": "Couldn't load notifications",
-      "retry": "Try again"
+      "title": "无法加载通知",
+      "retry": "重试"
     },
     "empty": {
-      "title": "You're all caught up",
-      "desc": "Notifications about events, deals, and badges will appear here."
+      "title": "已全部处理完毕",
+      "desc": "关于活动、优惠和徽章的通知将显示在这里。"
     },
     "groups": {
-      "today": "Today",
-      "yesterday": "Yesterday",
-      "earlier": "Earlier"
-    },
-    "markAllRead": "Mark all read"
+      "today": "今天",
+      "yesterday": "昨天",
+      "earlier": "更早"
+    }
   },
   "badges": {
-    "ariaLabel": "Badges page",
-    "breadcrumb": "Badges",
-    "title": "Badges",
-    "stats": "{earned} / {total} earned",
+    "ariaLabel": "徽章页面",
+    "breadcrumb": "徽章",
+    "title": "徽章",
+    "stats": "已获得 {earned} / {total}",
     "filter": {
-      "ariaLabel": "Filter by rarity",
-      "all": "All",
-      "common": "Common",
-      "rare": "Rare",
-      "epic": "Epic",
-      "legendary": "Legendary"
+      "ariaLabel": "按稀有度筛选",
+      "all": "全部",
+      "common": "普通",
+      "rare": "稀有",
+      "epic": "史诗",
+      "legendary": "传说"
     },
-    "loading": "Loading badges…",
+    "loading": "徽章加载中…",
     "error": {
-      "title": "Couldn't load badges",
-      "retry": "Try again"
+      "title": "无法加载徽章",
+      "retry": "重试"
     },
     "empty": {
-      "title": "No badges found",
-      "desc": "Explore Korea and complete challenges to earn badges."
+      "title": "未找到徽章",
+      "desc": "探索韩国、完成挑战来获得徽章。"
     },
     "badge": {
       "ariaLabel": "{name} — {rarity}",
-      "pinned": "Pinned badge",
-      "earnedOn": "Earned {date}",
-      "locked": "Locked"
+      "pinned": "已置顶徽章",
+      "earnedOn": "{date}获得",
+      "locked": "未解锁"
     },
     "detail": {
-      "ariaLabel": "Badge details",
-      "close": "Close",
-      "category": "Category",
-      "status": "Status",
-      "earned": "Earned",
-      "earnedOn": "Earned on {date}",
-      "unlockToast": "New badge unlocked: {name}",
-      "unlockCriteria": "How to unlock",
-      "pin": "Pin to profile",
-      "unpin": "Unpin from profile",
-      "pinLimit": "You can pin up to 3 badges. Unpin one first.",
-      "pinError": "Could not update pin. Please try again.",
-      "unlockToastView": "View badge"
+      "ariaLabel": "徽章详情",
+      "close": "关闭",
+      "category": "类别",
+      "status": "状态",
+      "earned": "已获得",
+      "earnedOn": "于{date}获得",
+      "unlockToast": "解锁新徽章：{name}",
+      "unlockCriteria": "解锁条件",
+      "pin": "置顶到个人主页",
+      "unpin": "从个人主页取消置顶",
+      "pinLimit": "最多可置顶3枚徽章，请先取消置顶一枚。",
+      "pinError": "无法更新置顶状态，请重试。",
+      "unlockToastView": "查看徽章"
     },
     "rarity": {
-      "common": "Common",
-      "rare": "Rare",
-      "epic": "Epic",
-      "legendary": "Legendary"
+      "common": "普通",
+      "rare": "稀有",
+      "epic": "史诗",
+      "legendary": "传说"
     }
   },
   "leaderboard": {
-    "ariaLabel": "Leaderboard page",
-    "breadcrumb": "Leaderboard",
-    "title": "Leaderboard",
+    "ariaLabel": "排行榜页面",
+    "breadcrumb": "排行榜",
+    "title": "排行榜",
     "windows": {
-      "ariaLabel": "Time window",
-      "weekly": "Weekly",
-      "rising": "Rising",
-      "annual": "Annual"
+      "ariaLabel": "时间范围",
+      "weekly": "本周",
+      "rising": "飙升",
+      "annual": "年度"
     },
-    "loading": "Loading leaderboard…",
+    "loading": "排行榜加载中…",
     "error": {
-      "title": "Couldn't load leaderboard",
-      "retry": "Try again"
+      "title": "无法加载排行榜",
+      "retry": "重试"
     },
     "empty": {
-      "title": "No rankings yet this week.",
-      "desc": "Publish your first itinerary to appear here."
+      "title": "本周暂无排名。",
+      "desc": "发布你的第一份行程，即可出现在这里。"
     },
-    "rank": "Rank {rank}",
-    "plans": "{count, plural, one {# plan} other {# plans}}",
-    "scoreUnit": "pts",
-    "computedAt": "Updated {date}",
+    "rank": "第{rank}名",
+    "plans": "{count}个行程",
+    "scoreUnit": "分",
+    "computedAt": "{date}更新",
     "yourRank": {
-      "label": "Your rank: #{rank}",
-      "ariaLabel": "Your rank is number {rank}"
+      "label": "你的排名：第{rank}名",
+      "ariaLabel": "你的排名是第{rank}名"
     },
     "trend": {
-      "up": "Rank up",
-      "down": "Rank down",
-      "same": "No change"
+      "up": "排名上升",
+      "down": "排名下降",
+      "same": "排名无变化"
     }
   },
   "help": {
-    "ariaLabel": "Help page",
-    "breadcrumb": "Help",
-    "title": "Help & FAQ",
-    "expandAriaLabel": "Expand: {question}",
-    "collapseAriaLabel": "Collapse: {question}",
+    "ariaLabel": "帮助页面",
+    "breadcrumb": "帮助",
+    "title": "帮助与常见问题",
+    "expandAriaLabel": "展开：{question}",
+    "collapseAriaLabel": "收起：{question}",
     "sections": {
       "gettingStarted": {
-        "title": "Getting started",
+        "title": "新手指南",
         "items": {
           "q1": {
-            "q": "What is B4K?",
-            "a": "B4K is a K-culture travel discovery platform for foreign tourists visiting Korea. Find K-Pop venues, K-Drama filming locations, beauty spots, and more — then build your own itinerary."
+            "q": "B4K是什么？",
+            "a": "B4K是一个面向访问韩国的外国游客的K文化旅行发现平台。发现K-Pop场馆、K-Drama拍摄地、美容打卡地等 — 然后规划属于你自己的行程。"
           },
           "q2": {
-            "q": "Do I need an account to use B4K?",
-            "a": "You can explore the map without an account. Saving places, creating itineraries, and joining the leaderboard require signing in with Google."
+            "q": "使用B4K需要账户吗？",
+            "a": "你可以无需账户浏览地图。收藏地点、创建行程和参与排行榜需要使用Google登录。"
           },
           "q3": {
-            "q": "Which languages does B4K support?",
-            "a": "B4K is available in Korean, English, Japanese, Chinese (Simplified & Traditional), Thai, and Portuguese (Brazil)."
+            "q": "B4K支持哪些语言？",
+            "a": "B4K支持韩语、英语、日语、中文（简体和繁体）、泰语和葡萄牙语（巴西）。"
           }
         }
       },
       "map": {
-        "title": "Using the map",
+        "title": "使用地图",
         "items": {
           "q1": {
-            "q": "How do I save a place?",
-            "a": "Tap any pin on the map to open the place panel, then tap the bookmark icon to save it. Saved places appear in your Saved tab."
+            "q": "如何收藏地点？",
+            "a": "点击地图上的任意图钉以打开地点面板，然后点击书签图标进行收藏。收藏的地点会出现在你的收藏标签页中。"
           },
           "q2": {
-            "q": "How do I build an itinerary?",
-            "a": "Open a place on the map and tap 'Add to plan' in the panel. You can add multiple stops, reorder them, and let B4K calculate the best route."
+            "q": "如何创建行程？",
+            "a": "在地图上打开一个地点，点击面板中的「加入行程」。你可以添加多个地点、重新排序，让B4K为你计算最佳路线。"
           }
         }
       },
       "account": {
-        "title": "Account",
+        "title": "账户",
         "items": {
           "q1": {
-            "q": "How do I change my profile?",
-            "a": "Go to your profile (the icon at the bottom of the sidebar), then tap the edit icon to update your display name and language preference."
+            "q": "如何修改我的个人主页？",
+            "a": "前往你的个人主页（侧边栏底部的图标），点击编辑图标以更新你的显示名称和语言偏好。"
           },
           "q2": {
-            "q": "How do I delete my account?",
-            "a": "In Profile → Settings, tap 'Delete account'. Your data is held for 30 days before permanent deletion, in line with Korean privacy law (PIPA)."
+            "q": "如何删除我的账户？",
+            "a": "在个人主页 → 设置中，点击「删除账户」。根据韩国个人信息保护法（PIPA），你的数据将保留30天后才会被永久删除。"
           },
           "q3": {
-            "q": "How do I change my password?",
-            "a": "If you signed up with email, go to Profile → Settings to update your password. If you signed in with Google, Apple, or Microsoft, manage your password with that provider — B4K does not store it."
+            "q": "如何修改我的密码？",
+            "a": "如果你使用邮箱注册，可前往个人主页 → 设置更新密码。如果你使用Google、Apple或Microsoft登录，请通过该服务商管理密码 — B4K不会存储它。"
           }
         }
       },
       "contact": {
-        "title": "Contact",
-        "desc": "Can't find what you're looking for? Reach out and we'll get back to you.",
-        "ctaEmail": "Email support",
+        "title": "联系我们",
+        "desc": "没有找到你需要的内容？请联系我们，我们会尽快回复。",
+        "ctaEmail": "联系支持邮箱",
         "ctaEmailHref": "mailto:support@b4korea.com",
         "emailAddress": "support@b4korea.com",
-        "copyEmail": "Copy email address",
-        "copyEmailCopied": "Copied",
-        "copyEmailAriaLabel": "Copy email address to clipboard"
+        "copyEmail": "复制邮箱地址",
+        "copyEmailCopied": "已复制",
+        "copyEmailAriaLabel": "复制邮箱地址到剪贴板"
       },
       "getting-started": {
-        "title": "Getting started",
+        "title": "新手指南",
         "items": {
           "q1": {
-            "q": "What is B4K?",
-            "a": "B4K is a K-culture travel discovery platform for foreign tourists visiting Korea. Explore K-Pop venues, K-Drama filming locations, K-Beauty spots, and K-Culture landmarks on an interactive map, then build your own trip plan."
+            "q": "B4K是什么？",
+            "a": "B4K是一个面向访问韩国的外国游客的K文化旅行发现平台。在互动地图上探索K-Pop场馆、K-Drama拍摄地、K-Beauty打卡地和K-Culture地标，然后规划属于你自己的旅行计划。"
           },
           "q2": {
-            "q": "How do I create an account?",
-            "a": "Sign up with your email and a password, or continue with Google, Apple, or Microsoft. There is no separate onboarding — once you sign up you land straight on the Home page."
+            "q": "如何创建账户？",
+            "a": "使用邮箱和密码注册，或使用Google、Apple、Microsoft继续。没有单独的新手引导流程 — 注册后你会直接进入首页。"
           },
           "q3": {
-            "q": "What languages are supported?",
-            "a": "B4K is available in Korean, English, Japanese, Chinese (Simplified and Traditional), Thai, and Brazilian Portuguese. You can change your language anytime in Profile settings."
+            "q": "支持哪些语言？",
+            "a": "B4K支持韩语、英语、日语、中文（简体和繁体）、泰语和巴西葡萄牙语。你可以随时在个人主页设置中更改语言。"
           }
         }
       },
       "planning": {
-        "title": "Planning",
+        "title": "行程规划",
         "items": {
           "q1": {
-            "q": "How do I create a trip plan?",
-            "a": "Open a place on the map and add it to your plan. Add stops, reorder them, and each leg shows an estimated travel time. When you are happy with it, tap Save Plan. You can also ask the AI assistant to draft a plan for you."
+            "q": "如何创建旅行行程？",
+            "a": "在地图上打开一个地点并将其加入行程。添加地点、重新排序，每段行程都会显示预计所需时间。满意后点击保存行程。你也可以让AI助手为你起草一份行程。"
           },
           "q2": {
-            "q": "Can I use B4K without an account?",
-            "a": "Yes. You can explore the map and build a plan as a guest — your draft is kept in your browser so it survives a refresh. You only need to sign in when you tap Save Plan, and your draft moves to your account automatically."
+            "q": "我可以不注册账户使用B4K吗？",
+            "a": "可以。你可以以访客身份浏览地图并创建行程 — 草稿会保存在浏览器中，刷新页面后仍会保留。只有在点击保存行程时才需要登录，你的草稿会自动转移到你的账户中。"
           },
           "q3": {
-            "q": "Is there a limit on how many stops a plan can have?",
-            "a": "A single plan can hold up to 40 stops. Once you reach the limit the Add button is disabled and a message lets you know. There is no in-app payment — partner plans simply link out to the partner's website."
+            "q": "一个行程可以包含的地点数量有上限吗？",
+            "a": "单个行程最多可包含40个地点。达到上限后，添加按钮将被禁用并显示提示信息。应用内没有付款功能 — 合作行程仅链接至合作伙伴的网站。"
           }
         }
       },
       "saved": {
-        "title": "Saved",
+        "title": "收藏",
         "items": {
           "q1": {
-            "q": "How do I save a place?",
-            "a": "Open any place from the map and tap the bookmark icon. Saved places appear in your Saved tab, where you can browse them all in one list."
+            "q": "如何收藏地点？",
+            "a": "从地图上打开任意地点，点击书签图标。收藏的地点会出现在你的收藏标签页中，你可以在一个列表中浏览全部内容。"
           },
           "q2": {
-            "q": "What are folders?",
-            "a": "Folders let you organize your saved places into single-level groups — for example one folder per city or per interest. Folders are for saved places only; saved plans stay in a single flat list."
+            "q": "文件夹是什么？",
+            "a": "文件夹可让你将收藏的地点整理为单层分组 — 例如按城市或兴趣建立一个文件夹。文件夹仅适用于收藏的地点；收藏的行程则统一显示在一个扁平列表中。"
           },
           "q3": {
-            "q": "How do I generate a plan from saved places?",
-            "a": "In the Saved tab, select the places you want with the checkboxes, then choose Generate plan. B4K arranges them into a suggested route and opens the new plan so you can fine-tune it."
+            "q": "如何从收藏的地点生成行程？",
+            "a": "在收藏标签页中，用复选框选择你想要的地点，然后选择生成行程。B4K会将它们安排成一条建议路线，并打开新行程供你微调。"
           }
         }
       },
       "technical": {
-        "title": "Technical",
+        "title": "技术问题",
         "items": {
           "q1": {
-            "q": "The map isn't loading.",
-            "a": "First try refreshing the page. If the map still doesn't appear, check your internet connection and disable any ad or script blockers, which can interfere with the map. If the problem continues, contact us using the email below."
+            "q": "地图无法加载。",
+            "a": "请先尝试刷新页面。如果地图仍无法显示，请检查你的网络连接，并禁用可能干扰地图的广告或脚本拦截器。如果问题仍未解决，请通过下方邮箱联系我们。"
           },
           "q2": {
-            "q": "The app is in the wrong language.",
-            "a": "B4K picks a language from your browser settings and falls back to English if your language isn't supported. To set it yourself, open Profile → Settings and choose your preferred language."
+            "q": "应用语言不正确。",
+            "a": "B4K会根据你的浏览器设置选择语言，如果不支持你的语言则默认使用英语。如需手动设置，请打开个人主页 → 设置，选择你偏好的语言。"
           },
           "q3": {
-            "q": "How do I report a problem?",
-            "a": "Use the email address in the Contact section below to report bugs or send feedback. Please include what you were doing, your device, and your browser so we can help faster."
+            "q": "如何反馈问题？",
+            "a": "使用下方联系方式部分的邮箱地址来报告错误或发送反馈。请说明你当时在做什么、你的设备和浏览器信息，以便我们更快提供帮助。"
           }
         }
       }
     },
     "legal": {
-      "title": "Legal",
-      "terms": "Terms of Service",
-      "privacy": "Privacy Policy",
-      "cookies": "Cookie Policy"
+      "title": "法律信息",
+      "terms": "服务条款",
+      "privacy": "隐私政策",
+      "cookies": "Cookie政策"
     }
   },
   "onboarding": {
-    "ariaLabel": "Onboarding — choose your interests",
-    "title": "What brings you to Korea?",
-    "subtitle": "Personalise your B4K experience.",
-    "desc": "Select the things you're most excited about. You can change this later.",
+    "ariaLabel": "新手引导 — 选择你的兴趣",
+    "title": "是什么让你来到韩国？",
+    "subtitle": "个性化你的B4K体验。",
+    "desc": "选择你最感兴趣的内容，稍后仍可更改。",
     "interests": {
-      "label": "Pick your interests",
+      "label": "选择你的兴趣",
       "kpop": {
         "label": "K-Pop",
-        "desc": "Concerts, venues & fandom"
+        "desc": "演唱会、场馆与粉丝文化"
       },
       "kdrama": {
         "label": "K-Drama",
-        "desc": "Filming locations & tours"
+        "desc": "拍摄地与参观行程"
       },
       "kbeauty": {
         "label": "K-Beauty",
-        "desc": "Skincare, makeup & spas"
+        "desc": "护肤、彩妆与水疗"
       },
       "kculture": {
         "label": "K-Culture",
-        "desc": "Food, markets & traditions"
+        "desc": "美食、市场与传统"
       },
       "food": {
-        "label": "Food",
-        "desc": "Street food & local dining"
+        "label": "美食",
+        "desc": "街头小吃与本地美食"
       },
       "nature": {
-        "label": "Nature",
-        "desc": "Parks, trails & outdoors"
+        "label": "自然",
+        "desc": "公园、步道与户外活动"
       },
       "nightlife": {
-        "label": "Nightlife",
-        "desc": "Bars, clubs & late nights"
+        "label": "夜生活",
+        "desc": "酒吧、夜店与深夜时光"
       },
       "history": {
-        "label": "History",
-        "desc": "Palaces, temples & heritage"
+        "label": "历史",
+        "desc": "宫殿、寺庙与文化遗产"
       }
     },
-    "cta": "Continue",
-    "skip": "Skip for now"
-  },
-  "footer": {
-    "help": "帮助",
-    "privacy": "隐私政策",
-    "terms": "使用条款",
-    "cookies": "Cookie政策",
-    "copyright": "© {year} B4K. All rights reserved."
-  },
-  "cookieConsent": {
-    "banner": {
-      "title": "Cookie notice",
-      "message": "We use cookies for analytics to improve B4K.",
-      "learnMore": "Learn more",
-      "accept": "Accept",
-      "decline": "Decline",
-      "dismiss": "Dismiss"
-    },
-    "preferences": {
-      "title": "Analytics cookies",
-      "desc": "Control whether B4K can use analytics cookies on this device.",
-      "statusAccepted": "Accepted",
-      "statusDeclined": "Declined",
-      "accept": "Accept",
-      "decline": "Decline"
-    }
+    "cta": "继续",
+    "skip": "暂时跳过"
   },
   "search": {
-    "title": "Search",
-    "placeholder": "Search itineraries, places...",
-    "recentTitle": "Recent searches",
-    "clearAll": "Clear all",
-    "noResults": "No results for \"{query}\"",
-    "noResultsSubtitle": "Try exploring by category",
-    "suggestions": "Suggestions",
+    "title": "搜索",
+    "placeholder": "搜索行程、地点...",
+    "recentTitle": "最近搜索",
+    "clearAll": "清除全部",
+    "noResults": "没有找到「{query}」的结果",
+    "noResultsSubtitle": "尝试按类别探索",
+    "suggestions": "建议",
     "categories": {
       "kpop": "K-Pop",
       "kdrama": "K-Drama",
@@ -1680,86 +1657,111 @@
       "kculture": "K-Culture"
     },
     "sections": {
-      "places": "Places",
-      "plans": "Plans",
-      "explore": "Explore"
+      "places": "地点",
+      "plans": "行程",
+      "explore": "探索"
     },
-    "seeAll": "See all",
-    "removeRecent": "Remove {query} from recents",
+    "seeAll": "查看全部",
+    "removeRecent": "从最近搜索中移除{query}",
     "filters": {
-      "title": "Filters",
-      "sections": "Show",
-      "section_all": "All",
-      "section_places": "Places",
-      "section_plans": "Plans",
-      "section_explore": "Explore",
+      "title": "筛选",
+      "sections": "显示",
+      "section_all": "全部",
+      "section_places": "地点",
+      "section_plans": "行程",
+      "section_explore": "探索",
       "sort": {
-        "label": "Sort by",
-        "relevance": "Relevance",
-        "popularity": "Popularity"
+        "label": "排序方式",
+        "relevance": "相关性",
+        "popularity": "热门度"
       },
       "area": {
-        "label": "Area",
-        "lv1Label": "Region",
-        "lv2Label": "District",
-        "chipAriaLabel": "Filter by {name}"
+        "label": "区域",
+        "lv1Label": "地区",
+        "lv2Label": "区",
+        "chipAriaLabel": "按{name}筛选"
       },
       "tags": {
-        "label": "Theme"
+        "label": "主题"
       },
       "region": {
-        "seoul": "Seoul",
-        "busan": "Busan",
-        "jeju": "Jeju"
+        "seoul": "首尔",
+        "busan": "釜山",
+        "jeju": "济州"
       },
       "district": {
-        "gangnam": "Gangnam",
-        "hongdae": "Hongdae",
-        "myeongdong": "Myeongdong",
-        "haeundae": "Haeundae",
-        "seomyeon": "Seomyeon",
-        "jejuCity": "Jeju City",
-        "seogwipo": "Seogwipo"
+        "gangnam": "江南",
+        "hongdae": "弘大",
+        "myeongdong": "明洞",
+        "haeundae": "海云台",
+        "seomyeon": "西面",
+        "jejuCity": "济州市",
+        "seogwipo": "西归浦"
       },
       "tag": {
         "kpop": "K-Pop",
         "kdrama": "K-Drama",
         "kbeauty": "K-Beauty",
-        "food": "Food",
-        "nature": "Nature",
-        "shopping": "Shopping",
-        "history": "History",
-        "nightlife": "Nightlife"
+        "food": "美食",
+        "nature": "自然",
+        "shopping": "购物",
+        "history": "历史",
+        "nightlife": "夜生活"
       },
-      "apply": "Apply",
-      "close": "Close filters"
+      "apply": "应用",
+      "close": "关闭筛选"
     },
     "results": {
-      "poi": "Places",
-      "plans": "Plans",
-      "explore": "Explore categories"
+      "poi": "地点",
+      "plans": "行程",
+      "explore": "探索分类"
     },
-    "poiAriaLabel": "{name}, {region}",
-    "planAriaLabel": "{title} by {author}",
-    "exploreAriaLabel": "Explore {category}",
-    "mapCta": "Explore on map",
-    "sponsored": "Sponsored",
-    "stops": "{count} stops",
-    "saves": "{count} saves",
-    "mobileFilter": "Filter",
-    "mobileSort": "Sort",
-    "loading": "Searching…",
-    "error": "Search failed. Try again.",
-    "retry": "Try again",
-    "seeAllPlaces": "See all {count} places",
-    "seeAllPlans": "See all {count} plans",
-    "seeAllExplore": "See all {count} contents",
-    "showLess": "Show less",
-    "minChars": "Type at least 2 characters to search",
-    "loadingSuggestions": "Loading suggestions"
+    "poiAriaLabel": "{name}，{region}",
+    "planAriaLabel": "{author}的{title}",
+    "exploreAriaLabel": "探索{category}",
+    "mapCta": "在地图上探索",
+    "sponsored": "推广",
+    "stops": "{count}个地点",
+    "saves": "{count}次收藏",
+    "mobileFilter": "筛选",
+    "mobileSort": "排序",
+    "loading": "搜索中…",
+    "error": "搜索失败，请重试。",
+    "retry": "重试",
+    "seeAllPlaces": "查看全部{count}个地点",
+    "seeAllPlans": "查看全部{count}个行程",
+    "seeAllExplore": "查看全部{count}项内容",
+    "showLess": "收起",
+    "minChars": "请输入至少2个字符进行搜索",
+    "loadingSuggestions": "建议加载中"
+  },
+  "footer": {
+    "help": "帮助",
+    "privacy": "隐私政策",
+    "terms": "使用条款",
+    "cookies": "Cookie政策",
+    "copyright": "© {year} B4K. 保留所有权利。"
+  },
+  "cookieConsent": {
+    "banner": {
+      "title": "Cookie提示",
+      "message": "我们使用Cookie进行数据分析以改善B4K的体验。",
+      "learnMore": "了解更多",
+      "accept": "接受",
+      "decline": "拒绝",
+      "dismiss": "关闭"
+    },
+    "preferences": {
+      "title": "分析类Cookie",
+      "desc": "管理B4K是否可以在此设备上使用分析类Cookie。",
+      "statusAccepted": "已接受",
+      "statusDeclined": "已拒绝",
+      "accept": "接受",
+      "decline": "拒绝"
+    }
   },
   "toast": {
-    "dismiss": "Dismiss",
-    "actionFailed": "Something went wrong. Try again."
+    "dismiss": "关闭",
+    "actionFailed": "出错了，请重试。"
   }
 }

@@ -7,6 +7,8 @@
     "home": "ホーム",
     "map": "マップ",
     "contents": "コンテンツ",
+    "explore": "探索",
+    "saved": "保存済み",
     "plan": "プラン",
     "profile": "プロフィール",
     "help": "ヘルプ",
@@ -14,50 +16,48 @@
     "language": "言語",
     "signIn": "ログイン",
     "signOut": "ログアウト",
-    "menuOpen": "Open menu",
-    "menuClose": "Close menu",
-    "mainNavigation": "Main navigation",
-    "logoHome": "B4K Home",
-    "about": "About",
-    "bottomNav": "Bottom navigation",
-    "sidebarRegion": "Sidebar",
-    "explore": "Explore",
-    "saved": "Saved",
-    "settings": "Settings",
-    "legal": "Legal",
-    "legalTerms": "Terms of Service",
-    "legalPrivacy": "Privacy Policy",
-    "legalCookies": "Cookie Policy",
-    "guestSubtitle": "Sign in to save places and plan trips"
+    "menuOpen": "メニューを開く",
+    "menuClose": "メニューを閉じる",
+    "mainNavigation": "メインナビゲーション",
+    "logoHome": "B4Kホーム",
+    "about": "B4Kについて",
+    "bottomNav": "下部ナビゲーション",
+    "sidebarRegion": "サイドバー",
+    "settings": "設定",
+    "legal": "法的情報",
+    "legalTerms": "利用規約",
+    "legalPrivacy": "プライバシーポリシー",
+    "legalCookies": "クッキーポリシー",
+    "guestSubtitle": "ログインして場所を保存し、旅行を計画しよう"
   },
   "topNav": {
     "searchPlaceholder": "旅程、場所、クリエイターを検索…",
     "searchPlaceholderMobile": "B4K · 検索...",
     "recentSearches": "最近の検索",
-    "clearSearch": "Clear search",
-    "noRecents": "No recent searches",
+    "clearSearch": "検索をクリア",
+    "noRecents": "最近の検索はありません",
     "searchFilters": {
-      "all": "All",
-      "places": "Places",
-      "itineraries": "Itineraries",
+      "all": "すべて",
+      "places": "場所",
+      "itineraries": "旅程",
       "kpop": "K-Pop",
       "kdrama": "K-Drama",
       "kbeauty": "K-Beauty"
     },
-    "noResults": "No results for \"{query}\"",
-    "noResultsDesc": "Try a different search or explore the map",
-    "searchResultAriaLabel": "{name}, {type}"
+    "noResults": "「{query}」の検索結果はありません",
+    "noResultsDesc": "別のキーワードで検索するか、マップを見てみましょう",
+    "searchResultAriaLabel": "{name}、{type}"
   },
   "home": {
     "breadcrumb": "ホーム",
     "weather": {
-      "ariaLabel": "Seoul {temp}°C, {condition}"
+      "ariaLabel": "ソウル {temp}°C、{condition}"
     },
     "carousel": {
-      "ariaLabel": "Featured content",
-      "slideN": "Slide {n}",
-      "prev": "Previous slide",
-      "next": "Next slide",
+      "ariaLabel": "注目のコンテンツ",
+      "slideN": "スライド{n}",
+      "prev": "前のスライド",
+      "next": "次のスライド",
       "slides": {
         "kCulture": {
           "badge": "新着",
@@ -85,14 +85,14 @@
       "seeAll": "すべて見る",
       "badge": "旅程",
       "card": {
-        "ariaLabel": "{title} by {creator}",
-        "likesLabel": "{count} likes",
-        "savesLabel": "{count} saves"
+        "ariaLabel": "{creator}による{title}",
+        "likesLabel": "{count}件のいいね",
+        "savesLabel": "{count}件の保存"
       },
       "empty": {
-        "title": "No plans yet this week",
-        "desc": "Share your Korea trip and inspire other travelers.",
-        "cta": "Create a plan"
+        "title": "今週はまだプランがありません",
+        "desc": "韓国旅行をシェアして、他の旅行者にインスピレーションを与えよう。",
+        "cta": "プランを作成"
       }
     },
     "leaderboard": {
@@ -105,144 +105,144 @@
       "subtitle": "半島の移ろう風景をキュレーション",
       "seeAll": "すべて見る",
       "card": {
-        "ariaLabel": "{name}, {region}"
+        "ariaLabel": "{name}、{region}"
       },
       "empty": {
-        "title": "No seasonal picks yet",
-        "desc": "Curators are gathering this season's must-see locations.",
-        "cta": "Open the map"
-      }
-    },
-    "continuePlan": {
-      "ariaLabel": "Continue your draft plan",
-      "cta": "Continue",
-      "dismiss": "Dismiss",
-      "stopCount": "{n} stops",
-      "timeAgo": {
-        "minutes": "{n}m ago",
-        "hours": "{n}h ago",
-        "days": "{n}d ago"
-      },
-      "guestTitle": "Continue your plan"
-    },
-    "youMightLike": {
-      "title": "You Might Like",
-      "viewAll": "View all"
-    },
-    "newOnB4K": {
-      "title": "New on B4K",
-      "viewAll": "View all",
-      "newBadge": "New",
-      "error": "Failed to load",
-      "retry": "Retry"
-    },
-    "leaderboardBadge": {
-      "ariaLabel": "Leaderboard and badge showcase",
-      "leaderboard": {
-        "title": "This Week's Top",
-        "viewAll": "View all",
-        "empty": "No rankings yet this week"
-      },
-      "badge": {
-        "title": "Latest Badge",
-        "viewAll": "View all",
-        "earnedBy": "Earned by {name}"
+        "title": "今シーズンのおすすめはまだありません",
+        "desc": "キュレーターが今シーズンの必見スポットを厳選中です。",
+        "cta": "マップを開く"
       }
     },
     "poiCard": {
-      "ariaLabel": "{name}, {region}",
-      "saveAria": "Save {name}",
-      "unsaveAria": "Unsave {name}",
-      "likeAria": "Like {name}",
-      "unlikeAria": "Unlike {name}",
-      "addAria": "Add {name} to plan",
-      "addedAria": "{name} added to plan",
-      "imagePending": "Image being prepared"
+      "ariaLabel": "{name}、{region}",
+      "saveAria": "{name}を保存",
+      "unsaveAria": "{name}の保存を解除",
+      "likeAria": "{name}にいいね",
+      "unlikeAria": "{name}のいいねを取り消す",
+      "addAria": "{name}をプランに追加",
+      "addedAria": "{name}をプランに追加しました",
+      "imagePending": "画像を準備中です"
+    },
+    "trending": {
+      "title": "話題のスポット",
+      "viewAll": "すべて見る",
+      "error": "読み込みに失敗しました",
+      "retry": "再試行"
     },
     "exploreHub": {
-      "ariaLabel": "Explore by category",
-      "title": "Explore K-Culture",
+      "ariaLabel": "カテゴリーから探す",
+      "title": "Kカルチャーを探索",
       "kPop": {
         "label": "K-Pop",
-        "sub": "Concerts, studios & fan spots"
+        "sub": "コンサート、スタジオ、ファンスポット"
       },
       "kDrama": {
         "label": "K-Drama",
-        "sub": "Filming locations & scenes"
+        "sub": "撮影地とシーン"
       },
       "kBeauty": {
         "label": "K-Beauty",
-        "sub": "Shops, clinics & trends"
+        "sub": "ショップ、クリニック、トレンド"
       },
       "kCulture": {
         "label": "K-Culture",
-        "sub": "Heritage, art & tradition"
+        "sub": "伝統、アート、文化遺産"
       }
-    },
-    "trending": {
-      "title": "Trending Spots",
-      "viewAll": "View all",
-      "error": "Failed to load",
-      "retry": "Retry"
-    },
-    "planTrip": {
-      "ariaLabel": "Plan your trip",
-      "title": "Plan Your Trip",
-      "subtitle": "Start planning your Korea journey",
-      "manual": {
-        "label": "Manual Plan",
-        "sub": "Add stops one by one"
-      },
-      "auto": {
-        "label": "From Saved",
-        "sub": "Auto-generate from saved places"
-      },
-      "ai": {
-        "label": "AI Chat Plan",
-        "sub": "Let AI plan for you"
-      }
-    },
-    "challenge": {
-      "ariaLabel": "Weekly challenge",
-      "label": "Weekly Challenge",
-      "badgeReward": "Badge reward",
-      "cta": "Start challenge"
-    },
-    "popularPlans": {
-      "title": "Popular Plans",
-      "viewAll": "View all",
-      "error": "Failed to load",
-      "retry": "Retry",
-      "sponsored": "Sponsored",
-      "card": {
-        "ariaLabel": "{title} by {author}",
-        "stops": "{n} stops"
-      }
-    },
-    "promotions": {
-      "title": "Promotions"
     },
     "editorial": {
-      "title": "Editor's Picks",
-      "viewAll": "View all",
-      "error": "Failed to load",
-      "retry": "Retry",
-      "catAll": "All",
+      "title": "編集部おすすめ",
+      "viewAll": "すべて見る",
+      "error": "読み込みに失敗しました",
+      "retry": "再試行",
+      "catAll": "すべて",
       "catKPop": "K-Pop",
       "catKDrama": "K-Drama",
       "catKBeauty": "K-Beauty",
       "catKCulture": "K-Culture"
     },
-    "events": {
-      "title": "Upcoming Events"
+    "newOnB4K": {
+      "title": "B4Kの新着",
+      "viewAll": "すべて見る",
+      "newBadge": "新着",
+      "error": "読み込みに失敗しました",
+      "retry": "再試行"
+    },
+    "youMightLike": {
+      "title": "あなたへのおすすめ",
+      "viewAll": "すべて見る"
+    },
+    "planTrip": {
+      "ariaLabel": "旅行を計画する",
+      "title": "旅行を計画する",
+      "subtitle": "韓国旅行の計画を始めよう",
+      "manual": {
+        "label": "手動プラン",
+        "sub": "スポットを1つずつ追加"
+      },
+      "auto": {
+        "label": "保存済みから作成",
+        "sub": "保存した場所から自動生成"
+      },
+      "ai": {
+        "label": "AIチャットプラン",
+        "sub": "AIに計画を任せる"
+      }
+    },
+    "continuePlan": {
+      "ariaLabel": "下書きプランを続ける",
+      "cta": "続ける",
+      "dismiss": "閉じる",
+      "stopCount": "{n}か所",
+      "timeAgo": {
+        "minutes": "{n}分前",
+        "hours": "{n}時間前",
+        "days": "{n}日前"
+      },
+      "guestTitle": "プランの続きへ"
+    },
+    "challenge": {
+      "ariaLabel": "週間チャレンジ",
+      "label": "週間チャレンジ",
+      "badgeReward": "バッジ報酬",
+      "cta": "チャレンジを始める"
+    },
+    "leaderboardBadge": {
+      "ariaLabel": "ランキング & バッジ紹介",
+      "leaderboard": {
+        "title": "今週のトップ",
+        "viewAll": "すべて見る",
+        "empty": "今週はまだランキングがありません"
+      },
+      "badge": {
+        "title": "最新バッジ",
+        "viewAll": "すべて見る",
+        "earnedBy": "{name}が獲得"
+      }
+    },
+    "popularPlans": {
+      "title": "人気のプラン",
+      "viewAll": "すべて見る",
+      "error": "読み込みに失敗しました",
+      "retry": "再試行",
+      "sponsored": "広告",
+      "card": {
+        "ariaLabel": "{author}による{title}",
+        "stops": "{n}か所"
+      }
     },
     "partnerPackages": {
-      "title": "Partner Packages",
-      "sponsored": "Sponsored",
-      "viewCta": "View",
+      "title": "パートナーパッケージ",
+      "sponsored": "広告",
+      "viewCta": "見る",
       "card": {
-        "ariaLabel": "{title} by {partner}"
+        "ariaLabel": "{partner}による{title}"
       }
+    },
+    "events": {
+      "title": "近日開催のイベント"
+    },
+    "promotions": {
+      "title": "プロモーション"
     }
   },
   "common": {
@@ -254,726 +254,728 @@
   },
   "routes": {
     "map": {
-      "breadcrumb": "Map",
-      "title": "Map",
+      "breadcrumb": "マップ",
+      "title": "マップ",
       "empty": {
-        "title": "Coming soon",
-        "desc": "The Korea map will land here once Naver Map canvas is wired."
+        "title": "近日公開",
+        "desc": "Naver Mapが実装され次第、韓国のマップがここに表示されます。"
       }
     },
     "contents": {
-      "breadcrumb": "Contents",
-      "title": "Contents",
+      "breadcrumb": "コンテンツ",
+      "title": "コンテンツ",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Four hubs: K-Pop, K-Drama, K-Beauty, K-Culture. Pick one to dive in."
+        "title": "近日公開",
+        "desc": "4つのカテゴリー：K-Pop、K-Drama、K-Beauty、K-Culture。1つ選んで探索しよう。"
+      }
+    },
+    "explore": {
+      "breadcrumb": "探索",
+      "title": "探索",
+      "empty": {
+        "title": "近日公開",
+        "desc": "4つのカテゴリー：K-Pop、K-Drama、K-Beauty、K-Culture。1つ選んで探索しよう。"
+      }
+    },
+    "saved": {
+      "breadcrumb": "保存済み",
+      "title": "保存済み",
+      "empty": {
+        "title": "まだ保存したものがありません",
+        "desc": "場所や旅程をブックマークすると、ここに表示されます。"
       }
     },
     "contentsKpop": {
       "breadcrumb": "K-Pop",
       "title": "K-Pop",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Pop hub coming soon. Artists, venues, tours."
+        "title": "近日公開",
+        "desc": "K-Popコンテンツは近日公開。アーティスト、会場、ツアー。"
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "コンテンツ",
+        "explore": "探索"
       }
     },
     "contentsKdrama": {
       "breadcrumb": "K-Drama",
       "title": "K-Drama",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Drama hub coming soon. Filming locations, drama trails."
+        "title": "近日公開",
+        "desc": "K-Dramaコンテンツは近日公開。撮影地、ドラマ巡り。"
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "コンテンツ",
+        "explore": "探索"
       }
     },
     "contentsKbeauty": {
       "breadcrumb": "K-Beauty",
       "title": "K-Beauty",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Beauty hub coming soon. Skincare, treatments, brand origin stores."
+        "title": "近日公開",
+        "desc": "K-Beautyコンテンツは近日公開。スキンケア、施術、ブランド直営店。"
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "コンテンツ",
+        "explore": "探索"
       }
     },
     "contentsKculture": {
       "breadcrumb": "K-Culture",
       "title": "K-Culture",
       "empty": {
-        "title": "Coming soon",
-        "desc": "K-Culture hub coming soon. Heritage, food, traditional crafts."
+        "title": "近日公開",
+        "desc": "K-Cultureコンテンツは近日公開。文化遺産、食、伝統工芸。"
       },
       "crumb": {
-        "contents": "Contents",
-        "explore": "Explore"
+        "contents": "コンテンツ",
+        "explore": "探索"
       }
     },
     "profile": {
-      "breadcrumb": "Profile",
-      "title": "Profile",
+      "breadcrumb": "プロフィール",
+      "title": "プロフィール",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Your B4K hub. Trips, saves, badges, community."
+        "title": "近日公開",
+        "desc": "あなたのB4Kハブ。旅程、保存済み、バッジ、コミュニティ。"
       }
     },
     "profileTrips": {
-      "breadcrumb": "My Trips",
-      "title": "My Trips",
+      "breadcrumb": "マイ旅程",
+      "title": "マイ旅程",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Plans you have created or saved will live here."
+        "title": "近日公開",
+        "desc": "作成または保存したプランがここに表示されます。"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "プロフィール"
       }
     },
     "profileSaved": {
-      "breadcrumb": "Saved",
-      "title": "Saved",
+      "breadcrumb": "保存済み",
+      "title": "保存済み",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Places and plans you have bookmarked."
+        "title": "近日公開",
+        "desc": "ブックマークした場所やプラン。"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "プロフィール"
       }
     },
     "profileBadges": {
-      "breadcrumb": "Badges",
-      "title": "Badges",
+      "breadcrumb": "バッジ",
+      "title": "バッジ",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Badges earned through community contributions."
+        "title": "近日公開",
+        "desc": "コミュニティ貢献で獲得したバッジ。"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "プロフィール"
       }
     },
     "profileCommunity": {
-      "breadcrumb": "Community",
-      "title": "Community",
+      "breadcrumb": "コミュニティ",
+      "title": "コミュニティ",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Followers, following, and creator activity."
+        "title": "近日公開",
+        "desc": "フォロワー、フォロー中、クリエイター活動。"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "プロフィール"
       }
     },
     "profileSettings": {
-      "breadcrumb": "Settings",
-      "title": "Settings",
+      "breadcrumb": "設定",
+      "title": "設定",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Account, language, notifications, and privacy preferences."
+        "title": "近日公開",
+        "desc": "アカウント、言語、通知、プライバシー設定。"
       },
       "crumb": {
-        "profile": "Profile"
+        "profile": "プロフィール"
       }
     },
     "plan": {
-      "breadcrumb": "Plan",
-      "title": "Plan",
+      "breadcrumb": "プラン",
+      "title": "プラン",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Choose a planning flow: manual, auto, or AI chat."
+        "title": "近日公開",
+        "desc": "計画方法を選択：手動、自動、AIチャット。"
       }
     },
     "planManual": {
-      "breadcrumb": "Manual Plan",
-      "title": "Manual Plan",
+      "breadcrumb": "手動プラン",
+      "title": "手動プラン",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Drag-and-drop builder for power users."
+        "title": "近日公開",
+        "desc": "上級者向けのドラッグ＆ドロップビルダー。"
       },
       "crumb": {
-        "plan": "Plan"
+        "plan": "プラン"
       }
     },
     "planAuto": {
-      "breadcrumb": "Auto Plan",
-      "title": "Auto Plan",
+      "breadcrumb": "自動プラン",
+      "title": "自動プラン",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Tell us your dates and we generate a starting itinerary."
+        "title": "近日公開",
+        "desc": "日程を入力すると、旅程の初期案を生成します。"
       },
       "crumb": {
-        "plan": "Plan"
+        "plan": "プラン"
       }
     },
     "planAi": {
-      "breadcrumb": "AI Chat Plan",
-      "title": "AI Chat Plan",
+      "breadcrumb": "AIチャットプラン",
+      "title": "AIチャットプラン",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Conversational AI builds your Korea trip turn by turn."
+        "title": "近日公開",
+        "desc": "対話型AIがあなたの韓国旅行を一歩ずつ組み立てます。"
       },
       "crumb": {
-        "plan": "Plan"
+        "plan": "プラン"
       }
     },
     "leaderboard": {
-      "breadcrumb": "Leaderboard",
-      "title": "Leaderboard",
+      "breadcrumb": "ランキング",
+      "title": "ランキング",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Weekly community ranking. Wilson score on saves + likes."
+        "title": "近日公開",
+        "desc": "週間コミュニティランキング。保存＆いいねに基づくウィルソンスコア。"
       }
     },
     "badges": {
-      "breadcrumb": "Badges Gallery",
-      "title": "Badges Gallery",
+      "breadcrumb": "バッジギャラリー",
+      "title": "バッジギャラリー",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Browse the full badge collection."
+        "title": "近日公開",
+        "desc": "バッジコレクションの全一覧。"
       }
     },
     "onboarding": {
-      "breadcrumb": "Welcome to B4K",
-      "title": "Welcome to B4K",
+      "breadcrumb": "B4Kへようこそ",
+      "title": "B4Kへようこそ",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Quick interest tags to personalise your first trip."
+        "title": "近日公開",
+        "desc": "最初の旅行をパーソナライズする簡単な興味タグ。"
       }
     },
     "help": {
-      "breadcrumb": "Help",
-      "title": "Help",
+      "breadcrumb": "ヘルプ",
+      "title": "ヘルプ",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Guides, FAQ, contact support."
+        "title": "近日公開",
+        "desc": "ガイド、よくある質問、サポート窓口。"
       }
     },
     "notifications": {
-      "breadcrumb": "Notifications",
-      "title": "Notifications",
+      "breadcrumb": "通知",
+      "title": "通知",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Platform notifications. Social pings deferred to v1.1."
+        "title": "近日公開",
+        "desc": "プラットフォーム通知。ソーシャル通知はv1.1で対応予定。"
       }
     },
     "legalPrivacy": {
-      "breadcrumb": "Privacy Policy",
-      "title": "Privacy Policy",
+      "breadcrumb": "プライバシーポリシー",
+      "title": "プライバシーポリシー",
       "empty": {
-        "title": "Coming soon",
-        "desc": "How we handle your data. PIPA compliant."
+        "title": "近日公開",
+        "desc": "データの取り扱い方法。PIPA準拠。"
       }
     },
     "legalTerms": {
-      "breadcrumb": "Terms of Service",
-      "title": "Terms of Service",
+      "breadcrumb": "利用規約",
+      "title": "利用規約",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Rules for using B4K."
+        "title": "近日公開",
+        "desc": "B4K利用のためのルール。"
       }
     },
     "legalCookies": {
-      "breadcrumb": "Cookie Policy",
-      "title": "Cookie Policy",
+      "breadcrumb": "クッキーポリシー",
+      "title": "クッキーポリシー",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Cookies we use and why."
+        "title": "近日公開",
+        "desc": "使用するクッキーとその理由。"
       }
     },
     "sitemap": {
-      "breadcrumb": "About B4K",
-      "title": "About B4K",
+      "breadcrumb": "B4Kについて",
+      "title": "B4Kについて",
       "empty": {
-        "title": "Coming soon",
-        "desc": "Story, team, mission."
-      }
-    },
-    "explore": {
-      "breadcrumb": "Explore",
-      "title": "Explore",
-      "empty": {
-        "title": "Coming soon",
-        "desc": "Four hubs: K-Pop, K-Drama, K-Beauty, K-Culture. Pick one to dive in."
-      }
-    },
-    "saved": {
-      "breadcrumb": "Saved",
-      "title": "Saved",
-      "empty": {
-        "title": "Nothing saved yet",
-        "desc": "Bookmark places and itineraries to find them here."
+        "title": "近日公開",
+        "desc": "ストーリー、チーム、ミッション。"
       }
     }
   },
   "boundary": {
     "notFound": {
-      "title": "Page not found",
-      "desc": "The page you're looking for doesn't exist or has moved.",
-      "cta": "Back to home"
+      "title": "ページが見つかりません",
+      "desc": "お探しのページは存在しないか、移動した可能性があります。",
+      "cta": "ホームに戻る"
     },
     "error": {
-      "title": "Something went wrong",
-      "desc": "Try again. If the problem persists, contact support.",
-      "cta": "Try again",
-      "goHome": "Go home"
+      "title": "エラーが発生しました",
+      "desc": "もう一度お試しください。問題が続く場合はサポートにご連絡ください。",
+      "cta": "再試行",
+      "goHome": "ホームへ"
     },
     "offline": {
-      "title": "You're offline",
-      "desc": "Reconnect to keep planning. Your saved trips are kept locally.",
-      "retry": "Try again",
-      "titleMap": "You're offline. Map may be outdated."
+      "title": "オフラインです",
+      "desc": "再接続すると計画を続けられます。保存した旅程はローカルに保持されています。",
+      "retry": "再試行",
+      "titleMap": "オフラインです。マップが最新でない場合があります。"
     }
   },
   "auth": {
     "gate": {
-      "title": "Sign in to B4K",
-      "valueProp": "Save your plan · Unlock leaderboards · Earn badges",
+      "title": "B4Kにログイン",
+      "valueProp": "プランを保存 · ランキングを解放 · バッジを獲得",
       "context": {
-        "save_poi": "Sign in to save places",
-        "like": "Sign in to like",
-        "save_plan": "Sign in to save your plan",
-        "save_plan_other": "Sign in to save this plan to your trips",
-        "saved_tab": "Sign in to see your saved places",
-        "profile_nav": "Sign in to view your profile",
-        "fl3_cap": "Sign in to keep planning"
+        "save_poi": "ログインして場所を保存",
+        "like": "ログインしていいねする",
+        "save_plan": "ログインしてプランを保存",
+        "save_plan_other": "ログインしてこのプランを保存",
+        "saved_tab": "ログインして保存済みの場所を見る",
+        "profile_nav": "ログインしてプロフィールを見る",
+        "fl3_cap": "ログインして計画を続ける"
       },
-      "google": "Continue with Google",
-      "apple": "Continue with Apple",
-      "microsoft": "Continue with Microsoft",
-      "email": "Sign in with email",
-      "emailPlaceholder": "Email address",
-      "passwordPlaceholder": "Password",
-      "signIn": "Sign in",
-      "backToProviders": "← Other sign-in options",
-      "dismiss": "Continue as guest",
-      "loading": "Signing in…",
-      "error": "Sign-in failed. Try again.",
-      "ariaLabel": "Sign in modal",
-      "close": "Close sign-in modal",
-      "planPreserved": "Your current plan is preserved — sign in to save it permanently.",
-      "fl3Preserved": "Your chat and plan are saved — sign in to keep planning.",
-      "emailContinue": "Continue with email",
-      "signInTab": "Sign in",
-      "signUpTab": "Sign up",
-      "signUp": "Create account",
-      "errorCredentials": "Email or password incorrect",
-      "errorWeak": "Password must be at least 8 characters",
-      "errorSignup": "Sign-up failed. Try again.",
-      "forgotPassword": "Forgot password?",
-      "forgotTitle": "Reset your password",
-      "forgotSubtitle": "Enter your email and we'll send you a reset link.",
-      "forgotSubmit": "Send reset link",
-      "errorForgot": "Couldn't send the email. Try again.",
-      "backToSignIn": "← Back to sign in",
-      "checkEmailTitle": "Check your email",
-      "checkEmailBodySignup": "We sent a verification link to {email}. Open it to finish creating your account.",
-      "checkEmailBodyReset": "We sent a password reset link to {email}.",
-      "resend": "Resend email",
-      "resendIn": "Resend in {seconds}s",
-      "tosFooter": "By continuing, you agree to B4K's <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
-      "ageConfirm": "I confirm I'm at least 14 years old"
+      "google": "Googleで続ける",
+      "apple": "Appleで続ける",
+      "microsoft": "Microsoftで続ける",
+      "email": "メールでログイン",
+      "emailPlaceholder": "メールアドレス",
+      "passwordPlaceholder": "パスワード",
+      "signIn": "ログイン",
+      "backToProviders": "← 他のログイン方法",
+      "dismiss": "ゲストとして続ける",
+      "loading": "ログイン中…",
+      "error": "ログインに失敗しました。もう一度お試しください。",
+      "ariaLabel": "ログインモーダル",
+      "close": "ログインモーダルを閉じる",
+      "planPreserved": "現在のプランは保持されています — ログインして永続的に保存しましょう。",
+      "fl3Preserved": "チャットとプランは保存されています — ログインして計画を続けましょう。",
+      "emailContinue": "メールで続ける",
+      "signInTab": "ログイン",
+      "signUpTab": "新規登録",
+      "signUp": "アカウント作成",
+      "errorCredentials": "メールアドレスまたはパスワードが正しくありません",
+      "errorWeak": "パスワードは8文字以上にしてください",
+      "errorSignup": "登録に失敗しました。もう一度お試しください。",
+      "forgotPassword": "パスワードをお忘れですか？",
+      "forgotTitle": "パスワードをリセット",
+      "forgotSubtitle": "メールアドレスを入力すると、リセットリンクをお送りします。",
+      "forgotSubmit": "リセットリンクを送信",
+      "errorForgot": "メールを送信できませんでした。もう一度お試しください。",
+      "backToSignIn": "← ログインに戻る",
+      "checkEmailTitle": "メールをご確認ください",
+      "checkEmailBodySignup": "{email}宛に確認リンクを送信しました。開いてアカウント作成を完了してください。",
+      "checkEmailBodyReset": "{email}宛にパスワードリセットリンクを送信しました。",
+      "resend": "メールを再送信",
+      "resendIn": "{seconds}秒後に再送信できます",
+      "tosFooter": "続行することで、B4Kの<terms>利用規約</terms>と<privacy>プライバシーポリシー</privacy>に同意したものとみなされます。",
+      "ageConfirm": "14歳以上であることを確認します"
     },
     "conflict": {
-      "ariaLabel": "Draft conflict — pick one modal",
-      "title": "You have two drafts — which one would you like to keep?",
-      "deviceDraft": "On this device",
-      "accountDraft": "In your account",
-      "stops": "{count, plural, one {# stop} other {# stops}}",
-      "lastModified": "Last modified {time}",
-      "keep": "Keep this one",
-      "discardNote": "The other draft will be permanently deleted."
+      "ariaLabel": "下書きの競合 — どちらかを選択してください",
+      "title": "2つの下書きがあります — どちらを残しますか？",
+      "deviceDraft": "このデバイス上",
+      "accountDraft": "アカウント内",
+      "stops": "{count}か所",
+      "lastModified": "最終更新：{time}",
+      "keep": "こちらを残す",
+      "discardNote": "もう一方の下書きは完全に削除されます。"
     },
     "resetPassword": {
-      "title": "Set new password",
-      "subtitle": "Enter your new password below.",
-      "passwordLabel": "New password",
-      "passwordPlaceholder": "New password",
-      "confirmLabel": "Confirm password",
-      "confirmPlaceholder": "Confirm password",
-      "submit": "Set password",
-      "loading": "Saving…",
-      "success": "Password updated — signing you in",
-      "redirecting": "Redirecting to home…",
-      "errorMismatch": "Passwords don't match",
-      "errorWeak": "Password must be at least 8 characters",
-      "errorExpired": "This link has expired. Request a new one.",
-      "errorGeneric": "Something went wrong. Try again.",
-      "showPw": "Show password",
-      "hidePw": "Hide password",
-      "backToHome": "Back to home"
+      "title": "新しいパスワードを設定",
+      "subtitle": "以下に新しいパスワードを入力してください。",
+      "passwordLabel": "新しいパスワード",
+      "passwordPlaceholder": "新しいパスワード",
+      "confirmLabel": "パスワードを確認",
+      "confirmPlaceholder": "パスワードを確認",
+      "submit": "パスワードを設定",
+      "loading": "保存中…",
+      "success": "パスワードを更新しました — ログイン中",
+      "redirecting": "ホームへリダイレクト中…",
+      "errorMismatch": "パスワードが一致しません",
+      "errorWeak": "パスワードは8文字以上にしてください",
+      "errorExpired": "このリンクは期限切れです。新しいリンクをリクエストしてください。",
+      "errorGeneric": "エラーが発生しました。もう一度お試しください。",
+      "showPw": "パスワードを表示",
+      "hidePw": "パスワードを隠す",
+      "backToHome": "ホームに戻る"
     },
     "callback": {
-      "verifying": "Verifying…",
-      "redirecting": "Redirecting to home…",
-      "error": "Sign-in failed",
-      "errorRetry": "Please try signing in again"
+      "verifying": "確認中…",
+      "redirecting": "ホームへリダイレクト中…",
+      "error": "ログインに失敗しました",
+      "errorRetry": "もう一度ログインをお試しください"
     }
   },
   "legalGate": {
-    "ariaLabel": "Terms acceptance",
-    "title": "Before you continue",
-    "message": "By using B4K, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
-    "accept": "Accept & Continue"
+    "ariaLabel": "利用規約への同意",
+    "title": "続ける前に",
+    "message": "B4Kを利用することで、当社の<terms>利用規約</terms>と<privacy>プライバシーポリシー</privacy>に同意したものとみなされます。",
+    "accept": "同意して続ける"
   },
   "map": {
-    "ariaLabel": "Interactive map of Korea",
-    "loading": "Loading map…",
-    "error": "Map could not load",
-    "retry": "Try again",
-    "noKey": "Map API key not configured",
-    "zoomIn": "Zoom in",
-    "zoomOut": "Zoom out",
+    "ariaLabel": "韓国のインタラクティブマップ",
+    "loading": "マップを読み込み中…",
+    "error": "マップを読み込めませんでした",
+    "retry": "再試行",
+    "noKey": "マップAPIキーが設定されていません",
+    "zoomIn": "ズームイン",
+    "zoomOut": "ズームアウト",
     "leftPanel": {
-      "ariaLabel": "Explore panel",
-      "viewSaved": "View saved places"
+      "ariaLabel": "探索パネル",
+      "viewSaved": "保存済みの場所を見る",
+      "tagline": "Find your place",
+      "savedLabel": "Saved"
     },
     "regions": {
-      "title": "Explore by Region",
-      "seoul": "Seoul",
-      "busan": "Busan",
-      "jeju": "Jeju",
-      "incheon": "Incheon",
-      "gyeongju": "Gyeongju",
-      "more": "More regions"
+      "title": "地域から探す",
+      "seoul": "ソウル",
+      "busan": "釜山",
+      "jeju": "済州",
+      "incheon": "仁川",
+      "gyeongju": "慶州",
+      "more": "他の地域"
     },
     "filters": {
-      "title": "Filter by Type",
-      "palaces": "Palaces",
-      "temples": "Temples",
-      "cafes": "Cafés",
-      "parks": "Parks",
-      "restaurants": "Restaurants",
-      "hotels": "Hotels",
-      "shopping": "Shopping",
-      "museums": "Museums"
+      "title": "タイプで絞り込む",
+      "palaces": "宮殿",
+      "temples": "寺院",
+      "cafes": "カフェ",
+      "parks": "公園",
+      "restaurants": "レストラン",
+      "hotels": "ホテル",
+      "shopping": "ショッピング",
+      "museums": "博物館"
     },
     "aiPill": {
-      "label": "AI Assistant ·",
-      "dismiss": "Dismiss AI assistant",
-      "expand": "Expand AI assistant"
+      "label": "AIアシスタント ·",
+      "dismiss": "AIアシスタントを閉じる",
+      "expand": "AIアシスタントを展開"
     },
     "poiDetail": {
-      "sponsored": "Sponsored",
-      "reviews": "reviews",
-      "saves": "saves",
-      "openNow": "Open now",
-      "closed": "Closed",
-      "addToPlan": "Add to Plan",
-      "added": "Added ✓",
-      "planFull": "Maximum 40 stops reached",
-      "save": "Save",
-      "saved": "Saved",
-      "unsave": "Remove from saved",
-      "savedToast": "Place saved!",
-      "removedSave": "Removed from saved",
-      "addedToast": "Added to plan",
-      "dismiss": "Close",
-      "share": "Share",
-      "like": "Like",
-      "liked": "Liked",
-      "unlike": "Unlike",
-      "website": "Visit website",
-      "close": "Close POI details",
-      "imagePending": "Image being prepared"
+      "sponsored": "広告",
+      "reviews": "件のレビュー",
+      "saves": "件の保存",
+      "openNow": "営業中",
+      "closed": "閉店",
+      "addToPlan": "プランに追加",
+      "added": "追加済み ✓",
+      "planFull": "最大40か所まで追加できます",
+      "save": "保存",
+      "saved": "保存済み",
+      "unsave": "保存を解除",
+      "savedToast": "場所を保存しました！",
+      "removedSave": "保存を解除しました",
+      "addedToast": "プランに追加しました",
+      "dismiss": "閉じる",
+      "share": "共有",
+      "like": "いいね",
+      "liked": "いいね済み",
+      "unlike": "いいねを取り消す",
+      "website": "ウェブサイトを見る",
+      "close": "場所の詳細を閉じる",
+      "imagePending": "画像を準備中です"
     },
     "plan": {
-      "title": "Your Plan",
-      "stops": "stops",
-      "removeStop": "Remove stop {n}",
-      "dragHandle": "Drag to reorder stop {n}",
-      "durationLabel": "min",
-      "durationAriaLabel": "Duration for {name}",
-      "total": "total",
+      "title": "あなたのプラン",
+      "stops": "か所",
+      "removeStop": "{n}番目のスポットを削除",
+      "dragHandle": "ドラッグして{n}番目のスポットを並べ替え",
+      "durationLabel": "分",
+      "durationAriaLabel": "{name}の所要時間",
+      "total": "合計",
       "transport": {
-        "label": "Transport mode",
-        "car": "Car",
-        "public": "Public"
+        "label": "移動手段",
+        "car": "車",
+        "public": "公共交通機関"
       },
-      "save": "Save Plan",
-      "savedToast": "Plan saved!",
-      "previewPlan": "Preview Plan",
-      "close": "Close plan sheet",
-      "stripExpand": "Expand plan panel",
-      "stripCollapse": "Collapse plan panel",
-      "routeError": "Route couldn't be generated. Stops are preserved.",
-      "routeRetry": "Retry",
-      "saveError": "Failed to save. Please try again.",
-      "maxStopsToast": "You've reached the {max}-stop limit for one plan.",
-      "discardDraft": "Discard draft",
-      "discardTitle": "Discard draft?",
-      "discardWarning": "This removes all {count, plural, one {# stop} other {# stops}} from the current draft. This cannot be undone.",
-      "discardCancel": "Cancel",
-      "discardConfirm": "Discard draft",
-      "dayTab": "Day {n}",
-      "legEstimate": "est {min}m",
-      "legAriaLabel": "Estimated travel time from stop {from} to stop {to}"
+      "save": "プランを保存",
+      "savedToast": "プランを保存しました！",
+      "previewPlan": "プランをプレビュー",
+      "close": "プランパネルを閉じる",
+      "stripExpand": "プランパネルを展開",
+      "stripCollapse": "プランパネルを折りたたむ",
+      "routeError": "ルートを生成できませんでした。スポットは保持されています。",
+      "routeRetry": "再試行",
+      "saveError": "保存に失敗しました。もう一度お試しください。",
+      "maxStopsToast": "1つのプランにつき{max}か所までの上限に達しました。",
+      "discardDraft": "下書きを破棄",
+      "discardTitle": "下書きを破棄しますか？",
+      "discardWarning": "現在の下書きから{count}か所がすべて削除されます。この操作は元に戻せません。",
+      "discardCancel": "キャンセル",
+      "discardConfirm": "下書きを破棄",
+      "dayTab": "{n}日目",
+      "legEstimate": "約{min}分",
+      "legAriaLabel": "スポット{from}からスポット{to}までの推定移動時間"
     },
     "namingSheet": {
-      "ariaLabel": "Name your plan",
-      "title": "Name your plan",
-      "inputLabel": "Plan title",
-      "placeholder": "e.g. Seoul K-Pop day trip",
-      "cancel": "Cancel",
-      "save": "Save plan"
+      "ariaLabel": "プランに名前を付ける",
+      "title": "プランに名前を付ける",
+      "inputLabel": "プラン名",
+      "placeholder": "例：ソウルK-Pop日帰り旅行",
+      "cancel": "キャンセル",
+      "save": "プランを保存"
     },
     "draftResume": {
-      "ariaLabel": "Unfinished plan found",
-      "title": "You have an unfinished plan",
-      "stopCount": "{count, plural, one {# stop} other {# stops}}",
-      "resume": "Resume this plan",
-      "startFresh": "Start fresh"
+      "ariaLabel": "未完成のプランがあります",
+      "title": "未完成のプランがあります",
+      "stopCount": "{count}か所",
+      "resume": "このプランを再開",
+      "startFresh": "最初から始める"
     },
     "aiOverlay": {
-      "title": "AI Travel Assistant",
-      "openButton": "AI Assistant",
-      "inputPlaceholder": "Ask about Korea…",
-      "send": "Send message",
-      "minimize": "Minimize AI assistant",
-      "disclaimer": "AI-generated suggestions — verify details independently before traveling.",
-      "close": "Close AI assistant",
-      "back": "Back to map",
-      "greeting": "Ask me anything about Korea — places, plans, and K-culture.",
+      "title": "AI旅行アシスタント",
+      "openButton": "AIアシスタント",
+      "inputPlaceholder": "韓国について質問する…",
+      "send": "メッセージを送信",
+      "minimize": "AIアシスタントを最小化",
+      "disclaimer": "AIによる提案です — 渡航前に必ずご自身で詳細をご確認ください。",
+      "close": "AIアシスタントを閉じる",
+      "back": "マップに戻る",
+      "greeting": "韓国について何でも聞いてください — 場所、プラン、Kカルチャーについて。",
       "chips": {
-        "bts": "BTS landmarks near me",
-        "kdrama": "K-Drama filming spots",
-        "food": "Best street food today"
+        "bts": "近くのBTSゆかりの地",
+        "kdrama": "K-Drama撮影スポット",
+        "food": "今日のおすすめ屋台グルメ"
       },
-      "error": "Connection lost. Retry when ready.",
-      "retry": "Retry",
-      "addToPlan": "Add",
-      "added": "Added",
-      "usePlan": "Use this plan",
-      "usePlanLoaded": "Plan loaded ✓",
-      "poiFound": "Here are some places:",
-      "planBuilt": "Here's a plan for you:",
-      "previewPlan": "Preview Plan",
-      "capReached": "You've reached the free plan limit",
-      "signInToContinue": "Sign in to keep planning",
+      "error": "接続が切断されました。準備ができたら再試行してください。",
+      "retry": "再試行",
+      "addToPlan": "追加",
+      "added": "追加済み",
+      "usePlan": "このプランを使う",
+      "usePlanLoaded": "プランを読み込みました ✓",
+      "poiFound": "こちらの場所はいかがですか：",
+      "planBuilt": "こちらがあなたのプランです：",
+      "previewPlan": "プランをプレビュー",
+      "capReached": "無料プランの上限に達しました",
+      "signInToContinue": "ログインして計画を続ける",
       "errorCode": "SYS·ERR · AI·TIMEOUT",
-      "planManually": "Plan manually"
+      "planManually": "手動で計画する"
     },
     "planPill": {
-      "ariaLabel": "View your plan · {count} stops",
-      "label": "Plan · {count} stops",
-      "aiLabel": "AI Plan · {count} stops"
+      "ariaLabel": "プランを見る · {count}か所",
+      "label": "プラン · {count}か所",
+      "aiLabel": "AIプラン · {count}か所"
     },
     "recommended": {
-      "title": "Popular Spots",
-      "empty": "No spots match your filters",
-      "error": "Couldn't load recommendations",
-      "save": "Save",
-      "unsave": "Remove from saved",
-      "cardAriaLabel": "{name}, {region}"
+      "title": "人気のスポット",
+      "empty": "フィルターに一致するスポットがありません",
+      "error": "おすすめを読み込めませんでした",
+      "save": "保存",
+      "unsave": "保存を解除",
+      "cardAriaLabel": "{name}、{region}"
     }
   },
   "itinerary": {
-    "loading": "Loading itinerary…",
-    "notFound": "Itinerary not found",
-    "private": "This itinerary is private",
-    "privateDesc": "The creator has set this itinerary to private.",
+    "loading": "旅程を読み込み中…",
+    "notFound": "旅程が見つかりません",
+    "private": "この旅程は非公開です",
+    "privateDesc": "作成者がこの旅程を非公開に設定しています。",
     "error": {
-      "title": "Couldn't load itinerary",
-      "cta": "Try again"
+      "title": "旅程を読み込めませんでした",
+      "cta": "再試行"
     },
     "stats": {
-      "stops": "{count} stops",
-      "min": "{min} min",
+      "stops": "{count}か所",
+      "min": "{min}分",
       "km": "{km} km"
     },
     "transport": {
-      "car": "By car",
-      "public": "Public transport",
-      "walk": "On foot",
-      "changeMode": "Change transport mode (current: {mode})",
-      "mode": "Transport: {mode}",
-      "offlineNote": "Try again when online"
+      "car": "車で",
+      "public": "公共交通機関",
+      "walk": "徒歩で",
+      "changeMode": "移動手段を変更（現在：{mode}）",
+      "mode": "移動手段：{mode}",
+      "offlineNote": "オンラインになったらもう一度お試しください"
     },
     "actions": {
-      "like": "Like",
-      "liked": "Liked",
-      "save": "Save",
-      "saved": "Saved",
-      "share": "Share",
-      "edit": "Edit",
-      "makePrivate": "Make private",
-      "makePublic": "Make public",
-      "likeAria": "Like this itinerary",
-      "saveAria": "Save this itinerary",
-      "shareAria": "Share this itinerary",
-      "editAria": "Edit this itinerary",
-      "likedToast": "Added to liked",
-      "unlikedToast": "Removed from liked",
-      "savedToast": "Saved!",
-      "unsavedToast": "Removed from saved",
-      "deleteTitle": "Delete itinerary?",
-      "deleteConfirmText": "This will permanently delete the itinerary. This cannot be undone.",
-      "deleteCancel": "Cancel",
-      "deleteConfirm": "Delete",
-      "deleteAria": "Confirm delete itinerary",
-      "deleting": "Deleting…",
-      "deleteErrorToast": "Failed to delete. Please try again."
+      "like": "いいね",
+      "liked": "いいね済み",
+      "save": "保存",
+      "saved": "保存済み",
+      "share": "共有",
+      "edit": "編集",
+      "makePrivate": "非公開にする",
+      "makePublic": "公開する",
+      "likeAria": "この旅程にいいねする",
+      "saveAria": "この旅程を保存する",
+      "shareAria": "この旅程を共有する",
+      "editAria": "この旅程を編集する",
+      "likedToast": "いいねに追加しました",
+      "unlikedToast": "いいねを解除しました",
+      "savedToast": "保存しました！",
+      "unsavedToast": "保存を解除しました",
+      "deleteTitle": "旅程を削除しますか？",
+      "deleteConfirmText": "この旅程は完全に削除されます。この操作は元に戻せません。",
+      "deleteCancel": "キャンセル",
+      "deleteConfirm": "削除",
+      "deleteAria": "旅程の削除を確認",
+      "deleting": "削除中…",
+      "deleteErrorToast": "削除に失敗しました。もう一度お試しください。"
     },
     "tabs": {
-      "all": "All",
-      "day": "Day {n}"
+      "all": "すべて",
+      "day": "{n}日目"
     },
     "stopList": {
-      "ariaLabel": "Itinerary stops"
+      "ariaLabel": "旅程のスポット"
     },
     "stopItem": {
-      "ariaLabel": "Stop {n}: {name}",
-      "min": "{min} min",
-      "fromStart": "{time} from start"
+      "ariaLabel": "{n}番目：{name}",
+      "min": "{min}分",
+      "fromStart": "出発から{time}"
     },
-    "sponsored": "Sponsored",
+    "sponsored": "広告",
     "related": {
-      "title": "More itineraries",
-      "stops": "{count} stops",
-      "likes": "{count} likes"
+      "title": "他の旅程",
+      "stops": "{count}か所",
+      "likes": "{count}件のいいね"
     },
     "panel": {
-      "ariaLabel": "Itinerary details"
+      "ariaLabel": "旅程の詳細"
     },
     "sheet": {
-      "handle": "Drag to resize",
-      "ariaLabel": "Itinerary detail"
+      "handle": "ドラッグしてサイズ変更",
+      "ariaLabel": "旅程の詳細"
     },
-    "copiedToast": "Link copied!",
-    "mapAriaLabel": "Itinerary route map",
-    "createdBy": "by {name}",
+    "copiedToast": "リンクをコピーしました！",
+    "mapAriaLabel": "旅程のルートマップ",
+    "createdBy": "{name}作成",
     "duration": {
-      "hoursMinutes": "{h}h {m}m",
-      "hours": "{h}h",
-      "minutes": "{m}m"
+      "hoursMinutes": "{h}時間{m}分",
+      "hours": "{h}時間",
+      "minutes": "{m}分"
     },
     "leg": {
-      "calculating": "Calculating route…",
+      "calculating": "ルートを計算中…",
       "km": "{km} km",
       "m": "{m} m",
-      "ariaLabel": "Travel from stop {from} to stop {to}"
+      "ariaLabel": "スポット{from}からスポット{to}への移動"
     },
     "footer": {
-      "totalDuration": "Total duration"
+      "totalDuration": "合計所要時間"
     },
-    "notFoundRedirect": "Taking you back to the map…"
+    "notFoundRedirect": "マップへお戻りします…"
   },
   "profile": {
     "header": {
-      "ariaLabel": "Profile header",
-      "breadcrumb": "Profile",
-      "avatarAlt": "Profile photo of {name}",
-      "statsLabel": "Profile stats",
-      "tripsLabel": "Trips",
-      "tripsCountAria": "{count} trips created",
-      "likesLabel": "Likes",
-      "likesAria": "{count} likes received",
-      "pinnedBadgesLabel": "Pinned badges",
-      "errorTitle": "Couldn't load profile",
-      "errorRetry": "Try again",
-      "savesLabel": "Saves",
-      "badgesLabel": "Badges",
-      "savesCountAria": "{count} saves",
-      "badgesCountAria": "{count} badges",
-      "loading": "Loading profile",
-      "namePlaceholder": "B4K Traveler"
+      "ariaLabel": "プロフィールヘッダー",
+      "breadcrumb": "プロフィール",
+      "avatarAlt": "{name}のプロフィール写真",
+      "statsLabel": "プロフィール統計",
+      "tripsLabel": "旅程",
+      "tripsCountAria": "作成した旅程 {count}件",
+      "likesLabel": "いいね",
+      "likesAria": "獲得したいいね {count}件",
+      "pinnedBadgesLabel": "ピン留めしたバッジ",
+      "errorTitle": "プロフィールを読み込めませんでした",
+      "errorRetry": "再試行",
+      "savesLabel": "保存",
+      "badgesLabel": "バッジ",
+      "savesCountAria": "保存 {count}件",
+      "badgesCountAria": "バッジ {count}件",
+      "loading": "プロフィールを読み込み中",
+      "namePlaceholder": "B4Kトラベラー"
     },
     "tabs": {
-      "ariaLabel": "Profile sections",
-      "trips": "My Trips",
-      "badges": "Badges",
-      "settings": "Settings",
-      "saved": "Saved"
+      "ariaLabel": "プロフィールのセクション",
+      "trips": "マイ旅程",
+      "badges": "バッジ",
+      "settings": "設定",
+      "saved": "保存済み"
     },
     "trips": {
-      "loading": "Loading trips…",
+      "loading": "旅程を読み込み中…",
       "empty": {
-        "title": "No trips yet",
-        "desc": "Create your first Korea itinerary.",
-        "cta": "Open the map"
+        "title": "まだ旅程がありません",
+        "desc": "最初の韓国旅程を作成しましょう。",
+        "cta": "マップを開く"
       },
       "error": {
-        "title": "Couldn't load trips",
-        "cta": "Try again"
+        "title": "旅程を読み込めませんでした",
+        "cta": "再試行"
       },
       "nudge": {
-        "title": "Or explore saved places",
-        "cta": "View saved"
+        "title": "または保存済みの場所を見る",
+        "cta": "保存済みを見る"
       },
       "card": {
-        "draft": "Draft",
-        "edit": "Edit",
-        "editAria": "Edit trip {title}",
-        "delete": "Delete",
-        "deleteAria": "Delete trip {title}",
-        "likes": "likes",
-        "saves": "saves",
-        "stops": "stops",
-        "thumbnailAlt": "Thumbnail for {title}",
-        "shareAria": "Share trip {title}",
-        "shareCopiedToast": "Link copied to clipboard"
+        "draft": "下書き",
+        "edit": "編集",
+        "editAria": "旅程「{title}」を編集",
+        "delete": "削除",
+        "deleteAria": "旅程「{title}」を削除",
+        "likes": "いいね",
+        "saves": "保存",
+        "stops": "か所",
+        "thumbnailAlt": "{title}のサムネイル",
+        "shareAria": "旅程「{title}」を共有",
+        "shareCopiedToast": "リンクをクリップボードにコピーしました"
       },
       "deleteModal": {
-        "title": "Delete trip?",
-        "desc": "This will permanently delete \"{title}\". This cannot be undone.",
-        "confirm": "Delete",
-        "cancel": "Cancel",
-        "ariaLabel": "Confirm delete trip"
+        "title": "旅程を削除しますか？",
+        "desc": "「{title}」は完全に削除されます。この操作は元に戻せません。",
+        "confirm": "削除",
+        "cancel": "キャンセル",
+        "ariaLabel": "旅程の削除を確認"
       }
     },
     "badges": {
-      "loading": "Loading badges…",
+      "loading": "バッジを読み込み中…",
       "empty": {
-        "title": "No badges yet",
-        "desc": "Complete trips and contribute to the community to earn badges.",
-        "cta": "Start exploring"
+        "title": "まだバッジがありません",
+        "desc": "旅程を完了し、コミュニティに貢献してバッジを獲得しましょう。",
+        "cta": "探索を始める"
       },
       "error": {
-        "title": "Couldn't load badges",
-        "cta": "Try again"
+        "title": "バッジを読み込めませんでした",
+        "cta": "再試行"
       },
       "rarity": {
-        "common": "Common",
-        "rare": "Rare",
-        "epic": "Epic",
-        "legendary": "Legendary"
+        "common": "コモン",
+        "rare": "レア",
+        "epic": "エピック",
+        "legendary": "レジェンダリー"
       },
-      "pinAria": "Pin {name}",
-      "unpinAria": "Unpin {name}",
-      "pinLimitError": "You can pin up to 3 badges. Unpin one to pin another.",
-      "locked": "Locked",
-      "earnedOn": "Earned on {date}",
+      "pinAria": "{name}をピン留め",
+      "unpinAria": "{name}のピン留めを解除",
+      "pinLimitError": "ピン留めは最大3個までです。1つ解除してから追加してください。",
+      "locked": "未解放",
+      "earnedOn": "{date}に獲得",
       "modal": {
-        "close": "Close badge detail",
-        "category": "Category",
-        "rarity": "Rarity",
-        "earned": "Earned"
+        "close": "バッジの詳細を閉じる",
+        "category": "カテゴリー",
+        "rarity": "レアリティ",
+        "earned": "獲得済み"
       }
     },
     "settings": {
       "account": {
-        "heading": "Account",
-        "email": "Email",
-        "emailNote": "Sign-in address — cannot be changed here"
+        "heading": "アカウント",
+        "email": "メールアドレス",
+        "emailNote": "ログイン用アドレス — ここでは変更できません"
       },
       "actions": {
-        "heading": "Actions"
+        "heading": "アクション"
       },
       "preferences": {
-        "heading": "Preferences",
-        "language": "Language",
-        "transport": "Default transport",
-        "transportCar": "Car",
-        "transportPublic": "Transit",
-        "interests": "Interests",
-        "interestsNote": "Used to personalise recommendations",
-        "save": "Save changes",
-        "saving": "Saving…",
-        "saved": "Saved"
+        "heading": "設定",
+        "language": "言語",
+        "transport": "デフォルトの移動手段",
+        "transportCar": "車",
+        "transportPublic": "公共交通機関",
+        "interests": "興味",
+        "interestsNote": "おすすめのパーソナライズに使用されます",
+        "save": "変更を保存",
+        "saving": "保存中…",
+        "saved": "保存済み"
       },
       "interests": {
         "kpop": "K-Pop",
@@ -990,246 +992,246 @@
         "th": "ภาษาไทย",
         "pt-BR": "Português (BR)"
       },
-      "signOut": "Sign out",
-      "changePassword": "Change password",
-      "deleteAccount": "Delete account",
-      "deleteWarning": "Your account will be permanently deleted after 30 days. This cannot be undone.",
-      "deleteConfirm": "Yes, delete my account",
-      "deleteCancel": "Cancel",
-      "deleteTypePrompt": "Type \"DELETE\" to confirm",
-      "deleteTypeHint": "You must type DELETE (all caps) to enable the confirm button",
+      "signOut": "ログアウト",
+      "changePassword": "パスワードを変更",
+      "deleteAccount": "アカウントを削除",
+      "deleteWarning": "アカウントは30日後に完全に削除されます。この操作は元に戻せません。",
+      "deleteConfirm": "はい、アカウントを削除します",
+      "deleteCancel": "キャンセル",
+      "deleteTypePrompt": "確認のため「DELETE」と入力してください",
+      "deleteTypeHint": "確認ボタンを有効にするには、DELETE（すべて大文字）と入力してください",
       "password": {
-        "heading": "Change password",
-        "current": "Current password",
-        "new": "New password",
-        "confirm": "Confirm new password",
-        "hint": "At least 8 characters",
-        "show": "Show password",
-        "hide": "Hide password",
-        "submit": "Update password",
-        "submitting": "Updating…",
-        "success": "Password updated",
-        "mismatch": "Passwords do not match"
+        "heading": "パスワードを変更",
+        "current": "現在のパスワード",
+        "new": "新しいパスワード",
+        "confirm": "新しいパスワードを確認",
+        "hint": "8文字以上",
+        "show": "パスワードを表示",
+        "hide": "パスワードを隠す",
+        "submit": "パスワードを更新",
+        "submitting": "更新中…",
+        "success": "パスワードを更新しました",
+        "mismatch": "パスワードが一致しません"
       },
-      "passwordError": "Failed to update password. Check your current password and try again.",
+      "passwordError": "パスワードの更新に失敗しました。現在のパスワードを確認してもう一度お試しください。",
       "avatar": {
-        "heading": "Profile photo",
-        "alt": "Your profile photo",
-        "upload": "Upload photo",
-        "remove": "Remove",
-        "uploading": "Uploading…",
-        "hint": "JPG, PNG or WebP. Max 2MB.",
-        "uploaded": "Photo updated",
-        "removed": "Photo removed",
-        "error": "Could not update photo. Try again."
+        "heading": "プロフィール写真",
+        "alt": "あなたのプロフィール写真",
+        "upload": "写真をアップロード",
+        "remove": "削除",
+        "uploading": "アップロード中…",
+        "hint": "JPG、PNG、またはWebP。最大2MB。",
+        "uploaded": "写真を更新しました",
+        "removed": "写真を削除しました",
+        "error": "写真を更新できませんでした。もう一度お試しください。"
       },
       "identity": {
-        "heading": "Name & bio",
-        "displayName": "Display name",
-        "displayNamePlaceholder": "Your name",
-        "bio": "Bio",
-        "bioPlaceholder": "Tell others a little about you",
+        "heading": "名前とプロフィール文",
+        "displayName": "表示名",
+        "displayNamePlaceholder": "あなたの名前",
+        "bio": "プロフィール文",
+        "bioPlaceholder": "自己紹介を少し書いてみましょう",
         "bioCounter": "{count}/150",
-        "save": "Save",
-        "saving": "Saving…",
-        "saved": "Saved",
-        "error": "Could not save. Try again."
+        "save": "保存",
+        "saving": "保存中…",
+        "saved": "保存済み",
+        "error": "保存できませんでした。もう一度お試しください。"
       },
       "notifications": {
-        "heading": "Notifications",
-        "note": "Turn off the notifications you don't want to receive.",
-        "error": "Could not update. Try again.",
+        "heading": "通知",
+        "note": "受け取りたくない通知をオフにしてください。",
+        "error": "更新できませんでした。もう一度お試しください。",
         "types": {
-          "event_drop": "New event drops",
-          "deal_expiring": "Deals expiring soon",
-          "editorial_pick": "Editor's picks",
-          "badge_earned": "Badges earned",
-          "challenge_new": "New challenges",
-          "promotion": "Promotions"
+          "event_drop": "新着イベント",
+          "deal_expiring": "まもなく終了するお得情報",
+          "editorial_pick": "編集部おすすめ",
+          "badge_earned": "バッジ獲得",
+          "challenge_new": "新しいチャレンジ",
+          "promotion": "プロモーション"
         }
       },
       "privacy": {
-        "heading": "Privacy",
-        "note": "Control which tabs other people can see on your profile.",
-        "trips": "Trips",
-        "tripsNote": "Show your trips on your public profile",
-        "saved": "Saved",
-        "savedNote": "Show your saved places on your public profile",
-        "public": "Public",
-        "private": "Private",
-        "error": "Could not update. Try again."
+        "heading": "プライバシー",
+        "note": "他のユーザーがあなたのプロフィールで見られるタブを管理します。",
+        "trips": "旅程",
+        "tripsNote": "公開プロフィールで旅程を表示する",
+        "saved": "保存済み",
+        "savedNote": "公開プロフィールで保存済みの場所を表示する",
+        "public": "公開",
+        "private": "非公開",
+        "error": "更新できませんでした。もう一度お試しください。"
       },
       "dataConsent": {
-        "heading": "Data & Privacy Consent",
-        "note": "Manage your analytics and tracking consent — the same setting as the Cookie Preferences page."
+        "heading": "データとプライバシーの同意",
+        "note": "アナリティクスとトラッキングの同意を管理します — クッキー設定ページと同じ設定です。"
       },
-      "signOutAll": "Log out from all devices",
-      "signOutAllNote": "Ends your session everywhere you're signed in.",
-      "signOutAllError": "Could not log out everywhere. Try again.",
+      "signOutAll": "すべてのデバイスからログアウト",
+      "signOutAllNote": "ログイン中のすべての場所でセッションを終了します。",
+      "signOutAllError": "すべての場所からログアウトできませんでした。もう一度お試しください。",
       "reauth": {
-        "heading": "Confirm it's you",
-        "note": "For your security, re-enter your password to continue.",
-        "password": "Password",
-        "continue": "Continue",
-        "verifying": "Verifying…",
-        "cancel": "Cancel",
-        "error": "Incorrect password. Try again."
+        "heading": "本人確認",
+        "note": "セキュリティのため、パスワードを再入力して続行してください。",
+        "password": "パスワード",
+        "continue": "続ける",
+        "verifying": "確認中…",
+        "cancel": "キャンセル",
+        "error": "パスワードが正しくありません。もう一度お試しください。"
       },
-      "deleteError": "Couldn't delete your account. Please try again."
+      "deleteError": "アカウントを削除できませんでした。もう一度お試しください。"
     },
     "saved": {
-      "loading": "Loading saved places…",
-      "empty": "No saved places yet",
-      "error": "Failed to load saved places",
-      "retry": "Try again",
-      "openOnMapAria": "Open {name} on the map"
+      "loading": "保存済みの場所を読み込み中…",
+      "empty": "まだ保存された場所がありません",
+      "error": "保存済みの場所を読み込めませんでした",
+      "retry": "再試行",
+      "openOnMapAria": "{name}をマップで開く"
     },
-    "notFound": "Profile not found",
-    "anonymousUser": "User",
-    "avatarAlt": "{name}'s profile photo",
-    "tabsLabel": "Profile sections",
-    "privateTab": "This tab is private",
-    "untitledPlan": "Untitled plan",
+    "notFound": "プロフィールが見つかりません",
+    "anonymousUser": "ユーザー",
+    "avatarAlt": "{name}のプロフィール写真",
+    "tabsLabel": "プロフィールのセクション",
+    "privateTab": "このタブは非公開です",
+    "untitledPlan": "無題のプラン",
     "otherTrips": {
-      "stops": "{count} stops",
-      "days": "{count} days",
-      "save": "Save",
-      "saved": "Saved",
-      "saveAria": "Save plan {title}",
-      "unsaveAria": "Remove saved plan {title}",
-      "openAria": "Open plan {title}"
+      "stops": "{count}か所",
+      "days": "{count}日間",
+      "save": "保存",
+      "saved": "保存済み",
+      "saveAria": "プラン「{title}」を保存",
+      "unsaveAria": "保存したプラン「{title}」を削除",
+      "openAria": "プラン「{title}」を開く"
     },
     "otherBadges": {
-      "lockedAria": "Locked badge: {name}"
+      "lockedAria": "未解放のバッジ：{name}"
     }
   },
   "explore": {
-    "title": "Explore",
-    "breadcrumb": "Explore",
-    "loading": "Loading…",
-    "sectionEmpty": "No places yet",
+    "title": "探索",
+    "breadcrumb": "探索",
+    "loading": "読み込み中…",
+    "sectionEmpty": "まだ場所がありません",
     "empty": {
-      "cta": "Explore the map"
+      "cta": "マップを探索する"
     },
     "sidebar": {
-      "ariaLabel": "Content category navigation"
+      "ariaLabel": "コンテンツカテゴリーのナビゲーション"
     },
     "pills": {
-      "ariaLabel": "Content category tabs"
+      "ariaLabel": "コンテンツカテゴリータブ"
     },
     "error": {
-      "title": "Failed to load",
-      "retry": "Try again"
+      "title": "読み込みに失敗しました",
+      "retry": "再試行"
     },
     "card": {
-      "trending": "Trending",
-      "ariaLabel": "View {name} on map",
-      "saveAria": "Save {name}",
-      "unsaveAria": "Unsave {name}",
-      "likeAria": "Like {name}",
-      "unlikeAria": "Unlike {name}",
-      "sponsored": "Sponsored",
+      "trending": "話題",
+      "ariaLabel": "{name}をマップで見る",
+      "saveAria": "{name}を保存",
+      "unsaveAria": "{name}の保存を解除",
+      "likeAria": "{name}にいいね",
+      "unlikeAria": "{name}のいいねを取り消す",
+      "sponsored": "広告",
       "dDay": "D-{days}",
       "dDayToday": "D-DAY",
-      "dDayPast": "Ended",
-      "featured": "Featured",
-      "addAria": "Add {name} to plan",
-      "addedAria": "{name} added to plan",
-      "imagePending": "Image being prepared"
+      "dDayPast": "終了",
+      "featured": "注目",
+      "addAria": "{name}をプランに追加",
+      "addedAria": "{name}をプランに追加しました",
+      "imagePending": "画像を準備中です"
     },
-    "hub": {
-      "title": "Explore Korea",
-      "subtitle": "Dive into K-Pop, K-Drama, K-Beauty, and K-Culture",
+    "aiCta": {
+      "text": "AIにKカルチャーの旅を計画してもらう",
+      "button": "AIプランを試す",
       "kpop": {
-        "desc": "Artists, concert venues, agency tours, and merchandise"
+        "text": "AIでK-Pop旅行を計画する"
       },
       "kdrama": {
-        "desc": "Filming locations, drama trails, and iconic sets"
+        "text": "K-Drama旅行を計画する"
       },
       "kbeauty": {
-        "desc": "Skincare districts, clinics, and brand flagship stores"
+        "text": "K-Beauty一日プランを計画する"
       },
       "kculture": {
-        "desc": "Cuisine, traditional markets, and heritage experiences"
+        "text": "文化体験の旅を計画する"
+      }
+    },
+    "hub": {
+      "title": "韓国を探索",
+      "subtitle": "K-Pop、K-Drama、K-Beauty、K-Cultureに浸ろう",
+      "kpop": {
+        "desc": "アーティスト、会場、事務所ツアー、グッズ"
+      },
+      "kdrama": {
+        "desc": "撮影地、ドラマ巡り、名シーンのセット"
+      },
+      "kbeauty": {
+        "desc": "スキンケアエリア、クリニック、ブランド旗艦店"
+      },
+      "kculture": {
+        "desc": "グルメ、伝統市場、文化遺産体験"
       }
     },
     "kpop": {
       "title": "K-Pop",
       "empty": {
-        "title": "No K-Pop spots yet",
-        "desc": "K-Pop content is coming soon."
+        "title": "まだK-Popスポットがありません",
+        "desc": "K-Popコンテンツは近日公開です。"
       }
     },
     "kdrama": {
       "title": "K-Drama",
       "empty": {
-        "title": "No K-Drama spots yet",
-        "desc": "K-Drama content is coming soon."
+        "title": "まだK-Dramaスポットがありません",
+        "desc": "K-Dramaコンテンツは近日公開です。"
       }
     },
     "kbeauty": {
       "title": "K-Beauty",
       "empty": {
-        "title": "No K-Beauty spots yet",
-        "desc": "K-Beauty content is coming soon."
+        "title": "まだK-Beautyスポットがありません",
+        "desc": "K-Beautyコンテンツは近日公開です。"
       }
     },
     "kculture": {
       "title": "K-Culture",
       "empty": {
-        "title": "No K-Culture spots yet",
-        "desc": "K-Culture content is coming soon."
+        "title": "まだK-Cultureスポットがありません",
+        "desc": "K-Cultureコンテンツは近日公開です。"
       }
     },
     "sections": {
-      "concerts": "Concerts",
-      "tours": "Tours",
-      "agencies": "Agencies",
-      "merchandise": "Merchandise",
-      "filming": "Filming Locations",
-      "historical": "Historical Sets",
-      "ostCafes": "OST Cafés",
-      "skincare": "Skincare",
-      "makeup": "Makeup",
-      "spa": "Spa & Wellness",
-      "salon": "Salon Experiences",
-      "cuisine": "Korean Cuisine",
-      "markets": "Traditional Markets",
-      "historic": "Historic Places",
-      "experiences": "Traditional Experiences",
-      "traditional": "Traditional",
-      "food": "Food",
-      "festivals": "Festivals",
-      "crafts": "Crafts",
-      "trending": "Trending Now"
+      "concerts": "コンサート",
+      "tours": "ツアー",
+      "agencies": "事務所",
+      "merchandise": "グッズ",
+      "filming": "撮影地",
+      "historical": "歴史的セット",
+      "ostCafes": "OSTカフェ",
+      "skincare": "スキンケア",
+      "makeup": "メイクアップ",
+      "spa": "スパ＆ウェルネス",
+      "salon": "サロン体験",
+      "cuisine": "韓国料理",
+      "markets": "伝統市場",
+      "historic": "歴史的名所",
+      "experiences": "伝統体験",
+      "traditional": "伝統",
+      "food": "グルメ",
+      "festivals": "フェスティバル",
+      "crafts": "工芸品",
+      "trending": "今話題"
     },
-    "aiCta": {
-      "text": "Let AI plan your K-culture journey",
-      "button": "Try AI Planning",
-      "kpop": {
-        "text": "Plan your K-Pop trip with AI"
-      },
-      "kdrama": {
-        "text": "Plan my K-Drama trip"
-      },
-      "kbeauty": {
-        "text": "Plan my K-Beauty day"
-      },
-      "kculture": {
-        "text": "Plan my cultural trip"
-      }
-    },
-    "viewAll": "View all",
-    "viewAllAria": "View all {section}",
+    "viewAll": "すべて見る",
+    "viewAllAria": "{section}をすべて見る",
     "hero": {
-      "ariaLabel": "Featured highlights",
-      "slideN": "Slide {n}",
-      "prev": "Previous slide",
-      "next": "Next slide"
+      "ariaLabel": "注目のハイライト",
+      "slideN": "スライド{n}",
+      "prev": "前のスライド",
+      "next": "次のスライド"
     },
     "filters": {
-      "ariaLabel": "Filter",
-      "all": "All",
+      "ariaLabel": "フィルター",
+      "all": "すべて",
       "agency": {
         "HYBE": "HYBE",
         "SM": "SM",
@@ -1237,408 +1239,501 @@
         "YG": "YG"
       },
       "district": {
-        "Apgujeong": "Apgujeong",
-        "Myeongdong": "Myeongdong",
-        "Hongdae": "Hongdae",
-        "Gangnam": "Gangnam"
+        "Apgujeong": "狎鴎亭",
+        "Myeongdong": "明洞",
+        "Hongdae": "弘大",
+        "Gangnam": "江南"
       },
       "region": {
-        "Seoul": "Seoul",
-        "Jeonju": "Jeonju",
-        "Gyeongju": "Gyeongju",
-        "Andong": "Andong"
+        "Seoul": "ソウル",
+        "Jeonju": "全州",
+        "Gyeongju": "慶州",
+        "Andong": "安東"
       }
     },
     "packages": {
-      "title": "B4K Best Packages",
-      "sponsored": "Sponsored",
-      "viewCta": "View",
-      "ariaLabel": "{title} by {partner}"
+      "title": "B4Kベストパッケージ",
+      "sponsored": "広告",
+      "viewCta": "見る",
+      "ariaLabel": "{partner}による{title}"
     }
   },
   "saved": {
-    "ariaLabel": "Saved page",
-    "breadcrumb": "Saved",
-    "title": "Saved",
+    "ariaLabel": "保存済みページ",
+    "breadcrumb": "保存済み",
+    "title": "保存済み",
     "tabs": {
-      "ariaLabel": "Content tabs",
-      "places": "Places",
-      "myPlans": "My Plans",
-      "savedPlans": "Saved Plans"
+      "ariaLabel": "コンテンツタブ",
+      "places": "場所",
+      "myPlans": "マイプラン",
+      "savedPlans": "保存したプラン"
     },
-    "loading": "Loading saved items…",
+    "loading": "保存済みアイテムを読み込み中…",
     "error": {
-      "title": "Couldn't load saved items",
-      "retry": "Try again"
+      "title": "保存済みアイテムを読み込めませんでした",
+      "retry": "再試行"
     },
     "empty": {
       "places": {
-        "title": "No saved places yet",
-        "desc": "Tap the bookmark icon on any place to save it here.",
-        "cta": "Explore the map"
+        "title": "まだ保存された場所がありません",
+        "desc": "任意の場所のブックマークアイコンをタップすると、ここに保存されます。",
+        "cta": "マップを探索する"
       },
       "myPlans": {
-        "title": "No plans yet",
-        "desc": "Create your first plan on the map.",
-        "cta": "Open the map"
+        "title": "まだプランがありません",
+        "desc": "マップで最初のプランを作成しましょう。",
+        "cta": "マップを開く"
       },
       "savedPlans": {
-        "title": "No saved plans yet",
-        "desc": "Save plans you love to revisit them anytime.",
-        "cta": "Explore the map"
+        "title": "まだ保存されたプランがありません",
+        "desc": "お気に入りのプランを保存して、いつでも見返せるようにしましょう。",
+        "cta": "マップを探索する"
       }
     },
     "place": {
-      "ariaLabel": "View {name} on map"
+      "ariaLabel": "{name}をマップで見る"
     },
     "plan": {
-      "ariaLabel": "View itinerary {title}",
-      "stops": "{count, plural, one {# stop} other {# stops}}",
-      "days": "{count, plural, one {# day} other {# days}}"
+      "ariaLabel": "旅程「{title}」を見る",
+      "stops": "{count}か所",
+      "days": "{count}日間"
     },
     "myPlan": {
-      "ariaLabel": "View plan {title}",
-      "draft": "Draft",
-      "lastEdited": "Edited {date}",
-      "edit": "Edit",
-      "share": "Share",
-      "delete": "Delete",
-      "editAriaLabel": "Edit plan {title}",
-      "shareAriaLabel": "Share plan {title}",
-      "deleteAriaLabel": "Delete plan {title}"
+      "ariaLabel": "プラン「{title}」を見る",
+      "draft": "下書き",
+      "lastEdited": "{date}に編集",
+      "edit": "編集",
+      "share": "共有",
+      "delete": "削除",
+      "editAriaLabel": "プラン「{title}」を編集",
+      "shareAriaLabel": "プラン「{title}」を共有",
+      "deleteAriaLabel": "プラン「{title}」を削除"
     },
     "unsave": {
-      "label": "Unsave",
-      "ariaLabel": "Unsave plan {title}"
+      "label": "保存を解除",
+      "ariaLabel": "保存したプラン「{title}」を削除"
     },
     "confirmDelete": {
-      "title": "Delete plan?",
-      "desc": "This plan will be permanently removed.",
-      "confirm": "Delete",
-      "cancel": "Cancel"
+      "title": "プランを削除しますか？",
+      "desc": "このプランは完全に削除されます。",
+      "confirm": "削除",
+      "cancel": "キャンセル"
     },
     "folder": {
-      "openAriaLabel": "Open folder {name}",
-      "poiCount": "{count, plural, one {# place} other {# places}}",
-      "generatePlan": "Generate Plan",
-      "back": "Back to folders",
-      "selectHint": "Select places for your plan",
-      "selectAll": "Select All",
-      "deselectAll": "Deselect All",
-      "selectAriaLabel": "Select {name}",
-      "generate": "Generate ({count} places)",
-      "generating": "Generating…",
-      "generateError": "Couldn't generate plan. Please try again.",
-      "newFolder": "New folder",
-      "createPlan": "Create plan",
-      "cancel": "Cancel",
-      "selectFoldersHint": "Select folders to plan from",
-      "newFolderPlaceholder": "Folder name",
-      "create": "Create",
-      "generateFolders": "Generate plan from {count, plural, one {# folder} other {# folders}}",
-      "selectFolderAria": "Select folder {name}",
-      "folderMenu": "Options for {name}",
-      "rename": "Rename",
-      "delete": "Delete",
-      "renameTitle": "Rename folder",
-      "save": "Save",
-      "deleteTitle": "Delete folder?",
-      "deleteWarning": "\"{name}\" and all its saved places will be permanently deleted. This cannot be undone.",
-      "deleteCancel": "Cancel",
-      "offlineNote": "You're offline. Try again when connected."
+      "openAriaLabel": "フォルダ「{name}」を開く",
+      "poiCount": "{count}件",
+      "generatePlan": "プランを生成",
+      "back": "フォルダに戻る",
+      "selectHint": "プランに含める場所を選択してください",
+      "selectAll": "すべて選択",
+      "deselectAll": "選択解除",
+      "selectAriaLabel": "{name}を選択",
+      "generate": "生成（{count}件の場所）",
+      "generating": "生成中…",
+      "generateError": "プランを生成できませんでした。もう一度お試しください。",
+      "newFolder": "新しいフォルダ",
+      "createPlan": "プランを作成",
+      "cancel": "キャンセル",
+      "selectFoldersHint": "計画に使うフォルダを選択してください",
+      "newFolderPlaceholder": "フォルダ名",
+      "create": "作成",
+      "generateFolders": "{count}件のフォルダからプランを生成",
+      "selectFolderAria": "フォルダ「{name}」を選択",
+      "folderMenu": "{name}のオプション",
+      "rename": "名前を変更",
+      "delete": "削除",
+      "renameTitle": "フォルダ名を変更",
+      "save": "保存",
+      "deleteTitle": "フォルダを削除しますか？",
+      "deleteWarning": "「{name}」とその中に保存されたすべての場所が完全に削除されます。この操作は元に戻せません。",
+      "deleteCancel": "キャンセル",
+      "offlineNote": "オフラインです。接続後にもう一度お試しください。"
     },
     "poi": {
-      "removeAriaLabel": "Remove {name} from folder",
-      "removeLabel": "Remove"
+      "removeAriaLabel": "{name}をフォルダから削除",
+      "removeLabel": "削除"
     }
   },
   "notifications": {
-    "ariaLabel": "Notifications page",
-    "breadcrumb": "Notifications",
-    "title": "Notifications",
-    "unread": "{count, plural, one {# unread} other {# unread}}",
-    "loading": "Loading notifications…",
-    "loadMore": "Load more",
+    "ariaLabel": "通知ページ",
+    "breadcrumb": "通知",
+    "title": "通知",
+    "unread": "未読{count}件",
+    "markAllRead": "すべて既読にする",
+    "loading": "通知を読み込み中…",
+    "loadMore": "もっと見る",
     "error": {
-      "title": "Couldn't load notifications",
-      "retry": "Try again"
+      "title": "通知を読み込めませんでした",
+      "retry": "再試行"
     },
     "empty": {
-      "title": "You're all caught up",
-      "desc": "Notifications about events, deals, and badges will appear here."
+      "title": "すべて確認済みです",
+      "desc": "イベント、お得情報、バッジに関する通知がここに表示されます。"
     },
     "groups": {
-      "today": "Today",
-      "yesterday": "Yesterday",
-      "earlier": "Earlier"
-    },
-    "markAllRead": "Mark all read"
+      "today": "今日",
+      "yesterday": "昨日",
+      "earlier": "それ以前"
+    }
   },
   "badges": {
-    "ariaLabel": "Badges page",
-    "breadcrumb": "Badges",
-    "title": "Badges",
-    "stats": "{earned} / {total} earned",
+    "ariaLabel": "バッジページ",
+    "breadcrumb": "バッジ",
+    "title": "バッジ",
+    "stats": "{earned} / {total} 獲得済み",
     "filter": {
-      "ariaLabel": "Filter by rarity",
-      "all": "All",
-      "common": "Common",
-      "rare": "Rare",
-      "epic": "Epic",
-      "legendary": "Legendary"
+      "ariaLabel": "レアリティで絞り込む",
+      "all": "すべて",
+      "common": "コモン",
+      "rare": "レア",
+      "epic": "エピック",
+      "legendary": "レジェンダリー"
     },
-    "loading": "Loading badges…",
+    "loading": "バッジを読み込み中…",
     "error": {
-      "title": "Couldn't load badges",
-      "retry": "Try again"
+      "title": "バッジを読み込めませんでした",
+      "retry": "再試行"
     },
     "empty": {
-      "title": "No badges found",
-      "desc": "Explore Korea and complete challenges to earn badges."
+      "title": "バッジが見つかりません",
+      "desc": "韓国を探索し、チャレンジをクリアしてバッジを獲得しましょう。"
     },
     "badge": {
       "ariaLabel": "{name} — {rarity}",
-      "pinned": "Pinned badge",
-      "earnedOn": "Earned {date}",
-      "locked": "Locked"
+      "pinned": "ピン留め済みバッジ",
+      "earnedOn": "{date}に獲得",
+      "locked": "未解放"
     },
     "detail": {
-      "ariaLabel": "Badge details",
-      "close": "Close",
-      "category": "Category",
-      "status": "Status",
-      "earned": "Earned",
-      "earnedOn": "Earned on {date}",
-      "unlockToast": "New badge unlocked: {name}",
-      "unlockCriteria": "How to unlock",
-      "pin": "Pin to profile",
-      "unpin": "Unpin from profile",
-      "pinLimit": "You can pin up to 3 badges. Unpin one first.",
-      "pinError": "Could not update pin. Please try again.",
-      "unlockToastView": "View badge"
+      "ariaLabel": "バッジの詳細",
+      "close": "閉じる",
+      "category": "カテゴリー",
+      "status": "ステータス",
+      "earned": "獲得済み",
+      "earnedOn": "{date}に獲得",
+      "unlockToast": "新しいバッジを獲得：{name}",
+      "unlockCriteria": "解放条件",
+      "pin": "プロフィールにピン留め",
+      "unpin": "プロフィールのピン留めを解除",
+      "pinLimit": "ピン留めは最大3個までです。まず1つ解除してください。",
+      "pinError": "ピン留めを更新できませんでした。もう一度お試しください。",
+      "unlockToastView": "バッジを見る"
     },
     "rarity": {
-      "common": "Common",
-      "rare": "Rare",
-      "epic": "Epic",
-      "legendary": "Legendary"
+      "common": "コモン",
+      "rare": "レア",
+      "epic": "エピック",
+      "legendary": "レジェンダリー"
     }
   },
   "leaderboard": {
-    "ariaLabel": "Leaderboard page",
-    "breadcrumb": "Leaderboard",
-    "title": "Leaderboard",
+    "ariaLabel": "ランキングページ",
+    "breadcrumb": "ランキング",
+    "title": "ランキング",
     "windows": {
-      "ariaLabel": "Time window",
-      "weekly": "Weekly",
-      "rising": "Rising",
-      "annual": "Annual"
+      "ariaLabel": "期間",
+      "weekly": "週間",
+      "rising": "急上昇",
+      "annual": "年間"
     },
-    "loading": "Loading leaderboard…",
+    "loading": "ランキングを読み込み中…",
     "error": {
-      "title": "Couldn't load leaderboard",
-      "retry": "Try again"
+      "title": "ランキングを読み込めませんでした",
+      "retry": "再試行"
     },
     "empty": {
-      "title": "No rankings yet this week.",
-      "desc": "Publish your first itinerary to appear here."
+      "title": "今週はまだランキングがありません。",
+      "desc": "最初の旅程を公開して、ここに表示させましょう。"
     },
-    "rank": "Rank {rank}",
-    "plans": "{count, plural, one {# plan} other {# plans}}",
-    "scoreUnit": "pts",
-    "computedAt": "Updated {date}",
+    "rank": "{rank}位",
+    "plans": "{count}件のプラン",
+    "scoreUnit": "pt",
+    "computedAt": "{date}に更新",
     "yourRank": {
-      "label": "Your rank: #{rank}",
-      "ariaLabel": "Your rank is number {rank}"
+      "label": "あなたの順位：{rank}位",
+      "ariaLabel": "あなたの順位は{rank}位です"
     },
     "trend": {
-      "up": "Rank up",
-      "down": "Rank down",
-      "same": "No change"
+      "up": "順位アップ",
+      "down": "順位ダウン",
+      "same": "変動なし"
     }
   },
   "help": {
-    "ariaLabel": "Help page",
-    "breadcrumb": "Help",
-    "title": "Help & FAQ",
-    "expandAriaLabel": "Expand: {question}",
-    "collapseAriaLabel": "Collapse: {question}",
+    "ariaLabel": "ヘルプページ",
+    "breadcrumb": "ヘルプ",
+    "title": "ヘルプ＆よくある質問",
+    "expandAriaLabel": "展開：{question}",
+    "collapseAriaLabel": "折りたたむ：{question}",
     "sections": {
       "gettingStarted": {
-        "title": "Getting started",
+        "title": "はじめに",
         "items": {
           "q1": {
-            "q": "What is B4K?",
-            "a": "B4K is a K-culture travel discovery platform for foreign tourists visiting Korea. Find K-Pop venues, K-Drama filming locations, beauty spots, and more — then build your own itinerary."
+            "q": "B4Kとは何ですか？",
+            "a": "B4Kは、韓国を訪れる海外旅行者向けのKカルチャー旅行発見プラットフォームです。K-Popの会場、K-Drama撮影地、ビューティースポットなどを見つけて、自分だけの旅程を組み立てましょう。"
           },
           "q2": {
-            "q": "Do I need an account to use B4K?",
-            "a": "You can explore the map without an account. Saving places, creating itineraries, and joining the leaderboard require signing in with Google."
+            "q": "B4Kの利用にアカウントは必要ですか？",
+            "a": "アカウントなしでもマップを探索できます。場所の保存、旅程の作成、ランキングへの参加にはGoogleでのログインが必要です。"
           },
           "q3": {
-            "q": "Which languages does B4K support?",
-            "a": "B4K is available in Korean, English, Japanese, Chinese (Simplified & Traditional), Thai, and Portuguese (Brazil)."
+            "q": "B4Kはどの言語に対応していますか？",
+            "a": "B4Kは韓国語、英語、日本語、中国語（簡体字・繁体字）、タイ語、ポルトガル語（ブラジル）に対応しています。"
           }
         }
       },
       "map": {
-        "title": "Using the map",
+        "title": "マップの使い方",
         "items": {
           "q1": {
-            "q": "How do I save a place?",
-            "a": "Tap any pin on the map to open the place panel, then tap the bookmark icon to save it. Saved places appear in your Saved tab."
+            "q": "場所を保存するには？",
+            "a": "マップ上のピンをタップして場所パネルを開き、ブックマークアイコンをタップして保存します。保存した場所は保存済みタブに表示されます。"
           },
           "q2": {
-            "q": "How do I build an itinerary?",
-            "a": "Open a place on the map and tap 'Add to plan' in the panel. You can add multiple stops, reorder them, and let B4K calculate the best route."
+            "q": "旅程を作成するには？",
+            "a": "マップで場所を開き、パネルの「プランに追加」をタップします。複数のスポットを追加・並べ替えでき、B4Kが最適なルートを計算します。"
           }
         }
       },
       "account": {
-        "title": "Account",
+        "title": "アカウント",
         "items": {
           "q1": {
-            "q": "How do I change my profile?",
-            "a": "Go to your profile (the icon at the bottom of the sidebar), then tap the edit icon to update your display name and language preference."
+            "q": "プロフィールを変更するには？",
+            "a": "サイドバー下部のアイコンからプロフィールに移動し、編集アイコンをタップして表示名や言語設定を更新します。"
           },
           "q2": {
-            "q": "How do I delete my account?",
-            "a": "In Profile → Settings, tap 'Delete account'. Your data is held for 30 days before permanent deletion, in line with Korean privacy law (PIPA)."
+            "q": "アカウントを削除するには？",
+            "a": "プロフィール → 設定で「アカウントを削除」をタップします。韓国の個人情報保護法（PIPA）に準拠し、データは完全削除前に30日間保持されます。"
           },
           "q3": {
-            "q": "How do I change my password?",
-            "a": "If you signed up with email, go to Profile → Settings to update your password. If you signed in with Google, Apple, or Microsoft, manage your password with that provider — B4K does not store it."
+            "q": "パスワードを変更するには？",
+            "a": "メールで登録した場合は、プロフィール → 設定でパスワードを更新できます。Google、Apple、Microsoftでログインした場合は、そのプロバイダーでパスワードを管理してください — B4Kはパスワードを保存しません。"
           }
         }
       },
       "contact": {
-        "title": "Contact",
-        "desc": "Can't find what you're looking for? Reach out and we'll get back to you.",
-        "ctaEmail": "Email support",
+        "title": "お問い合わせ",
+        "desc": "お探しのものが見つかりませんか？お気軽にご連絡ください。折り返しご連絡いたします。",
+        "ctaEmail": "サポートにメール",
         "ctaEmailHref": "mailto:support@b4korea.com",
         "emailAddress": "support@b4korea.com",
-        "copyEmail": "Copy email address",
-        "copyEmailCopied": "Copied",
-        "copyEmailAriaLabel": "Copy email address to clipboard"
+        "copyEmail": "メールアドレスをコピー",
+        "copyEmailCopied": "コピーしました",
+        "copyEmailAriaLabel": "メールアドレスをクリップボードにコピー"
       },
       "getting-started": {
-        "title": "Getting started",
+        "title": "はじめに",
         "items": {
           "q1": {
-            "q": "What is B4K?",
-            "a": "B4K is a K-culture travel discovery platform for foreign tourists visiting Korea. Explore K-Pop venues, K-Drama filming locations, K-Beauty spots, and K-Culture landmarks on an interactive map, then build your own trip plan."
+            "q": "B4Kとは何ですか？",
+            "a": "B4Kは、韓国を訪れる海外旅行者向けのKカルチャー旅行発見プラットフォームです。インタラクティブマップでK-Popの会場、K-Drama撮影地、K-Beautyスポット、K-Cultureの名所を探索し、自分だけの旅行プランを組み立てましょう。"
           },
           "q2": {
-            "q": "How do I create an account?",
-            "a": "Sign up with your email and a password, or continue with Google, Apple, or Microsoft. There is no separate onboarding — once you sign up you land straight on the Home page."
+            "q": "アカウントを作成するには？",
+            "a": "メールアドレスとパスワードで登録するか、Google、Apple、Microsoftで続けます。個別のオンボーディングはなく、登録するとすぐにホームページに移動します。"
           },
           "q3": {
-            "q": "What languages are supported?",
-            "a": "B4K is available in Korean, English, Japanese, Chinese (Simplified and Traditional), Thai, and Brazilian Portuguese. You can change your language anytime in Profile settings."
+            "q": "対応言語は？",
+            "a": "B4Kは韓国語、英語、日本語、中国語（簡体字・繁体字）、タイ語、ブラジルポルトガル語に対応しています。言語はプロフィール設定でいつでも変更できます。"
           }
         }
       },
       "planning": {
-        "title": "Planning",
+        "title": "旅行計画",
         "items": {
           "q1": {
-            "q": "How do I create a trip plan?",
-            "a": "Open a place on the map and add it to your plan. Add stops, reorder them, and each leg shows an estimated travel time. When you are happy with it, tap Save Plan. You can also ask the AI assistant to draft a plan for you."
+            "q": "旅行プランを作成するには？",
+            "a": "マップで場所を開き、プランに追加します。スポットを追加・並べ替えでき、各区間には推定移動時間が表示されます。準備ができたら「プランを保存」をタップ。AIアシスタントにプランの作成を依頼することもできます。"
           },
           "q2": {
-            "q": "Can I use B4K without an account?",
-            "a": "Yes. You can explore the map and build a plan as a guest — your draft is kept in your browser so it survives a refresh. You only need to sign in when you tap Save Plan, and your draft moves to your account automatically."
+            "q": "アカウントなしでB4Kを使えますか？",
+            "a": "はい。ゲストとしてマップを探索し、プランを作成できます — 下書きはブラウザに保存されるため、ページを更新しても残ります。ログインが必要なのはプランを保存する時のみで、下書きは自動的にアカウントへ移行されます。"
           },
           "q3": {
-            "q": "Is there a limit on how many stops a plan can have?",
-            "a": "A single plan can hold up to 40 stops. Once you reach the limit the Add button is disabled and a message lets you know. There is no in-app payment — partner plans simply link out to the partner's website."
+            "q": "プランに含められるスポット数に上限はありますか？",
+            "a": "1つのプランには最大40か所まで含められます。上限に達すると追加ボタンが無効になり、メッセージが表示されます。アプリ内決済はなく、パートナープランはパートナーのサイトへリンクするのみです。"
           }
         }
       },
       "saved": {
-        "title": "Saved",
+        "title": "保存済み",
         "items": {
           "q1": {
-            "q": "How do I save a place?",
-            "a": "Open any place from the map and tap the bookmark icon. Saved places appear in your Saved tab, where you can browse them all in one list."
+            "q": "場所を保存するには？",
+            "a": "マップから任意の場所を開き、ブックマークアイコンをタップします。保存した場所は保存済みタブに表示され、1つのリストでまとめて閲覧できます。"
           },
           "q2": {
-            "q": "What are folders?",
-            "a": "Folders let you organize your saved places into single-level groups — for example one folder per city or per interest. Folders are for saved places only; saved plans stay in a single flat list."
+            "q": "フォルダとは何ですか？",
+            "a": "フォルダを使うと、保存した場所を単一階層のグループに整理できます — 例えば都市ごとや興味ごとに1つのフォルダを作成できます。フォルダは保存した場所専用で、保存したプランは1つのフラットなリストにまとまります。"
           },
           "q3": {
-            "q": "How do I generate a plan from saved places?",
-            "a": "In the Saved tab, select the places you want with the checkboxes, then choose Generate plan. B4K arranges them into a suggested route and opens the new plan so you can fine-tune it."
+            "q": "保存済みの場所からプランを生成するには？",
+            "a": "保存済みタブでチェックボックスから場所を選択し、「プランを生成」を選びます。B4Kがおすすめルートに並べ替え、新しいプランを開いて微調整できるようにします。"
           }
         }
       },
       "technical": {
-        "title": "Technical",
+        "title": "技術的な問題",
         "items": {
           "q1": {
-            "q": "The map isn't loading.",
-            "a": "First try refreshing the page. If the map still doesn't appear, check your internet connection and disable any ad or script blockers, which can interfere with the map. If the problem continues, contact us using the email below."
+            "q": "マップが読み込まれません。",
+            "a": "まずページを更新してみてください。それでもマップが表示されない場合は、インターネット接続を確認し、マップの動作を妨げる可能性のある広告ブロッカーやスクリプトブロッカーを無効にしてください。問題が解決しない場合は、下記のメールアドレスまでご連絡ください。"
           },
           "q2": {
-            "q": "The app is in the wrong language.",
-            "a": "B4K picks a language from your browser settings and falls back to English if your language isn't supported. To set it yourself, open Profile → Settings and choose your preferred language."
+            "q": "アプリの言語が間違っています。",
+            "a": "B4Kはブラウザの設定から言語を選択し、対応していない場合は英語にフォールバックします。ご自身で設定するには、プロフィール → 設定を開き、希望の言語を選択してください。"
           },
           "q3": {
-            "q": "How do I report a problem?",
-            "a": "Use the email address in the Contact section below to report bugs or send feedback. Please include what you were doing, your device, and your browser so we can help faster."
+            "q": "問題を報告するには？",
+            "a": "下記のお問い合わせセクションのメールアドレスを使って、バグの報告やフィードバックの送信ができます。何をしていたか、デバイス、ブラウザの情報を含めていただくと、より早く対応できます。"
           }
         }
       }
     },
     "legal": {
-      "title": "Legal",
-      "terms": "Terms of Service",
-      "privacy": "Privacy Policy",
-      "cookies": "Cookie Policy"
+      "title": "法的情報",
+      "terms": "利用規約",
+      "privacy": "プライバシーポリシー",
+      "cookies": "クッキーポリシー"
     }
   },
   "onboarding": {
-    "ariaLabel": "Onboarding — choose your interests",
-    "title": "What brings you to Korea?",
-    "subtitle": "Personalise your B4K experience.",
-    "desc": "Select the things you're most excited about. You can change this later.",
+    "ariaLabel": "オンボーディング — 興味を選択",
+    "title": "韓国旅行の目的は？",
+    "subtitle": "B4Kの体験をパーソナライズしましょう。",
+    "desc": "興味のあるものを選択してください。後で変更できます。",
     "interests": {
-      "label": "Pick your interests",
+      "label": "興味を選択",
       "kpop": {
         "label": "K-Pop",
-        "desc": "Concerts, venues & fandom"
+        "desc": "コンサート、会場、ファンダム"
       },
       "kdrama": {
         "label": "K-Drama",
-        "desc": "Filming locations & tours"
+        "desc": "撮影地とツアー"
       },
       "kbeauty": {
         "label": "K-Beauty",
-        "desc": "Skincare, makeup & spas"
+        "desc": "スキンケア、メイク、スパ"
       },
       "kculture": {
         "label": "K-Culture",
-        "desc": "Food, markets & traditions"
+        "desc": "グルメ、市場、伝統"
       },
       "food": {
-        "label": "Food",
-        "desc": "Street food & local dining"
+        "label": "グルメ",
+        "desc": "屋台グルメとローカルダイニング"
       },
       "nature": {
-        "label": "Nature",
-        "desc": "Parks, trails & outdoors"
+        "label": "自然",
+        "desc": "公園、トレイル、アウトドア"
       },
       "nightlife": {
-        "label": "Nightlife",
-        "desc": "Bars, clubs & late nights"
+        "label": "ナイトライフ",
+        "desc": "バー、クラブ、深夜の時間"
       },
       "history": {
-        "label": "History",
-        "desc": "Palaces, temples & heritage"
+        "label": "歴史",
+        "desc": "宮殿、寺院、文化遺産"
       }
     },
-    "cta": "Continue",
-    "skip": "Skip for now"
+    "cta": "続ける",
+    "skip": "今はスキップ"
+  },
+  "search": {
+    "title": "検索",
+    "placeholder": "旅程、場所を検索...",
+    "recentTitle": "最近の検索",
+    "clearAll": "すべてクリア",
+    "noResults": "「{query}」の検索結果はありません",
+    "noResultsSubtitle": "カテゴリーから探索してみてください",
+    "suggestions": "おすすめ",
+    "categories": {
+      "kpop": "K-Pop",
+      "kdrama": "K-Drama",
+      "kbeauty": "K-Beauty",
+      "kculture": "K-Culture"
+    },
+    "sections": {
+      "places": "場所",
+      "plans": "プラン",
+      "explore": "探索"
+    },
+    "seeAll": "すべて見る",
+    "removeRecent": "{query}を最近の検索から削除",
+    "filters": {
+      "title": "フィルター",
+      "sections": "表示",
+      "section_all": "すべて",
+      "section_places": "場所",
+      "section_plans": "プラン",
+      "section_explore": "探索",
+      "sort": {
+        "label": "並び替え",
+        "relevance": "関連度",
+        "popularity": "人気度"
+      },
+      "area": {
+        "label": "エリア",
+        "lv1Label": "地域",
+        "lv2Label": "地区",
+        "chipAriaLabel": "{name}で絞り込む"
+      },
+      "tags": {
+        "label": "テーマ"
+      },
+      "region": {
+        "seoul": "ソウル",
+        "busan": "釜山",
+        "jeju": "済州"
+      },
+      "district": {
+        "gangnam": "江南",
+        "hongdae": "弘大",
+        "myeongdong": "明洞",
+        "haeundae": "海雲台",
+        "seomyeon": "西面",
+        "jejuCity": "済州市",
+        "seogwipo": "西帰浦"
+      },
+      "tag": {
+        "kpop": "K-Pop",
+        "kdrama": "K-Drama",
+        "kbeauty": "K-Beauty",
+        "food": "グルメ",
+        "nature": "自然",
+        "shopping": "ショッピング",
+        "history": "歴史",
+        "nightlife": "ナイトライフ"
+      },
+      "apply": "適用",
+      "close": "フィルターを閉じる"
+    },
+    "results": {
+      "poi": "場所",
+      "plans": "プラン",
+      "explore": "探索カテゴリー"
+    },
+    "poiAriaLabel": "{name}、{region}",
+    "planAriaLabel": "{author}による{title}",
+    "exploreAriaLabel": "{category}を探索",
+    "mapCta": "マップで探索",
+    "sponsored": "広告",
+    "stops": "{count}か所",
+    "saves": "{count}件の保存",
+    "mobileFilter": "フィルター",
+    "mobileSort": "並び替え",
+    "loading": "検索中…",
+    "error": "検索に失敗しました。もう一度お試しください。",
+    "retry": "再試行",
+    "seeAllPlaces": "{count}件の場所をすべて見る",
+    "seeAllPlans": "{count}件のプランをすべて見る",
+    "seeAllExplore": "{count}件のコンテンツをすべて見る",
+    "showLess": "表示を減らす",
+    "minChars": "検索するには2文字以上入力してください",
+    "loadingSuggestions": "おすすめを読み込み中"
   },
   "footer": {
     "help": "ヘルプ",
@@ -1649,117 +1744,24 @@
   },
   "cookieConsent": {
     "banner": {
-      "title": "Cookie notice",
-      "message": "We use cookies for analytics to improve B4K.",
-      "learnMore": "Learn more",
-      "accept": "Accept",
-      "decline": "Decline",
-      "dismiss": "Dismiss"
+      "title": "クッキーに関するお知らせ",
+      "message": "B4Kをより良くするため、分析目的でクッキーを使用しています。",
+      "learnMore": "詳細を見る",
+      "accept": "同意する",
+      "decline": "拒否する",
+      "dismiss": "閉じる"
     },
     "preferences": {
-      "title": "Analytics cookies",
-      "desc": "Control whether B4K can use analytics cookies on this device.",
-      "statusAccepted": "Accepted",
-      "statusDeclined": "Declined",
-      "accept": "Accept",
-      "decline": "Decline"
+      "title": "分析用クッキー",
+      "desc": "このデバイスでB4Kが分析用クッキーを使用できるかどうかを管理します。",
+      "statusAccepted": "同意済み",
+      "statusDeclined": "拒否済み",
+      "accept": "同意する",
+      "decline": "拒否する"
     }
   },
-  "search": {
-    "title": "Search",
-    "placeholder": "Search itineraries, places...",
-    "recentTitle": "Recent searches",
-    "clearAll": "Clear all",
-    "noResults": "No results for \"{query}\"",
-    "noResultsSubtitle": "Try exploring by category",
-    "suggestions": "Suggestions",
-    "categories": {
-      "kpop": "K-Pop",
-      "kdrama": "K-Drama",
-      "kbeauty": "K-Beauty",
-      "kculture": "K-Culture"
-    },
-    "sections": {
-      "places": "Places",
-      "plans": "Plans",
-      "explore": "Explore"
-    },
-    "seeAll": "See all",
-    "removeRecent": "Remove {query} from recents",
-    "filters": {
-      "title": "Filters",
-      "sections": "Show",
-      "section_all": "All",
-      "section_places": "Places",
-      "section_plans": "Plans",
-      "section_explore": "Explore",
-      "sort": {
-        "label": "Sort by",
-        "relevance": "Relevance",
-        "popularity": "Popularity"
-      },
-      "area": {
-        "label": "Area",
-        "lv1Label": "Region",
-        "lv2Label": "District",
-        "chipAriaLabel": "Filter by {name}"
-      },
-      "tags": {
-        "label": "Theme"
-      },
-      "region": {
-        "seoul": "Seoul",
-        "busan": "Busan",
-        "jeju": "Jeju"
-      },
-      "district": {
-        "gangnam": "Gangnam",
-        "hongdae": "Hongdae",
-        "myeongdong": "Myeongdong",
-        "haeundae": "Haeundae",
-        "seomyeon": "Seomyeon",
-        "jejuCity": "Jeju City",
-        "seogwipo": "Seogwipo"
-      },
-      "tag": {
-        "kpop": "K-Pop",
-        "kdrama": "K-Drama",
-        "kbeauty": "K-Beauty",
-        "food": "Food",
-        "nature": "Nature",
-        "shopping": "Shopping",
-        "history": "History",
-        "nightlife": "Nightlife"
-      },
-      "apply": "Apply",
-      "close": "Close filters"
-    },
-    "results": {
-      "poi": "Places",
-      "plans": "Plans",
-      "explore": "Explore categories"
-    },
-    "poiAriaLabel": "{name}, {region}",
-    "planAriaLabel": "{title} by {author}",
-    "exploreAriaLabel": "Explore {category}",
-    "mapCta": "Explore on map",
-    "sponsored": "Sponsored",
-    "stops": "{count} stops",
-    "saves": "{count} saves",
-    "mobileFilter": "Filter",
-    "mobileSort": "Sort",
-    "loading": "Searching…",
-    "error": "Search failed. Try again.",
-    "retry": "Try again",
-    "seeAllPlaces": "See all {count} places",
-    "seeAllPlans": "See all {count} plans",
-    "seeAllExplore": "See all {count} contents",
-    "showLess": "Show less",
-    "minChars": "Type at least 2 characters to search",
-    "loadingSuggestions": "Loading suggestions"
-  },
   "toast": {
-    "dismiss": "Dismiss",
-    "actionFailed": "Something went wrong. Try again."
+    "dismiss": "閉じる",
+    "actionFailed": "エラーが発生しました。もう一度お試しください。"
   }
 }

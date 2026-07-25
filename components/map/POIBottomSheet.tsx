@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { X, Heart, Plus, Check, Clock, Share2, MapPin, ExternalLink, ImageOff } from 'lucide-react'
+import { X, Heart, Bookmark, Plus, Check, Clock, Share2, MapPin, ExternalLink, ImageOff } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import FieldImage from '@/components/ui/FieldImage'
 import { useBottomSheetSnap, type SheetSnap } from '@/hooks/useBottomSheetSnap'
@@ -189,22 +189,6 @@ export default function POIBottomSheet({
 
             <div className="flex gap-sp-3">
               <button
-                onClick={onToggleSave}
-                aria-label={isSaved ? t('unsave') : t('save')}
-                aria-pressed={isSaved}
-                className="flex-1 min-h-touch flex items-center justify-center gap-sp-2 rounded-none text-f-sm font-medium transition-colors bg-overlay-10 hover:bg-muted-3"
-                style={{ border: '1px solid var(--bdr)' }}
-              >
-                <Heart
-                  size={16} strokeWidth={2}
-                  fill={isSaved ? 'currentColor' : 'none'}
-                  className={isSaved ? 'text-danger' : 'text-muted'}
-                  aria-hidden="true"
-                />
-                <span className={isSaved ? 'text-fg' : 'text-muted'}>{isSaved ? t('saved') : t('save')}</span>
-              </button>
-
-              <button
                 onClick={onToggleLike}
                 aria-label={isLiked ? t('unlike') : t('like')}
                 aria-pressed={isLiked}
@@ -214,10 +198,26 @@ export default function POIBottomSheet({
                 <Heart
                   size={16} strokeWidth={2}
                   fill={isLiked ? 'currentColor' : 'none'}
-                  className={isLiked ? 'text-lav' : 'text-muted'}
+                  className={isLiked ? 'text-danger' : 'text-muted'}
                   aria-hidden="true"
                 />
                 <span className={isLiked ? 'text-fg' : 'text-muted'}>{isLiked ? t('liked') : t('like')}</span>
+              </button>
+
+              <button
+                onClick={onToggleSave}
+                aria-label={isSaved ? t('unsave') : t('save')}
+                aria-pressed={isSaved}
+                className="flex-1 min-h-touch flex items-center justify-center gap-sp-2 rounded-none text-f-sm font-medium transition-colors bg-overlay-10 hover:bg-muted-3"
+                style={{ border: '1px solid var(--bdr)' }}
+              >
+                <Bookmark
+                  size={16} strokeWidth={2}
+                  fill={isSaved ? 'currentColor' : 'none'}
+                  className={isSaved ? 'text-lav' : 'text-muted'}
+                  aria-hidden="true"
+                />
+                <span className={isSaved ? 'text-fg' : 'text-muted'}>{isSaved ? t('saved') : t('save')}</span>
               </button>
             </div>
           </div>
