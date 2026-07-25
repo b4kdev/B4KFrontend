@@ -211,14 +211,20 @@ export default function NaverMapCanvas({
     const clusteredIds = new Set<string>()
     const clusterGroups: MapPoi[][] = []
 
-    // Same-point grouping — independent of zoom/CLUSTER_ZOOM_THRESHOLD. Some
-    // POIs share near-identical coordinates regardless of how far in you zoom
-    // (e.g. every tenant store inside one department store inherits the
-    // building's single geocoded point — a data issue, not a rendering one).
-    // Zooming in never separates these, so they must always collapse into one
-    // bubble or they'd render as literally-overlapping, unclickable dots.
-    // Rounds to 5 decimals (~1m) — tight enough to only catch true duplicates,
-    // not just-nearby distinct storefronts.
+    // Same-point atoms — exact-duplicate-coordinate POIs (e.g. every tenant
+    // store inside one department store inherits the building's single
+    // geocoded point — a data issue, not a rendering one) must always
+    // collapse into one bubble regardless of zoom, or they'd render as
+    // literally-overlapping, unclickable dots. Rounds to 5 decimals (~1m) —
+    // tight enough to only catch true duplicates, not just-nearby distinct
+    // storefronts. Kept as atoms (not pushed to clusterGroups yet) so the
+    // pixel-space merge pass below can still absorb one into a nearby
+    // distinct-POI cluster — two same-point groups a few dozen pixels apart
+    // (e.g. two different buildings' duplicate-tenant clusters) previously
+    // could never merge with each other or anything else, since this pass
+    // ran before and independently of the proximity-based one.
+    type Atom = { members: MapPoi[]; lat: number; lng: number }
+    const samePointAtoms: Atom[] = []
     if (!savedFolderPoiIds) {
       const samePointBuckets = new Map<string, MapPoi[]>()
       freePois.forEach(poi => {
@@ -228,62 +234,64 @@ export default function NaverMapCanvas({
       })
       samePointBuckets.forEach(members => {
         if (members.length >= 2) {
-          clusterGroups.push(members)
+          samePointAtoms.push({ members, lat: members[0].coords_lat, lng: members[0].coords_lng })
           members.forEach(m => clusteredIds.add(m.poi_id))
         }
       })
     }
 
-    // Bucket the remaining free POIs. Cells with 2+ members become a cluster
-    // bubble; singletons render as normal dots. Only active below
-    // CLUSTER_ZOOM_THRESHOLD — past that, individual buildings are legible so
-    // distinct-but-nearby POIs stay as separate pins (same-point grouping
-    // above still applies regardless).
-    //
-    // Bucketing happens in screen-pixel space (via the map's projection), not
-    // raw lat/lng degrees — a fixed-size cluster bubble is drawn at a fixed
-    // pixel size regardless of zoom, so two POIs can be geographically distinct
-    // (correctly placed in different degree-space cells) yet still project to
-    // overlapping screen positions at certain zoom levels. Pixel-space
-    // bucketing guarantees anything close enough on screen to visually overlap
-    // gets merged. Falls back to the old degree-based grid if the projection
-    // API isn't available for some reason (defensive, shouldn't normally fire).
-    let projection: { fromCoordToOffset: (c: unknown) => { x: number; y: number } } | null = null
-    try {
-      const p = map.getProjection?.()
-      if (p && typeof p.fromCoordToOffset === 'function') projection = p
-    } catch { /* fall back below */ }
-    // 80px, not the ~32px bubble diameter — live-verified on prod that 48px
-    // still left two bubbles touching at a corner (4px gap): a merge/no-merge
-    // decision this close to a bubble's own size reads as "overlapping" even
-    // when the bounding boxes technically don't intersect. Generous margin.
-    const PIXEL_CELL = 80
-    const gridSize = clusterGridSize(zoom)
     if (clusterActive) {
-      const buckets = new Map<string, MapPoi[]>()
+      // One unified pixel-space merge pass over same-point atoms AND every
+      // remaining individual free POI together — this is what lets a
+      // same-point cluster absorb (or be absorbed by) a nearby distinct POI.
+      // Screen-pixel space, not raw lat/lng degrees, via the map's projection
+      // — a fixed-size cluster bubble is drawn at a fixed pixel size
+      // regardless of zoom, so two atoms can be geographically distinct yet
+      // still project to overlapping/adjacent screen positions at some zoom
+      // levels. Falls back to the old degree-based grid if the projection
+      // API isn't available for some reason (defensive, shouldn't normally
+      // fire).
+      let projection: { fromCoordToOffset: (c: unknown) => { x: number; y: number } } | null = null
+      try {
+        const p = map.getProjection?.()
+        if (p && typeof p.fromCoordToOffset === 'function') projection = p
+      } catch { /* fall back below */ }
+      // 80px, not the ~32px bubble diameter — live-verified on prod that 48px
+      // still left two bubbles touching at a corner (4px gap): a merge/no-merge
+      // decision this close to a bubble's own size reads as "overlapping" even
+      // when the bounding boxes technically don't intersect. Generous margin.
+      const PIXEL_CELL = 80
+      const gridSize = clusterGridSize(zoom)
+
+      const atoms: Atom[] = [
+        ...samePointAtoms,
+        ...freePois.filter(p => !clusteredIds.has(p.poi_id)).map(p => ({ members: [p], lat: p.coords_lat, lng: p.coords_lng })),
+      ]
+
+      const buckets = new Map<string, Atom[]>()
       const bucketCoords = new Map<string, [number, number]>()
-      freePois.forEach(poi => {
-        if (clusteredIds.has(poi.poi_id)) return
+      atoms.forEach(atom => {
         let gx: number, gy: number
         if (projection) {
-          const pt = projection.fromCoordToOffset(new window.naver.maps.LatLng(poi.coords_lat, poi.coords_lng))
+          const pt = projection.fromCoordToOffset(new window.naver.maps.LatLng(atom.lat, atom.lng))
           gx = Math.floor(pt.x / PIXEL_CELL)
           gy = Math.floor(pt.y / PIXEL_CELL)
         } else {
-          gx = Math.floor(poi.coords_lat / gridSize)
-          gy = Math.floor(poi.coords_lng / gridSize)
+          gx = Math.floor(atom.lat / gridSize)
+          gy = Math.floor(atom.lng / gridSize)
         }
         const key = `${gx}:${gy}`
         bucketCoords.set(key, [gx, gy])
         const bucket = buckets.get(key)
-        if (bucket) bucket.push(poi); else buckets.set(key, [poi])
+        if (bucket) bucket.push(atom); else buckets.set(key, [atom])
       })
 
-      // Merge 8-connected neighboring cells. Plain floor-division bucketing has
-      // hard cell boundaries — two POIs a few meters apart can land in adjacent
-      // cells if they straddle one, rendering as two separate cluster bubbles
-      // sitting right on top of each other on screen instead of one. Union-find
-      // over cell adjacency collapses those into a single group.
+      // Merge cells within a 2-cell radius. Plain floor-division bucketing has
+      // hard cell boundaries — two atoms a few meters apart can land in
+      // non-adjacent cells if they straddle one, rendering as two separate
+      // cluster bubbles sitting right next to (or on top of) each other on
+      // screen instead of one. Union-find over cell adjacency collapses those
+      // into a single group.
       const keys = Array.from(buckets.keys())
       const parent = new Map<string, string>(keys.map(k => [k, k]))
       const find = (k: string): string => {
@@ -312,7 +320,7 @@ export default function NaverMapCanvas({
       keys.forEach(k => {
         const root = find(k)
         const group = merged.get(root) ?? []
-        group.push(...buckets.get(k)!)
+        buckets.get(k)!.forEach(atom => group.push(...atom.members))
         merged.set(root, group)
       })
 
@@ -322,6 +330,11 @@ export default function NaverMapCanvas({
           members.forEach(m => clusteredIds.add(m.poi_id))
         }
       })
+    } else {
+      // Past the cluster zoom threshold, only same-point duplicates still
+      // merge — distinct-but-nearby POIs render as separate, individually
+      // legible pins.
+      samePointAtoms.forEach(atom => clusterGroups.push(atom.members))
     }
 
     const individualPois = [...planPois, ...freePois.filter(p => !clusteredIds.has(p.poi_id))]
