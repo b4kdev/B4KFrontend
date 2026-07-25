@@ -22,6 +22,10 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
 
   const [saved,  setSaved]  = useState(false)
   const [liked,  setLiked]  = useState(false)
+  // Explore seed content ships a content-sheet code ('KP-005') as poi_id, not the
+  // live DB's numeric id — save/like can't resolve these yet. Disable rather
+  // than silently fail. See B4KVault/blockers/ (bookmark seed-id mismatch).
+  const hasRealId = Number.isFinite(Number(poi.poi_id))
 
   // Partner redirect — Link href points to partner_url (validated https://) in new tab
   const isPartner = !!(poi.is_partner && poi.partner_url && /^https?:\/\//.test(poi.partner_url))
@@ -38,6 +42,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
   const handleSave = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    if (!hasRealId) return
     if (!user) { openAuthGate('save_poi'); return }
     const next = !saved
     setSaved(next)
@@ -46,11 +51,12 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ poi_id: poi.poi_id }),
     }).catch(() => { setSaved(!next); showToast(tToast('actionFailed'), 'error') })
-  }, [user, saved, openAuthGate, poi.poi_id, showToast, tToast])
+  }, [user, saved, openAuthGate, poi.poi_id, showToast, tToast, hasRealId])
 
   const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    if (!hasRealId) return
     if (!user) { openAuthGate('like'); return }
     const next = !liked
     setLiked(next)
@@ -59,7 +65,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ poi_id: poi.poi_id }),
     }).catch(() => { setLiked(!next); showToast(tToast('actionFailed'), 'error') })
-  }, [user, liked, openAuthGate, poi.poi_id, showToast, tToast])
+  }, [user, liked, openAuthGate, poi.poi_id, showToast, tToast, hasRealId])
 
   return (
     <article
@@ -138,18 +144,20 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
       <div className="absolute top-sp-2 left-sp-2 flex items-center gap-1">
         <button
           onClick={handleSave}
+          disabled={!hasRealId}
           aria-label={saved ? t('card.unsaveAria', { name }) : t('card.saveAria', { name })}
           aria-pressed={saved}
-          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           style={{ background: 'var(--backdrop-50)', color: saved ? 'var(--lav)' : 'var(--fg)' }}
         >
           <Bookmark size={15} strokeWidth={2} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
         </button>
         <button
           onClick={handleLike}
+          disabled={!hasRealId}
           aria-label={liked ? t('card.unlikeAria', { name }) : t('card.likeAria', { name })}
           aria-pressed={liked}
-          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           style={{ background: 'var(--backdrop-50)', color: liked ? 'var(--danger)' : 'var(--fg)' }}
         >
           <Heart size={15} strokeWidth={2} fill={liked ? 'currentColor' : 'none'} aria-hidden="true" />

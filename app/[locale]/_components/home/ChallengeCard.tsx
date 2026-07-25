@@ -58,12 +58,12 @@ export default function ChallengeCard() {
         </span>
         <div className="flex-1 min-w-0">
           <p className="text-f-xxs font-bold tracking-[0.1em] uppercase text-lav mb-[4px]">{t('label')}</p>
-          <p className="text-f-lg font-semibold text-fg mb-[4px]">{data.title}</p>
-          <p className="text-f-sm text-muted leading-relaxed">{data.description}</p>
+          <p className="text-f-lg font-semibold text-fg mb-[4px] line-clamp-1">{data.title}</p>
+          <p className="text-f-sm text-muted leading-relaxed line-clamp-2">{data.description}</p>
         </div>
-        <div className="flex flex-col gap-[3px] shrink-0">
+        <div className="flex flex-col gap-[3px] shrink-0 max-w-[120px]">
           <p className="text-f-xxs text-muted uppercase tracking-[0.08em]">{t('badgeReward')}</p>
-          <p className="text-f-sm font-semibold text-fg">{data.badge_name}</p>
+          <p className="text-f-sm font-semibold text-fg truncate">{data.badge_name}</p>
           <button
             onClick={handleCta}
             className="mt-sp-2 flex items-center gap-1 text-f-sm font-semibold text-lav hover:opacity-80 transition-opacity duration-[80ms] min-h-touch"
