@@ -199,7 +199,7 @@ export default function SavedPage() {
                         {plan.title}
                       </Link>
                       {plan.is_draft && (
-                        <span className="shrink-0 px-[6px] py-[2px] rounded-full text-f-xxs font-semibold text-warning" style={{ background: 'color-mix(in srgb, var(--warning) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--warning) 25%, transparent)' }}>
+                        <span className="shrink-0 px-[6px] py-[2px] rounded-full text-f-xxs font-semibold text-warning leading-none" style={{ background: 'color-mix(in srgb, var(--warning) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--warning) 25%, transparent)' }}>
                           {t('myPlan.draft')}
                         </span>
                       )}
