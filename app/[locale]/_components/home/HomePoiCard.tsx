@@ -8,6 +8,7 @@ import { Link } from '@/i18n/navigation'
 import { MapPin, Bookmark, Heart } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { useAuthGate } from '@/contexts/AuthGateContext'
+import { useSaved } from '@/hooks/useSaved'
 import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 
 interface Props {
@@ -24,8 +25,13 @@ export default function HomePoiCard({ poi, badge }: Props) {
   const { user } = useAuth()
   const { open: openAuthGate } = useAuthGate()
   const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
+  const { data: savedData, mutate: mutateSaved } = useSaved()
 
-  const [saved, setSaved] = useState(false)
+  // Seed from the real saved list — undefined until the SWR fetch resolves, then
+  // overridden optimistically by handleSave. See EXPLORE-POI-SEED (orchestrator queue).
+  const isSavedRemote = !!savedData?.pois.some(p => p.poi_id === poi.poi_id)
+  const [savedOverride, setSavedOverride] = useState<boolean | null>(null)
+  const saved = savedOverride ?? isSavedRemote
   const [liked, setLiked] = useState(false)
   // Home seed content ships a content-sheet code ('KP-207') as poi_id, not the
   // live DB's numeric id — save/like can't resolve these yet. Disable rather
@@ -38,13 +44,14 @@ export default function HomePoiCard({ poi, badge }: Props) {
     if (!hasRealId) return
     if (!user) { openAuthGate('save_poi'); return }
     const next = !saved
-    setSaved(next)
+    setSavedOverride(next)
     await fetch('/api/saved/poi', {
       method:  next ? 'POST' : 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ poi_id: poi.poi_id }),
-    }).catch(() => setSaved(!next))
-  }, [user, saved, openAuthGate, poi.poi_id, hasRealId])
+    }).then(() => mutateSaved())
+      .catch(() => setSavedOverride(!next))
+  }, [user, saved, openAuthGate, poi.poi_id, hasRealId, mutateSaved])
 
   const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()

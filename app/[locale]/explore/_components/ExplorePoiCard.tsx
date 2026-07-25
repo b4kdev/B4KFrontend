@@ -9,6 +9,7 @@ import { TrendingUp, MapPin, Bookmark, Heart, ExternalLink } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useToast } from '@/contexts/ToastContext'
+import { useSaved } from '@/hooks/useSaved'
 import type { ExplorePoi } from '@/app/api/explore/[category]/route'
 
 export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
@@ -17,10 +18,15 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
   const { user } = useAuth()
   const { open: openAuthGate } = useAuthGate()
   const { showToast } = useToast()
+  const { data: savedData, mutate: mutateSaved } = useSaved()
 
   const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
 
-  const [saved,  setSaved]  = useState(false)
+  // Seed from the real saved list — undefined until the SWR fetch resolves, then
+  // overridden optimistically by handleSave. See EXPLORE-POI-SEED (orchestrator queue).
+  const isSavedRemote = !!savedData?.pois.some(p => p.poi_id === poi.poi_id)
+  const [savedOverride, setSavedOverride] = useState<boolean | null>(null)
+  const saved = savedOverride ?? isSavedRemote
   const [liked,  setLiked]  = useState(false)
   // Explore seed content ships a content-sheet code ('KP-005') as poi_id, not the
   // live DB's numeric id — save/like can't resolve these yet. Disable rather
@@ -45,13 +51,14 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
     if (!hasRealId) return
     if (!user) { openAuthGate('save_poi'); return }
     const next = !saved
-    setSaved(next)
+    setSavedOverride(next)
     await fetch('/api/saved/poi', {
       method:  next ? 'POST' : 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ poi_id: poi.poi_id }),
-    }).catch(() => { setSaved(!next); showToast(tToast('actionFailed'), 'error') })
-  }, [user, saved, openAuthGate, poi.poi_id, showToast, tToast, hasRealId])
+    }).then(() => mutateSaved())
+      .catch(() => { setSavedOverride(!next); showToast(tToast('actionFailed'), 'error') })
+  }, [user, saved, openAuthGate, poi.poi_id, showToast, tToast, hasRealId, mutateSaved])
 
   const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
