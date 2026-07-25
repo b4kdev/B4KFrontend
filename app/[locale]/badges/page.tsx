@@ -371,7 +371,7 @@ export default function BadgesPage() {
                   {/* L6 — Rarity chip on earned cells */}
                   {badge.earned && (
                     <span
-                      className={`rounded-full px-sp-2 py-[1px] text-f-xxs font-semibold uppercase tracking-wide ${color}`}
+                      className={`rounded-full px-sp-2 py-[1px] text-f-xxs font-semibold uppercase tracking-wide leading-none ${color}`}
                       style={{ background: RARITY_CHIP_BG[badge.rarity] }}
                     >
                       {t(`badges.rarity.${badge.rarity}`)}
