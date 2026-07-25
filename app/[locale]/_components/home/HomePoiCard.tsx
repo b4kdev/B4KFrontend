@@ -27,10 +27,15 @@ export default function HomePoiCard({ poi, badge }: Props) {
 
   const [saved, setSaved] = useState(false)
   const [liked, setLiked] = useState(false)
+  // Home seed content ships a content-sheet code ('KP-207') as poi_id, not the
+  // live DB's numeric id — save/like can't resolve these yet. Disable rather
+  // than silently fail. See B4KVault/blockers/ (bookmark seed-id mismatch).
+  const hasRealId = Number.isFinite(Number(poi.poi_id))
 
   const handleSave = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    if (!hasRealId) return
     if (!user) { openAuthGate('save_poi'); return }
     const next = !saved
     setSaved(next)
@@ -39,11 +44,12 @@ export default function HomePoiCard({ poi, badge }: Props) {
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ poi_id: poi.poi_id }),
     }).catch(() => setSaved(!next))
-  }, [user, saved, openAuthGate, poi.poi_id])
+  }, [user, saved, openAuthGate, poi.poi_id, hasRealId])
 
   const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    if (!hasRealId) return
     if (!user) { openAuthGate('like'); return }
     const next = !liked
     setLiked(next)
@@ -52,7 +58,7 @@ export default function HomePoiCard({ poi, badge }: Props) {
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ poi_id: poi.poi_id }),
     }).catch(() => setLiked(!next))
-  }, [user, liked, openAuthGate, poi.poi_id])
+  }, [user, liked, openAuthGate, poi.poi_id, hasRealId])
 
   return (
     <article
@@ -116,18 +122,20 @@ export default function HomePoiCard({ poi, badge }: Props) {
       <div className="absolute top-sp-2 left-sp-2 flex items-center gap-1">
         <button
           onClick={handleSave}
+          disabled={!hasRealId}
           aria-label={saved ? t('unsaveAria', { name }) : t('saveAria', { name })}
           aria-pressed={saved}
-          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-[80ms]"
+          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-[80ms] disabled:opacity-40 disabled:cursor-not-allowed"
           style={{ background: 'var(--backdrop-50)', color: saved ? 'var(--lav)' : 'var(--fg)' }}
         >
           <Bookmark size={15} strokeWidth={2} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
         </button>
         <button
           onClick={handleLike}
+          disabled={!hasRealId}
           aria-label={liked ? t('unlikeAria', { name }) : t('likeAria', { name })}
           aria-pressed={liked}
-          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-[80ms]"
+          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-[80ms] disabled:opacity-40 disabled:cursor-not-allowed"
           style={{ background: 'var(--backdrop-50)', color: liked ? 'var(--danger)' : 'var(--fg)' }}
         >
           <Heart size={15} strokeWidth={2} fill={liked ? 'currentColor' : 'none'} aria-hidden="true" />

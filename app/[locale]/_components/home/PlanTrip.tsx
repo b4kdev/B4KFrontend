@@ -4,12 +4,13 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useAuthGate } from '@/contexts/AuthGateContext'
-import { PenLine, Wand2, MessageSquare } from 'lucide-react'
+import { PenLine, Wand2 } from 'lucide-react'
 
+// 'ai' tile hidden per DEC-51 (2026-07-25) — /plan/ai now redirects to a plain
+// /map with no AI overlay, so the tile was a dead end. Re-add when FL3 ships.
 const OPTIONS = [
-  { key: 'manual', href: '/plan/manual', Icon: PenLine    },
-  { key: 'auto',   href: '/plan/auto',   Icon: Wand2      },
-  { key: 'ai',     href: '/plan/ai',     Icon: MessageSquare },
+  { key: 'manual', href: '/plan/manual', Icon: PenLine },
+  { key: 'auto',   href: '/plan/auto',   Icon: Wand2   },
 ] as const
 
 export default function PlanTrip() {
@@ -29,7 +30,7 @@ export default function PlanTrip() {
     <section className="pt-sp-10 px-sp-4 lg:px-sp-8" aria-label={t('ariaLabel')}>
       <h2 className="text-f-xl font-semibold text-fg mb-sp-1">{t('title')}</h2>
       <p className="text-f-sm text-muted mb-sp-4">{t('subtitle')}</p>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-sp-3">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-sp-3">
         {OPTIONS.map(({ key, href, Icon }) => (
           <button
             key={key}

@@ -221,6 +221,14 @@ export default function NaverMapCanvas({
     })
   }, [mapReady, pois, selectedPoiId, planStopIds, onPoiSelect, zoom, savedFolderPoiIds])
 
+  // Pan to the selected POI whenever selection changes externally (e.g. LeftPanel card click) —
+  // marker click already pans itself, this covers every other selection source.
+  useEffect(() => {
+    if (!mapReady || !mapRef.current || !window.naver?.maps || !selectedPoiId) return
+    const poi = pois.find(p => p.poi_id === selectedPoiId)
+    if (poi) mapRef.current.panTo(new window.naver.maps.LatLng(poi.coords_lat, poi.coords_lng))
+  }, [selectedPoiId, mapReady, pois])
+
   // MP_20 — Route polyline connecting plan stops.
   // routeLegs (from a saved itinerary's real routing.route_leg results) draws
   // one polyline per leg along its actual road path; day boundaries are
