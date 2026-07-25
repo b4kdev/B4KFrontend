@@ -104,8 +104,12 @@ export default function MapView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPoiId])
 
-  // Restore draft plan on mount — skip if a specific plan is being loaded via ?plan param
+  // Restore draft plan on mount — skip if a specific plan is being loaded via
+  // ?plan param, and skip for logged-in users (their draft lives in the DB —
+  // see the DB-draft-restore effect below; localStorage is guest-only and
+  // should already be empty post-login via useDraftMigration).
   useEffect(() => {
+    if (session) return
     const params = new URLSearchParams(window.location.search)
     if (params.get('plan')) return
     const draft = getDraftPlan()
@@ -114,7 +118,58 @@ export default function MapView() {
     setPlanStopIds(ids)
     setStopDurations(draft.durations)
     clearDraftPlan()
-  }, [])
+  }, [session])
+
+  // Restore an in-progress DB draft on mount for logged-in users — the
+  // autosave effect below persists every change to /api/plans/draft, but
+  // nothing previously read it back on remount, so navigating away from
+  // /map and back (or a fresh tab) showed a blank plan even though the DB
+  // draft still existed. Mirrors handleResumeExistingDraft's fetch-by-id
+  // shape. Marks T1 as checked so handleAddToPlan doesn't re-prompt
+  // "resume or start fresh?" for the draft this effect just restored.
+  const dbDraftRestoredRef = useRef(false)
+  useEffect(() => {
+    if (!session || dbDraftRestoredRef.current) return
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('plan')) return
+    if (planStopIds.length > 0) return
+    dbDraftRestoredRef.current = true
+
+    fetch('/api/plans/draft')
+      .then(r => r.ok ? r.json() as Promise<{ id: string } | null> : null)
+      .then(dbDraft => {
+        if (!dbDraft?.id) return null
+        return fetch(`/api/plans/${dbDraft.id}`)
+          .then(r => r.ok ? r.json() as Promise<ItineraryDetail> : null)
+      })
+      .then(itinerary => {
+        if (!itinerary) return
+        t1CheckedRef.current = true
+        const sorted = [...itinerary.stops].sort((a, b) => a.stop_order - b.stop_order)
+        const ids:  string[]               = sorted.map(s => s.poi.poi_id)
+        const durs: Record<string, number> = {}
+        const lpois: MapPoi[]              = []
+        sorted.forEach(s => {
+          durs[s.poi.poi_id] = s.duration_min
+          lpois.push({
+            poi_id:      s.poi.poi_id,
+            name_ko:       s.poi.name_ko,
+            name_en:       s.poi.name_en,
+            coords_lat:    s.poi.coords_lat,
+            coords_lng:    s.poi.coords_lng,
+            display_domain: s.poi.display_domain,
+            display_region: '',
+            is_trending:   false,
+            is_partner:    false,
+            quality_score: 0,
+          })
+        })
+        setPlanStopIds(ids)
+        setStopDurations(durs)
+        setLoadedPlanPois(lpois)
+      })
+      .catch(() => { /* blank plan — user can keep building, autosave retries */ })
+  }, [session, planStopIds.length])
 
   // Seed savedPoiIds from API on first load — one-time only so local toggles aren't overwritten
   useEffect(() => {

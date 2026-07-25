@@ -398,6 +398,44 @@ export default function NaverMapCanvas({
     })
   }, [mapReady, planStopIds, pois, routeLegs])
 
+  // Fit the viewport to the plan route once per load — covers "saved plan
+  // shows somewhere random" (map was defaulting to the fixed Seoul center/
+  // zoom regardless of where the plan's stops actually are). Fires once when
+  // stops first populate (routeLegs for a saved itinerary, planStopIds for
+  // the live builder) and re-arms when they clear back to empty, so it
+  // doesn't fight the user's own pan/zoom while they keep adding stops.
+  const hasFitRouteRef = useRef(false)
+  useEffect(() => {
+    if (!mapReady || !mapRef.current || !window.naver?.maps) return
+
+    const points: Array<{ lat: number; lng: number }> = routeLegs && routeLegs.length > 0
+      ? routeLegs.flatMap(leg => leg.path)
+      : planStopIds
+          .map(id => pois.find(p => p.poi_id === id))
+          .filter((p): p is MapPoi => !!p)
+          .map(p => ({ lat: p.coords_lat, lng: p.coords_lng }))
+
+    if (points.length === 0) {
+      hasFitRouteRef.current = false
+      return
+    }
+    if (hasFitRouteRef.current) return
+    hasFitRouteRef.current = true
+
+    if (points.length === 1) {
+      mapRef.current.setCenter(new window.naver.maps.LatLng(points[0].lat, points[0].lng))
+      mapRef.current.setZoom(15)
+      return
+    }
+
+    const bounds = new window.naver.maps.LatLngBounds(
+      new window.naver.maps.LatLng(points[0].lat, points[0].lng),
+      new window.naver.maps.LatLng(points[0].lat, points[0].lng),
+    )
+    points.forEach(p => bounds.extend(new window.naver.maps.LatLng(p.lat, p.lng)))
+    mapRef.current.fitBounds(bounds)
+  }, [mapReady, routeLegs, planStopIds, pois])
+
   useEffect(() => () => {
     markersRef.current.forEach(({ marker }) => marker.setMap(null))
     markersRef.current.clear()
