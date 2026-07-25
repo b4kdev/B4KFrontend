@@ -72,6 +72,19 @@ function mapPlace(row: RawPlace, locale: string): MapPoi {
   }
 }
 
+// display_region in the DB is a Korean province name (서울/부산/제주/...), not the
+// English region labels LeftPanel shows — `region` query param needs the Korean
+// value or the BFF's exact-match filter returns zero rows every time. Gyeongju has
+// no city-level row (province is 경북, which also covers other Gyeongbuk cities) —
+// best available match, not exact.
+const REGION_API_NAME: Record<string, string> = {
+  Seoul:    '서울',
+  Busan:    '부산',
+  Jeju:     '제주',
+  Incheon:  '인천',
+  Gyeongju: '경북',
+}
+
 // bounds=null → 지도가 아직 idle을 한 번도 안 쐈을 때(초기 로드)의 폴백,
 // 기존과 동일하게 bbox 없이 전국 top-100. bounds가 잡히면 화면 안 장소를
 // 받아오고, 줌아웃(넓은 bbox)일수록 클러스터로 뭉쳐질 걸 알기에 적게 요청.
@@ -84,7 +97,7 @@ export function useMapPois(
   const locale = useLocale()
 
   const params = new URLSearchParams()
-  if (region) params.set('region', region)
+  if (region) params.set('region', REGION_API_NAME[region] ?? region)
   if (activeFilters.length > 0) params.set('domain', activeFilters[0])
   if (bounds) {
     params.set('bounds', `${bounds.minLat},${bounds.maxLat},${bounds.minLng},${bounds.maxLng}`)
