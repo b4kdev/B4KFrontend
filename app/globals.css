@@ -1,7 +1,7 @@
 @font-face {
   font-family: 'MODERNIZ';
   src: url('/fonts/moderniz.woff2') format('woff2');
-  font-weight: 400;
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
@@ -142,6 +142,15 @@ body {
   --f-display-hero:    72px;
 }
 
+/* Hero title at 72px overflows a single unbroken word (e.g. "Gyeongbokgung")
+   past the ~300px mobile content width and gets hard-clipped by the
+   carousel's overflow-hidden — shrink it below the md breakpoint. */
+@media (max-width: 767px) {
+  :root {
+    --f-display-hero: 40px;
+  }
+}
+
 /* ─── Light mode overrides ──────────────────────────────────── */
 [data-theme="light"] {
   color-scheme: light;
@@ -192,6 +201,13 @@ body {
 .locale-ko, .locale-ja { word-break: keep-all; overflow-wrap: break-word; }
 .locale-zh-CN, .locale-zh-TW { word-break: break-all; line-break: normal; }
 .locale-th { word-break: break-word; overflow-wrap: break-word; }
+
+/* ─── DEC-45 rule 2 — hero subtitle: modest per-locale step-down (13px → 11.5px),
+   real line-height token kept. ja/zh-CN/zh-TW/th only — ko ships real translations. ─── */
+:lang(ja) .hero-subtitle,
+:lang(zh-CN) .hero-subtitle,
+:lang(zh-TW) .hero-subtitle,
+:lang(th) .hero-subtitle { font-size: 11.5px; }
 
 /* ─── Scrollbar ─────────────────────────────────────────────── */
 .scrollbar-hide::-webkit-scrollbar { display: none; }

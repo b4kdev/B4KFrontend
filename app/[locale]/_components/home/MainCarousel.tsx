@@ -103,13 +103,13 @@ export default function MainCarousel() {
 
       {/* Content */}
       <div className="absolute inset-0 flex flex-col justify-end p-9 md:p-11">
-        <span className="inline-flex items-center bg-fg text-bg text-f-xxs font-extrabold tracking-[0.12em] uppercase px-2.5 py-1 rounded-none mb-3.5 w-fit">
+        <span className="inline-flex items-center bg-fg text-bg text-f-xxs font-extrabold tracking-[0.12em] uppercase px-2.5 py-1 rounded-none mb-3.5 w-fit leading-none">
           {slide.badge}
         </span>
-        <h1 className="text-fg font-display text-f-display-hero tracking-[-0.02em] mb-3 whitespace-pre-line max-w-[520px] line-clamp-2 md:line-clamp-3">
+        <h1 className="text-fg font-display text-f-display-hero tracking-[-0.02em] mb-3 whitespace-pre-line break-words max-w-[520px] line-clamp-2 md:line-clamp-3">
           {slide.title}
         </h1>
-        <p className="hidden md:block text-f-md text-muted leading-relaxed mb-6 max-w-[400px]">
+        <p className="hero-subtitle hidden md:block text-f-md text-muted leading-relaxed mb-6 max-w-[400px]">
           {slide.subtitle}
         </p>
         <Link
