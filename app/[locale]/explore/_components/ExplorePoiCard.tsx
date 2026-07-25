@@ -150,29 +150,31 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
         </div>
       </Link>
 
-      {/* Save + Like — top-left, sibling of Link (not nested — avoids <button> inside <a>) */}
-      <div className="absolute top-sp-2 left-sp-2 flex items-center gap-1">
-        <button
-          onClick={handleSave}
-          disabled={!hasRealId}
-          aria-label={saved ? t('card.unsaveAria', { name }) : t('card.saveAria', { name })}
-          aria-pressed={saved}
-          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ background: 'var(--backdrop-50)', color: saved ? 'var(--lav)' : 'var(--fg)' }}
-        >
-          <Bookmark size={15} strokeWidth={2} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
-        </button>
-        <button
-          onClick={handleLike}
-          disabled={!hasRealId}
-          aria-label={liked ? t('card.unlikeAria', { name }) : t('card.likeAria', { name })}
-          aria-pressed={liked}
-          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ background: 'var(--backdrop-50)', color: liked ? 'var(--danger)' : 'var(--fg)' }}
-        >
-          <Heart size={15} strokeWidth={2} fill={liked ? 'currentColor' : 'none'} aria-hidden="true" />
-        </button>
-      </div>
+      {/* Save + Like — top-left, sibling of Link (not nested — avoids <button> inside <a>).
+          Hidden (not just disabled) when the card has no real DB id — a visibly
+          clickable-but-inert button reads as broken, not intentional. */}
+      {hasRealId && (
+        <div className="absolute top-sp-2 left-sp-2 flex items-center gap-1">
+          <button
+            onClick={handleSave}
+            aria-label={saved ? t('card.unsaveAria', { name }) : t('card.saveAria', { name })}
+            aria-pressed={saved}
+            className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+            style={{ background: 'var(--backdrop-50)', color: saved ? 'var(--lav)' : 'var(--fg)' }}
+          >
+            <Bookmark size={15} strokeWidth={2} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
+          </button>
+          <button
+            onClick={handleLike}
+            aria-label={liked ? t('card.unlikeAria', { name }) : t('card.likeAria', { name })}
+            aria-pressed={liked}
+            className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+            style={{ background: 'var(--backdrop-50)', color: liked ? 'var(--danger)' : 'var(--fg)' }}
+          >
+            <Heart size={15} strokeWidth={2} fill={liked ? 'currentColor' : 'none'} aria-hidden="true" />
+          </button>
+        </div>
+      )}
     </article>
   )
 }
