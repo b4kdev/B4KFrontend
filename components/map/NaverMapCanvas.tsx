@@ -242,13 +242,51 @@ export default function NaverMapCanvas({
     const gridSize = clusterGridSize(zoom)
     if (clusterActive) {
       const buckets = new Map<string, MapPoi[]>()
+      const bucketCoords = new Map<string, [number, number]>()
       freePois.forEach(poi => {
         if (clusteredIds.has(poi.poi_id)) return
-        const key = `${Math.floor(poi.coords_lat / gridSize)}:${Math.floor(poi.coords_lng / gridSize)}`
+        const gx = Math.floor(poi.coords_lat / gridSize)
+        const gy = Math.floor(poi.coords_lng / gridSize)
+        const key = `${gx}:${gy}`
+        bucketCoords.set(key, [gx, gy])
         const bucket = buckets.get(key)
         if (bucket) bucket.push(poi); else buckets.set(key, [poi])
       })
-      buckets.forEach(members => {
+
+      // Merge 8-connected neighboring cells. Plain floor-division bucketing has
+      // hard cell boundaries — two POIs a few meters apart can land in adjacent
+      // cells if they straddle one, rendering as two separate cluster bubbles
+      // sitting right on top of each other on screen instead of one. Union-find
+      // over cell adjacency collapses those into a single group.
+      const keys = Array.from(buckets.keys())
+      const parent = new Map<string, string>(keys.map(k => [k, k]))
+      const find = (k: string): string => {
+        while (parent.get(k) !== k) { parent.set(k, parent.get(parent.get(k)!)!); k = parent.get(k)! }
+        return k
+      }
+      const union = (a: string, b: string) => {
+        const ra = find(a), rb = find(b)
+        if (ra !== rb) parent.set(ra, rb)
+      }
+      keys.forEach(k => {
+        const [gx, gy] = bucketCoords.get(k)!
+        for (let dx = -1; dx <= 1; dx++) {
+          for (let dy = -1; dy <= 1; dy++) {
+            if (dx === 0 && dy === 0) continue
+            const nk = `${gx + dx}:${gy + dy}`
+            if (buckets.has(nk)) union(k, nk)
+          }
+        }
+      })
+      const merged = new Map<string, MapPoi[]>()
+      keys.forEach(k => {
+        const root = find(k)
+        const group = merged.get(root) ?? []
+        group.push(...buckets.get(k)!)
+        merged.set(root, group)
+      })
+
+      merged.forEach(members => {
         if (members.length >= 2) {
           clusterGroups.push(members)
           members.forEach(m => clusteredIds.add(m.poi_id))
