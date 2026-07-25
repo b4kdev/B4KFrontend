@@ -144,10 +144,14 @@ body {
 
 /* Hero title at 72px overflows a single unbroken word (e.g. "Gyeongbokgung")
    past the ~300px mobile content width and gets hard-clipped by the
-   carousel's overflow-hidden — shrink it below the md breakpoint. */
+   carousel's overflow-hidden — shrink it below the md breakpoint. 40px
+   still didn't leave enough margin on real devices (2-line wrap plus
+   badge/button exceeded the carousel's fixed mobile height even with
+   word-break fixed) — dropped further, and the carousel height was
+   bumped alongside this in MainCarousel.tsx. */
 @media (max-width: 767px) {
   :root {
-    --f-display-hero: 40px;
+    --f-display-hero: 28px;
   }
 }
 

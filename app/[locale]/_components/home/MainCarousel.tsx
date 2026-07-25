@@ -12,7 +12,7 @@ import type { HomeCarouselSlide } from '@/app/api/home/carousel/route';
 function CarouselSkeleton() {
   return (
     <div
-      className="relative overflow-hidden h-[240px] lg:h-[560px] animate-pulse bg-bg-2"
+      className="relative overflow-hidden h-[300px] lg:h-[560px] animate-pulse bg-bg-2"
       aria-hidden="true"
     >
       <div className="absolute inset-0 bg-bg-3" />
@@ -69,7 +69,7 @@ export default function MainCarousel() {
 
   return (
     <div
-      className="relative overflow-hidden h-[240px] lg:h-[560px] bg-bg-2"
+      className="relative overflow-hidden h-[300px] lg:h-[560px] bg-bg-2"
       aria-roledescription="carousel"
       aria-label={tCarousel('ariaLabel')}
     >
