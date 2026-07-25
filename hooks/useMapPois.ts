@@ -44,6 +44,13 @@ interface RawPlace {
   translations:      Record<string, { name?: string; description?: string }>
 }
 
+export interface MapBounds {
+  minLat: number
+  maxLat: number
+  minLng: number
+  maxLng: number
+}
+
 function mapPlace(row: RawPlace, locale: string): MapPoi {
   const t   = row.translations ?? {}
   const cur = t[locale] ?? {}
@@ -65,13 +72,26 @@ function mapPlace(row: RawPlace, locale: string): MapPoi {
   }
 }
 
-export function useMapPois(region: string | null, activeFilters: string[]) {
+// bounds=null → 지도가 아직 idle을 한 번도 안 쐈을 때(초기 로드)의 폴백,
+// 기존과 동일하게 bbox 없이 전국 top-100. bounds가 잡히면 화면 안 장소를
+// 받아오고, 줌아웃(넓은 bbox)일수록 클러스터로 뭉쳐질 걸 알기에 적게 요청.
+export function useMapPois(
+  region: string | null,
+  activeFilters: string[],
+  bounds: MapBounds | null,
+  zoom: number,
+) {
   const locale = useLocale()
 
   const params = new URLSearchParams()
   if (region) params.set('region', region)
   if (activeFilters.length > 0) params.set('domain', activeFilters[0])
-  params.set('limit', '100')
+  if (bounds) {
+    params.set('bounds', `${bounds.minLat},${bounds.maxLat},${bounds.minLng},${bounds.maxLng}`)
+    params.set('limit', zoom <= 8 ? '150' : '300')
+  } else {
+    params.set('limit', '100')
+  }
 
   const { data, error, isLoading } = useSWR(
     ['/places', params.toString(), locale],

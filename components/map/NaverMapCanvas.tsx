@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Script from 'next/script'
 import { useTranslations } from 'next-intl'
 import { Plus, Minus, Sparkles, X } from 'lucide-react'
-import type { MapPoi } from '@/hooks/useMapPois'
+import type { MapPoi, MapBounds } from '@/hooks/useMapPois'
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,6 +26,49 @@ interface Props {
   // SC-31 (S-HDTVGP) — when a Saved-hub folder is active, only its POIs stay
   // pinned (never clustered — spec: "all folder POIs pinned on map").
   savedFolderPoiIds?: string[] | null
+  // Viewport-bounds fetching — fired on 'idle' (debounced, padded, threshold-
+  // gated below), so useMapPois can request POIs in the visible area instead
+  // of a fixed nationwide top-N. Omitted/no calls yet → caller stays on its
+  // no-bounds fallback (nationwide top-N) until the first idle settles.
+  onBoundsChange?: (bounds: MapBounds, zoom: number) => void
+}
+
+// Extra margin around the viewport so panning within it doesn't need an
+// immediate refetch — total span ends up ~1.3x the visible width/height.
+const BOUNDS_PADDING_RATIO = 0.15
+// Skip a refetch unless the new bounds moved at least this fraction of the
+// previous request's span — avoids re-querying on trivial nudges.
+const BOUNDS_MOVE_THRESHOLD = 0.3
+// Debounce after 'idle' — collapses rapid stop/move/stop sequences (e.g.
+// scroll-wheel zoom bursts) into a single request.
+const BOUNDS_DEBOUNCE_MS = 800
+
+function paddedBounds(map: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getBounds: () => any
+}): MapBounds {
+  const b   = map.getBounds()
+  const sw  = b.getSW()
+  const ne  = b.getNE()
+  const latSpan = ne.lat() - sw.lat()
+  const lngSpan = ne.lng() - sw.lng()
+  const latPad  = latSpan * BOUNDS_PADDING_RATIO
+  const lngPad  = lngSpan * BOUNDS_PADDING_RATIO
+  return {
+    minLat: sw.lat() - latPad,
+    maxLat: ne.lat() + latPad,
+    minLng: sw.lng() - lngPad,
+    maxLng: ne.lng() + lngPad,
+  }
+}
+
+function movedPastThreshold(prev: MapBounds | null, next: MapBounds): boolean {
+  if (!prev) return true
+  const prevLatSpan = prev.maxLat - prev.minLat
+  const prevLngSpan = prev.maxLng - prev.minLng
+  const latMove = Math.max(Math.abs(next.minLat - prev.minLat), Math.abs(next.maxLat - prev.maxLat))
+  const lngMove = Math.max(Math.abs(next.minLng - prev.minLng), Math.abs(next.maxLng - prev.maxLng))
+  return latMove > prevLatSpan * BOUNDS_MOVE_THRESHOLD || lngMove > prevLngSpan * BOUNDS_MOVE_THRESHOLD
 }
 
 const SEOUL = { lat: 37.5665, lng: 126.9780 }
@@ -61,6 +104,7 @@ export default function NaverMapCanvas({
   pois, selectedPoiId, planStopIds, routeLegs, onPoiSelect,
   showAiPill, onAiPillDismiss, onAiPillExpand,
   savedFolderPoiIds = null,
+  onBoundsChange,
 }: Props) {
   const t = useTranslations('map')
   const containerRef = useRef<HTMLDivElement>(null)
@@ -78,6 +122,14 @@ export default function NaverMapCanvas({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const clusterMarkersRef = useRef<any[]>([])
   const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID
+
+  // Viewport-bounds fetch bookkeeping — refs so the 'idle' listener (registered
+  // once in initMap) always reads the latest callback/last-requested-bounds
+  // without needing to re-register on every render.
+  const onBoundsChangeRef = useRef(onBoundsChange)
+  useEffect(() => { onBoundsChangeRef.current = onBoundsChange }, [onBoundsChange])
+  const lastBoundsRef = useRef<MapBounds | null>(null)
+  const idleTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // The SDK <script> only fires onLoad once per browser session — remounting
   // this component (e.g. navigating away and back) after it already loaded
@@ -110,6 +162,19 @@ export default function NaverMapCanvas({
 
     // UF-10 (G3.1) — track zoom so the marker-sync effect can re-cluster on zoom change.
     window.naver.maps.Event.addListener(map, 'zoom_changed', () => setZoom(map.getZoom()))
+
+    // Viewport-bounds fetch — only fires once movement fully stops (idle),
+    // never mid-drag/mid-zoom. Debounced + threshold-gated (see constants
+    // above) on top of that so light exploration doesn't spam requests.
+    window.naver.maps.Event.addListener(map, 'idle', () => {
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
+      idleTimerRef.current = setTimeout(() => {
+        const next = paddedBounds(map)
+        if (!movedPastThreshold(lastBoundsRef.current, next)) return
+        lastBoundsRef.current = next
+        onBoundsChangeRef.current?.(next, map.getZoom())
+      }, BOUNDS_DEBOUNCE_MS)
+    })
 
     setMapReady(true)
   }
@@ -282,6 +347,7 @@ export default function NaverMapCanvas({
     clusterMarkersRef.current = []
     polylineRef.current?.setMap(null)
     routeLegPolylinesRef.current.forEach(pl => pl.setMap(null))
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
   }, [])
 
   function zoomIn()  { mapRef.current?.setZoom(Math.min(mapRef.current.getZoom() + 1, 18)) }
