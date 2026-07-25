@@ -35,8 +35,8 @@ export default function ExploreHub() {
             >
               <Icon size={20} strokeWidth={2} className="text-lav" />
             </span>
-            <span className="text-f-md font-semibold text-fg">{t(`${key}.label`)}</span>
-            <span className="text-f-xs text-muted text-center px-sp-2">{t(`${key}.sub`)}</span>
+            <span className="text-f-md font-semibold text-fg line-clamp-1 px-sp-2">{t(`${key}.label`)}</span>
+            <span className="text-f-xs text-muted text-center px-sp-2 line-clamp-2">{t(`${key}.sub`)}</span>
           </Link>
         ))}
       </HScrollRow>
