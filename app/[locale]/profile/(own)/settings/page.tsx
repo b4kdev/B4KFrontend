@@ -9,6 +9,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { Car, Train, Check, AlertTriangle, Eye, EyeOff, Upload, Trash2, User } from 'lucide-react'
 import { useProfile } from '@/hooks/useProfile'
 import { useToast } from '@/contexts/ToastContext'
+import { track } from '@/lib/analytics'
 import CookiePreferences from '@/app/[locale]/legal/cookies/_CookiePreferences'
 
 const LOCALES = ['en', 'ko', 'ja', 'zh-CN', 'zh-TW', 'th', 'pt-BR'] as const
@@ -444,8 +445,9 @@ export default function SettingsPage() {
   const [pwStatus, setPwStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [pwError, setPwError] = useState('')
 
-  const handleLangChange = (locale: string) => {
-    router.replace(pathname, { locale })
+  const handleLangChange = (newLocale: string) => {
+    track('lang_switch', { from: locale, to: newLocale, locale, screen_id: 'PR_50' })
+    router.replace(pathname, { locale: newLocale })
   }
 
   const toggleInterest = (key: string) => {
