@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { useSearchParams } from 'next/navigation'
@@ -22,7 +22,7 @@ import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useToast } from '@/contexts/ToastContext'
 import { getDraftPlan, saveDraftPlan, clearDraftPlan } from '@/lib/draft-plan'
 import { MAX_STOPS } from '@/lib/plan-constants'
-import type { MapPoi } from '@/hooks/useMapPois'
+import type { MapPoi, MapBounds } from '@/hooks/useMapPois'
 import type { DraftMeta } from '@/components/auth/DraftConflictModal'
 import type { ItineraryDetail } from '@/lib/itinerary'
 
@@ -58,6 +58,10 @@ export default function MapView() {
   const [savedSheetOpen, setSavedSheetOpen] = useState(false)
   // SC-31/DEC-38 (S-HDTVGP/S-IGOSPS) — active Saved-hub folder's POIs, synced to the map
   const [savedFolderPoiIds, setSavedFolderPoiIds] = useState<string[] | null>(null)
+  // Viewport-bounds fetching — null until NaverMapCanvas's first 'idle' fires,
+  // so useMapPois falls back to its no-bounds (nationwide top-N) query until then.
+  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null)
+  const [mapZoom, setMapZoom] = useState(12)
   const [loadedPlanPois, setLoadedPlanPois] = useState<MapPoi[]>([])
   const [draftConflict, setDraftConflict]   = useState<PendingPlan | null>(null)
   // DEC-29: naming sheet shown before publishing
@@ -82,7 +86,13 @@ export default function MapView() {
   // DEC-33 T1: track whether draft-conflict check has been resolved this session
   const t1CheckedRef    = useRef(false)
 
-  const { pois, isLoading: poisLoading, isError: poisError } = useMapPois(activeRegion, activeFilters)
+  const handleBoundsChange = useCallback((bounds: MapBounds, zoom: number) => {
+    setMapBounds(bounds)
+    setMapZoom(zoom)
+  }, [])
+
+  const { pois, isLoading: poisLoading, isError: poisError } =
+    useMapPois(activeRegion, activeFilters, mapBounds, mapZoom)
   const { data: savedData, mutate: mutateSaved } = useSaved()
 
   // Restore draft plan on mount — skip if a specific plan is being loaded via ?plan param
@@ -522,6 +532,7 @@ export default function MapView() {
           onAiPillDismiss={() => setShowAiPill(false)}
           onAiPillExpand={() => setAiOverlayOpen(true)}
           savedFolderPoiIds={savedFolderPoiIds}
+          onBoundsChange={handleBoundsChange}
         />
 
         {/* Plan Pill — mobile, when stops > 0; hidden while the POI sheet covers it (mid/full) */}
