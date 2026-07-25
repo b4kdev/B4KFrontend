@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { AlertTriangle } from 'lucide-react'
+import { track } from '@/lib/analytics'
 import NaverMapCanvas from './NaverMapCanvas'
 import LeftPanel from './LeftPanel/index'
 import POIBottomSheet from './POIBottomSheet'
@@ -38,6 +39,7 @@ const DEFAULT_DURATION = 60
 
 export default function MapView() {
   const t = useTranslations('map')
+  const locale = useLocale()
   const router = useRouter()
   const searchParams = useSearchParams()
   const { session } = useAuth()
@@ -84,6 +86,13 @@ export default function MapView() {
 
   const { pois, isLoading: poisLoading, isError: poisError } = useMapPois(activeRegion, activeFilters)
   const { data: savedData, mutate: mutateSaved } = useSaved()
+
+  useEffect(() => {
+    if (!selectedPoiId) return
+    const poi = pois.find(p => p.poi_id === selectedPoiId)
+    if (poi) track('poi_view', { poi_id: poi.poi_id, domain: poi.display_domain ?? 'unknown', locale, screen_id: 'MP_01' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPoiId])
 
   // Restore draft plan on mount — skip if a specific plan is being loaded via ?plan param
   useEffect(() => {
@@ -225,6 +234,8 @@ export default function MapView() {
       showToast(t('plan.maxStopsToast', { max: MAX_STOPS }), 'error')
       return
     }
+    const isFirstStop = planStopIds.length === 0
+    if (isFirstStop) track('plan_create', { method: source, locale, screen_id: 'MP_01' })
     if (source === 'ai') setPlanSource('ai')
 
     // DEC-33 T1: logged-in user, first plan interaction this session → check for existing DB draft
@@ -339,6 +350,7 @@ export default function MapView() {
       } else {
         next.add(poi.poi_id)
         showToast(t('poiDetail.savedToast'))
+        track('poi_save', { poi_id: poi.poi_id, locale, screen_id: 'MP_01' })
       }
       return next
     })
@@ -440,6 +452,7 @@ export default function MapView() {
         body: JSON.stringify({ is_published: true }),
       })
       if (!patchRes.ok) throw new Error()
+      track('plan_save', { plan_id: plan.id, stop_count: planStops.length, method: planSource, locale, screen_id: 'MP_01' })
       clearDraftPlan()
       setNamingSheetOpen(false)
       setNamingSaving(false)
@@ -520,7 +533,10 @@ export default function MapView() {
           onPoiSelect={setSelectedPoiId}
           showAiPill={showAiPill}
           onAiPillDismiss={() => setShowAiPill(false)}
-          onAiPillExpand={() => setAiOverlayOpen(true)}
+          onAiPillExpand={() => {
+            track('ai_open', { entry_point: 'map_pill', locale, screen_id: 'MP_01' })
+            setAiOverlayOpen(true)
+          }}
           savedFolderPoiIds={savedFolderPoiIds}
         />
 

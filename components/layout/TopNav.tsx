@@ -8,6 +8,7 @@ import { Search, Globe, HelpCircle, Menu, X, RefreshCw } from 'lucide-react';
 import useSWR from 'swr';
 import { fetcher } from '@/lib/fetcher';
 import { useToast } from '@/contexts/ToastContext';
+import { track } from '@/lib/analytics';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -467,7 +468,11 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
                       'w-full text-left px-sp-3 py-sp-2 text-f-sm transition-colors',
                       loc === locale ? 'text-lav font-semibold' : 'text-muted hover:text-fg hover:bg-muted-3',
                     ].join(' ')}
-                    onClick={() => { router.replace(pathname, { locale: loc }); setLocaleOpen(false); }}
+                    onClick={() => {
+                      track('lang_switch', { from: locale, to: loc, locale, screen_id: 'nav' });
+                      router.replace(pathname, { locale: loc });
+                      setLocaleOpen(false);
+                    }}
                   >
                     {tLangs(loc)}
                   </button>
