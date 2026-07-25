@@ -142,7 +142,7 @@ export default function POIBottomSheet({
 
           {/* Domain chip + region + open status */}
           <div className="flex flex-wrap items-center gap-sp-2 mb-sp-3">
-            <span className="px-sp-2 py-0.5 rounded-full bg-lav-dim text-lav text-f-xs font-medium">
+            <span className="px-sp-2 py-0.5 rounded-full bg-lav-dim text-lav text-f-xs font-medium leading-none">
               {poi.display_domain}
             </span>
             {poi.display_region_detail && (

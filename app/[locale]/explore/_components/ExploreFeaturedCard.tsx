@@ -42,7 +42,7 @@ export default function ExploreFeaturedCard({ poi, domain }: { poi: ExplorePoi; 
         )}
         {isPartner && (
           <span
-            className="absolute top-sp-2 left-sp-2 text-f-xxs font-semibold px-sp-2 py-[3px] rounded-full"
+            className="absolute top-sp-2 left-sp-2 text-f-xxs font-semibold px-sp-2 py-[3px] rounded-full leading-none"
             style={{ background: 'var(--backdrop-50)', color: 'var(--fg)', border: '1px solid var(--bdr)' }}
           >
             {t('card.sponsored')}
@@ -61,7 +61,7 @@ export default function ExploreFeaturedCard({ poi, domain }: { poi: ExplorePoi; 
           <span className="text-f-sm text-muted truncate">{poi.display_region}</span>
           {poi.is_trending && (
             <span
-              className="flex items-center gap-[3px] text-f-xxs font-semibold text-lav px-[6px] py-[2px] rounded-full"
+              className="flex items-center gap-[3px] text-f-xxs font-semibold text-lav px-[6px] py-[2px] rounded-full leading-none"
               style={{ background: 'var(--lav-dim)' }}
             >
               <TrendingUp size={9} strokeWidth={2} aria-hidden="true" />

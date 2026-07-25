@@ -110,7 +110,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
           {/* D-Day countdown badge — event/festival/merch items */}
           {dDay && (
             <span
-              className="absolute top-sp-2 right-sp-2 text-f-xxs font-bold px-sp-2 py-[3px] rounded-full text-bg"
+              className="absolute top-sp-2 right-sp-2 text-f-xxs font-bold px-sp-2 py-[3px] rounded-full text-bg leading-none"
               style={{ background: 'var(--lav)' }}
             >
               {dDay}
@@ -119,7 +119,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
           {/* Sponsored label — DEC-05 / CLAUDE.md §9: LeftPanel card only on desktop, but Explore cards are equivalent */}
           {isPartner && (
             <span
-              className="absolute bottom-sp-2 left-sp-2 text-f-xxs font-semibold px-sp-2 py-[3px] rounded-full"
+              className="absolute bottom-sp-2 left-sp-2 text-f-xxs font-semibold px-sp-2 py-[3px] rounded-full leading-none"
               style={{ background: 'var(--backdrop-50)', color: 'var(--fg)', border: '1px solid var(--bdr)' }}
             >
               {t('card.sponsored')}
@@ -134,7 +134,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
             <div className="flex items-center gap-sp-1 shrink-0">
               {poi.is_trending && (
                 <span
-                  className="flex items-center gap-[3px] text-f-xxs font-semibold text-lav px-[6px] py-[2px] rounded-full"
+                  className="flex items-center gap-[3px] text-f-xxs font-semibold text-lav px-[6px] py-[2px] rounded-full leading-none"
                   style={{ background: 'var(--lav-dim)' }}
                 >
                   <TrendingUp size={9} strokeWidth={2} aria-hidden="true" />

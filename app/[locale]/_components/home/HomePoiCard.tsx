@@ -99,14 +99,14 @@ export default function HomePoiCard({ poi, badge }: Props) {
           )}
           {badge && (
             <span
-              className="absolute bottom-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.1em] uppercase text-bg bg-lav px-[6px] py-[3px]"
+              className="absolute bottom-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.1em] uppercase text-bg bg-lav px-[6px] py-[3px] leading-none"
               aria-label={badge}
             >
               {badge}
             </span>
           )}
           <span
-            className="absolute top-sp-2 right-sp-2 text-f-xxs font-semibold text-fg"
+            className="absolute top-sp-2 right-sp-2 text-f-xxs font-semibold text-fg leading-none"
             style={{ background: 'var(--backdrop-50)', padding: '2px 6px' }}
             aria-hidden="true"
           >

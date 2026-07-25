@@ -27,7 +27,7 @@ export default function EditorialPicks() {
             <button
               key={c.key}
               onClick={() => setCat(c.key)}
-              className="shrink-0 px-sp-3 py-[5px] text-f-xs font-semibold rounded-full transition-colors duration-[80ms]"
+              className="shrink-0 px-sp-3 py-[5px] text-f-xs font-semibold rounded-full transition-colors duration-[80ms] leading-none"
               style={{
                 background: cat === c.key ? 'var(--lav)' : 'var(--bg-3)',
                 color: cat === c.key ? 'var(--bg)' : 'var(--muted)',

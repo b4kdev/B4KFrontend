@@ -67,13 +67,13 @@ export default function ExploreHero({ slides }: { slides: ExploreHeroSlide[] }) 
 
       {/* Content */}
       <div className="absolute inset-0 flex flex-col justify-end p-sp-6 lg:p-sp-10">
-        <span className="inline-flex items-center bg-fg text-bg text-f-xxs font-extrabold tracking-[0.12em] uppercase px-sp-2 py-[4px] rounded-none mb-sp-3 w-fit">
+        <span className="inline-flex items-center bg-fg text-bg text-f-xxs font-extrabold tracking-[0.12em] uppercase px-sp-2 py-[4px] rounded-none mb-sp-3 w-fit leading-none">
           {slide.badge}
         </span>
         <h2 className="text-fg font-display text-f-display-feature tracking-[-0.02em] mb-sp-2 max-w-[520px]">
           {slide.title}
         </h2>
-        <p className="hidden md:block text-f-md text-muted leading-relaxed mb-sp-4 max-w-[400px]">
+        <p className="hero-subtitle hidden md:block text-f-md text-muted leading-relaxed mb-sp-4 max-w-[400px]">
           {slide.subtitle}
         </p>
         <Link
