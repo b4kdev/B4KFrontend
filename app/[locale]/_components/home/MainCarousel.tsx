@@ -106,7 +106,7 @@ export default function MainCarousel() {
         <span className="inline-flex items-center bg-fg text-bg text-f-xxs font-extrabold tracking-[0.12em] uppercase px-2.5 py-1 rounded-none mb-3.5 w-fit">
           {slide.badge}
         </span>
-        <h1 className="text-fg font-display text-f-display-hero tracking-[-0.02em] mb-3 whitespace-pre-line max-w-[520px] line-clamp-2 md:line-clamp-3">
+        <h1 className="text-fg font-display text-f-display-hero tracking-[-0.02em] mb-3 whitespace-pre-line break-words max-w-[520px] line-clamp-2 md:line-clamp-3">
           {slide.title}
         </h1>
         <p className="hidden md:block text-f-md text-muted leading-relaxed mb-6 max-w-[400px]">

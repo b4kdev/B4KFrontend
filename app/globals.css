@@ -142,6 +142,15 @@ body {
   --f-display-hero:    72px;
 }
 
+/* Hero title at 72px overflows a single unbroken word (e.g. "Gyeongbokgung")
+   past the ~300px mobile content width and gets hard-clipped by the
+   carousel's overflow-hidden — shrink it below the md breakpoint. */
+@media (max-width: 767px) {
+  :root {
+    --f-display-hero: 40px;
+  }
+}
+
 /* ─── Light mode overrides ──────────────────────────────────── */
 [data-theme="light"] {
   color-scheme: light;
