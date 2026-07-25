@@ -88,7 +88,11 @@ export function useMapPois(
   if (activeFilters.length > 0) params.set('domain', activeFilters[0])
   if (bounds) {
     params.set('bounds', `${bounds.minLat},${bounds.maxLat},${bounds.minLng},${bounds.maxLng}`)
-    params.set('limit', zoom <= 8 ? '150' : '300')
+    // Clustering stays active through zoom 15 (NaverMapCanvas.CLUSTER_ZOOM_THRESHOLD) —
+    // that range needs a fuller sample for accurate cluster counts. Past it
+    // (individual pins, street-level bbox) the viewport itself is small, so
+    // fewer rows are both sufficient and cheaper.
+    params.set('limit', zoom <= 8 ? '150' : zoom <= 15 ? '300' : '150')
   } else {
     params.set('limit', '100')
   }
