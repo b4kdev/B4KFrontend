@@ -14,13 +14,32 @@ import SavedPlacesPanel from '@/components/saved/SavedPlacesPanel'
 
 type Tab = 'places' | 'myPlans' | 'savedPlans'
 
-function RowSkeleton() {
+// Matches the real myPlans card shape (icon + title/badge + metadata row +
+// 3-button action row) — a bare 2-line skeleton undersizes it by roughly a third,
+// registering as layout shift when data resolves.
+function MyPlanRowSkeleton() {
   return (
-    <div className="flex items-center gap-sp-3 p-sp-4 animate-pulse" style={{ borderBottom: '1px solid var(--bdr)' }}>
-      <div className="w-14 h-14 rounded-none bg-muted-3 shrink-0" />
+    <div className="flex items-start gap-sp-4 p-sp-4 rounded-none animate-pulse" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
+      <div className="w-16 h-16 rounded-none bg-muted-3 shrink-0" />
       <div className="flex-1 space-y-sp-2">
-        <div className="h-4 w-2/3 rounded bg-muted-3" />
+        <div className="h-4 w-1/2 rounded bg-muted-3" />
+        <div className="h-3 w-2/3 rounded bg-muted-3" />
+        <div className="h-[28px] w-1/3 rounded bg-muted-3 mt-sp-1" />
+      </div>
+    </div>
+  )
+}
+
+// Matches the real savedPlans card shape (icon + title + author + metadata row,
+// no action row).
+function SavedPlanRowSkeleton() {
+  return (
+    <div className="flex items-start gap-sp-4 p-sp-4 rounded-none animate-pulse" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
+      <div className="w-16 h-16 rounded-none bg-muted-3 shrink-0" />
+      <div className="flex-1 space-y-sp-2">
+        <div className="h-4 w-1/2 rounded bg-muted-3" />
         <div className="h-3 w-1/3 rounded bg-muted-3" />
+        <div className="h-3 w-2/3 rounded bg-muted-3" />
       </div>
     </div>
   )
@@ -115,8 +134,10 @@ export default function SavedPage() {
 
       {/* ── Loading (My Plans / Saved Plans) ── */}
       {isLoading && tab !== 'places' && (
-        <div aria-busy="true" aria-label={t('loading')} className="rounded-none overflow-hidden" style={{ border: '1px solid var(--bdr)' }}>
-          {Array.from({ length: 3 }, (_, i) => <RowSkeleton key={i} />)}
+        <div aria-busy="true" aria-label={t('loading')} className="flex flex-col gap-sp-3">
+          {tab === 'myPlans'
+            ? Array.from({ length: 3 }, (_, i) => <MyPlanRowSkeleton key={i} />)
+            : Array.from({ length: 3 }, (_, i) => <SavedPlanRowSkeleton key={i} />)}
         </div>
       )}
 
