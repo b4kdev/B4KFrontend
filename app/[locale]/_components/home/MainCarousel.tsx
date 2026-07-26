@@ -26,9 +26,11 @@ function CarouselSkeleton() {
   );
 }
 
-export default function MainCarousel() {
+export default function MainCarousel({ initialData }: { initialData?: HomeCarouselSlide[] }) {
   const tCarousel = useTranslations('home.carousel');
-  const { data, isLoading, error } = useSWR<HomeCarouselSlide[]>('/api/home/carousel', fetcher);
+  const { data, isLoading, error } = useSWR<HomeCarouselSlide[]>('/api/home/carousel', fetcher, {
+    fallbackData: initialData,
+  });
 
   const [idx, setIdx] = useState(0);
   const [prefersReduced, setPrefersReduced] = useState(false);
@@ -57,8 +59,10 @@ export default function MainCarousel() {
   if (isLoading) return <CarouselSkeleton />;
   // SPEC-01: every other section hides itself on fetch failure; Hero is the
   // one exception — its errors escalate to the page-level error boundary
-  // (app/[locale]/error.tsx) instead of silently disappearing.
-  if (error) throw error;
+  // (app/[locale]/error.tsx) instead of silently disappearing. Gated on `!data`
+  // too — with `fallbackData` set, a background revalidation error must not
+  // discard slides we can already show.
+  if (error && !data) throw error;
   // Genuinely empty (loaded, zero slides) is not an error — hide like any
   // other section, rest of the page still loads.
   if (!data || total === 0) return null;
@@ -90,6 +94,7 @@ export default function MainCarousel() {
               alt=""
               fillContainer
               priority={i === 0}
+              sizes="100vw"
             />
           )}
         </div>
