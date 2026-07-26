@@ -19,12 +19,33 @@ function relativeTime(iso: string, t: ReturnType<typeof useTranslations>): strin
   return t('timeAgo.days', { n: Math.floor(hrs / 24) })
 }
 
+// BLK-30: fixed-height placeholder so this section reserves space while auth /
+// draft state resolves, instead of jumping from zero height straight to the
+// full bar (the worst-case CLS pattern — this section is 'use client'-only,
+// so nothing about draft state is knowable during SSR).
+function ContinuePlanSkeleton() {
+  return (
+    <div
+      className="mx-sp-4 lg:mx-sp-8 mt-sp-10 p-sp-4 flex items-center gap-sp-4 animate-pulse"
+      style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+      aria-hidden="true"
+    >
+      <div className="w-10 h-10 rounded-full bg-muted-3 shrink-0" />
+      <div className="flex-1 flex flex-col gap-[6px]">
+        <div className="h-[14px] w-1/3 bg-muted-3" />
+        <div className="h-[12px] w-1/4 bg-muted-3" />
+      </div>
+    </div>
+  )
+}
+
 export default function ContinuePlan() {
   const t = useTranslations('home.continuePlan')
   const { user, loading } = useAuth()
   const router = useRouter()
   const [dismissed, setDismissed] = useState(false)
-  const [guestStopCount, setGuestStopCount] = useState<number | null>(null)
+  // undefined = guest localStorage not checked yet, null = checked/no draft, number = checked/has draft
+  const [guestStopCount, setGuestStopCount] = useState<number | null | undefined>(undefined)
 
   // Logged-in: fetch draft from server via SWR
   const { data: serverDraft } = useSWR<PlanDraft | null>(
@@ -40,6 +61,9 @@ export default function ContinuePlan() {
   }, [user, loading])
 
   if (dismissed) return null
+
+  const stillResolving = loading || (!user && guestStopCount === undefined) || (!!user && serverDraft === undefined)
+  if (stillResolving) return <ContinuePlanSkeleton />
 
   // Logged-in path
   if (user && serverDraft) {
@@ -82,7 +106,7 @@ export default function ContinuePlan() {
   }
 
   // Guest path — localStorage draft
-  if (!user && guestStopCount !== null) {
+  if (!user && typeof guestStopCount === 'number') {
     return (
       <div
         className="mx-sp-4 lg:mx-sp-8 mt-sp-10 p-sp-4 flex items-center gap-sp-4"

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { hreflangAlternates, localizedUrl, SITE_URL } from '@/lib/site-url';
+import { SEED as INITIAL_CAROUSEL } from '@/app/api/home/carousel/data';
 import HomeClient from './HomeClient';
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
@@ -31,7 +32,7 @@ export default function Page() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <HomeClient />
+      <HomeClient initialCarousel={INITIAL_CAROUSEL} />
     </>
   );
 }

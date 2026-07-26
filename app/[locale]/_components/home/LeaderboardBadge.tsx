@@ -20,11 +20,11 @@ const RARITY_LABEL: Record<string, string> = { common: '', rare: 'Rare', epic: '
 export default function LeaderboardBadge() {
   const t = useTranslations('home.leaderboardBadge')
   const { data: lb, isLoading: lbLoading } = useSWR<HomeLeaderboardEntry[]>('/api/home/leaderboard', fetcher)
-  const { data: badge } = useSWR<HomeBadgeShowcase | null>('/api/home/badge-showcase', fetcher)
+  const { data: badge, isLoading: badgeLoading } = useSWR<HomeBadgeShowcase | null>('/api/home/badge-showcase', fetcher)
 
   // Section hides only when both sub-cards have nothing to show. A loaded-but-empty
   // `lb` (`[]`) still renders the leaderboard card — with EMP_04 copy, not a bare header.
-  if (!lbLoading && !lb && !badge) return null
+  if (!lbLoading && !badgeLoading && !lb && !badge) return null
 
   return (
     <section className="pt-sp-10 px-sp-4 lg:px-sp-8" aria-label={t('ariaLabel')}>
@@ -85,7 +85,25 @@ export default function LeaderboardBadge() {
           </div>
         )}
 
-        {/* SEC-13 Badge Showcase */}
+        {/* SEC-13 Badge Showcase — skeleton reserves the same shape while loading (BLK-30:
+            this card previously had no loading state, popping in late and pushing content
+            below down — a real CLS source) */}
+        {badgeLoading && (
+          <div className="animate-pulse" aria-hidden="true" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
+            <div className="flex items-center justify-between px-sp-4 pt-sp-4 pb-sp-3" style={{ borderBottom: '1px solid var(--bdr)' }}>
+              <div className="h-[16px] w-1/3 bg-muted-3" />
+              <div className="h-[13px] w-[60px] bg-muted-3" />
+            </div>
+            <div className="p-sp-4 flex items-center gap-sp-4">
+              <div className="w-16 h-16 rounded-full bg-muted-3 shrink-0" />
+              <div className="flex-1 flex flex-col gap-[6px]">
+                <div className="h-[13px] w-2/3 bg-muted-3" />
+                <div className="h-[13px] w-1/2 bg-muted-3" />
+              </div>
+            </div>
+          </div>
+        )}
+
         {badge && (
           <div style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
             <div className="flex items-center justify-between px-sp-4 pt-sp-4 pb-sp-3" style={{ borderBottom: '1px solid var(--bdr)' }}>

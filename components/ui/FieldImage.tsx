@@ -10,6 +10,7 @@ interface FieldImageProps {
   aspectRatio?: string   // default "3/2". Ignored when fillContainer is true.
   priority?: boolean     // Next.js Image priority
   fillContainer?: boolean // fills parent absolutely (position:absolute;inset:0) instead of aspect-ratio sizing
+  sizes?: string         // Next.js Image sizes — pass for any fillContainer usage that spans the viewport
 }
 
 export default function FieldImage({
@@ -22,6 +23,7 @@ export default function FieldImage({
   aspectRatio = '3/2',
   priority = false,
   fillContainer = false,
+  sizes,
 }: FieldImageProps) {
   const wrapperStyle = fillContainer
     ? { position: 'absolute' as const, inset: 0, overflow: 'hidden', borderRadius: 0 }
@@ -38,6 +40,7 @@ export default function FieldImage({
         alt={alt}
         fill
         priority={priority}
+        sizes={sizes}
         style={{ filter: 'brightness(0.85) saturate(1.05)', objectFit: 'cover' }}
       />
 
