@@ -641,7 +641,20 @@
       "jeju": "済州",
       "incheon": "仁川",
       "gyeongju": "慶州",
-      "more": "他の地域"
+      "daegu": "Daegu",
+      "gwangju": "Gwangju",
+      "daejeon": "Daejeon",
+      "ulsan": "Ulsan",
+      "sejong": "Sejong",
+      "gyeonggi": "Gyeonggi",
+      "gangwon": "Gangwon",
+      "chungbuk": "North Chungcheong",
+      "chungnam": "South Chungcheong",
+      "jeonbuk": "North Jeolla",
+      "jeonnam": "South Jeolla",
+      "gyeongnam": "South Gyeongsang",
+      "more": "他の地域",
+      "less": "Show fewer"
     },
     "filters": {
       "title": "タイプで絞り込む",
