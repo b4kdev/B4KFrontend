@@ -52,7 +52,10 @@ export default function POIBottomSheet({
   }, [isOpen, onDismiss])
 
   async function handleShare() {
-    const url = `${window.location.origin}/map?poi=${poi.poi_id}`
+    // BLK-11: share the real canonical POI page, not /map?poi= — a recipient
+    // without an active map session gets real SSR content instead of an
+    // interactive map trying to boot into a specific overlay state.
+    const url = `${window.location.origin}/place/${poi.poi_id}`
     try {
       if (navigator.share) await navigator.share({ title: name, url })
       else await navigator.clipboard.writeText(url)
