@@ -1765,9 +1765,9 @@
     "actionFailed": "Algo deu errado. Tente novamente."
   },
   "place": {
-    "imagePending": "Image being prepared",
-    "viewOnMap": "View on Map",
-    "saves": "saves",
-    "fallbackDescription": "{name} — discover this spot in Korea."
+    "imagePending": "Imagem sendo preparada",
+    "viewOnMap": "Ver no mapa",
+    "saves": "salvos",
+    "fallbackDescription": "{name} — descubra este lugar na Coreia."
   }
 }
