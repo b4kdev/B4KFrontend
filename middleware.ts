@@ -81,8 +81,22 @@ const BYPASS_TOKEN = process.env.MAINTENANCE_BYPASS_TOKEN
 const BYPASS_COOKIE = 'b4k_bypass'
 const BYPASS_PATH = '/api/maintenance-bypass'
 
+// Plain-JS constant-time compare — middleware runs on the Edge Runtime, which
+// has no Node `crypto` module (`crypto.timingSafeEqual` isn't available here),
+// only Web-standard APIs. XORs every byte regardless of an early mismatch so
+// comparison time doesn't leak how many leading bytes matched.
+function timingSafeEqual(a: string, b: string): boolean {
+  const bufA = new TextEncoder().encode(a)
+  const bufB = new TextEncoder().encode(b)
+  if (bufA.length !== bufB.length) return false
+  let diff = 0
+  for (let i = 0; i < bufA.length; i++) diff |= bufA[i] ^ bufB[i]
+  return diff === 0
+}
+
 function isBypassed(req: NextRequest): boolean {
-  return Boolean(BYPASS_TOKEN) && req.cookies.get(BYPASS_COOKIE)?.value === BYPASS_TOKEN
+  const cookieValue = req.cookies.get(BYPASS_COOKIE)?.value
+  return Boolean(BYPASS_TOKEN) && Boolean(cookieValue) && timingSafeEqual(cookieValue!, BYPASS_TOKEN!)
 }
 
 function maintenanceResponse(): NextResponse {
