@@ -1763,5 +1763,11 @@
   "toast": {
     "dismiss": "ปิด",
     "actionFailed": "เกิดข้อผิดพลาด ลองอีกครั้ง"
+  },
+  "place": {
+    "imagePending": "Image being prepared",
+    "viewOnMap": "View on Map",
+    "saves": "saves",
+    "fallbackDescription": "{name} — discover this spot in Korea."
   }
 }
