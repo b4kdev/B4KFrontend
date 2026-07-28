@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
-import { fetchDbDraft, type BffItinerary } from '@/lib/itinerary'
+import type { BffItinerary } from '@/lib/itinerary'
 
 export interface PlanStop {
   poi_id:      string
@@ -75,11 +75,6 @@ export async function GET(req: Request) {
 // carries only a flat stop order — no day assignment survives the contract).
 // status 'confirmed': this is an explicit user save, and only confirmed plans
 // can be published by the follow-up PATCH { is_published: true }.
-//
-// BLK-08: the autosave path (POST /api/plans/draft) already has a status:'draft'
-// row for this account by the time the user hits "Save Plan" — check for it
-// first and PUT-convert that same row to status:'confirmed' instead of always
-// POSTing a fresh one, or every confirmed save orphans its own draft row.
 export async function POST(req: Request) {
   const auth = await getSessionAuth()
   if (!auth) return unauthorized()
@@ -102,45 +97,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'stops required' }, { status: 400 })
   }
 
-  const title = typeof body.title === 'string' && body.title.trim() ? body.title : null
-
   try {
-    const existingDraft = await fetchDbDraft(auth.token)
-
-    let planId: number
-    let planTitle: string
-    let createdAt: string
-
-    if (existingDraft) {
-      await bffFetch(`/itineraries/${existingDraft.itinerary_id}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          days:   [{ day_number: 1, places }],
-          title,
-          status: 'confirmed',
-        }),
-        token: auth.token,
-      })
-      planId    = existingDraft.itinerary_id
-      planTitle = title ?? existingDraft.title
-      createdAt = existingDraft.created_at ?? existingDraft.updated_at ?? new Date().toISOString()
-    } else {
-      const created = await bffFetch<BffItinerary>('/itineraries', {
-        method: 'POST',
-        body: JSON.stringify({
-          days:   [{ day_number: 1, places }],
-          title,
-          status: 'confirmed',
-        }),
-        token: auth.token,
-      })
-      planId    = created.itinerary_id
-      planTitle = created.title
-      createdAt = created.created_at ?? new Date().toISOString()
-    }
+    const created = await bffFetch<BffItinerary>('/itineraries', {
+      method: 'POST',
+      body: JSON.stringify({
+        days:   [{ day_number: 1, places }],
+        title:  typeof body.title === 'string' && body.title.trim() ? body.title : null,
+        status: 'confirmed',
+      }),
+      token: auth.token,
+    })
 
     if (body.is_published === true) {
-      await bffFetch(`/itineraries/${planId}/publish`, {
+      await bffFetch(`/itineraries/${created.itinerary_id}/publish`, {
         method: 'POST',
         body:   JSON.stringify({ is_public: true }),
         token:  auth.token,
@@ -148,14 +117,14 @@ export async function POST(req: Request) {
     }
 
     const plan: Plan = {
-      id:           String(planId),
-      title:        planTitle,
-      stop_count:   places.length,
-      is_published: body.is_published === true,
-      is_partner:   false,
-      created_at:   createdAt,
+      id:           String(created.itinerary_id),
+      title:        created.title,
+      stop_count:   created.total_places ?? places.length,
+      is_published: body.is_published === true || (created.is_public ?? false),
+      is_partner:   created.is_partner ?? false,
+      created_at:   created.created_at ?? new Date().toISOString(),
     }
-    return NextResponse.json({ plan }, { status: existingDraft ? 200 : 201 })
+    return NextResponse.json({ plan }, { status: 201 })
   } catch (e) {
     return bffErrorResponse(e)
   }

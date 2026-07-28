@@ -61,7 +61,7 @@ body {
 
   /* Foreground */
   --fg:          #ffffff;
-  --muted:       rgba(255,255,255,0.60); /* BLK-10: was 0.35 (~3.2:1, WCAG AA fail) — now ~7:1 */
+  --muted:       rgba(255,255,255,0.35);
   --muted-2:     rgba(255,255,255,0.15);
   --muted-3:     rgba(255,255,255,0.06);
   --mut2:        rgba(255,255,255,0.22);
@@ -160,7 +160,7 @@ body {
   --border:  1px solid rgba(0,0,0,0.12);
   --bdr:     1px solid rgba(0,0,0,0.10);
   --lbdr:    1px solid rgba(196,168,224,0.35);
-  --muted:   rgba(0,0,0,0.62); /* BLK-10: was 0.45 (~3.3:1, WCAG AA fail) — now ~5.7-6:1. Not yet reachable (dark-mode-only for MVP) but fixed for correctness */
+  --muted:   rgba(0,0,0,0.45);
   --muted-2: rgba(0,0,0,0.25);
   --muted-3: rgba(0,0,0,0.08);
   --mut2:    rgba(0,0,0,0.35);

@@ -3,8 +3,6 @@
 // because Next.js route.ts files may only export HTTP handlers + route config —
 // any other export breaks `next build`'s generated route types.
 
-import { bffFetch } from './bff'
-
 export interface ItineraryStop {
   stop_order: number
   day: number | null
@@ -144,26 +142,6 @@ export function toBffMode(mode: string): 'driving' | 'transit' | 'walking' {
 }
 
 export const isNumericId = (id: string) => /^\d+$/.test(id)
-
-// list_my_itineraries item (GET /me/itineraries?status=draft) — the account's
-// single working draft, if any. Shared by app/api/plans/draft (autosave) and
-// app/api/plans (Save Plan confirm, BLK-08) so both check the same row before
-// deciding create-vs-reuse.
-export interface DbDraftSummary {
-  itinerary_id: number
-  title: string
-  total_places: number
-  created_at?: string
-  updated_at?: string
-}
-
-export async function fetchDbDraft(token: string): Promise<DbDraftSummary | null> {
-  const items = await bffFetch<DbDraftSummary[]>(
-    '/me/itineraries?status=draft&limit=1',
-    { token },
-  )
-  return items?.[0] ?? null
-}
 
 /** Flatten BFF days into a single ordered stop list with a global stop_order
  *  (1-based, day order then visit order) — the frontend contract has no
