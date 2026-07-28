@@ -7,6 +7,7 @@ import {
   Noto_Sans_TC,
   IBM_Plex_Sans_Thai,
 } from 'next/font/google';
+import localFont from 'next/font/local';
 import { getLocale } from 'next-intl/server';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -54,6 +55,18 @@ const ibmPlexSansThai = IBM_Plex_Sans_Thai({
   display: 'swap',
 });
 
+// BLK-30: was a raw @font-face in globals.css with no fallback-metrics override,
+// unlike every font above — a real (if secondary) CLS contributor on the hero
+// heading. next/font/local generates the ascent/descent/size-adjust override
+// automatically, same as the next/font/google fonts above.
+const moderniz = localFont({
+  src: '../public/fonts/moderniz.woff2',
+  weight: '900',
+  style: 'normal',
+  variable: '--font-moderniz',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: 'B4K | Korea Travel & Culture',
@@ -82,7 +95,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`${workSans.variable} ${ibmPlexMono.variable} ${mPlus1.variable} ${notoSansSC.variable} ${notoSansTC.variable} ${ibmPlexSansThai.variable}`}
+      className={`${workSans.variable} ${ibmPlexMono.variable} ${mPlus1.variable} ${notoSansSC.variable} ${notoSansTC.variable} ${ibmPlexSansThai.variable} ${moderniz.variable}`}
     >
       <body className="antialiased">
         {children}

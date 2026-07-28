@@ -26,9 +26,11 @@ function CarouselSkeleton() {
   );
 }
 
-export default function MainCarousel() {
+export default function MainCarousel({ initialData }: { initialData?: HomeCarouselSlide[] }) {
   const tCarousel = useTranslations('home.carousel');
-  const { data, isLoading, error } = useSWR<HomeCarouselSlide[]>('/api/home/carousel', fetcher);
+  const { data, error } = useSWR<HomeCarouselSlide[]>('/api/home/carousel', fetcher, {
+    fallbackData: initialData,
+  });
 
   const [idx, setIdx] = useState(0);
   const [prefersReduced, setPrefersReduced] = useState(false);
@@ -54,14 +56,21 @@ export default function MainCarousel() {
     if (total > 0 && idx >= total) setIdx(0);
   }, [total, idx]);
 
-  if (isLoading) return <CarouselSkeleton />;
-  // SPEC-01: every other section hides itself on fetch failure; Hero is the
-  // one exception — its errors escalate to the page-level error boundary
-  // (app/[locale]/error.tsx) instead of silently disappearing.
-  if (error) throw error;
+  // Check `data` before `isLoading` — SWR's `isLoading` reflects an in-flight
+  // background revalidation and ignores `fallbackData` by design, so with
+  // fallbackData set it's `true` on mount even though real slides are already
+  // available. Gating on `data` first is what actually makes the SSR'd hero
+  // fallback show immediately instead of the skeleton.
+  if (!data) {
+    // SPEC-01: every other section hides itself on fetch failure; Hero is the
+    // one exception — its errors escalate to the page-level error boundary
+    // (app/[locale]/error.tsx) instead of silently disappearing.
+    if (error) throw error;
+    return <CarouselSkeleton />;
+  }
   // Genuinely empty (loaded, zero slides) is not an error — hide like any
   // other section, rest of the page still loads.
-  if (!data || total === 0) return null;
+  if (total === 0) return null;
 
   const prev = () => setIdx((i) => (i - 1 + total) % total);
   const next = () => setIdx((i) => (i + 1) % total);
@@ -90,6 +99,7 @@ export default function MainCarousel() {
               alt=""
               fillContainer
               priority={i === 0}
+              sizes="100vw"
             />
           )}
         </div>

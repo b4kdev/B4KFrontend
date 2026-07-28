@@ -78,11 +78,24 @@ function mapPlace(row: RawPlace, locale: string): MapPoi {
 // no city-level row (province is 경북, which also covers other Gyeongbuk cities) —
 // best available match, not exact.
 const REGION_API_NAME: Record<string, string> = {
-  Seoul:    '서울',
-  Busan:    '부산',
-  Jeju:     '제주',
-  Incheon:  '인천',
-  Gyeongju: '경북',
+  Seoul:     '서울',
+  Busan:     '부산',
+  Jeju:      '제주',
+  Incheon:   '인천',
+  Gyeongju:  '경북',
+  // LP_01 "more regions" — remaining first-level administrative divisions
+  Daegu:     '대구',
+  Gwangju:   '광주',
+  Daejeon:   '대전',
+  Ulsan:     '울산',
+  Sejong:    '세종',
+  Gyeonggi:  '경기',
+  Gangwon:   '강원',
+  Chungbuk:  '충북',
+  Chungnam:  '충남',
+  Jeonbuk:   '전북',
+  Jeonnam:   '전남',
+  Gyeongnam: '경남',
 }
 
 // bounds=null → 지도가 아직 idle을 한 번도 안 쐈을 때(초기 로드)의 폴백,

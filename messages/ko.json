@@ -641,7 +641,20 @@
       "jeju": "제주",
       "incheon": "인천",
       "gyeongju": "경주",
-      "more": "더 보기"
+      "daegu": "대구",
+      "gwangju": "광주",
+      "daejeon": "대전",
+      "ulsan": "울산",
+      "sejong": "세종",
+      "gyeonggi": "경기",
+      "gangwon": "강원",
+      "chungbuk": "충북",
+      "chungnam": "충남",
+      "jeonbuk": "전북",
+      "jeonnam": "전남",
+      "gyeongnam": "경남",
+      "more": "더 보기",
+      "less": "간략히 보기"
     },
     "filters": {
       "title": "유형별 필터",
@@ -1763,5 +1776,11 @@
   "toast": {
     "dismiss": "닫기",
     "actionFailed": "문제가 발생했습니다. 다시 시도해 주세요."
+  },
+  "place": {
+    "imagePending": "이미지 준비 중",
+    "viewOnMap": "지도에서 보기",
+    "saves": "저장",
+    "fallbackDescription": "{name} — 한국에서 만나는 특별한 장소."
   }
 }

@@ -341,7 +341,7 @@ function PoiSection({
               <button
                 className="w-full flex items-center gap-sp-3 px-sp-4 py-sp-3 text-left hover:bg-muted-3 transition-colors min-h-touch"
                 style={{ borderBottom: 'var(--bdr)' }}
-                onClick={() => router.push(`/map?poi=${poi.poi_id}`)}
+                onClick={() => router.push(`/place/${poi.poi_id}`)}
                 aria-label={t('poiAriaLabel', { name, region: poi.display_region })}
               >
                 <div

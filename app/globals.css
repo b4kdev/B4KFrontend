@@ -1,10 +1,5 @@
-@font-face {
-  font-family: 'MODERNIZ';
-  src: url('/fonts/moderniz.woff2') format('woff2');
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
+/* MODERNIZ now loaded via next/font/local in app/layout.tsx (--font-moderniz) —
+   gets Next's automatic fallback-metrics override, unlike this raw @font-face. */
 
 /* Pretendard — SIL OFL 1.1, Kil Hyung-jin (github.com/orioncactus/pretendard) */
 @font-face {
@@ -66,7 +61,7 @@ body {
 
   /* Foreground */
   --fg:          #ffffff;
-  --muted:       rgba(255,255,255,0.35);
+  --muted:       rgba(255,255,255,0.60); /* BLK-10: was 0.35 (~3.2:1, WCAG AA fail) — now ~7:1 */
   --muted-2:     rgba(255,255,255,0.15);
   --muted-3:     rgba(255,255,255,0.06);
   --mut2:        rgba(255,255,255,0.22);
@@ -122,7 +117,7 @@ body {
   --sp-20: 80px;
 
   /* Typography */
-  --f-display: 'MODERNIZ', system-ui, -apple-system, sans-serif;
+  --f-display: var(--font-moderniz), system-ui, -apple-system, sans-serif;
   --f-body:    var(--font-work-sans, 'Work Sans'), system-ui, -apple-system, sans-serif;
   --f-mono:    var(--font-ibm-plex-mono, 'IBM Plex Mono', 'Courier New', monospace);
 
@@ -165,7 +160,7 @@ body {
   --border:  1px solid rgba(0,0,0,0.12);
   --bdr:     1px solid rgba(0,0,0,0.10);
   --lbdr:    1px solid rgba(196,168,224,0.35);
-  --muted:   rgba(0,0,0,0.45);
+  --muted:   rgba(0,0,0,0.62); /* BLK-10: was 0.45 (~3.3:1, WCAG AA fail) — now ~5.7-6:1. Not yet reachable (dark-mode-only for MVP) but fixed for correctness */
   --muted-2: rgba(0,0,0,0.25);
   --muted-3: rgba(0,0,0,0.08);
   --mut2:    rgba(0,0,0,0.35);

@@ -76,7 +76,7 @@ export default function HomePoiCard({ poi, badge }: Props) {
       style={{ width: 'clamp(220px, 44vw, 280px)', background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
     >
       <Link
-        href={`/map?poi=${poi.poi_id}`}
+        href={`/place/${poi.poi_id}`}
         className="flex flex-col hover:opacity-90 transition-opacity"
         aria-label={t('ariaLabel', { name, region: poi.display_region })}
       >

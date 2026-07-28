@@ -10,7 +10,7 @@ const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.clarity.ms https://oapi.map.naver.com https://*.pstatic.net",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://res.cloudinary.com https://lh3.googleusercontent.com https://*.pstatic.net https://*.map.naver.com https://*.clarity.ms",
+  "img-src 'self' data: blob: https://lh3.googleusercontent.com https://*.pstatic.net https://*.map.naver.com https://*.clarity.ms",
   "font-src 'self' data:",
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.b4korea.com https://www.google-analytics.com https://analytics.google.com https://*.clarity.ms https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://*.nelo.navercorp.com",
   "frame-ancestors 'none'",
@@ -81,8 +81,22 @@ const BYPASS_TOKEN = process.env.MAINTENANCE_BYPASS_TOKEN
 const BYPASS_COOKIE = 'b4k_bypass'
 const BYPASS_PATH = '/api/maintenance-bypass'
 
+// Plain-JS constant-time compare — middleware runs on the Edge Runtime, which
+// has no Node `crypto` module (`crypto.timingSafeEqual` isn't available here),
+// only Web-standard APIs. XORs every byte regardless of an early mismatch so
+// comparison time doesn't leak how many leading bytes matched.
+function timingSafeEqual(a: string, b: string): boolean {
+  const bufA = new TextEncoder().encode(a)
+  const bufB = new TextEncoder().encode(b)
+  if (bufA.length !== bufB.length) return false
+  let diff = 0
+  for (let i = 0; i < bufA.length; i++) diff |= bufA[i] ^ bufB[i]
+  return diff === 0
+}
+
 function isBypassed(req: NextRequest): boolean {
-  return Boolean(BYPASS_TOKEN) && req.cookies.get(BYPASS_COOKIE)?.value === BYPASS_TOKEN
+  const cookieValue = req.cookies.get(BYPASS_COOKIE)?.value
+  return Boolean(BYPASS_TOKEN) && Boolean(cookieValue) && timingSafeEqual(cookieValue!, BYPASS_TOKEN!)
 }
 
 function maintenanceResponse(): NextResponse {
