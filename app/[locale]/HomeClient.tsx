@@ -4,6 +4,7 @@ import type { ComponentType } from 'react'
 import useSWR from 'swr'
 import { useTranslations } from 'next-intl'
 import { fetcher } from '@/lib/fetcher'
+import type { HomeCarouselSlide } from '@/app/api/home/carousel/route'
 import MainCarousel from './_components/home/MainCarousel'
 import WeatherWidget from './_components/home/WeatherWidget'
 import TrendingSpots from './_components/home/TrendingSpots'
@@ -57,7 +58,7 @@ const DEFAULT_ORDER = [
   'promotions',
 ]
 
-export default function HomeClient() {
+export default function HomeClient({ initialCarousel }: { initialCarousel: HomeCarouselSlide[] }) {
   const tNav = useTranslations('nav')
   const { data } = useSWR<HomeSectionOrder>('/api/home/section-order', fetcher)
 
@@ -73,7 +74,7 @@ export default function HomeClient() {
     <div className="pb-sp-16">
       <h1 className="sr-only">{tNav('home')}</h1>
       {/* Hero: full bleed — pinned first, never reordered */}
-      <MainCarousel />
+      <MainCarousel initialData={initialCarousel} />
 
       {/* Sections contained to max 1280px */}
       <div className="max-w-[1280px] mx-auto">

@@ -1,11 +1,20 @@
 'use client'
 
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { MapPin, Bookmark, AlertTriangle, Plus, Check } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import type { MapPoi } from '@/hooks/useMapPois'
 
 const REGIONS   = ['Seoul', 'Busan', 'Jeju', 'Incheon', 'Gyeongju'] as const
+// LP_01 "more regions" — remaining 12 of Korea's 17 first-level administrative
+// divisions, revealed on demand instead of always rendering all 17. See REGION_API_NAME
+// in useMapPois.ts for the Korean display_region value each maps to.
+const MORE_REGIONS = [
+  'Daegu', 'Gwangju', 'Daejeon', 'Ulsan', 'Sejong',
+  'Gyeonggi', 'Gangwon', 'Chungbuk', 'Chungnam', 'Jeonbuk', 'Jeonnam', 'Gyeongnam',
+] as const
+type Region = typeof REGIONS[number] | typeof MORE_REGIONS[number]
 const CATEGORIES = ['Palaces', 'Temples', 'Cafes', 'Parks', 'Restaurants', 'Hotels', 'Shopping', 'Museums'] as const
 
 // SC-30 (LP_01–10, S-ZKAIGJ) — cold-start fallback is popular POIs (no
@@ -41,6 +50,8 @@ export default function LeftPanelDefault({
 }: Props) {
   const t = useTranslations('map')
   const recommended = [...pois].sort((a, b) => (b.quality_score ?? 0) - (a.quality_score ?? 0)).slice(0, RECOMMENDED_COUNT)
+  const [showMoreRegions, setShowMoreRegions] = useState(false)
+  const visibleRegions: readonly Region[] = showMoreRegions ? [...REGIONS, ...MORE_REGIONS] : REGIONS
 
   return (
     <div className="flex flex-col h-full overflow-y-auto themed-scrollbar">
@@ -65,7 +76,7 @@ export default function LeftPanelDefault({
           {t('regions.title')}
         </p>
         <div className="flex flex-col gap-0.5">
-          {REGIONS.map(region => {
+          {visibleRegions.map(region => {
             const isActive = activeRegion === region
             return (
               <button
@@ -79,12 +90,17 @@ export default function LeftPanelDefault({
                     : 'text-fg',
                 ].join(' ')}
               >
-                {t(`regions.${region.toLowerCase() as Lowercase<typeof region>}`)}
+                {t(`regions.${region.toLowerCase() as Lowercase<Region>}`)}
               </button>
             )
           })}
-          <button className="catalogue-row text-left w-full min-h-touch px-sp-3 rounded-none text-sm text-muted hover:text-fg hover:bg-overlay-10">
-            {t('regions.more')}
+          <button
+            type="button"
+            onClick={() => setShowMoreRegions(v => !v)}
+            aria-expanded={showMoreRegions}
+            className="catalogue-row text-left w-full min-h-touch px-sp-3 rounded-none text-sm text-muted hover:text-fg hover:bg-overlay-10"
+          >
+            {showMoreRegions ? t('regions.less') : t('regions.more')}
           </button>
         </div>
       </div>

@@ -222,10 +222,6 @@ export const privacyPolicySections: LegalSection[] = [
               <td>Database and authentication hosting</td>
             </tr>
             <tr>
-              <td>Cloudinary</td>
-              <td>Image hosting and delivery</td>
-            </tr>
-            <tr>
               <td>Naver</td>
               <td>Map rendering</td>
             </tr>
@@ -259,10 +255,6 @@ export const privacyPolicySections: LegalSection[] = [
           ·{' '}
           <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer">
             Supabase
-          </a>{' '}
-          ·{' '}
-          <a href="https://cloudinary.com/privacy" target="_blank" rel="noopener noreferrer">
-            Cloudinary
           </a>{' '}
           ·{' '}
           <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">

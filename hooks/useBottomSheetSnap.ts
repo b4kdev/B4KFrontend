@@ -93,7 +93,14 @@ export function useBottomSheetSnap({ open, initialSnap = 'mid', onDismiss, onSna
     // Header zone spans interactive children (Share/X/tabs) too — let taps on
     // those pass through untouched instead of entering the drag state machine.
     if ((e.target as HTMLElement).closest('button, a')) return
-    ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+    // WebKit can throw NotFoundError here ("no active pointer with the given
+    // id") under touch timing Chrome/Firefox tolerate — capture is an
+    // enhancement (keeps the drag tracking if the finger leaves the handle's
+    // bounds), not required for the gesture to work, so a failure here must
+    // not abort the rest of the handler.
+    try {
+      (e.target as HTMLElement).setPointerCapture(e.pointerId)
+    } catch { /* noop — see above */ }
     startY.current = e.clientY
     startOffset.current = offset
     samples.current = [{ y: e.clientY, t: performance.now() }]
@@ -118,7 +125,9 @@ export function useBottomSheetSnap({ open, initialSnap = 'mid', onDismiss, onSna
   const onPointerUp = useCallback((e: React.PointerEvent) => {
     if (!dragging) return
     if (rafId.current != null) { cancelAnimationFrame(rafId.current); rafId.current = null }
-    ;(e.target as HTMLElement).releasePointerCapture?.(e.pointerId)
+    try {
+      (e.target as HTMLElement).releasePointerCapture?.(e.pointerId)
+    } catch { /* noop — same WebKit quirk as setPointerCapture above */ }
     setDragging(false)
 
     // rolling-window velocity (px/ms); +ve = downward

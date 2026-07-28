@@ -83,7 +83,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
       style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
     >
       <Link
-        href={isPartner ? (poi.partner_url ?? `/map?poi=${poi.poi_id}`) : `/map?poi=${poi.poi_id}`}
+        href={isPartner ? (poi.partner_url ?? `/place/${poi.poi_id}`) : `/place/${poi.poi_id}`}
         className="flex flex-col flex-1 transition-opacity hover:opacity-80"
         aria-label={t('card.ariaLabel', { name })}
         target={isPartner ? '_blank' : undefined}

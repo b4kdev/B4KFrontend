@@ -1,10 +1,5 @@
-@font-face {
-  font-family: 'MODERNIZ';
-  src: url('/fonts/moderniz.woff2') format('woff2');
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
+/* MODERNIZ now loaded via next/font/local in app/layout.tsx (--font-moderniz) —
+   gets Next's automatic fallback-metrics override, unlike this raw @font-face. */
 
 /* Pretendard — SIL OFL 1.1, Kil Hyung-jin (github.com/orioncactus/pretendard) */
 @font-face {
@@ -122,7 +117,7 @@ body {
   --sp-20: 80px;
 
   /* Typography */
-  --f-display: 'MODERNIZ', system-ui, -apple-system, sans-serif;
+  --f-display: var(--font-moderniz), system-ui, -apple-system, sans-serif;
   --f-body:    var(--font-work-sans, 'Work Sans'), system-ui, -apple-system, sans-serif;
   --f-mono:    var(--font-ibm-plex-mono, 'IBM Plex Mono', 'Courier New', monospace);
 

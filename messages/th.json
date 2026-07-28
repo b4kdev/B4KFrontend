@@ -641,7 +641,20 @@
       "jeju": "เชจู",
       "incheon": "อินชอน",
       "gyeongju": "คย็องจู",
-      "more": "ภูมิภาคเพิ่มเติม"
+      "daegu": "Daegu",
+      "gwangju": "Gwangju",
+      "daejeon": "Daejeon",
+      "ulsan": "Ulsan",
+      "sejong": "Sejong",
+      "gyeonggi": "Gyeonggi",
+      "gangwon": "Gangwon",
+      "chungbuk": "North Chungcheong",
+      "chungnam": "South Chungcheong",
+      "jeonbuk": "North Jeolla",
+      "jeonnam": "South Jeolla",
+      "gyeongnam": "South Gyeongsang",
+      "more": "ภูมิภาคเพิ่มเติม",
+      "less": "Show fewer"
     },
     "filters": {
       "title": "กรองตามประเภท",
@@ -1763,5 +1776,11 @@
   "toast": {
     "dismiss": "ปิด",
     "actionFailed": "เกิดข้อผิดพลาด ลองอีกครั้ง"
+  },
+  "place": {
+    "imagePending": "Image being prepared",
+    "viewOnMap": "View on Map",
+    "saves": "saves",
+    "fallbackDescription": "{name} — discover this spot in Korea."
   }
 }
