@@ -9,6 +9,7 @@ import { MapPin, Bookmark, Heart } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useSaved } from '@/hooks/useSaved'
+import { useIntersectionOnce } from '@/hooks/useIntersectionOnce'
 import { track } from '@/lib/analytics'
 import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 
@@ -29,6 +30,10 @@ export default function HomePoiCard({ poi, badge }: Props) {
   const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
   const { data: savedData, mutate: mutateSaved } = useSaved()
 
+  const viewRef = useIntersectionOnce<HTMLElement>(() => {
+    track('poi_view', { poi_id: poi.poi_id, domain: poi.display_domain ?? 'unknown', region: poi.display_region ?? undefined, locale, screen_id: 'HM_01' })
+  })
+
   // Seed from the real saved list — undefined until the SWR fetch resolves, then
   // overridden optimistically by handleSave. See EXPLORE-POI-SEED (orchestrator queue).
   const isSavedRemote = !!savedData?.pois.some(p => p.poi_id === poi.poi_id)
@@ -47,14 +52,14 @@ export default function HomePoiCard({ poi, badge }: Props) {
     if (!user) { openAuthGate('save_poi'); return }
     const next = !saved
     setSavedOverride(next)
-    if (next) track('poi_save', { poi_id: poi.poi_id, locale, screen_id: 'HM_01' })
+    if (next) track('poi_save', { poi_id: poi.poi_id, region: poi.display_region ?? undefined, locale, screen_id: 'HM_01' })
     await fetch('/api/saved/poi', {
       method:  next ? 'POST' : 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ poi_id: poi.poi_id }),
     }).then(() => mutateSaved())
       .catch(() => setSavedOverride(!next))
-  }, [user, saved, openAuthGate, poi.poi_id, hasRealId, mutateSaved, locale])
+  }, [user, saved, openAuthGate, poi.poi_id, poi.display_region, hasRealId, mutateSaved, locale])
 
   const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -72,6 +77,7 @@ export default function HomePoiCard({ poi, badge }: Props) {
 
   return (
     <article
+      ref={viewRef}
       className="relative overflow-hidden"
       style={{ width: 'clamp(220px, 44vw, 280px)', background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
     >

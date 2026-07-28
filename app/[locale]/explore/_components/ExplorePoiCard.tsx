@@ -10,10 +10,11 @@ import { getDisplayName } from '@/lib/display-name'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useToast } from '@/contexts/ToastContext'
 import { useSaved } from '@/hooks/useSaved'
+import { useIntersectionOnce } from '@/hooks/useIntersectionOnce'
 import { track } from '@/lib/analytics'
 import type { ExplorePoi } from '@/app/api/explore/[category]/route'
 
-export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
+export default function ExplorePoiCard({ poi, domain }: { poi: ExplorePoi; domain: string }) {
   const t = useTranslations('explore')
   const tToast = useTranslations('toast')
   const locale = useLocale()
@@ -21,6 +22,10 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
   const { open: openAuthGate } = useAuthGate()
   const { showToast } = useToast()
   const { data: savedData, mutate: mutateSaved } = useSaved()
+
+  const viewRef = useIntersectionOnce<HTMLElement>(() => {
+    track('poi_view', { poi_id: poi.poi_id, domain, region: poi.display_region ?? undefined, locale, screen_id: 'explore' })
+  })
 
   const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
 
@@ -54,14 +59,14 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
     if (!user) { openAuthGate('save_poi'); return }
     const next = !saved
     setSavedOverride(next)
-    if (next) track('poi_save', { poi_id: poi.poi_id, locale, screen_id: 'explore' })
+    if (next) track('poi_save', { poi_id: poi.poi_id, region: poi.display_region ?? undefined, locale, screen_id: 'explore' })
     await fetch('/api/saved/poi', {
       method:  next ? 'POST' : 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ poi_id: poi.poi_id }),
     }).then(() => mutateSaved())
       .catch(() => { setSavedOverride(!next); showToast(tToast('actionFailed'), 'error') })
-  }, [user, saved, openAuthGate, poi.poi_id, showToast, tToast, hasRealId, mutateSaved, locale])
+  }, [user, saved, openAuthGate, poi.poi_id, poi.display_region, showToast, tToast, hasRealId, mutateSaved, locale])
 
   const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -79,6 +84,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
 
   return (
     <article
+      ref={viewRef}
       className="flex flex-col overflow-hidden relative w-[clamp(220px,72vw,260px)] shrink-0"
       style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
     >
@@ -88,6 +94,7 @@ export default function ExplorePoiCard({ poi }: { poi: ExplorePoi }) {
         aria-label={t('card.ariaLabel', { name })}
         target={isPartner ? '_blank' : undefined}
         rel={isPartner ? 'noopener noreferrer' : undefined}
+        onClick={isPartner ? () => track('outbound_click', { poi_id: poi.poi_id, type: 'poi', locale, screen_id: 'explore' }) : undefined}
       >
         <div
           className="w-full aspect-[4/3] flex items-center justify-center relative overflow-hidden"

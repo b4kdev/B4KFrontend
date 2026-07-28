@@ -10,8 +10,8 @@ type ExploreDomain = 'kpop' | 'kdrama' | 'kbeauty' | 'kculture'
 
 type AnalyticsEventMap = {
   sign_in: { method: string; is_new_user: boolean }
-  poi_view: { poi_id: string; domain: string }
-  poi_save: { poi_id: string }
+  poi_view: { poi_id: string; domain: string; region?: string }
+  poi_save: { poi_id: string; region?: string }
   plan_create: { method: PlanMethod }
   plan_save: { plan_id: string; stop_count: number; method: PlanMethod }
   ai_open: { entry_point: string }
@@ -19,6 +19,10 @@ type AnalyticsEventMap = {
   content_hub_view: { domain: ExploreDomain }
   plan_share: { plan_id: string }
   lang_switch: { from: string; to: string }
+  // KPI-MEASUREMENT-IMPLEMENTATION-PLAN-2026-07-27.md — closes V2/V3/S2/L1/G1/G3 data gaps.
+  search: { query_raw: string; ui_language: string; result_count: number }
+  outbound_click: { poi_id: string; type: 'poi' | 'package' }
+  share_click: { section: string; method: string }
 }
 
 type BaseParams = { locale: string; screen_id: string }

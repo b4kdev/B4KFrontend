@@ -1,16 +1,18 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { TrendingUp, MapPin, ExternalLink } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import FieldImage from '@/components/ui/FieldImage'
+import { track } from '@/lib/analytics'
 import type { ExplorePoi } from '@/app/api/explore/[category]/route'
 
 // SC-36 (KD_04/KB_04, S-OIRFKM/S-ZVKQUS) — 1 featured wide card above the
 // section's horizontal scroll row. Same fields as ExplorePoiCard, wide layout.
 export default function ExploreFeaturedCard({ poi, domain }: { poi: ExplorePoi; domain?: string }) {
   const t = useTranslations('explore')
+  const locale = useLocale()
   const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
   const isPartner = !!(poi.is_partner && poi.partner_url && /^https?:\/\//.test(poi.partner_url))
 
@@ -19,6 +21,7 @@ export default function ExploreFeaturedCard({ poi, domain }: { poi: ExplorePoi; 
       href={isPartner ? (poi.partner_url ?? `/place/${poi.poi_id}`) : `/place/${poi.poi_id}`}
       target={isPartner ? '_blank' : undefined}
       rel={isPartner ? 'noopener noreferrer' : undefined}
+      onClick={isPartner ? () => track('outbound_click', { poi_id: poi.poi_id, type: 'poi', locale, screen_id: 'explore' }) : undefined}
       className="flex flex-col sm:flex-row overflow-hidden mb-sp-4 transition-opacity hover:opacity-90"
       style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
       aria-label={t('card.ariaLabel', { name })}

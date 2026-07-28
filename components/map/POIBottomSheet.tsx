@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { X, Heart, Bookmark, Plus, Check, Clock, Share2, MapPin, ExternalLink, ImageOff } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import FieldImage from '@/components/ui/FieldImage'
 import { useBottomSheetSnap, type SheetSnap } from '@/hooks/useBottomSheetSnap'
+import { track } from '@/lib/analytics'
 import type { MapPoi } from '@/hooks/useMapPois'
 
 interface Props {
@@ -31,6 +32,7 @@ export default function POIBottomSheet({
   onAddToPlan, onToggleSave, onToggleLike, onDismiss, onSnapChange,
 }: Props) {
   const t = useTranslations('map.poiDetail')
+  const locale = useLocale()
   const addDisabled = planFull && !isInPlan
   const name = getDisplayName(poi)
 
@@ -57,8 +59,10 @@ export default function POIBottomSheet({
     // interactive map trying to boot into a specific overlay state.
     const url = `${window.location.origin}/place/${poi.poi_id}`
     try {
-      if (navigator.share) await navigator.share({ title: name, url })
-      else await navigator.clipboard.writeText(url)
+      let method: 'native' | 'clipboard'
+      if (navigator.share) { await navigator.share({ title: name, url }); method = 'native' }
+      else { await navigator.clipboard.writeText(url); method = 'clipboard' }
+      track('share_click', { section: poi.display_domain ?? 'unknown', method, locale, screen_id: 'MP_10' })
     } catch { /* user cancelled share / clipboard blocked — no-op */ }
   }
 

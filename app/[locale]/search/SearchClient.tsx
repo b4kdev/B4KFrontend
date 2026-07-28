@@ -3,12 +3,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useRouter, Link } from '@/i18n/navigation'
 import { Search, SlidersHorizontal, X, ChevronRight } from 'lucide-react'
 import useSWR from 'swr'
 import { fetcher } from '@/lib/fetcher'
 import { getDisplayName } from '@/lib/display-name'
+import { track } from '@/lib/analytics'
 import type { SearchPoi, SearchPlan, SearchExplore } from '@/app/api/search/route'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -535,6 +536,7 @@ function MobileFilterSheet({
 
 export default function SearchClient() {
   const t = useTranslations('search')
+  const locale = useLocale()
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -627,6 +629,20 @@ export default function SearchClient() {
     : null
 
   const { data, error, isLoading, mutate } = useSWR<SearchResponse>(swrKey, fetcher)
+
+  // V2/V3 (Japan search-satisfaction) — query_raw stays exactly what the user
+  // typed, no normalization, per KPI-SYSTEM-FINAL-2026-07-27.md §4.
+  useEffect(() => {
+    if (!q || !data) return
+    track('search', {
+      query_raw: q,
+      ui_language: locale,
+      result_count: data.places.length + data.plans.length + data.explore.length,
+      locale,
+      screen_id: 'SC_14',
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data])
 
   const hasResults = data && (
     data.places.length > 0 || data.plans.length > 0 || data.explore.length > 0

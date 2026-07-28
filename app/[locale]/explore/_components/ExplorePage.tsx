@@ -319,7 +319,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                         <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-sp-4 lg:-mx-sp-6 px-sp-4 lg:px-sp-6">
                           <div className="flex gap-sp-3 pb-[4px]" style={{ width: 'max-content' }}>
                             {rest.map(poi => (
-                              <ExplorePoiCard key={poi.poi_id} poi={poi} />
+                              <ExplorePoiCard key={poi.poi_id} poi={poi} domain={HUB_DOMAIN[category]} />
                             ))}
                           </div>
                         </div>
