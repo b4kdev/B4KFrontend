@@ -3,8 +3,8 @@ import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 // POST /api/account/avatar — multipart/form-data with `file` field.
 // Real impl: validate file (type: image/jpeg|png|webp, max 2MB)
-//   → upload to Cloudinary via server-side signed upload (CLOUDINARY_API_SECRET stays server-only)
-//   → UPDATE accounts.users SET avatar_url = <cloudinary secure_url> WHERE id = user.id
+//   → upload via server-side signed upload to whichever image host DEC-55 lands on
+//   → UPDATE accounts.users SET avatar_url = <uploaded url> WHERE id = user.id
 export async function POST(req: NextRequest) {
   const supabase = createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -15,11 +15,11 @@ export async function POST(req: NextRequest) {
   if (!file) {
     return NextResponse.json({ ok: false, error: 'missing_file' }, { status: 400 })
   }
-  return NextResponse.json({ ok: true, avatar_url: 'https://res.cloudinary.com/b4k/image/upload/v1/avatars/stub.jpg' })
+  return NextResponse.json({ ok: true, avatar_url: '/images/avatars/stub.jpg' })
 }
 
 // DELETE /api/account/avatar
-// Real impl: destroy Cloudinary asset → UPDATE accounts.users SET avatar_url = NULL WHERE id = user.id
+// Real impl: destroy the uploaded asset → UPDATE accounts.users SET avatar_url = NULL WHERE id = user.id
 export async function DELETE() {
   const supabase = createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()

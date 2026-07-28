@@ -20,7 +20,7 @@ export interface HomeCarouselSlide {
 }
 
 // Interim content seed — real DB row (poi_id KD016-014), cross-checked against
-// B4K_POI_DB_IMPORT_CLEANED_1500.xlsx. image_url null pending Cloudinary wiring.
+// B4K_POI_DB_IMPORT_CLEANED_1500.xlsx. image_url null - image host TBD, see DEC-55.
 export const SEED: HomeCarouselSlide[] = [
   {
     id: 'KD016-014',

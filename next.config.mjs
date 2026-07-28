@@ -9,9 +9,6 @@ const nextConfig = {
     remotePatterns: [
       // Google OAuth avatar (accounts.google.com / *.googleusercontent.com)
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
-      // Cloudinary — not wired into any image_url yet (route files say "pending"),
-      // whitelisted now so next/image doesn't hard-error the moment it is (BLK-30).
-      { protocol: 'https', hostname: 'res.cloudinary.com' },
     ],
   },
 };
