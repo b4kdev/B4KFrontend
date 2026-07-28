@@ -641,7 +641,20 @@
       "jeju": "Jeju",
       "incheon": "Incheon",
       "gyeongju": "Gyeongju",
-      "more": "More regions"
+      "daegu": "Daegu",
+      "gwangju": "Gwangju",
+      "daejeon": "Daejeon",
+      "ulsan": "Ulsan",
+      "sejong": "Sejong",
+      "gyeonggi": "Gyeonggi",
+      "gangwon": "Gangwon",
+      "chungbuk": "North Chungcheong",
+      "chungnam": "South Chungcheong",
+      "jeonbuk": "North Jeolla",
+      "jeonnam": "South Jeolla",
+      "gyeongnam": "South Gyeongsang",
+      "more": "More regions",
+      "less": "Show fewer"
     },
     "filters": {
       "title": "Filter by Type",
