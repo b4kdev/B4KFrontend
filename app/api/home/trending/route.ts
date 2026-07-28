@@ -16,8 +16,8 @@ export interface HomeTrendingPoi {
 // Interim content seed — every row cross-checked against
 // B4K_POI_DB_IMPORT_CLEANED_1500.xlsx (poi_id/coords are the real DB values).
 // save_count is 0 for all rows: no real engagement data exists pre-launch and
-// this file does not fabricate social-proof numbers. primary_image_url is null
-// pending Cloudinary wiring. Replace this seed with the real BFF call once
+// this file does not fabricate social-proof numbers. primary_image_url is null -
+// image host TBD, see DEC-55. Replace this seed with the real BFF call once
 // dev friend wires /places (or an equivalent trending endpoint) — see DEC-50.
 const SEED: HomeTrendingPoi[] = [
   { poi_id: 'KP-207', name_ko: '올림픽공원 KSPO DOME', name_en: 'KSPO Dome Olympic Park', display_region: 'Songpa-gu, Seoul', display_domain: 'k-pop', save_count: 0, primary_image_url: '/images/home/trending/KP-207_kspo-dome-olympic-park.webp', coords_lat: 37.5192612328545, coords_lng: 127.1273998904141 },

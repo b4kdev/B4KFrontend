@@ -92,7 +92,7 @@ const FACET_BY_CATEGORY: Record<string, keyof ExplorePoi | undefined> = {
 // per-section facet yet — see comment on `base` below). Every row cross-checked
 // against B4K_POI_DB_IMPORT_CLEANED_1500.xlsx (poi_id/coords are the real DB
 // values). quality_score 0 / is_trending false: no real engagement signal to
-// report yet, not fabricated. primary_image_url null pending Cloudinary wiring.
+// report yet, not fabricated. primary_image_url null - image host TBD, see DEC-55.
 // `packages` stays [] on every category — no confirmed real partner_url to ship
 // (see DEC-50). Replace with the real per-section BFF facet once it exists.
 const SEED_HERO: Record<string, ExploreHeroSlide[]> = {

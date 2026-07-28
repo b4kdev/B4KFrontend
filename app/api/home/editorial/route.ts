@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { HomeTrendingPoi } from '../trending/route'
 
 // Interim content seed — cross-checked against B4K_POI_DB_IMPORT_CLEANED_1500.xlsx.
-// save_count 0 (no real engagement data), primary_image_url null (Cloudinary pending).
+// save_count 0 (no real engagement data), primary_image_url null - image host TBD, see DEC-55.
 const SEED: HomeTrendingPoi[] = [
   { poi_id: 'KD016-014', name_ko: '경복궁', name_en: 'Gyeongbokgung Palace', display_region: 'Jongno-gu, Seoul', display_domain: 'k-culture', save_count: 0, primary_image_url: '/images/home/editorial/KD016-014_gyeongbokgung-palace.webp', coords_lat: 37.57761328825821, coords_lng: 126.9768978683218 },
   { poi_id: 'KP-008', name_ko: 'WORLD K POP CENTER', name_en: 'World K-Pop Center — HYBE Insight', display_region: 'Yongsan-gu, Seoul', display_domain: 'k-pop', save_count: 0, primary_image_url: '/images/home/editorial/KP-008_world-kpop-center-hybe-insight.webp', coords_lat: 37.55486756994441, coords_lng: 126.9687440242792 },
