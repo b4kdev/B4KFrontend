@@ -100,7 +100,7 @@ export default function MapView() {
   useEffect(() => {
     if (!selectedPoiId) return
     const poi = pois.find(p => p.poi_id === selectedPoiId)
-    if (poi) track('poi_view', { poi_id: poi.poi_id, domain: poi.display_domain ?? 'unknown', locale, screen_id: 'MP_01' })
+    if (poi) track('poi_view', { poi_id: poi.poi_id, domain: poi.display_domain ?? 'unknown', region: poi.display_region ?? undefined, locale, screen_id: 'MP_01' })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPoiId])
 
@@ -415,7 +415,7 @@ export default function MapView() {
       } else {
         next.add(poi.poi_id)
         showToast(t('poiDetail.savedToast'))
-        track('poi_save', { poi_id: poi.poi_id, locale, screen_id: 'MP_01' })
+        track('poi_save', { poi_id: poi.poi_id, region: poi.display_region ?? undefined, locale, screen_id: 'MP_01' })
       }
       return next
     })

@@ -1,10 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import useSWR from 'swr'
 import { ExternalLink, Package } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
+import { track } from '@/lib/analytics'
 import SectionHead from './SectionHead'
 import HScrollRow from './HScrollRow'
 import type { HomePartnerPackage } from '@/app/api/home/partner-packages/route'
@@ -27,6 +28,7 @@ function CardSkeleton() {
 
 export default function PartnerPackages() {
   const t = useTranslations('home.partnerPackages')
+  const locale = useLocale()
   const { data, isLoading } = useSWR<HomePartnerPackage[]>('/api/home/partner-packages', fetcher)
 
   if (!isLoading && (!data || data.length === 0)) return null
@@ -47,6 +49,7 @@ export default function PartnerPackages() {
               href={pkg.partner_url}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => track('outbound_click', { poi_id: pkg.id, type: 'package', locale, screen_id: 'HM_01' })}
               className="flex flex-col overflow-hidden hover:opacity-90 transition-opacity"
               style={{ width: 'clamp(220px, 60vw, 260px)', background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
               aria-label={t('card.ariaLabel', { title: pkg.title, partner: pkg.partner_name })}
