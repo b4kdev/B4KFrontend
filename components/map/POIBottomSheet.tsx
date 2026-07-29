@@ -127,6 +127,9 @@ export default function POIBottomSheet({
               domain={poi.display_domain ?? undefined}
               aspectRatio="16/9"
               className="-mx-sp-4 mb-sp-3"
+              /* 바텀시트는 모바일 전용(lg 미만)이라 뷰포트 전폭이 맞다.
+                 명시하지 않으면 기본값도 100vw 이지만, 의도를 드러내려고 적어둔다. */
+              sizes="100vw"
             />
           ) : (
             <div className="-mx-sp-4 mb-sp-3 bg-bg-3 flex flex-col items-center justify-center gap-sp-2" style={{ aspectRatio: '16/9' }}>

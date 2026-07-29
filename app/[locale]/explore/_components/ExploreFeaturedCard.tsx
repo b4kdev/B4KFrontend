@@ -33,6 +33,11 @@ export default function ExploreFeaturedCard({ poi, domain }: { poi: ExplorePoi; 
             alt={name}
             domain={domain}
             aspectRatio="16/9"
+            /* 데스크톱(lg~)은 좌측 사이드바 --sidebar(420px) + 본문 좌우 패딩
+               sp-6(24px×2) 을 뺀 폭. 그 미만에서는 사이드바가 hidden 이라 전폭.
+               ※ 이 카드는 데스크톱에서 ~1450px 까지 커지는데 TourAPI 원본이 940px 가
+                 한계라 업스케일은 불가피하다(소스 제약, sizes 로는 못 고침). */
+            sizes="(max-width: 1024px) 100vw, calc(100vw - 468px)"
           />
         ) : (
           <div
