@@ -6,9 +6,12 @@ import { createServerClient } from '@supabase/ssr'
 import { routing } from './i18n/routing'
 
 // ── Security headers ────────────────────────────────────────────────────────────
+// 'unsafe-eval' is added to script-src only in dev — Next.js Fast Refresh
+// runtime uses eval() to apply hot updates. Production builds don't need it.
+const isDev = process.env.NODE_ENV === 'development'
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.clarity.ms https://oapi.map.naver.com https://*.pstatic.net",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://*.clarity.ms https://oapi.map.naver.com https://*.pstatic.net`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://lh3.googleusercontent.com https://*.pstatic.net https://*.map.naver.com https://*.clarity.ms",
   "font-src 'self' data:",
