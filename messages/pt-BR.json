@@ -1283,6 +1283,15 @@
         "selectAria": "Filtrar por {name}",
         "empty": "Nenhum artista para mostrar ainda"
       }
+    },
+    "footsteps": {
+      "breadcrumb": "Passos",
+      "title": "Passos",
+      "subtitle": "{count} lugares",
+      "filterAll": "Todos",
+      "filterMuseum": "Museus",
+      "filterPark": "Parques",
+      "filterCafe": "Cafés"
     }
   },
   "saved": {

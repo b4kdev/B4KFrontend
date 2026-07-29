@@ -1283,6 +1283,15 @@
         "selectAria": "Filter by {name}",
         "empty": "No artists to show yet"
       }
+    },
+    "footsteps": {
+      "breadcrumb": "Footsteps",
+      "title": "Footsteps",
+      "subtitle": "{count} places",
+      "filterAll": "All",
+      "filterMuseum": "Museums",
+      "filterPark": "Parks",
+      "filterCafe": "Cafés"
     }
   },
   "saved": {

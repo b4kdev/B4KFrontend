@@ -1283,6 +1283,15 @@
         "selectAria": "{name} 필터",
         "empty": "표시할 아티스트가 없습니다"
       }
+    },
+    "footsteps": {
+      "breadcrumb": "발자취",
+      "title": "발자취",
+      "subtitle": "{count}곳",
+      "filterAll": "전체",
+      "filterMuseum": "미술관",
+      "filterPark": "공원",
+      "filterCafe": "카페"
     }
   },
   "saved": {
