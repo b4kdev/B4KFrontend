@@ -1232,7 +1232,10 @@
       "food": "Comida",
       "festivals": "Festivais",
       "crafts": "Artesanato",
-      "trending": "Em Alta Agora"
+      "trending": "Em Alta Agora",
+      "agencyHq": "Sede da Agência",
+      "memberFootsteps": "Passos dos Membros",
+      "birthdayCafe": "Cafés de Aniversário do Mês"
     },
     "viewAll": "Ver tudo",
     "viewAllAria": "Ver tudo de {section}",
@@ -1249,7 +1252,9 @@
         "HYBE": "HYBE",
         "SM": "SM",
         "JYP": "JYP",
-        "YG": "YG"
+        "YG": "YG",
+        "STARSHIP": "STARSHIP",
+        "KQ": "KQ"
       },
       "district": {
         "Apgujeong": "Apgujeong",
@@ -1269,6 +1274,15 @@
       "sponsored": "Patrocinado",
       "viewCta": "Ver",
       "ariaLabel": "{title} por {partner}"
+    },
+    "kpopArtistNav": {
+      "tileGrid": {
+        "ariaLabel": "Navegar por artista",
+        "showMore": "mais {count}",
+        "showLess": "Mostrar menos",
+        "selectAria": "Filtrar por {name}",
+        "empty": "Nenhum artista para mostrar ainda"
+      }
     }
   },
   "saved": {

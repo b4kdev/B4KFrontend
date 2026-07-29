@@ -1232,7 +1232,10 @@
       "food": "グルメ",
       "festivals": "フェスティバル",
       "crafts": "工芸品",
-      "trending": "今話題"
+      "trending": "今話題",
+      "agencyHq": "Agency HQ",
+      "memberFootsteps": "Member Footsteps",
+      "birthdayCafe": "This Month's Birthday Cafés"
     },
     "viewAll": "すべて見る",
     "viewAllAria": "{section}をすべて見る",
@@ -1249,7 +1252,9 @@
         "HYBE": "HYBE",
         "SM": "SM",
         "JYP": "JYP",
-        "YG": "YG"
+        "YG": "YG",
+        "STARSHIP": "STARSHIP",
+        "KQ": "KQ"
       },
       "district": {
         "Apgujeong": "狎鴎亭",
@@ -1269,6 +1274,15 @@
       "sponsored": "広告",
       "viewCta": "見る",
       "ariaLabel": "{partner}による{title}"
+    },
+    "kpopArtistNav": {
+      "tileGrid": {
+        "ariaLabel": "Browse by artist",
+        "showMore": "{count} more",
+        "showLess": "Show less",
+        "selectAria": "Filter by {name}",
+        "empty": "No artists to show yet"
+      }
     }
   },
   "saved": {
