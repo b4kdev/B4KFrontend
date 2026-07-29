@@ -43,6 +43,13 @@ interface CategoryConfig {
    * combined as AND in the fetch query — see the `fetchParams` loop below.
    */
   filters?: ChipFilterConfig[]
+  /**
+   * Per-row "View all" override — a handful of rows deep-link to a dedicated detail
+   * page (DEC-61's masonry pages) instead of the generic `/search?q=` results. Keyed
+   * by section id *within this category* (section ids like 'tours' repeat across
+   * categories with different meaning, so this can't be a single global map).
+   */
+  detailHrefs?: Partial<Record<string, string>>
 }
 
 const CATEGORIES: CategoryConfig[] = [
@@ -67,6 +74,7 @@ const CATEGORIES: CategoryConfig[] = [
       { param: 'broadcaster', values: ['tvN', 'MBC', 'SBS', 'KBS', 'JTBC', 'Netflix'] },
       { param: 'region', values: ['Jeju', 'Ulsan', 'Jeonbuk', 'Jongno'] },
     ],
+    detailHrefs: { filming: '/explore/k-drama/tangerines/filming-spots' },
   },
   {
     id: 'k-beauty',
@@ -343,7 +351,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                         items={section.items}
                         category={category}
                         hubDomain={HUB_DOMAIN[category]}
-                        viewAllHref={`/search?q=${category}`}
+                        viewAllHref={cat.detailHrefs?.[section.id] ?? `/search?q=${category}`}
                         allowFeatured={FEATURED_SECTIONS.has(section.id)}
                       />
                     ))

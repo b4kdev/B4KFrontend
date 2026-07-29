@@ -152,7 +152,10 @@ const SEED_HERO: Record<string, ExploreHeroSlide[]> = {
   // CT_KP_EXT (DEC-60) — reframed to "RM'S MUSEUM ROUTE" per the content plan's canonical
   // page mock (image 3 of the source doc), replacing the old generic KSPO Dome hero.
   'k-pop': [{ id: 'KP-014', badge: 'MEMBER ROUTE', title: "RM's Museum Route", subtitle: '용산구 이태원로 55길 60 — RM이 반복해 찾은 미술관, 그가 남긴 흔적을 따라 걷는 하루 코스.', cta_label: 'FOLLOW THE ROUTE', cta_href: '/explore/k-pop/bts/footsteps', image_url: '/images/explore/kpop/KP-014_leeum-samsung-museum.png' }],
-  'k-drama': [{ id: 'KD002-001b', badge: 'GOBLIN PILGRIMAGE', title: 'Jumunjin Breakwater', subtitle: '강원 강릉시 주문진읍 교항리 — where Kim Shin and Eun-tak first met. The red-scarf photo tradition still lives on.', cta_label: 'SEE THE ROUTE', cta_href: '/map?poi=KD002-001b', image_url: '/images/explore/kdrama/KD002-001b_jumunjin-breakwater-hero.png' }],
+  // DEC-61 — reframed to "TANGERINES · JEJU ROUTE" per the content plan's canonical
+  // page mock (Tangerines = the English title of 폭싹 속았수다), CTA into the new
+  // filming-spots detail page — replaces the old Goblin/Jumunjin Breakwater hero.
+  'k-drama': [{ id: 'KD-SEONGSAN-ILCHULBONG', badge: 'TANGERINES · JEJU ROUTE', title: 'Seongsan Ilchulbong', subtitle: '제주 서귀포시 — 폭싹속았수다 해수 장면의 배경지. 촬영지 24곳이 제주에 모여 있다.', cta_label: 'SEE THE ROUTE', cta_href: '/explore/k-drama/tangerines/filming-spots', image_url: null }],
   'k-beauty': [{ id: 'KB-NEW-065', badge: 'SHOPPING HUB', title: 'Olive Young Myeongdong', subtitle: '중구 명동8길 14 — Korea’s biggest K-beauty retailer, right in the middle of Seoul’s busiest shopping street.', cta_label: 'START SHOPPING', cta_href: '/map?poi=KB-NEW-065', image_url: '/images/home/editorial/KB-NEW-065_olive-young-myeongdong.webp' }],
   'k-culture': [{ id: 'KD016-014', badge: 'ROYAL SEOUL', title: 'Gyeongbokgung Palace', subtitle: '종로구 사직로 161 — Korea’s grandest royal palace, with an hourly changing-of-the-guard ceremony.', cta_label: 'EXPLORE PALACES', cta_href: '/map?poi=KD016-014', image_url: '/images/home/hero/KD016-014_gyeongbokgung-hero-wide.webp' }],
 }
@@ -258,23 +261,38 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
     ],
   },
   'k-drama': {
+    // Kept unchanged — already real/verified, not contradicted by the content plan
+    // (its hub-page crop only showed 4 rows; treated as a partial view, not a
+    // directive to drop this row, per the same judgment call DEC-61 documents).
     tours: [
       { poi_id: 'KD002-001b', name_ko: '주문진방파제', name_en: 'Jumunjin Breakwater', primary_image_url: '/images/explore/kdrama/KD002-001b_jumunjin-breakwater-hero.png', display_region: 'Gangneung, Gangwon', quality_score: 0, is_trending: false, is_featured: true, coords_lat: 37.9036, coords_lng: 128.8286 },
       { poi_id: 'KD002-001', name_ko: '비내섬', name_en: 'Binaeseom Island / Binae Trail', primary_image_url: '/images/explore/kdrama/KD002-001_binaeseom-island.png', display_region: 'Chungju, Chungbuk', quality_score: 0, is_trending: false, coords_lat: 37.10763245243604, coords_lng: 127.8177258622132 },
       { poi_id: 'KD016-003', name_ko: '문경새재 오픈세트장', name_en: 'Mungyeong Saejae Open Set', primary_image_url: '/images/home/trending/KD016-003_mungyeong-saejae-open-set.webp', display_region: 'Mungyeong, Gyeongsangbuk-do', quality_score: 0, is_trending: false, coords_lat: 36.7713996802656, coords_lng: 128.074072026373 },
       { poi_id: 'KD013-009', name_ko: '남이섬', name_en: 'Namiseom Café Area', primary_image_url: '/images/explore/kdrama/KD013-009_namiseom-cafe-area.png', display_region: 'Chuncheon, Gangwon', quality_score: 0, is_trending: false, coords_lat: 37.79144074509299, coords_lng: 127.5252101432974 },
     ],
+    // 촬영지 (DEC-61) — reframed with the content plan's named examples. No real
+    // per-item broadcaster/region attribution exists (same BLK-35-class gap as
+    // K-Pop's concerts/tours/merch), so these stay unfiltered by the new
+    // broadcaster/region chips — all placeholder, no confirmed core.poi row.
     filming: [
-      { poi_id: 'KD003-003', name_ko: '오리올', name_en: 'Oriole Rooftop Bar', primary_image_url: '/images/explore/kdrama/KD003-003_oriole-rooftop-bar.png', display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5316076300166, coords_lng: 126.9920215556666 },
-      { poi_id: 'KD003-014', name_ko: '남산공원', name_en: 'Namsan Park', primary_image_url: '/images/explore/kdrama/KD003-014_namsan-park.png', display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5524979951415, coords_lng: 126.989316855952 },
-      { poi_id: 'KD016-012', name_ko: '용인대장금테마파크', name_en: 'Yongin Dae Jang Geum Park Set', primary_image_url: '/images/home/recommended/KD016-012_yongin-daejanggeum-park.webp', display_region: 'Yongin, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 37.1211916935391, coords_lng: 127.337579430944 },
-      { poi_id: 'KP-0633', name_ko: 'SBS프리즘타워', name_en: 'SBS Prism Tower', primary_image_url: '/images/explore/kdrama/KP-0633_sbs-prism-tower.png', display_region: 'Mapo-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5797103213346, coords_lng: 126.892781019504 },
-      { poi_id: 'KD017-015', name_ko: '청진2리항', name_en: 'Cheongjin 2-ri Breakwater', primary_image_url: '/images/explore/kdrama/KD017-015_cheongjin-2ri-breakwater.png', display_region: 'Pohang, Gyeongbuk', quality_score: 0, is_trending: false, coords_lat: 36.1743210094615, coords_lng: 129.395809146558 },
+      { poi_id: 'KD-PLACEHOLDER-SEOULBAM', name_ko: '서울밤', name_en: 'Seoul Bam', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KD-PLACEHOLDER-HANBYEOKTUNNEL', name_ko: '한벽터널', name_en: 'Hanbyeok Tunnel', primary_image_url: null, display_region: 'Jeonju, Jeonbuk', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KD-PLACEHOLDER-AHYEONSUPER', name_ko: '아현수퍼', name_en: 'Ahyeon Super', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
     ],
+    // 역사적 세트장 (DEC-61) — reframed. Ondal Tourist Site is a real, well-known
+    // public heritage site (Danyang); Cheonjeongjeon/Sungjeongjeon Hall are named
+    // set-hall locations from the content plan without a confirmed core.poi row —
+    // all three ship placeholder pending BLK-37.
     historical: [
-      { poi_id: 'KD020-011', name_ko: '전주한옥마을', name_en: 'Jeonju Hanok Stay', primary_image_url: '/images/explore/kdrama/KD020-011_jeonju-hanok-stay.png', display_region: 'Jeonju, Jeonbuk', quality_score: 0, is_trending: false, coords_lat: 35.81477744329797, coords_lng: 127.1525570014218 },
-      { poi_id: 'KD028-014', name_ko: '운현궁', name_en: 'Unhyeongung Palace', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.576226410093, coords_lng: 126.987085596535 },
-      { poi_id: 'KD005-014', name_ko: '수원화성', name_en: 'Suwon Hwaseong Fortress', primary_image_url: null, display_region: 'Suwon, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 37.2869569586225, coords_lng: 127.011795743342 },
+      { poi_id: 'KD-PLACEHOLDER-CHEONJEONGJEON', name_ko: '천정전', name_en: 'Cheonjeongjeon Hall', primary_image_url: null, display_region: 'Korea', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KD-PLACEHOLDER-SUNGJEONGJEON', name_ko: '숭정전', name_en: 'Sungjeongjeon Hall', primary_image_url: null, display_region: 'Korea', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KD-PLACEHOLDER-ONDAL', name_ko: '온달관광지', name_en: 'Ondal Tourist Site', primary_image_url: null, display_region: 'Danyang, Chungbuk', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      // 지금 뜨는 곳 (auto-populated via is_trending, generic mechanism unchanged for
+      // non-k-pop categories) — Hwahongmun Gate is a real, confirmed public landmark
+      // (Suwon Hwaseong Fortress gate); Gimnyeong Beach is a real Jeju beach, no
+      // confirmed core.poi row of its own yet.
+      { poi_id: 'KD-HWAHONGMUN', name_ko: '화홍문', name_en: 'Hwahongmun Gate', primary_image_url: null, display_region: 'Suwon, Gyeonggi', quality_score: 0, is_trending: true, coords_lat: 37.2925, coords_lng: 127.0177 },
+      { poi_id: 'KD-PLACEHOLDER-GIMNYEONGBEACH', name_ko: '김녕해변', name_en: 'Gimnyeong Beach', primary_image_url: null, display_region: 'Jeju', quality_score: 0, is_trending: true, coords_lat: 0, coords_lng: 0, verified: false },
     ],
     ostCafes: [
       { poi_id: 'KD002-009', name_ko: '제물포구락부', name_en: 'New Jemulpo Club', primary_image_url: '/images/explore/kdrama/KD002-009_new-jemulpo-club.png', display_region: 'Incheon Jung-gu', quality_score: 0, is_trending: false, coords_lat: 37.47463623198604, coords_lng: 126.6225221142413 },
