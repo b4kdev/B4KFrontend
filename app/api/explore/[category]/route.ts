@@ -23,6 +23,30 @@ export interface ExplorePoi {
   // Quick-add-to-plan needs coords — service.places_snapshot has them for real
   coords_lat: number
   coords_lng: number
+  /** CT_KP_EXT (DEC-60) — which artist tile(s) this item belongs to, e.g. ['bts']. */
+  artistIds?: string[]
+  /**
+   * false = placeholder content (invented coords/no confirmed core.poi row) pending
+   * BLK-36 — filtered out of every real response, only visible with ?includeUnverified=1
+   * in non-production. Omitted (undefined) means real/confirmed, same as every existing
+   * seed row above this comment.
+   */
+  verified?: boolean
+}
+
+/** CT_KP_EXT (DEC-60) — artist tile grid entry. Team-level only, no per-member tiles. */
+export interface ExploreArtist {
+  id: string
+  name_ko: string
+  name_en: string
+  agency: string
+  image_url: string | null
+  /**
+   * Team-level simplification: the month a member-tied seasonal row (birthday-cafe)
+   * is live for this team. Real per-member granularity needs the relation BLK-35 asks
+   * dev friend about — this field stands in until that exists.
+   */
+  birthday_month?: number
 }
 
 export interface ExploreSection {
@@ -54,6 +78,8 @@ export interface ExploreData {
   sections: ExploreSection[]
   hero?: ExploreHeroSlide[]
   packages?: ExplorePackage[]
+  /** CT_KP_EXT (DEC-60) — artist tile grid data, k-pop only. [] on other categories. */
+  artists?: ExploreArtist[]
 }
 
 // BFF GET /places item (api.list_places)
@@ -74,7 +100,10 @@ interface BffPlace {
 // CATEGORIES[].sections so headers/labels render correctly once items exist.
 // Category slugs coincide with BFF domain values (k-pop | k-drama | k-beauty | k-culture).
 const SECTIONS_BY_CATEGORY: Record<string, string[]> = {
-  'k-pop': ['concerts', 'tours', 'agencies', 'merchandise'],
+  // 'agencies' renamed 'agencyHq' + 'memberFootsteps' added — CT_KP_EXT (DEC-60).
+  // birthdayCafe intentionally excluded: it's conditionally rendered (see GET), not
+  // a static per-category section like the rest.
+  'k-pop': ['concerts', 'tours', 'agencyHq', 'merchandise', 'memberFootsteps'],
   'k-drama': ['filming', 'tours', 'historical', 'ostCafes'],
   'k-beauty': ['skincare', 'makeup', 'spa', 'salon'],
   'k-culture': ['traditional', 'food', 'festivals', 'crafts'],
@@ -102,31 +131,98 @@ const SEED_HERO: Record<string, ExploreHeroSlide[]> = {
   'k-culture': [{ id: 'KD016-014', badge: 'ROYAL SEOUL', title: 'Gyeongbokgung Palace', subtitle: '종로구 사직로 161 — Korea’s grandest royal palace, with an hourly changing-of-the-guard ceremony.', cta_label: 'EXPLORE PALACES', cta_href: '/map?poi=KD016-014', image_url: '/images/home/hero/KD016-014_gyeongbokgung-hero-wide.webp' }],
 }
 
+// CT_KP_EXT (DEC-60) — artist tile grid roster. Real, publicly-known groups (not
+// fabricated business data) — but which ~23 of ~40 teams are default-shown, and the
+// exact default/reveal ordering, is the content collaborator's curation call and
+// wasn't handed off with this build; this list is a representative placeholder
+// spanning all 6 agencies until the real roster arrives. birthday_month is only set
+// where a curated member-tied row (memberFootsteps/birthdayCafe below) depends on it.
+const SEED_ARTISTS: Record<string, ExploreArtist[]> = {
+  'k-pop': [
+    { id: 'bts', name_ko: '방탄소년단', name_en: 'BTS', agency: 'HYBE', image_url: null, birthday_month: 9 },
+    { id: 'seventeen', name_ko: '세븐틴', name_en: 'SEVENTEEN', agency: 'HYBE', image_url: null },
+    { id: 'txt', name_ko: '투모로우바이투게더', name_en: 'TOMORROW X TOGETHER', agency: 'HYBE', image_url: null },
+    { id: 'enhypen', name_ko: '엔하이픈', name_en: 'ENHYPEN', agency: 'HYBE', image_url: null },
+    { id: 'le-sserafim', name_ko: '르세라핌', name_en: 'LE SSERAFIM', agency: 'HYBE', image_url: null },
+    { id: 'newjeans', name_ko: '뉴진스', name_en: 'NewJeans', agency: 'HYBE', image_url: null },
+    { id: 'aespa', name_ko: '에스파', name_en: 'aespa', agency: 'SM', image_url: null },
+    { id: 'nct-dream', name_ko: 'NCT 드림', name_en: 'NCT DREAM', agency: 'SM', image_url: null },
+    { id: 'red-velvet', name_ko: '레드벨벳', name_en: 'Red Velvet', agency: 'SM', image_url: null },
+    { id: 'exo', name_ko: '엑소', name_en: 'EXO', agency: 'SM', image_url: null },
+    { id: 'riize', name_ko: '라이즈', name_en: 'RIIZE', agency: 'SM', image_url: null },
+    { id: 'blackpink', name_ko: '블랙핑크', name_en: 'BLACKPINK', agency: 'YG', image_url: null },
+    { id: 'treasure', name_ko: '트레저', name_en: 'TREASURE', agency: 'YG', image_url: null },
+    { id: 'babymonster', name_ko: '베이비몬스터', name_en: 'BABYMONSTER', agency: 'YG', image_url: null },
+    { id: 'winner', name_ko: '위너', name_en: 'WINNER', agency: 'YG', image_url: null },
+    { id: 'twice', name_ko: '트와이스', name_en: 'TWICE', agency: 'JYP', image_url: null },
+    { id: 'stray-kids', name_ko: '스트레이 키즈', name_en: 'Stray Kids', agency: 'JYP', image_url: null },
+    { id: 'itzy', name_ko: '있지', name_en: 'ITZY', agency: 'JYP', image_url: null },
+    { id: 'nmixx', name_ko: '엔믹스', name_en: 'NMIXX', agency: 'JYP', image_url: null },
+    { id: 'ive', name_ko: '아이브', name_en: 'IVE', agency: 'STARSHIP', image_url: null },
+    { id: 'monsta-x', name_ko: '몬스타엑스', name_en: 'MONSTA X', agency: 'STARSHIP', image_url: null },
+    { id: 'ateez', name_ko: '에이티즈', name_en: 'ATEEZ', agency: 'KQ', image_url: null },
+  ],
+}
+
 const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
   'k-pop': {
+    // Concerts/tours/merchandise stay UNFILTERED by artist/agency selection — no real
+    // per-item artist attribution exists for these (BLK-35/BLK-36), so tagging them
+    // would mean inventing the exact relation data this build is deliberately not
+    // guessing at. Placeholder (verified:false) rows added below only to preview
+    // SPEC-04's named examples ahead of real coordinates — filtered from real users.
     concerts: [
       { poi_id: 'KP-005', name_ko: '인스파이어 아레나', name_en: 'Inspire Arena', primary_image_url: '/images/explore/kpop/KP-005_inspire-arena.png', display_region: 'Incheon', quality_score: 0, is_trending: false, coords_lat: 37.46668401261223, coords_lng: 126.3905883002809 },
       { poi_id: 'KP-0823', name_ko: '장충체육관', name_en: 'Jangchung Arena', primary_image_url: '/images/explore/kpop/KP-0823_jangchung-arena.png', display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.558178171371, coords_lng: 127.006808757736 },
       { poi_id: 'KP-0824', name_ko: '블루스퀘어', name_en: 'Blue Square', primary_image_url: '/images/explore/kpop/KP-0824_blue-square.png', display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5408611480276, coords_lng: 127.002548167462 },
       { poi_id: 'KP-0864', name_ko: '고척스카이돔', name_en: 'Gocheok Sky Dome', primary_image_url: '/images/explore/kpop/KP-0864_gocheok-sky-dome.png', display_region: 'Guro-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.49821220764421, coords_lng: 126.8670889679075 },
+      // Placeholder — BLK-36 (SPEC-04 names this row's 3rd example, no confirmed core.poi row)
+      { poi_id: 'KP-PLACEHOLDER-OLYMPICHALL', name_ko: '올림픽홀', name_en: 'Olympic Hall', primary_image_url: null, display_region: 'Songpa-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
     ],
     tours: [
       { poi_id: 'KP-014', name_ko: '리움미술관', name_en: 'Leeum Samsung Museum', primary_image_url: '/images/explore/kpop/KP-014_leeum-samsung-museum.png', display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, coords_lat: 37.53833657002706, coords_lng: 126.9991174495516 },
       { poi_id: 'KD024-004', name_ko: 'DDP 동대문디자인플라자', name_en: 'Dongdaemun Design Plaza', primary_image_url: '/images/home/editorial/KD001-019_ddp.webp', display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5671843130818, coords_lng: 127.009911013917 },
       { poi_id: 'KP-067', name_ko: '경리단길', name_en: 'Gyeongridan-gil', primary_image_url: '/images/explore/kpop/KP-067_gyeongridan-gil.png', display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5397580614249, coords_lng: 126.991721972247 },
       { poi_id: 'KP-111', name_ko: '일산호수공원', name_en: 'Ilsan Lake Park', primary_image_url: '/images/explore/kpop/KP-111_ilsan-lake-park.png', display_region: 'Goyang, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 37.6561360415672, coords_lng: 126.764141543966 },
+      // Placeholders — BLK-36 (SPEC-04's named 투어 examples, no confirmed core.poi row)
+      { poi_id: 'KP-PLACEHOLDER-GYEONGBOKGUNG', name_ko: '경복궁', name_en: 'Gyeongbokgung Palace', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KP-PLACEHOLDER-NODEUL', name_ko: '노들섬', name_en: 'Nodeul Island', primary_image_url: null, display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KP-PLACEHOLDER-EULJIRO', name_ko: '을지로', name_en: 'Euljiro', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
     ],
-    agencies: [
+    // Renamed from 'agencies' — CT_KP_EXT reframes this as its own "agency HQ
+    // pilgrimage" row (기획사), not just the chip-filter's backing data. JYP/SM/YG
+    // HQ are the confirmed-real entries (CUBE dropped — no agency tag, not in
+    // SPEC-04's named set). HYBE HQ/Company SooSoo/INB100 are SPEC-04's named "3/5
+    // ready" examples but have no confirmed core.poi row (BLK-36) — placeholder.
+    agencyHq: [
       { poi_id: 'KP-075', name_ko: 'JYP 센터', name_en: 'JYP Center', primary_image_url: '/images/explore/kpop/KP-075_jyp-center.png', display_region: 'Gangdong-gu, Seoul', quality_score: 0, is_trending: false, agency: 'JYP', coords_lat: 37.524129269795, coords_lng: 127.129131076272 },
-      { poi_id: 'KP-192', name_ko: 'SM엔터테인먼트 사옥', name_en: 'SM Entertainment HQ', primary_image_url: '/images/explore/kpop/KP-192_sm-hq.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, agency: 'SM', coords_lat: 37.54414907499344, coords_lng: 127.0433501688011 },
+      { poi_id: 'KP-192', name_ko: 'SM엔터테인먼트 사옥', name_en: 'SM Entertainment HQ', primary_image_url: '/images/explore/kpop/KP-192_sm-hq.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, agency: 'SM', coords_lat: 37.54414907499344, coords_lng: 127.0433501688011 },
       { poi_id: 'KP-199', name_ko: 'YG엔터테인먼트 사옥', name_en: 'YG Entertainment HQ', primary_image_url: '/images/explore/kpop/KP-199_yg-hq.png', display_region: 'Mapo-gu, Seoul', quality_score: 0, is_trending: false, agency: 'YG', coords_lat: 37.5502023926174, coords_lng: 126.918287778213 },
-      { poi_id: 'KP-159', name_ko: '큐브엔터테인먼트', name_en: 'CUBE Entertainment', primary_image_url: '/images/explore/kpop/KP-159_cube-entertainment.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5456099572053, coords_lng: 127.053456066552 },
+      { poi_id: 'KP-PLACEHOLDER-HYBEHQ', name_ko: '하이브 사옥', name_en: 'HYBE Headquarters', primary_image_url: null, display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, agency: 'HYBE', coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KP-PLACEHOLDER-SOOSOO', name_ko: '컴퍼니수수', name_en: 'Company SooSoo', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KP-PLACEHOLDER-INB100', name_ko: 'INB100', name_en: 'INB100', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
     ],
     merchandise: [
       { poi_id: 'KP-0250', name_ko: '더현대 서울', name_en: 'The Hyundai Seoul', primary_image_url: '/images/explore/kpop/KP-0250_the-hyundai-seoul.png', display_region: 'Yeongdeungpo-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.52587207102913, coords_lng: 126.9284461241116 },
       { poi_id: 'KP-1090', name_ko: '커먼그라운드', name_en: 'Common Ground', primary_image_url: '/images/home/new/KP-1090_common-ground.webp', display_region: 'Gwangjin-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.54105555235208, coords_lng: 127.0656686600397 },
       { poi_id: 'KP-0408', name_ko: '케이타운포유 코엑스', name_en: 'Ktown4u COEX', primary_image_url: '/images/explore/kpop/KP-0408_ktown4u-coex.png', display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.50996877837638, coords_lng: 127.0613875508475 },
       { poi_id: 'KP-0409', name_ko: '케이타운포유 인사', name_en: 'Ktown4u Insa', primary_image_url: '/images/explore/kpop/KP-0409_ktown4u-insa.png', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.57446722916056, coords_lng: 126.9835517296716 },
+      // Placeholders — BLK-36 (SPEC-04's named 굿즈 examples, no confirmed core.poi row)
+      { poi_id: 'KP-PLACEHOLDER-LINEFRIENDS', name_ko: '라인프렌즈 스퀘어', name_en: 'LINE FRIENDS SQUARE', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KP-PLACEHOLDER-LOTTESTAR', name_ko: '롯데스타에비뉴', name_en: 'Lotte Star Avenue', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KP-PLACEHOLDER-WITHMUU', name_ko: '위드뮤 홍대', name_en: 'WITHMUU Hongdae', primary_image_url: null, display_region: 'Mapo-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+    ],
+    // NEW — 멤버 발자취 (member footsteps), DEC-60. Cross-cuts categories by which
+    // member visited, tagged with the team id (tile grid is team-level only — see
+    // ExploreArtist comment). Leeum reuses tours' KP-014 poi_id/coords (same real
+    // place, don't fork the record) rather than duplicating it. The other 4 named
+    // in SPEC-04's "RM 미술관 코스 5곳" example have no confirmed core.poi row (BLK-36).
+    memberFootsteps: [
+      { poi_id: 'KP-014', name_ko: '리움미술관', name_en: 'Leeum Samsung Museum', primary_image_url: '/images/explore/kpop/KP-014_leeum-samsung-museum.png', display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.53833657002706, coords_lng: 126.9991174495516, artistIds: ['bts'] },
+      { poi_id: 'KP-PLACEHOLDER-GANAART', name_ko: '가나아트센터', name_en: 'Gana Art Center', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
+      { poi_id: 'KP-PLACEHOLDER-PKM', name_ko: 'PKM갤러리', name_en: 'PKM Gallery', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
+      { poi_id: 'KP-PLACEHOLDER-BUKSEOULMOA', name_ko: '북서울미술관', name_en: 'Buk-Seoul Museum of Art', primary_image_url: null, display_region: 'Nowon-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
+      { poi_id: 'KP-PLACEHOLDER-HOAM', name_ko: '호암미술관', name_en: 'Hoam Museum', primary_image_url: null, display_region: 'Yongin, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
     ],
   },
   'k-drama': {
@@ -206,6 +302,21 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
   },
 }
 
+// CT_KP_EXT (DEC-60) — 이번달 생일카페 (birthday-cafe), the seasonality curation row.
+// Not in SECTIONS_BY_CATEGORY: conditionally rendered client-side only when the
+// selected artist's birthday_month matches the current month (KpopArtistNav), and
+// every item here is a placeholder (BLK-36 — none of these 5 cafés have a confirmed
+// core.poi row), so this section is always empty for real users until that resolves.
+const SEED_BIRTHDAY_CAFE: Record<string, ExplorePoi[]> = {
+  'k-pop': [
+    { poi_id: 'KP-PLACEHOLDER-PIEDPIPER', name_ko: '피리부는사나이', name_en: 'PIED PIPER', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
+    { poi_id: 'KP-PLACEHOLDER-BLACKDRUM', name_ko: '블랙드럼', name_en: 'Black Drum', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
+    { poi_id: 'KP-PLACEHOLDER-KIDMOON', name_ko: '킷문카페', name_en: 'Kidmoon Cafe', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
+    { poi_id: 'KP-PLACEHOLDER-MARINECOFFEE', name_ko: '마린커피', name_en: 'Marine Coffee', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
+    { poi_id: 'KP-PLACEHOLDER-DELULU', name_ko: '델룰루', name_en: 'Delulu', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
+  ],
+}
+
 // next-intl locales (i18n/routing.ts) — translations JSONB keys must match this
 // exact casing (e.g. 'zh-CN' not 'zh_CN') or the lookup below silently misses.
 function mapPlace(p: BffPlace, locale: string): ExplorePoi {
@@ -233,6 +344,14 @@ export async function GET(
 
   const locale = cookies().get('NEXT_LOCALE')?.value ?? 'en'
 
+  // CT_KP_EXT (DEC-60) — dev-only preview of placeholder (verified:false) content so
+  // DoD gates 2/3/6 can be tested against complete-looking rows before BLK-35/BLK-36
+  // resolve. Gated on both the query param AND non-production so it's a no-op if a
+  // stray query param ever reaches a real deploy.
+  const includeUnverified =
+    process.env.NODE_ENV !== 'production' && req.nextUrl.searchParams.get('includeUnverified') === '1'
+  const dropUnverified = (poi: ExplorePoi) => includeUnverified || poi.verified !== false
+
   // BFF domain values match the category slugs 1:1. A BFF failure here must
   // NOT kill the whole response — the interim content seed below (hero +
   // thematic sections) still needs to render even when the real backend is
@@ -255,7 +374,10 @@ export async function GET(
   const base: ExploreData = {
     category: params.category,
     hero: SEED_HERO[params.category] ?? [],
-    sections: sectionIds.map(id => ({ id, items: SEED_SECTIONS[params.category]?.[id] ?? [] })),
+    sections: sectionIds.map(id => ({
+      id,
+      items: (SEED_SECTIONS[params.category]?.[id] ?? []).filter(dropUnverified),
+    })),
     packages: [],
   }
 
@@ -295,11 +417,21 @@ export async function GET(
     })
   }
 
+  // CT_KP_EXT (DEC-60) — birthdayCafe is conditionally rendered client-side (matched
+  // against the selected artist's birthday_month), not per-category static like the
+  // rest — appended here rather than via SECTIONS_BY_CATEGORY. Always empty for real
+  // users today (every seed item is verified:false pending BLK-36).
+  const birthdayCafeSection: ExploreSection = {
+    id: 'birthdayCafe',
+    items: (SEED_BIRTHDAY_CAFE[params.category] ?? []).filter(dropUnverified),
+  }
+
   const data: ExploreData = {
     category: base.category,
     hero: base.hero,
     packages: base.packages,
-    sections: [trendingSection, ...sections],
+    artists: SEED_ARTISTS[params.category] ?? [],
+    sections: [trendingSection, ...sections, birthdayCafeSection],
   }
   return NextResponse.json(data)
 }
