@@ -70,6 +70,14 @@ export interface ExploreHeroSlide {
   cta_label: string
   cta_href: string
   image_url: string | null
+  /**
+   * Same `verified` gate as ExplorePoi (BLK-36/BLK-37) — hero content wasn't
+   * previously filtered by this at all (only sections were), which would have
+   * shown unconfirmed placeholder content to real users unconditionally for any
+   * hero that isn't backed by a real core.poi row (found while wiring K-Beauty's
+   * and K-Food's heroes, neither of which have confirmed coordinates yet).
+   */
+  verified?: boolean
 }
 
 export interface ExplorePackage {
@@ -161,8 +169,17 @@ const SEED_HERO: Record<string, ExploreHeroSlide[]> = {
   'k-drama': [{ id: 'KD-SEONGSAN-ILCHULBONG', badge: 'TANGERINES · JEJU ROUTE', title: 'Seongsan Ilchulbong', subtitle: '제주 서귀포시 — 폭싹속았수다 해수 장면의 배경지. 촬영지 24곳이 제주에 모여 있다.', cta_label: 'SEE THE ROUTE', cta_href: '/explore/k-drama/tangerines/filming-spots', image_url: null }],
   // DEC-61 — reframed to "SEOUL SCENT ROUTE" / NONFICTION Seongsu per the content
   // plan's canonical page mock, replacing the old Olive Young shopping-hub hero.
-  'k-beauty': [{ id: 'KB-PLACEHOLDER-NONFICTIONSEONGSU', badge: 'SEOUL SCENT ROUTE', title: 'NONFICTION Seongsu', subtitle: '성동구 연무장길 — 향수 플래그십 10곳 중 하나, 뷰티에서 유일하게 완전한 컬렉션.', cta_label: 'FOLLOW THE SCENT', cta_href: '/explore/k-beauty/perfume-flagships', image_url: null }],
+  // verified:false — NONFICTION Seongsu has no confirmed core.poi row (BLK-37);
+  // real users see no hero on k-beauty until this resolves (rather than a
+  // fabricated-content hero, which the pre-fix code would have shown — hero
+  // wasn't gated by `verified` at all until this pass).
+  'k-beauty': [{ id: 'KB-PLACEHOLDER-NONFICTIONSEONGSU', badge: 'SEOUL SCENT ROUTE', title: 'NONFICTION Seongsu', subtitle: '성동구 연무장길 — 향수 플래그십 10곳 중 하나, 뷰티에서 유일하게 완전한 컬렉션.', cta_label: 'FOLLOW THE SCENT', cta_href: '/explore/k-beauty/perfume-flagships', image_url: null, verified: false }],
   'k-culture': [{ id: 'KD016-014', badge: 'ROYAL SEOUL', title: 'Gyeongbokgung Palace', subtitle: '종로구 사직로 161 — Korea’s grandest royal palace, with an hourly changing-of-the-guard ceremony.', cta_label: 'EXPLORE PALACES', cta_href: '/map?poi=KD016-014', image_url: '/images/home/hero/KD016-014_gyeongbokgung-hero-wide.webp' }],
+  // DEC-61 — new 5th section. "TRIPLE-PICKED" / Woo Lae Oak, per the content
+  // plan's own named example (a restaurant all 4 of its merged badge sources agree on).
+  // verified:false — same reasoning as k-beauty's hero above; Woo Lae Oak has
+  // no confirmed core.poi row of its own in this codebase yet.
+  'k-food': [{ id: 'KF-PLACEHOLDER-WOOLAEOAK', badge: 'TRIPLE-PICKED', title: 'Woo Lae Oak', subtitle: '중구 창경궁로 — 미슐랭·레드리본·B4K픽 4개 출처가 모두 꼽은 7곳 중 하나.', cta_label: 'SEE ALL SEVEN', cta_href: '/explore/k-food/michelin-noodles', image_url: null, verified: false }],
 }
 
 // CT_KP_EXT (DEC-60) — artist tile grid roster. Real, publicly-known groups (not
@@ -350,6 +367,30 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
       { poi_id: 'KB-HAIR-MD-001', name_ko: 'JUNO Hair Myeongdong', name_en: 'JUNO Hair Myeongdong', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, district: 'Myeongdong', coords_lat: 37.5615686368221, coords_lng: 126.9840050325429 },
     ],
   },
+  // DEC-61 — new 5th section. No pre-existing seed at all (K-Food didn't exist
+  // before this pass) — every item here is new. None carry a `badges` tag: the
+  // content plan's badge system (미슐랭/레드리본/B4K픽/우쏠랑) isn't confirmed
+  // per-item for these hub-row examples, only for the michelin-noodles detail
+  // collection specifically (see lib/kfood-michelin-noodles.ts, where "Michelin
+  // pick" is definitionally what that collection is, not an invented relation).
+  // "기타" (509곳) deliberately skipped — the deck itself flags it as not usable
+  // as a row.
+  'k-food': {
+    noodles: [
+      { poi_id: 'KF-PLACEHOLDER-WOOLAEOAK2', name_ko: '우래옥', name_en: 'Woo Lae Oak', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KF-PLACEHOLDER-PILDONGMYEONOK', name_ko: '필동면옥', name_en: 'Pildong Myeonok', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KF-PLACEHOLDER-KYODAIYA', name_ko: '교다이야', name_en: 'Kyodaiya', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+    ],
+    soups: [
+      { poi_id: 'KF-PLACEHOLDER-MAPOOK', name_ko: '마포옥', name_en: 'Mapo Ok', primary_image_url: null, display_region: 'Mapo-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KF-PLACEHOLDER-ANMOK', name_ko: '안목', name_en: 'Anmok', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KF-PLACEHOLDER-HANWOLGWAN', name_ko: '한월관', name_en: 'Hanwolgwan', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+    ],
+    hanjeongsik: [
+      { poi_id: 'KF-PLACEHOLDER-BIBIJAE', name_ko: '비비재', name_en: 'Bibijae', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KF-PLACEHOLDER-SONGHEONJIP', name_ko: '송현집', name_en: 'Songheonjip', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+    ],
+  },
   'k-culture': {
     traditional: [
       { poi_id: 'KD016-006', name_ko: '북촌한옥마을', name_en: 'Bukchon Hanok Village', primary_image_url: '/images/explore/kculture/KD016-006_bukchon-hanok-village.png', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.58176815383344, coords_lng: 126.9848124506409 },
@@ -427,7 +468,7 @@ export async function GET(
   // stray query param ever reaches a real deploy.
   const includeUnverified =
     process.env.NODE_ENV !== 'production' && req.nextUrl.searchParams.get('includeUnverified') === '1'
-  const dropUnverified = (poi: ExplorePoi) => includeUnverified || poi.verified !== false
+  const dropUnverified = (poi: { verified?: boolean }) => includeUnverified || poi.verified !== false
 
   // BFF domain values match the category slugs 1:1. A BFF failure here must
   // NOT kill the whole response — the interim content seed below (hero +
@@ -450,7 +491,7 @@ export async function GET(
   // this seed. Packages stay [] on every category (see SEED_HERO comment).
   const base: ExploreData = {
     category: params.category,
-    hero: SEED_HERO[params.category] ?? [],
+    hero: (SEED_HERO[params.category] ?? []).filter(dropUnverified),
     sections: sectionIds.map(id => ({
       id,
       items: (SEED_SECTIONS[params.category]?.[id] ?? []).filter(dropUnverified),
