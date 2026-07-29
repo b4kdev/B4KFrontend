@@ -28,7 +28,9 @@ export type ExploreCategory = 'k-pop' | 'k-drama' | 'k-beauty' | 'k-food' | 'k-c
 // category now, each with a real is_featured POI already in the seed data.
 // 'agencies' (k-pop) dropped — CT_KP_EXT (DEC-60) renames that row 'agencyHq'
 // and deliberately doesn't give it the featured treatment (see KpopArtistNav).
-const FEATURED_SECTIONS = new Set(['tours', 'makeup', 'food', 'ostCafes', 'spa'])
+// K-Beauty's 'makeup'/'spa' renamed 'shopping'/'derma' (DEC-61) — their featured
+// items (Makeup House Myeongdong, Abijou Clinic) carried over under the new ids.
+const FEATURED_SECTIONS = new Set(['tours', 'shopping', 'food', 'ostCafes', 'derma'])
 
 interface CategoryConfig {
   id: ExploreCategory
@@ -82,7 +84,10 @@ const CATEGORIES: CategoryConfig[] = [
     icon: Sparkles,
     tKey: 'kbeauty',
     sections: ['trending', 'skincare', 'makeup', 'spa', 'salon'],
-    filters: [{ param: 'district', values: ['Apgujeong', 'Myeongdong', 'Hongdae', 'Gangnam'] }],
+    // DEC-61 — matches the content plan's exact 6 districts (was 4, missing
+    // Seongsu/Jongno/Jamsil, had Apgujeong which the deck doesn't chip on).
+    filters: [{ param: 'district', values: ['Gangnam', 'Myeongdong', 'Seongsu', 'Hongdae', 'Jongno', 'Jamsil'] }],
+    detailHrefs: { brandFlagship: '/explore/k-beauty/perfume-flagships' },
   },
   {
     id: 'k-food',

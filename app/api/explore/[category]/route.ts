@@ -113,7 +113,10 @@ const SECTIONS_BY_CATEGORY: Record<string, string[]> = {
   // a static per-category section like the rest.
   'k-pop': ['concerts', 'tours', 'agencyHq', 'merchandise', 'memberFootsteps'],
   'k-drama': ['filming', 'tours', 'historical', 'ostCafes'],
-  'k-beauty': ['skincare', 'makeup', 'spa', 'salon'],
+  // DEC-61 — restructured from skincare/makeup/spa/salon to the content plan's
+  // real 4 rows (쇼핑·편집샵/브랜드플래그십/헤어·살롱/약국·더마). Existing real seed
+  // items redistributed into whichever new row fits (see SEED_SECTIONS comment).
+  'k-beauty': ['shopping', 'brandFlagship', 'salon', 'derma'],
   // DEC-61 — new 5th section. "기타" (509곳) explicitly skipped: the content plan
   // itself flags it as "로우로 못 쓰인다" (not usable as a row), not a screen gap.
   'k-food': ['noodles', 'soups', 'hanjeongsik'],
@@ -156,7 +159,9 @@ const SEED_HERO: Record<string, ExploreHeroSlide[]> = {
   // page mock (Tangerines = the English title of 폭싹 속았수다), CTA into the new
   // filming-spots detail page — replaces the old Goblin/Jumunjin Breakwater hero.
   'k-drama': [{ id: 'KD-SEONGSAN-ILCHULBONG', badge: 'TANGERINES · JEJU ROUTE', title: 'Seongsan Ilchulbong', subtitle: '제주 서귀포시 — 폭싹속았수다 해수 장면의 배경지. 촬영지 24곳이 제주에 모여 있다.', cta_label: 'SEE THE ROUTE', cta_href: '/explore/k-drama/tangerines/filming-spots', image_url: null }],
-  'k-beauty': [{ id: 'KB-NEW-065', badge: 'SHOPPING HUB', title: 'Olive Young Myeongdong', subtitle: '중구 명동8길 14 — Korea’s biggest K-beauty retailer, right in the middle of Seoul’s busiest shopping street.', cta_label: 'START SHOPPING', cta_href: '/map?poi=KB-NEW-065', image_url: '/images/home/editorial/KB-NEW-065_olive-young-myeongdong.webp' }],
+  // DEC-61 — reframed to "SEOUL SCENT ROUTE" / NONFICTION Seongsu per the content
+  // plan's canonical page mock, replacing the old Olive Young shopping-hub hero.
+  'k-beauty': [{ id: 'KB-PLACEHOLDER-NONFICTIONSEONGSU', badge: 'SEOUL SCENT ROUTE', title: 'NONFICTION Seongsu', subtitle: '성동구 연무장길 — 향수 플래그십 10곳 중 하나, 뷰티에서 유일하게 완전한 컬렉션.', cta_label: 'FOLLOW THE SCENT', cta_href: '/explore/k-beauty/perfume-flagships', image_url: null }],
   'k-culture': [{ id: 'KD016-014', badge: 'ROYAL SEOUL', title: 'Gyeongbokgung Palace', subtitle: '종로구 사직로 161 — Korea’s grandest royal palace, with an hourly changing-of-the-guard ceremony.', cta_label: 'EXPLORE PALACES', cta_href: '/map?poi=KD016-014', image_url: '/images/home/hero/KD016-014_gyeongbokgung-hero-wide.webp' }],
 }
 
@@ -300,21 +305,39 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
       { poi_id: 'KD017-010', name_ko: '청하공진시장', name_en: 'Cheongha Gongjin Market Café', primary_image_url: '/images/explore/kdrama/KD017-010_cheongha-gongjin-market-cafe.png', display_region: 'Pohang, Gyeongbuk', quality_score: 0, is_trending: false, coords_lat: 36.19705421304869, coords_lng: 129.3397715303084 },
     ],
   },
+  // DEC-61 — restructured from skincare/makeup/spa/salon to the content plan's
+  // real 4 rows. Every real (coordinate-confirmed) item from the old 4 rows is
+  // redistributed here, none dropped — see each row's comment for where it landed.
   'k-beauty': {
-    skincare: [
-      { poi_id: 'KB-FLAG-SU-003', name_ko: 'Amore Seongsu', name_en: 'Amore Seongsu', primary_image_url: '/images/explore/kbeauty/KB-FLAG-SU-003_amore-seongsu.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.54435844202786, coords_lng: 127.0591808958532 },
-      { poi_id: 'KB-NEW-138', name_ko: '설화수 도산플래그십스토어', name_en: 'Sulwhasoo Dosan Flagship', primary_image_url: '/images/explore/kbeauty/KB-NEW-138_sulwhasoo-dosan-flagship.png', display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.52353049099649, coords_lng: 127.0354907462648 },
-      { poi_id: 'KB-NEW-144', name_ko: '논픽션 한남', name_en: 'Nonfiction Hannam', primary_image_url: '/images/explore/kbeauty/KB-NEW-144_nonfiction-hannam.png', display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.53625706385359, coords_lng: 127.0003428273847 },
-      { poi_id: 'KB-NEW-152', name_ko: '이솝 성수', name_en: 'Aesop Seongsu', primary_image_url: '/images/explore/kbeauty/KB-NEW-152_aesop-seongsu.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5423129121868, coords_lng: 127.056022296655 },
+    // 쇼핑·편집샵 — Olive Young (already real, was tagged skincare) is a genuine
+    // select-shop; the 4 old 'makeup' brand-counter items fold in here too (no
+    // "makeup" row exists in the content plan's real structure). 3 new placeholders
+    // for the deck's own named examples (department-store/duty-free beauty halls).
+    shopping: [
       { poi_id: 'KB-NEW-065', name_ko: '올리브영 명동타운', name_en: 'Olive Young Myeongdong Town', primary_image_url: '/images/home/editorial/KB-NEW-065_olive-young-myeongdong.webp', display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, district: 'Myeongdong', coords_lat: 37.56398256073924, coords_lng: 126.9851873129621 },
-    ],
-    makeup: [
       { poi_id: 'KB-MU-MD-001', name_ko: 'Makeup House Myeongdong', name_en: 'Makeup House Myeongdong', primary_image_url: '/images/explore/kbeauty/KB-MU-MD-001_makeup-house-myeongdong.png', display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, district: 'Myeongdong', coords_lat: 37.5627516321022, coords_lng: 126.983907441043 },
       { poi_id: 'KB-MU-GN-003', name_ko: 'Cocory Color Seoul', name_en: 'Cocory Color Seoul', primary_image_url: null, display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 37.56377089583383, coords_lng: 126.985749889034 },
       { poi_id: 'KB-MU-GN-012', name_ko: 'Jung Saem Mool Inspiration West', name_en: 'Jung Saem Mool Inspiration West', primary_image_url: null, display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 37.52529441862385, coords_lng: 127.0487773089321 },
-      { poi_id: 'KB-FLAG-SU-001', name_ko: 'AMUSE Seongsu Flagship Store', name_en: 'AMUSE Seongsu Flagship Store', primary_image_url: null, display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5438137552044, coords_lng: 127.050522918312 },
+      { poi_id: 'KB-FLAG-SU-001', name_ko: 'AMUSE Seongsu Flagship Store', name_en: 'AMUSE Seongsu Flagship Store', primary_image_url: null, display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, district: 'Seongsu', coords_lat: 37.5438137552044, coords_lng: 127.050522918312 },
+      { poi_id: 'KB-PLACEHOLDER-MUSINSA', name_ko: '무신사 뷰티 성수', name_en: 'Musinsa Beauty Seongsu', primary_image_url: null, display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, district: 'Seongsu', coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KB-PLACEHOLDER-LOTTEDUTYFREE', name_ko: '롯데면세점 명동본점', name_en: 'Lotte Duty Free Myeongdong', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, district: 'Myeongdong', coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KB-PLACEHOLDER-SHINSEGAE', name_ko: '신세계 강남 뷰티관', name_en: 'Shinsegae Gangnam Beauty Hall', primary_image_url: null, display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 0, coords_lng: 0, verified: false },
     ],
-    spa: [
+    // 브랜드 플래그십 — NEW row. Amore Seongsu/Sulwhasoo Dosan/Aesop Seongsu were
+    // already real (moved from the old 'skincare' row, they're single-brand
+    // flagship stores by nature). NONFICTION Seongsu is the deck's own named hero
+    // example — no confirmed core.poi row of its own (distinct from the existing
+    // Nonfiction Hannam branch).
+    brandFlagship: [
+      { poi_id: 'KB-FLAG-SU-003', name_ko: 'Amore Seongsu', name_en: 'Amore Seongsu', primary_image_url: '/images/explore/kbeauty/KB-FLAG-SU-003_amore-seongsu.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, district: 'Seongsu', coords_lat: 37.54435844202786, coords_lng: 127.0591808958532 },
+      { poi_id: 'KB-NEW-138', name_ko: '설화수 도산플래그십스토어', name_en: 'Sulwhasoo Dosan Flagship', primary_image_url: '/images/explore/kbeauty/KB-NEW-138_sulwhasoo-dosan-flagship.png', display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 37.52353049099649, coords_lng: 127.0354907462648 },
+      { poi_id: 'KB-NEW-152', name_ko: '이솝 성수', name_en: 'Aesop Seongsu', primary_image_url: '/images/explore/kbeauty/KB-NEW-152_aesop-seongsu.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, district: 'Seongsu', coords_lat: 37.5423129121868, coords_lng: 127.056022296655 },
+      { poi_id: 'KB-NEW-144', name_ko: '논픽션 한남', name_en: 'Nonfiction Hannam', primary_image_url: '/images/explore/kbeauty/KB-NEW-144_nonfiction-hannam.png', display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.53625706385359, coords_lng: 127.0003428273847 },
+      { poi_id: 'KB-PLACEHOLDER-NONFICTIONSEONGSU', name_ko: '논픽션 성수', name_en: 'NONFICTION Seongsu', primary_image_url: null, display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, district: 'Seongsu', coords_lat: 0, coords_lng: 0, verified: false },
+    ],
+    // 약국·더마 — renamed from 'spa'. Real content unchanged (clinics/derma
+    // already fit this row conceptually), no better-named deck examples given.
+    derma: [
       { poi_id: 'KB-DER-GN-005', name_ko: 'Abijou Clinic Gangnam', name_en: 'Abijou Clinic Gangnam', primary_image_url: '/images/home/trending/KB-DER-GN-005_abijou-clinic-gangnam.webp', display_region: 'Seocho-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, district: 'Gangnam', coords_lat: 37.49864716138882, coords_lng: 127.0262645904912 },
       { poi_id: 'KB-DER-MD-005', name_ko: 'Lienjang Clinic Myeongdong', name_en: 'Lienjang Clinic Myeongdong', primary_image_url: '/images/explore/kbeauty/KB-DER-MD-005_lienjang-clinic-myeongdong.png', display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, district: 'Myeongdong', coords_lat: 37.563410116935, coords_lng: 126.982886367076 },
       { poi_id: 'KB-NEW-416', name_ko: '아이디병원', name_en: 'ID Hospital', primary_image_url: '/images/explore/kbeauty/KB-NEW-416_id-hospital.png', display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 37.5177642310409, coords_lng: 127.024157143362 },
