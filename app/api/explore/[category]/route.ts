@@ -125,7 +125,9 @@ const FACET_BY_CATEGORY: Record<string, keyof ExplorePoi | undefined> = {
 // `packages` stays [] on every category — no confirmed real partner_url to ship
 // (see DEC-50). Replace with the real per-section BFF facet once it exists.
 const SEED_HERO: Record<string, ExploreHeroSlide[]> = {
-  'k-pop': [{ id: 'KP-207', badge: 'ICONIC VENUE', title: 'Olympic Park KSPO Dome', subtitle: '송파구 올림픽로 424 — BTS, Seventeen, and more have all taken this stage. Even between shows, it’s a pilgrimage stop for fans.', cta_label: 'SEE THE VENUE', cta_href: '/map?poi=KP-207', image_url: '/images/explore/kpop/HERO_zeprincess11-stadium-concert-purple-lights.png' }],
+  // CT_KP_EXT (DEC-60) — reframed to "RM'S MUSEUM ROUTE" per the content plan's canonical
+  // page mock (image 3 of the source doc), replacing the old generic KSPO Dome hero.
+  'k-pop': [{ id: 'KP-014', badge: 'MEMBER ROUTE', title: "RM's Museum Route", subtitle: '용산구 이태원로 55길 60 — RM이 반복해 찾은 미술관, 그가 남긴 흔적을 따라 걷는 하루 코스.', cta_label: 'FOLLOW THE ROUTE', cta_href: '/explore/k-pop/bts/footsteps', image_url: '/images/explore/kpop/KP-014_leeum-samsung-museum.png' }],
   'k-drama': [{ id: 'KD002-001b', badge: 'GOBLIN PILGRIMAGE', title: 'Jumunjin Breakwater', subtitle: '강원 강릉시 주문진읍 교항리 — where Kim Shin and Eun-tak first met. The red-scarf photo tradition still lives on.', cta_label: 'SEE THE ROUTE', cta_href: '/map?poi=KD002-001b', image_url: '/images/explore/kdrama/KD002-001b_jumunjin-breakwater-hero.png' }],
   'k-beauty': [{ id: 'KB-NEW-065', badge: 'SHOPPING HUB', title: 'Olive Young Myeongdong', subtitle: '중구 명동8길 14 — Korea’s biggest K-beauty retailer, right in the middle of Seoul’s busiest shopping street.', cta_label: 'START SHOPPING', cta_href: '/map?poi=KB-NEW-065', image_url: '/images/home/editorial/KB-NEW-065_olive-young-myeongdong.webp' }],
   'k-culture': [{ id: 'KD016-014', badge: 'ROYAL SEOUL', title: 'Gyeongbokgung Palace', subtitle: '종로구 사직로 161 — Korea’s grandest royal palace, with an hourly changing-of-the-guard ceremony.', cta_label: 'EXPLORE PALACES', cta_href: '/map?poi=KD016-014', image_url: '/images/home/hero/KD016-014_gyeongbokgung-hero-wide.webp' }],
@@ -135,11 +137,14 @@ const SEED_HERO: Record<string, ExploreHeroSlide[]> = {
 // fabricated business data) — but which ~23 of ~40 teams are default-shown, and the
 // exact default/reveal ordering, is the content collaborator's curation call and
 // wasn't handed off with this build; this list is a representative placeholder
-// spanning all 6 agencies until the real roster arrives. birthday_month is only set
-// where a curated member-tied row (memberFootsteps/birthdayCafe below) depends on it.
+// spanning all 6 agencies until the real roster arrives. `birthday_month` drives the
+// Trending Now auto-rotation (see GET) — left unset for every artist below: the
+// content plan's "이번 달 생일카페" row doesn't name which member/month it belongs to,
+// and no real BTS member has an August birthday, so guessing was wrong. Set this once
+// dev friend/content plan confirms a real member+month pairing.
 const SEED_ARTISTS: Record<string, ExploreArtist[]> = {
   'k-pop': [
-    { id: 'bts', name_ko: '방탄소년단', name_en: 'BTS', agency: 'HYBE', image_url: null, birthday_month: 9 },
+    { id: 'bts', name_ko: '방탄소년단', name_en: 'BTS', agency: 'HYBE', image_url: null },
     { id: 'seventeen', name_ko: '세븐틴', name_en: 'SEVENTEEN', agency: 'HYBE', image_url: null },
     { id: 'txt', name_ko: '투모로우바이투게더', name_en: 'TOMORROW X TOGETHER', agency: 'HYBE', image_url: null },
     { id: 'enhypen', name_ko: '엔하이픈', name_en: 'ENHYPEN', agency: 'HYBE', image_url: null },
@@ -189,18 +194,21 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
       { poi_id: 'KP-PLACEHOLDER-NODEUL', name_ko: '노들섬', name_en: 'Nodeul Island', primary_image_url: null, display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
       { poi_id: 'KP-PLACEHOLDER-EULJIRO', name_ko: '을지로', name_en: 'Euljiro', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
     ],
-    // Renamed from 'agencies' — CT_KP_EXT reframes this as its own "agency HQ
-    // pilgrimage" row (기획사), not just the chip-filter's backing data. JYP/SM/YG
-    // HQ are the confirmed-real entries (CUBE dropped — no agency tag, not in
-    // SPEC-04's named set). HYBE HQ/Company SooSoo/INB100 are SPEC-04's named "3/5
-    // ready" examples but have no confirmed core.poi row (BLK-36) — placeholder.
+    // Renamed from 'agencies' — CT_KP_EXT reframes this as its own "덕질의 원점"
+    // (origin point of the fandom) agency-HQ-pilgrimage row (기획사), a specific
+    // curated 5-item set per the content plan's source doc — NOT the same as the
+    // old KP_05 agencies chip-filter data (JYP Center/SM HQ/YG HQ), which is dropped
+    // entirely here since it isn't part of this row's real definition. Only 3/5 are
+    // named as publish-ready (HYBE HQ, Company SooSoo, INB100); the other 2 (Former
+    // Big Hit, YG HQ) are explicitly held back pending coords/quality grade. None
+    // have a confirmed core.poi row yet (BLK-36) — all 5 ship as placeholder, so this
+    // row is empty for real users until that resolves.
     agencyHq: [
-      { poi_id: 'KP-075', name_ko: 'JYP 센터', name_en: 'JYP Center', primary_image_url: '/images/explore/kpop/KP-075_jyp-center.png', display_region: 'Gangdong-gu, Seoul', quality_score: 0, is_trending: false, agency: 'JYP', coords_lat: 37.524129269795, coords_lng: 127.129131076272 },
-      { poi_id: 'KP-192', name_ko: 'SM엔터테인먼트 사옥', name_en: 'SM Entertainment HQ', primary_image_url: '/images/explore/kpop/KP-192_sm-hq.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, agency: 'SM', coords_lat: 37.54414907499344, coords_lng: 127.0433501688011 },
-      { poi_id: 'KP-199', name_ko: 'YG엔터테인먼트 사옥', name_en: 'YG Entertainment HQ', primary_image_url: '/images/explore/kpop/KP-199_yg-hq.png', display_region: 'Mapo-gu, Seoul', quality_score: 0, is_trending: false, agency: 'YG', coords_lat: 37.5502023926174, coords_lng: 126.918287778213 },
       { poi_id: 'KP-PLACEHOLDER-HYBEHQ', name_ko: '하이브 사옥', name_en: 'HYBE Headquarters', primary_image_url: null, display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, agency: 'HYBE', coords_lat: 0, coords_lng: 0, verified: false },
       { poi_id: 'KP-PLACEHOLDER-SOOSOO', name_ko: '컴퍼니수수', name_en: 'Company SooSoo', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
       { poi_id: 'KP-PLACEHOLDER-INB100', name_ko: 'INB100', name_en: 'INB100', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KP-PLACEHOLDER-FORMERBIGHIT', name_ko: '구 빅히트 사옥', name_en: 'Former Big Hit', primary_image_url: null, display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, agency: 'HYBE', coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KP-PLACEHOLDER-YGHQ', name_ko: 'YG엔터테인먼트 사옥', name_en: 'YG HQ', primary_image_url: null, display_region: 'Mapo-gu, Seoul', quality_score: 0, is_trending: false, agency: 'YG', coords_lat: 0, coords_lng: 0, verified: false },
     ],
     merchandise: [
       { poi_id: 'KP-0250', name_ko: '더현대 서울', name_en: 'The Hyundai Seoul', primary_image_url: '/images/explore/kpop/KP-0250_the-hyundai-seoul.png', display_region: 'Yeongdeungpo-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.52587207102913, coords_lng: 126.9284461241116 },
@@ -302,20 +310,24 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
   },
 }
 
-// CT_KP_EXT (DEC-60) — 이번달 생일카페 (birthday-cafe), the seasonality curation row.
-// Not in SECTIONS_BY_CATEGORY: conditionally rendered client-side only when the
-// selected artist's birthday_month matches the current month (KpopArtistNav), and
-// every item here is a placeholder (BLK-36 — none of these 5 cafés have a confirmed
-// core.poi row), so this section is always empty for real users until that resolves.
-const SEED_BIRTHDAY_CAFE: Record<string, ExplorePoi[]> = {
-  'k-pop': [
-    { poi_id: 'KP-PLACEHOLDER-PIEDPIPER', name_ko: '피리부는사나이', name_en: 'PIED PIPER', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
-    { poi_id: 'KP-PLACEHOLDER-BLACKDRUM', name_ko: '블랙드럼', name_en: 'Black Drum', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
-    { poi_id: 'KP-PLACEHOLDER-KIDMOON', name_ko: '킷문카페', name_en: 'Kidmoon Cafe', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
-    { poi_id: 'KP-PLACEHOLDER-MARINECOFFEE', name_ko: '마린커피', name_en: 'Marine Coffee', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
-    { poi_id: 'KP-PLACEHOLDER-DELULU', name_ko: '델룰루', name_en: 'Delulu', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
-  ],
-}
+// CT_KP_EXT (DEC-60) — 지금 뜨는 곳 (Trending Now) is reframed as the seasonal
+// auto-rotation row for k-pop specifically (see GET): whichever artist has a
+// birthday_month matching the current month supplies this row's content via
+// SEED_TRENDING_BY_ARTIST; if none does (true for every artist today — see
+// SEED_ARTISTS comment), SEED_TRENDING_UNATTRIBUTED is the fallback. These 5 café
+// names are the content plan's real "이번 달 생일카페" example, but the doc doesn't
+// name which member/month they belong to (no real BTS member has an August
+// birthday), so they ship unattributed (no artistIds) and verified:false — every
+// real user sees an empty Trending Now row until a real member+month pairing lands.
+const SEED_TRENDING_BY_ARTIST: Record<string, ExplorePoi[]> = {}
+
+const SEED_TRENDING_UNATTRIBUTED: ExplorePoi[] = [
+  { poi_id: 'KP-PLACEHOLDER-PIEDPIPER', name_ko: '피리부는사나이', name_en: 'PIED PIPER', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+  { poi_id: 'KP-PLACEHOLDER-BLACKDRUM', name_ko: '블랙드럼', name_en: 'Black Drum', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+  { poi_id: 'KP-PLACEHOLDER-KIDMOON', name_ko: '킷문카페', name_en: 'Kidmoon Cafe', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+  { poi_id: 'KP-PLACEHOLDER-MARINECOFFEE', name_ko: '마린커피', name_en: 'Marine Coffee', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+  { poi_id: 'KP-PLACEHOLDER-DELULU', name_ko: '델룰루', name_en: 'Delulu', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+]
 
 // next-intl locales (i18n/routing.ts) — translations JSONB keys must match this
 // exact casing (e.g. 'zh-CN' not 'zh_CN') or the lookup below silently misses.
@@ -398,9 +410,23 @@ export async function GET(
       }
     }
   }
-  const trendingSection: ExploreSection = {
+  let trendingSection: ExploreSection = {
     id: 'trending',
     items: (flagged.length > 0 ? flagged : items).slice(0, 8),
+  }
+
+  // CT_KP_EXT (DEC-60) — k-pop only: Trending Now is reframed as the seasonal
+  // birthday-member auto-rotation row instead of the generic like-ordered/flagged
+  // one above. Whichever artist's birthday_month matches the current calendar month
+  // supplies the content; none does today (see SEED_ARTISTS), so every real k-pop
+  // user sees the unattributed placeholder set only via ?includeUnverified=1.
+  if (params.category === 'k-pop') {
+    const currentMonth = new Date().getMonth() + 1
+    const birthdayArtist = (SEED_ARTISTS['k-pop'] ?? []).find(a => a.birthday_month === currentMonth)
+    const trendingItems = birthdayArtist
+      ? (SEED_TRENDING_BY_ARTIST[birthdayArtist.id] ?? SEED_TRENDING_UNATTRIBUTED)
+      : SEED_TRENDING_UNATTRIBUTED
+    trendingSection = { id: 'trending', items: trendingItems.filter(dropUnverified) }
   }
 
   // Apply chip filter only to sections whose items carry the facet (the chip is
@@ -417,21 +443,12 @@ export async function GET(
     })
   }
 
-  // CT_KP_EXT (DEC-60) — birthdayCafe is conditionally rendered client-side (matched
-  // against the selected artist's birthday_month), not per-category static like the
-  // rest — appended here rather than via SECTIONS_BY_CATEGORY. Always empty for real
-  // users today (every seed item is verified:false pending BLK-36).
-  const birthdayCafeSection: ExploreSection = {
-    id: 'birthdayCafe',
-    items: (SEED_BIRTHDAY_CAFE[params.category] ?? []).filter(dropUnverified),
-  }
-
   const data: ExploreData = {
     category: base.category,
     hero: base.hero,
     packages: base.packages,
     artists: SEED_ARTISTS[params.category] ?? [],
-    sections: [trendingSection, ...sections, birthdayCafeSection],
+    sections: [trendingSection, ...sections],
   }
   return NextResponse.json(data)
 }

@@ -1,29 +1,37 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
 import ExploreChipFilter, { ChipFilterConfig } from './ExploreChipFilter'
 import ArtistTileGrid from './ArtistTileGrid'
 import ExploreSectionRow from './ExploreSectionRow'
 import type { ExploreData, ExplorePoi } from '@/app/api/explore/[category]/route'
 
 // CT_KP_EXT (DEC-60) — global agency chip, promoted out of the per-section scope
-// the generic hub shell uses. Widened HYBE/SM/JYP/YG -> +STARSHIP/KQ.
+// the generic hub shell uses. Order matches the content plan's source doc: 전체 ·
+// HYBE · SM · YG · JYP · STARSHIP · KQ (전체/All is built into ExploreChipFilter).
 const AGENCY_FILTER: ChipFilterConfig = {
   param: 'agency',
-  values: ['HYBE', 'SM', 'JYP', 'YG', 'STARSHIP', 'KQ'],
+  values: ['HYBE', 'SM', 'YG', 'JYP', 'STARSHIP', 'KQ'],
 }
 
 // concerts/tours/merchandise/trending have no real per-item artist/agency
 // attribution (BLK-35/BLK-36) — always shown in full regardless of selection.
-// agencyHq/memberFootsteps carry real tags (agency field / artistIds) and do
-// filter. 'tours' is the only row that keeps the wide featured-card treatment
-// (Leeum, is_featured:true) — agencyHq intentionally dropped that (see DEC-60
-// build notes: 3 near-identical HQ-building placeholders don't need a featured pick).
+// Trending Now is additionally date-driven server-side (see route.ts), not
+// selection-driven — it just happens to also be untagged, so it passes through
+// filterItems unfiltered the same way. agencyHq/memberFootsteps carry real tags
+// (agency field / artistIds) and do filter. 'tours' is the only row that keeps the
+// wide featured-card treatment (Leeum, is_featured:true) — agencyHq intentionally
+// dropped that (see DEC-60 build notes: near-identical HQ-building placeholders
+// don't need a featured pick).
 const ROW_IDS = ['trending', 'concerts', 'tours', 'agencyHq', 'merchandise', 'memberFootsteps'] as const
 
+// memberFootsteps is the only row that deep-links to a dedicated detail page
+// instead of the generic search results — every other row keeps the shared href.
+const VIEW_ALL_HREF: Partial<Record<(typeof ROW_IDS)[number], string>> = {
+  memberFootsteps: '/explore/k-pop/bts/footsteps',
+}
+
 export default function KpopArtistNav({ data }: { data: ExploreData }) {
-  const searchParams = useSearchParams()
   const [selectedAgency, setSelectedAgency] = useState<string | null>(null)
   const [selectedArtistId, setSelectedArtistId] = useState<string | null>(null)
 
@@ -60,17 +68,6 @@ export default function KpopArtistNav({ data }: { data: ExploreData }) {
     })
   }
 
-  // Dev-only: override "current month" to test the birthday-cafe row's
-  // conditional without waiting for a real member's birthday month to arrive.
-  // No-op in production regardless of query param.
-  const devMonth =
-    process.env.NODE_ENV !== 'production' ? Number(searchParams.get('devMonth')) : NaN
-  const currentMonth = devMonth >= 1 && devMonth <= 12 ? devMonth : new Date().getMonth() + 1
-
-  const selectedArtist = selectedArtistId ? artistIndex[selectedArtistId] : undefined
-  const showBirthdayCafe = !!selectedArtist && selectedArtist.birthday_month === currentMonth
-  const birthdayCafeItems = data.sections.find(s => s.id === 'birthdayCafe')?.items ?? []
-
   return (
     <>
       <ExploreChipFilter config={AGENCY_FILTER} active={selectedAgency} onChange={handleSelectAgency} />
@@ -85,21 +82,11 @@ export default function KpopArtistNav({ data }: { data: ExploreData }) {
             items={items}
             category="k-pop"
             hubDomain="kpop"
-            viewAllHref="/search?q=k-pop"
+            viewAllHref={VIEW_ALL_HREF[id] ?? '/search?q=k-pop'}
             allowFeatured={id === 'tours'}
           />
         )
       })}
-
-      {showBirthdayCafe && (
-        <ExploreSectionRow
-          id="birthdayCafe"
-          items={filterItems(birthdayCafeItems)}
-          category="k-pop"
-          hubDomain="kpop"
-          viewAllHref="/search?q=k-pop"
-        />
-      )}
     </>
   )
 }
