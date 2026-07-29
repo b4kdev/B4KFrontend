@@ -8,7 +8,7 @@ import { Link } from '@/i18n/navigation'
 import { MapPin, ImageOff, AlertTriangle, RefreshCw } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
 import { getDisplayName } from '@/lib/display-name'
-import type { FootstepsDetail, FootstepsPoi } from '@/app/api/explore/k-pop/footsteps/[teamId]/route'
+import type { FootstepsDetail, FootstepsPoi } from '@/lib/kpop-footsteps'
 
 type TypeFilter = 'all' | 'museum' | 'park' | 'cafe'
 
@@ -94,7 +94,7 @@ export default function FootstepsDetailClient({ teamId }: { teamId: string }) {
       {!isError && data && (
         <>
           <div className="flex items-center gap-1.5 text-f-xxs font-semibold tracking-[0.08em] uppercase text-muted mb-sp-4">
-            <Link href="/explore/k-pop" className="text-muted-2 hover:text-fg transition-colors">K-Pop</Link>
+            <Link href="/explore/k-pop" className="text-muted-2 hover:text-fg transition-colors">{t('kpop.title')}</Link>
             <span>›</span>
             <span className="text-muted-2">{data.agencyName}</span>
             <span>›</span>

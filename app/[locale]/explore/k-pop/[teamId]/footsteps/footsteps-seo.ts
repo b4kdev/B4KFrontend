@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { hreflangAlternates, localizedUrl } from '@/lib/site-url'
 import { routing } from '@/i18n/routing'
-import type { FootstepsDetail } from '@/app/api/explore/k-pop/footsteps/[teamId]/route'
+import type { FootstepsDetail } from '@/lib/kpop-footsteps'
 
 export function buildFootstepsMetadata(detail: FootstepsDetail, locale: string): Metadata {
   const title = `${detail.memberName} Footsteps — ${detail.teamNameEn} | B4K`

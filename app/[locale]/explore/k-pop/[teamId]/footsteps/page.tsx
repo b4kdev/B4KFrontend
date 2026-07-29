@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getFootstepsDetail } from '@/app/api/explore/k-pop/footsteps/[teamId]/route'
+import { getFootstepsDetail } from '@/lib/kpop-footsteps'
 import { buildFootstepsMetadata, buildFootstepsJsonLd } from './footsteps-seo'
 import FootstepsDetailClient from './FootstepsDetailClient'
 
