@@ -128,7 +128,10 @@ const SECTIONS_BY_CATEGORY: Record<string, string[]> = {
   // DEC-61 — new 5th section. "기타" (509곳) explicitly skipped: the content plan
   // itself flags it as "로우로 못 쓰인다" (not usable as a row), not a screen gap.
   'k-food': ['noodles', 'soups', 'hanjeongsik'],
-  'k-culture': ['traditional', 'food', 'festivals', 'crafts'],
+  // DEC-61 — restructured from traditional/food/festivals/crafts to the content
+  // plan's real 4 rows (역사·유적/자연·경관/사찰·종교/박물관·미술관). Real items
+  // redistributed, none dropped — see SEED_SECTIONS comment.
+  'k-culture': ['heritage', 'nature', 'temple', 'museum'],
 }
 
 /**
@@ -174,7 +177,11 @@ const SEED_HERO: Record<string, ExploreHeroSlide[]> = {
   // fabricated-content hero, which the pre-fix code would have shown — hero
   // wasn't gated by `verified` at all until this pass).
   'k-beauty': [{ id: 'KB-PLACEHOLDER-NONFICTIONSEONGSU', badge: 'SEOUL SCENT ROUTE', title: 'NONFICTION Seongsu', subtitle: '성동구 연무장길 — 향수 플래그십 10곳 중 하나, 뷰티에서 유일하게 완전한 컬렉션.', cta_label: 'FOLLOW THE SCENT', cta_href: '/explore/k-beauty/perfume-flagships', image_url: null, verified: false }],
-  'k-culture': [{ id: 'KD016-014', badge: 'ROYAL SEOUL', title: 'Gyeongbokgung Palace', subtitle: '종로구 사직로 161 — Korea’s grandest royal palace, with an hourly changing-of-the-guard ceremony.', cta_label: 'EXPLORE PALACES', cta_href: '/map?poi=KD016-014', image_url: '/images/home/hero/KD016-014_gyeongbokgung-hero-wide.webp' }],
+  // DEC-61 — reframed to "UNESCO WORLD HERITAGE" / Changdeokgung Palace per the
+  // content plan's canonical page mock. Changdeokgung already has a confirmed
+  // core.poi row (KD016-001, reused from the traditional/heritage row below) —
+  // real, not placeholder, unlike k-beauty/k-food's heroes.
+  'k-culture': [{ id: 'KD016-001', badge: 'UNESCO WORLD HERITAGE', title: 'Changdeokgung Palace', subtitle: '서울 종로구 율곡로 99 — 1997년 유네스코 세계유산 등재. 51곳의 유네스코 유산 중 하나.', cta_label: 'EXPLORE HERITAGE SITES', cta_href: '/explore/k-culture/gyeongbuk/heritage', image_url: '/images/home/trending/KD016-001_changdeokgung-palace.webp' }],
   // DEC-61 — new 5th section. "TRIPLE-PICKED" / Woo Lae Oak, per the content
   // plan's own named example (a restaurant all 4 of its merged badge sources agree on).
   // verified:false — same reasoning as k-beauty's hero above; Woo Lae Oak has
@@ -391,24 +398,49 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
       { poi_id: 'KF-PLACEHOLDER-SONGHEONJIP', name_ko: '송현집', name_en: 'Songheonjip', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
     ],
   },
+  // DEC-61 — restructured from traditional/food/festivals/crafts to the content
+  // plan's real 4 rows. Every real (coordinate-confirmed) item from the old 4
+  // rows redistributed here, none dropped.
   'k-culture': {
-    traditional: [
+    // 역사·유적 — palaces/shrines (was 'traditional', minus Jogyesa which moves
+    // to 'temple') + the 2 real markets (was 'food') + both folk villages (was
+    // 'festivals') — all fit "historical heritage site" broadly. Suwon Hwaseong
+    // Fortress reuses the real record already seeded under K-Drama's 'historical'
+    // row (same real place, don't fork) — the content plan names it as this
+    // row's own example too.
+    heritage: [
       { poi_id: 'KD016-006', name_ko: '북촌한옥마을', name_en: 'Bukchon Hanok Village', primary_image_url: '/images/explore/kculture/KD016-006_bukchon-hanok-village.png', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.58176815383344, coords_lng: 126.9848124506409 },
-      { poi_id: 'KC-SEO-184', name_ko: '조계사', name_en: 'Jogyesa Temple', primary_image_url: '/images/explore/kculture/KC-SEO-184_jogyesa-temple.png', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.57395881968132, coords_lng: 126.98185608504 },
       { poi_id: 'KC-SEO-182', name_ko: '종묘', name_en: 'Jongmyo Shrine', primary_image_url: '/images/explore/kculture/KC-SEO-182_jongmyo-shrine.png', display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5761080433804, coords_lng: 126.994212979827 },
-      { poi_id: 'KD016-001', name_ko: '창덕궁', name_en: 'Changdeokgung Palace', primary_image_url: '/images/home/trending/KD016-001_changdeokgung-palace.webp', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.57964694739535, coords_lng: 126.9909998067713 },
+      { poi_id: 'KD016-001', name_ko: '창덕궁', name_en: 'Changdeokgung Palace', primary_image_url: '/images/home/trending/KD016-001_changdeokgung-palace.webp', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, region: 'Seoul', coords_lat: 37.57964694739535, coords_lng: 126.9909998067713 },
       { poi_id: 'KD028-014', name_ko: '운현궁', name_en: 'Unhyeongung Palace', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.576226410093, coords_lng: 126.987085596535 },
-    ],
-    food: [
-      { poi_id: 'KD016-007', name_ko: '광장시장', name_en: 'Gwangjang Market', primary_image_url: '/images/home/trending/KD016-007_gwangjang-market.webp', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, region: 'Seoul', coords_lat: 37.57005529646949, coords_lng: 126.9989472822363 },
+      { poi_id: 'KD005-014', name_ko: '수원화성', name_en: 'Suwon Hwaseong Fortress', primary_image_url: null, display_region: 'Suwon, Gyeonggi', quality_score: 0, is_trending: false, region: 'Gyeonggi', coords_lat: 37.2869569586225, coords_lng: 127.011795743342 },
       { poi_id: 'KC-SEO-148', name_ko: '남대문시장', name_en: 'Namdaemun Market', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.55918176072071, coords_lng: 126.9776267740439 },
       { poi_id: 'KC-SEO-149', name_ko: '통인시장', name_en: 'Tongin Market', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.58076970747926, coords_lng: 126.9699479604657 },
-    ],
-    festivals: [
       { poi_id: 'KD029-014', name_ko: '한국민속촌', name_en: 'Korean Folk Village', primary_image_url: '/images/explore/kculture/KD029-014_korean-folk-village.png', display_region: 'Yongin, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 37.25961522542851, coords_lng: 127.1198007202516 },
       { poi_id: 'KC-GSB-101', name_ko: '안동민속촌', name_en: 'Andong Folk Village', primary_image_url: null, display_region: 'Andong, Gyeongbuk', quality_score: 0, is_trending: false, region: 'Andong', coords_lat: 36.57675373532396, coords_lng: 128.765295003501 },
     ],
-    crafts: [
+    // 자연·경관 — NEW row. Seongsan Ilchulbong reuses the real record already
+    // seeded under K-Drama's hero/historical (same real place).
+    nature: [
+      { poi_id: 'KD-SEONGSAN-ILCHULBONG', name_ko: '성산일출봉', name_en: 'Seongsan Ilchulbong', primary_image_url: null, display_region: 'Seogwipo, Jeju', quality_score: 0, is_trending: false, region: 'Jeju', coords_lat: 33.4587, coords_lng: 126.9425 },
+      { poi_id: 'KC-PLACEHOLDER-MANJANGGUL', name_ko: '만장굴', name_en: 'Manjanggul Cave', primary_image_url: null, display_region: 'Jeju', quality_score: 0, is_trending: false, region: 'Jeju', coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KC-PLACEHOLDER-HALLASAN', name_ko: '한라산국립공원', name_en: 'Hallasan National Park', primary_image_url: null, display_region: 'Jeju', quality_score: 0, is_trending: false, region: 'Jeju', coords_lat: 0, coords_lng: 0, verified: false },
+    ],
+    // 사찰·종교 — Jogyesa Temple moves here from 'traditional' (real, unchanged).
+    temple: [
+      { poi_id: 'KC-SEO-184', name_ko: '조계사', name_en: 'Jogyesa Temple', primary_image_url: '/images/explore/kculture/KC-SEO-184_jogyesa-temple.png', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.57395881968132, coords_lng: 126.98185608504 },
+    ],
+    // 박물관·미술관 — NEW row. National Museum of Korea and MMCA Seoul are
+    // well-known, unambiguous public landmarks (same "real, unconfirmed core.poi
+    // row, high real-world confidence" judgment as K-Drama's Hwahongmun Gate);
+    // Seoul Craft Museum's exact coordinates aren't something this session has
+    // confident knowledge of, so it stays placeholder. Old 'crafts' row's 3
+    // "experience point" items fold in here too — closest conceptual fit,
+    // nothing else in the new 4-row structure suits them either.
+    museum: [
+      { poi_id: 'KC-NATIONALMUSEUM', name_ko: '국립중앙박물관', name_en: 'National Museum of Korea', primary_image_url: null, display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5240, coords_lng: 126.9803 },
+      { poi_id: 'KC-PLACEHOLDER-CRAFTMUSEUM', name_ko: '서울공예박물관', name_en: 'Seoul Craft Museum', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KC-MMCASEOUL', name_ko: '국립현대미술관 서울관', name_en: 'MMCA Seoul', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5788, coords_lng: 126.9770 },
       { poi_id: 'KC-SEO-270', name_ko: '경복궁 - 체험 예약 포인트', name_en: 'Palace-Gate Experiences', primary_image_url: '/images/explore/kculture/KC-SEO-270_palace-gate-experiences.png', display_region: 'Gwangjin-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.53604245097937, coords_lng: 127.0958748426305 },
       { poi_id: 'KC-SEO-281', name_ko: '청계천 - 체험 예약 포인트', name_en: 'Cheonggyecheon Experience Point', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5691469686793, coords_lng: 126.978647068151 },
       { poi_id: 'KC-GGI-241', name_ko: '에버랜드 - 전통공예 체험', name_en: 'Everland Traditional Craft Experience', primary_image_url: null, display_region: 'Yongin, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 37.2756257163761, coords_lng: 127.030623743794 },

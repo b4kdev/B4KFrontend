@@ -30,7 +30,8 @@ export type ExploreCategory = 'k-pop' | 'k-drama' | 'k-beauty' | 'k-food' | 'k-c
 // and deliberately doesn't give it the featured treatment (see KpopArtistNav).
 // K-Beauty's 'makeup'/'spa' renamed 'shopping'/'derma' (DEC-61) — their featured
 // items (Makeup House Myeongdong, Abijou Clinic) carried over under the new ids.
-const FEATURED_SECTIONS = new Set(['tours', 'shopping', 'food', 'ostCafes', 'derma'])
+// K-Culture's 'food' (Gwangjang Market) renamed 'heritage' (DEC-61 restructure).
+const FEATURED_SECTIONS = new Set(['tours', 'shopping', 'heritage', 'ostCafes', 'derma'])
 
 interface CategoryConfig {
   id: ExploreCategory
@@ -110,6 +111,7 @@ const CATEGORIES: CategoryConfig[] = [
       { param: 'badge', values: ['UNESCO', 'NATIONAL_HERITAGE'] },
       { param: 'region', values: ['Jeju', 'Seoul', 'Gangwon', 'Gyeongbuk', 'Busan'] },
     ],
+    detailHrefs: { heritage: '/explore/k-culture/gyeongbuk/heritage' },
   },
 ]
 
