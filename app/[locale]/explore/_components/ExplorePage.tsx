@@ -5,13 +5,13 @@ import { useLocale, useTranslations } from 'next-intl'
 import useSWR from 'swr'
 import { useSearchParams } from 'next/navigation'
 import { Link, usePathname } from '@/i18n/navigation'
-import { Music, Tv, Sparkles, Globe, RefreshCw, AlertTriangle, Compass } from 'lucide-react'
+import { Music, Tv, Sparkles, Globe, Utensils, RefreshCw, AlertTriangle, Compass } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
 import { track } from '@/lib/analytics'
 import type { ExploreData } from '@/app/api/explore/[category]/route'
 
-const HUB_DOMAIN: Record<ExploreCategory, 'kpop' | 'kdrama' | 'kbeauty' | 'kculture'> = {
-  'k-pop': 'kpop', 'k-drama': 'kdrama', 'k-beauty': 'kbeauty', 'k-culture': 'kculture',
+const HUB_DOMAIN: Record<ExploreCategory, 'kpop' | 'kdrama' | 'kbeauty' | 'kfood' | 'kculture'> = {
+  'k-pop': 'kpop', 'k-drama': 'kdrama', 'k-beauty': 'kbeauty', 'k-food': 'kfood', 'k-culture': 'kculture',
 }
 import ExploreSectionRow from './ExploreSectionRow'
 import KpopArtistNav from './KpopArtistNav'
@@ -19,7 +19,7 @@ import ExploreHero from './ExploreHero'
 import ExploreChipFilter, { ChipFilterConfig } from './ExploreChipFilter'
 import ExplorePackages from './ExplorePackages'
 
-export type ExploreCategory = 'k-pop' | 'k-drama' | 'k-beauty' | 'k-culture'
+export type ExploreCategory = 'k-pop' | 'k-drama' | 'k-beauty' | 'k-food' | 'k-culture'
 
 // SC-36 (KD_04 Tours / KB_04 Makeup) originally spec'd only these two.
 // Widened same-session: with tours/makeup as the only featured slots, 3 of 4
@@ -37,7 +37,12 @@ interface CategoryConfig {
   tKey: string
   /** Section order (trending is prepended server-side). */
   sections: string[]
-  filter?: ChipFilterConfig
+  /**
+   * One row per simultaneous chip filter (content-plan doc: K-Drama/K-Food/K-Culture
+   * each need a mid-tier chip + a region chip at once). Rendered in array order,
+   * combined as AND in the fetch query — see the `fetchParams` loop below.
+   */
+  filters?: ChipFilterConfig[]
 }
 
 const CATEGORIES: CategoryConfig[] = [
@@ -46,7 +51,7 @@ const CATEGORIES: CategoryConfig[] = [
     href: '/explore/k-pop',
     icon: Music,
     tKey: 'kpop',
-    // CT_KP_EXT (DEC-60): no `filter` here — the agency chip lives inside
+    // CT_KP_EXT (DEC-60): no `filters` here — the agency chip lives inside
     // KpopArtistNav now (global, client-side filtering against artist/agency
     // tags), not a query-param refetch. This list only drives the desktop
     // sidebar's #section-{id} anchors; birthdayCafe excluded (conditional row).
@@ -58,7 +63,10 @@ const CATEGORIES: CategoryConfig[] = [
     icon: Tv,
     tKey: 'kdrama',
     sections: ['trending', 'filming', 'tours', 'historical', 'ostCafes'],
-    // K-Drama has no chip filter (SPEC-05).
+    filters: [
+      { param: 'broadcaster', values: ['tvN', 'MBC', 'SBS', 'KBS', 'JTBC', 'Netflix'] },
+      { param: 'region', values: ['Jeju', 'Ulsan', 'Jeonbuk', 'Jongno'] },
+    ],
   },
   {
     id: 'k-beauty',
@@ -66,7 +74,18 @@ const CATEGORIES: CategoryConfig[] = [
     icon: Sparkles,
     tKey: 'kbeauty',
     sections: ['trending', 'skincare', 'makeup', 'spa', 'salon'],
-    filter: { param: 'district', values: ['Apgujeong', 'Myeongdong', 'Hongdae', 'Gangnam'] },
+    filters: [{ param: 'district', values: ['Apgujeong', 'Myeongdong', 'Hongdae', 'Gangnam'] }],
+  },
+  {
+    id: 'k-food',
+    href: '/explore/k-food',
+    icon: Utensils,
+    tKey: 'kfood',
+    sections: ['trending', 'noodles', 'soups', 'hanjeongsik'],
+    filters: [
+      { param: 'badge', values: ['MICHELIN', 'REDRIBBON', 'B4KPICK', 'WOOSOLLANG', 'MULTI'] },
+      { param: 'region', values: ['Seoul', 'GyeongnamUlsan', 'Busan', 'GangwonChungbuk', 'GyeonggiIncheon'] },
+    ],
   },
   {
     id: 'k-culture',
@@ -74,7 +93,10 @@ const CATEGORIES: CategoryConfig[] = [
     icon: Globe,
     tKey: 'kculture',
     sections: ['trending', 'traditional', 'food', 'festivals', 'crafts'],
-    filter: { param: 'region', values: ['Seoul', 'Jeonju', 'Gyeongju', 'Andong'] },
+    filters: [
+      { param: 'badge', values: ['UNESCO', 'NATIONAL_HERITAGE'] },
+      { param: 'region', values: ['Jeju', 'Seoul', 'Gangwon', 'Gyeongbuk', 'Busan'] },
+    ],
   },
 ]
 
@@ -114,7 +136,9 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
   const cat = CATEGORIES.find(c => c.id === category)!
   const CatIcon = cat.icon
 
-  const [activeFilter, setActiveFilter] = useState<string | null>(null)
+  // Keyed by filter param (e.g. 'broadcaster'/'region') so multiple simultaneous
+  // chip rows (K-Drama/K-Food/K-Culture) each track their own active value.
+  const [activeFilters, setActiveFilters] = useState<Record<string, string | null>>({})
 
   useEffect(() => {
     track('content_hub_view', { domain: HUB_DOMAIN[category], locale, screen_id: `CT_${category}` })
@@ -127,7 +151,10 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
   // from a NEXT_LOCALE cookie server-side, and an unchanged key would keep
   // serving the previous locale's cached response indefinitely.
   const fetchParams = new URLSearchParams()
-  if (cat.filter && activeFilter) fetchParams.set(cat.filter.param, activeFilter)
+  for (const f of cat.filters ?? []) {
+    const value = activeFilters[f.param]
+    if (value) fetchParams.set(f.param, value)
+  }
   // CT_KP_EXT (DEC-60) dev-only preview passthrough — forwards the page's own
   // ?includeUnverified=1 to the API route so placeholder (verified:false) rows
   // can be checked against complete-looking content before BLK-35/BLK-36 land.
@@ -273,19 +300,22 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
 
             {/* CT_KP_EXT (DEC-60) — k-pop only: global agency filter + artist tile
                 grid + 6(-7) rows, entirely separate from the generic per-hub body
-                below. k-drama/k-beauty/k-culture output is untouched. */}
+                below. The other 4 sections (k-drama/k-beauty/k-food/k-culture) all
+                go through the generic body — DEC-61 confirms K-Pop is the only
+                section whose mid-tier needs a bespoke tile-grid component. */}
             {category === 'k-pop' ? (
               <KpopArtistNav data={data} />
             ) : (
               <>
-                {/* H4 Chip filter (per-hub; K-Drama has none) */}
-                {cat.filter && (
+                {/* H4 Chip filter row(s) — one per simultaneous facet (see CategoryConfig.filters) */}
+                {(cat.filters ?? []).map(f => (
                   <ExploreChipFilter
-                    config={cat.filter}
-                    active={activeFilter}
-                    onChange={setActiveFilter}
+                    key={f.param}
+                    config={f}
+                    active={activeFilters[f.param] ?? null}
+                    onChange={(value) => setActiveFilters(prev => ({ ...prev, [f.param]: value }))}
                   />
-                )}
+                ))}
 
                 {/* H3 Horizontal-scroll section rows */}
                 {data.sections.every(s => s.items.length === 0) ? (

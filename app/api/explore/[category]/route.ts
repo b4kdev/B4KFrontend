@@ -16,6 +16,14 @@ export interface ExplorePoi {
   agency?: string
   district?: string
   region?: string
+  /** K-Drama broadcaster chip facet. */
+  broadcaster?: string
+  /**
+   * Array-membership facet (K-Food/K-Culture badge chips — 미슐랭/레드리본/UNESCO/etc).
+   * A POI can carry more than one. The special chip value 'MULTI' (기타: "2개 이상")
+   * matches `badges.length >= 2` instead of array-inclusion — see `applyFacets` in GET.
+   */
+  badges?: string[]
   /** ISO date (YYYY-MM-DD) for D-Day countdown on event/merch/festival items. */
   event_date?: string
   /** SC-36 (KD_04/KB_04) — one featured item renders as a wide card above the row. */
@@ -106,15 +114,31 @@ const SECTIONS_BY_CATEGORY: Record<string, string[]> = {
   'k-pop': ['concerts', 'tours', 'agencyHq', 'merchandise', 'memberFootsteps'],
   'k-drama': ['filming', 'tours', 'historical', 'ostCafes'],
   'k-beauty': ['skincare', 'makeup', 'spa', 'salon'],
+  // DEC-61 — new 5th section. "기타" (509곳) explicitly skipped: the content plan
+  // itself flags it as "로우로 못 쓰인다" (not usable as a row), not a screen gap.
+  'k-food': ['noodles', 'soups', 'hanjeongsik'],
   'k-culture': ['traditional', 'food', 'festivals', 'crafts'],
 }
 
-/** Facet key per category — the single query param that hub's chips drive. */
-const FACET_BY_CATEGORY: Record<string, keyof ExplorePoi | undefined> = {
-  'k-pop': 'agency',
-  'k-beauty': 'district',
-  'k-culture': 'region',
-  'k-drama': undefined,
+/**
+ * Facet config per category — the query param(s) hub chips drive. Most sections have
+ * one (or two, since the content-plan doc's K-Drama/K-Food/K-Culture hubs each need a
+ * mid-tier chip AND a region chip simultaneously — see `CATEGORIES.filters` in
+ * `ExplorePage.tsx`). `array: true` fields (K-Food/K-Culture's `badges`) match via
+ * `.includes(value)` instead of equality; `'MULTI'` is a hardcoded special value for
+ * K-Food's "2개 이상" chip (`badges.length >= 2`), not a generalized predicate.
+ */
+interface FacetConfig {
+  param: string
+  field: keyof ExplorePoi
+  array?: boolean
+}
+const FACETS_BY_CATEGORY: Record<string, FacetConfig[]> = {
+  'k-pop': [{ param: 'agency', field: 'agency' }],
+  'k-drama': [{ param: 'broadcaster', field: 'broadcaster' }, { param: 'region', field: 'region' }],
+  'k-beauty': [{ param: 'district', field: 'district' }],
+  'k-food': [{ param: 'badge', field: 'badges', array: true }, { param: 'region', field: 'region' }],
+  'k-culture': [{ param: 'badge', field: 'badges', array: true }, { param: 'region', field: 'region' }],
 }
 
 // Interim content seed for the thematic sections + hero (the BFF has no
@@ -393,8 +417,7 @@ export async function GET(
     packages: [],
   }
 
-  const facet = FACET_BY_CATEGORY[params.category]
-  const filterValue = facet ? req.nextUrl.searchParams.get(facet) : null
+  const facets = FACETS_BY_CATEGORY[params.category] ?? []
 
   // Trending Now (KP/KB/KC_02) is built from the UNFILTERED data — the trending
   // row sits above the chip-scoped sections and must not collapse under a
@@ -429,17 +452,28 @@ export async function GET(
     trendingSection = { id: 'trending', items: trendingItems.filter(dropUnverified) }
   }
 
-  // Apply chip filter only to sections whose items carry the facet (the chip is
-  // spec-scoped to those sections). Untagged sections pass through unchanged.
-  // Note: BFF places don't carry agency/district/region facets yet, so this is
-  // a pass-through until that data exists (BFF region= expects Korean
-  // display_region values — the English chip values wouldn't match).
+  // Apply each active chip filter only to sections whose items carry that facet (the
+  // chip is spec-scoped to those sections). Untagged sections pass through unchanged.
+  // Multiple facets (e.g. K-Drama's broadcaster + region) apply as AND — a section
+  // narrows once per active facet. Note: BFF places don't carry these facets yet, so
+  // this is a pass-through until that data exists.
   let sections = base.sections
-  if (facet && filterValue) {
-    sections = base.sections.map((s) => {
-      const anyTagged = s.items.some((it) => it[facet] !== undefined)
+  for (const fc of facets) {
+    const value = req.nextUrl.searchParams.get(fc.param)
+    if (!value) continue
+    sections = sections.map((s) => {
+      const anyTagged = s.items.some((it) => it[fc.field] !== undefined)
       if (!anyTagged) return s
-      return { ...s, items: s.items.filter((it) => it[facet] === filterValue) }
+      return {
+        ...s,
+        items: s.items.filter((it) => {
+          if (fc.array) {
+            const arr = (it[fc.field] as string[] | undefined) ?? []
+            return value === 'MULTI' ? arr.length >= 2 : arr.includes(value)
+          }
+          return it[fc.field] === value
+        }),
+      }
     })
   }
 
