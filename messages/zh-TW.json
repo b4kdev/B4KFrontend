@@ -1232,7 +1232,10 @@
       "food": "美食",
       "festivals": "節慶活動",
       "crafts": "手工藝",
-      "trending": "當前熱門"
+      "trending": "當前熱門",
+      "agencyHq": "Agency HQ",
+      "memberFootsteps": "Member Footsteps",
+      "birthdayCafe": "This Month's Birthday Cafés"
     },
     "viewAll": "查看全部",
     "viewAllAria": "查看{section}的全部內容",
@@ -1249,7 +1252,9 @@
         "HYBE": "HYBE",
         "SM": "SM",
         "JYP": "JYP",
-        "YG": "YG"
+        "YG": "YG",
+        "STARSHIP": "STARSHIP",
+        "KQ": "KQ"
       },
       "district": {
         "Apgujeong": "狎鷗亭",
@@ -1269,6 +1274,24 @@
       "sponsored": "廣告",
       "viewCta": "查看",
       "ariaLabel": "{partner}的{title}"
+    },
+    "kpopArtistNav": {
+      "tileGrid": {
+        "ariaLabel": "Browse by artist",
+        "showMore": "{count} more",
+        "showLess": "Show less",
+        "selectAria": "Filter by {name}",
+        "empty": "No artists to show yet"
+      }
+    },
+    "footsteps": {
+      "breadcrumb": "Footsteps",
+      "title": "Footsteps",
+      "subtitle": "{count} places",
+      "filterAll": "All",
+      "filterMuseum": "Museums",
+      "filterPark": "Parks",
+      "filterCafe": "Cafés"
     }
   },
   "saved": {

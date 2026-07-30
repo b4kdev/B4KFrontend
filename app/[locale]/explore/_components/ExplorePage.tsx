@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import useSWR from 'swr'
+import { useSearchParams } from 'next/navigation'
 import { Link, usePathname } from '@/i18n/navigation'
-import { Music, Tv, Sparkles, Globe, RefreshCw, AlertTriangle, ArrowRight, Compass } from 'lucide-react'
+import { Music, Tv, Sparkles, Globe, RefreshCw, AlertTriangle, Compass } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
 import { track } from '@/lib/analytics'
 import type { ExploreData } from '@/app/api/explore/[category]/route'
@@ -12,8 +13,8 @@ import type { ExploreData } from '@/app/api/explore/[category]/route'
 const HUB_DOMAIN: Record<ExploreCategory, 'kpop' | 'kdrama' | 'kbeauty' | 'kculture'> = {
   'k-pop': 'kpop', 'k-drama': 'kdrama', 'k-beauty': 'kbeauty', 'k-culture': 'kculture',
 }
-import ExplorePoiCard from './ExplorePoiCard'
-import ExploreFeaturedCard from './ExploreFeaturedCard'
+import ExploreSectionRow from './ExploreSectionRow'
+import KpopArtistNav from './KpopArtistNav'
 import ExploreHero from './ExploreHero'
 import ExploreChipFilter, { ChipFilterConfig } from './ExploreChipFilter'
 import ExplorePackages from './ExplorePackages'
@@ -25,7 +26,9 @@ export type ExploreCategory = 'k-pop' | 'k-drama' | 'k-beauty' | 'k-culture'
 // category pages (k-culture, and half of k-pop/k-drama/k-beauty) rendered as
 // flat uniform card rows with zero visual break — one featured section per
 // category now, each with a real is_featured POI already in the seed data.
-const FEATURED_SECTIONS = new Set(['tours', 'makeup', 'food', 'agencies', 'ostCafes', 'spa'])
+// 'agencies' (k-pop) dropped — CT_KP_EXT (DEC-60) renames that row 'agencyHq'
+// and deliberately doesn't give it the featured treatment (see KpopArtistNav).
+const FEATURED_SECTIONS = new Set(['tours', 'makeup', 'food', 'ostCafes', 'spa'])
 
 interface CategoryConfig {
   id: ExploreCategory
@@ -43,8 +46,11 @@ const CATEGORIES: CategoryConfig[] = [
     href: '/explore/k-pop',
     icon: Music,
     tKey: 'kpop',
-    sections: ['trending', 'concerts', 'tours', 'agencies', 'merchandise'],
-    filter: { param: 'agency', values: ['HYBE', 'SM', 'JYP', 'YG'] },
+    // CT_KP_EXT (DEC-60): no `filter` here — the agency chip lives inside
+    // KpopArtistNav now (global, client-side filtering against artist/agency
+    // tags), not a query-param refetch. This list only drives the desktop
+    // sidebar's #section-{id} anchors; birthdayCafe excluded (conditional row).
+    sections: ['trending', 'concerts', 'tours', 'agencyHq', 'merchandise', 'memberFootsteps'],
   },
   {
     id: 'k-drama',
@@ -103,6 +109,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
   const t = useTranslations('explore')
   const locale = useLocale()
   const pathname = usePathname()
+  const pageSearchParams = useSearchParams()
 
   const cat = CATEGORIES.find(c => c.id === category)!
   const CatIcon = cat.icon
@@ -119,7 +126,16 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
   // the in-app switcher busts the cache — the API route resolves display names
   // from a NEXT_LOCALE cookie server-side, and an unchanged key would keep
   // serving the previous locale's cached response indefinitely.
-  const query = cat.filter && activeFilter ? `?${cat.filter.param}=${encodeURIComponent(activeFilter)}` : ''
+  const fetchParams = new URLSearchParams()
+  if (cat.filter && activeFilter) fetchParams.set(cat.filter.param, activeFilter)
+  // CT_KP_EXT (DEC-60) dev-only preview passthrough — forwards the page's own
+  // ?includeUnverified=1 to the API route so placeholder (verified:false) rows
+  // can be checked against complete-looking content before BLK-35/BLK-36 land.
+  // route.ts itself no-ops this outside development, so this is a plain
+  // passthrough with no separate gate needed here.
+  const includeUnverified = pageSearchParams.get('includeUnverified')
+  if (includeUnverified) fetchParams.set('includeUnverified', includeUnverified)
+  const query = fetchParams.toString() ? `?${fetchParams.toString()}` : ''
   const { data, isLoading, error, mutate } = useSWR<ExploreData>(
     [`/api/explore/${category}${query}`, locale],
     ([url]) => fetcher<ExploreData>(url),
@@ -255,78 +271,54 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
             {/* H2 Hero */}
             {data.hero && data.hero.length > 0 && <ExploreHero slides={data.hero} />}
 
-            {/* H4 Chip filter (per-hub; K-Drama has none) */}
-            {cat.filter && (
-              <ExploreChipFilter
-                config={cat.filter}
-                active={activeFilter}
-                onChange={setActiveFilter}
-              />
-            )}
-
-            {/* H3 Horizontal-scroll section rows */}
-            {data.sections.every(s => s.items.length === 0) ? (
-              <div
-                className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-none"
-                style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
-              >
-                <Compass size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
-                <p className="text-f-xl font-semibold text-fg mb-sp-2">{t(`${cat.tKey}.empty.title`)}</p>
-                <p className="text-f-md text-muted max-w-[320px] mb-sp-4">{t(`${cat.tKey}.empty.desc`)}</p>
-                <Link
-                  href="/map"
-                  className="cta-primary"
-                >
-                  {t('empty.cta')}
-                </Link>
-              </div>
+            {/* CT_KP_EXT (DEC-60) — k-pop only: global agency filter + artist tile
+                grid + 6(-7) rows, entirely separate from the generic per-hub body
+                below. k-drama/k-beauty/k-culture output is untouched. */}
+            {category === 'k-pop' ? (
+              <KpopArtistNav data={data} />
             ) : (
-              data.sections
-                .filter(s => s.items.length > 0)
-                .map(section => {
-                  // Featured wide-card treatment is scoped to KD_04/KB_04 (SC-36) —
-                  // 'trending' re-includes the same items by dedup and must stay
-                  // a plain row, so the featured flag can't leak in there too.
-                  const featured = FEATURED_SECTIONS.has(section.id)
-                    ? section.items.find(poi => poi.is_featured)
-                    : undefined
-                  const rest = featured
-                    ? section.items.filter(poi => poi.poi_id !== featured.poi_id)
-                    : section.items
+              <>
+                {/* H4 Chip filter (per-hub; K-Drama has none) */}
+                {cat.filter && (
+                  <ExploreChipFilter
+                    config={cat.filter}
+                    active={activeFilter}
+                    onChange={setActiveFilter}
+                  />
+                )}
 
-                  return (
-                    <section
-                      key={section.id}
-                      id={`section-${section.id}`}
-                      className="mb-sp-10 scroll-mt-[80px]"
-                      aria-label={t(`sections.${section.id}`)}
+                {/* H3 Horizontal-scroll section rows */}
+                {data.sections.every(s => s.items.length === 0) ? (
+                  <div
+                    className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-none"
+                    style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+                  >
+                    <Compass size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
+                    <p className="text-f-xl font-semibold text-fg mb-sp-2">{t(`${cat.tKey}.empty.title`)}</p>
+                    <p className="text-f-md text-muted max-w-[320px] mb-sp-4">{t(`${cat.tKey}.empty.desc`)}</p>
+                    <Link
+                      href="/map"
+                      className="cta-primary"
                     >
-                      <div className="flex items-end justify-between mb-sp-4">
-                        <h2 className="text-f-sm font-semibold tracking-[0.07em] uppercase text-muted">
-                          {t(`sections.${section.id}`)}
-                        </h2>
-                        <Link
-                          href={`/search?q=${category}`}
-                          className="flex items-center gap-1 text-f-sm text-lav hover:opacity-80 transition-opacity whitespace-nowrap shrink-0 ml-sp-4"
-                          aria-label={t('viewAllAria', { section: t(`sections.${section.id}`) })}
-                        >
-                          {t('viewAll')}
-                          <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />
-                        </Link>
-                      </div>
-                      {featured && <ExploreFeaturedCard poi={featured} domain={category.toUpperCase()} />}
-                      {rest.length > 0 && (
-                        <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-sp-4 lg:-mx-sp-6 px-sp-4 lg:px-sp-6">
-                          <div className="flex gap-sp-3 pb-[4px]" style={{ width: 'max-content' }}>
-                            {rest.map(poi => (
-                              <ExplorePoiCard key={poi.poi_id} poi={poi} domain={HUB_DOMAIN[category]} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </section>
-                  )
-                })
+                      {t('empty.cta')}
+                    </Link>
+                  </div>
+                ) : (
+                  data.sections
+                    .filter(s => s.items.length > 0)
+                    .map(section => (
+                      <ExploreSectionRow
+                        key={section.id}
+                        id={section.id}
+                        items={section.items}
+                        category={category}
+                        hubDomain={HUB_DOMAIN[category]}
+                        viewAllHref={`/search?q=${category}`}
+                        allowFeatured={FEATURED_SECTIONS.has(section.id)}
+                      />
+                    ))
+                )}
+              </>
             )}
 
             {/* H5 B4K Best Packages */}

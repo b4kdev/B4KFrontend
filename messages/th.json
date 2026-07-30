@@ -1232,7 +1232,10 @@
       "food": "อาหาร",
       "festivals": "เทศกาล",
       "crafts": "งานฝีมือ",
-      "trending": "กำลังฮิตตอนนี้"
+      "trending": "กำลังฮิตตอนนี้",
+      "agencyHq": "Agency HQ",
+      "memberFootsteps": "Member Footsteps",
+      "birthdayCafe": "This Month's Birthday Cafés"
     },
     "viewAll": "ดูทั้งหมด",
     "viewAllAria": "ดูทั้งหมดของ {section}",
@@ -1249,7 +1252,9 @@
         "HYBE": "HYBE",
         "SM": "SM",
         "JYP": "JYP",
-        "YG": "YG"
+        "YG": "YG",
+        "STARSHIP": "STARSHIP",
+        "KQ": "KQ"
       },
       "district": {
         "Apgujeong": "อัพกูจอง",
@@ -1269,6 +1274,24 @@
       "sponsored": "ได้รับการสนับสนุน",
       "viewCta": "ดู",
       "ariaLabel": "{title} โดย {partner}"
+    },
+    "kpopArtistNav": {
+      "tileGrid": {
+        "ariaLabel": "Browse by artist",
+        "showMore": "{count} more",
+        "showLess": "Show less",
+        "selectAria": "Filter by {name}",
+        "empty": "No artists to show yet"
+      }
+    },
+    "footsteps": {
+      "breadcrumb": "Footsteps",
+      "title": "Footsteps",
+      "subtitle": "{count} places",
+      "filterAll": "All",
+      "filterMuseum": "Museums",
+      "filterPark": "Parks",
+      "filterCafe": "Cafés"
     }
   },
   "saved": {

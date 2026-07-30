@@ -1232,7 +1232,10 @@
       "food": "Food",
       "festivals": "Festivals",
       "crafts": "Crafts",
-      "trending": "Trending Now"
+      "trending": "Trending Now",
+      "agencyHq": "Agency HQ",
+      "memberFootsteps": "Member Footsteps",
+      "birthdayCafe": "This Month's Birthday Cafés"
     },
     "viewAll": "View all",
     "viewAllAria": "View all {section}",
@@ -1249,7 +1252,9 @@
         "HYBE": "HYBE",
         "SM": "SM",
         "JYP": "JYP",
-        "YG": "YG"
+        "YG": "YG",
+        "STARSHIP": "STARSHIP",
+        "KQ": "KQ"
       },
       "district": {
         "Apgujeong": "Apgujeong",
@@ -1269,6 +1274,24 @@
       "sponsored": "Sponsored",
       "viewCta": "View",
       "ariaLabel": "{title} by {partner}"
+    },
+    "kpopArtistNav": {
+      "tileGrid": {
+        "ariaLabel": "Browse by artist",
+        "showMore": "{count} more",
+        "showLess": "Show less",
+        "selectAria": "Filter by {name}",
+        "empty": "No artists to show yet"
+      }
+    },
+    "footsteps": {
+      "breadcrumb": "Footsteps",
+      "title": "Footsteps",
+      "subtitle": "{count} places",
+      "filterAll": "All",
+      "filterMuseum": "Museums",
+      "filterPark": "Parks",
+      "filterCafe": "Cafés"
     }
   },
   "saved": {

@@ -1232,7 +1232,10 @@
       "food": "음식",
       "festivals": "축제",
       "crafts": "공예",
-      "trending": "지금 뜨는 곳"
+      "trending": "지금 뜨는 곳",
+      "agencyHq": "기획사",
+      "memberFootsteps": "멤버 발자취",
+      "birthdayCafe": "이번달 생일카페"
     },
     "viewAll": "전체 보기",
     "viewAllAria": "{section} 전체 보기",
@@ -1249,7 +1252,9 @@
         "HYBE": "HYBE",
         "SM": "SM",
         "JYP": "JYP",
-        "YG": "YG"
+        "YG": "YG",
+        "STARSHIP": "STARSHIP",
+        "KQ": "KQ"
       },
       "district": {
         "Apgujeong": "압구정",
@@ -1269,6 +1274,24 @@
       "sponsored": "광고",
       "viewCta": "보기",
       "ariaLabel": "{partner}의 {title}"
+    },
+    "kpopArtistNav": {
+      "tileGrid": {
+        "ariaLabel": "아티스트별 탐색",
+        "showMore": "{count}개 더보기",
+        "showLess": "간단히 보기",
+        "selectAria": "{name} 필터",
+        "empty": "표시할 아티스트가 없습니다"
+      }
+    },
+    "footsteps": {
+      "breadcrumb": "발자취",
+      "title": "발자취",
+      "subtitle": "{count}곳",
+      "filterAll": "전체",
+      "filterMuseum": "미술관",
+      "filterPark": "공원",
+      "filterCafe": "카페"
     }
   },
   "saved": {
