@@ -1182,6 +1182,9 @@
       },
       "kculture": {
         "desc": "美食、傳統市場與文化遺產體驗"
+      },
+      "kfood": {
+        "desc": "Michelin picks, award-winning dishes, and traditional recipes"
       }
     },
     "kpop": {
@@ -1235,7 +1238,17 @@
       "trending": "當前熱門",
       "agencyHq": "Agency HQ",
       "memberFootsteps": "Member Footsteps",
-      "birthdayCafe": "This Month's Birthday Cafés"
+      "birthdayCafe": "This Month's Birthday Cafés",
+      "shopping": "Shopping & Select Shops",
+      "brandFlagship": "Brand Flagships",
+      "derma": "Pharmacy & Derma",
+      "noodles": "Noodles",
+      "soups": "Soups & Stews",
+      "hanjeongsik": "Hanjeongsik & Bapsang",
+      "heritage": "Historical Heritage",
+      "nature": "Nature & Scenery",
+      "temple": "Temples & Religion",
+      "museum": "Museums & Galleries"
     },
     "viewAll": "查看全部",
     "viewAllAria": "查看{section}的全部內容",
@@ -1260,13 +1273,43 @@
         "Apgujeong": "狎鷗亭",
         "Myeongdong": "明洞",
         "Hongdae": "弘大",
-        "Gangnam": "江南"
+        "Gangnam": "江南",
+        "Seongsu": "Seongsu",
+        "Jongno": "Jongno",
+        "Jamsil": "Jamsil"
       },
       "region": {
         "Seoul": "首爾",
         "Jeonju": "全州",
         "Gyeongju": "慶州",
-        "Andong": "安東"
+        "Andong": "安東",
+        "Jeju": "Jeju",
+        "Ulsan": "Ulsan",
+        "Jeonbuk": "Jeonbuk",
+        "Jongno": "Jongno",
+        "Gangwon": "Gangwon",
+        "Gyeongbuk": "Gyeongbuk",
+        "Busan": "Busan",
+        "GyeongnamUlsan": "Gyeongnam·Ulsan",
+        "GangwonChungbuk": "Gangwon·Chungbuk",
+        "GyeonggiIncheon": "Gyeonggi·Incheon"
+      },
+      "broadcaster": {
+        "tvN": "tvN",
+        "MBC": "MBC",
+        "SBS": "SBS",
+        "KBS": "KBS",
+        "JTBC": "JTBC",
+        "Netflix": "Netflix"
+      },
+      "badge": {
+        "MICHELIN": "Michelin",
+        "REDRIBBON": "Red Ribbon",
+        "B4KPICK": "B4K Pick",
+        "WOOSOLLANG": "Woosollang",
+        "MULTI": "2+ Badges",
+        "UNESCO": "UNESCO",
+        "NATIONAL_HERITAGE": "National Heritage"
       }
     },
     "packages": {
@@ -1292,6 +1335,48 @@
       "filterMuseum": "Museums",
       "filterPark": "Parks",
       "filterCafe": "Cafés"
+    },
+    "kfood": {
+      "title": "K-Food",
+      "empty": {
+        "title": "No K-Food spots yet",
+        "desc": "K-Food content is coming soon."
+      }
+    },
+    "filmingSpots": {
+      "breadcrumb": "Filming Spots",
+      "title": "Filming Spots",
+      "subtitle": "{count} real filming locations",
+      "filterAll": "All",
+      "filterNature": "Nature",
+      "filterHistoric": "Historic",
+      "filterExperience": "Experience"
+    },
+    "perfumeFlagships": {
+      "breadcrumb": "Perfume Flagships",
+      "title": "Perfume Flagships",
+      "subtitle": "{count} perfume flagship stores",
+      "filterAll": "All",
+      "filterSeongsu": "Seongsu",
+      "filterHannam": "Hannam",
+      "filterGarosugil": "Garosu-gil"
+    },
+    "michelinNoodles": {
+      "breadcrumb": "Michelin Noodles",
+      "title": "Michelin-Picked Noodles",
+      "subtitle": "{count} Michelin-recognized noodle restaurants",
+      "filterAll": "All",
+      "filterNaengmyeon": "Naengmyeon",
+      "filterOther": "Other"
+    },
+    "heritage": {
+      "breadcrumb": "UNESCO Heritage",
+      "title": "UNESCO Heritage",
+      "subtitle": "{count} UNESCO heritage sites",
+      "filterAll": "All",
+      "filterGyeongju": "Gyeongju",
+      "filterAndong": "Andong",
+      "filterYeongju": "Yeongju"
     }
   },
   "saved": {

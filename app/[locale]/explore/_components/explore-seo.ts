@@ -7,6 +7,7 @@ const CATEGORY_MAP: Record<ExploreCategory, { tKey: string; path: string }> = {
   'k-pop':     { tKey: 'kpop',    path: '/explore/k-pop' },
   'k-drama':   { tKey: 'kdrama',  path: '/explore/k-drama' },
   'k-beauty':  { tKey: 'kbeauty', path: '/explore/k-beauty' },
+  'k-food':    { tKey: 'kfood',   path: '/explore/k-food' },
   'k-culture': { tKey: 'kculture', path: '/explore/k-culture' },
 }
 

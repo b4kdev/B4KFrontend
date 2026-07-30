@@ -16,6 +16,14 @@ export interface ExplorePoi {
   agency?: string
   district?: string
   region?: string
+  /** K-Drama broadcaster chip facet. */
+  broadcaster?: string
+  /**
+   * Array-membership facet (K-Food/K-Culture badge chips — 미슐랭/레드리본/UNESCO/etc).
+   * A POI can carry more than one. The special chip value 'MULTI' (기타: "2개 이상")
+   * matches `badges.length >= 2` instead of array-inclusion — see `applyFacets` in GET.
+   */
+  badges?: string[]
   /** ISO date (YYYY-MM-DD) for D-Day countdown on event/merch/festival items. */
   event_date?: string
   /** SC-36 (KD_04/KB_04) — one featured item renders as a wide card above the row. */
@@ -62,6 +70,14 @@ export interface ExploreHeroSlide {
   cta_label: string
   cta_href: string
   image_url: string | null
+  /**
+   * Same `verified` gate as ExplorePoi (BLK-36/BLK-37) — hero content wasn't
+   * previously filtered by this at all (only sections were), which would have
+   * shown unconfirmed placeholder content to real users unconditionally for any
+   * hero that isn't backed by a real core.poi row (found while wiring K-Beauty's
+   * and K-Food's heroes, neither of which have confirmed coordinates yet).
+   */
+  verified?: boolean
 }
 
 export interface ExplorePackage {
@@ -105,16 +121,38 @@ const SECTIONS_BY_CATEGORY: Record<string, string[]> = {
   // a static per-category section like the rest.
   'k-pop': ['concerts', 'tours', 'agencyHq', 'merchandise', 'memberFootsteps'],
   'k-drama': ['filming', 'tours', 'historical', 'ostCafes'],
-  'k-beauty': ['skincare', 'makeup', 'spa', 'salon'],
-  'k-culture': ['traditional', 'food', 'festivals', 'crafts'],
+  // DEC-61 — restructured from skincare/makeup/spa/salon to the content plan's
+  // real 4 rows (쇼핑·편집샵/브랜드플래그십/헤어·살롱/약국·더마). Existing real seed
+  // items redistributed into whichever new row fits (see SEED_SECTIONS comment).
+  'k-beauty': ['shopping', 'brandFlagship', 'salon', 'derma'],
+  // DEC-61 — new 5th section. "기타" (509곳) explicitly skipped: the content plan
+  // itself flags it as "로우로 못 쓰인다" (not usable as a row), not a screen gap.
+  'k-food': ['noodles', 'soups', 'hanjeongsik'],
+  // DEC-61 — restructured from traditional/food/festivals/crafts to the content
+  // plan's real 4 rows (역사·유적/자연·경관/사찰·종교/박물관·미술관). Real items
+  // redistributed, none dropped — see SEED_SECTIONS comment.
+  'k-culture': ['heritage', 'nature', 'temple', 'museum'],
 }
 
-/** Facet key per category — the single query param that hub's chips drive. */
-const FACET_BY_CATEGORY: Record<string, keyof ExplorePoi | undefined> = {
-  'k-pop': 'agency',
-  'k-beauty': 'district',
-  'k-culture': 'region',
-  'k-drama': undefined,
+/**
+ * Facet config per category — the query param(s) hub chips drive. Most sections have
+ * one (or two, since the content-plan doc's K-Drama/K-Food/K-Culture hubs each need a
+ * mid-tier chip AND a region chip simultaneously — see `CATEGORIES.filters` in
+ * `ExplorePage.tsx`). `array: true` fields (K-Food/K-Culture's `badges`) match via
+ * `.includes(value)` instead of equality; `'MULTI'` is a hardcoded special value for
+ * K-Food's "2개 이상" chip (`badges.length >= 2`), not a generalized predicate.
+ */
+interface FacetConfig {
+  param: string
+  field: keyof ExplorePoi
+  array?: boolean
+}
+const FACETS_BY_CATEGORY: Record<string, FacetConfig[]> = {
+  'k-pop': [{ param: 'agency', field: 'agency' }],
+  'k-drama': [{ param: 'broadcaster', field: 'broadcaster' }, { param: 'region', field: 'region' }],
+  'k-beauty': [{ param: 'district', field: 'district' }],
+  'k-food': [{ param: 'badge', field: 'badges', array: true }, { param: 'region', field: 'region' }],
+  'k-culture': [{ param: 'badge', field: 'badges', array: true }, { param: 'region', field: 'region' }],
 }
 
 // Interim content seed for the thematic sections + hero (the BFF has no
@@ -128,9 +166,27 @@ const SEED_HERO: Record<string, ExploreHeroSlide[]> = {
   // CT_KP_EXT (DEC-60) — reframed to "RM'S MUSEUM ROUTE" per the content plan's canonical
   // page mock (image 3 of the source doc), replacing the old generic KSPO Dome hero.
   'k-pop': [{ id: 'KP-014', badge: 'MEMBER ROUTE', title: "RM's Museum Route", subtitle: '용산구 이태원로 55길 60 — RM이 반복해 찾은 미술관, 그가 남긴 흔적을 따라 걷는 하루 코스.', cta_label: 'FOLLOW THE ROUTE', cta_href: '/explore/k-pop/bts/footsteps', image_url: '/images/explore/kpop/KP-014_leeum-samsung-museum.png' }],
-  'k-drama': [{ id: 'KD002-001b', badge: 'GOBLIN PILGRIMAGE', title: 'Jumunjin Breakwater', subtitle: '강원 강릉시 주문진읍 교항리 — where Kim Shin and Eun-tak first met. The red-scarf photo tradition still lives on.', cta_label: 'SEE THE ROUTE', cta_href: '/map?poi=KD002-001b', image_url: '/images/explore/kdrama/KD002-001b_jumunjin-breakwater-hero.png' }],
-  'k-beauty': [{ id: 'KB-NEW-065', badge: 'SHOPPING HUB', title: 'Olive Young Myeongdong', subtitle: '중구 명동8길 14 — Korea’s biggest K-beauty retailer, right in the middle of Seoul’s busiest shopping street.', cta_label: 'START SHOPPING', cta_href: '/map?poi=KB-NEW-065', image_url: '/images/home/editorial/KB-NEW-065_olive-young-myeongdong.webp' }],
-  'k-culture': [{ id: 'KD016-014', badge: 'ROYAL SEOUL', title: 'Gyeongbokgung Palace', subtitle: '종로구 사직로 161 — Korea’s grandest royal palace, with an hourly changing-of-the-guard ceremony.', cta_label: 'EXPLORE PALACES', cta_href: '/map?poi=KD016-014', image_url: '/images/home/hero/KD016-014_gyeongbokgung-hero-wide.webp' }],
+  // DEC-61 — reframed to "TANGERINES · JEJU ROUTE" per the content plan's canonical
+  // page mock (Tangerines = the English title of 폭싹 속았수다), CTA into the new
+  // filming-spots detail page — replaces the old Goblin/Jumunjin Breakwater hero.
+  'k-drama': [{ id: 'KD-SEONGSAN-ILCHULBONG', badge: 'TANGERINES · JEJU ROUTE', title: 'Seongsan Ilchulbong', subtitle: '제주 서귀포시 — 폭싹속았수다 해수 장면의 배경지. 촬영지 24곳이 제주에 모여 있다.', cta_label: 'SEE THE ROUTE', cta_href: '/explore/k-drama/tangerines/filming-spots', image_url: null }],
+  // DEC-61 — reframed to "SEOUL SCENT ROUTE" / NONFICTION Seongsu per the content
+  // plan's canonical page mock, replacing the old Olive Young shopping-hub hero.
+  // verified:false — NONFICTION Seongsu has no confirmed core.poi row (BLK-37);
+  // real users see no hero on k-beauty until this resolves (rather than a
+  // fabricated-content hero, which the pre-fix code would have shown — hero
+  // wasn't gated by `verified` at all until this pass).
+  'k-beauty': [{ id: 'KB-PLACEHOLDER-NONFICTIONSEONGSU', badge: 'SEOUL SCENT ROUTE', title: 'NONFICTION Seongsu', subtitle: '성동구 연무장길 — 향수 플래그십 10곳 중 하나, 뷰티에서 유일하게 완전한 컬렉션.', cta_label: 'FOLLOW THE SCENT', cta_href: '/explore/k-beauty/perfume-flagships', image_url: null, verified: false }],
+  // DEC-61 — reframed to "UNESCO WORLD HERITAGE" / Changdeokgung Palace per the
+  // content plan's canonical page mock. Changdeokgung already has a confirmed
+  // core.poi row (KD016-001, reused from the traditional/heritage row below) —
+  // real, not placeholder, unlike k-beauty/k-food's heroes.
+  'k-culture': [{ id: 'KD016-001', badge: 'UNESCO WORLD HERITAGE', title: 'Changdeokgung Palace', subtitle: '서울 종로구 율곡로 99 — 1997년 유네스코 세계유산 등재. 51곳의 유네스코 유산 중 하나.', cta_label: 'EXPLORE HERITAGE SITES', cta_href: '/explore/k-culture/gyeongbuk/heritage', image_url: '/images/home/trending/KD016-001_changdeokgung-palace.webp' }],
+  // DEC-61 — new 5th section. "TRIPLE-PICKED" / Woo Lae Oak, per the content
+  // plan's own named example (a restaurant all 4 of its merged badge sources agree on).
+  // verified:false — same reasoning as k-beauty's hero above; Woo Lae Oak has
+  // no confirmed core.poi row of its own in this codebase yet.
+  'k-food': [{ id: 'KF-PLACEHOLDER-WOOLAEOAK', badge: 'TRIPLE-PICKED', title: 'Woo Lae Oak', subtitle: '중구 창경궁로 — 미슐랭·레드리본·B4K픽 4개 출처가 모두 꼽은 7곳 중 하나.', cta_label: 'SEE ALL SEVEN', cta_href: '/explore/k-food/michelin-noodles', image_url: null, verified: false }],
 }
 
 // CT_KP_EXT (DEC-60) — artist tile grid roster. Real, publicly-known groups (not
@@ -234,23 +290,38 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
     ],
   },
   'k-drama': {
+    // Kept unchanged — already real/verified, not contradicted by the content plan
+    // (its hub-page crop only showed 4 rows; treated as a partial view, not a
+    // directive to drop this row, per the same judgment call DEC-61 documents).
     tours: [
       { poi_id: 'KD002-001b', name_ko: '주문진방파제', name_en: 'Jumunjin Breakwater', primary_image_url: '/images/explore/kdrama/KD002-001b_jumunjin-breakwater-hero.png', display_region: 'Gangneung, Gangwon', quality_score: 0, is_trending: false, is_featured: true, coords_lat: 37.9036, coords_lng: 128.8286 },
       { poi_id: 'KD002-001', name_ko: '비내섬', name_en: 'Binaeseom Island / Binae Trail', primary_image_url: '/images/explore/kdrama/KD002-001_binaeseom-island.png', display_region: 'Chungju, Chungbuk', quality_score: 0, is_trending: false, coords_lat: 37.10763245243604, coords_lng: 127.8177258622132 },
       { poi_id: 'KD016-003', name_ko: '문경새재 오픈세트장', name_en: 'Mungyeong Saejae Open Set', primary_image_url: '/images/home/trending/KD016-003_mungyeong-saejae-open-set.webp', display_region: 'Mungyeong, Gyeongsangbuk-do', quality_score: 0, is_trending: false, coords_lat: 36.7713996802656, coords_lng: 128.074072026373 },
       { poi_id: 'KD013-009', name_ko: '남이섬', name_en: 'Namiseom Café Area', primary_image_url: '/images/explore/kdrama/KD013-009_namiseom-cafe-area.png', display_region: 'Chuncheon, Gangwon', quality_score: 0, is_trending: false, coords_lat: 37.79144074509299, coords_lng: 127.5252101432974 },
     ],
+    // 촬영지 (DEC-61) — reframed with the content plan's named examples. No real
+    // per-item broadcaster/region attribution exists (same BLK-35-class gap as
+    // K-Pop's concerts/tours/merch), so these stay unfiltered by the new
+    // broadcaster/region chips — all placeholder, no confirmed core.poi row.
     filming: [
-      { poi_id: 'KD003-003', name_ko: '오리올', name_en: 'Oriole Rooftop Bar', primary_image_url: '/images/explore/kdrama/KD003-003_oriole-rooftop-bar.png', display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5316076300166, coords_lng: 126.9920215556666 },
-      { poi_id: 'KD003-014', name_ko: '남산공원', name_en: 'Namsan Park', primary_image_url: '/images/explore/kdrama/KD003-014_namsan-park.png', display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5524979951415, coords_lng: 126.989316855952 },
-      { poi_id: 'KD016-012', name_ko: '용인대장금테마파크', name_en: 'Yongin Dae Jang Geum Park Set', primary_image_url: '/images/home/recommended/KD016-012_yongin-daejanggeum-park.webp', display_region: 'Yongin, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 37.1211916935391, coords_lng: 127.337579430944 },
-      { poi_id: 'KP-0633', name_ko: 'SBS프리즘타워', name_en: 'SBS Prism Tower', primary_image_url: '/images/explore/kdrama/KP-0633_sbs-prism-tower.png', display_region: 'Mapo-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5797103213346, coords_lng: 126.892781019504 },
-      { poi_id: 'KD017-015', name_ko: '청진2리항', name_en: 'Cheongjin 2-ri Breakwater', primary_image_url: '/images/explore/kdrama/KD017-015_cheongjin-2ri-breakwater.png', display_region: 'Pohang, Gyeongbuk', quality_score: 0, is_trending: false, coords_lat: 36.1743210094615, coords_lng: 129.395809146558 },
+      { poi_id: 'KD-PLACEHOLDER-SEOULBAM', name_ko: '서울밤', name_en: 'Seoul Bam', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KD-PLACEHOLDER-HANBYEOKTUNNEL', name_ko: '한벽터널', name_en: 'Hanbyeok Tunnel', primary_image_url: null, display_region: 'Jeonju, Jeonbuk', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KD-PLACEHOLDER-AHYEONSUPER', name_ko: '아현수퍼', name_en: 'Ahyeon Super', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
     ],
+    // 역사적 세트장 (DEC-61) — reframed. Ondal Tourist Site is a real, well-known
+    // public heritage site (Danyang); Cheonjeongjeon/Sungjeongjeon Hall are named
+    // set-hall locations from the content plan without a confirmed core.poi row —
+    // all three ship placeholder pending BLK-37.
     historical: [
-      { poi_id: 'KD020-011', name_ko: '전주한옥마을', name_en: 'Jeonju Hanok Stay', primary_image_url: '/images/explore/kdrama/KD020-011_jeonju-hanok-stay.png', display_region: 'Jeonju, Jeonbuk', quality_score: 0, is_trending: false, coords_lat: 35.81477744329797, coords_lng: 127.1525570014218 },
-      { poi_id: 'KD028-014', name_ko: '운현궁', name_en: 'Unhyeongung Palace', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.576226410093, coords_lng: 126.987085596535 },
-      { poi_id: 'KD005-014', name_ko: '수원화성', name_en: 'Suwon Hwaseong Fortress', primary_image_url: null, display_region: 'Suwon, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 37.2869569586225, coords_lng: 127.011795743342 },
+      { poi_id: 'KD-PLACEHOLDER-CHEONJEONGJEON', name_ko: '천정전', name_en: 'Cheonjeongjeon Hall', primary_image_url: null, display_region: 'Korea', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KD-PLACEHOLDER-SUNGJEONGJEON', name_ko: '숭정전', name_en: 'Sungjeongjeon Hall', primary_image_url: null, display_region: 'Korea', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KD-PLACEHOLDER-ONDAL', name_ko: '온달관광지', name_en: 'Ondal Tourist Site', primary_image_url: null, display_region: 'Danyang, Chungbuk', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      // 지금 뜨는 곳 (auto-populated via is_trending, generic mechanism unchanged for
+      // non-k-pop categories) — Hwahongmun Gate is a real, confirmed public landmark
+      // (Suwon Hwaseong Fortress gate); Gimnyeong Beach is a real Jeju beach, no
+      // confirmed core.poi row of its own yet.
+      { poi_id: 'KD-HWAHONGMUN', name_ko: '화홍문', name_en: 'Hwahongmun Gate', primary_image_url: null, display_region: 'Suwon, Gyeonggi', quality_score: 0, is_trending: true, coords_lat: 37.2925, coords_lng: 127.0177 },
+      { poi_id: 'KD-PLACEHOLDER-GIMNYEONGBEACH', name_ko: '김녕해변', name_en: 'Gimnyeong Beach', primary_image_url: null, display_region: 'Jeju', quality_score: 0, is_trending: true, coords_lat: 0, coords_lng: 0, verified: false },
     ],
     ostCafes: [
       { poi_id: 'KD002-009', name_ko: '제물포구락부', name_en: 'New Jemulpo Club', primary_image_url: '/images/explore/kdrama/KD002-009_new-jemulpo-club.png', display_region: 'Incheon Jung-gu', quality_score: 0, is_trending: false, coords_lat: 37.47463623198604, coords_lng: 126.6225221142413 },
@@ -258,21 +329,39 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
       { poi_id: 'KD017-010', name_ko: '청하공진시장', name_en: 'Cheongha Gongjin Market Café', primary_image_url: '/images/explore/kdrama/KD017-010_cheongha-gongjin-market-cafe.png', display_region: 'Pohang, Gyeongbuk', quality_score: 0, is_trending: false, coords_lat: 36.19705421304869, coords_lng: 129.3397715303084 },
     ],
   },
+  // DEC-61 — restructured from skincare/makeup/spa/salon to the content plan's
+  // real 4 rows. Every real (coordinate-confirmed) item from the old 4 rows is
+  // redistributed here, none dropped — see each row's comment for where it landed.
   'k-beauty': {
-    skincare: [
-      { poi_id: 'KB-FLAG-SU-003', name_ko: 'Amore Seongsu', name_en: 'Amore Seongsu', primary_image_url: '/images/explore/kbeauty/KB-FLAG-SU-003_amore-seongsu.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.54435844202786, coords_lng: 127.0591808958532 },
-      { poi_id: 'KB-NEW-138', name_ko: '설화수 도산플래그십스토어', name_en: 'Sulwhasoo Dosan Flagship', primary_image_url: '/images/explore/kbeauty/KB-NEW-138_sulwhasoo-dosan-flagship.png', display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.52353049099649, coords_lng: 127.0354907462648 },
-      { poi_id: 'KB-NEW-144', name_ko: '논픽션 한남', name_en: 'Nonfiction Hannam', primary_image_url: '/images/explore/kbeauty/KB-NEW-144_nonfiction-hannam.png', display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.53625706385359, coords_lng: 127.0003428273847 },
-      { poi_id: 'KB-NEW-152', name_ko: '이솝 성수', name_en: 'Aesop Seongsu', primary_image_url: '/images/explore/kbeauty/KB-NEW-152_aesop-seongsu.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5423129121868, coords_lng: 127.056022296655 },
+    // 쇼핑·편집샵 — Olive Young (already real, was tagged skincare) is a genuine
+    // select-shop; the 4 old 'makeup' brand-counter items fold in here too (no
+    // "makeup" row exists in the content plan's real structure). 3 new placeholders
+    // for the deck's own named examples (department-store/duty-free beauty halls).
+    shopping: [
       { poi_id: 'KB-NEW-065', name_ko: '올리브영 명동타운', name_en: 'Olive Young Myeongdong Town', primary_image_url: '/images/home/editorial/KB-NEW-065_olive-young-myeongdong.webp', display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, district: 'Myeongdong', coords_lat: 37.56398256073924, coords_lng: 126.9851873129621 },
-    ],
-    makeup: [
       { poi_id: 'KB-MU-MD-001', name_ko: 'Makeup House Myeongdong', name_en: 'Makeup House Myeongdong', primary_image_url: '/images/explore/kbeauty/KB-MU-MD-001_makeup-house-myeongdong.png', display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, district: 'Myeongdong', coords_lat: 37.5627516321022, coords_lng: 126.983907441043 },
       { poi_id: 'KB-MU-GN-003', name_ko: 'Cocory Color Seoul', name_en: 'Cocory Color Seoul', primary_image_url: null, display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 37.56377089583383, coords_lng: 126.985749889034 },
       { poi_id: 'KB-MU-GN-012', name_ko: 'Jung Saem Mool Inspiration West', name_en: 'Jung Saem Mool Inspiration West', primary_image_url: null, display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 37.52529441862385, coords_lng: 127.0487773089321 },
-      { poi_id: 'KB-FLAG-SU-001', name_ko: 'AMUSE Seongsu Flagship Store', name_en: 'AMUSE Seongsu Flagship Store', primary_image_url: null, display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5438137552044, coords_lng: 127.050522918312 },
+      { poi_id: 'KB-FLAG-SU-001', name_ko: 'AMUSE Seongsu Flagship Store', name_en: 'AMUSE Seongsu Flagship Store', primary_image_url: null, display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, district: 'Seongsu', coords_lat: 37.5438137552044, coords_lng: 127.050522918312 },
+      { poi_id: 'KB-PLACEHOLDER-MUSINSA', name_ko: '무신사 뷰티 성수', name_en: 'Musinsa Beauty Seongsu', primary_image_url: null, display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, district: 'Seongsu', coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KB-PLACEHOLDER-LOTTEDUTYFREE', name_ko: '롯데면세점 명동본점', name_en: 'Lotte Duty Free Myeongdong', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, district: 'Myeongdong', coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KB-PLACEHOLDER-SHINSEGAE', name_ko: '신세계 강남 뷰티관', name_en: 'Shinsegae Gangnam Beauty Hall', primary_image_url: null, display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 0, coords_lng: 0, verified: false },
     ],
-    spa: [
+    // 브랜드 플래그십 — NEW row. Amore Seongsu/Sulwhasoo Dosan/Aesop Seongsu were
+    // already real (moved from the old 'skincare' row, they're single-brand
+    // flagship stores by nature). NONFICTION Seongsu is the deck's own named hero
+    // example — no confirmed core.poi row of its own (distinct from the existing
+    // Nonfiction Hannam branch).
+    brandFlagship: [
+      { poi_id: 'KB-FLAG-SU-003', name_ko: 'Amore Seongsu', name_en: 'Amore Seongsu', primary_image_url: '/images/explore/kbeauty/KB-FLAG-SU-003_amore-seongsu.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, district: 'Seongsu', coords_lat: 37.54435844202786, coords_lng: 127.0591808958532 },
+      { poi_id: 'KB-NEW-138', name_ko: '설화수 도산플래그십스토어', name_en: 'Sulwhasoo Dosan Flagship', primary_image_url: '/images/explore/kbeauty/KB-NEW-138_sulwhasoo-dosan-flagship.png', display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 37.52353049099649, coords_lng: 127.0354907462648 },
+      { poi_id: 'KB-NEW-152', name_ko: '이솝 성수', name_en: 'Aesop Seongsu', primary_image_url: '/images/explore/kbeauty/KB-NEW-152_aesop-seongsu.png', display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, district: 'Seongsu', coords_lat: 37.5423129121868, coords_lng: 127.056022296655 },
+      { poi_id: 'KB-NEW-144', name_ko: '논픽션 한남', name_en: 'Nonfiction Hannam', primary_image_url: '/images/explore/kbeauty/KB-NEW-144_nonfiction-hannam.png', display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.53625706385359, coords_lng: 127.0003428273847 },
+      { poi_id: 'KB-PLACEHOLDER-NONFICTIONSEONGSU', name_ko: '논픽션 성수', name_en: 'NONFICTION Seongsu', primary_image_url: null, display_region: 'Seongdong-gu, Seoul', quality_score: 0, is_trending: false, district: 'Seongsu', coords_lat: 0, coords_lng: 0, verified: false },
+    ],
+    // 약국·더마 — renamed from 'spa'. Real content unchanged (clinics/derma
+    // already fit this row conceptually), no better-named deck examples given.
+    derma: [
       { poi_id: 'KB-DER-GN-005', name_ko: 'Abijou Clinic Gangnam', name_en: 'Abijou Clinic Gangnam', primary_image_url: '/images/home/trending/KB-DER-GN-005_abijou-clinic-gangnam.webp', display_region: 'Seocho-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, district: 'Gangnam', coords_lat: 37.49864716138882, coords_lng: 127.0262645904912 },
       { poi_id: 'KB-DER-MD-005', name_ko: 'Lienjang Clinic Myeongdong', name_en: 'Lienjang Clinic Myeongdong', primary_image_url: '/images/explore/kbeauty/KB-DER-MD-005_lienjang-clinic-myeongdong.png', display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, district: 'Myeongdong', coords_lat: 37.563410116935, coords_lng: 126.982886367076 },
       { poi_id: 'KB-NEW-416', name_ko: '아이디병원', name_en: 'ID Hospital', primary_image_url: '/images/explore/kbeauty/KB-NEW-416_id-hospital.png', display_region: 'Gangnam-gu, Seoul', quality_score: 0, is_trending: false, district: 'Gangnam', coords_lat: 37.5177642310409, coords_lng: 127.024157143362 },
@@ -285,24 +374,73 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
       { poi_id: 'KB-HAIR-MD-001', name_ko: 'JUNO Hair Myeongdong', name_en: 'JUNO Hair Myeongdong', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, district: 'Myeongdong', coords_lat: 37.5615686368221, coords_lng: 126.9840050325429 },
     ],
   },
-  'k-culture': {
-    traditional: [
-      { poi_id: 'KD016-006', name_ko: '북촌한옥마을', name_en: 'Bukchon Hanok Village', primary_image_url: '/images/explore/kculture/KD016-006_bukchon-hanok-village.png', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.58176815383344, coords_lng: 126.9848124506409 },
-      { poi_id: 'KC-SEO-184', name_ko: '조계사', name_en: 'Jogyesa Temple', primary_image_url: '/images/explore/kculture/KC-SEO-184_jogyesa-temple.png', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.57395881968132, coords_lng: 126.98185608504 },
-      { poi_id: 'KC-SEO-182', name_ko: '종묘', name_en: 'Jongmyo Shrine', primary_image_url: '/images/explore/kculture/KC-SEO-182_jongmyo-shrine.png', display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5761080433804, coords_lng: 126.994212979827 },
-      { poi_id: 'KD016-001', name_ko: '창덕궁', name_en: 'Changdeokgung Palace', primary_image_url: '/images/home/trending/KD016-001_changdeokgung-palace.webp', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.57964694739535, coords_lng: 126.9909998067713 },
-      { poi_id: 'KD028-014', name_ko: '운현궁', name_en: 'Unhyeongung Palace', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.576226410093, coords_lng: 126.987085596535 },
+  // DEC-61 — new 5th section. No pre-existing seed at all (K-Food didn't exist
+  // before this pass) — every item here is new. None carry a `badges` tag: the
+  // content plan's badge system (미슐랭/레드리본/B4K픽/우쏠랑) isn't confirmed
+  // per-item for these hub-row examples, only for the michelin-noodles detail
+  // collection specifically (see lib/kfood-michelin-noodles.ts, where "Michelin
+  // pick" is definitionally what that collection is, not an invented relation).
+  // "기타" (509곳) deliberately skipped — the deck itself flags it as not usable
+  // as a row.
+  'k-food': {
+    noodles: [
+      { poi_id: 'KF-PLACEHOLDER-WOOLAEOAK2', name_ko: '우래옥', name_en: 'Woo Lae Oak', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KF-PLACEHOLDER-PILDONGMYEONOK', name_ko: '필동면옥', name_en: 'Pildong Myeonok', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KF-PLACEHOLDER-KYODAIYA', name_ko: '교다이야', name_en: 'Kyodaiya', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
     ],
-    food: [
-      { poi_id: 'KD016-007', name_ko: '광장시장', name_en: 'Gwangjang Market', primary_image_url: '/images/home/trending/KD016-007_gwangjang-market.webp', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, region: 'Seoul', coords_lat: 37.57005529646949, coords_lng: 126.9989472822363 },
+    soups: [
+      { poi_id: 'KF-PLACEHOLDER-MAPOOK', name_ko: '마포옥', name_en: 'Mapo Ok', primary_image_url: null, display_region: 'Mapo-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KF-PLACEHOLDER-ANMOK', name_ko: '안목', name_en: 'Anmok', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KF-PLACEHOLDER-HANWOLGWAN', name_ko: '한월관', name_en: 'Hanwolgwan', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+    ],
+    hanjeongsik: [
+      { poi_id: 'KF-PLACEHOLDER-BIBIJAE', name_ko: '비비재', name_en: 'Bibijae', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KF-PLACEHOLDER-SONGHEONJIP', name_ko: '송현집', name_en: 'Songheonjip', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+    ],
+  },
+  // DEC-61 — restructured from traditional/food/festivals/crafts to the content
+  // plan's real 4 rows. Every real (coordinate-confirmed) item from the old 4
+  // rows redistributed here, none dropped.
+  'k-culture': {
+    // 역사·유적 — palaces/shrines (was 'traditional', minus Jogyesa which moves
+    // to 'temple') + the 2 real markets (was 'food') + both folk villages (was
+    // 'festivals') — all fit "historical heritage site" broadly. Suwon Hwaseong
+    // Fortress reuses the real record already seeded under K-Drama's 'historical'
+    // row (same real place, don't fork) — the content plan names it as this
+    // row's own example too.
+    heritage: [
+      { poi_id: 'KD016-006', name_ko: '북촌한옥마을', name_en: 'Bukchon Hanok Village', primary_image_url: '/images/explore/kculture/KD016-006_bukchon-hanok-village.png', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.58176815383344, coords_lng: 126.9848124506409 },
+      { poi_id: 'KC-SEO-182', name_ko: '종묘', name_en: 'Jongmyo Shrine', primary_image_url: '/images/explore/kculture/KC-SEO-182_jongmyo-shrine.png', display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5761080433804, coords_lng: 126.994212979827 },
+      { poi_id: 'KD016-001', name_ko: '창덕궁', name_en: 'Changdeokgung Palace', primary_image_url: '/images/home/trending/KD016-001_changdeokgung-palace.webp', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, region: 'Seoul', coords_lat: 37.57964694739535, coords_lng: 126.9909998067713 },
+      { poi_id: 'KD028-014', name_ko: '운현궁', name_en: 'Unhyeongung Palace', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.576226410093, coords_lng: 126.987085596535 },
+      { poi_id: 'KD005-014', name_ko: '수원화성', name_en: 'Suwon Hwaseong Fortress', primary_image_url: null, display_region: 'Suwon, Gyeonggi', quality_score: 0, is_trending: false, region: 'Gyeonggi', coords_lat: 37.2869569586225, coords_lng: 127.011795743342 },
       { poi_id: 'KC-SEO-148', name_ko: '남대문시장', name_en: 'Namdaemun Market', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.55918176072071, coords_lng: 126.9776267740439 },
       { poi_id: 'KC-SEO-149', name_ko: '통인시장', name_en: 'Tongin Market', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.58076970747926, coords_lng: 126.9699479604657 },
-    ],
-    festivals: [
       { poi_id: 'KD029-014', name_ko: '한국민속촌', name_en: 'Korean Folk Village', primary_image_url: '/images/explore/kculture/KD029-014_korean-folk-village.png', display_region: 'Yongin, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 37.25961522542851, coords_lng: 127.1198007202516 },
       { poi_id: 'KC-GSB-101', name_ko: '안동민속촌', name_en: 'Andong Folk Village', primary_image_url: null, display_region: 'Andong, Gyeongbuk', quality_score: 0, is_trending: false, region: 'Andong', coords_lat: 36.57675373532396, coords_lng: 128.765295003501 },
     ],
-    crafts: [
+    // 자연·경관 — NEW row. Seongsan Ilchulbong reuses the real record already
+    // seeded under K-Drama's hero/historical (same real place).
+    nature: [
+      { poi_id: 'KD-SEONGSAN-ILCHULBONG', name_ko: '성산일출봉', name_en: 'Seongsan Ilchulbong', primary_image_url: null, display_region: 'Seogwipo, Jeju', quality_score: 0, is_trending: false, region: 'Jeju', coords_lat: 33.4587, coords_lng: 126.9425 },
+      { poi_id: 'KC-PLACEHOLDER-MANJANGGUL', name_ko: '만장굴', name_en: 'Manjanggul Cave', primary_image_url: null, display_region: 'Jeju', quality_score: 0, is_trending: false, region: 'Jeju', coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KC-PLACEHOLDER-HALLASAN', name_ko: '한라산국립공원', name_en: 'Hallasan National Park', primary_image_url: null, display_region: 'Jeju', quality_score: 0, is_trending: false, region: 'Jeju', coords_lat: 0, coords_lng: 0, verified: false },
+    ],
+    // 사찰·종교 — Jogyesa Temple moves here from 'traditional' (real, unchanged).
+    temple: [
+      { poi_id: 'KC-SEO-184', name_ko: '조계사', name_en: 'Jogyesa Temple', primary_image_url: '/images/explore/kculture/KC-SEO-184_jogyesa-temple.png', display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.57395881968132, coords_lng: 126.98185608504 },
+    ],
+    // 박물관·미술관 — NEW row. National Museum of Korea and MMCA Seoul are
+    // well-known, unambiguous public landmarks (same "real, unconfirmed core.poi
+    // row, high real-world confidence" judgment as K-Drama's Hwahongmun Gate);
+    // Seoul Craft Museum's exact coordinates aren't something this session has
+    // confident knowledge of, so it stays placeholder. Old 'crafts' row's 3
+    // "experience point" items fold in here too — closest conceptual fit,
+    // nothing else in the new 4-row structure suits them either.
+    museum: [
+      { poi_id: 'KC-NATIONALMUSEUM', name_ko: '국립중앙박물관', name_en: 'National Museum of Korea', primary_image_url: null, display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5240, coords_lng: 126.9803 },
+      { poi_id: 'KC-PLACEHOLDER-CRAFTMUSEUM', name_ko: '서울공예박물관', name_en: 'Seoul Craft Museum', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 0, coords_lng: 0, verified: false },
+      { poi_id: 'KC-MMCASEOUL', name_ko: '국립현대미술관 서울관', name_en: 'MMCA Seoul', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5788, coords_lng: 126.9770 },
       { poi_id: 'KC-SEO-270', name_ko: '경복궁 - 체험 예약 포인트', name_en: 'Palace-Gate Experiences', primary_image_url: '/images/explore/kculture/KC-SEO-270_palace-gate-experiences.png', display_region: 'Gwangjin-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.53604245097937, coords_lng: 127.0958748426305 },
       { poi_id: 'KC-SEO-281', name_ko: '청계천 - 체험 예약 포인트', name_en: 'Cheonggyecheon Experience Point', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5691469686793, coords_lng: 126.978647068151 },
       { poi_id: 'KC-GGI-241', name_ko: '에버랜드 - 전통공예 체험', name_en: 'Everland Traditional Craft Experience', primary_image_url: null, display_region: 'Yongin, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 37.2756257163761, coords_lng: 127.030623743794 },
@@ -362,7 +500,7 @@ export async function GET(
   // stray query param ever reaches a real deploy.
   const includeUnverified =
     process.env.NODE_ENV !== 'production' && req.nextUrl.searchParams.get('includeUnverified') === '1'
-  const dropUnverified = (poi: ExplorePoi) => includeUnverified || poi.verified !== false
+  const dropUnverified = (poi: { verified?: boolean }) => includeUnverified || poi.verified !== false
 
   // BFF domain values match the category slugs 1:1. A BFF failure here must
   // NOT kill the whole response — the interim content seed below (hero +
@@ -385,7 +523,7 @@ export async function GET(
   // this seed. Packages stay [] on every category (see SEED_HERO comment).
   const base: ExploreData = {
     category: params.category,
-    hero: SEED_HERO[params.category] ?? [],
+    hero: (SEED_HERO[params.category] ?? []).filter(dropUnverified),
     sections: sectionIds.map(id => ({
       id,
       items: (SEED_SECTIONS[params.category]?.[id] ?? []).filter(dropUnverified),
@@ -393,8 +531,7 @@ export async function GET(
     packages: [],
   }
 
-  const facet = FACET_BY_CATEGORY[params.category]
-  const filterValue = facet ? req.nextUrl.searchParams.get(facet) : null
+  const facets = FACETS_BY_CATEGORY[params.category] ?? []
 
   // Trending Now (KP/KB/KC_02) is built from the UNFILTERED data — the trending
   // row sits above the chip-scoped sections and must not collapse under a
@@ -429,17 +566,28 @@ export async function GET(
     trendingSection = { id: 'trending', items: trendingItems.filter(dropUnverified) }
   }
 
-  // Apply chip filter only to sections whose items carry the facet (the chip is
-  // spec-scoped to those sections). Untagged sections pass through unchanged.
-  // Note: BFF places don't carry agency/district/region facets yet, so this is
-  // a pass-through until that data exists (BFF region= expects Korean
-  // display_region values — the English chip values wouldn't match).
+  // Apply each active chip filter only to sections whose items carry that facet (the
+  // chip is spec-scoped to those sections). Untagged sections pass through unchanged.
+  // Multiple facets (e.g. K-Drama's broadcaster + region) apply as AND — a section
+  // narrows once per active facet. Note: BFF places don't carry these facets yet, so
+  // this is a pass-through until that data exists.
   let sections = base.sections
-  if (facet && filterValue) {
-    sections = base.sections.map((s) => {
-      const anyTagged = s.items.some((it) => it[facet] !== undefined)
+  for (const fc of facets) {
+    const value = req.nextUrl.searchParams.get(fc.param)
+    if (!value) continue
+    sections = sections.map((s) => {
+      const anyTagged = s.items.some((it) => it[fc.field] !== undefined)
       if (!anyTagged) return s
-      return { ...s, items: s.items.filter((it) => it[facet] === filterValue) }
+      return {
+        ...s,
+        items: s.items.filter((it) => {
+          if (fc.array) {
+            const arr = (it[fc.field] as string[] | undefined) ?? []
+            return value === 'MULTI' ? arr.length >= 2 : arr.includes(value)
+          }
+          return it[fc.field] === value
+        }),
+      }
     })
   }
 

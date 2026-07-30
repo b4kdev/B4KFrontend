@@ -6,7 +6,7 @@
 // Supabase provider id, passed through as-is (email/google/apple/azure) — not narrowed to
 // the taxonomy doc's literal names since Apple/Microsoft OAuth is still broken (BLK-18).
 type PlanMethod = 'manual' | 'ai'
-type ExploreDomain = 'kpop' | 'kdrama' | 'kbeauty' | 'kculture'
+type ExploreDomain = 'kpop' | 'kdrama' | 'kbeauty' | 'kfood' | 'kculture'
 
 type AnalyticsEventMap = {
   sign_in: { method: string; is_new_user: boolean }
