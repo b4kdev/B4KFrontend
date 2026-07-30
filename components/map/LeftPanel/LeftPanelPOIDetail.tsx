@@ -52,6 +52,10 @@ export default function LeftPanelPOIDetail({
             domain={poi.display_domain ?? undefined}
             aspectRatio="4/3"
             className="-mx-sp-4 -mt-sp-2"
+            /* 패널 폭 고정(--sidebar: 420px)이고 -mx-sp-4 로 패딩까지 덮으므로 딱 420px.
+               sizes 를 안 주면 next/image 가 100vw 로 간주해 데스크톱에서 1920px 짜리를
+               요청한다(실제 필요치의 4.5배). */
+            sizes="420px"
           />
         ) : (
           <div className="-mx-sp-4 -mt-sp-2 bg-bg-3 flex flex-col items-center justify-center gap-sp-2 overflow-hidden" style={{ aspectRatio: '4/3' }}>
