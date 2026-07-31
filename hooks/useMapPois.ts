@@ -123,10 +123,15 @@ export function useMapPois(
     params.set('limit', '100')
   }
 
+  // keepPreviousData: true — bounds (and therefore the SWR key) change on
+  // every pan/zoom idle event. Without this, SWR clears `data` to undefined
+  // for every new key while the new bbox request is in flight, which zeroes
+  // out `pois` below and wipes every marker off the map until the fetch
+  // resolves — live-reproduced as markers vanishing on every pan/zoom.
   const { data, error, isLoading } = useSWR(
     ['/places', params.toString(), locale],
     () => apiFetch<RawPlace[]>(`/places?${params.toString()}`),
-    { revalidateOnFocus: false }
+    { revalidateOnFocus: false, keepPreviousData: true }
   )
 
   // list_places only takes one p_domain server-side — additional selected
