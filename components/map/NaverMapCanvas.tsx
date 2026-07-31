@@ -131,6 +131,7 @@ export default function NaverMapCanvas({
   const polylineRef  = useRef<any>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const routeLegPolylinesRef = useRef<any[]>([])
+  const resizeObserverRef = useRef<ResizeObserver | null>(null)
   const [mapReady, setMapReady]   = useState(false)
   const [scriptErr, setScriptErr] = useState(false)
   const [zoom, setZoom]           = useState(12)
@@ -190,6 +191,19 @@ export default function NaverMapCanvas({
         onBoundsChangeRef.current?.(next, map.getZoom())
       }, BOUNDS_DEBOUNCE_MS)
     })
+
+    // The SDK measures the container once at construction and never re-checks
+    // it — any later resize (mobile URL-bar collapse, locale font swap
+    // reflow, sidebar toggle) leaves the SDK's internal coordinate system
+    // stale, so drag/click hit-testing drifts off the visible pins. Naver
+    // Maps v3 requires an explicit 'resize' trigger + recenter to rebuild it;
+    // there's no auto-relayout.
+    const resizeObserver = new ResizeObserver(() => {
+      window.naver.maps.Event.trigger(map, 'resize')
+      map.setCenter(map.getCenter())
+    })
+    resizeObserver.observe(containerRef.current)
+    resizeObserverRef.current = resizeObserver
 
     setMapReady(true)
   }
@@ -525,6 +539,7 @@ export default function NaverMapCanvas({
     polylineRef.current?.setMap(null)
     routeLegPolylinesRef.current.forEach(pl => pl.setMap(null))
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
+    resizeObserverRef.current?.disconnect()
   }, [])
 
   function zoomIn()  { mapRef.current?.setZoom(Math.min(mapRef.current.getZoom() + 1, 18)) }
