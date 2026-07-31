@@ -199,6 +199,11 @@ export default function NaverMapCanvas({
     // Maps v3 requires an explicit 'resize' trigger + recenter to rebuild it;
     // there's no auto-relayout.
     const resizeObserver = new ResizeObserver(() => {
+      // Auth can fail after the SDK script itself loaded (blocked domain,
+      // CSP scheme mismatch in dev, Naver-side auth error) — window.naver.maps
+      // goes null in that case, and a resize firing afterward would otherwise
+      // throw uncaught here.
+      if (!window.naver?.maps) return
       window.naver.maps.Event.trigger(map, 'resize')
       map.setCenter(map.getCenter())
     })

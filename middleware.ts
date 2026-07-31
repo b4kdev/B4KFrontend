@@ -9,11 +9,20 @@ import { routing } from './i18n/routing'
 // 'unsafe-eval' is added to script-src only in dev — Next.js Fast Refresh
 // runtime uses eval() to apply hot updates. Production builds don't need it.
 const isDev = process.env.NODE_ENV === 'development'
+// Naver Maps SDK issues its own follow-up requests (auth, tile styles) using
+// the same scheme as the page that loaded it. `next dev` serves plain HTTP,
+// so those come back as http:// and get silently killed by an https-only
+// CSP — the SDK then shows a generic "auth failed" message with no hint the
+// real cause is our own header. Dev-only, matches the unsafe-eval pattern
+// below; production is always https so these never apply there.
+const devNaverHttp = isDev
+  ? ' http://oapi.map.naver.com http://*.map.naver.com http://*.map.naver.net http://static.naver.net'
+  : ''
 const CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://*.clarity.ms https://oapi.map.naver.com https://*.pstatic.net`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://*.clarity.ms https://oapi.map.naver.com https://*.pstatic.net${devNaverHttp}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://lh3.googleusercontent.com https://*.pstatic.net https://*.map.naver.com https://*.clarity.ms",
+  `img-src 'self' data: blob: https://lh3.googleusercontent.com https://*.pstatic.net https://*.map.naver.com https://*.clarity.ms${devNaverHttp}`,
   "font-src 'self' data:",
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.b4korea.com https://www.google-analytics.com https://analytics.google.com https://*.clarity.ms https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://*.nelo.navercorp.com",
   "frame-ancestors 'none'",
