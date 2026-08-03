@@ -112,6 +112,33 @@ interface BffPlace {
   translations: Record<string, { name?: string; description?: string }> | null
 }
 
+// BFF GET /entities item (api.list_entities) — migration 040 added metadata + is_group filter
+interface BffEntity {
+  entity_id: number
+  slug: string
+  entity_type: string
+  name_ko: string
+  name_en: string
+  primary_image_url: string | null
+  translations: Record<string, { name?: string; description?: string }> | null
+  metadata: { company?: string; is_group?: boolean } | null
+}
+
+// core.entities.metadata.company stores the full agency display name
+// (seed_kpop_entities.py's COMPANY_LABEL_MAP, e.g. "SM Entertainment") — the
+// hub's agency chip filter (KpopArtistNav.tsx AGENCY_FILTER) uses short codes.
+// Only the 6 agencies the chip filter supports get a short code; every other
+// real agency (Belift Lab, ADOR, Pledis, ...) falls back to its raw company
+// name, which just won't match any chip (still renders as an unfiltered tile).
+const COMPANY_SHORT_CODE: Record<string, string> = {
+  'HYBE': 'HYBE',
+  'SM Entertainment': 'SM',
+  'YG Entertainment': 'YG',
+  'JYP Entertainment': 'JYP',
+  'Starship Entertainment': 'STARSHIP',
+  'KQ Entertainment': 'KQ',
+}
+
 // Section ids per category kept in sync with app/[locale]/explore/_components/ExplorePage.tsx
 // CATEGORIES[].sections so headers/labels render correctly once items exist.
 // Category slugs coincide with BFF domain values (k-pop | k-drama | k-beauty | k-culture).
@@ -485,6 +512,20 @@ function mapPlace(p: BffPlace, locale: string): ExplorePoi {
   }
 }
 
+// core.entities slug is "kpop-" + english-name-slug (seed_kpop_entities.py) — the
+// tile id is stripped back to plain form so it lines up with the artistIds/
+// cta_href placeholders still hardcoded in SEED_SECTIONS/SEED_HERO (e.g. 'bts').
+function mapArtist(e: BffEntity, locale: string): ExploreArtist {
+  const company = e.metadata?.company ?? ''
+  return {
+    id: e.slug.replace(/^kpop-/, ''),
+    name_ko: e.name_ko,
+    name_en: e.translations?.[locale]?.name ?? (locale === 'ko' ? e.name_ko : e.translations?.en?.name) ?? e.name_en,
+    agency: COMPANY_SHORT_CODE[company] ?? company,
+    image_url: e.primary_image_url,
+  }
+}
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { category: string } }
@@ -515,6 +556,19 @@ export async function GET(
     items = (places ?? []).map(p => mapPlace(p, locale))
   } catch {
     items = []
+  }
+
+  // CT_KP_EXT — k-pop artist tile grid now backed by core.entities (real roster,
+  // 36 groups) instead of SEED_ARTISTS. A BFF failure falls back to the seed so
+  // the hub still renders something instead of an empty grid.
+  let artists = SEED_ARTISTS[params.category] ?? []
+  if (params.category === 'k-pop') {
+    try {
+      const entities = await bffFetch<BffEntity[]>('/entities?type=kpop_artist&isGroup=true&limit=100')
+      if (entities?.length) artists = entities.map(e => mapArtist(e, locale))
+    } catch {
+      // keep SEED_ARTISTS fallback
+    }
   }
 
   // Thematic sections use the interim content seed above — the BFF has no
@@ -595,7 +649,7 @@ export async function GET(
     category: base.category,
     hero: base.hero,
     packages: base.packages,
-    artists: SEED_ARTISTS[params.category] ?? [],
+    artists,
     sections: [trendingSection, ...sections],
   }
   return NextResponse.json(data)
