@@ -44,6 +44,9 @@ export default async function PlacePage({ params }: Props) {
             domain={place.display_domain ?? undefined}
             aspectRatio="16/9"
             priority
+            /* main 이 max-w-[720px] + px-sp-4(16px×2) → 콘텐츠 폭 688px 상한.
+               720px 미만 뷰포트에서는 전폭이므로 브레이크포인트는 752px(=720+32). */
+            sizes="(max-width: 752px) 100vw, 688px"
           />
         ) : (
           <div

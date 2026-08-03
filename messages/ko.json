@@ -1182,6 +1182,9 @@
       },
       "kculture": {
         "desc": "한식, 전통시장, 문화유산 체험"
+      },
+      "kfood": {
+        "desc": "미슐랭 선정 맛집과 전통 요리"
       }
     },
     "kpop": {
@@ -1232,7 +1235,20 @@
       "food": "음식",
       "festivals": "축제",
       "crafts": "공예",
-      "trending": "지금 뜨는 곳"
+      "trending": "지금 뜨는 곳",
+      "agencyHq": "기획사",
+      "memberFootsteps": "멤버 발자취",
+      "birthdayCafe": "이번달 생일카페",
+      "shopping": "쇼핑·편집샵",
+      "brandFlagship": "브랜드 플래그십",
+      "derma": "약국·더마",
+      "noodles": "면",
+      "soups": "국물·탕",
+      "hanjeongsik": "한정식·백반",
+      "heritage": "역사·유적",
+      "nature": "자연·경관",
+      "temple": "사찰·종교",
+      "museum": "박물관·미술관"
     },
     "viewAll": "전체 보기",
     "viewAllAria": "{section} 전체 보기",
@@ -1249,19 +1265,51 @@
         "HYBE": "HYBE",
         "SM": "SM",
         "JYP": "JYP",
-        "YG": "YG"
+        "YG": "YG",
+        "STARSHIP": "STARSHIP",
+        "KQ": "KQ"
       },
       "district": {
         "Apgujeong": "압구정",
         "Myeongdong": "명동",
         "Hongdae": "홍대",
-        "Gangnam": "강남"
+        "Gangnam": "강남",
+        "Seongsu": "성수",
+        "Jongno": "종로",
+        "Jamsil": "잠실"
       },
       "region": {
         "Seoul": "서울",
         "Jeonju": "전주",
         "Gyeongju": "경주",
-        "Andong": "안동"
+        "Andong": "안동",
+        "Jeju": "제주",
+        "Ulsan": "울산",
+        "Jeonbuk": "전북",
+        "Jongno": "종로",
+        "Gangwon": "강원",
+        "Gyeongbuk": "경북",
+        "Busan": "부산",
+        "GyeongnamUlsan": "경남·울산",
+        "GangwonChungbuk": "강원·충북",
+        "GyeonggiIncheon": "경기·인천"
+      },
+      "broadcaster": {
+        "tvN": "tvN",
+        "MBC": "MBC",
+        "SBS": "SBS",
+        "KBS": "KBS",
+        "JTBC": "JTBC",
+        "Netflix": "Netflix"
+      },
+      "badge": {
+        "MICHELIN": "미슐랭",
+        "REDRIBBON": "레드리본",
+        "B4KPICK": "B4K픽",
+        "WOOSOLLANG": "우쏠랑",
+        "MULTI": "2개 이상",
+        "UNESCO": "유네스코",
+        "NATIONAL_HERITAGE": "국가유산"
       }
     },
     "packages": {
@@ -1269,6 +1317,66 @@
       "sponsored": "광고",
       "viewCta": "보기",
       "ariaLabel": "{partner}의 {title}"
+    },
+    "kpopArtistNav": {
+      "tileGrid": {
+        "ariaLabel": "아티스트별 탐색",
+        "showMore": "{count}개 더보기",
+        "showLess": "간단히 보기",
+        "selectAria": "{name} 필터",
+        "empty": "표시할 아티스트가 없습니다"
+      }
+    },
+    "footsteps": {
+      "breadcrumb": "발자취",
+      "title": "발자취",
+      "subtitle": "{count}곳",
+      "filterAll": "전체",
+      "filterMuseum": "미술관",
+      "filterPark": "공원",
+      "filterCafe": "카페"
+    },
+    "kfood": {
+      "title": "K-푸드",
+      "empty": {
+        "title": "아직 K-푸드 콘텐츠가 없습니다",
+        "desc": "K-푸드 콘텐츠가 곧 준비됩니다."
+      }
+    },
+    "filmingSpots": {
+      "breadcrumb": "촬영지",
+      "title": "촬영지",
+      "subtitle": "실제 촬영지 {count}곳",
+      "filterAll": "전체",
+      "filterNature": "자연",
+      "filterHistoric": "역사",
+      "filterExperience": "체험"
+    },
+    "perfumeFlagships": {
+      "breadcrumb": "향수 플래그십",
+      "title": "향수 플래그십",
+      "subtitle": "향수 플래그십 {count}곳",
+      "filterAll": "전체",
+      "filterSeongsu": "성수",
+      "filterHannam": "한남",
+      "filterGarosugil": "가로수길"
+    },
+    "michelinNoodles": {
+      "breadcrumb": "미슐랭 면 요리",
+      "title": "미슐랭이 뽑은 면 요리",
+      "subtitle": "미슐랭이 인정한 면 요리 {count}곳",
+      "filterAll": "전체",
+      "filterNaengmyeon": "냉면",
+      "filterOther": "기타"
+    },
+    "heritage": {
+      "breadcrumb": "유네스코 유산",
+      "title": "유네스코 유산",
+      "subtitle": "유네스코 유산 {count}곳",
+      "filterAll": "전체",
+      "filterGyeongju": "경주",
+      "filterAndong": "안동",
+      "filterYeongju": "영주"
     }
   },
   "saved": {

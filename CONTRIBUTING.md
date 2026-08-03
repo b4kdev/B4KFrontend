@@ -48,10 +48,12 @@ Never commit real keys. `.env.example` has placeholders for every var — see `@
 
 ## Commits
 
+[Conventional Commits](https://www.conventionalcommits.org/) — `type(scope): summary`, lowercase, colon not bracket. Replaced the old `[Bracket]` style 2026-07-23.
+
 ```
-[Feat]  MP_01 MapDefault — mobile + desktop, all states, i18n, wired
-[Fix]   POICard loading skeleton height mismatch
-[Style] token-align: MapDefault
-[i18n]  extract: MapDefault — 7 languages
-[Docs]  update CLAUDE.md: section 12
+feat(MP_01): MapDefault — mobile + desktop, all states, i18n, wired
+fix(POICard): loading skeleton height mismatch
+style(MapDefault): token-align
+i18n(MapDefault): extract — 7 languages
+docs(CLAUDE): update section 12
 ```

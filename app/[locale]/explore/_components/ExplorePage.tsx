@@ -3,29 +3,35 @@
 import { useState, useEffect } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import useSWR from 'swr'
+import { useSearchParams } from 'next/navigation'
 import { Link, usePathname } from '@/i18n/navigation'
-import { Music, Tv, Sparkles, Globe, RefreshCw, AlertTriangle, ArrowRight, Compass } from 'lucide-react'
+import { Music, Tv, Sparkles, Globe, Utensils, RefreshCw, AlertTriangle, Compass } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
 import { track } from '@/lib/analytics'
 import type { ExploreData } from '@/app/api/explore/[category]/route'
 
-const HUB_DOMAIN: Record<ExploreCategory, 'kpop' | 'kdrama' | 'kbeauty' | 'kculture'> = {
-  'k-pop': 'kpop', 'k-drama': 'kdrama', 'k-beauty': 'kbeauty', 'k-culture': 'kculture',
+const HUB_DOMAIN: Record<ExploreCategory, 'kpop' | 'kdrama' | 'kbeauty' | 'kfood' | 'kculture'> = {
+  'k-pop': 'kpop', 'k-drama': 'kdrama', 'k-beauty': 'kbeauty', 'k-food': 'kfood', 'k-culture': 'kculture',
 }
-import ExplorePoiCard from './ExplorePoiCard'
-import ExploreFeaturedCard from './ExploreFeaturedCard'
+import ExploreSectionRow from './ExploreSectionRow'
+import KpopArtistNav from './KpopArtistNav'
 import ExploreHero from './ExploreHero'
 import ExploreChipFilter, { ChipFilterConfig } from './ExploreChipFilter'
 import ExplorePackages from './ExplorePackages'
 
-export type ExploreCategory = 'k-pop' | 'k-drama' | 'k-beauty' | 'k-culture'
+export type ExploreCategory = 'k-pop' | 'k-drama' | 'k-beauty' | 'k-food' | 'k-culture'
 
 // SC-36 (KD_04 Tours / KB_04 Makeup) originally spec'd only these two.
 // Widened same-session: with tours/makeup as the only featured slots, 3 of 4
 // category pages (k-culture, and half of k-pop/k-drama/k-beauty) rendered as
 // flat uniform card rows with zero visual break — one featured section per
 // category now, each with a real is_featured POI already in the seed data.
-const FEATURED_SECTIONS = new Set(['tours', 'makeup', 'food', 'agencies', 'ostCafes', 'spa'])
+// 'agencies' (k-pop) dropped — CT_KP_EXT (DEC-60) renames that row 'agencyHq'
+// and deliberately doesn't give it the featured treatment (see KpopArtistNav).
+// K-Beauty's 'makeup'/'spa' renamed 'shopping'/'derma' (DEC-61) — their featured
+// items (Makeup House Myeongdong, Abijou Clinic) carried over under the new ids.
+// K-Culture's 'food' (Gwangjang Market) renamed 'heritage' (DEC-61 restructure).
+const FEATURED_SECTIONS = new Set(['tours', 'shopping', 'heritage', 'ostCafes', 'derma'])
 
 interface CategoryConfig {
   id: ExploreCategory
@@ -34,7 +40,19 @@ interface CategoryConfig {
   tKey: string
   /** Section order (trending is prepended server-side). */
   sections: string[]
-  filter?: ChipFilterConfig
+  /**
+   * One row per simultaneous chip filter (content-plan doc: K-Drama/K-Food/K-Culture
+   * each need a mid-tier chip + a region chip at once). Rendered in array order,
+   * combined as AND in the fetch query — see the `fetchParams` loop below.
+   */
+  filters?: ChipFilterConfig[]
+  /**
+   * Per-row "View all" override — a handful of rows deep-link to a dedicated detail
+   * page (DEC-61's masonry pages) instead of the generic `/search?q=` results. Keyed
+   * by section id *within this category* (section ids like 'tours' repeat across
+   * categories with different meaning, so this can't be a single global map).
+   */
+  detailHrefs?: Partial<Record<string, string>>
 }
 
 const CATEGORIES: CategoryConfig[] = [
@@ -43,8 +61,11 @@ const CATEGORIES: CategoryConfig[] = [
     href: '/explore/k-pop',
     icon: Music,
     tKey: 'kpop',
-    sections: ['trending', 'concerts', 'tours', 'agencies', 'merchandise'],
-    filter: { param: 'agency', values: ['HYBE', 'SM', 'JYP', 'YG'] },
+    // CT_KP_EXT (DEC-60): no `filters` here — the agency chip lives inside
+    // KpopArtistNav now (global, client-side filtering against artist/agency
+    // tags), not a query-param refetch. This list only drives the desktop
+    // sidebar's #section-{id} anchors; birthdayCafe excluded (conditional row).
+    sections: ['trending', 'concerts', 'tours', 'agencyHq', 'merchandise', 'memberFootsteps'],
   },
   {
     id: 'k-drama',
@@ -52,7 +73,11 @@ const CATEGORIES: CategoryConfig[] = [
     icon: Tv,
     tKey: 'kdrama',
     sections: ['trending', 'filming', 'tours', 'historical', 'ostCafes'],
-    // K-Drama has no chip filter (SPEC-05).
+    filters: [
+      { param: 'broadcaster', values: ['tvN', 'MBC', 'SBS', 'KBS', 'JTBC', 'Netflix'] },
+      { param: 'region', values: ['Jeju', 'Ulsan', 'Jeonbuk', 'Jongno'] },
+    ],
+    detailHrefs: { filming: '/explore/k-drama/tangerines/filming-spots' },
   },
   {
     id: 'k-beauty',
@@ -60,7 +85,21 @@ const CATEGORIES: CategoryConfig[] = [
     icon: Sparkles,
     tKey: 'kbeauty',
     sections: ['trending', 'skincare', 'makeup', 'spa', 'salon'],
-    filter: { param: 'district', values: ['Apgujeong', 'Myeongdong', 'Hongdae', 'Gangnam'] },
+    // DEC-61 — matches the content plan's exact 6 districts (was 4, missing
+    // Seongsu/Jongno/Jamsil, had Apgujeong which the deck doesn't chip on).
+    filters: [{ param: 'district', values: ['Gangnam', 'Myeongdong', 'Seongsu', 'Hongdae', 'Jongno', 'Jamsil'] }],
+    detailHrefs: { brandFlagship: '/explore/k-beauty/perfume-flagships' },
+  },
+  {
+    id: 'k-food',
+    href: '/explore/k-food',
+    icon: Utensils,
+    tKey: 'kfood',
+    sections: ['trending', 'noodles', 'soups', 'hanjeongsik'],
+    filters: [
+      { param: 'badge', values: ['MICHELIN', 'REDRIBBON', 'B4KPICK', 'WOOSOLLANG', 'MULTI'] },
+      { param: 'region', values: ['Seoul', 'GyeongnamUlsan', 'Busan', 'GangwonChungbuk', 'GyeonggiIncheon'] },
+    ],
   },
   {
     id: 'k-culture',
@@ -68,7 +107,11 @@ const CATEGORIES: CategoryConfig[] = [
     icon: Globe,
     tKey: 'kculture',
     sections: ['trending', 'traditional', 'food', 'festivals', 'crafts'],
-    filter: { param: 'region', values: ['Seoul', 'Jeonju', 'Gyeongju', 'Andong'] },
+    filters: [
+      { param: 'badge', values: ['UNESCO', 'NATIONAL_HERITAGE'] },
+      { param: 'region', values: ['Jeju', 'Seoul', 'Gangwon', 'Gyeongbuk', 'Busan'] },
+    ],
+    detailHrefs: { heritage: '/explore/k-culture/gyeongbuk/heritage' },
   },
 ]
 
@@ -103,11 +146,14 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
   const t = useTranslations('explore')
   const locale = useLocale()
   const pathname = usePathname()
+  const pageSearchParams = useSearchParams()
 
   const cat = CATEGORIES.find(c => c.id === category)!
   const CatIcon = cat.icon
 
-  const [activeFilter, setActiveFilter] = useState<string | null>(null)
+  // Keyed by filter param (e.g. 'broadcaster'/'region') so multiple simultaneous
+  // chip rows (K-Drama/K-Food/K-Culture) each track their own active value.
+  const [activeFilters, setActiveFilters] = useState<Record<string, string | null>>({})
 
   useEffect(() => {
     track('content_hub_view', { domain: HUB_DOMAIN[category], locale, screen_id: `CT_${category}` })
@@ -119,7 +165,19 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
   // the in-app switcher busts the cache — the API route resolves display names
   // from a NEXT_LOCALE cookie server-side, and an unchanged key would keep
   // serving the previous locale's cached response indefinitely.
-  const query = cat.filter && activeFilter ? `?${cat.filter.param}=${encodeURIComponent(activeFilter)}` : ''
+  const fetchParams = new URLSearchParams()
+  for (const f of cat.filters ?? []) {
+    const value = activeFilters[f.param]
+    if (value) fetchParams.set(f.param, value)
+  }
+  // CT_KP_EXT (DEC-60) dev-only preview passthrough — forwards the page's own
+  // ?includeUnverified=1 to the API route so placeholder (verified:false) rows
+  // can be checked against complete-looking content before BLK-35/BLK-36 land.
+  // route.ts itself no-ops this outside development, so this is a plain
+  // passthrough with no separate gate needed here.
+  const includeUnverified = pageSearchParams.get('includeUnverified')
+  if (includeUnverified) fetchParams.set('includeUnverified', includeUnverified)
+  const query = fetchParams.toString() ? `?${fetchParams.toString()}` : ''
   const { data, isLoading, error, mutate } = useSWR<ExploreData>(
     [`/api/explore/${category}${query}`, locale],
     ([url]) => fetcher<ExploreData>(url),
@@ -255,78 +313,57 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
             {/* H2 Hero */}
             {data.hero && data.hero.length > 0 && <ExploreHero slides={data.hero} />}
 
-            {/* H4 Chip filter (per-hub; K-Drama has none) */}
-            {cat.filter && (
-              <ExploreChipFilter
-                config={cat.filter}
-                active={activeFilter}
-                onChange={setActiveFilter}
-              />
-            )}
-
-            {/* H3 Horizontal-scroll section rows */}
-            {data.sections.every(s => s.items.length === 0) ? (
-              <div
-                className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-none"
-                style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
-              >
-                <Compass size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
-                <p className="text-f-xl font-semibold text-fg mb-sp-2">{t(`${cat.tKey}.empty.title`)}</p>
-                <p className="text-f-md text-muted max-w-[320px] mb-sp-4">{t(`${cat.tKey}.empty.desc`)}</p>
-                <Link
-                  href="/map"
-                  className="cta-primary"
-                >
-                  {t('empty.cta')}
-                </Link>
-              </div>
+            {/* CT_KP_EXT (DEC-60) — k-pop only: global agency filter + artist tile
+                grid + 6(-7) rows, entirely separate from the generic per-hub body
+                below. The other 4 sections (k-drama/k-beauty/k-food/k-culture) all
+                go through the generic body — DEC-61 confirms K-Pop is the only
+                section whose mid-tier needs a bespoke tile-grid component. */}
+            {category === 'k-pop' ? (
+              <KpopArtistNav data={data} />
             ) : (
-              data.sections
-                .filter(s => s.items.length > 0)
-                .map(section => {
-                  // Featured wide-card treatment is scoped to KD_04/KB_04 (SC-36) —
-                  // 'trending' re-includes the same items by dedup and must stay
-                  // a plain row, so the featured flag can't leak in there too.
-                  const featured = FEATURED_SECTIONS.has(section.id)
-                    ? section.items.find(poi => poi.is_featured)
-                    : undefined
-                  const rest = featured
-                    ? section.items.filter(poi => poi.poi_id !== featured.poi_id)
-                    : section.items
+              <>
+                {/* H4 Chip filter row(s) — one per simultaneous facet (see CategoryConfig.filters) */}
+                {(cat.filters ?? []).map(f => (
+                  <ExploreChipFilter
+                    key={f.param}
+                    config={f}
+                    active={activeFilters[f.param] ?? null}
+                    onChange={(value) => setActiveFilters(prev => ({ ...prev, [f.param]: value }))}
+                  />
+                ))}
 
-                  return (
-                    <section
-                      key={section.id}
-                      id={`section-${section.id}`}
-                      className="mb-sp-10 scroll-mt-[80px]"
-                      aria-label={t(`sections.${section.id}`)}
+                {/* H3 Horizontal-scroll section rows */}
+                {data.sections.every(s => s.items.length === 0) ? (
+                  <div
+                    className="flex flex-col items-center justify-center text-center py-sp-16 px-sp-6 rounded-none"
+                    style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+                  >
+                    <Compass size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
+                    <p className="text-f-xl font-semibold text-fg mb-sp-2">{t(`${cat.tKey}.empty.title`)}</p>
+                    <p className="text-f-md text-muted max-w-[320px] mb-sp-4">{t(`${cat.tKey}.empty.desc`)}</p>
+                    <Link
+                      href="/map"
+                      className="cta-primary"
                     >
-                      <div className="flex items-end justify-between mb-sp-4">
-                        <h2 className="text-f-sm font-semibold tracking-[0.07em] uppercase text-muted">
-                          {t(`sections.${section.id}`)}
-                        </h2>
-                        <Link
-                          href={`/search?q=${category}`}
-                          className="flex items-center gap-1 text-f-sm text-lav hover:opacity-80 transition-opacity whitespace-nowrap shrink-0 ml-sp-4"
-                          aria-label={t('viewAllAria', { section: t(`sections.${section.id}`) })}
-                        >
-                          {t('viewAll')}
-                          <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />
-                        </Link>
-                      </div>
-                      {featured && <ExploreFeaturedCard poi={featured} domain={category.toUpperCase()} />}
-                      {rest.length > 0 && (
-                        <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-sp-4 lg:-mx-sp-6 px-sp-4 lg:px-sp-6">
-                          <div className="flex gap-sp-3 pb-[4px]" style={{ width: 'max-content' }}>
-                            {rest.map(poi => (
-                              <ExplorePoiCard key={poi.poi_id} poi={poi} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </section>
-                  )
-                })
+                      {t('empty.cta')}
+                    </Link>
+                  </div>
+                ) : (
+                  data.sections
+                    .filter(s => s.items.length > 0)
+                    .map(section => (
+                      <ExploreSectionRow
+                        key={section.id}
+                        id={section.id}
+                        items={section.items}
+                        category={category}
+                        hubDomain={HUB_DOMAIN[category]}
+                        viewAllHref={cat.detailHrefs?.[section.id] ?? `/search?q=${category}`}
+                        allowFeatured={FEATURED_SECTIONS.has(section.id)}
+                      />
+                    ))
+                )}
+              </>
             )}
 
             {/* H5 B4K Best Packages */}

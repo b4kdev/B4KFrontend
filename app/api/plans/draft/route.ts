@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
+import { fetchDbDraft } from '@/lib/itinerary'
 
 export interface PlanDraft {
   id: string
@@ -8,28 +9,12 @@ export interface PlanDraft {
   updated_at: string
 }
 
-// list_my_itineraries item (GET /me/itineraries?status=draft)
-interface BffMyItinerary {
-  itinerary_id: number
-  title:        string
-  total_places: number
-  updated_at:   string
-}
-
 // Consumers (useDraftMigration / useQuickAddToPlan / MapView autosave) send
 // the localStorage DraftPlan shape: { stops: MapPoi[], durations, name? }.
 interface DraftBody {
   stops?:     Array<{ poi_id?: string | number }>
   durations?: Record<string, number>
   name?:      string
-}
-
-async function fetchDbDraft(token: string): Promise<BffMyItinerary | null> {
-  const items = await bffFetch<BffMyItinerary[]>(
-    '/me/itineraries?status=draft&limit=1',
-    { token },
-  )
-  return items?.[0] ?? null
 }
 
 // GET /api/plans/draft — the account's single working draft (BFF
@@ -44,7 +29,7 @@ export async function GET() {
       id:         String(draft.itinerary_id),
       title:      draft.title,
       stop_count: draft.total_places ?? 0,
-      updated_at: draft.updated_at,
+      updated_at: draft.updated_at ?? draft.created_at ?? new Date().toISOString(),
     } satisfies PlanDraft)
   } catch (e) {
     return bffErrorResponse(e)

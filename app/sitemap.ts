@@ -7,10 +7,10 @@ import { MOCK_PLANS } from '@/lib/mock/plans-list'
 // plans. Excludes /profile/*, /notifications, drafts, /plan/preview (never
 // built — see CLAUDE.md §9), and anything requiring auth.
 //
-// NOTE: no standalone POI detail route exists in this app (POI detail is an
-// overlay state on /map — LeftPanel/BottomSheet, not a canonical URL). The
-// spec assumes POIs are independently indexable; that requires its own
-// routing decision and is out of scope here — tracked as SC-40 in the fix plan.
+// NOTE: individual POI pages are NOT listed here yet. The canonical detail
+// route (/place/[poiId], BLK-11) exists and is indexable, but listing every
+// POI needs a "list all is_publishable=TRUE POIs" BFF capability that isn't
+// confirmed to exist yet — flagged to dev friend, not guessed at. See BLK-11.
 const STATIC_PATHS: Array<{
   path: string
   changeFrequency: NonNullable<MetadataRoute.Sitemap[number]['changeFrequency']>

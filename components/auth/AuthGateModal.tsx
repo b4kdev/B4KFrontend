@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 import { X, Mail, MailCheck, Route } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useAuthGate } from '@/contexts/AuthGateContext';
+import { track } from '@/lib/analytics';
 
 interface Props {
   open:      boolean;
@@ -21,6 +22,7 @@ const RESEND_COOLDOWN_S = 60; // S-JNCTDV: 60s resend cooldown
 
 export default function AuthGateModal({ open, onDismiss }: Props) {
   const t = useTranslations('auth.gate');
+  const locale = useLocale();
   const { reason, executePendingAction, persistPendingAction } = useAuthGate();
 
   const [status,     setStatus]     = useState<'idle' | 'loading'>('idle');
@@ -151,6 +153,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
       const supabase = createSupabaseBrowserClient();
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
       if (!signInError) {
+        track('sign_in', { method: 'email', is_new_user: false, locale, screen_id: 'AG_01' });
         executePendingAction();
         onDismiss();
       } else {

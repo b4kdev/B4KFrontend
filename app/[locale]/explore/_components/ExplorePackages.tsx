@@ -1,12 +1,14 @@
 'use client'
 
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { ExternalLink, Package } from 'lucide-react'
+import { track } from '@/lib/analytics'
 import type { ExplorePackage } from '@/app/api/explore/[category]/route'
 
 export default function ExplorePackages({ packages }: { packages: ExplorePackage[] }) {
   const t = useTranslations('explore')
+  const locale = useLocale()
 
   // Validate partner_url (open-redirect guard) and cap at 3.
   const valid = packages.filter((p) => /^https?:\/\//.test(p.partner_url)).slice(0, 3)
@@ -24,6 +26,7 @@ export default function ExplorePackages({ packages }: { packages: ExplorePackage
             href={pkg.partner_url}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => track('outbound_click', { poi_id: pkg.id, type: 'package', locale, screen_id: 'explore' })}
             className="flex flex-col overflow-hidden hover:opacity-90 transition-opacity"
             style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
             aria-label={t('packages.ariaLabel', { title: pkg.title, partner: pkg.partner_name })}

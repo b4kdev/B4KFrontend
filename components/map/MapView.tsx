@@ -100,7 +100,7 @@ export default function MapView() {
   useEffect(() => {
     if (!selectedPoiId) return
     const poi = pois.find(p => p.poi_id === selectedPoiId)
-    if (poi) track('poi_view', { poi_id: poi.poi_id, domain: poi.display_domain ?? 'unknown', locale, screen_id: 'MP_01' })
+    if (poi) track('poi_view', { poi_id: poi.poi_id, domain: poi.display_domain ?? 'unknown', region: poi.display_region ?? undefined, locale, screen_id: 'MP_01' })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPoiId])
 
@@ -415,7 +415,7 @@ export default function MapView() {
       } else {
         next.add(poi.poi_id)
         showToast(t('poiDetail.savedToast'))
-        track('poi_save', { poi_id: poi.poi_id, locale, screen_id: 'MP_01' })
+        track('poi_save', { poi_id: poi.poi_id, region: poi.display_region ?? undefined, locale, screen_id: 'MP_01' })
       }
       return next
     })
@@ -473,19 +473,32 @@ export default function MapView() {
     setNamingSheetOpen(true)
   }
 
-  // UF-6 (G5.6) — discard the active draft: hard-delete the DB draft (if this
-  // session resumed one via T1), clear localStorage, reset builder state, and
-  // reset the map to its default (no ?plan param).
-  function handleConfirmDiscard() {
-    const dbDraftId = draftResumePlanId
+  // UF-6 (G5.6) — discard the active draft: hard-delete the DB draft, clear
+  // localStorage, reset builder state, and reset the map to its default (no
+  // ?plan param).
+  // BLK-08 (related finding): don't rely on draftResumePlanId — it's only
+  // populated when the T1 "Resume or start fresh?" modal fired this session.
+  // The autosave effect upserts a DB draft on every change regardless of T1,
+  // so re-fetch the current draft id fresh at discard-time instead of trusting
+  // stale/absent local state, or a draft created without ever hitting T1 never
+  // gets deleted.
+  async function handleConfirmDiscard() {
     setDiscardConfirmOpen(false)
     clearDraftPlan()
     setPlanStopIds([])
     setStopDurations({})
     setLoadedPlanPois([])
     setPlanSource('manual')
-    if (dbDraftId) {
-      fetch(`/api/plans/${dbDraftId}`, { method: 'DELETE' }).catch(() => {})
+    if (session) {
+      try {
+        const res = await fetch('/api/plans/draft')
+        const draft = res.ok ? await res.json() as { id: string } | null : null
+        if (draft?.id) {
+          await fetch(`/api/plans/${draft.id}`, { method: 'DELETE' })
+        }
+      } catch {
+        // Silent — worst case: stale draft remains, same as before this fix
+      }
     }
     router.push('/map')
   }
