@@ -1444,6 +1444,7 @@
       "openAriaLabel": "Open folder {name}",
       "poiCount": "{count, plural, one {# place} other {# places}}",
       "generatePlan": "Generate Plan",
+      "viewOnMap": "View on map",
       "back": "Back to folders",
       "selectHint": "Select places for your plan",
       "selectAll": "Select All",

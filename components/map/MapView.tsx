@@ -189,6 +189,22 @@ export default function MapView() {
     setSavedSheetOpen(searchParams.get('saved') === '1')
   }, [searchParams])
 
+  // Item 7 — "view on map" from /saved's folder-detail view: ?view=saved
+  // (+ optional &folder=:id) resolves to an exclusive restrictToPois set +
+  // fitBounds, same convention as the existing Saved-hub folder-open feature.
+  // Tracks searchParams (not mount-only) since savedData may resolve after
+  // this first fires; consumed-once via the ref so a later unrelated
+  // searchParams/savedData change doesn't re-trigger it.
+  const restrictConsumedRef = useRef(false)
+  useEffect(() => {
+    if (searchParams.get('view') !== 'saved' || restrictConsumedRef.current || !savedData) return
+    restrictConsumedRef.current = true
+    const folderId = searchParams.get('folder')
+    const folderPois = folderId ? savedData.folders.find(f => f.id === folderId)?.pois : undefined
+    setRestrictToPois(folderPois ?? savedData.pois)
+    router.replace('/map')
+  }, [searchParams, savedData, router])
+
   // URL param handling — ?plan=:id loads plan into edit mode
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
