@@ -6,12 +6,12 @@ import { Link } from '@/i18n/navigation'
 import { X, ArrowLeft, MapPin, FolderOpen, FileText, Trash2 } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { useSaved } from '@/hooks/useSaved'
-import type { SavedFolder } from '@/app/api/saved/route'
+import type { SavedFolder, SavedPoi } from '@/app/api/saved/route'
 
 interface Props {
   onClose:        () => void
   onSelectPoi:    (placeId: string) => void
-  onFolderChange: (poiIds: string[] | null) => void
+  onFolderChange: (pois: SavedPoi[] | null) => void
 }
 
 type Tab = 'places' | 'plans'
@@ -29,7 +29,7 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
   // Pin sync — tell MapView which POIs to show while a folder is open;
   // clear on unmount/tab switch/close so the full map returns.
   useEffect(() => {
-    onFolderChange(activeFolder ? activeFolder.pois.map(p => p.poi_id) : null)
+    onFolderChange(activeFolder ? activeFolder.pois : null)
     return () => onFolderChange(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFolder])

@@ -7,6 +7,7 @@ import LeftPanelPlanActive from './LeftPanelPlanActive'
 import LeftPanelSavedHub from './LeftPanelSavedHub'
 import PlanStrip from './PlanStrip'
 import type { MapPoi } from '@/hooks/useMapPois'
+import type { SavedPoi } from '@/app/api/saved/route'
 
 interface Props {
   pois:             MapPoi[]
@@ -39,7 +40,7 @@ interface Props {
   savedHubOpen:        boolean
   onOpenSaved:         () => void
   onCloseSavedHub:     () => void
-  onSavedFolderChange: (poiIds: string[] | null) => void
+  onSavedFolderChange: (pois: SavedPoi[] | null) => void
 }
 
 export default function LeftPanel({

@@ -15,17 +15,13 @@ export default function ExploreFeaturedCard({ poi, domain }: { poi: ExplorePoi; 
   const locale = useLocale()
   const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
   const isPartner = !!(poi.is_partner && poi.partner_url && /^https?:\/\//.test(poi.partner_url))
+  // verified:false rows don't have a real DB id — linking to /place/{poi_id}
+  // would 404 now that the page does a real BFF lookup. Same gate
+  // MasonryGrid.tsx/ExplorePoiCard.tsx use for the same content.
+  const linkable = poi.verified !== false
 
-  return (
-    <Link
-      href={isPartner ? (poi.partner_url ?? `/place/${poi.poi_id}`) : `/place/${poi.poi_id}`}
-      target={isPartner ? '_blank' : undefined}
-      rel={isPartner ? 'noopener noreferrer' : undefined}
-      onClick={isPartner ? () => track('outbound_click', { poi_id: poi.poi_id, type: 'poi', locale, screen_id: 'explore' }) : undefined}
-      className="flex flex-col sm:flex-row overflow-hidden mb-sp-4 transition-opacity hover:opacity-90"
-      style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
-      aria-label={t('card.ariaLabel', { name })}
-    >
+  const cardBody = (
+    <>
       <div className="relative sm:w-[42%] shrink-0">
         {poi.primary_image_url ? (
           <FieldImage
@@ -78,6 +74,31 @@ export default function ExploreFeaturedCard({ poi, domain }: { poi: ExplorePoi; 
           )}
         </div>
       </div>
+    </>
+  )
+
+  const className = 'flex flex-col sm:flex-row overflow-hidden mb-sp-4 transition-opacity hover:opacity-90'
+  const style = { background: 'var(--bg-2)', border: '1px solid var(--bdr)' }
+
+  if (!linkable) {
+    return (
+      <div className={className} style={style} aria-label={t('card.ariaLabel', { name })}>
+        {cardBody}
+      </div>
+    )
+  }
+
+  return (
+    <Link
+      href={isPartner ? (poi.partner_url ?? `/place/${poi.poi_id}`) : `/place/${poi.poi_id}`}
+      target={isPartner ? '_blank' : undefined}
+      rel={isPartner ? 'noopener noreferrer' : undefined}
+      onClick={isPartner ? () => track('outbound_click', { poi_id: poi.poi_id, type: 'poi', locale, screen_id: 'explore' }) : undefined}
+      className={className}
+      style={style}
+      aria-label={t('card.ariaLabel', { name })}
+    >
+      {cardBody}
     </Link>
   )
 }
