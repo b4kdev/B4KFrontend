@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { Heart, Bookmark, Plus, Check, Clock, X, ImageOff } from 'lucide-react'
+import { Heart, Bookmark, Plus, Check, Clock, X, ImageOff, MapPin, ExternalLink } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import FieldImage from '@/components/ui/FieldImage'
 import type { MapPoi } from '@/hooks/useMapPois'
@@ -112,6 +112,25 @@ export default function LeftPanelPOIDetail({
             <Clock size={12} strokeWidth={2} aria-hidden="true" />
             <span>{poi.hours_open}–{poi.hours_close}</span>
           </div>
+        )}
+
+        {/* Address + website — parity with POIBottomSheet.tsx's mobile equivalent */}
+        {poi.address && (
+          <div className="flex items-start gap-sp-2 text-muted text-xs">
+            <MapPin size={12} strokeWidth={2} aria-hidden="true" className="shrink-0 mt-0.5" />
+            <span>{poi.address}</span>
+          </div>
+        )}
+        {poi.website_url && /^https?:\/\//.test(poi.website_url) && (
+          <a
+            href={poi.website_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-sp-2 text-lav text-xs font-medium min-h-touch"
+          >
+            <ExternalLink size={12} strokeWidth={2} aria-hidden="true" />
+            {t('website')}
+          </a>
         )}
       </div>
 
