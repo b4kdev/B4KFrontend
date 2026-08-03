@@ -360,13 +360,31 @@ export default function SavedPlacesPanel() {
                   )
                 })}
               </div>
-              <button
-                onClick={() => { setPlacesView('folders'); enterSelectMode(activeFolder) }}
-                disabled={visiblePois.length === 0}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-none font-semibold text-f-base hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40"
-              >
-                <Sparkles size={16} strokeWidth={2} aria-hidden="true" />{t('folder.generatePlan')}
-              </button>
+              <div className="flex flex-col gap-sp-3">
+                <button
+                  onClick={() => { setPlacesView('folders'); enterSelectMode(activeFolder) }}
+                  disabled={visiblePois.length === 0}
+                  className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-none font-semibold text-f-base hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40"
+                >
+                  <Sparkles size={16} strokeWidth={2} aria-hidden="true" />{t('folder.generatePlan')}
+                </button>
+                {/* View this folder's places on the map — exclusive set + fitBounds,
+                    same convention as Google/Naver/Kakao's "view saved on map":
+                    explicit action, never an ambient camera shift. */}
+                <Link
+                  href={`/map?view=saved&folder=${activeFolder.id}`}
+                  aria-disabled={visiblePois.length === 0}
+                  className={[
+                    'w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-none font-semibold text-f-base transition-colors',
+                    visiblePois.length === 0
+                      ? 'pointer-events-none opacity-40'
+                      : 'text-fg hover:bg-muted-3',
+                  ].join(' ')}
+                  style={{ border: '1px solid var(--bdr)' }}
+                >
+                  <Map size={16} strokeWidth={2} aria-hidden="true" />{t('folder.viewOnMap')}
+                </Link>
+              </div>
             </div>
           )
         })()

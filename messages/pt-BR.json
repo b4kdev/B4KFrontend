@@ -1444,6 +1444,7 @@
       "openAriaLabel": "Abrir pasta {name}",
       "poiCount": "{count, plural, one {# lugar} other {# lugares}}",
       "generatePlan": "Gerar Plano",
+      "viewOnMap": "Ver no mapa",
       "back": "Voltar às pastas",
       "selectHint": "Selecione lugares para seu plano",
       "selectAll": "Selecionar Todos",

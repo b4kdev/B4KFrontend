@@ -42,6 +42,10 @@ export default function ExplorePoiCard({ poi, domain }: { poi: ExplorePoi; domai
 
   // Partner redirect — Link href points to partner_url (validated https://) in new tab
   const isPartner = !!(poi.is_partner && poi.partner_url && /^https?:\/\//.test(poi.partner_url))
+  // verified:false rows don't have a real DB id — linking to /place/{poi_id}
+  // would 404 now that the page does a real BFF lookup. Same "disable, don't
+  // silently break" gate MasonryGrid.tsx uses for the same content.
+  const linkable = poi.verified !== false
 
   // D-Day countdown — days until event_date (whole-day delta from today).
   let dDay: string | null = null
@@ -82,80 +86,90 @@ export default function ExplorePoiCard({ poi, domain }: { poi: ExplorePoi; domai
     }).catch(() => { setLiked(!next); showToast(tToast('actionFailed'), 'error') })
   }, [user, liked, openAuthGate, poi.poi_id, showToast, tToast, hasRealId])
 
+  const cardBody = (
+    <>
+      <div
+        className="w-full aspect-[4/3] flex items-center justify-center relative overflow-hidden"
+        style={{ background: 'var(--bg-3)' }}
+      >
+        {poi.primary_image_url ? (
+          <Image
+            src={poi.primary_image_url}
+            alt={name}
+            fill
+            sizes="(max-width: 1024px) 72vw, 260px"
+            className="object-cover"
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-sp-1">
+            <MapPin size={22} strokeWidth={2} className="text-fg opacity-[0.15]" />
+            <span className="text-f-xxs text-muted">{t('card.imagePending')}</span>
+          </div>
+        )}
+        {/* D-Day countdown badge — event/festival/merch items */}
+        {dDay && (
+          <span
+            className="absolute top-sp-2 right-sp-2 text-f-xxs font-bold px-sp-2 py-[3px] rounded-full text-bg leading-none"
+            style={{ background: 'var(--lav)' }}
+          >
+            {dDay}
+          </span>
+        )}
+        {/* Sponsored label — DEC-05 / CLAUDE.md §9: LeftPanel card only on desktop, but Explore cards are equivalent */}
+        {isPartner && (
+          <span
+            className="absolute bottom-sp-2 left-sp-2 text-f-xxs font-semibold px-sp-2 py-[3px] rounded-full leading-none"
+            style={{ background: 'var(--backdrop-50)', color: 'var(--fg)', border: '1px solid var(--bdr)' }}
+          >
+            {t('card.sponsored')}
+          </span>
+        )}
+      </div>
+      <div className="p-sp-3 flex flex-col gap-[4px]">
+        <div className="flex items-start justify-between gap-sp-2">
+          <span className="text-f-md font-semibold text-fg leading-tight line-clamp-2 flex-1">
+            {name}
+          </span>
+          <div className="flex items-center gap-sp-1 shrink-0">
+            {poi.is_trending && (
+              <span
+                className="flex items-center gap-[3px] text-f-xxs font-semibold text-lav px-[6px] py-[2px] rounded-full leading-none"
+                style={{ background: 'var(--lav-dim)' }}
+              >
+                <TrendingUp size={9} strokeWidth={2} aria-hidden="true" />
+                {t('card.trending')}
+              </span>
+            )}
+            {isPartner && (
+              <ExternalLink size={12} strokeWidth={2} className="text-muted" aria-hidden="true" />
+            )}
+          </div>
+        </div>
+        <span className="text-f-xs text-muted">{poi.display_region}</span>
+      </div>
+    </>
+  )
+
   return (
     <article
       ref={viewRef}
       className="flex flex-col overflow-hidden relative w-[clamp(220px,72vw,260px)] shrink-0"
       style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
     >
-      <Link
-        href={isPartner ? (poi.partner_url ?? `/place/${poi.poi_id}`) : `/place/${poi.poi_id}`}
-        className="flex flex-col flex-1 transition-opacity hover:opacity-80"
-        aria-label={t('card.ariaLabel', { name })}
-        target={isPartner ? '_blank' : undefined}
-        rel={isPartner ? 'noopener noreferrer' : undefined}
-        onClick={isPartner ? () => track('outbound_click', { poi_id: poi.poi_id, type: 'poi', locale, screen_id: 'explore' }) : undefined}
-      >
-        <div
-          className="w-full aspect-[4/3] flex items-center justify-center relative overflow-hidden"
-          style={{ background: 'var(--bg-3)' }}
+      {linkable ? (
+        <Link
+          href={isPartner ? (poi.partner_url ?? `/place/${poi.poi_id}`) : `/place/${poi.poi_id}`}
+          className="flex flex-col flex-1 transition-opacity hover:opacity-80"
+          aria-label={t('card.ariaLabel', { name })}
+          target={isPartner ? '_blank' : undefined}
+          rel={isPartner ? 'noopener noreferrer' : undefined}
+          onClick={isPartner ? () => track('outbound_click', { poi_id: poi.poi_id, type: 'poi', locale, screen_id: 'explore' }) : undefined}
         >
-          {poi.primary_image_url ? (
-            <Image
-              src={poi.primary_image_url}
-              alt={name}
-              fill
-              sizes="(max-width: 1024px) 72vw, 260px"
-              className="object-cover"
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-sp-1">
-              <MapPin size={22} strokeWidth={2} className="text-fg opacity-[0.15]" />
-              <span className="text-f-xxs text-muted">{t('card.imagePending')}</span>
-            </div>
-          )}
-          {/* D-Day countdown badge — event/festival/merch items */}
-          {dDay && (
-            <span
-              className="absolute top-sp-2 right-sp-2 text-f-xxs font-bold px-sp-2 py-[3px] rounded-full text-bg leading-none"
-              style={{ background: 'var(--lav)' }}
-            >
-              {dDay}
-            </span>
-          )}
-          {/* Sponsored label — DEC-05 / CLAUDE.md §9: LeftPanel card only on desktop, but Explore cards are equivalent */}
-          {isPartner && (
-            <span
-              className="absolute bottom-sp-2 left-sp-2 text-f-xxs font-semibold px-sp-2 py-[3px] rounded-full leading-none"
-              style={{ background: 'var(--backdrop-50)', color: 'var(--fg)', border: '1px solid var(--bdr)' }}
-            >
-              {t('card.sponsored')}
-            </span>
-          )}
-        </div>
-        <div className="p-sp-3 flex flex-col gap-[4px]">
-          <div className="flex items-start justify-between gap-sp-2">
-            <span className="text-f-md font-semibold text-fg leading-tight line-clamp-2 flex-1">
-              {name}
-            </span>
-            <div className="flex items-center gap-sp-1 shrink-0">
-              {poi.is_trending && (
-                <span
-                  className="flex items-center gap-[3px] text-f-xxs font-semibold text-lav px-[6px] py-[2px] rounded-full leading-none"
-                  style={{ background: 'var(--lav-dim)' }}
-                >
-                  <TrendingUp size={9} strokeWidth={2} aria-hidden="true" />
-                  {t('card.trending')}
-                </span>
-              )}
-              {isPartner && (
-                <ExternalLink size={12} strokeWidth={2} className="text-muted" aria-hidden="true" />
-              )}
-            </div>
-          </div>
-          <span className="text-f-xs text-muted">{poi.display_region}</span>
-        </div>
-      </Link>
+          {cardBody}
+        </Link>
+      ) : (
+        <div className="flex flex-col flex-1">{cardBody}</div>
+      )}
 
       {/* Save + Like — top-left, sibling of Link (not nested — avoids <button> inside <a>).
           Hidden (not just disabled) when the card has no real DB id — a visibly

@@ -26,6 +26,7 @@ import { MAX_STOPS } from '@/lib/plan-constants'
 import type { MapPoi, MapBounds } from '@/hooks/useMapPois'
 import type { DraftMeta } from '@/components/auth/DraftConflictModal'
 import type { ItineraryDetail } from '@/lib/itinerary'
+import type { SavedPoi } from '@/app/api/saved/route'
 
 type PendingPlan = {
   deviceDraft:  DraftMeta
@@ -58,8 +59,12 @@ export default function MapView() {
   const [planSheetOpen, setPlanSheetOpen] = useState(false)
   const [poiSheetSnap, setPoiSheetSnap]   = useState<'peek' | 'mid' | 'full'>('mid')
   const [savedSheetOpen, setSavedSheetOpen] = useState(false)
-  // SC-31/DEC-38 (S-HDTVGP/S-IGOSPS) — active Saved-hub folder's POIs, synced to the map
-  const [savedFolderPoiIds, setSavedFolderPoiIds] = useState<string[] | null>(null)
+  // SC-31/DEC-38 (S-HDTVGP/S-IGOSPS) — active exclusive "show only these POIs"
+  // set, synced to the map: a Saved-hub folder, a bookmark "view on map"
+  // action, etc. Full POI objects (not ids) so a member outside the
+  // currently-loaded viewport `pois` still renders — see NaverMapCanvas's
+  // restrictToPois prop.
+  const [restrictToPois, setRestrictToPois] = useState<SavedPoi[] | null>(null)
   // Viewport-bounds fetching — null until NaverMapCanvas's first 'idle' fires,
   // so useMapPois falls back to its no-bounds (nationwide top-N) query until then.
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null)
@@ -183,6 +188,22 @@ export default function MapView() {
   useEffect(() => {
     setSavedSheetOpen(searchParams.get('saved') === '1')
   }, [searchParams])
+
+  // Item 7 — "view on map" from /saved's folder-detail view: ?view=saved
+  // (+ optional &folder=:id) resolves to an exclusive restrictToPois set +
+  // fitBounds, same convention as the existing Saved-hub folder-open feature.
+  // Tracks searchParams (not mount-only) since savedData may resolve after
+  // this first fires; consumed-once via the ref so a later unrelated
+  // searchParams/savedData change doesn't re-trigger it.
+  const restrictConsumedRef = useRef(false)
+  useEffect(() => {
+    if (searchParams.get('view') !== 'saved' || restrictConsumedRef.current || !savedData) return
+    restrictConsumedRef.current = true
+    const folderId = searchParams.get('folder')
+    const folderPois = folderId ? savedData.folders.find(f => f.id === folderId)?.pois : undefined
+    setRestrictToPois(folderPois ?? savedData.pois)
+    router.replace('/map')
+  }, [searchParams, savedData, router])
 
   // URL param handling — ?plan=:id loads plan into edit mode
   useEffect(() => {
@@ -598,7 +619,7 @@ export default function MapView() {
           savedHubOpen={savedSheetOpen}
           onOpenSaved={() => router.replace('/map?saved=1')}
           onCloseSavedHub={() => { setSavedSheetOpen(false); router.replace('/map') }}
-          onSavedFolderChange={setSavedFolderPoiIds}
+          onSavedFolderChange={setRestrictToPois}
         />
       </aside>
 
@@ -615,7 +636,12 @@ export default function MapView() {
             track('ai_open', { entry_point: 'map_pill', locale, screen_id: 'MP_01' })
             setAiOverlayOpen(true)
           }}
-          savedFolderPoiIds={savedFolderPoiIds}
+          focusPoi={selectedPoi}
+          // SavedPoi.primary_image_url is `string | null` (BFF shape); MapPoi
+          // wants `string | undefined` — the only field that isn't a direct
+          // structural match, normalized here rather than adding a mapping
+          // layer for every other already-compatible field.
+          restrictToPois={restrictToPois?.map(p => ({ ...p, primary_image_url: p.primary_image_url ?? undefined })) ?? null}
           onBoundsChange={handleBoundsChange}
         />
 
@@ -669,7 +695,7 @@ export default function MapView() {
         open={savedSheetOpen}
         onClose={() => { setSavedSheetOpen(false); router.replace('/map') }}
         onSelectPoi={(id) => { setSavedSheetOpen(false); router.replace('/map'); setSelectedPoiId(id) }}
-        onFolderChange={setSavedFolderPoiIds}
+        onFolderChange={setRestrictToPois}
       />
 
       {/* T2 collision modal — local draft vs plan loaded via ?plan=:id */}
