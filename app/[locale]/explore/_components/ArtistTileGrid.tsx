@@ -56,7 +56,10 @@ export default function ArtistTileGrid({ artists, selectedArtistId, onSelect }: 
                 style={{ background: 'var(--bg-3)' }}
               >
                 {artist.image_url ? (
-                  <Image src={artist.image_url} alt={name} fill sizes="120px" className="object-cover" />
+                  // Logos are wide, transparent-background wordmarks, not square avatar
+                  // photos — object-cover would crop most of them away. object-contain +
+                  // padding keeps the whole mark visible, letterboxed within the tile.
+                  <Image src={artist.image_url} alt={name} fill sizes="120px" className="object-contain p-sp-3" />
                 ) : (
                   <Music size={20} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                 )}
