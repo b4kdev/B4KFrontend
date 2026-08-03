@@ -8,7 +8,7 @@ import type { MapPoi, MapBounds } from '@/hooks/useMapPois'
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  interface Window { naver: any }
+  interface Window { naver: any; navermap_authFailure?: () => void }
 }
 
 interface Props {
@@ -146,6 +146,19 @@ export default function NaverMapCanvas({
   useEffect(() => { onBoundsChangeRef.current = onBoundsChange }, [onBoundsChange])
   const lastBoundsRef = useRef<MapBounds | null>(null)
   const idleTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Naver Maps v3 calls window.navermap_authFailure (if defined) when its own
+  // async auth check fails — the script itself already loaded fine (onLoad
+  // already fired, initMap already ran), so this is the only signal that
+  // window.naver.maps is about to go dead. Without this, a failed auth just
+  // shows Naver's own Korean-only banner over a blank canvas with our POI
+  // markers still floating on top — reusing the existing scriptErr UI here
+  // instead gives a real, i18n'd, on-brand fallback. Registered before any
+  // script load can complete, so it's never missed regardless of mount timing.
+  useEffect(() => {
+    window.navermap_authFailure = () => setScriptErr(true)
+    return () => { delete window.navermap_authFailure }
+  }, [])
 
   // The SDK <script> only fires onLoad once per browser session — remounting
   // this component (e.g. navigating away and back) after it already loaded
