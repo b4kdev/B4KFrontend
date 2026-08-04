@@ -1325,7 +1325,7 @@
         "showLess": "Mostrar menos",
         "selectAria": "Filtrar por {name}",
         "empty": "Nenhum artista para mostrar ainda",
-        "memberCount": "{count, plural, one {# member} other {# members}}"
+        "memberCount": "{count, plural, one {# membro} other {# membros}}"
       }
     },
     "footsteps": {
