@@ -40,6 +40,10 @@ export default function KpopArtistNav({ data }: { data: ExploreData }) {
     () => Object.fromEntries((data.artists ?? []).map(a => [a.id, a])),
     [data.artists],
   )
+  const visibleArtists = useMemo(
+    () => (selectedAgency ? artists.filter(a => a.agency === selectedAgency) : artists),
+    [artists, selectedAgency],
+  )
 
   const handleSelectArtist = (id: string | null) => {
     setSelectedArtistId(id)
@@ -71,7 +75,7 @@ export default function KpopArtistNav({ data }: { data: ExploreData }) {
   return (
     <>
       <ExploreChipFilter config={AGENCY_FILTER} active={selectedAgency} onChange={handleSelectAgency} />
-      <ArtistIndexList artists={artists} selectedArtistId={selectedArtistId} onSelect={handleSelectArtist} />
+      <ArtistIndexList artists={visibleArtists} selectedArtistId={selectedArtistId} onSelect={handleSelectArtist} />
 
       {ROW_IDS.map(id => {
         const items = filterItems(data.sections.find(s => s.id === id)?.items ?? [])

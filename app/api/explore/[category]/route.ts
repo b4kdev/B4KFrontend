@@ -530,11 +530,21 @@ interface BffEntity {
 // core.entities.metadata.company stores the full agency display name
 // (seed_kpop_entities.py's COMPANY_LABEL_MAP, e.g. "SM Entertainment") — the
 // hub's agency chip filter (KpopArtistNav.tsx AGENCY_FILTER) uses short codes.
-// Only the 6 agencies the chip filter supports get a short code; every other
-// real agency (Belift Lab, ADOR, Pledis, ...) falls back to its raw company
-// name, which just won't match any chip (still renders as an unfiltered row).
+// Sub-labels roll up to their parent's chip (e.g. ADOR/Source Music/Pledis/
+// Belift Lab/KOZ → HYBE) since that's how fans actually think of "소속사".
+// Verified 2026-08 — do not add The Black Label here: it fully split from YG
+// on 2025-12-20 (YG CEO resigned), so MEOVV etc. are independent now and
+// correctly fall through to the raw-company-name (unmatched-chip) case below.
+// Every other real agency (Cube, FNC, Wake One, P NATION, ...) also falls
+// back to its raw company name, which won't match any chip (still shows
+// under "전체" only).
 const COMPANY_SHORT_CODE: Record<string, string> = {
   'HYBE': 'HYBE',
+  'Source Music': 'HYBE',
+  'Pledis Entertainment': 'HYBE',
+  'Belift Lab': 'HYBE',
+  'ADOR': 'HYBE',
+  'KOZ Entertainment': 'HYBE',
   'SM Entertainment': 'SM',
   'YG Entertainment': 'YG',
   'JYP Entertainment': 'JYP',
