@@ -8,7 +8,7 @@ import type { MapPoi, MapBounds } from '@/hooks/useMapPois'
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  interface Window { naver: any }
+  interface Window { naver: any; navermap_authFailure?: () => void }
 }
 
 interface Props {
@@ -23,14 +23,28 @@ interface Props {
   showAiPill:    boolean
   onAiPillDismiss: () => void
   onAiPillExpand:  () => void
-  // SC-31 (S-HDTVGP) — when a Saved-hub folder is active, only its POIs stay
-  // pinned (never clustered — spec: "all folder POIs pinned on map").
-  savedFolderPoiIds?: string[] | null
+  // Guarantees this POI renders individually (never clustered, never
+  // same-point-collapsed) even if it's outside the loaded `pois` array, and
+  // pans to it — e.g. a deep-linked/searched/bookmarked POI the current
+  // viewport fetch hasn't loaded. Ambient mode only — ignored while
+  // restrictToPois is active (exclusive sets are already fully individual).
+  focusPoi?: MapPoi | null
+  // SC-31 (S-HDTVGP) — when active (Saved-hub folder, search results, a
+  // single bookmarked focus, etc.), ONLY these POIs show — never clustered,
+  // never same-point-collapsed — regardless of whether they're present in
+  // `pois`. Full objects (not ids intersected against `pois`) so an exclusive
+  // set member outside the loaded viewport still renders.
+  restrictToPois?: MapPoi[] | null
   // Viewport-bounds fetching — fired on 'idle' (debounced, padded, threshold-
   // gated below), so useMapPois can request POIs in the visible area instead
   // of a fixed nationwide top-N. Omitted/no calls yet → caller stays on its
   // no-bounds fallback (nationwide top-N) until the first idle settles.
   onBoundsChange?: (bounds: MapBounds, zoom: number) => void
+  // Initial camera, consumed once at construction only — defaults to the
+  // Seoul/zoom-12 fallback so every existing caller is unaffected. For a
+  // single-POI view (e.g. /place/:id) this should be that POI's coords.
+  initialCenter?: { lat: number; lng: number }
+  initialZoom?: number
 }
 
 // Extra margin around the viewport so panning within it doesn't need an
@@ -110,8 +124,11 @@ function clusterGridSize(zoom: number): number {
 export default function NaverMapCanvas({
   pois, selectedPoiId, planStopIds, routeLegs, onPoiSelect,
   showAiPill, onAiPillDismiss, onAiPillExpand,
-  savedFolderPoiIds = null,
+  focusPoi = null,
+  restrictToPois = null,
   onBoundsChange,
+  initialCenter,
+  initialZoom,
 }: Props) {
   const t = useTranslations('map')
   const containerRef = useRef<HTMLDivElement>(null)
@@ -147,6 +164,19 @@ export default function NaverMapCanvas({
   const lastBoundsRef = useRef<MapBounds | null>(null)
   const idleTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  // Naver Maps v3 calls window.navermap_authFailure (if defined) when its own
+  // async auth check fails — the script itself already loaded fine (onLoad
+  // already fired, initMap already ran), so this is the only signal that
+  // window.naver.maps is about to go dead. Without this, a failed auth just
+  // shows Naver's own Korean-only banner over a blank canvas with our POI
+  // markers still floating on top — reusing the existing scriptErr UI here
+  // instead gives a real, i18n'd, on-brand fallback. Registered before any
+  // script load can complete, so it's never missed regardless of mount timing.
+  useEffect(() => {
+    window.navermap_authFailure = () => setScriptErr(true)
+    return () => { delete window.navermap_authFailure }
+  }, [])
+
   // The SDK <script> only fires onLoad once per browser session — remounting
   // this component (e.g. navigating away and back) after it already loaded
   // elsewhere means onLoad never fires again, leaving mapReady stuck false
@@ -158,9 +188,10 @@ export default function NaverMapCanvas({
 
   function initMap() {
     if (!containerRef.current || !window.naver?.maps || mapRef.current) return
+    const center = initialCenter ?? SEOUL
     const map = new window.naver.maps.Map(containerRef.current, {
-      center:         new window.naver.maps.LatLng(SEOUL.lat, SEOUL.lng),
-      zoom:           12,
+      center:         new window.naver.maps.LatLng(center.lat, center.lng),
+      zoom:           initialZoom ?? 12,
       mapTypeControl: false,
       scaleControl:   false,
       logoControl:    true,
@@ -218,14 +249,21 @@ export default function NaverMapCanvas({
   useEffect(() => {
     if (!mapReady || !mapRef.current || !window.naver?.maps) return
     const map = mapRef.current
-    const clusterActive = zoom <= CLUSTER_ZOOM_THRESHOLD && !savedFolderPoiIds
+    const clusterActive = zoom <= CLUSTER_ZOOM_THRESHOLD && !restrictToPois
 
-    const visiblePois = savedFolderPoiIds
-      ? pois.filter(p => savedFolderPoiIds.includes(p.poi_id))
-      : pois
+    const visiblePois = restrictToPois ?? pois
+
+    // focusPoi is additive (ambient mode only) — a no-op while restrictToPois
+    // is active, since an exclusive set is already fully individual (see
+    // clusterActive/same-point gates below), whether or not focusPoi happens
+    // to be a member of it.
+    const showFocus = !!focusPoi && !restrictToPois && !planStopIds.includes(focusPoi.poi_id)
 
     const planPois = visiblePois.filter(p => planStopIds.includes(p.poi_id))
-    const freePois = visiblePois.filter(p => !planStopIds.includes(p.poi_id))
+    const freePois = visiblePois.filter(p =>
+      !planStopIds.includes(p.poi_id) &&
+      !(showFocus && p.poi_id === focusPoi!.poi_id)
+    )
 
     const clusteredIds = new Set<string>()
     const clusterGroups: MapPoi[][] = []
@@ -244,7 +282,7 @@ export default function NaverMapCanvas({
     // ran before and independently of the proximity-based one.
     type Atom = { members: MapPoi[]; lat: number; lng: number }
     const samePointAtoms: Atom[] = []
-    if (!savedFolderPoiIds) {
+    if (!restrictToPois) {
       const samePointBuckets = new Map<string, MapPoi[]>()
       freePois.forEach(poi => {
         const key = `${poi.coords_lat.toFixed(5)}:${poi.coords_lng.toFixed(5)}`
@@ -356,7 +394,11 @@ export default function NaverMapCanvas({
       samePointAtoms.forEach(atom => clusterGroups.push(atom.members))
     }
 
-    const individualPois = [...planPois, ...freePois.filter(p => !clusteredIds.has(p.poi_id))]
+    const individualPois = [
+      ...planPois,
+      ...(showFocus ? [focusPoi!] : []),
+      ...freePois.filter(p => !clusteredIds.has(p.poi_id)),
+    ]
     const liveIds = new Set(individualPois.map(p => p.poi_id))
 
     markersRef.current.forEach(({ marker }, id) => {
@@ -442,15 +484,73 @@ export default function NaverMapCanvas({
         return marker
       })
     }
-  }, [mapReady, pois, selectedPoiId, planStopIds, onPoiSelect, zoom, savedFolderPoiIds])
+  }, [mapReady, pois, selectedPoiId, planStopIds, onPoiSelect, zoom, restrictToPois, focusPoi])
 
-  // Pan to the selected POI whenever selection changes externally (e.g. LeftPanel card click) —
-  // marker click already pans itself, this covers every other selection source.
+  // Pan to the selected POI whenever selection CHANGES externally (e.g.
+  // LeftPanel card click) — marker click already pans itself, this covers
+  // every other selection source.
+  //
+  // Fundamentals bug fix: this must fire once per selection change, not once
+  // per render where selectedPoiId happens to still be set. The old
+  // dependency array included `pois`, which gets a new array reference on
+  // every viewport-bounds refetch (any idle-triggered pan/zoom while a POI is
+  // selected) — so after a user selected a pin and then tried to pan away,
+  // the next bounds refetch re-ran this effect and panTo'd straight back to
+  // the same pin, making the camera feel locked. Track the last poi_id we
+  // actually panned for in a ref, and only call panTo when the selection
+  // itself changes — a `pois`/`focusPoi` refresh with the same selectedPoiId
+  // must never re-trigger the pan.
+  //
+  // Prefers focusPoi (works even when the POI is outside `pois`, e.g. a
+  // deep-linked/searched/bookmarked POI the viewport fetch hasn't loaded),
+  // falling back to a `pois` lookup for the ordinary in-viewport case.
+  // Gated off during exclusive mode so it never fights the restrictToPois
+  // fitBounds effect below.
+  const lastPannedPoiIdRef = useRef<string | null>(null)
   useEffect(() => {
-    if (!mapReady || !mapRef.current || !window.naver?.maps || !selectedPoiId) return
-    const poi = pois.find(p => p.poi_id === selectedPoiId)
-    if (poi) mapRef.current.panTo(new window.naver.maps.LatLng(poi.coords_lat, poi.coords_lng))
-  }, [selectedPoiId, mapReady, pois])
+    if (!mapReady || !mapRef.current || !window.naver?.maps || !selectedPoiId || restrictToPois) return
+    if (lastPannedPoiIdRef.current === selectedPoiId) return
+    const poi = (focusPoi?.poi_id === selectedPoiId ? focusPoi : null) ?? pois.find(p => p.poi_id === selectedPoiId)
+    if (!poi) return
+    lastPannedPoiIdRef.current = selectedPoiId
+    mapRef.current.panTo(new window.naver.maps.LatLng(poi.coords_lat, poi.coords_lng))
+  }, [selectedPoiId, mapReady, pois, focusPoi, restrictToPois])
+
+  // Selection cleared (deselect) — allow the next selection of the SAME poi
+  // (re-clicking after deselecting) to pan again.
+  useEffect(() => {
+    if (!selectedPoiId) lastPannedPoiIdRef.current = null
+  }, [selectedPoiId])
+
+  // Fit the viewport to an active exclusive set once per activation — e.g.
+  // opening a saved folder or a search-results/bookmark "view on map" action.
+  // Fires once when restrictToPois first populates and re-arms when it
+  // clears, mirroring the hasFitRouteRef pattern below. Kept as its own
+  // effect (not merged with focusPoi's pan effect above) so the two camera
+  // behaviors never fire in the same tick.
+  const hasFitRestrictRef = useRef(false)
+  useEffect(() => {
+    if (!mapReady || !mapRef.current || !window.naver?.maps) return
+    if (!restrictToPois || restrictToPois.length === 0) {
+      hasFitRestrictRef.current = false
+      return
+    }
+    if (hasFitRestrictRef.current) return
+    hasFitRestrictRef.current = true
+
+    if (restrictToPois.length === 1) {
+      mapRef.current.setCenter(new window.naver.maps.LatLng(restrictToPois[0].coords_lat, restrictToPois[0].coords_lng))
+      mapRef.current.setZoom(15)
+      return
+    }
+
+    const bounds = new window.naver.maps.LatLngBounds(
+      new window.naver.maps.LatLng(restrictToPois[0].coords_lat, restrictToPois[0].coords_lng),
+      new window.naver.maps.LatLng(restrictToPois[0].coords_lat, restrictToPois[0].coords_lng),
+    )
+    restrictToPois.forEach(p => bounds.extend(new window.naver.maps.LatLng(p.coords_lat, p.coords_lng)))
+    mapRef.current.fitBounds(bounds)
+  }, [mapReady, restrictToPois])
 
   // MP_20 — Route polyline connecting plan stops.
   // routeLegs (from a saved itinerary's real routing.route_leg results) draws
@@ -545,6 +645,13 @@ export default function NaverMapCanvas({
     routeLegPolylinesRef.current.forEach(pl => pl.setMap(null))
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
     resizeObserverRef.current?.disconnect()
+    // Naver's destroy() removes the map's DOM + all its own listeners
+    // (click/zoom_changed/idle registered in initMap) in one call — those
+    // three were previously never explicitly detached, relying on the map
+    // object being dropped for GC instead. Marker/overlay teardown above
+    // stays as-is (cheap, and not guaranteed redundant with destroy()).
+    mapRef.current?.destroy?.()
+    mapRef.current = null
   }, [])
 
   function zoomIn()  { mapRef.current?.setZoom(Math.min(mapRef.current.getZoom() + 1, 18)) }

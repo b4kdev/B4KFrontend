@@ -1444,6 +1444,7 @@
       "openAriaLabel": "打开文件夹「{name}」",
       "poiCount": "{count}个地点",
       "generatePlan": "生成行程",
+      "viewOnMap": "在地图上查看",
       "back": "返回文件夹",
       "selectHint": "选择要加入行程的地点",
       "selectAll": "全选",

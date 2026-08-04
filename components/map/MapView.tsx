@@ -19,6 +19,8 @@ import DraftResumeFreshModal from './DraftResumeFreshModal'
 import { useMapPois } from '@/hooks/useMapPois'
 import { usePlaceDetail } from '@/hooks/usePlaceDetail'
 import { useSaved } from '@/hooks/useSaved'
+import { useSavedPois } from '@/hooks/useSavedPois'
+import { useLikedPois } from '@/hooks/useLikedPois'
 import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useToast } from '@/contexts/ToastContext'
 import { getDraftPlan, saveDraftPlan, clearDraftPlan } from '@/lib/draft-plan'
@@ -26,6 +28,7 @@ import { MAX_STOPS } from '@/lib/plan-constants'
 import type { MapPoi, MapBounds } from '@/hooks/useMapPois'
 import type { DraftMeta } from '@/components/auth/DraftConflictModal'
 import type { ItineraryDetail } from '@/lib/itinerary'
+import type { SavedPoi } from '@/app/api/saved/route'
 
 type PendingPlan = {
   deviceDraft:  DraftMeta
@@ -42,7 +45,7 @@ export default function MapView() {
   const locale = useLocale()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { session } = useAuth()
+  const { session, loading: authLoading } = useAuth()
   const { open: openAuthGate } = useAuthGate()
   const { showToast } = useToast()
 
@@ -52,14 +55,16 @@ export default function MapView() {
   const [showAiPill, setShowAiPill]       = useState(false)
   const [aiOverlayOpen, setAiOverlayOpen] = useState(false)
   const [planStopIds, setPlanStopIds]     = useState<string[]>([])
-  const [savedPoiIds, setSavedPoiIds]     = useState<Set<string>>(new Set())
-  const [likedPoiIds, setLikedPoiIds]     = useState<Set<string>>(new Set())
   const [stopDurations, setStopDurations] = useState<Record<string, number>>({})
   const [planSheetOpen, setPlanSheetOpen] = useState(false)
   const [poiSheetSnap, setPoiSheetSnap]   = useState<'peek' | 'mid' | 'full'>('mid')
   const [savedSheetOpen, setSavedSheetOpen] = useState(false)
-  // SC-31/DEC-38 (S-HDTVGP/S-IGOSPS) — active Saved-hub folder's POIs, synced to the map
-  const [savedFolderPoiIds, setSavedFolderPoiIds] = useState<string[] | null>(null)
+  // SC-31/DEC-38 (S-HDTVGP/S-IGOSPS) — active exclusive "show only these POIs"
+  // set, synced to the map: a Saved-hub folder, a bookmark "view on map"
+  // action, etc. Full POI objects (not ids) so a member outside the
+  // currently-loaded viewport `pois` still renders — see NaverMapCanvas's
+  // restrictToPois prop.
+  const [restrictToPois, setRestrictToPois] = useState<SavedPoi[] | null>(null)
   // Viewport-bounds fetching — null until NaverMapCanvas's first 'idle' fires,
   // so useMapPois falls back to its no-bounds (nationwide top-N) query until then.
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null)
@@ -84,7 +89,6 @@ export default function MapView() {
   // SC-25 — sticky once 'ai': PlanPill reads this to show "AI Plan · X stops"
   // once any stop came from FL3, even if the user adds more stops manually after.
   const [planSource, setPlanSource] = useState<'manual' | 'ai'>('manual')
-  const savedSeededRef  = useRef(false)
   // DEC-33 T1: track whether draft-conflict check has been resolved this session
   const t1CheckedRef    = useRef(false)
 
@@ -95,7 +99,11 @@ export default function MapView() {
 
   const { pois, isLoading: poisLoading, isError: poisError } =
     useMapPois(activeRegion, activeFilters, mapBounds, mapZoom)
-  const { data: savedData, mutate: mutateSaved } = useSaved()
+  const { data: savedData } = useSaved()
+  // Save/like state + toggles — shared with /place/:id via these hooks so the
+  // two surfaces can't diverge (see hooks/useSavedPois, hooks/useLikedPois).
+  const { savedPoiIds, isSaved, toggleSave } = useSavedPois()
+  const { likedPoiIds, toggleLike } = useLikedPois()
 
   useEffect(() => {
     if (!selectedPoiId) return
@@ -171,18 +179,27 @@ export default function MapView() {
       .catch(() => { /* blank plan — user can keep building, autosave retries */ })
   }, [session, planStopIds.length])
 
-  // Seed savedPoiIds from API on first load — one-time only so local toggles aren't overwritten
-  useEffect(() => {
-    if (savedSeededRef.current || !savedData?.pois) return
-    savedSeededRef.current = true
-    setSavedPoiIds(new Set(savedData.pois.map(p => p.poi_id)))
-  }, [savedData])
-
   // H13 — Saved sheet reacts to ?saved=1 (toggled from the mobile Saved tab
   // on the same page, so this must track searchParams, not just mount).
   useEffect(() => {
     setSavedSheetOpen(searchParams.get('saved') === '1')
   }, [searchParams])
+
+  // Item 7 — "view on map" from /saved's folder-detail view: ?view=saved
+  // (+ optional &folder=:id) resolves to an exclusive restrictToPois set +
+  // fitBounds, same convention as the existing Saved-hub folder-open feature.
+  // Tracks searchParams (not mount-only) since savedData may resolve after
+  // this first fires; consumed-once via the ref so a later unrelated
+  // searchParams/savedData change doesn't re-trigger it.
+  const restrictConsumedRef = useRef(false)
+  useEffect(() => {
+    if (searchParams.get('view') !== 'saved' || restrictConsumedRef.current || !savedData) return
+    restrictConsumedRef.current = true
+    const folderId = searchParams.get('folder')
+    const folderPois = folderId ? savedData.folders.find(f => f.id === folderId)?.pois : undefined
+    setRestrictToPois(folderPois ?? savedData.pois)
+    router.replace('/map')
+  }, [searchParams, savedData, router])
 
   // URL param handling — ?plan=:id loads plan into edit mode
   useEffect(() => {
@@ -233,6 +250,25 @@ export default function MapView() {
       })
       .catch(() => {})
   }, [])
+
+  // /place/:id "Add to Plan" bridges here via ?poi=:id&addToPlan=1 — keeps plan-
+  // building centralized in this one builder rather than growing a second
+  // add-to-plan path. Waits until auth has resolved (so a logged-in user hits
+  // handleAddToPlan's DB-draft T1 check, not the guest path) and pois have
+  // loaded (so the added stop can render), runs it once, then strips addToPlan
+  // from the URL — leaving ?poi= so the POI stays selected/focused.
+  const addToPlanConsumedRef = useRef(false)
+  useEffect(() => {
+    if (addToPlanConsumedRef.current || authLoading || poisLoading) return
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('addToPlan') !== '1') return
+    const poiId = params.get('poi')
+    if (!poiId) return
+    addToPlanConsumedRef.current = true
+    handleAddToPlan(poiId)
+    router.replace(`/map?poi=${poiId}`)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, poisLoading])
 
   // Ordered stop POIs for LeftPanel and polyline — fallback to loadedPlanPois for plan-edit mode
   const planStops = planStopIds
@@ -404,54 +440,6 @@ export default function MapView() {
     setStopDays(prev => { const next = { ...prev }; delete next[poiId]; return next })
   }
 
-  function handleToggleSave(poi: MapPoi) {
-    if (!session) { openAuthGate('save_poi'); return }
-    const removing = savedPoiIds.has(poi.poi_id)
-    setSavedPoiIds(prev => {
-      const next = new Set(prev)
-      if (removing) {
-        next.delete(poi.poi_id)
-        showToast(t('poiDetail.removedSave'), 'info')
-      } else {
-        next.add(poi.poi_id)
-        showToast(t('poiDetail.savedToast'))
-        track('poi_save', { poi_id: poi.poi_id, region: poi.display_region ?? undefined, locale, screen_id: 'MP_01' })
-      }
-      return next
-    })
-    fetch('/api/saved/poi', {
-      method:  removing ? 'DELETE' : 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ poi_id: poi.poi_id }),
-    })
-      .then(() => mutateSaved())
-      .catch(() => {})
-  }
-
-  function handleToggleLike(poi: MapPoi) {
-    if (!session) { openAuthGate('like'); return }
-    const removing = likedPoiIds.has(poi.poi_id)
-    setLikedPoiIds(prev => {
-      const next = new Set(prev)
-      if (removing) next.delete(poi.poi_id)
-      else next.add(poi.poi_id)
-      return next
-    })
-    fetch('/api/likes/poi', {
-      method:  removing ? 'DELETE' : 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ poi_id: poi.poi_id }),
-    }).catch(() => {
-      // revert on failure
-      setLikedPoiIds(prev => {
-        const next = new Set(prev)
-        if (removing) next.add(poi.poi_id)
-        else next.delete(poi.poi_id)
-        return next
-      })
-    })
-  }
-
   // Receives the reordered ids for whichever day is currently visible (the
   // child panel is day-filtered) and splices them back into their original
   // slots in the full ordered list, leaving other days' stops untouched.
@@ -576,13 +564,13 @@ export default function MapView() {
           stopDurations={stopDurations}
           onRegionToggle={handleRegionToggle}
           onFilterToggle={handleFilterToggle}
-          isSaved={id => savedPoiIds.has(id)}
+          isSaved={isSaved}
           isInPlan={id => planStopIds.includes(id)}
           planFull={planStopIds.length >= MAX_STOPS}
           onAddToPlan={handleAddToPlan}
-          onToggleSave={handleToggleSave}
+          onToggleSave={toggleSave}
           isLiked={selectedPoi ? likedPoiIds.has(selectedPoi.poi_id) : false}
-          onToggleLike={() => selectedPoi && handleToggleLike(selectedPoi)}
+          onToggleLike={() => selectedPoi && toggleLike(selectedPoi)}
           onReorder={handleReorder}
           onRemove={handleRemoveFromPlan}
           onDurationChange={handleDurationChange}
@@ -598,7 +586,7 @@ export default function MapView() {
           savedHubOpen={savedSheetOpen}
           onOpenSaved={() => router.replace('/map?saved=1')}
           onCloseSavedHub={() => { setSavedSheetOpen(false); router.replace('/map') }}
-          onSavedFolderChange={setSavedFolderPoiIds}
+          onSavedFolderChange={setRestrictToPois}
         />
       </aside>
 
@@ -615,7 +603,12 @@ export default function MapView() {
             track('ai_open', { entry_point: 'map_pill', locale, screen_id: 'MP_01' })
             setAiOverlayOpen(true)
           }}
-          savedFolderPoiIds={savedFolderPoiIds}
+          focusPoi={selectedPoi}
+          // SavedPoi.primary_image_url is `string | null` (BFF shape); MapPoi
+          // wants `string | undefined` — the only field that isn't a direct
+          // structural match, normalized here rather than adding a mapping
+          // layer for every other already-compatible field.
+          restrictToPois={restrictToPois?.map(p => ({ ...p, primary_image_url: p.primary_image_url ?? undefined })) ?? null}
           onBoundsChange={handleBoundsChange}
         />
 
@@ -641,8 +634,8 @@ export default function MapView() {
           isInPlan={planStopIds.includes(selectedPoi.poi_id)}
           planFull={planStopIds.length >= MAX_STOPS}
           onAddToPlan={() => handleAddToPlan(selectedPoi.poi_id)}
-          onToggleSave={() => handleToggleSave(selectedPoi)}
-          onToggleLike={() => handleToggleLike(selectedPoi)}
+          onToggleSave={() => toggleSave(selectedPoi)}
+          onToggleLike={() => toggleLike(selectedPoi)}
           onDismiss={() => setSelectedPoiId(null)}
           onSnapChange={setPoiSheetSnap}
         />
@@ -669,7 +662,7 @@ export default function MapView() {
         open={savedSheetOpen}
         onClose={() => { setSavedSheetOpen(false); router.replace('/map') }}
         onSelectPoi={(id) => { setSavedSheetOpen(false); router.replace('/map'); setSelectedPoiId(id) }}
-        onFolderChange={setSavedFolderPoiIds}
+        onFolderChange={setRestrictToPois}
       />
 
       {/* T2 collision modal — local draft vs plan loaded via ?plan=:id */}

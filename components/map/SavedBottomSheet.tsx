@@ -7,13 +7,13 @@ import { X, ArrowLeft, MapPin, FolderOpen, FileText, Trash2 } from 'lucide-react
 import { getDisplayName } from '@/lib/display-name'
 import { useSaved } from '@/hooks/useSaved'
 import { useBottomSheetSnap } from '@/hooks/useBottomSheetSnap'
-import type { SavedFolder } from '@/app/api/saved/route'
+import type { SavedFolder, SavedPoi } from '@/app/api/saved/route'
 
 interface Props {
   open:           boolean
   onClose:        () => void
   onSelectPoi:    (placeId: string) => void
-  onFolderChange: (poiIds: string[] | null) => void
+  onFolderChange: (pois: SavedPoi[] | null) => void
 }
 
 type Tab = 'places' | 'plans'
@@ -30,7 +30,7 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
 
   // DEC-38 (S-IGOSPS) — active folder's POIs pinned on the map underneath the sheet
   useEffect(() => {
-    onFolderChange(activeFolder ? activeFolder.pois.map(p => p.poi_id) : null)
+    onFolderChange(activeFolder ? activeFolder.pois : null)
     return () => onFolderChange(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFolder])

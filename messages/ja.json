@@ -1444,6 +1444,7 @@
       "openAriaLabel": "フォルダ「{name}」を開く",
       "poiCount": "{count}件",
       "generatePlan": "プランを生成",
+      "viewOnMap": "地図で見る",
       "back": "フォルダに戻る",
       "selectHint": "プランに含める場所を選択してください",
       "selectAll": "すべて選択",
