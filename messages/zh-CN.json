@@ -1324,7 +1324,8 @@
         "showMore": "{count} more",
         "showLess": "Show less",
         "selectAria": "Filter by {name}",
-        "empty": "No artists to show yet"
+        "empty": "No artists to show yet",
+        "memberCount": "{count, plural, one {# member} other {# members}}"
       }
     },
     "footsteps": {

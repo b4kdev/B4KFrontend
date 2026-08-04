@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import Image from 'next/image'
-import { ChevronRight, Music } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import type { ExploreArtist } from '@/app/api/explore/[category]/route'
 
@@ -17,7 +16,11 @@ interface Props {
   onSelect: (artistId: string | null) => void
 }
 
-export default function ArtistTileGrid({ artists, selectedArtistId, onSelect }: Props) {
+// Text-only index (rank code · name · agency, optional debut/members/fandom
+// meta line) — no images. Was an image tile grid; entity/idol images are
+// high-risk per legal counsel (IMAGE-BOUNDARIES.md, connect-kpop-artist
+// revert), so this reads as a real catalog/index instead of avatar tiles.
+export default function ArtistIndexList({ artists, selectedArtistId, onSelect }: Props) {
   const t = useTranslations('explore')
   const [expanded, setExpanded] = useState(false)
 
@@ -33,11 +36,17 @@ export default function ArtistTileGrid({ artists, selectedArtistId, onSelect }: 
       <div
         role="group"
         aria-label={t('kpopArtistNav.tileGrid.ariaLabel')}
-        className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-sp-3"
+        style={{ borderTop: '1px solid var(--bdr)' }}
       >
-        {visible.map(artist => {
+        {visible.map((artist, i) => {
           const name = getDisplayName({ name_en: artist.name_en, name_ko: artist.name_ko, id: artist.id })
           const selected = selectedArtistId === artist.id
+          const meta = [
+            artist.debut_year,
+            artist.member_count != null ? t('kpopArtistNav.tileGrid.memberCount', { count: artist.member_count }) : null,
+            artist.fandom_name,
+          ].filter((v): v is string | number => v != null)
+
           return (
             <button
               key={artist.id}
@@ -45,27 +54,33 @@ export default function ArtistTileGrid({ artists, selectedArtistId, onSelect }: 
               onClick={() => onSelect(selected ? null : artist.id)}
               aria-pressed={selected}
               aria-label={t('kpopArtistNav.tileGrid.selectAria', { name })}
-              className="flex flex-col items-center gap-sp-2 p-sp-2 min-h-touch rounded-none transition-colors"
+              className="w-full flex items-center gap-sp-4 px-sp-2 py-sp-3 min-h-touch text-left transition-colors"
               style={{
-                background: selected ? 'var(--lav-dim)' : 'var(--bg-2)',
-                border: selected ? '1px solid var(--lav)' : '1px solid var(--bdr)',
+                borderBottom: '1px solid var(--bdr)',
+                background: selected ? 'var(--lav-dim)' : 'transparent',
               }}
             >
-              <div
-                className="w-full aspect-square flex items-center justify-center overflow-hidden relative"
-                style={{ background: 'var(--bg-3)' }}
-              >
-                {artist.image_url ? (
-                  <Image src={artist.image_url} alt={name} fill sizes="120px" className="object-cover" />
-                ) : (
-                  <Music size={20} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
-                )}
-              </div>
               <span
-                className="text-f-xs font-semibold leading-tight line-clamp-1 text-center w-full"
-                style={{ color: selected ? 'var(--lav)' : 'var(--fg)' }}
+                className="text-f-xs shrink-0 tabular-nums"
+                style={{ fontFamily: 'var(--f-mono)', letterSpacing: '0.05em', color: 'var(--muted)' }}
               >
-                {name}
+                {String(i + 1).padStart(2, '0')}
+              </span>
+
+              <span className="flex-1 min-w-0 flex flex-col gap-[2px]">
+                <span
+                  className="text-f-base font-semibold leading-tight truncate"
+                  style={{ color: selected ? 'var(--lav)' : 'var(--fg)' }}
+                >
+                  {name}
+                </span>
+                {meta.length > 0 && (
+                  <span className="text-f-xs text-muted truncate">{meta.join(' · ')}</span>
+                )}
+              </span>
+
+              <span className="px-sp-2 py-0.5 rounded-full bg-lav-dim text-lav text-f-xs font-medium shrink-0">
+                {artist.agency}
               </span>
             </button>
           )

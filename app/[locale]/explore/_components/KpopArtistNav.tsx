@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import ExploreChipFilter, { ChipFilterConfig } from './ExploreChipFilter'
-import ArtistTileGrid from './ArtistTileGrid'
+import ArtistIndexList from './ArtistIndexList'
 import ExploreSectionRow from './ExploreSectionRow'
 import type { ExploreData, ExplorePoi } from '@/app/api/explore/[category]/route'
 
@@ -71,7 +71,7 @@ export default function KpopArtistNav({ data }: { data: ExploreData }) {
   return (
     <>
       <ExploreChipFilter config={AGENCY_FILTER} active={selectedAgency} onChange={handleSelectAgency} />
-      <ArtistTileGrid artists={artists} selectedArtistId={selectedArtistId} onSelect={handleSelectArtist} />
+      <ArtistIndexList artists={artists} selectedArtistId={selectedArtistId} onSelect={handleSelectArtist} />
 
       {ROW_IDS.map(id => {
         const items = filterItems(data.sections.find(s => s.id === id)?.items ?? [])

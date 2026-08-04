@@ -1324,7 +1324,8 @@
         "showMore": "{count}개 더보기",
         "showLess": "간단히 보기",
         "selectAria": "{name} 필터",
-        "empty": "표시할 아티스트가 없습니다"
+        "empty": "표시할 아티스트가 없습니다",
+        "memberCount": "{count}명"
       }
     },
     "footsteps": {
