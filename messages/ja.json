@@ -628,6 +628,9 @@
     "noKey": "マップAPIキーが設定されていません",
     "zoomIn": "ズームイン",
     "zoomOut": "ズームアウト",
+    "empty": {
+      "title": "No spots in this area"
+    },
     "leftPanel": {
       "ariaLabel": "探索パネル",
       "viewSaved": "保存済みの場所を見る",

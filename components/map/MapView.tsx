@@ -610,6 +610,7 @@ export default function MapView() {
           // layer for every other already-compatible field.
           restrictToPois={restrictToPois?.map(p => ({ ...p, primary_image_url: p.primary_image_url ?? undefined })) ?? null}
           onBoundsChange={handleBoundsChange}
+          poisLoading={poisLoading}
         />
 
         {/* Plan Pill — mobile, when stops > 0; hidden while the POI sheet covers it (mid/full) */}

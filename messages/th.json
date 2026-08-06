@@ -628,6 +628,9 @@
     "noKey": "ยังไม่ได้ตั้งค่าคีย์ API ของแผนที่",
     "zoomIn": "ซูมเข้า",
     "zoomOut": "ซูมออก",
+    "empty": {
+      "title": "No spots in this area"
+    },
     "leftPanel": {
       "ariaLabel": "แผงสำรวจ",
       "viewSaved": "ดูสถานที่ที่บันทึกไว้",

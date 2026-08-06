@@ -628,6 +628,9 @@
     "noKey": "Map API key not configured",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
+    "empty": {
+      "title": "No spots in this area"
+    },
     "leftPanel": {
       "ariaLabel": "Explore panel",
       "viewSaved": "View saved places",
