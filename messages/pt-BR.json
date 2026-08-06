@@ -629,7 +629,7 @@
     "zoomIn": "Aumentar zoom",
     "zoomOut": "Diminuir zoom",
     "empty": {
-      "title": "No spots in this area"
+      "title": "Nenhum local encontrado nesta área"
     },
     "leftPanel": {
       "ariaLabel": "Painel de exploração",
