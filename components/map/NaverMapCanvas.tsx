@@ -101,7 +101,10 @@ function planMarkerHtml(index: number, selected: boolean): string {
 }
 
 function clusterMarkerHtml(count: number): string {
-  return `<div class="poi-cluster">${count}</div>`
+  // "+N" not bare "N" — a bare number is visually identical to plan-marker's
+  // numbered stop bubble (same size class, both plain circles). The "+"
+  // reads as "N more here" and disambiguates by content, not a redesign.
+  return `<div class="poi-cluster">+${count}</div>`
 }
 
 // UF-10 (G3.1) — below this zoom, aggregate nearby POIs into cluster bubbles.
