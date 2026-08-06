@@ -42,13 +42,30 @@ export interface ExplorePoi {
   verified?: boolean
 }
 
-/** CT_KP_EXT (DEC-60) — artist tile grid entry. Team-level only, no per-member tiles. */
+/**
+ * CT_KP_EXT (DEC-60) — artist index row. Team-level only, no per-member rows.
+ * Rendered as a text-only index (ArtistIndexList.tsx) — no images/logos, by
+ * design: entity/idol images are high-risk per legal counsel (IMAGE-BOUNDARIES.md),
+ * see the connect-kpop-artist revert. image_url is kept in the shape (some
+ * ingestion paths may still populate it) but intentionally never rendered.
+ *
+ * debut_year/member_count/fandom_name are additive and optional — not
+ * currently populated by anything (SEED_ARTISTS ships without them). Real
+ * values come from core.entities.metadata once dev friend wires the /entities
+ * BFF route back up; the frontend already renders them the moment they're
+ * present, no further frontend change needed. Omitted (not shown as a dash)
+ * when absent so today's minimal seed content still reads clean.
+ */
 export interface ExploreArtist {
   id: string
   name_ko: string
   name_en: string
   agency: string
   image_url: string | null
+  is_group?: boolean
+  debut_year?: number
+  member_count?: number
+  fandom_name?: string
   /**
    * Team-level simplification: the month a member-tied seasonal row (birthday-cafe)
    * is live for this team. Real per-member granularity needs the relation BLK-35 asks
@@ -485,6 +502,77 @@ function mapPlace(p: BffPlace, locale: string): ExplorePoi {
   }
 }
 
+// BFF GET /entities item (api.list_entities) — migration 040 added metadata + is_group
+// filter. NOTE 2026-08-04: this RPC is currently erroring backend-side ("Could not
+// find the function api.list_entities(...) in the schema cache") — the try/catch
+// below means that's invisible to users (falls back to SEED_ARTISTS), but it does
+// mean this fetch is dead code until dev friend fixes the RPC signature/schema
+// cache. Left wired rather than removed so fixing it backend-side is the ONLY step
+// needed — no frontend change required once api.list_entities resolves and
+// core.entities.metadata carries these fields for kpop_artist rows.
+interface BffEntity {
+  entity_id: number
+  slug: string
+  entity_type: string
+  name_ko: string
+  name_en: string
+  primary_image_url: string | null
+  translations: Record<string, { name?: string; description?: string }> | null
+  metadata: {
+    company?: string
+    is_group?: boolean
+    debut_year?: number
+    member_count?: number
+    fandom_name?: string
+  } | null
+}
+
+// core.entities.metadata.company stores the full agency display name
+// (seed_kpop_entities.py's COMPANY_LABEL_MAP, e.g. "SM Entertainment") — the
+// hub's agency chip filter (KpopArtistNav.tsx AGENCY_FILTER) uses short codes.
+// Sub-labels roll up to their parent's chip (e.g. ADOR/Source Music/Pledis/
+// Belift Lab/KOZ → HYBE) since that's how fans actually think of "소속사".
+// Verified 2026-08 — do not add The Black Label here: it fully split from YG
+// on 2025-12-20 (YG CEO resigned), so MEOVV etc. are independent now and
+// correctly fall through to the raw-company-name (unmatched-chip) case below.
+// Every other real agency (Cube, FNC, Wake One, P NATION, ...) also falls
+// back to its raw company name, which won't match any chip (still shows
+// under "전체" only).
+const COMPANY_SHORT_CODE: Record<string, string> = {
+  'HYBE': 'HYBE',
+  'Source Music': 'HYBE',
+  'Pledis Entertainment': 'HYBE',
+  'Belift Lab': 'HYBE',
+  'ADOR': 'HYBE',
+  'KOZ Entertainment': 'HYBE',
+  'SM Entertainment': 'SM',
+  'YG Entertainment': 'YG',
+  'JYP Entertainment': 'JYP',
+  'Starship Entertainment': 'STARSHIP',
+  'KQ Entertainment': 'KQ',
+}
+
+// core.entities slug is "kpop-" + english-name-slug (seed_kpop_entities.py) — the
+// row id is stripped back to plain form so it lines up with the artistIds/
+// cta_href placeholders still hardcoded in SEED_SECTIONS/SEED_HERO (e.g. 'bts').
+// image_url is read (some ingestion paths populate it) but ArtistIndexList.tsx
+// never renders it — entity/idol images are high-risk per legal counsel, see
+// IMAGE-BOUNDARIES.md and the connect-kpop-artist revert.
+function mapArtist(e: BffEntity, locale: string): ExploreArtist {
+  const company = e.metadata?.company ?? ''
+  return {
+    id: e.slug.replace(/^kpop-/, ''),
+    name_ko: e.name_ko,
+    name_en: e.translations?.[locale]?.name ?? (locale === 'ko' ? e.name_ko : e.translations?.en?.name) ?? e.name_en,
+    agency: COMPANY_SHORT_CODE[company] ?? company,
+    image_url: e.primary_image_url,
+    is_group: e.metadata?.is_group,
+    debut_year: e.metadata?.debut_year,
+    member_count: e.metadata?.member_count,
+    fandom_name: e.metadata?.fandom_name,
+  }
+}
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { category: string } }
@@ -515,6 +603,20 @@ export async function GET(
     items = (places ?? []).map(p => mapPlace(p, locale))
   } catch {
     items = []
+  }
+
+  // CT_KP_EXT — k-pop artist index now backed by core.entities (real roster)
+  // instead of SEED_ARTISTS, once dev friend's backend fix lands. A BFF
+  // failure falls back to the seed so the hub still renders something
+  // instead of an empty index — see BffEntity comment above re: current RPC error.
+  let artists = SEED_ARTISTS[params.category] ?? []
+  if (params.category === 'k-pop') {
+    try {
+      const entities = await bffFetch<BffEntity[]>('/entities?type=kpop_artist&isGroup=true&limit=100')
+      if (entities?.length) artists = entities.map(e => mapArtist(e, locale))
+    } catch {
+      // keep SEED_ARTISTS fallback
+    }
   }
 
   // Thematic sections use the interim content seed above — the BFF has no
@@ -595,7 +697,7 @@ export async function GET(
     category: base.category,
     hero: base.hero,
     packages: base.packages,
-    artists: SEED_ARTISTS[params.category] ?? [],
+    artists,
     sections: [trendingSection, ...sections],
   }
   return NextResponse.json(data)

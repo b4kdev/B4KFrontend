@@ -190,13 +190,26 @@ export default function NaverMapCanvas({
     if (!containerRef.current || !window.naver?.maps || mapRef.current) return
     const center = initialCenter ?? SEOUL
     const map = new window.naver.maps.Map(containerRef.current, {
-      center:         new window.naver.maps.LatLng(center.lat, center.lng),
-      zoom:           initialZoom ?? 12,
-      mapTypeControl: false,
-      scaleControl:   false,
-      logoControl:    true,
-      mapDataControl: false,
-      zoomControl:    false,
+      center:                 new window.naver.maps.LatLng(center.lat, center.lng),
+      zoom:                   initialZoom ?? 12,
+      mapTypeControl:         false,
+      scaleControl:           false,
+      logoControl:            true,
+      mapDataControl:         false,
+      zoomControl:            false,
+      // Base-manipulation parity with Google/Naver/Kakao (DEC-62) — min/max
+      // zoom fixes real inconsistency: without this, scroll/pinch/fitBounds
+      // could zoom past what the +/- buttons and cluster-click already clamp
+      // to (5-18). The rest are explicit declarations of already-true native
+      // defaults, so a future SDK bump or edit can't silently drop one.
+      minZoom:                5,
+      maxZoom:                18,
+      draggable:              true,
+      pinchZoom:              true,
+      scrollWheel:            true,
+      keyboardShortcuts:      true,
+      disableDoubleClickZoom: false,
+      disableKineticPan:      false,
     })
     mapRef.current = map
 
@@ -221,6 +234,15 @@ export default function NaverMapCanvas({
         lastBoundsRef.current = next
         onBoundsChangeRef.current?.(next, map.getZoom())
       }, BOUNDS_DEBOUNCE_MS)
+    })
+
+    // Grab/grabbing cursor affordance during pan — matches Google/Naver/Kakao
+    // (DEC-62 base-manipulation parity). Purely visual, no gesture logic.
+    window.naver.maps.Event.addListener(map, 'dragstart', () => {
+      if (containerRef.current) containerRef.current.style.cursor = 'grabbing'
+    })
+    window.naver.maps.Event.addListener(map, 'dragend', () => {
+      if (containerRef.current) containerRef.current.style.cursor = 'grab'
     })
 
     // The SDK measures the container once at construction and never re-checks
@@ -693,7 +715,7 @@ export default function NaverMapCanvas({
       {/* Map container */}
       <div
         ref={containerRef}
-        className="w-full h-full naver-map-dark"
+        className="w-full h-full naver-map-dark cursor-grab"
         role="application"
         aria-label={t('ariaLabel')}
       />
