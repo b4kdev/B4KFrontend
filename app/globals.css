@@ -252,6 +252,18 @@ a { color: inherit; text-decoration: none; }
   filter: invert(100%) hue-rotate(180deg) brightness(0.95) contrast(0.9);
 }
 
+/* ─── Map marker hit-areas (CLAUDE.md §6 — 44px touch-target minimum) ──
+   Invisible wrappers around the existing visual markers below — visual size
+   is unchanged, only the tappable area is enlarged. ─────────────────── */
+.poi-hit, .plan-marker-hit, .poi-cluster-hit {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
 /* ─── Map POI Markers ───────────────────────────────────────── */
 .poi-wrap {
   width: 24px;

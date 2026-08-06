@@ -628,6 +628,9 @@
     "noKey": "地图API密钥未配置",
     "zoomIn": "放大",
     "zoomOut": "缩小",
+    "empty": {
+      "title": "No spots in this area"
+    },
     "leftPanel": {
       "ariaLabel": "探索面板",
       "viewSaved": "查看收藏的地点",

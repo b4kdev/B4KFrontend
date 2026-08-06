@@ -628,6 +628,9 @@
     "noKey": "지도 API 키가 설정되지 않았습니다",
     "zoomIn": "확대",
     "zoomOut": "축소",
+    "empty": {
+      "title": "이 지역에는 표시할 장소가 없습니다"
+    },
     "leftPanel": {
       "ariaLabel": "탐색 패널",
       "viewSaved": "저장한 장소 보기",

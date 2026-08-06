@@ -628,6 +628,9 @@
     "noKey": "Chave da API do mapa não configurada",
     "zoomIn": "Aumentar zoom",
     "zoomOut": "Diminuir zoom",
+    "empty": {
+      "title": "No spots in this area"
+    },
     "leftPanel": {
       "ariaLabel": "Painel de exploração",
       "viewSaved": "Ver lugares salvos",
