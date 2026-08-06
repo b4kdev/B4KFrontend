@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import useSWR from 'swr'
 import { useLocale } from 'next-intl'
 import { apiFetch } from '@/lib/api'
@@ -136,14 +137,20 @@ export function useMapPois(
 
   // list_places only takes one p_domain server-side — additional selected
   // filters (beyond the first) are applied client-side against `domains`.
-  const extraFilters = activeFilters.slice(1)
-  const rows = (data ?? []).filter(row =>
-    extraFilters.length === 0 || extraFilters.some(f => row.domains?.includes(f))
-  )
+  // Memoized on [data, activeFilters] — without this, MapView's ~20 other
+  // useState slots (naming sheet, modals, etc.) each produced a fresh `rows`/
+  // `pois` array reference on every unrelated re-render, forcing
+  // NaverMapCanvas's O(n) marker/cluster-grouping effect to redo its full
+  // pass for no reason (per-marker/cluster diffing already skipped the
+  // actual DOM writes, but the grouping computation itself still re-ran).
+  const rows = useMemo(() => {
+    const extraFilters = activeFilters.slice(1)
+    return (data ?? []).filter(row =>
+      extraFilters.length === 0 || extraFilters.some(f => row.domains?.includes(f))
+    )
+  }, [data, activeFilters])
 
-  return {
-    pois: rows.map(row => mapPlace(row, locale)),
-    isLoading,
-    isError: !!error,
-  }
+  const pois = useMemo(() => rows.map(row => mapPlace(row, locale)), [rows, locale])
+
+  return { pois, isLoading, isError: !!error }
 }

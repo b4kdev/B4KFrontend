@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import Script from 'next/script'
 import { useTranslations } from 'next-intl'
-import { Plus, Minus, Sparkles, X } from 'lucide-react'
+import { Plus, Minus, Sparkles, X, MapPinOff } from 'lucide-react'
 import type { MapPoi, MapBounds } from '@/hooks/useMapPois'
+import { getDisplayName } from '@/lib/display-name'
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,6 +46,9 @@ interface Props {
   // single-POI view (e.g. /place/:id) this should be that POI's coords.
   initialCenter?: { lat: number; lng: number }
   initialZoom?: number
+  // Whether useMapPois's fetch for the current viewport is still in flight —
+  // gates the empty-viewport overlay below so it doesn't flash during load.
+  poisLoading?: boolean
 }
 
 // Extra margin around the viewport so panning within it doesn't need an
@@ -92,19 +96,25 @@ const MAP_PIN_HEX = '#FB2BDD' // allow-hex — map SDK route colour, matches --m
 function poiMarkerHtml(poi: MapPoi, selected: boolean): string {
   const sel = selected ? ' poi-selected' : ''
   const tr  = poi.is_trending ? ' poi-trending' : ''
-  return `<div class="poi-wrap${sel}${tr}"><div class="poi-dot"></div></div>`
+  // .poi-hit is an invisible 44px hit-area wrapper (CLAUDE.md §6 touch-target
+  // minimum) — .poi-wrap/.poi-dot/.poi-trending stay exactly as they were,
+  // untouched, so the trending pulse ring's positioning can't regress.
+  return `<div class="poi-hit"><div class="poi-wrap${sel}${tr}"><div class="poi-dot"></div></div></div>`
 }
 
 function planMarkerHtml(index: number, selected: boolean): string {
   const sel = selected ? ' plan-marker--selected' : ''
-  return `<div class="plan-marker${sel}">${index + 1}</div>`
+  // .plan-marker-hit is an invisible 44px hit-area wrapper (CLAUDE.md §6
+  // touch-target minimum) — the visual circle inside stays its existing size.
+  return `<div class="plan-marker-hit"><div class="plan-marker${sel}">${index + 1}</div></div>`
 }
 
 function clusterMarkerHtml(count: number): string {
   // "+N" not bare "N" — a bare number is visually identical to plan-marker's
   // numbered stop bubble (same size class, both plain circles). The "+"
   // reads as "N more here" and disambiguates by content, not a redesign.
-  return `<div class="poi-cluster">+${count}</div>`
+  // .poi-cluster-hit is the same 44px invisible hit-area wrapper as above.
+  return `<div class="poi-cluster-hit"><div class="poi-cluster">+${count}</div></div>`
 }
 
 // UF-10 (G3.1) — below this zoom, aggregate nearby POIs into cluster bubbles.
@@ -132,8 +142,14 @@ export default function NaverMapCanvas({
   onBoundsChange,
   initialCenter,
   initialZoom,
+  poisLoading = false,
 }: Props) {
   const t = useTranslations('map')
+  // For the aria-live selection announcement below — fires whether selection
+  // came from a pin tap or LeftPanel, since both set the same selectedPoiId.
+  // Deliberately not pin keyboard-focus/tabIndex (DEC-22: LeftPanel is the
+  // keyboard path to POIs, not individual map pins).
+  const selectedPoi = pois.find(p => p.poi_id === selectedPoiId) ?? null
   const containerRef = useRef<HTMLDivElement>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mapRef       = useRef<any>(null)
@@ -449,8 +465,8 @@ export default function NaverMapCanvas({
         if (existing.content !== content) {
           existing.marker.setIcon({
             content,
-            size:   new window.naver.maps.Size(24, 24),
-            anchor: new window.naver.maps.Point(12, 12),
+            size:   new window.naver.maps.Size(44, 44),
+            anchor: new window.naver.maps.Point(22, 22),
           })
           existing.content = content
         }
@@ -462,8 +478,8 @@ export default function NaverMapCanvas({
         map,
         icon: {
           content,
-          size:   new window.naver.maps.Size(24, 24),
-          anchor: new window.naver.maps.Point(12, 12),
+          size:   new window.naver.maps.Size(44, 44),
+          anchor: new window.naver.maps.Point(22, 22),
         },
         title:  poi.name_en,
         cursor: 'pointer',
@@ -497,8 +513,8 @@ export default function NaverMapCanvas({
           map,
           icon: {
             content: clusterMarkerHtml(members.length),
-            size:    new window.naver.maps.Size(32, 32),
-            anchor:  new window.naver.maps.Point(16, 16),
+            size:    new window.naver.maps.Size(44, 44),
+            anchor:  new window.naver.maps.Point(22, 22),
           },
           cursor: 'pointer',
           zIndex: 50,
@@ -726,6 +742,12 @@ export default function NaverMapCanvas({
         aria-label={t('ariaLabel')}
       />
 
+      {/* Screen-reader announcement on POI selection — pin tap or LeftPanel,
+          both set selectedPoiId the same way. See DEC-22 note above. */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {selectedPoi ? getDisplayName(selectedPoi) : ''}
+      </div>
+
       {/* Loading state — mono dots, no spinner (DESIGN.md loading-state rule) */}
       {!mapReady && !scriptErr && (
         <div className="absolute inset-0 bg-bg-3 flex flex-col items-center justify-center gap-sp-3">
@@ -745,6 +767,26 @@ export default function NaverMapCanvas({
             <button onClick={() => setScriptErr(false)} className="text-lav-map text-sm hover:underline min-h-touch flex items-center">
               {t('retry')}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Empty-viewport state — ambient browsing only (restrictToPois is a
+          different, exclusive-set context, not "nothing here"). Gated on
+          !poisLoading so it doesn't flash during the in-flight fetch. */}
+      {mapReady && !scriptErr && !poisLoading && !restrictToPois && pois.length === 0 && (
+        <div className="absolute inset-0 flex items-end sm:items-center justify-center pointer-events-none px-sp-4 pb-sp-6 sm:pb-0">
+          <div
+            className="pointer-events-auto flex flex-col items-center gap-sp-2 text-center px-sp-6 py-sp-4"
+            style={{ background: 'rgba(17,17,17,0.92)', backdropFilter: 'blur(12px)', border: '1px solid var(--bdr)' }}
+          >
+            <MapPinOff size={20} strokeWidth={2} className="text-muted" aria-hidden="true" />
+            <p className="text-fg text-sm font-semibold">{t('empty.title')}</p>
+            {zoom > 6 && (
+              <button onClick={zoomOut} className="text-lav-map text-sm hover:underline min-h-touch flex items-center">
+                {t('zoomOut')}
+              </button>
+            )}
           </div>
         </div>
       )}
