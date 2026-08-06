@@ -200,9 +200,12 @@ export default function NaverMapCanvas({
       // Base-manipulation parity with Google/Naver/Kakao (DEC-62) — min/max
       // zoom fixes real inconsistency: without this, scroll/pinch/fitBounds
       // could zoom past what the +/- buttons and cluster-click already clamp
-      // to (5-18). The rest are explicit declarations of already-true native
+      // to. The rest are explicit declarations of already-true native
       // defaults, so a future SDK bump or edit can't silently drop one.
-      minZoom:                5,
+      // minZoom below 6 is rejected by the Naver SDK itself ("Please set the
+      // minimum zoom level to 6 or higher") — confirmed live on production,
+      // an invalid value here breaks map init entirely, not just the clamp.
+      minZoom:                6,
       maxZoom:                18,
       draggable:              true,
       pinchZoom:              true,
@@ -677,7 +680,7 @@ export default function NaverMapCanvas({
   }, [])
 
   function zoomIn()  { mapRef.current?.setZoom(Math.min(mapRef.current.getZoom() + 1, 18)) }
-  function zoomOut() { mapRef.current?.setZoom(Math.max(mapRef.current.getZoom() - 1, 5)) }
+  function zoomOut() { mapRef.current?.setZoom(Math.max(mapRef.current.getZoom() - 1, 6)) }
 
   // ─── No API key ──────────────────────────────────────────────
   if (!clientId) {
