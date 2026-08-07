@@ -97,8 +97,29 @@ export default function MapView() {
     setMapZoom(zoom)
   }, [])
 
-  const { pois, isLoading: poisLoading, isError: poisError } =
+  const { pois, isLoading: poisLoading, isError: poisError, isValidating: poisValidating } =
     useMapPois(activeRegion, activeFilters, mapBounds, mapZoom)
+
+  // BLK-39 — region-chip pan/zoom. Fires once per region activation (guarded
+  // by regionFocusedForRef, keyed on activeRegion) once real data for that
+  // region has settled — isValidating guard skips the moment right after
+  // switching regions where `pois` still holds the previous region's
+  // keepPreviousData-carried-over rows (see useMapPois.ts). Passed to
+  // NaverMapCanvas as cameraFocusPois, separate from restrictToPois so
+  // clustering/rendering of the (possibly large) region set is unaffected.
+  const [regionFocusPois, setRegionFocusPois] = useState<MapPoi[] | null>(null)
+  const regionFocusedForRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!activeRegion) {
+      regionFocusedForRef.current = null
+      setRegionFocusPois(null)
+      return
+    }
+    if (regionFocusedForRef.current === activeRegion) return
+    if (poisLoading || poisValidating || pois.length === 0) return
+    regionFocusedForRef.current = activeRegion
+    setRegionFocusPois(pois)
+  }, [activeRegion, pois, poisLoading, poisValidating])
   const { data: savedData } = useSaved()
   // Save/like state + toggles — shared with /place/:id via these hooks so the
   // two surfaces can't diverge (see hooks/useSavedPois, hooks/useLikedPois).
@@ -609,6 +630,7 @@ export default function MapView() {
           // structural match, normalized here rather than adding a mapping
           // layer for every other already-compatible field.
           restrictToPois={restrictToPois?.map(p => ({ ...p, primary_image_url: p.primary_image_url ?? undefined })) ?? null}
+          cameraFocusPois={regionFocusPois}
           onBoundsChange={handleBoundsChange}
           poisLoading={poisLoading}
         />

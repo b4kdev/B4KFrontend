@@ -36,6 +36,11 @@ interface Props {
   // `pois`. Full objects (not ids intersected against `pois`) so an exclusive
   // set member outside the loaded viewport still renders.
   restrictToPois?: MapPoi[] | null
+  // BLK-39 — region-chip pan/zoom. Unlike restrictToPois, does NOT change
+  // what's rendered/clustered (pois stays the live render+cluster set) —
+  // this only drives a one-shot camera fit when the caller hands us a new
+  // array reference (region selection). Caller controls reference stability.
+  cameraFocusPois?: MapPoi[] | null
   // Viewport-bounds fetching — fired on 'idle' (debounced, padded, threshold-
   // gated below), so useMapPois can request POIs in the visible area instead
   // of a fixed nationwide top-N. Omitted/no calls yet → caller stays on its
@@ -139,6 +144,7 @@ export default function NaverMapCanvas({
   showAiPill, onAiPillDismiss, onAiPillExpand,
   focusPoi = null,
   restrictToPois = null,
+  cameraFocusPois = null,
   onBoundsChange,
   initialCenter,
   initialZoom,
@@ -595,6 +601,35 @@ export default function NaverMapCanvas({
     restrictToPois.forEach(p => bounds.extend(new window.naver.maps.LatLng(p.coords_lat, p.coords_lng)))
     mapRef.current.fitBounds(bounds)
   }, [mapReady, restrictToPois])
+
+  // BLK-39 — region-chip pan/zoom. Reference-equality lock (not the boolean
+  // flag above) because the caller (MapView) only hands us a new array when
+  // it actually wants a new fit (region switched) — safe to compare by
+  // identity, unlike restrictToPois which gets a fresh mapped array every
+  // render at the call site.
+  const lastCameraFocusRef = useRef<MapPoi[] | null>(null)
+  useEffect(() => {
+    if (!mapReady || !mapRef.current || !window.naver?.maps) return
+    if (!cameraFocusPois || cameraFocusPois.length === 0) {
+      lastCameraFocusRef.current = null
+      return
+    }
+    if (lastCameraFocusRef.current === cameraFocusPois) return
+    lastCameraFocusRef.current = cameraFocusPois
+
+    if (cameraFocusPois.length === 1) {
+      mapRef.current.setCenter(new window.naver.maps.LatLng(cameraFocusPois[0].coords_lat, cameraFocusPois[0].coords_lng))
+      mapRef.current.setZoom(15)
+      return
+    }
+
+    const bounds = new window.naver.maps.LatLngBounds(
+      new window.naver.maps.LatLng(cameraFocusPois[0].coords_lat, cameraFocusPois[0].coords_lng),
+      new window.naver.maps.LatLng(cameraFocusPois[0].coords_lat, cameraFocusPois[0].coords_lng),
+    )
+    cameraFocusPois.forEach(p => bounds.extend(new window.naver.maps.LatLng(p.coords_lat, p.coords_lng)))
+    mapRef.current.fitBounds(bounds)
+  }, [mapReady, cameraFocusPois])
 
   // MP_20 — Route polyline connecting plan stops.
   // routeLegs (from a saved itinerary's real routing.route_leg results) draws
