@@ -129,7 +129,7 @@ export function useMapPois(
   // for every new key while the new bbox request is in flight, which zeroes
   // out `pois` below and wipes every marker off the map until the fetch
   // resolves — live-reproduced as markers vanishing on every pan/zoom.
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading, isValidating } = useSWR(
     ['/places', params.toString(), locale],
     () => apiFetch<RawPlace[]>(`/places?${params.toString()}`),
     { revalidateOnFocus: false, keepPreviousData: true }
@@ -152,5 +152,5 @@ export function useMapPois(
 
   const pois = useMemo(() => rows.map(row => mapPlace(row, locale)), [rows, locale])
 
-  return { pois, isLoading, isError: !!error }
+  return { pois, isLoading, isError: !!error, isValidating }
 }
