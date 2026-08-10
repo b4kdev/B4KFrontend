@@ -36,11 +36,14 @@ interface Props {
   // `pois`. Full objects (not ids intersected against `pois`) so an exclusive
   // set member outside the loaded viewport still renders.
   restrictToPois?: MapPoi[] | null
-  // BLK-39 — region-chip pan/zoom. Unlike restrictToPois, does NOT change
-  // what's rendered/clustered (pois stays the live render+cluster set) —
-  // this only drives a one-shot camera fit when the caller hands us a new
-  // array reference (region selection). Caller controls reference stability.
-  cameraFocusPois?: MapPoi[] | null
+  // BLK-39 — region-chip pan/zoom. A static per-region bounding box
+  // (REGION_BOUNDS, hooks/useMapPois.ts) — NOT derived from the live `pois`
+  // list, unlike restrictToPois. A POI-driven fit deadlocked on region
+  // switch (fetch is bounds+region intersected, so a fresh region outside
+  // the current viewport always returns empty) and skewed the frame to
+  // whatever POIs happened to be tagged that region rather than the region
+  // itself. Fires once per new object reference the caller hands us.
+  cameraFocusBounds?: MapBounds | null
   // Viewport-bounds fetching — fired on 'idle' (debounced, padded, threshold-
   // gated below), so useMapPois can request POIs in the visible area instead
   // of a fixed nationwide top-N. Omitted/no calls yet → caller stays on its
@@ -144,7 +147,7 @@ export default function NaverMapCanvas({
   showAiPill, onAiPillDismiss, onAiPillExpand,
   focusPoi = null,
   restrictToPois = null,
-  cameraFocusPois = null,
+  cameraFocusBounds = null,
   onBoundsChange,
   initialCenter,
   initialZoom,
@@ -603,33 +606,27 @@ export default function NaverMapCanvas({
   }, [mapReady, restrictToPois])
 
   // BLK-39 — region-chip pan/zoom. Reference-equality lock (not the boolean
-  // flag above) because the caller (MapView) only hands us a new array when
+  // flag above) because the caller (MapView) only hands us a new object when
   // it actually wants a new fit (region switched) — safe to compare by
-  // identity, unlike restrictToPois which gets a fresh mapped array every
-  // render at the call site.
-  const lastCameraFocusRef = useRef<MapPoi[] | null>(null)
+  // identity since REGION_BOUNDS entries are module-level constants; MapView
+  // spreads into a fresh object per activation so re-selecting the same
+  // region after switching away still re-fires.
+  const lastCameraFocusRef = useRef<MapBounds | null>(null)
   useEffect(() => {
     if (!mapReady || !mapRef.current || !window.naver?.maps) return
-    if (!cameraFocusPois || cameraFocusPois.length === 0) {
+    if (!cameraFocusBounds) {
       lastCameraFocusRef.current = null
       return
     }
-    if (lastCameraFocusRef.current === cameraFocusPois) return
-    lastCameraFocusRef.current = cameraFocusPois
-
-    if (cameraFocusPois.length === 1) {
-      mapRef.current.setCenter(new window.naver.maps.LatLng(cameraFocusPois[0].coords_lat, cameraFocusPois[0].coords_lng))
-      mapRef.current.setZoom(15)
-      return
-    }
+    if (lastCameraFocusRef.current === cameraFocusBounds) return
+    lastCameraFocusRef.current = cameraFocusBounds
 
     const bounds = new window.naver.maps.LatLngBounds(
-      new window.naver.maps.LatLng(cameraFocusPois[0].coords_lat, cameraFocusPois[0].coords_lng),
-      new window.naver.maps.LatLng(cameraFocusPois[0].coords_lat, cameraFocusPois[0].coords_lng),
+      new window.naver.maps.LatLng(cameraFocusBounds.minLat, cameraFocusBounds.minLng),
+      new window.naver.maps.LatLng(cameraFocusBounds.maxLat, cameraFocusBounds.maxLng),
     )
-    cameraFocusPois.forEach(p => bounds.extend(new window.naver.maps.LatLng(p.coords_lat, p.coords_lng)))
     mapRef.current.fitBounds(bounds)
-  }, [mapReady, cameraFocusPois])
+  }, [mapReady, cameraFocusBounds])
 
   // MP_20 — Route polyline connecting plan stops.
   // routeLegs (from a saved itinerary's real routing.route_leg results) draws
