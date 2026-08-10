@@ -146,7 +146,14 @@ export function useMapPois(
   const rows = useMemo(() => {
     const extraFilters = activeFilters.slice(1)
     return (data ?? []).filter(row =>
-      extraFilters.length === 0 || extraFilters.some(f => row.domains?.includes(f))
+      // BLK-40 — a live row can have null coords_lat/coords_lng despite the
+      // RawPlace/MapPoi type saying number (schema.md's three-divergent-
+      // coordinate-tables callout — some source never backfilled). Every
+      // downstream consumer (clustering, markers, bounds, panTo) assumes a
+      // real number and crashes on null, so drop it here once instead of
+      // guarding every call site.
+      row.coords_lat != null && row.coords_lng != null &&
+      (extraFilters.length === 0 || extraFilters.some(f => row.domains?.includes(f)))
     )
   }, [data, activeFilters])
 
