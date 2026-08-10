@@ -16,7 +16,7 @@ import SavedBottomSheet from './SavedBottomSheet'
 import DraftConflictModal from '@/components/auth/DraftConflictModal'
 import PlanNamingSheet from './PlanNamingSheet'
 import DraftResumeFreshModal from './DraftResumeFreshModal'
-import { useMapPois } from '@/hooks/useMapPois'
+import { useMapPois, REGION_BOUNDS } from '@/hooks/useMapPois'
 import { usePlaceDetail } from '@/hooks/usePlaceDetail'
 import { useSaved } from '@/hooks/useSaved'
 import { useSavedPois } from '@/hooks/useSavedPois'
@@ -97,29 +97,25 @@ export default function MapView() {
     setMapZoom(zoom)
   }, [])
 
-  const { pois, isLoading: poisLoading, isError: poisError, isValidating: poisValidating } =
+  const { pois, isLoading: poisLoading, isError: poisError } =
     useMapPois(activeRegion, activeFilters, mapBounds, mapZoom)
 
-  // BLK-39 — region-chip pan/zoom. Fires once per region activation (guarded
-  // by regionFocusedForRef, keyed on activeRegion) once real data for that
-  // region has settled — isValidating guard skips the moment right after
-  // switching regions where `pois` still holds the previous region's
-  // keepPreviousData-carried-over rows (see useMapPois.ts). Passed to
-  // NaverMapCanvas as cameraFocusPois, separate from restrictToPois so
-  // clustering/rendering of the (possibly large) region set is unaffected.
-  const [regionFocusPois, setRegionFocusPois] = useState<MapPoi[] | null>(null)
-  const regionFocusedForRef = useRef<string | null>(null)
+  // BLK-39 — region-chip pan/zoom. Static per-region bbox (REGION_BOUNDS),
+  // not derived from the live `pois` fetch — a POI-driven fit deadlocked on
+  // region switch (fetch is bounds+region intersected, so a fresh region
+  // outside the current viewport always returns empty) and skewed the frame
+  // to whatever POIs happened to be tagged that region. Spread into a fresh
+  // object per activation so NaverMapCanvas's reference-equality fit effect
+  // re-fires even when re-selecting the same region after switching away.
+  const [regionFocusBounds, setRegionFocusBounds] = useState<MapBounds | null>(null)
   useEffect(() => {
     if (!activeRegion) {
-      regionFocusedForRef.current = null
-      setRegionFocusPois(null)
+      setRegionFocusBounds(null)
       return
     }
-    if (regionFocusedForRef.current === activeRegion) return
-    if (poisLoading || poisValidating || pois.length === 0) return
-    regionFocusedForRef.current = activeRegion
-    setRegionFocusPois(pois)
-  }, [activeRegion, pois, poisLoading, poisValidating])
+    const bounds = REGION_BOUNDS[activeRegion]
+    setRegionFocusBounds(bounds ? { ...bounds } : null)
+  }, [activeRegion])
   const { data: savedData } = useSaved()
   // Save/like state + toggles — shared with /place/:id via these hooks so the
   // two surfaces can't diverge (see hooks/useSavedPois, hooks/useLikedPois).
@@ -630,7 +626,7 @@ export default function MapView() {
           // structural match, normalized here rather than adding a mapping
           // layer for every other already-compatible field.
           restrictToPois={restrictToPois?.map(p => ({ ...p, primary_image_url: p.primary_image_url ?? undefined })) ?? null}
-          cameraFocusPois={regionFocusPois}
+          cameraFocusBounds={regionFocusBounds}
           onBoundsChange={handleBoundsChange}
           poisLoading={poisLoading}
         />
