@@ -803,10 +803,13 @@ export default function NaverMapCanvas({
         </div>
       )}
 
-      {/* Empty-viewport state — ambient browsing only (restrictToPois is a
-          different, exclusive-set context, not "nothing here"). Gated on
+      {/* Empty-viewport state — ambient browsing only (restrictToPois and
+          focusPoi are both a "here's the one/few POI(s) that matter" context,
+          not "nothing here" — BLK-42, found during BLK-11's live-verify:
+          /place/:id passes pois=[] + focusPoi with no restrictToPois, so
+          this showed incorrectly on every POI detail page). Gated on
           !poisLoading so it doesn't flash during the in-flight fetch. */}
-      {mapReady && !scriptErr && !poisLoading && !restrictToPois && pois.length === 0 && (
+      {mapReady && !scriptErr && !poisLoading && !restrictToPois && !focusPoi && pois.length === 0 && (
         <div className="absolute inset-0 flex items-end sm:items-center justify-center pointer-events-none px-sp-4 pb-sp-6 sm:pb-0">
           <div
             className="pointer-events-auto flex flex-col items-center gap-sp-2 text-center px-sp-6 py-sp-4"
