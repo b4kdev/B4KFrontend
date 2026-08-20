@@ -402,7 +402,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
               onFocus={() => setDropdownOpen(true)}
               onKeyDown={handleKeyDownInput}
               placeholder={tSearch('placeholder')}
-              className="w-full h-8 rounded-none pl-8 pr-8 text-f-sm text-fg placeholder:text-muted outline-none bg-bg-3"
+              className="w-full h-8 rounded-full pl-8 pr-8 text-f-sm text-fg placeholder:text-muted outline-none bg-bg-3"
               style={{ border: '1px solid var(--bdr)' }}
               aria-label={tSearch('placeholder')}
               aria-autocomplete="list"
