@@ -18,19 +18,11 @@ export interface HomeSectionOrder {
 }
 
 const DEFAULT_ORDER: string[] = [
-  'trending',
   'exploreHub',
-  'editorial',
-  'new',
-  'youMightLike',
+  'trending',
   'planTrip',
-  'continuePlan',
   'challenge',
   'leaderboardBadge',
-  'popularPlans',
-  'partnerPackages',
-  'upcomingEvents',
-  'promotions',
 ]
 
 export async function GET() {
