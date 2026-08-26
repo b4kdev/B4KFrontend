@@ -984,6 +984,9 @@
       "preferences": {
         "heading": "Preferences",
         "language": "Language",
+        "appearance": "Appearance",
+        "appearanceDark": "Dark",
+        "appearanceLight": "Light",
         "transport": "Default transport",
         "transportCar": "Car",
         "transportPublic": "Transit",

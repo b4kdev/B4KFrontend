@@ -984,6 +984,9 @@
       "preferences": {
         "heading": "設定",
         "language": "言語",
+        "appearance": "Appearance",
+        "appearanceDark": "Dark",
+        "appearanceLight": "Light",
         "transport": "デフォルトの移動手段",
         "transportCar": "車",
         "transportPublic": "公共交通機関",

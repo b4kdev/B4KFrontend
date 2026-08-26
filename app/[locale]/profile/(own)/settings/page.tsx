@@ -10,6 +10,7 @@ import { Car, Train, Check, AlertTriangle, Eye, EyeOff, Upload, Trash2, User } f
 import { useProfile } from '@/hooks/useProfile'
 import { useToast } from '@/contexts/ToastContext'
 import { track } from '@/lib/analytics'
+import { getStoredTheme, setTheme as persistTheme, type Theme } from '@/lib/theme'
 import CookiePreferences from '@/app/[locale]/legal/cookies/_CookiePreferences'
 
 const LOCALES = ['en', 'ko', 'ja', 'zh-CN', 'zh-TW', 'th', 'pt-BR'] as const
@@ -241,6 +242,7 @@ export default function SettingsPage() {
   const { showToast } = useToast()
   const locale = useLocale()
 
+  const [theme, setThemeState] = useState<Theme>('dark')
   const [transport, setTransport] = useState<Transport>(profile?.transport_default ?? 'car')
   const [interests, setInterests] = useState<string[]>(profile?.interests ?? [])
   const [saving, setSaving] = useState(false)
@@ -444,6 +446,18 @@ export default function SettingsPage() {
   const [pwChanging, setPwChanging] = useState(false)
   const [pwStatus, setPwStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [pwError, setPwError] = useState('')
+
+  // Boot script (app/layout.tsx) already applied the stored theme to <html>
+  // before paint — this just syncs the toggle's own display state to match.
+  useEffect(() => {
+    setThemeState(getStoredTheme())
+  }, [])
+
+  const handleThemeChange = (isDark: boolean) => {
+    const next: Theme = isDark ? 'dark' : 'light'
+    setThemeState(next)
+    persistTheme(next)
+  }
 
   const handleLangChange = (newLocale: string) => {
     track('lang_switch', { from: locale, to: newLocale, locale, screen_id: 'PR_50' })
@@ -684,6 +698,18 @@ export default function SettingsPage() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Appearance — DEC-64 */}
+            <div className={`${row} px-sp-4`} aria-labelledby="appearance-label">
+              <p id="appearance-label" className={label}>{t('settings.preferences.appearance')}</p>
+              <SegToggle
+                value={theme === 'dark'}
+                onChange={handleThemeChange}
+                onLabel={t('settings.preferences.appearanceDark')}
+                offLabel={t('settings.preferences.appearanceLight')}
+                ariaLabel={t('settings.preferences.appearance')}
+              />
             </div>
 
             {/* Transport — PR_52 */}

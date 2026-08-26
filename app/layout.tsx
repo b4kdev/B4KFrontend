@@ -12,6 +12,7 @@ import { getLocale } from 'next-intl/server';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SITE_URL } from '@/lib/site-url';
+import { THEME_BOOT_SCRIPT } from '@/lib/theme';
 import './globals.css';
 
 const openSans = Open_Sans({
@@ -98,6 +99,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       className={`${openSans.variable} ${ibmPlexMono.variable} ${mPlus1.variable} ${notoSansSC.variable} ${notoSansTC.variable} ${ibmPlexSansThai.variable} ${moderniz.variable}`}
     >
       <body className="antialiased">
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         {children}
         <Analytics />
         <SpeedInsights />

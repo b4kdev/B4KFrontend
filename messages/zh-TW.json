@@ -984,6 +984,9 @@
       "preferences": {
         "heading": "偏好設定",
         "language": "語言",
+        "appearance": "Appearance",
+        "appearanceDark": "Dark",
+        "appearanceLight": "Light",
         "transport": "預設交通方式",
         "transportCar": "自駕",
         "transportPublic": "大眾運輸",

@@ -984,6 +984,9 @@
       "preferences": {
         "heading": "환경설정",
         "language": "언어",
+        "appearance": "테마",
+        "appearanceDark": "다크",
+        "appearanceLight": "라이트",
         "transport": "기본 이동 수단",
         "transportCar": "자동차",
         "transportPublic": "대중교통",
