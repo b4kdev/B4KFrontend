@@ -39,11 +39,10 @@ export default function PlanTrip() {
             style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
           >
             <span
-              className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-              style={{ background: 'var(--lav-dim)' }}
+              className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-bg-3"
               aria-hidden="true"
             >
-              <Icon size={20} strokeWidth={2} className="text-lav" />
+              <Icon size={20} strokeWidth={2} className="text-fg" />
             </span>
             <div>
               <p className="text-f-base font-semibold text-fg">{t(`${key}.label`)}</p>

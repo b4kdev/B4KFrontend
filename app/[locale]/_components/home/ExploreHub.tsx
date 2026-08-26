@@ -29,11 +29,10 @@ export default function ExploreHub() {
             aria-label={t(`${key}.label`)}
           >
             <span
-              className="w-10 h-10 rounded-full flex items-center justify-center"
-              style={{ background: 'var(--lav-dim)' }}
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-bg-3"
               aria-hidden="true"
             >
-              <Icon size={20} strokeWidth={2} className="text-lav" />
+              <Icon size={20} strokeWidth={2} className="text-fg" />
             </span>
             <span className="text-f-md font-semibold text-fg line-clamp-1 px-sp-2">{t(`${key}.label`)}</span>
             <span className="text-f-xs text-muted text-center px-sp-2 line-clamp-2">{t(`${key}.sub`)}</span>

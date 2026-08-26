@@ -53,10 +53,10 @@ export default function LeaderboardBadge() {
           <div style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
             <div className="flex items-center justify-between px-sp-4 pt-sp-4 pb-sp-3" style={{ borderBottom: '1px solid var(--bdr)' }}>
               <div className="flex items-center gap-sp-2">
-                <Trophy size={16} strokeWidth={2} className="text-lav" aria-hidden="true" />
+                <Trophy size={16} strokeWidth={2} className="text-fg" aria-hidden="true" />
                 <h2 className="text-f-base font-semibold text-fg">{t('leaderboard.title')}</h2>
               </div>
-              <Link href="/leaderboard" className="flex items-center gap-1 text-f-xs text-lav hover:opacity-80 transition-opacity">
+              <Link href="/leaderboard" className="flex items-center gap-1 text-f-xs text-muted hover:text-fg transition-colors">
                 {t('leaderboard.viewAll')}
                 <ArrowRight size={11} strokeWidth={2} aria-hidden="true" />
               </Link>
@@ -90,28 +90,28 @@ export default function LeaderboardBadge() {
           <div style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
             <div className="flex items-center justify-between px-sp-4 pt-sp-4 pb-sp-3" style={{ borderBottom: '1px solid var(--bdr)' }}>
               <div className="flex items-center gap-sp-2">
-                <Award size={16} strokeWidth={2} className="text-lav" aria-hidden="true" />
+                <Award size={16} strokeWidth={2} className="text-fg" aria-hidden="true" />
                 <h2 className="text-f-base font-semibold text-fg">{t('badge.title')}</h2>
               </div>
-              <Link href="/badges" className="flex items-center gap-1 text-f-xs text-lav hover:opacity-80 transition-opacity">
+              <Link href="/badges" className="flex items-center gap-1 text-f-xs text-muted hover:text-fg transition-colors">
                 {t('badge.viewAll')}
                 <ArrowRight size={11} strokeWidth={2} aria-hidden="true" />
               </Link>
             </div>
             <div className="p-sp-4 flex items-center gap-sp-4">
               <div
-                className="relative w-16 h-16 rounded-full flex items-center justify-center shrink-0"
-                style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
+                className="relative w-16 h-16 rounded-full flex items-center justify-center shrink-0 bg-bg-3"
+                style={{ border: '1px solid var(--bdr)' }}
                 aria-hidden="true"
               >
                 {badge.image_url
                   ? <Image src={badge.image_url} alt="" fill sizes="64px" className="rounded-full object-contain" />
-                  : <Star size={28} strokeWidth={2} className="text-lav" />
+                  : <Star size={28} strokeWidth={2} className="text-fg" />
                 }
               </div>
               <div className="min-w-0">
                 {RARITY_LABEL[badge.rarity] && (
-                  <p className="text-f-xxs font-bold tracking-[0.1em] uppercase text-lav mb-[3px]">
+                  <p className="text-f-xxs font-bold tracking-[0.1em] uppercase text-muted mb-[3px]">
                     {RARITY_LABEL[badge.rarity]}
                   </p>
                 )}
