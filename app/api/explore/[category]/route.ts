@@ -255,7 +255,9 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
       { poi_id: 'KP-0824', name_ko: '블루스퀘어', name_en: 'Blue Square', primary_image_url: '/images/explore/kpop/KP-0824_blue-square.png', display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5408611480276, coords_lng: 127.002548167462 },
       { poi_id: 'KP-0864', name_ko: '고척스카이돔', name_en: 'Gocheok Sky Dome', primary_image_url: '/images/explore/kpop/KP-0864_gocheok-sky-dome.png', display_region: 'Guro-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.49821220764421, coords_lng: 126.8670889679075 },
       // Placeholder — BLK-36 (SPEC-04 names this row's 3rd example, no confirmed core.poi row)
-      { poi_id: 'KP-PLACEHOLDER-OLYMPICHALL', name_ko: '올림픽홀', name_en: 'Olympic Hall', primary_image_url: null, display_region: 'Songpa-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      // coords geocoded (OSM/Nominatim, exact match) this session; still
+      // verified:false, no core.poi row yet (BLK-36).
+      { poi_id: 'KP-PLACEHOLDER-OLYMPICHALL', name_ko: '올림픽홀', name_en: 'Olympic Hall', primary_image_url: null, display_region: 'Songpa-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5147470, coords_lng: 127.1275894, verified: false },
     ],
     tours: [
       { poi_id: 'KP-014', name_ko: '리움미술관', name_en: 'Leeum Samsung Museum', primary_image_url: '/images/explore/kpop/KP-014_leeum-samsung-museum.png', display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, is_featured: true, coords_lat: 37.53833657002706, coords_lng: 126.9991174495516 },
@@ -277,11 +279,17 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
     // have a confirmed core.poi row yet (BLK-36) — all 5 ship as placeholder, so this
     // row is empty for real users until that resolves.
     agencyHq: [
-      { poi_id: 'KP-PLACEHOLDER-HYBEHQ', name_ko: '하이브 사옥', name_en: 'HYBE Headquarters', primary_image_url: null, display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, agency: 'HYBE', coords_lat: 0, coords_lng: 0, verified: false },
+      // coords geocoded from the confirmed street address (42 Hangang-daero,
+      // Yongsan-gu — OSM/Nominatim) this session; still verified:false, no
+      // core.poi row yet (BLK-36) — real-world address confidence only.
+      { poi_id: 'KP-PLACEHOLDER-HYBEHQ', name_ko: '하이브 사옥', name_en: 'HYBE Headquarters', primary_image_url: null, display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, agency: 'HYBE', coords_lat: 37.5246532, coords_lng: 126.9641564, verified: false },
       { poi_id: 'KP-PLACEHOLDER-SOOSOO', name_ko: '컴퍼니수수', name_en: 'Company SooSoo', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
       { poi_id: 'KP-PLACEHOLDER-INB100', name_ko: 'INB100', name_en: 'INB100', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
       { poi_id: 'KP-PLACEHOLDER-FORMERBIGHIT', name_ko: '구 빅히트 사옥', name_en: 'Former Big Hit', primary_image_url: null, display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, agency: 'HYBE', coords_lat: 0, coords_lng: 0, verified: false },
-      { poi_id: 'KP-PLACEHOLDER-YGHQ', name_ko: 'YG엔터테인먼트 사옥', name_en: 'YG HQ', primary_image_url: null, display_region: 'Mapo-gu, Seoul', quality_score: 0, is_trending: false, agency: 'YG', coords_lat: 0, coords_lng: 0, verified: false },
+      // coords geocoded from the confirmed building address (3 Huiujeong-ro
+      // 1-gil, Mapo-gu — OSM/Nominatim resolves directly to "YG 엔터테인먼트")
+      // this session; still verified:false, no core.poi row yet (BLK-36).
+      { poi_id: 'KP-PLACEHOLDER-YGHQ', name_ko: 'YG엔터테인먼트 사옥', name_en: 'YG HQ', primary_image_url: null, display_region: 'Mapo-gu, Seoul', quality_score: 0, is_trending: false, agency: 'YG', coords_lat: 37.5488529, coords_lng: 126.9082068, verified: false },
     ],
     merchandise: [
       { poi_id: 'KP-0250', name_ko: '더현대 서울', name_en: 'The Hyundai Seoul', primary_image_url: '/images/explore/kpop/KP-0250_the-hyundai-seoul.png', display_region: 'Yeongdeungpo-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.52587207102913, coords_lng: 126.9284461241116 },
@@ -300,10 +308,15 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
     // in SPEC-04's "RM 미술관 코스 5곳" example have no confirmed core.poi row (BLK-36).
     memberFootsteps: [
       { poi_id: 'KP-014', name_ko: '리움미술관', name_en: 'Leeum Samsung Museum', primary_image_url: '/images/explore/kpop/KP-014_leeum-samsung-museum.png', display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.53833657002706, coords_lng: 126.9991174495516, artistIds: ['bts'] },
-      { poi_id: 'KP-PLACEHOLDER-GANAART', name_ko: '가나아트센터', name_en: 'Gana Art Center', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
-      { poi_id: 'KP-PLACEHOLDER-PKM', name_ko: 'PKM갤러리', name_en: 'PKM Gallery', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
+      // coords geocoded (OSM/Nominatim, exact building-name match) this session;
+      // still verified:false, no core.poi row yet (BLK-36).
+      { poi_id: 'KP-PLACEHOLDER-GANAART', name_ko: '가나아트센터', name_en: 'Gana Art Center', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.6122580, coords_lng: 126.9751335, artistIds: ['bts'], verified: false },
+      { poi_id: 'KP-PLACEHOLDER-PKM', name_ko: 'PKM갤러리', name_en: 'PKM Gallery', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5841094, coords_lng: 126.9800269, artistIds: ['bts'], verified: false },
+      // no OSM match found this session (tried official full name too) — left as-is.
       { poi_id: 'KP-PLACEHOLDER-BUKSEOULMOA', name_ko: '북서울미술관', name_en: 'Buk-Seoul Museum of Art', primary_image_url: null, display_region: 'Nowon-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
-      { poi_id: 'KP-PLACEHOLDER-HOAM', name_ko: '호암미술관', name_en: 'Hoam Museum', primary_image_url: null, display_region: 'Yongin, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, artistIds: ['bts'], verified: false },
+      // coords geocoded (OSM/Nominatim, exact match) this session; still
+      // verified:false, no core.poi row yet (BLK-36).
+      { poi_id: 'KP-PLACEHOLDER-HOAM', name_ko: '호암미술관', name_en: 'Hoam Museum', primary_image_url: null, display_region: 'Yongin, Gyeonggi', quality_score: 0, is_trending: false, coords_lat: 37.2945398, coords_lng: 127.1916078, artistIds: ['bts'], verified: false },
     ],
   },
   'k-drama': {
@@ -332,13 +345,17 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
     historical: [
       { poi_id: 'KD-PLACEHOLDER-CHEONJEONGJEON', name_ko: '천정전', name_en: 'Cheonjeongjeon Hall', primary_image_url: null, display_region: 'Korea', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
       { poi_id: 'KD-PLACEHOLDER-SUNGJEONGJEON', name_ko: '숭정전', name_en: 'Sungjeongjeon Hall', primary_image_url: null, display_region: 'Korea', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
-      { poi_id: 'KD-PLACEHOLDER-ONDAL', name_ko: '온달관광지', name_en: 'Ondal Tourist Site', primary_image_url: null, display_region: 'Danyang, Chungbuk', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      // coords geocoded (OSM/Nominatim, exact match) this session; still
+      // verified:false pending BLK-37.
+      { poi_id: 'KD-PLACEHOLDER-ONDAL', name_ko: '온달관광지', name_en: 'Ondal Tourist Site', primary_image_url: null, display_region: 'Danyang, Chungbuk', quality_score: 0, is_trending: false, coords_lat: 37.0627833, coords_lng: 128.4913039, verified: false },
       // 지금 뜨는 곳 (auto-populated via is_trending, generic mechanism unchanged for
       // non-k-pop categories) — Hwahongmun Gate is a real, confirmed public landmark
       // (Suwon Hwaseong Fortress gate); Gimnyeong Beach is a real Jeju beach, no
       // confirmed core.poi row of its own yet.
       { poi_id: 'KD-HWAHONGMUN', name_ko: '화홍문', name_en: 'Hwahongmun Gate', primary_image_url: null, display_region: 'Suwon, Gyeonggi', quality_score: 0, is_trending: true, coords_lat: 37.2925, coords_lng: 127.0177 },
-      { poi_id: 'KD-PLACEHOLDER-GIMNYEONGBEACH', name_ko: '김녕해변', name_en: 'Gimnyeong Beach', primary_image_url: null, display_region: 'Jeju', quality_score: 0, is_trending: true, coords_lat: 0, coords_lng: 0, verified: false },
+      // coords geocoded (OSM/Nominatim, exact match) this session; still
+      // verified:false, no confirmed core.poi row yet.
+      { poi_id: 'KD-PLACEHOLDER-GIMNYEONGBEACH', name_ko: '김녕해변', name_en: 'Gimnyeong Beach', primary_image_url: null, display_region: 'Jeju', quality_score: 0, is_trending: true, coords_lat: 33.5577381, coords_lng: 126.7595453, verified: false },
     ],
     ostCafes: [
       { poi_id: 'KD002-009', name_ko: '제물포구락부', name_en: 'New Jemulpo Club', primary_image_url: '/images/explore/kdrama/KD002-009_new-jemulpo-club.png', display_region: 'Incheon Jung-gu', quality_score: 0, is_trending: false, coords_lat: 37.47463623198604, coords_lng: 126.6225221142413 },
@@ -401,12 +418,16 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
   // as a row.
   'k-food': {
     noodles: [
-      { poi_id: 'KF-PLACEHOLDER-WOOLAEOAK2', name_ko: '우래옥', name_en: 'Woo Lae Oak', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
-      { poi_id: 'KF-PLACEHOLDER-PILDONGMYEONOK', name_ko: '필동면옥', name_en: 'Pildong Myeonok', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
-      { poi_id: 'KF-PLACEHOLDER-KYODAIYA', name_ko: '교다이야', name_en: 'Kyodaiya', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      // coords geocoded (OSM/Nominatim, exact match) this session; still
+      // verified:false, no confirmed core.poi row yet.
+      { poi_id: 'KF-PLACEHOLDER-WOOLAEOAK2', name_ko: '우래옥', name_en: 'Woo Lae Oak', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5682154, coords_lng: 126.9988152, verified: false },
+      { poi_id: 'KF-PLACEHOLDER-PILDONGMYEONOK', name_ko: '필동면옥', name_en: 'Pildong Myeonok', primary_image_url: null, display_region: 'Jung-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5603894, coords_lng: 126.9969309, verified: false },
+      { poi_id: 'KF-PLACEHOLDER-KYODAIYA', name_ko: '교다이야', name_en: 'Kyodaiya', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5469154, coords_lng: 126.9131898, verified: false },
     ],
     soups: [
-      { poi_id: 'KF-PLACEHOLDER-MAPOOK', name_ko: '마포옥', name_en: 'Mapo Ok', primary_image_url: null, display_region: 'Mapo-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
+      // coords geocoded (OSM/Nominatim, exact match) this session; still
+      // verified:false, no confirmed core.poi row yet.
+      { poi_id: 'KF-PLACEHOLDER-MAPOOK', name_ko: '마포옥', name_en: 'Mapo Ok', primary_image_url: null, display_region: 'Mapo-gu, Seoul', quality_score: 0, is_trending: false, coords_lat: 37.5398840, coords_lng: 126.9433475, verified: false },
       { poi_id: 'KF-PLACEHOLDER-ANMOK', name_ko: '안목', name_en: 'Anmok', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
       { poi_id: 'KF-PLACEHOLDER-HANWOLGWAN', name_ko: '한월관', name_en: 'Hanwolgwan', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
     ],
@@ -440,8 +461,10 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
     // seeded under K-Drama's hero/historical (same real place).
     nature: [
       { poi_id: 'KD-SEONGSAN-ILCHULBONG', name_ko: '성산일출봉', name_en: 'Seongsan Ilchulbong', primary_image_url: null, display_region: 'Seogwipo, Jeju', quality_score: 0, is_trending: false, region: 'Jeju', coords_lat: 33.4587, coords_lng: 126.9425 },
-      { poi_id: 'KC-PLACEHOLDER-MANJANGGUL', name_ko: '만장굴', name_en: 'Manjanggul Cave', primary_image_url: null, display_region: 'Jeju', quality_score: 0, is_trending: false, region: 'Jeju', coords_lat: 0, coords_lng: 0, verified: false },
-      { poi_id: 'KC-PLACEHOLDER-HALLASAN', name_ko: '한라산국립공원', name_en: 'Hallasan National Park', primary_image_url: null, display_region: 'Jeju', quality_score: 0, is_trending: false, region: 'Jeju', coords_lat: 0, coords_lng: 0, verified: false },
+      // coords geocoded (OSM/Nominatim, exact match) this session; still
+      // verified:false, no confirmed core.poi row yet.
+      { poi_id: 'KC-PLACEHOLDER-MANJANGGUL', name_ko: '만장굴', name_en: 'Manjanggul Cave', primary_image_url: null, display_region: 'Jeju', quality_score: 0, is_trending: false, region: 'Jeju', coords_lat: 33.5282540, coords_lng: 126.7701281, verified: false },
+      { poi_id: 'KC-PLACEHOLDER-HALLASAN', name_ko: '한라산국립공원', name_en: 'Hallasan National Park', primary_image_url: null, display_region: 'Jeju', quality_score: 0, is_trending: false, region: 'Jeju', coords_lat: 33.3922451, coords_lng: 126.4942816, verified: false },
     ],
     // 사찰·종교 — Jogyesa Temple moves here from 'traditional' (real, unchanged).
     temple: [
@@ -456,7 +479,11 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
     // nothing else in the new 4-row structure suits them either.
     museum: [
       { poi_id: 'KC-NATIONALMUSEUM', name_ko: '국립중앙박물관', name_en: 'National Museum of Korea', primary_image_url: null, display_region: 'Yongsan-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5240, coords_lng: 126.9803 },
-      { poi_id: 'KC-PLACEHOLDER-CRAFTMUSEUM', name_ko: '서울공예박물관', name_en: 'Seoul Craft Museum', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 0, coords_lng: 0, verified: false },
+      // coords geocoded (OSM/Nominatim, exact match) this session — the file's
+      // own prior comment flagged this one specifically as "not something this
+      // session has confident knowledge of"; now resolved via real geocoding,
+      // still verified:false, no confirmed core.poi row yet.
+      { poi_id: 'KC-PLACEHOLDER-CRAFTMUSEUM', name_ko: '서울공예박물관', name_en: 'Seoul Craft Museum', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5765519, coords_lng: 126.9834467, verified: false },
       { poi_id: 'KC-MMCASEOUL', name_ko: '국립현대미술관 서울관', name_en: 'MMCA Seoul', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5788, coords_lng: 126.9770 },
       { poi_id: 'KC-SEO-270', name_ko: '경복궁 - 체험 예약 포인트', name_en: 'Palace-Gate Experiences', primary_image_url: '/images/explore/kculture/KC-SEO-270_palace-gate-experiences.png', display_region: 'Gwangjin-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.53604245097937, coords_lng: 127.0958748426305 },
       { poi_id: 'KC-SEO-281', name_ko: '청계천 - 체험 예약 포인트', name_en: 'Cheonggyecheon Experience Point', primary_image_url: null, display_region: 'Jongno-gu, Seoul', quality_score: 0, is_trending: false, region: 'Seoul', coords_lat: 37.5691469686793, coords_lng: 126.978647068151 },
