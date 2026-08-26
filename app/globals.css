@@ -118,7 +118,7 @@ body {
 
   /* Typography */
   --f-display: var(--font-moderniz), system-ui, -apple-system, sans-serif;
-  --f-body:    var(--font-work-sans, 'Work Sans'), system-ui, -apple-system, sans-serif;
+  --f-body:    var(--font-open-sans, 'Open Sans'), system-ui, -apple-system, sans-serif;
   --f-mono:    var(--font-ibm-plex-mono, 'IBM Plex Mono', 'Courier New', monospace);
 
   /* Font sizes */

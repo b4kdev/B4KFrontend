@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import {
-  Work_Sans,
+  Open_Sans,
   IBM_Plex_Mono,
   M_PLUS_1,
   Noto_Sans_SC,
@@ -14,9 +14,9 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SITE_URL } from '@/lib/site-url';
 import './globals.css';
 
-const workSans = Work_Sans({
+const openSans = Open_Sans({
   subsets: ['latin', 'latin-ext'],
-  variable: '--font-work-sans',
+  variable: '--font-open-sans',
   display: 'swap',
 });
 
@@ -95,7 +95,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`${workSans.variable} ${ibmPlexMono.variable} ${mPlus1.variable} ${notoSansSC.variable} ${notoSansTC.variable} ${ibmPlexSansThai.variable} ${moderniz.variable}`}
+      className={`${openSans.variable} ${ibmPlexMono.variable} ${mPlus1.variable} ${notoSansSC.variable} ${notoSansTC.variable} ${ibmPlexSansThai.variable} ${moderniz.variable}`}
     >
       <body className="antialiased">
         {children}
