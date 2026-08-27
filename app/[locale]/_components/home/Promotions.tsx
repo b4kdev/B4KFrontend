@@ -43,16 +43,15 @@ export default function Promotions() {
                 style={{ width: 'clamp(280px, 80vw, 360px)', background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
               >
                 <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                  style={{ background: 'var(--lav-dim)' }}
+                  className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-bg-3"
                   aria-hidden="true"
                 >
-                  <Tag size={18} strokeWidth={2} className="text-lav" />
+                  <Tag size={18} strokeWidth={2} className="text-fg" />
                 </div>
                 <p className="flex-1 min-w-0 text-f-sm text-fg leading-snug line-clamp-2">{promo.headline}</p>
                 <Tag2
                   {...(extraProps as Record<string, string>)}
-                  className="shrink-0 text-f-xs font-semibold text-lav hover:opacity-80 transition-opacity duration-[80ms] flex items-center gap-1 min-h-touch px-sp-2"
+                  className="shrink-0 text-f-xs font-semibold text-fg hover:opacity-80 transition-opacity duration-[80ms] flex items-center gap-1 min-h-touch px-sp-2"
                   aria-label={`${promo.cta_label}: ${promo.headline}`}
                 >
                   {promo.cta_label}

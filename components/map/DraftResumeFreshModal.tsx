@@ -49,7 +49,7 @@ export default function DraftResumeFreshModal({ open, stopCount, onResume, onSta
         </div>
 
         <div className="flex items-start gap-sp-3 mb-sp-5">
-          <AlertCircle size={20} strokeWidth={2} className="text-lav shrink-0 mt-0.5" aria-hidden="true" />
+          <AlertCircle size={20} strokeWidth={2} className="text-fg shrink-0 mt-0.5" aria-hidden="true" />
           <div>
             <h2 className="text-fg font-semibold text-f-base mb-sp-1">{t('title')}</h2>
             <div className="flex items-center gap-sp-1 text-muted text-f-sm">
@@ -63,7 +63,7 @@ export default function DraftResumeFreshModal({ open, stopCount, onResume, onSta
           <button
             onClick={onResume}
             className="w-full min-h-touch rounded-none text-f-sm font-semibold transition-opacity hover:opacity-90"
-            style={{ background: 'var(--lav)', color: 'var(--bg)' }}
+            style={{ background: 'var(--fg)', color: 'var(--bg)' }}
           >
             {t('resume')}
           </button>

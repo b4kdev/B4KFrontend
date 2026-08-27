@@ -179,7 +179,7 @@ export default function ItineraryDetailView({ id }: { id: string }) {
   if (isLoading) {
     return (
       <div className="fixed top-[50px] lg:top-[56px] left-0 right-0 bottom-14 lg:left-[56px] lg:bottom-0 z-10 flex items-center justify-center bg-bg">
-        <span className="w-8 h-8 border-2 border-lav border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+        <span className="w-8 h-8 border-2 border-fg border-t-transparent rounded-full animate-spin" aria-hidden="true" />
         <span className="sr-only">{t('loading')}</span>
       </div>
     )

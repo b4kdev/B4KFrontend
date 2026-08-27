@@ -16,8 +16,7 @@ export default function NotFound() {
         <p className="text-f-md text-muted mb-5 max-w-[320px]">{t('desc')}</p>
         <Link
           href="/"
-          className="inline-flex items-center min-h-touch px-4 rounded-full text-f-sm font-semibold text-lav"
-          style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
+          className="inline-flex items-center min-h-touch px-4 rounded-full text-f-sm font-semibold bg-fg text-bg"
         >
           {t('cta')}
         </Link>

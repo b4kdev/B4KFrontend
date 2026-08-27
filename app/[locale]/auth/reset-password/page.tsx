@@ -79,7 +79,7 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex items-center justify-center px-sp-4 bg-bg">
       <div className="w-full max-w-[400px]">
         <div className="mb-sp-8 text-center">
-          <span className="text-lav font-display text-f-2xl tracking-tight select-none">B4K</span>
+          <span className="text-fg font-display text-f-2xl tracking-tight select-none">B4K</span>
         </div>
 
         <div className="bg-bg-2 rounded-none p-sp-6" style={{ border: '1px solid var(--bdr)' }}>
@@ -104,7 +104,7 @@ export default function ResetPasswordPage() {
                   placeholder={t('passwordPlaceholder')}
                   required
                   autoComplete="new-password"
-                  className="w-full min-h-touch px-sp-4 pr-12 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
+                  className="w-full min-h-touch px-sp-4 pr-12 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-fg"
                   style={{ border: '1px solid var(--bdr)' }}
                 />
                 <button
@@ -131,7 +131,7 @@ export default function ResetPasswordPage() {
                   placeholder={t('confirmPlaceholder')}
                   required
                   autoComplete="new-password"
-                  className="w-full min-h-touch px-sp-4 pr-12 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
+                  className="w-full min-h-touch px-sp-4 pr-12 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-fg"
                   style={{ border: '1px solid var(--bdr)' }}
                 />
                 <button
@@ -148,7 +148,7 @@ export default function ResetPasswordPage() {
             <button
               type="submit"
               disabled={status === 'loading' || !password || !confirm}
-              className="w-full min-h-touch flex items-center justify-center bg-lav text-bg rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75 mt-sp-2"
+              className="w-full min-h-touch flex items-center justify-center bg-fg text-bg rounded-none font-semibold text-f-base transition-opacity disabled:opacity-60 hover:opacity-90 active:opacity-75 mt-sp-2"
             >
               {status === 'loading'
                 ? <><span className="w-4 h-4 border-2 border-bg border-t-transparent rounded-full animate-spin mr-sp-2" aria-hidden="true" />{t('loading')}</>

@@ -59,9 +59,9 @@ function Chip({
       aria-label={ariaLabel}
       className="px-sp-3 py-sp-2 rounded-full text-f-sm font-semibold min-h-touch flex items-center transition-colors"
       style={{
-        background: active ? 'var(--lav)' : 'transparent',
-        color: active ? 'var(--bg)' : 'var(--lav)',
-        border: active ? '1px solid var(--lav)' : '1px solid var(--lav-border)',
+        background: active ? 'var(--fg)' : 'transparent',
+        color: active ? 'var(--bg)' : 'var(--muted)',
+        border: active ? '1px solid var(--fg)' : '1px solid var(--bdr)',
       }}
     >
       {children}
@@ -246,8 +246,8 @@ function EmptyState({ query }: { query: string }) {
           <Link
             key={cat}
             href={`/search?q=${queries[cat]}`}
-            className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-lav min-h-touch flex items-center"
-            style={{ border: '1px solid var(--lav-border)' }}
+            className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-fg min-h-touch flex items-center hover:bg-muted-3 transition-colors"
+            style={{ border: '1px solid var(--bdr)' }}
           >
             {t(`categories.${cat}`)}
           </Link>
@@ -274,8 +274,8 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
       <p className="text-f-base text-muted mb-sp-4">{t('error')}</p>
       <button
         onClick={onRetry}
-        className="px-sp-6 py-sp-3 rounded-full text-f-sm font-semibold text-lav min-h-touch"
-        style={{ border: '1px solid var(--lav-border)' }}
+        className="px-sp-6 py-sp-3 rounded-full text-f-sm font-semibold text-muted hover:text-fg transition-colors min-h-touch"
+        style={{ border: '1px solid var(--bdr)' }}
       >
         {t('retry')}
       </button>
@@ -305,7 +305,7 @@ function SeeAllLink({
       <button
         type="button"
         onClick={onToggle}
-        className="text-f-sm font-semibold text-lav min-h-touch flex items-center gap-sp-1"
+        className="text-f-sm font-semibold text-muted hover:text-fg transition-colors min-h-touch flex items-center gap-sp-1"
       >
         {expanded ? t('showLess') : t(labelKey, { count })}
         {!expanded && <ChevronRight size={16} strokeWidth={2} aria-hidden="true" />}
@@ -460,8 +460,8 @@ function ExploreSection({
           <Link
             key={item.category}
             href={item.href as `/explore/${string}`}
-            className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-lav min-h-touch flex items-center"
-            style={{ border: '1px solid var(--lav-border)' }}
+            className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-fg min-h-touch flex items-center hover:bg-muted-3 transition-colors"
+            style={{ border: '1px solid var(--bdr)' }}
             aria-label={t('exploreAriaLabel', { category: t(`categories.${item.label_key}` as `categories.${string}`) })}
           >
             {t(`categories.${item.label_key}` as `categories.${string}`)}
@@ -523,7 +523,7 @@ function MobileFilterSheet({
           type="button"
           onClick={onClose}
           className="w-full mt-sp-6 py-sp-3 rounded-full text-f-sm font-semibold min-h-touch flex items-center justify-center"
-          style={{ background: 'var(--lav)', color: 'var(--bg)' }}
+          style={{ background: 'var(--fg)', color: 'var(--bg)' }}
         >
           {t('apply')}
         </button>
@@ -730,8 +730,8 @@ export default function SearchClient() {
                     <Link
                       key={cat}
                       href={`/search?q=${queries[cat]}`}
-                      className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-lav min-h-touch flex items-center"
-                      style={{ border: '1px solid var(--lav-border)' }}
+                      className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-fg min-h-touch flex items-center hover:bg-muted-3 transition-colors"
+                      style={{ border: '1px solid var(--bdr)' }}
                     >
                       {t(`categories.${cat}`)}
                     </Link>

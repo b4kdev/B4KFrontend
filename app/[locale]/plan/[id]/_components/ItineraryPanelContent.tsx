@@ -252,8 +252,8 @@ export default function ItineraryPanelContent({
         {/* Creator */}
         <div className="flex items-center gap-sp-2">
           <div
-            className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-f-xxs font-bold text-lav"
-            style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
+            className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-f-xxs font-bold text-fg"
+            style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
             aria-hidden="true"
           >
             {authorName.charAt(0).toUpperCase()}
@@ -270,7 +270,7 @@ export default function ItineraryPanelContent({
         style={{ background: 'var(--bg-3)' }}
       >
         <span className="flex items-center gap-1 text-f-xs text-muted">
-          <MapPin size={11} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
+          <MapPin size={11} strokeWidth={2} className="text-muted shrink-0" aria-hidden="true" />
           {t('stats.stops', { count: itinerary.stops.length })}
         </span>
         <span className="flex items-center gap-1 text-f-xs text-muted">
@@ -322,9 +322,9 @@ export default function ItineraryPanelContent({
             onClick={() => setActiveDay(null)}
             className="shrink-0 min-h-[30px] px-sp-3 rounded-full text-f-xs font-semibold transition-colors"
             style={{
-              background: activeDay === null ? 'var(--lav-dim)' : 'var(--bg-3)',
-              color: activeDay === null ? 'var(--lav)' : 'var(--muted)',
-              border: `1px solid ${activeDay === null ? 'var(--lav-border)' : 'transparent'}`,
+              background: activeDay === null ? 'var(--muted-3)' : 'var(--bg-3)',
+              color: activeDay === null ? 'var(--fg)' : 'var(--muted)',
+              border: `1px solid ${activeDay === null ? 'var(--bdr)' : 'transparent'}`,
             }}
           >
             {t('tabs.all')}
@@ -337,9 +337,9 @@ export default function ItineraryPanelContent({
               onClick={() => setActiveDay(d)}
               className="shrink-0 min-h-[30px] px-sp-3 rounded-full text-f-xs font-semibold transition-colors"
               style={{
-                background: activeDay === d ? 'var(--lav-dim)' : 'var(--bg-3)',
-                color: activeDay === d ? 'var(--lav)' : 'var(--muted)',
-                border: `1px solid ${activeDay === d ? 'var(--lav-border)' : 'transparent'}`,
+                background: activeDay === d ? 'var(--muted-3)' : 'var(--bg-3)',
+                color: activeDay === d ? 'var(--fg)' : 'var(--muted)',
+                border: `1px solid ${activeDay === d ? 'var(--bdr)' : 'transparent'}`,
               }}
             >
               {t('tabs.day', { n: d })}
@@ -373,15 +373,15 @@ export default function ItineraryPanelContent({
                 aria-current={isSelected ? 'true' : undefined}
                 className="w-full text-left rounded-none p-sp-3 transition-colors flex gap-sp-3 items-start"
                 style={{
-                  background: isSelected ? 'var(--lav-dim)' : 'var(--bg-3)',
-                  border: `1px solid ${isSelected ? 'var(--lav-border)' : 'transparent'}`,
+                  background: isSelected ? 'var(--muted-3)' : 'var(--bg-3)',
+                  border: `1px solid ${isSelected ? 'var(--bdr)' : 'transparent'}`,
                 }}
               >
                 {/* Number badge */}
                 <span
                   className="shrink-0 w-[22px] h-[22px] rounded-full flex items-center justify-center text-f-xs font-bold mt-0.5"
                   style={{
-                    background: isSelected ? 'var(--lav)' : 'var(--bg-2)',
+                    background: isSelected ? 'var(--fg)' : 'var(--bg-2)',
                     color: isSelected ? 'var(--bg)' : 'var(--muted)',
                   }}
                   aria-hidden="true"
@@ -536,9 +536,9 @@ export default function ItineraryPanelContent({
             aria-pressed={isSaved}
             className="flex-1 flex items-center justify-center gap-1 min-h-touch px-sp-3 rounded-none text-f-sm font-semibold transition-colors"
             style={{
-              background: isSaved ? 'var(--lav-dim)' : 'var(--bg-3)',
-              color: isSaved ? 'var(--lav)' : 'var(--muted)',
-              border: `1px solid ${isSaved ? 'var(--lav-border)' : 'transparent'}`,
+              background: isSaved ? 'var(--muted-3)' : 'var(--bg-3)',
+              color: isSaved ? 'var(--fg)' : 'var(--muted)',
+              border: `1px solid ${isSaved ? 'var(--bdr)' : 'transparent'}`,
             }}
           >
             <Bookmark size={13} strokeWidth={2} fill={isSaved ? 'currentColor' : 'none'} aria-hidden="true" />
