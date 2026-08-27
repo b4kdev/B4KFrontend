@@ -83,7 +83,7 @@ export default function FootstepsDetailClient({ teamId }: { teamId: string }) {
           <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+            className="flex items-center gap-sp-2 text-f-md font-semibold text-fg hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
           >
             <RefreshCw size={14} strokeWidth={2} />
             {t('error.retry')}
@@ -126,8 +126,8 @@ export default function FootstepsDetailClient({ teamId }: { teamId: string }) {
                   aria-pressed={selected}
                   className="shrink-0 flex items-center min-h-touch px-sp-4 rounded-full text-f-sm font-semibold whitespace-nowrap transition-colors duration-[80ms]"
                   style={selected
-                    ? { background: 'var(--lav)', color: 'var(--bg)' }
-                    : { background: 'var(--bg-3)', color: 'var(--muted)', border: '1px solid var(--lav-border)' }}
+                    ? { background: 'var(--fg)', color: 'var(--bg)' }
+                    : { background: 'var(--bg-3)', color: 'var(--muted)', border: '1px solid var(--bdr)' }}
                 >
                   {label} {count}
                 </button>
