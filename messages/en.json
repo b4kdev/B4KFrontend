@@ -1773,6 +1773,10 @@
   },
   "search": {
     "title": "Search",
+    "pageTitle": "Search Results",
+    "breadcrumb": "Search",
+    "resultsSummary": "\"{query}\" — {places} Places · {plans} Plans · {explore} Explore",
+    "resultsCount": "{count} results",
     "placeholder": "Search itineraries, places...",
     "recentTitle": "Recent searches",
     "clearAll": "Clear all",

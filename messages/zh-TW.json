@@ -1773,6 +1773,10 @@
   },
   "search": {
     "title": "搜尋",
+    "pageTitle": "Search Results",
+    "breadcrumb": "Search",
+    "resultsSummary": "\"{query}\" — {places} Places · {plans} Plans · {explore} Explore",
+    "resultsCount": "{count} results",
     "placeholder": "搜尋行程、地點...",
     "recentTitle": "最近搜尋",
     "clearAll": "清除全部",

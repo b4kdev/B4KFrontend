@@ -1773,6 +1773,10 @@
   },
   "search": {
     "title": "検索",
+    "pageTitle": "Search Results",
+    "breadcrumb": "Search",
+    "resultsSummary": "\"{query}\" — {places} Places · {plans} Plans · {explore} Explore",
+    "resultsCount": "{count} results",
     "placeholder": "旅程、場所を検索...",
     "recentTitle": "最近の検索",
     "clearAll": "すべてクリア",

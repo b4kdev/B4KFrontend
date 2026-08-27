@@ -1773,6 +1773,10 @@
   },
   "search": {
     "title": "Buscar",
+    "pageTitle": "Resultados da Busca",
+    "breadcrumb": "Buscar",
+    "resultsSummary": "\"{query}\" — {places} Locais · {plans} Roteiros · {explore} Explorar",
+    "resultsCount": "{count} resultados",
     "placeholder": "Buscar roteiros, lugares...",
     "recentTitle": "Buscas recentes",
     "clearAll": "Limpar tudo",
