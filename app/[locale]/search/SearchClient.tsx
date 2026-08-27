@@ -644,9 +644,10 @@ export default function SearchClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
-  const hasResults = data && (
-    data.places.length > 0 || data.plans.length > 0 || data.explore.length > 0
-  )
+  // Explore is a fixed 4-category browse list, not query-matched — excluded here so a
+  // genuinely empty places+plans search still renders EmptyState (matches the Figma
+  // "Search Results — Empty State" frame, which shows no Explore section at all).
+  const hasResults = data && (data.places.length > 0 || data.plans.length > 0)
 
   return (
     <div style={{ background: 'var(--bg)' }}>
