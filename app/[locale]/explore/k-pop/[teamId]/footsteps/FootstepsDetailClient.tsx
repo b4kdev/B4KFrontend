@@ -8,9 +8,8 @@ import { Link } from '@/i18n/navigation'
 import { MapPin, ImageOff, AlertTriangle, RefreshCw } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
 import { getDisplayName } from '@/lib/display-name'
+import { getRelationLabel } from '@/lib/footsteps-relation-labels'
 import type { FootstepsDetail, FootstepsPoi } from '@/lib/kpop-footsteps'
-
-type TypeFilter = 'all' | 'museum' | 'park' | 'cafe'
 
 function FootstepsCard({ poi, locale }: { poi: FootstepsPoi; locale: string }) {
   const t = useTranslations('explore')
@@ -58,7 +57,7 @@ function FootstepsCard({ poi, locale }: { poi: FootstepsPoi; locale: string }) {
 export default function FootstepsDetailClient({ teamId }: { teamId: string }) {
   const t = useTranslations('explore')
   const locale = useLocale()
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
+  const [typeFilter, setTypeFilter] = useState<string>('all')
 
   const { data, isLoading, error, mutate } = useSWR<FootstepsDetail>(
     [`/api/explore/k-pop/footsteps/${teamId}`, locale],
@@ -111,12 +110,9 @@ export default function FootstepsDetailClient({ teamId }: { teamId: string }) {
           </p>
 
           <div className="flex gap-sp-2 overflow-x-auto pb-sp-2 mb-sp-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group">
-            {(['all', 'museum', 'park', 'cafe'] as const).map(key => {
+            {['all', ...Object.keys(data.typeCounts)].map(key => {
               const count = key === 'all' ? data.totalCount : data.typeCounts[key]
-              const label = key === 'all' ? t('footsteps.filterAll')
-                : key === 'museum' ? t('footsteps.filterMuseum')
-                : key === 'park' ? t('footsteps.filterPark')
-                : t('footsteps.filterCafe')
+              const label = key === 'all' ? t('footsteps.filterAll') : getRelationLabel(key, locale)
               const selected = typeFilter === key
               return (
                 <button

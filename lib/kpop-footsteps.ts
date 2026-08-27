@@ -5,6 +5,9 @@
 // the shared hub type. Lives outside app/api/ because Next.js route.ts files only
 // allow HTTP-verb handlers + type exports — a plain helper function here would fail
 // the build ("not a valid Route export field").
+import 'server-only'
+import { bffFetch } from './bff'
+import { getRelationLabel } from './footsteps-relation-labels'
 
 export interface FootstepsPoi {
   poi_id: string
@@ -12,8 +15,13 @@ export interface FootstepsPoi {
   name_en: string
   primary_image_url: string | null
   display_region: string
-  poi_type: 'museum' | 'park' | 'cafe'
-  /** Plain seed text (same convention as ExploreHeroSlide.subtitle) — content data, not UI chrome. */
+  /** Seed data: 'museum'|'park'|'cafe' invented bucket. Real API data: the raw
+   *  `core.poi_context.relation` value (e.g. 'concert_venue', 'mv_location') — see
+   *  RELATION_LABELS. Kept as a free string so both sources fit one field. */
+  poi_type: string
+  /** Plain seed text (same convention as ExploreHeroSlide.subtitle) for seed rows.
+   *  For real API rows this is the humanized relation label, not a narrative sentence
+   *  — the BFF's /context/:key endpoint doesn't return descriptive relationship text. */
   relationship_ko: string
   relationship_en: string
   coords_lat: number
@@ -30,8 +38,83 @@ export interface FootstepsDetail {
   memberName: string
   /** Doc-given totals — independent of `items.length` (most of the 31 aren't seeded yet). */
   totalCount: number
-  typeCounts: { museum: number; park: number; cafe: number }
+  typeCounts: Record<string, number>
   items: FootstepsPoi[]
+}
+
+// teamId -> core.entities row backing real data. Only teams actually linked from the UI
+// (KpopArtistNav's memberFootsteps CTA) belong here — confirmed 2026-08-27 via SQL run by
+// product owner + live curl against GET /entities/:slug and GET /context/entity:<id>.
+// entity_id 1 = BTS (group level) — entity_id 39 (RM, the member the page is framed around)
+// returns zero rows from /context/entity:39, group-level is what actually has data.
+const TEAM_ENTITY_MAP: Record<string, { slug: string; entityId: number }> = {
+  bts: { slug: 'kpop-bts', entityId: 1 },
+}
+
+interface EntityProfile {
+  name_en: string
+  name_ko: string
+  metadata?: { company?: string }
+}
+
+interface ContextItem {
+  poi_id: number
+  name_ko: string
+  relation: string
+  coords_lat: number
+  coords_lng: number
+  primary_image_url: string | null
+  display_region: string | null
+  base_translations?: { en?: { name?: string } }
+}
+
+/** Real-data path: GET /entities/:slug for the profile, GET /context/entity:<id> for the
+ *  related-places list (API-USAGE.md's documented two-call pattern). Returns null on any
+ *  failure or empty result so the caller can fall back to seed data. */
+async function fetchRealFootsteps(teamId: string, includeUnverified: boolean): Promise<FootstepsDetail | null> {
+  const mapping = TEAM_ENTITY_MAP[teamId]
+  if (!mapping) return null
+  try {
+    const [profile, context] = await Promise.all([
+      bffFetch<EntityProfile>(`/entities/${mapping.slug}`, { token: null }),
+      bffFetch<ContextItem[]>(`/context/entity:${mapping.entityId}?limit=50`, { token: null }),
+    ])
+    if (!context.length) return null
+
+    const items: FootstepsPoi[] = context.map(c => {
+      const label = getRelationLabel(c.relation, 'ko')
+      const labelEn = getRelationLabel(c.relation, 'en')
+      return {
+        poi_id: String(c.poi_id),
+        name_ko: c.name_ko,
+        name_en: c.base_translations?.en?.name ?? c.name_ko,
+        primary_image_url: c.primary_image_url,
+        display_region: c.display_region ?? '',
+        poi_type: c.relation,
+        relationship_ko: label,
+        relationship_en: labelEn,
+        coords_lat: c.coords_lat,
+        coords_lng: c.coords_lng,
+        verified: true,
+      }
+    })
+
+    const typeCounts: Record<string, number> = {}
+    for (const item of items) typeCounts[item.poi_type] = (typeCounts[item.poi_type] ?? 0) + 1
+
+    return {
+      teamId,
+      teamNameEn: profile.name_en,
+      teamNameKo: profile.name_ko,
+      agencyName: profile.metadata?.company ?? '',
+      memberName: profile.name_en,
+      totalCount: items.length,
+      typeCounts,
+      items: includeUnverified ? items : items.filter(i => i.verified !== false),
+    }
+  } catch {
+    return null
+  }
 }
 
 // 5 reused verbatim from `memberFootsteps` in app/api/explore/[category]/route.ts (same
@@ -122,4 +205,11 @@ export function getFootstepsDetail(teamId: string, includeUnverified: boolean): 
     ...detail,
     items: detail.items.filter(poi => includeUnverified || poi.verified !== false),
   }
+}
+
+/** Route entrypoint — tries real BFF data first, falls back to seed. */
+export async function resolveFootstepsDetail(teamId: string, includeUnverified: boolean): Promise<FootstepsDetail | null> {
+  const real = await fetchRealFootsteps(teamId, includeUnverified)
+  if (real) return real
+  return getFootstepsDetail(teamId, includeUnverified)
 }
