@@ -7,7 +7,7 @@
 // the build ("not a valid Route export field").
 import 'server-only'
 import { bffFetch } from './bff'
-import { getRelationLabel } from './footsteps-relation-labels'
+import { getRelationLabel } from './content-relation-labels'
 
 export interface FootstepsPoi {
   poi_id: string

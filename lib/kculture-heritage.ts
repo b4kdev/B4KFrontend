@@ -2,6 +2,9 @@
 // (경북 유네스코 유산 15곳 — Gyeongbuk has the most UNESCO sites nationally per the
 // deck, 53 total, but only 1 is publish-ready today). Self-contained, mirrors
 // lib/kpop-footsteps.ts's pattern.
+import 'server-only'
+import { bffFetch } from './bff'
+import { getRelationLabel } from './content-relation-labels'
 
 export interface HeritagePoi {
   poi_id: string
@@ -9,7 +12,9 @@ export interface HeritagePoi {
   name_en: string
   primary_image_url: string | null
   display_region: string
-  poi_type: 'gyeongju' | 'andong' | 'yeongju' | 'other'
+  /** Seed data: 'gyeongju'|'andong'|'yeongju'|'other' invented bucket. Real API data: the
+   *  raw core.poi_context.relation value. Free string so both sources fit one field. */
+  poi_type: string
   relationship_ko: string
   relationship_en: string
   coords_lat: number
@@ -104,4 +109,70 @@ export function getHeritageDetail(region: string, includeUnverified: boolean): H
     ...detail,
     items: detail.items.filter(poi => includeUnverified || poi.verified !== false),
   }
+}
+
+// region -> core.entities row backing real data. Empty for now — 2026-08-27 investigation:
+// slug guesses (kculture-gyeongbuk etc.) all 404, domain:k-culture only returns generic
+// Seoul spots, not Gyeongbuk-specific heritage sites. Same pattern as
+// lib/kpop-footsteps.ts's TEAM_ENTITY_MAP — once the real entity_id is confirmed, add it
+// here and resolveHeritageDetail() picks it up automatically, no other code changes needed.
+const REGION_ENTITY_MAP: Record<string, { slug: string; entityId: number }> = {}
+
+interface EntityProfile {
+  name_en: string
+  name_ko: string
+}
+
+interface ContextItem {
+  poi_id: number
+  name_ko: string
+  relation: string
+  coords_lat: number
+  coords_lng: number
+  primary_image_url: string | null
+  display_region: string | null
+  base_translations?: { en?: { name?: string } }
+}
+
+async function fetchRealHeritage(region: string, includeUnverified: boolean): Promise<HeritageDetail | null> {
+  const mapping = REGION_ENTITY_MAP[region]
+  if (!mapping) return null
+  try {
+    const [profile, context] = await Promise.all([
+      bffFetch<EntityProfile>(`/entities/${mapping.slug}`, { token: null }),
+      bffFetch<ContextItem[]>(`/context/entity:${mapping.entityId}?limit=50`, { token: null }),
+    ])
+    if (!context.length) return null
+
+    const items: HeritagePoi[] = context.map(c => ({
+      poi_id: String(c.poi_id),
+      name_ko: c.name_ko,
+      name_en: c.base_translations?.en?.name ?? c.name_ko,
+      primary_image_url: c.primary_image_url,
+      display_region: c.display_region ?? '',
+      poi_type: c.relation,
+      relationship_ko: getRelationLabel(c.relation, 'ko'),
+      relationship_en: getRelationLabel(c.relation, 'en'),
+      coords_lat: c.coords_lat,
+      coords_lng: c.coords_lng,
+      verified: true,
+    }))
+
+    return {
+      region,
+      regionNameEn: profile.name_en,
+      regionNameKo: profile.name_ko,
+      totalCount: items.length,
+      items: includeUnverified ? items : items.filter(i => i.verified !== false),
+    }
+  } catch {
+    return null
+  }
+}
+
+/** Route entrypoint — tries real BFF data first, falls back to seed. */
+export async function resolveHeritageDetail(region: string, includeUnverified: boolean): Promise<HeritageDetail | null> {
+  const real = await fetchRealHeritage(region, includeUnverified)
+  if (real) return real
+  return getHeritageDetail(region, includeUnverified)
 }

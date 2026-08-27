@@ -8,7 +8,7 @@ import { Link } from '@/i18n/navigation'
 import { MapPin, ImageOff, AlertTriangle, RefreshCw } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
 import { getDisplayName } from '@/lib/display-name'
-import { getRelationLabel } from '@/lib/footsteps-relation-labels'
+import { getRelationLabel } from '@/lib/content-relation-labels'
 import type { FootstepsDetail, FootstepsPoi } from '@/lib/kpop-footsteps'
 
 function FootstepsCard({ poi, locale }: { poi: FootstepsPoi; locale: string }) {

@@ -1,6 +1,9 @@
 // DEC-61 — 촬영지 (filming spots) detail page data, "Tangerines" (폭싹 속았수다) example.
 // Self-contained, mirrors lib/kpop-footsteps.ts's pattern (own seed, own gate, no
 // cross-import from app/api/explore/[category]/route.ts).
+import 'server-only'
+import { bffFetch } from './bff'
+import { getRelationLabel } from './content-relation-labels'
 
 export interface FilmingSpotPoi {
   poi_id: string
@@ -8,7 +11,9 @@ export interface FilmingSpotPoi {
   name_en: string
   primary_image_url: string | null
   display_region: string
-  poi_type: 'nature' | 'historic' | 'experience'
+  /** Seed data: 'nature'|'historic'|'experience' invented bucket. Real API data: the raw
+   *  core.poi_context.relation value. Free string so both sources fit one field. */
+  poi_type: string
   relationship_ko: string
   relationship_en: string
   coords_lat: number
@@ -110,4 +115,73 @@ export function getFilmingSpotsDetail(workId: string, includeUnverified: boolean
     ...detail,
     items: detail.items.filter(poi => includeUnverified || poi.verified !== false),
   }
+}
+
+// workId -> core.entities row backing real data. Empty for now — 2026-08-27 investigation
+// confirmed "Tangerines"/폭싹 속았수다 has no discoverable entity (list_entities/list_places
+// broken, every slug guess 404s, domain:k-drama only returns unrelated Seoul locations, not
+// this Jeju-set show). Same pattern as lib/kpop-footsteps.ts's TEAM_ENTITY_MAP — once the
+// real entity_id is confirmed (SQL from dev friend, or list_entities fixed), add it here and
+// resolveFilmingSpotsDetail() picks it up automatically, no other code changes needed.
+const WORK_ENTITY_MAP: Record<string, { slug: string; entityId: number }> = {}
+
+interface EntityProfile {
+  name_en: string
+  name_ko: string
+  metadata?: { broadcaster?: string }
+}
+
+interface ContextItem {
+  poi_id: number
+  name_ko: string
+  relation: string
+  coords_lat: number
+  coords_lng: number
+  primary_image_url: string | null
+  display_region: string | null
+  base_translations?: { en?: { name?: string } }
+}
+
+async function fetchRealFilmingSpots(workId: string, includeUnverified: boolean): Promise<FilmingSpotsDetail | null> {
+  const mapping = WORK_ENTITY_MAP[workId]
+  if (!mapping) return null
+  try {
+    const [profile, context] = await Promise.all([
+      bffFetch<EntityProfile>(`/entities/${mapping.slug}`, { token: null }),
+      bffFetch<ContextItem[]>(`/context/entity:${mapping.entityId}?limit=50`, { token: null }),
+    ])
+    if (!context.length) return null
+
+    const items: FilmingSpotPoi[] = context.map(c => ({
+      poi_id: String(c.poi_id),
+      name_ko: c.name_ko,
+      name_en: c.base_translations?.en?.name ?? c.name_ko,
+      primary_image_url: c.primary_image_url,
+      display_region: c.display_region ?? '',
+      poi_type: c.relation,
+      relationship_ko: getRelationLabel(c.relation, 'ko'),
+      relationship_en: getRelationLabel(c.relation, 'en'),
+      coords_lat: c.coords_lat,
+      coords_lng: c.coords_lng,
+      verified: true,
+    }))
+
+    return {
+      workId,
+      workNameEn: profile.name_en,
+      workNameKo: profile.name_ko,
+      broadcaster: profile.metadata?.broadcaster ?? '',
+      totalCount: items.length,
+      items: includeUnverified ? items : items.filter(i => i.verified !== false),
+    }
+  } catch {
+    return null
+  }
+}
+
+/** Route entrypoint — tries real BFF data first, falls back to seed. */
+export async function resolveFilmingSpotsDetail(workId: string, includeUnverified: boolean): Promise<FilmingSpotsDetail | null> {
+  const real = await fetchRealFilmingSpots(workId, includeUnverified)
+  if (real) return real
+  return getFilmingSpotsDetail(workId, includeUnverified)
 }

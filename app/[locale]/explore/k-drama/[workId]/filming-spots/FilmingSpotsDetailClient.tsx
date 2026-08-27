@@ -6,16 +6,15 @@ import { useLocale, useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
+import { getRelationLabel } from '@/lib/content-relation-labels'
 import type { FilmingSpotsDetail } from '@/lib/kdrama-filming-spots'
 import MasonryGrid from '../../../_components/MasonryGrid'
 import TypeFilterChips from '../../../_components/TypeFilterChips'
 
-type TypeFilter = 'all' | 'nature' | 'historic' | 'experience'
-
 export default function FilmingSpotsDetailClient({ workId }: { workId: string }) {
   const t = useTranslations('explore')
   const locale = useLocale()
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
+  const [typeFilter, setTypeFilter] = useState<string>('all')
 
   const { data, isLoading, error, mutate } = useSWR<FilmingSpotsDetail>(
     [`/api/explore/k-drama/filming-spots/${workId}`, locale],
@@ -69,12 +68,12 @@ export default function FilmingSpotsDetailClient({ workId }: { workId: string })
 
           <TypeFilterChips
             active={typeFilter}
-            onChange={(k) => setTypeFilter(k as TypeFilter)}
+            onChange={setTypeFilter}
             options={[
               { key: 'all', label: t('filmingSpots.filterAll'), count: data.totalCount },
-              { key: 'nature', label: t('filmingSpots.filterNature') },
-              { key: 'historic', label: t('filmingSpots.filterHistoric') },
-              { key: 'experience', label: t('filmingSpots.filterExperience') },
+              ...Array.from(new Set(data.items.map(p => p.poi_type))).map(key => ({
+                key, label: getRelationLabel(key, locale),
+              })),
             ]}
           />
 

@@ -2,6 +2,9 @@
 // content plan flags as fully complete (no blank cards). Fixed slug, not a dynamic
 // [id] segment — this section's detail-page axis is "목적" (purpose), not a
 // per-entity id like K-Drama's work or K-Pop's team.
+import 'server-only'
+import { bffFetch } from './bff'
+import { getRelationLabel } from './content-relation-labels'
 
 export interface PerfumeFlagshipPoi {
   poi_id: string
@@ -9,7 +12,9 @@ export interface PerfumeFlagshipPoi {
   name_en: string
   primary_image_url: string | null
   display_region: string
-  poi_type: 'seongsu' | 'hannam' | 'garosugil' | 'other'
+  /** Seed data: 'seongsu'|'hannam'|'garosugil'|'other' invented bucket. Real API data: the
+   *  raw core.poi_context.relation value. Free string so both sources fit one field. */
+  poi_type: string
   relationship_ko: string
   relationship_en: string
   coords_lat: number
@@ -86,4 +91,57 @@ export const SEED_PERFUME_FLAGSHIPS: PerfumeFlagshipPoi[] = [
 
 export function getPerfumeFlagships(includeUnverified: boolean): PerfumeFlagshipPoi[] {
   return SEED_PERFUME_FLAGSHIPS.filter(poi => includeUnverified || poi.verified !== false)
+}
+
+// core.entities row backing real data. Unset for now — 2026-08-27 investigation: slug
+// guesses (kbeauty-aesop, kbeauty-nonfiction, ...) all 404, domain:k-beauty returns
+// plastic-surgery/dermatology clinics, not perfume flagships — wrong category entirely.
+// Same pattern as lib/kpop-footsteps.ts's TEAM_ENTITY_MAP — once the real entity_id is
+// confirmed, set it here and resolvePerfumeFlagships() picks it up automatically, no
+// other code changes needed.
+const PERFUME_ENTITY: { slug: string; entityId: number } | null = null
+
+interface ContextItem {
+  poi_id: number
+  name_ko: string
+  relation: string
+  coords_lat: number
+  coords_lng: number
+  primary_image_url: string | null
+  display_region: string | null
+  base_translations?: { en?: { name?: string } }
+}
+
+async function fetchRealPerfumeFlagships(includeUnverified: boolean): Promise<PerfumeFlagshipPoi[] | null> {
+  if (!PERFUME_ENTITY) return null
+  try {
+    const context = await bffFetch<ContextItem[]>(`/context/entity:${PERFUME_ENTITY.entityId}?limit=50`, { token: null })
+    if (!context.length) return null
+
+    const items: PerfumeFlagshipPoi[] = context.map(c => ({
+      poi_id: String(c.poi_id),
+      name_ko: c.name_ko,
+      name_en: c.base_translations?.en?.name ?? c.name_ko,
+      primary_image_url: c.primary_image_url,
+      display_region: c.display_region ?? '',
+      poi_type: c.relation,
+      relationship_ko: getRelationLabel(c.relation, 'ko'),
+      relationship_en: getRelationLabel(c.relation, 'en'),
+      coords_lat: c.coords_lat,
+      coords_lng: c.coords_lng,
+      verified: true,
+    }))
+
+    return includeUnverified ? items : items.filter(i => i.verified !== false)
+  } catch {
+    return null
+  }
+}
+
+/** Route entrypoint — tries real BFF data first, falls back to seed. Returns
+ *  {totalCount, items} directly (this page has no wrapping *Detail type). */
+export async function resolvePerfumeFlagships(includeUnverified: boolean): Promise<{ totalCount: number; items: PerfumeFlagshipPoi[] }> {
+  const real = await fetchRealPerfumeFlagships(includeUnverified)
+  if (real) return { totalCount: real.length, items: real }
+  return { totalCount: PERFUME_FLAGSHIPS_TOTAL, items: getPerfumeFlagships(includeUnverified) }
 }

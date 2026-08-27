@@ -6,16 +6,15 @@ import { useLocale, useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
+import { getRelationLabel } from '@/lib/content-relation-labels'
 import type { HeritageDetail } from '@/lib/kculture-heritage'
 import MasonryGrid from '../../../_components/MasonryGrid'
 import TypeFilterChips from '../../../_components/TypeFilterChips'
 
-type TypeFilter = 'all' | 'gyeongju' | 'andong' | 'yeongju' | 'other'
-
 export default function HeritageDetailClient({ region }: { region: string }) {
   const t = useTranslations('explore')
   const locale = useLocale()
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
+  const [typeFilter, setTypeFilter] = useState<string>('all')
 
   const { data, isLoading, error, mutate } = useSWR<HeritageDetail>(
     [`/api/explore/k-culture/heritage/${region}`, locale],
@@ -67,12 +66,12 @@ export default function HeritageDetailClient({ region }: { region: string }) {
 
           <TypeFilterChips
             active={typeFilter}
-            onChange={(k) => setTypeFilter(k as TypeFilter)}
+            onChange={setTypeFilter}
             options={[
               { key: 'all', label: t('heritage.filterAll'), count: data.totalCount },
-              { key: 'gyeongju', label: t('heritage.filterGyeongju') },
-              { key: 'andong', label: t('heritage.filterAndong') },
-              { key: 'yeongju', label: t('heritage.filterYeongju') },
+              ...Array.from(new Set(data.items.map(p => p.poi_type))).map(key => ({
+                key, label: getRelationLabel(key, locale),
+              })),
             ]}
           />
 

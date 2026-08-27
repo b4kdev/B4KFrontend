@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
+import { getRelationLabel } from '@/lib/content-relation-labels'
 import type { PerfumeFlagshipPoi } from '@/lib/kbeauty-perfume-flagships'
 import MasonryGrid from '../../_components/MasonryGrid'
 import TypeFilterChips from '../../_components/TypeFilterChips'
@@ -15,12 +16,10 @@ interface ApiResponse {
   items: PerfumeFlagshipPoi[]
 }
 
-type TypeFilter = 'all' | 'seongsu' | 'hannam' | 'garosugil' | 'other'
-
 export default function PerfumeFlagshipsDetailClient() {
   const t = useTranslations('explore')
   const locale = useLocale()
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
+  const [typeFilter, setTypeFilter] = useState<string>('all')
 
   const { data, isLoading, error, mutate } = useSWR<ApiResponse>(
     ['/api/explore/k-beauty/perfume-flagships', locale],
@@ -70,12 +69,12 @@ export default function PerfumeFlagshipsDetailClient() {
 
           <TypeFilterChips
             active={typeFilter}
-            onChange={(k) => setTypeFilter(k as TypeFilter)}
+            onChange={setTypeFilter}
             options={[
               { key: 'all', label: t('perfumeFlagships.filterAll'), count: data.totalCount },
-              { key: 'seongsu', label: t('perfumeFlagships.filterSeongsu') },
-              { key: 'hannam', label: t('perfumeFlagships.filterHannam') },
-              { key: 'garosugil', label: t('perfumeFlagships.filterGarosugil') },
+              ...Array.from(new Set(data.items.map(p => p.poi_type))).map(key => ({
+                key, label: getRelationLabel(key, locale),
+              })),
             ]}
           />
 
