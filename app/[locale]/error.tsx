@@ -31,8 +31,7 @@ export default function ErrorBoundary({
         <div className="flex items-center gap-3">
           <button
             onClick={reset}
-            className="inline-flex items-center min-h-touch px-4 rounded-full text-f-sm font-semibold text-lav"
-            style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
+            className="inline-flex items-center min-h-touch px-4 rounded-full text-f-sm font-semibold bg-fg text-bg"
           >
             {t('cta')}
           </button>

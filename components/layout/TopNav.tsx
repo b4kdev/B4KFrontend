@@ -134,7 +134,7 @@ function SearchDropdown({
                 </p>
                 <button
                   onClick={onClearAll}
-                  className="text-f-xs text-lav hover:text-fg transition-colors min-h-touch flex items-center px-sp-2"
+                  className="text-f-xs text-muted hover:text-fg transition-colors min-h-touch flex items-center px-sp-2"
                 >
                   {t('clearAll')}
                 </button>
@@ -174,8 +174,8 @@ function SearchDropdown({
               <button
                 key={chip.key}
                 onClick={() => onCategoryChip(chip.query)}
-                className="px-sp-3 py-sp-1 rounded-full text-f-xs font-semibold text-lav min-h-touch flex items-center transition-colors hover:bg-lav-dim"
-                style={{ border: '1px solid var(--lav-border)' }}
+                className="px-sp-3 py-sp-1 rounded-full text-f-xs font-semibold text-fg min-h-touch flex items-center transition-colors hover:bg-muted-3"
+                style={{ border: '1px solid var(--bdr)' }}
               >
                 {t(`categories.${chip.key}`)}
               </button>
@@ -200,7 +200,7 @@ function SearchDropdown({
               <p className="text-f-sm text-muted">{t('error')}</p>
               <button
                 onClick={() => mutate()}
-                className="flex items-center gap-1 text-f-sm text-lav hover:opacity-80 transition-opacity min-h-touch shrink-0"
+                className="flex items-center gap-1 text-f-sm text-fg hover:opacity-80 transition-opacity min-h-touch shrink-0"
               >
                 <RefreshCw size={12} strokeWidth={2} aria-hidden="true" />
                 {t('retry')}
@@ -466,7 +466,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
                     aria-selected={loc === locale}
                     className={[
                       'w-full text-left px-sp-3 py-sp-2 text-f-sm transition-colors',
-                      loc === locale ? 'text-lav font-semibold' : 'text-muted hover:text-fg hover:bg-muted-3',
+                      loc === locale ? 'text-fg font-semibold bg-muted-3' : 'text-muted hover:text-fg hover:bg-muted-3',
                     ].join(' ')}
                     onClick={() => {
                       track('lang_switch', { from: locale, to: loc, locale, screen_id: 'nav' });

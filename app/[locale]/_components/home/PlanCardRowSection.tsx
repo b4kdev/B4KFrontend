@@ -50,7 +50,7 @@ function PlanCard({ plan, t }: { plan: HomePopularPlan; t: ReturnType<typeof use
         )}
         {plan.is_partner && (
           <span
-            className="absolute top-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.1em] uppercase text-bg bg-lav px-[6px] py-[3px]"
+            className="absolute top-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.1em] uppercase text-bg bg-fg px-[6px] py-[3px]"
             aria-label={t('sponsored')}
           >
             {t('sponsored')}
@@ -99,7 +99,7 @@ export default function PlanCardRowSection({ namespace, endpoint, viewAllHref = 
         <div className="flex items-center gap-sp-3 py-sp-6 text-muted text-f-sm" role="alert">
           <RefreshCw size={14} strokeWidth={2} aria-hidden="true" />
           <span>{t('error')}</span>
-          <button onClick={() => mutate()} className="text-lav font-semibold hover:opacity-80 transition-opacity duration-[80ms]">
+          <button onClick={() => mutate()} className="text-fg font-semibold hover:opacity-80 transition-opacity duration-[80ms]">
             {t('retry')}
           </button>
         </div>

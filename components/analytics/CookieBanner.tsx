@@ -34,14 +34,14 @@ export default function CookieBanner() {
       className="fixed bottom-0 inset-x-0 z-[210] px-sp-4 py-sp-4 md:px-sp-6"
       style={{
         background: 'var(--bg-3)',
-        borderTop: '1px solid var(--lav-border)',
+        borderTop: '1px solid var(--bdr)',
         boxShadow: '0 -8px 24px var(--backdrop-50)',
       }}
     >
       <div className="max-w-[960px] mx-auto flex flex-col md:flex-row md:items-center gap-sp-3 md:gap-sp-5">
         <p className="flex-1 text-f-sm text-muted leading-snug">
           {t('message')}{' '}
-          <Link href="/legal/cookies" className="text-lav underline underline-offset-2 hover:opacity-80">
+          <Link href="/legal/cookies" className="text-fg underline underline-offset-2 hover:opacity-80">
             {t('learnMore')}
           </Link>
         </p>
@@ -56,7 +56,7 @@ export default function CookieBanner() {
           <button
             type="button"
             onClick={accept}
-            className="min-h-touch px-sp-5 text-f-sm font-semibold rounded-full bg-lav text-bg hover:opacity-90 active:opacity-75 transition-opacity"
+            className="min-h-touch px-sp-5 text-f-sm font-semibold rounded-full bg-fg text-bg hover:opacity-90 active:opacity-75 transition-opacity"
           >
             {t('accept')}
           </button>

@@ -59,9 +59,9 @@ function Chip({
       aria-label={ariaLabel}
       className="px-sp-3 py-sp-2 rounded-full text-f-sm font-semibold min-h-touch flex items-center transition-colors"
       style={{
-        background: active ? 'var(--lav)' : 'transparent',
-        color: active ? 'var(--bg)' : 'var(--lav)',
-        border: active ? '1px solid var(--lav)' : '1px solid var(--lav-border)',
+        background: active ? 'var(--fg)' : 'transparent',
+        color: active ? 'var(--bg)' : 'var(--muted)',
+        border: active ? '1px solid var(--fg)' : '1px solid var(--bdr)',
       }}
     >
       {children}
@@ -246,8 +246,8 @@ function EmptyState({ query }: { query: string }) {
           <Link
             key={cat}
             href={`/search?q=${queries[cat]}`}
-            className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-lav min-h-touch flex items-center"
-            style={{ border: '1px solid var(--lav-border)' }}
+            className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-fg min-h-touch flex items-center hover:bg-muted-3 transition-colors"
+            style={{ border: '1px solid var(--bdr)' }}
           >
             {t(`categories.${cat}`)}
           </Link>
@@ -274,8 +274,8 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
       <p className="text-f-base text-muted mb-sp-4">{t('error')}</p>
       <button
         onClick={onRetry}
-        className="px-sp-6 py-sp-3 rounded-full text-f-sm font-semibold text-lav min-h-touch"
-        style={{ border: '1px solid var(--lav-border)' }}
+        className="px-sp-6 py-sp-3 rounded-full text-f-sm font-semibold text-muted hover:text-fg transition-colors min-h-touch"
+        style={{ border: '1px solid var(--bdr)' }}
       >
         {t('retry')}
       </button>
@@ -305,7 +305,7 @@ function SeeAllLink({
       <button
         type="button"
         onClick={onToggle}
-        className="text-f-sm font-semibold text-lav min-h-touch flex items-center gap-sp-1"
+        className="text-f-sm font-semibold text-muted hover:text-fg transition-colors min-h-touch flex items-center gap-sp-1"
       >
         {expanded ? t('showLess') : t(labelKey, { count })}
         {!expanded && <ChevronRight size={16} strokeWidth={2} aria-hidden="true" />}
@@ -315,6 +315,16 @@ function SeeAllLink({
 }
 
 // ─── Result Sections ──────────────────────────────────────────────────────────
+
+function ResultSectionHead({ label, count }: { label: string; count: number }) {
+  const t = useTranslations('search')
+  return (
+    <div className="flex items-baseline gap-sp-2 px-sp-4 pt-sp-6 pb-sp-3">
+      <h2 className="text-f-lg font-semibold text-fg">{label}</h2>
+      <span className="text-f-sm text-muted">{t('resultsCount', { count })}</span>
+    </div>
+  )
+}
 
 function PoiSection({
   places,
@@ -331,46 +341,44 @@ function PoiSection({
 
   return (
     <section>
-      <h2 className="text-f-xs font-semibold uppercase tracking-[0.08em] text-muted px-sp-4 py-sp-2">
-        {t('results.poi')}
-      </h2>
-      <ul>
+      <ResultSectionHead label={t('results.poi')} count={places.length} />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-sp-4 px-sp-4">
         {shown.map(poi => {
           const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
           return (
-            <li key={poi.poi_id}>
-              <button
-                className="w-full flex items-center gap-sp-3 px-sp-4 py-sp-3 text-left hover:bg-muted-3 transition-colors min-h-touch"
-                style={{ borderBottom: 'var(--bdr)' }}
-                onClick={() => router.push(`/place/${poi.poi_id}`)}
-                aria-label={t('poiAriaLabel', { name, region: poi.display_region })}
+            <button
+              key={poi.poi_id}
+              className="flex flex-col text-left hover:opacity-90 transition-opacity"
+              onClick={() => router.push(`/place/${poi.poi_id}`)}
+              aria-label={t('poiAriaLabel', { name, region: poi.display_region })}
+            >
+              <div
+                className="relative w-full aspect-square shrink-0 rounded-none overflow-hidden"
+                style={{ background: 'var(--muted-3)' }}
               >
-                <div
-                  className="relative w-[56px] h-[56px] shrink-0 rounded-none overflow-hidden"
-                  style={{ background: 'var(--muted-3)' }}
+                {poi.primary_image_url && (
+                  <Image
+                    src={poi.primary_image_url}
+                    alt=""
+                    aria-hidden="true"
+                    fill
+                    sizes="(max-width: 1024px) 44vw, 280px"
+                    className="object-cover"
+                  />
+                )}
+                <span
+                  className="absolute top-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.1em] uppercase text-on-media leading-none"
+                  aria-hidden="true"
                 >
-                  {poi.primary_image_url && (
-                    <Image
-                      src={poi.primary_image_url}
-                      alt=""
-                      aria-hidden="true"
-                      fill
-                      sizes="56px"
-                      className="object-cover"
-                    />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-f-base text-fg truncate font-semibold">{name}</p>
-                  <p className="text-f-sm text-muted truncate">{poi.display_region}</p>
-                  <p className="text-f-xs text-muted">{t('saves', { count: poi.save_count })}</p>
-                </div>
-                <ChevronRight size={16} strokeWidth={2} className="text-muted shrink-0" aria-hidden="true" />
-              </button>
-            </li>
+                  {poi.display_domain}
+                </span>
+              </div>
+              <p className="text-f-base text-fg truncate font-semibold mt-sp-2">{name}</p>
+              <p className="text-f-sm text-muted truncate">{poi.display_region}</p>
+            </button>
           )
         })}
-      </ul>
+      </div>
       <SeeAllLink labelKey="seeAllPlaces" count={places.length} expanded={expanded} onToggle={onToggle} />
     </section>
   )
@@ -391,48 +399,42 @@ function PlanSection({
 
   return (
     <section>
-      <h2 className="text-f-xs font-semibold uppercase tracking-[0.08em] text-muted px-sp-4 py-sp-2">
-        {t('results.plans')}
-      </h2>
-      <ul>
+      <ResultSectionHead label={t('results.plans')} count={plans.length} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-sp-4 px-sp-4">
         {shown.map(plan => (
-          <li key={plan.id}>
-            <button
-              className="w-full flex items-center gap-sp-3 px-sp-4 py-sp-3 text-left hover:bg-muted-3 transition-colors min-h-touch"
-              style={{ borderBottom: 'var(--bdr)' }}
-              onClick={() => router.push(`/plan/${plan.id}`)}
-              aria-label={t('planAriaLabel', { title: plan.title, author: plan.author_name })}
+          <button
+            key={plan.id}
+            className="flex flex-col text-left hover:opacity-90 transition-opacity"
+            onClick={() => router.push(`/plan/${plan.id}`)}
+            aria-label={t('planAriaLabel', { title: plan.title, author: plan.author_name })}
+          >
+            <div
+              className="relative w-full aspect-[16/9] shrink-0 rounded-none overflow-hidden"
+              style={{ background: 'var(--muted-3)' }}
             >
-              <div
-                className="relative w-[56px] h-[56px] shrink-0 rounded-none overflow-hidden"
-                style={{ background: 'var(--muted-3)' }}
-              >
-                {plan.cover_image_url && (
-                  <Image
-                    src={plan.cover_image_url}
-                    alt=""
-                    aria-hidden="true"
-                    fill
-                    sizes="56px"
-                    className="object-cover"
-                  />
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-sp-2">
-                  <p className="text-f-base text-fg truncate font-semibold">{plan.title}</p>
-                  {plan.is_partner && (
-                    <span className="text-f-xs text-muted shrink-0">{t('sponsored')}</span>
-                  )}
-                </div>
-                <p className="text-f-sm text-muted truncate">{plan.author_name}</p>
-                <p className="text-f-xs text-muted">{t('stops', { count: plan.stop_count })}</p>
-              </div>
-              <ChevronRight size={16} strokeWidth={2} className="text-muted shrink-0" aria-hidden="true" />
-            </button>
-          </li>
+              {plan.cover_image_url && (
+                <Image
+                  src={plan.cover_image_url}
+                  alt=""
+                  aria-hidden="true"
+                  fill
+                  sizes="(max-width: 1024px) 90vw, 460px"
+                  className="object-cover"
+                />
+              )}
+              {plan.is_partner && (
+                <span
+                  className="absolute top-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.1em] uppercase text-bg bg-fg px-[6px] py-[3px] leading-none"
+                >
+                  {t('sponsored')}
+                </span>
+              )}
+            </div>
+            <p className="text-f-base text-fg truncate font-semibold mt-sp-2">{plan.title}</p>
+            <p className="text-f-sm text-muted truncate">{t('stops', { count: plan.stop_count })}</p>
+          </button>
         ))}
-      </ul>
+      </div>
       <SeeAllLink labelKey="seeAllPlans" count={plans.length} expanded={expanded} onToggle={onToggle} />
     </section>
   )
@@ -452,16 +454,14 @@ function ExploreSection({
 
   return (
     <section>
-      <h2 className="text-f-xs font-semibold uppercase tracking-[0.08em] text-muted px-sp-4 py-sp-2">
-        {t('results.explore')}
-      </h2>
-      <div className="flex flex-wrap gap-sp-2 px-sp-4 py-sp-3">
+      <ResultSectionHead label={t('results.explore')} count={explore.length} />
+      <div className="flex flex-wrap gap-sp-2 px-sp-4 pb-sp-3">
         {shown.map(item => (
           <Link
             key={item.category}
             href={item.href as `/explore/${string}`}
-            className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-lav min-h-touch flex items-center"
-            style={{ border: '1px solid var(--lav-border)' }}
+            className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-fg min-h-touch flex items-center hover:bg-muted-3 transition-colors"
+            style={{ border: '1px solid var(--bdr)' }}
             aria-label={t('exploreAriaLabel', { category: t(`categories.${item.label_key}` as `categories.${string}`) })}
           >
             {t(`categories.${item.label_key}` as `categories.${string}`)}
@@ -523,7 +523,7 @@ function MobileFilterSheet({
           type="button"
           onClick={onClose}
           className="w-full mt-sp-6 py-sp-3 rounded-full text-f-sm font-semibold min-h-touch flex items-center justify-center"
-          style={{ background: 'var(--lav)', color: 'var(--bg)' }}
+          style={{ background: 'var(--fg)', color: 'var(--bg)' }}
         >
           {t('apply')}
         </button>
@@ -644,13 +644,26 @@ export default function SearchClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
-  const hasResults = data && (
-    data.places.length > 0 || data.plans.length > 0 || data.explore.length > 0
-  )
+  // Explore is a fixed 4-category browse list, not query-matched — excluded here so a
+  // genuinely empty places+plans search still renders EmptyState (matches the Figma
+  // "Search Results — Empty State" frame, which shows no Explore section at all).
+  const hasResults = data && (data.places.length > 0 || data.plans.length > 0)
 
   return (
     <div style={{ background: 'var(--bg)' }}>
-      <h1 className="sr-only">{t('title')}</h1>
+      <div className="px-sp-4 lg:px-sp-8 pt-sp-6">
+        <div className="flex items-center gap-1.5 text-f-xxs font-semibold tracking-[0.08em] uppercase text-muted mb-sp-5">
+          <Link href="/" className="text-muted-2 hover:text-fg transition-colors">B4K</Link>
+          <span>›</span>
+          <span className="text-fg">{t('breadcrumb')}</span>
+        </div>
+        <h1 className="font-display text-fg text-f-display-tile">{t('pageTitle')}</h1>
+        {q && hasResults && (
+          <p className="text-f-sm text-muted mt-sp-2">
+            {t('resultsSummary', { query: q, places: data!.places.length, plans: data!.plans.length, explore: data!.explore.length })}
+          </p>
+        )}
+      </div>
       <div className="lg:flex">
         {/* Desktop filter sidebar */}
         <aside
@@ -730,8 +743,8 @@ export default function SearchClient() {
                     <Link
                       key={cat}
                       href={`/search?q=${queries[cat]}`}
-                      className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-lav min-h-touch flex items-center"
-                      style={{ border: '1px solid var(--lav-border)' }}
+                      className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-fg min-h-touch flex items-center hover:bg-muted-3 transition-colors"
+                      style={{ border: '1px solid var(--bdr)' }}
                     >
                       {t(`categories.${cat}`)}
                     </Link>

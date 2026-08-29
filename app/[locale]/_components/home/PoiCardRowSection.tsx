@@ -53,7 +53,7 @@ export default function PoiCardRowSection({
         <div className="flex items-center gap-sp-3 py-sp-6 text-muted text-f-sm" role="alert">
           <RefreshCw size={14} strokeWidth={2} aria-hidden="true" />
           <span>{t('error')}</span>
-          <button onClick={() => mutate()} className="text-lav font-semibold hover:opacity-80 transition-opacity duration-[80ms]">
+          <button onClick={() => mutate()} className="text-fg font-semibold hover:opacity-80 transition-opacity duration-[80ms]">
             {t('retry')}
           </button>
         </div>

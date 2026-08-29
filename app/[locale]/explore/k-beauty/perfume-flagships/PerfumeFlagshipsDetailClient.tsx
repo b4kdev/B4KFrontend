@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
+import { getRelationLabel } from '@/lib/content-relation-labels'
 import type { PerfumeFlagshipPoi } from '@/lib/kbeauty-perfume-flagships'
 import MasonryGrid from '../../_components/MasonryGrid'
 import TypeFilterChips from '../../_components/TypeFilterChips'
@@ -13,14 +14,13 @@ import TypeFilterChips from '../../_components/TypeFilterChips'
 interface ApiResponse {
   totalCount: number
   items: PerfumeFlagshipPoi[]
+  collectionTitle?: string
 }
-
-type TypeFilter = 'all' | 'seongsu' | 'hannam' | 'garosugil' | 'other'
 
 export default function PerfumeFlagshipsDetailClient() {
   const t = useTranslations('explore')
   const locale = useLocale()
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
+  const [typeFilter, setTypeFilter] = useState<string>('all')
 
   const { data, isLoading, error, mutate } = useSWR<ApiResponse>(
     ['/api/explore/k-beauty/perfume-flagships', locale],
@@ -45,7 +45,7 @@ export default function PerfumeFlagshipsDetailClient() {
           <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+            className="flex items-center gap-sp-2 text-f-md font-semibold text-fg hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
           >
             <RefreshCw size={14} strokeWidth={2} />
             {t('error.retry')}
@@ -64,18 +64,21 @@ export default function PerfumeFlagshipsDetailClient() {
           <h1 className="font-display text-fg text-f-display-tile mb-sp-2">
             {t('perfumeFlagships.title')}
           </h1>
+          {data.collectionTitle && (
+            <p className="text-f-sm text-muted-2 mb-sp-1 italic">{data.collectionTitle}</p>
+          )}
           <p className="text-f-md text-muted mb-sp-5">
             {t('perfumeFlagships.subtitle', { count: data.totalCount })}
           </p>
 
           <TypeFilterChips
             active={typeFilter}
-            onChange={(k) => setTypeFilter(k as TypeFilter)}
+            onChange={setTypeFilter}
             options={[
               { key: 'all', label: t('perfumeFlagships.filterAll'), count: data.totalCount },
-              { key: 'seongsu', label: t('perfumeFlagships.filterSeongsu') },
-              { key: 'hannam', label: t('perfumeFlagships.filterHannam') },
-              { key: 'garosugil', label: t('perfumeFlagships.filterGarosugil') },
+              ...Array.from(new Set(data.items.map(p => p.poi_type))).map(key => ({
+                key, label: getRelationLabel(key, locale),
+              })),
             ]}
           />
 

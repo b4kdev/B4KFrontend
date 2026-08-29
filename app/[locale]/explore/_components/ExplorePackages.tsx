@@ -44,7 +44,7 @@ export default function ExplorePackages({ packages }: { packages: ExplorePackage
                 />
               )}
               <span
-                className="absolute top-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.08em] uppercase text-bg bg-lav px-[6px] py-[3px]"
+                className="absolute top-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.08em] uppercase text-bg bg-fg px-[6px] py-[3px]"
                 aria-label={t('packages.sponsored')}
               >
                 {t('packages.sponsored')}
@@ -53,7 +53,7 @@ export default function ExplorePackages({ packages }: { packages: ExplorePackage
             <div className="p-sp-3 flex flex-col gap-[3px]">
               <p className="text-f-md font-semibold text-fg line-clamp-1">{pkg.title}</p>
               <p className="text-f-xs text-muted">{pkg.partner_name}</p>
-              <p className="flex items-center gap-[3px] text-f-xs text-lav mt-[2px]">
+              <p className="flex items-center gap-[3px] text-f-xs text-fg mt-[2px]">
                 {t('packages.viewCta')}
                 <ExternalLink size={10} strokeWidth={2} aria-hidden="true" />
               </p>

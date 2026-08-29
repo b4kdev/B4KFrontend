@@ -8,9 +8,8 @@ import { Link } from '@/i18n/navigation'
 import { MapPin, ImageOff, AlertTriangle, RefreshCw } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
 import { getDisplayName } from '@/lib/display-name'
+import { getRelationLabel } from '@/lib/content-relation-labels'
 import type { FootstepsDetail, FootstepsPoi } from '@/lib/kpop-footsteps'
-
-type TypeFilter = 'all' | 'museum' | 'park' | 'cafe'
 
 function FootstepsCard({ poi, locale }: { poi: FootstepsPoi; locale: string }) {
   const t = useTranslations('explore')
@@ -58,7 +57,7 @@ function FootstepsCard({ poi, locale }: { poi: FootstepsPoi; locale: string }) {
 export default function FootstepsDetailClient({ teamId }: { teamId: string }) {
   const t = useTranslations('explore')
   const locale = useLocale()
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
+  const [typeFilter, setTypeFilter] = useState<string>('all')
 
   const { data, isLoading, error, mutate } = useSWR<FootstepsDetail>(
     [`/api/explore/k-pop/footsteps/${teamId}`, locale],
@@ -83,7 +82,7 @@ export default function FootstepsDetailClient({ teamId }: { teamId: string }) {
           <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+            className="flex items-center gap-sp-2 text-f-md font-semibold text-fg hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
           >
             <RefreshCw size={14} strokeWidth={2} />
             {t('error.retry')}
@@ -111,12 +110,9 @@ export default function FootstepsDetailClient({ teamId }: { teamId: string }) {
           </p>
 
           <div className="flex gap-sp-2 overflow-x-auto pb-sp-2 mb-sp-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group">
-            {(['all', 'museum', 'park', 'cafe'] as const).map(key => {
+            {['all', ...Object.keys(data.typeCounts)].map(key => {
               const count = key === 'all' ? data.totalCount : data.typeCounts[key]
-              const label = key === 'all' ? t('footsteps.filterAll')
-                : key === 'museum' ? t('footsteps.filterMuseum')
-                : key === 'park' ? t('footsteps.filterPark')
-                : t('footsteps.filterCafe')
+              const label = key === 'all' ? t('footsteps.filterAll') : getRelationLabel(key, locale)
               const selected = typeFilter === key
               return (
                 <button
@@ -126,8 +122,8 @@ export default function FootstepsDetailClient({ teamId }: { teamId: string }) {
                   aria-pressed={selected}
                   className="shrink-0 flex items-center min-h-touch px-sp-4 rounded-full text-f-sm font-semibold whitespace-nowrap transition-colors duration-[80ms]"
                   style={selected
-                    ? { background: 'var(--lav)', color: 'var(--bg)' }
-                    : { background: 'var(--bg-3)', color: 'var(--muted)', border: '1px solid var(--lav-border)' }}
+                    ? { background: 'var(--fg)', color: 'var(--bg)' }
+                    : { background: 'var(--bg-3)', color: 'var(--muted)', border: '1px solid var(--bdr)' }}
                 >
                   {label} {count}
                 </button>

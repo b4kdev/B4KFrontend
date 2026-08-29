@@ -43,7 +43,7 @@ export default function MobileBottomNav() {
             prefetch={false}
             className={[
               'flex flex-col items-center gap-sp-1 px-sp-4 py-sp-1 flex-1 min-h-touch justify-center',
-              active ? 'text-lav' : 'text-fg',
+              'text-fg',
             ].join(' ')}
             style={{ transitionProperty: 'color, opacity', transitionDuration: 'var(--dur-micro)', transitionTimingFunction: 'var(--ease-linear)', opacity: active ? undefined : 0.35 }}
             aria-label={t(labelKey)}

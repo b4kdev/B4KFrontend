@@ -63,7 +63,7 @@ export default function LeftPanelDefault({
           onClick={onOpenSaved}
           aria-label={t('leftPanel.viewSaved')}
           title={t('leftPanel.viewSaved')}
-          className="group flex items-center gap-1 min-h-touch px-sp-2 rounded-none text-fg hover:text-lav hover:bg-overlay-10 transition-colors"
+          className="group flex items-center gap-1 min-h-touch px-sp-2 rounded-none text-fg hover:text-fg hover:bg-overlay-10 transition-colors"
         >
           <Bookmark size={24} strokeWidth={2} aria-hidden="true" className="opacity-[0.35] group-hover:opacity-100 transition-opacity" />
           <span className="text-f-sm">{t('leftPanel.savedLabel')}</span>
@@ -86,7 +86,7 @@ export default function LeftPanelDefault({
                 className={[
                   'catalogue-row text-left w-full min-h-touch px-sp-3 rounded-none text-sm font-medium',
                   isActive
-                    ? 'bg-lav-dim text-lav'
+                    ? 'bg-muted-3 text-fg'
                     : 'text-fg',
                 ].join(' ')}
               >
@@ -122,7 +122,7 @@ export default function LeftPanelDefault({
                   'px-sp-3 py-1.5 rounded-full text-xs font-medium transition-colors',
                   'min-h-[32px]',
                   isActive
-                    ? 'bg-lav text-bg'
+                    ? 'bg-fg text-bg'
                     : 'bg-overlay-10 text-muted hover:text-fg',
                 ].join(' ')}
               >
@@ -206,7 +206,7 @@ export default function LeftPanelDefault({
                     className={[
                       'shrink-0 w-8 h-8 flex items-center justify-center rounded-none transition-colors',
                       inPlan
-                        ? 'text-lav cursor-default'
+                        ? 'text-fg cursor-default'
                         : addDisabled
                           ? 'text-muted-3 cursor-not-allowed'
                           : 'text-muted-2 hover:bg-overlay-10 hover:text-fg',
@@ -225,7 +225,7 @@ export default function LeftPanelDefault({
                     <Bookmark
                       size={16}
                       strokeWidth={2}
-                      className={saved ? 'text-lav' : 'text-muted-2'}
+                      className={saved ? 'text-fg' : 'text-muted-2'}
                       fill={saved ? 'currentColor' : 'none'}
                       aria-hidden="true"
                     />

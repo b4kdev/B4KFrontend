@@ -68,7 +68,7 @@ export default function SavedPage() {
 
   const tabClass = (active: boolean) => [
     'px-sp-4 py-sp-3 text-f-md font-semibold tracking-[0.02em] transition-colors min-h-[44px] flex items-center -mb-px',
-    active ? 'text-lav border-b-2 border-lav' : 'text-muted hover:text-fg',
+    active ? 'text-fg border-b-2 border-fg' : 'text-muted hover:text-fg',
   ].join(' ')
 
   function handleUnsave(planId: string) {
@@ -152,7 +152,7 @@ export default function SavedPage() {
           <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+            className="flex items-center gap-sp-2 text-f-md font-semibold text-fg hover:opacity-80 transition-opacity mt-sp-2 min-h-touch px-sp-4"
           >
             <RefreshCw size={14} strokeWidth={2} />{t('error.retry')}
           </button>
@@ -166,7 +166,7 @@ export default function SavedPage() {
             <FileText size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
             <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.myPlans.title')}</p>
             <p className="text-f-md text-muted max-w-[320px] mb-sp-5">{t('empty.myPlans.desc')}</p>
-            <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-none text-f-md font-semibold text-bg min-h-touch" style={{ background: 'var(--lav)' }}>
+            <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-none text-f-md font-semibold text-bg bg-fg min-h-touch">
               <Map size={15} strokeWidth={2} />{t('empty.myPlans.cta')}
             </Link>
           </div>
@@ -216,7 +216,7 @@ export default function SavedPage() {
                   </Link>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-sp-2 mb-[4px]">
-                      <Link href={`/plan/${plan.id}`} className="text-f-base font-semibold text-fg leading-snug line-clamp-1 hover:text-lav transition-colors">
+                      <Link href={`/plan/${plan.id}`} className="text-f-base font-semibold text-fg leading-snug line-clamp-1 hover:opacity-80 transition-opacity">
                         {plan.title}
                       </Link>
                       {plan.is_draft && (
@@ -238,8 +238,8 @@ export default function SavedPage() {
                       <Link
                         href={`/map?plan=${plan.id}`}
                         aria-label={t('myPlan.editAriaLabel', { title: plan.title })}
-                        className="flex items-center gap-[4px] text-f-xs font-semibold text-lav hover:opacity-70 transition-opacity min-h-[28px] px-sp-2 rounded-none"
-                        style={{ border: '1px solid var(--lav-border)' }}
+                        className="flex items-center gap-[4px] text-f-xs font-semibold text-fg hover:opacity-70 transition-opacity min-h-[28px] px-sp-2 rounded-none"
+                        style={{ border: '1px solid var(--bdr)' }}
                       >
                         <Edit2 size={11} strokeWidth={2} aria-hidden="true" />
                         {t('myPlan.edit')}
@@ -279,7 +279,7 @@ export default function SavedPage() {
             <Bookmark size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
             <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.savedPlans.title')}</p>
             <p className="text-f-md text-muted max-w-[320px] mb-sp-5">{t('empty.savedPlans.desc')}</p>
-            <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-none text-f-md font-semibold text-bg min-h-touch" style={{ background: 'var(--lav)' }}>
+            <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-none text-f-md font-semibold text-bg bg-fg min-h-touch">
               <Map size={15} strokeWidth={2} />{t('empty.savedPlans.cta')}
             </Link>
           </div>
@@ -300,7 +300,7 @@ export default function SavedPage() {
                   <MapPin size={22} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />
                 </Link>
                 <div className="flex-1 min-w-0">
-                  <Link href={`/plan/${plan.id}`} className="block text-f-base font-semibold text-fg leading-snug mb-[4px] line-clamp-2 hover:text-lav transition-colors">
+                  <Link href={`/plan/${plan.id}`} className="block text-f-base font-semibold text-fg leading-snug mb-[4px] line-clamp-2 hover:opacity-80 transition-opacity">
                     {plan.title}
                   </Link>
                   <p className="text-f-sm text-muted mb-sp-2">{plan.author_name}</p>
@@ -315,7 +315,7 @@ export default function SavedPage() {
                 <button
                   onClick={() => handleUnsave(plan.id)}
                   aria-label={t('unsave.ariaLabel', { title: plan.title })}
-                  className="text-lav hover:text-muted transition-colors min-w-touch min-h-touch flex items-center justify-center shrink-0"
+                  className="text-fg hover:text-muted transition-colors min-w-touch min-h-touch flex items-center justify-center shrink-0"
                   title={t('unsave.label')}
                 >
                   <Bookmark size={16} strokeWidth={2} fill="currentColor" />

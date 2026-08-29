@@ -63,7 +63,7 @@ export default function HelpClient() {
       </div>
 
       <div className="flex items-center gap-sp-3 mb-sp-8">
-        <HelpCircle size={22} strokeWidth={2} className="text-lav shrink-0" />
+        <HelpCircle size={22} strokeWidth={2} className="text-fg shrink-0" />
         <h1 className="font-display text-fg text-f-2xl">
           {t('title')}
         </h1>
@@ -135,15 +135,15 @@ export default function HelpClient() {
               className="w-10 h-10 rounded-none flex items-center justify-center shrink-0"
               style={{ background: 'var(--bg-3)' }}
             >
-              <Mail size={18} strokeWidth={2} className="text-lav" />
+              <Mail size={18} strokeWidth={2} className="text-fg" />
             </div>
             <div className="min-w-0">
               <p className="text-f-md text-muted mb-sp-3">{t('sections.contact.desc')}</p>
               <div className="flex flex-wrap items-center gap-sp-2">
                 <a
                   href={t('sections.contact.ctaEmailHref')}
-                  className="inline-flex items-center gap-sp-2 px-sp-4 py-sp-2 rounded-none text-f-md font-semibold text-lav min-h-touch hover:text-fg transition-colors"
-                  style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
+                  className="inline-flex items-center gap-sp-2 px-sp-4 py-sp-2 rounded-none text-f-md font-semibold text-fg min-h-touch hover:text-fg transition-colors"
+                  style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
                 >
                   <Mail size={14} strokeWidth={2} />
                   {t('sections.contact.ctaEmail')}

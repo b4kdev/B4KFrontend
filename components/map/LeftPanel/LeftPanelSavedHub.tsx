@@ -50,7 +50,7 @@ export default function LeftPanelSavedHub({ onClose, onSelectPoi, onFolderChange
 
   const tabClass = (active: boolean) => [
     'flex-1 min-h-touch text-f-sm font-semibold transition-colors',
-    active ? 'text-lav border-b-2 border-lav' : 'text-muted',
+    active ? 'text-fg border-b-2 border-fg' : 'text-muted',
   ].join(' ')
 
   return (

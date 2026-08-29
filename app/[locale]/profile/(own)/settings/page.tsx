@@ -110,7 +110,7 @@ function DeleteConfirmModal({
               onKeyDown={(e) => { if (e.key === 'Enter') handleReauth() }}
               autoComplete="current-password"
               autoFocus
-              className="w-full rounded-none px-sp-3 min-h-touch text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-lav-border"
+              className="w-full rounded-none px-sp-3 min-h-touch text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-fg"
               style={{ border: reauthError ? '1px solid var(--danger)' : '1px solid var(--bdr)' }}
               aria-label={t('settings.reauth.password')}
               aria-invalid={reauthError.length > 0}
@@ -128,10 +128,8 @@ function DeleteConfirmModal({
               <button
                 onClick={handleReauth}
                 disabled={pw.length === 0 || verifying}
-                className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-fg transition-opacity"
+                className="flex-1 min-h-touch rounded-none text-f-md font-semibold bg-fg text-bg transition-opacity"
                 style={{
-                  background: 'var(--lav-dim)',
-                  border: '1px solid var(--lav-border)',
                   opacity: pw.length > 0 && !verifying ? 1 : 0.4,
                   cursor: pw.length > 0 && !verifying ? 'pointer' : 'not-allowed',
                 }}
@@ -222,7 +220,7 @@ function SegToggle({
             onClick={() => onChange(v)}
             className={[
               'px-sp-4 min-h-[36px] text-f-sm font-semibold transition-colors',
-              active ? 'bg-lav-dim text-lav' : 'text-muted hover:text-fg',
+              active ? 'bg-bg-3 text-fg' : 'text-muted hover:text-fg',
             ].join(' ')}
           >
             {v ? onLabel : offLabel}
@@ -581,8 +579,7 @@ export default function SettingsPage() {
                 <button
                   onClick={handleAvatarPick}
                   disabled={avatarBusy}
-                  className="flex items-center gap-1.5 min-h-touch px-sp-3 rounded-none text-f-sm font-semibold text-lav bg-lav-dim hover:bg-lav-mid transition-colors"
-                  style={{ border: '1px solid var(--lav-border)', opacity: avatarBusy ? 0.5 : 1 }}
+                  className="flex items-center gap-1.5 min-h-touch px-sp-3 rounded-none text-f-sm font-semibold text-bg bg-fg hover:opacity-90 disabled:opacity-50 transition-opacity"
                   aria-label={t('settings.avatar.upload')}
                 >
                   <Upload size={14} strokeWidth={2} aria-hidden="true" />
@@ -616,7 +613,7 @@ export default function SettingsPage() {
                   maxLength={40}
                   placeholder={t('settings.identity.displayNamePlaceholder')}
                   autoComplete="name"
-                  className="w-full rounded-none px-sp-3 min-h-touch text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-lav-border"
+                  className="w-full rounded-none px-sp-3 min-h-touch text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-fg"
                   style={{ border: '1px solid var(--bdr)' }}
                   aria-label={t('settings.identity.displayName')}
                 />
@@ -632,7 +629,7 @@ export default function SettingsPage() {
                   maxLength={150}
                   rows={3}
                   placeholder={t('settings.identity.bioPlaceholder')}
-                  className="w-full rounded-none px-sp-3 py-sp-2 text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-lav-border resize-none"
+                  className="w-full rounded-none px-sp-3 py-sp-2 text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-fg resize-none"
                   style={{ border: '1px solid var(--bdr)' }}
                   aria-label={t('settings.identity.bio')}
                 />
@@ -644,14 +641,13 @@ export default function SettingsPage() {
                 onClick={handleIdentitySave}
                 disabled={identitySaving}
                 className={[
-                  'self-start min-h-touch px-sp-6 rounded-full text-f-md font-semibold transition-all',
-                  identitySaved ? 'bg-success/20 text-success' : 'bg-lav-dim text-lav hover:bg-lav-mid',
+                  'self-start min-h-touch px-sp-6 rounded-full text-f-md font-semibold transition-all disabled:opacity-50',
+                  identitySaved ? 'bg-success/20 text-success' : 'bg-fg text-bg hover:opacity-90',
                 ].join(' ')}
                 style={{
                   border: identitySaved
                     ? '1px solid color-mix(in srgb, var(--success) 30%, transparent)'
-                    : '1px solid var(--lav-border)',
-                  opacity: identitySaving ? 0.5 : 1,
+                    : 'none',
                 }}
                 aria-label={t('settings.identity.save')}
               >
@@ -731,7 +727,7 @@ export default function SettingsPage() {
                       onClick={() => handleTransport(val)}
                       className={[
                         'flex items-center gap-1.5 px-sp-4 min-h-[36px] text-f-sm font-semibold transition-colors',
-                        active ? 'bg-lav-dim text-lav' : 'text-muted hover:text-fg',
+                        active ? 'bg-bg-3 text-fg' : 'text-muted hover:text-fg',
                       ].join(' ')}
                     >
                       {val === 'car'
@@ -763,10 +759,10 @@ export default function SettingsPage() {
                       className={[
                         'min-h-touch px-sp-4 rounded-full text-f-sm font-semibold transition-colors',
                         active
-                          ? 'bg-lav-dim text-lav'
+                          ? 'bg-bg-3 text-fg'
                           : 'text-muted hover:text-fg',
                       ].join(' ')}
-                      style={{ border: active ? '1px solid var(--lav-border)' : '1px solid var(--bdr)' }}
+                      style={{ border: active ? '1px solid var(--bdr)' : '1px solid var(--bdr)' }}
                     >
                       {t(`settings.interests.${key}`)}
                     </button>
@@ -785,9 +781,9 @@ export default function SettingsPage() {
             'self-start min-h-touch px-sp-8 rounded-full text-f-md font-semibold transition-all',
             saved
               ? 'bg-success/20 text-success'
-              : 'bg-lav-dim text-lav hover:bg-lav-mid',
+              : 'bg-fg text-bg hover:opacity-90',
           ].join(' ')}
-          style={{ border: saved ? '1px solid color-mix(in srgb, var(--success) 30%, transparent)' : '1px solid var(--lav-border)' }}
+          style={{ border: saved ? '1px solid color-mix(in srgb, var(--success) 30%, transparent)' : 'none' }}
           aria-label={saving ? t('settings.preferences.saving') : saved ? t('settings.preferences.saved') : t('settings.preferences.save')}
         >
           {saving ? t('settings.preferences.saving') : saved ? (
@@ -818,7 +814,7 @@ export default function SettingsPage() {
                     disabled={!notifPrefs}
                     onClick={() => handleNotifToggle(type)}
                     className="relative shrink-0 w-11 h-6 rounded-full transition-colors min-w-[44px]"
-                    style={{ background: on ? 'var(--lav)' : 'var(--bg-3)', border: '1px solid var(--bdr)', opacity: notifPrefs ? 1 : 0.5 }}
+                    style={{ background: on ? 'var(--fg)' : 'var(--bg-3)', border: '1px solid var(--bdr)', opacity: notifPrefs ? 1 : 0.5 }}
                   >
                     <span
                       className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full transition-transform"
@@ -903,7 +899,7 @@ export default function SettingsPage() {
                     value={pwCurrent}
                     onChange={(e) => { setPwCurrent(e.target.value); setPwStatus('idle') }}
                     autoComplete="current-password"
-                    className="w-full rounded-none px-sp-3 pr-12 min-h-touch text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-lav-border"
+                    className="w-full rounded-none px-sp-3 pr-12 min-h-touch text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-fg"
                     style={{ border: '1px solid var(--bdr)' }}
                     aria-label={t('settings.password.current')}
                   />
@@ -935,7 +931,7 @@ export default function SettingsPage() {
                     onChange={(e) => { setPwNew(e.target.value); setPwStatus('idle') }}
                     autoComplete="new-password"
                     minLength={8}
-                    className="w-full rounded-none px-sp-3 pr-12 min-h-touch text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-lav-border"
+                    className="w-full rounded-none px-sp-3 pr-12 min-h-touch text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-fg"
                     style={{ border: '1px solid var(--bdr)' }}
                     aria-label={t('settings.password.new')}
                     aria-describedby="pw-new-hint"
@@ -967,7 +963,7 @@ export default function SettingsPage() {
                   value={pwConfirm}
                   onChange={(e) => { setPwConfirm(e.target.value); setPwStatus('idle') }}
                   autoComplete="new-password"
-                  className="w-full rounded-none px-sp-3 min-h-touch text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-lav-border"
+                  className="w-full rounded-none px-sp-3 min-h-touch text-f-base text-fg bg-bg-3 outline-none focus:ring-1 focus:ring-fg"
                   style={{
                     border: pwConfirm.length > 0 && pwNew !== pwConfirm
                       ? '1px solid var(--danger)'
@@ -996,10 +992,8 @@ export default function SettingsPage() {
               <button
                 onClick={handlePasswordChange}
                 disabled={!pwValid || pwChanging}
-                className="self-start min-h-touch px-sp-8 rounded-full text-f-md font-semibold transition-all bg-lav-dim text-lav hover:bg-lav-mid"
+                className="self-start min-h-touch px-sp-8 rounded-full text-f-md font-semibold transition-all bg-fg text-bg hover:opacity-90 disabled:opacity-40"
                 style={{
-                  border: '1px solid var(--lav-border)',
-                  opacity: pwValid && !pwChanging ? 1 : 0.4,
                   cursor: pwValid && !pwChanging ? 'pointer' : 'not-allowed',
                 }}
                 aria-label={t('settings.password.submit')}

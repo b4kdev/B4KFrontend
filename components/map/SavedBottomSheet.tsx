@@ -68,7 +68,7 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
 
   const tabClass = (active: boolean) => [
     'flex-1 min-h-touch text-f-sm font-semibold transition-colors',
-    active ? 'text-lav border-b-2 border-lav' : 'text-muted hover:text-fg',
+    active ? 'text-fg border-b-2 border-fg' : 'text-muted hover:text-fg',
   ].join(' ')
 
   return (

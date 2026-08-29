@@ -86,6 +86,15 @@ body {
   --warn-c:      rgba(251,191,36,0.85);
   --si-c:        rgba(251,191,36,0.85);
 
+  /* Monochrome reskin — additive, not yet used by any component. --line is
+     the reskin's hairline-divider token (close to --muted-2 numerically but
+     kept distinct since the reskin's semantic use differs); --on-media is a
+     theme-invariant white for text overlaid on a photo/media placeholder
+     (never flips with [data-theme="light"] — matches the reskin file's own
+     rule, since photography shouldn't invert with the UI theme). */
+  --line:        rgba(255,255,255,0.14);
+  --on-media:    #ffffff;
+
   /* Touch target — Apple HIG + WCAG AAA minimum */
   --touch-min: 44px;
 
@@ -173,6 +182,7 @@ body {
   --ok:      rgba(22,163,74,0.85);
   --warn-c:  rgba(180,130,0,0.85);
   --si-c:    rgba(180,130,0,0.85);
+  --line:    rgba(0,0,0,0.12);
 }
 
 /* ─── Locale font stacks ────────────────────────────────────── */

@@ -5,6 +5,7 @@
 // ("POI detail pages must be SSR (not client-rendered) for Naver indexing").
 import { bffFetch, BffError } from './bff'
 import { getDisplayName } from './display-name'
+import { DB_POI_MAPPING } from './db-poi-mapping'
 
 // api.get_place (BFF: GET /places/:id) — same shape hooks/usePlaceDetail.ts consumes.
 interface RawPlaceDetail {
@@ -39,6 +40,19 @@ export interface PlaceDetail {
   like_count:        number
 }
 
+// TODO(remove-hardcoding-poi): app/api/explore/* and app/api/home/* still ship
+// curated-content codes ('KD016-007') as poi_id instead of the live DB's
+// numeric place_id (the real content-plan rework — e.g. DB-backed curated
+// sections via core.entities collection/core.poi_context, migration 041 —
+// hasn't landed yet). DB_POI_MAPPING is a stopgap translating those codes to
+// real place_id so /place/[poiId] resolves instead of 404ing (see the
+// b4korea.com/place/KD016-007 404 this patched). Once seed sections carry the
+// real numeric id directly, delete this mapping lookup and lib/db-poi-mapping.ts.
+function resolvePoiId(poiId: string): string {
+  const mapped = DB_POI_MAPPING[poiId]
+  return mapped !== undefined ? String(mapped) : poiId
+}
+
 /** null when the poi_id doesn't resolve (404) — callers should notFound(). */
 export async function fetchPlaceDetail(poiId: string, locale: string): Promise<PlaceDetail | null> {
   let row: RawPlaceDetail
@@ -46,7 +60,7 @@ export async function fetchPlaceDetail(poiId: string, locale: string): Promise<P
     // Fully public read, no per-viewer fields in this shape — force anonymous
     // (token: null) rather than let bffFetch look up the cookie session, which
     // would risk a token-refresh cookie write during Server Component render.
-    row = await bffFetch<RawPlaceDetail>(`/places/${poiId}`, { token: null })
+    row = await bffFetch<RawPlaceDetail>(`/places/${resolvePoiId(poiId)}`, { token: null })
   } catch (e) {
     if (e instanceof BffError && e.status === 404) return null
     throw e

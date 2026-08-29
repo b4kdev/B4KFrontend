@@ -6,6 +6,9 @@
 // none have a confirmed core.poi row here, so all 9 ship verified:false pending
 // BLK-37, same as every other placeholder in this pass. Fixed slug, badge-scoped
 // like K-Beauty's perfume-flagships.
+import 'server-only'
+import { bffFetch } from './bff'
+import { getRelationLabel } from './content-relation-labels'
 
 export interface MichelinNoodlePoi {
   poi_id: string
@@ -13,7 +16,9 @@ export interface MichelinNoodlePoi {
   name_en: string
   primary_image_url: string | null
   display_region: string
-  poi_type: 'naengmyeon' | 'other'
+  /** Seed data: 'naengmyeon'|'other' invented bucket. Real API data: the raw
+   *  core.poi_context.relation value. Free string so both sources fit one field. */
+  poi_type: string
   relationship_ko: string
   relationship_en: string
   coords_lat: number
@@ -85,4 +90,60 @@ export const SEED_MICHELIN_NOODLES: MichelinNoodlePoi[] = [
 
 export function getMichelinNoodles(includeUnverified: boolean): MichelinNoodlePoi[] {
   return SEED_MICHELIN_NOODLES.filter(poi => includeUnverified || poi.verified !== false)
+}
+
+// core.entities row backing real data. 2026-08-29: list_entities/PostgREST schema cache
+// fixed (was broken 2026-08-27) — searched all 108 entity_type='collection' rows via
+// GET /entities?type=collection, matched by POI overlap against SEED_MICHELIN_NOODLES'
+// placeholder names. entity 474 "냉면 한 그릇 때문에 간다 — 서울 냉면 성지순례"
+// (slide-kfood-101) contains 우래옥/Woo Lae Oak and 필동면옥/Pildong Myeonok — exact
+// name matches. Note: this collection is naengmyeon-specific (5 items, all naengmyeon
+// restaurants), not the broader "미슐랭이 뽑은 면 요리 20곳" (Michelin-picked noodle
+// dishes generally) the seed's framing implies — no Michelin-badged or non-naengmyeon
+// noodle collection exists among the 108. Closest real match; not an exact scope match.
+const MICHELIN_NOODLES_ENTITY: { slug: string; entityId: number } | null = { slug: 'slide-kfood-101', entityId: 474 }
+
+interface ContextItem {
+  poi_id: number
+  name_ko: string
+  relation: string
+  coords_lat: number
+  coords_lng: number
+  primary_image_url: string | null
+  display_region: string | null
+  base_translations?: { en?: { name?: string } }
+}
+
+async function fetchRealMichelinNoodles(includeUnverified: boolean): Promise<MichelinNoodlePoi[] | null> {
+  if (!MICHELIN_NOODLES_ENTITY) return null
+  try {
+    const context = await bffFetch<ContextItem[]>(`/context/entity:${MICHELIN_NOODLES_ENTITY.entityId}?limit=50`, { token: null })
+    if (!context.length) return null
+
+    const items: MichelinNoodlePoi[] = context.map(c => ({
+      poi_id: String(c.poi_id),
+      name_ko: c.name_ko,
+      name_en: c.base_translations?.en?.name ?? c.name_ko,
+      primary_image_url: c.primary_image_url,
+      display_region: c.display_region ?? '',
+      poi_type: c.relation,
+      relationship_ko: getRelationLabel(c.relation, 'ko'),
+      relationship_en: getRelationLabel(c.relation, 'en'),
+      coords_lat: c.coords_lat,
+      coords_lng: c.coords_lng,
+      verified: true,
+    }))
+
+    return includeUnverified ? items : items.filter(i => i.verified !== false)
+  } catch {
+    return null
+  }
+}
+
+/** Route entrypoint — tries real BFF data first, falls back to seed. Returns
+ *  {totalCount, items} directly (this page has no wrapping *Detail type). */
+export async function resolveMichelinNoodles(includeUnverified: boolean): Promise<{ totalCount: number; items: MichelinNoodlePoi[] }> {
+  const real = await fetchRealMichelinNoodles(includeUnverified)
+  if (real) return { totalCount: real.length, items: real }
+  return { totalCount: MICHELIN_NOODLES_TOTAL, items: getMichelinNoodles(includeUnverified) }
 }

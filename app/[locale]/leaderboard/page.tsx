@@ -48,7 +48,7 @@ export default function LeaderboardPage() {
 
   const pillClass = (active: boolean) => [
     'px-sp-4 py-[7px] rounded-full text-f-sm font-semibold whitespace-nowrap transition-colors min-h-touch flex items-center shrink-0',
-    active ? 'bg-lav text-bg' : 'text-muted hover:text-fg',
+    active ? 'bg-fg text-bg' : 'text-muted hover:text-fg',
   ].join(' ')
 
   return (
@@ -108,7 +108,7 @@ export default function LeaderboardPage() {
           <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+            className="flex items-center gap-sp-2 text-f-md font-semibold text-fg hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
           >
             <RefreshCw size={14} strokeWidth={2} />{t('error.retry')}
           </button>
@@ -197,10 +197,10 @@ export default function LeaderboardPage() {
       {!isLoading && !isError && data?.your_rank && (
         <div
           className="sticky bottom-0 z-10 mt-sp-3 flex items-center gap-sp-3 p-sp-4 min-h-touch"
-          style={{ background: 'var(--bg-3)', border: '1px solid var(--lav-border)' }}
+          style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
           aria-label={t('yourRank.ariaLabel', { rank: data.your_rank.rank })}
         >
-          <span className="text-f-md font-bold text-lav shrink-0">
+          <span className="text-f-md font-bold text-fg shrink-0">
             {t('yourRank.label', { rank: data.your_rank.rank })}
           </span>
           <TrendIndicator trend={data.your_rank.trend} label={t(`trend.${data.your_rank.trend}`)} />

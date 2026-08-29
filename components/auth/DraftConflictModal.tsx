@@ -81,13 +81,13 @@ export default function DraftConflictModal({
               {t('deviceDraft')}
             </div>
             <div className="flex items-center gap-sp-2 text-fg text-f-base font-semibold">
-              <MapPin size={14} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
+              <MapPin size={14} strokeWidth={2} className="text-fg shrink-0" aria-hidden="true" />
               {t('stops', { count: deviceDraft.stopCount })}
             </div>
             <p className="text-muted text-f-xs">{t('lastModified', { time: relativeTime(deviceDraft.lastModified) })}</p>
             <button
               onClick={onKeepDevice}
-              className="w-full min-h-touch flex items-center justify-center bg-lav text-bg rounded-none text-f-sm font-semibold transition-opacity hover:opacity-90 active:opacity-75"
+              className="w-full min-h-touch flex items-center justify-center bg-fg text-bg rounded-none text-f-sm font-semibold transition-opacity hover:opacity-90 active:opacity-75"
             >
               {t('keep')}
             </button>
@@ -103,14 +103,14 @@ export default function DraftConflictModal({
               {t('accountDraft')}
             </div>
             <div className="flex items-center gap-sp-2 text-fg text-f-base font-semibold">
-              <MapPin size={14} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
+              <MapPin size={14} strokeWidth={2} className="text-fg shrink-0" aria-hidden="true" />
               {t('stops', { count: accountDraft.stopCount })}
             </div>
             <p className="text-muted text-f-xs">{t('lastModified', { time: relativeTime(accountDraft.lastModified) })}</p>
             <button
               onClick={onKeepAccount}
-              className="w-full min-h-touch flex items-center justify-center rounded-none text-f-sm font-semibold transition-colors hover:text-fg"
-              style={{ border: '1px solid var(--lav-border)', color: 'var(--lav)' }}
+              className="w-full min-h-touch flex items-center justify-center rounded-none text-f-sm font-semibold text-fg transition-opacity hover:opacity-90 active:opacity-75"
+              style={{ border: '1px solid var(--bdr)' }}
             >
               {t('keep')}
             </button>

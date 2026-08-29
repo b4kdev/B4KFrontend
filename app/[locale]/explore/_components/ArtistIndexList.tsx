@@ -57,7 +57,7 @@ export default function ArtistIndexList({ artists, selectedArtistId, onSelect }:
               className="w-full flex items-center gap-sp-4 px-sp-2 py-sp-3 min-h-touch text-left transition-colors"
               style={{
                 borderBottom: '1px solid var(--bdr)',
-                background: selected ? 'var(--lav-dim)' : 'transparent',
+                background: selected ? 'var(--muted-3)' : 'transparent',
               }}
             >
               <span
@@ -70,7 +70,7 @@ export default function ArtistIndexList({ artists, selectedArtistId, onSelect }:
               <span className="flex-1 min-w-0 flex flex-col gap-[2px]">
                 <span
                   className="text-f-base font-semibold leading-tight truncate"
-                  style={{ color: selected ? 'var(--lav)' : 'var(--fg)' }}
+                  style={{ color: 'var(--fg)' }}
                 >
                   {name}
                 </span>
@@ -79,7 +79,7 @@ export default function ArtistIndexList({ artists, selectedArtistId, onSelect }:
                 )}
               </span>
 
-              <span className="px-sp-2 py-0.5 rounded-full bg-lav-dim text-lav text-f-xs font-medium shrink-0">
+              <span className="px-sp-2 py-0.5 rounded-full bg-bg-3 text-fg text-f-xs font-medium shrink-0">
                 {artist.agency}
               </span>
             </button>
@@ -92,7 +92,7 @@ export default function ArtistIndexList({ artists, selectedArtistId, onSelect }:
           <button
             type="button"
             onClick={() => setExpanded(e => !e)}
-            className="text-f-sm font-semibold text-lav min-h-touch flex items-center gap-sp-1"
+            className="text-f-sm font-semibold text-fg min-h-touch flex items-center gap-sp-1"
           >
             {expanded ? t('kpopArtistNav.tileGrid.showLess') : t('kpopArtistNav.tileGrid.showMore', { count: hiddenCount })}
             {!expanded && <ChevronRight size={16} strokeWidth={2} aria-hidden="true" />}

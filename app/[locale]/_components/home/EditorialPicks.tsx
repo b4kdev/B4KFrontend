@@ -29,9 +29,9 @@ export default function EditorialPicks() {
               onClick={() => setCat(c.key)}
               className="shrink-0 px-sp-3 py-[5px] text-f-xs font-semibold rounded-full transition-colors duration-[80ms] leading-none"
               style={{
-                background: cat === c.key ? 'var(--lav)' : 'var(--bg-3)',
+                background: cat === c.key ? 'var(--fg)' : 'var(--bg-3)',
                 color: cat === c.key ? 'var(--bg)' : 'var(--muted)',
-                border: cat === c.key ? '1px solid var(--lav)' : '1px solid var(--bdr)',
+                border: cat === c.key ? '1px solid var(--fg)' : '1px solid var(--bdr)',
               }}
             >
               {t(c.labelKey)}

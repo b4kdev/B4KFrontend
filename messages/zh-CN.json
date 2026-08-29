@@ -984,6 +984,9 @@
       "preferences": {
         "heading": "偏好设置",
         "language": "语言",
+        "appearance": "Appearance",
+        "appearanceDark": "Dark",
+        "appearanceLight": "Light",
         "transport": "默认出行方式",
         "transportCar": "自驾",
         "transportPublic": "公共交通",
@@ -1357,9 +1360,9 @@
       "filterExperience": "Experience"
     },
     "perfumeFlagships": {
-      "breadcrumb": "Perfume Flagships",
-      "title": "Perfume Flagships",
-      "subtitle": "{count} perfume flagship stores",
+      "breadcrumb": "K-Beauty Flagship Tour",
+      "title": "K-Beauty Flagship Tour",
+      "subtitle": "{count} K-Beauty flagship stores",
       "filterAll": "All",
       "filterSeongsu": "Seongsu",
       "filterHannam": "Hannam",
@@ -1770,6 +1773,10 @@
   },
   "search": {
     "title": "搜索",
+    "pageTitle": "Search Results",
+    "breadcrumb": "Search",
+    "resultsSummary": "\"{query}\" — {places} Places · {plans} Plans · {explore} Explore",
+    "resultsCount": "{count} results",
     "placeholder": "搜索行程、地点...",
     "recentTitle": "最近搜索",
     "clearAll": "清除全部",

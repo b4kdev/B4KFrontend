@@ -75,9 +75,11 @@ export default function Sidebar() {
     transitionTimingFunction: 'var(--ease-linear)',
   };
 
+  // Monochrome direction (Figma "B4K Reskin" — DEC pending): active state is a
+  // filled fg icon on a subtle bg-3-tint pill, not the --lav accent.
   const railClass = (active: boolean) => [
     'flex items-center justify-center min-w-touch min-h-touch rounded-none',
-    active ? 'bg-lav-dim text-lav' : 'text-fg hover:bg-muted-3',
+    active ? 'bg-muted-3 text-fg' : 'text-fg hover:bg-muted-3',
   ].join(' ');
 
   const iconStyle = (active: boolean): CSSProperties =>

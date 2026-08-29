@@ -27,8 +27,8 @@ export default function ExploreChipFilter({ config, active, onChange }: Props) {
       className="shrink-0 flex items-center min-h-touch px-sp-4 rounded-full text-f-sm font-semibold whitespace-nowrap transition-colors duration-[80ms]"
       style={
         selected
-          ? { background: 'var(--lav)', color: 'var(--bg)' }
-          : { background: 'var(--bg-3)', color: 'var(--muted)', border: '1px solid var(--lav-border)' }
+          ? { background: 'var(--fg)', color: 'var(--bg)' }
+          : { background: 'var(--bg-3)', color: 'var(--muted)', border: '1px solid var(--bdr)' }
       }
     >
       {label}
