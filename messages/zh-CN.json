@@ -984,6 +984,9 @@
       "preferences": {
         "heading": "偏好设置",
         "language": "语言",
+        "appearance": "Appearance",
+        "appearanceDark": "Dark",
+        "appearanceLight": "Light",
         "transport": "默认出行方式",
         "transportCar": "自驾",
         "transportPublic": "公共交通",
@@ -1770,6 +1773,10 @@
   },
   "search": {
     "title": "搜索",
+    "pageTitle": "Search Results",
+    "breadcrumb": "Search",
+    "resultsSummary": "\"{query}\" — {places} Places · {plans} Plans · {explore} Explore",
+    "resultsCount": "{count} results",
     "placeholder": "搜索行程、地点...",
     "recentTitle": "最近搜索",
     "clearAll": "清除全部",
