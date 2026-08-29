@@ -105,7 +105,7 @@ export default function NotificationsClient() {
         </h1>
         {data && data.unread_count > 0 && (
           <div className="flex items-center gap-sp-3">
-            <span className="text-f-sm font-semibold text-lav">
+            <span className="text-f-sm font-semibold text-danger">
               {t('unread', { count: data.unread_count })}
             </span>
             <button
@@ -139,7 +139,7 @@ export default function NotificationsClient() {
           <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+            className="flex items-center gap-sp-2 text-f-md font-semibold text-muted hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
           >
             <RefreshCw size={14} strokeWidth={2} />{t('error.retry')}
           </button>
@@ -172,16 +172,16 @@ export default function NotificationsClient() {
                   const isLast = idx === group.items.length - 1
                   const itemClass = [
                     'flex items-start gap-sp-3 p-sp-4 hover:bg-muted-3 transition-colors min-h-touch w-full text-left',
-                    !n.is_read ? 'bg-lav-dim' : '',
+                    !n.is_read ? 'bg-muted-3' : '',
                   ].join(' ')
                   const itemStyle = !isLast ? { borderBottom: 'var(--bdr)' } : undefined
                   const inner = (
                     <>
                       <div
                         className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-[2px]"
-                        style={{ background: n.is_read ? 'var(--bg-3)' : 'var(--lav-mid)' }}
+                        style={{ background: n.is_read ? 'var(--bg-3)' : 'var(--muted-3)' }}
                       >
-                        <Icon size={16} strokeWidth={2} className={n.is_read ? 'text-muted' : 'text-lav'} />
+                        <Icon size={16} strokeWidth={2} className={n.is_read ? 'text-muted' : 'text-fg'} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-f-md font-semibold leading-snug text-fg">
@@ -228,7 +228,7 @@ export default function NotificationsClient() {
               <button
                 onClick={loadMore}
                 disabled={isLoadingMore}
-                className="flex items-center gap-sp-2 text-f-sm font-semibold text-lav hover:text-fg transition-colors min-h-touch px-sp-5 disabled:opacity-50"
+                className="flex items-center gap-sp-2 text-f-sm font-semibold text-muted hover:text-fg transition-colors min-h-touch px-sp-5 disabled:opacity-50"
               >
                 {isLoadingMore ? t('loading') : t('loadMore')}
               </button>

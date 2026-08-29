@@ -152,7 +152,7 @@ export default function POIBottomSheet({
 
           {/* Domain chip + region + open status */}
           <div className="flex flex-wrap items-center gap-sp-2 mb-sp-3">
-            <span className="px-sp-2 py-0.5 rounded-full bg-lav-dim text-lav text-f-xs font-medium leading-none">
+            <span className="px-sp-2 py-0.5 rounded-full bg-bg-3 text-fg text-f-xs font-medium leading-none">
               {poi.display_domain}
             </span>
             {poi.display_region_detail && (
@@ -186,10 +186,10 @@ export default function POIBottomSheet({
               className={[
                 'w-full min-h-touch flex items-center justify-center gap-sp-2 rounded-none font-semibold text-f-sm transition-all',
                 isInPlan
-                  ? 'bg-lav-dim text-lav cursor-default'
+                  ? 'bg-muted-3 text-fg cursor-default'
                   : addDisabled
                     ? 'bg-muted-3 text-muted cursor-not-allowed'
-                    : 'bg-lav text-bg hover:opacity-90 active:opacity-75',
+                    : 'bg-fg text-bg hover:opacity-90 active:opacity-75',
               ].join(' ')}
             >
               {isInPlan
@@ -224,7 +224,7 @@ export default function POIBottomSheet({
                 <Bookmark
                   size={16} strokeWidth={2}
                   fill={isSaved ? 'currentColor' : 'none'}
-                  className={isSaved ? 'text-lav' : 'text-muted'}
+                  className={isSaved ? 'text-fg' : 'text-muted'}
                   aria-hidden="true"
                 />
                 <span className={isSaved ? 'text-fg' : 'text-muted'}>{isSaved ? t('saved') : t('save')}</span>
@@ -247,7 +247,7 @@ export default function POIBottomSheet({
               href={poi.website_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-sp-2 text-lav text-f-sm font-medium mt-sp-4 min-h-touch"
+              className="inline-flex items-center gap-sp-2 text-fg text-f-sm font-medium mt-sp-4 min-h-touch"
             >
               <ExternalLink size={14} strokeWidth={2} aria-hidden="true" />
               {t('website')}

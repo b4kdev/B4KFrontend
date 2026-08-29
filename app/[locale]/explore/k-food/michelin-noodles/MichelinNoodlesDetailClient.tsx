@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
+import { getRelationLabel } from '@/lib/content-relation-labels'
 import type { MichelinNoodlePoi } from '@/lib/kfood-michelin-noodles'
 import MasonryGrid from '../../_components/MasonryGrid'
 import TypeFilterChips from '../../_components/TypeFilterChips'
@@ -15,12 +16,10 @@ interface ApiResponse {
   items: MichelinNoodlePoi[]
 }
 
-type TypeFilter = 'all' | 'naengmyeon' | 'other'
-
 export default function MichelinNoodlesDetailClient() {
   const t = useTranslations('explore')
   const locale = useLocale()
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
+  const [typeFilter, setTypeFilter] = useState<string>('all')
 
   const { data, isLoading, error, mutate } = useSWR<ApiResponse>(
     ['/api/explore/k-food/michelin-noodles', locale],
@@ -45,7 +44,7 @@ export default function MichelinNoodlesDetailClient() {
           <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+            className="flex items-center gap-sp-2 text-f-md font-semibold text-fg hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
           >
             <RefreshCw size={14} strokeWidth={2} />
             {t('error.retry')}
@@ -70,11 +69,12 @@ export default function MichelinNoodlesDetailClient() {
 
           <TypeFilterChips
             active={typeFilter}
-            onChange={(k) => setTypeFilter(k as TypeFilter)}
+            onChange={setTypeFilter}
             options={[
               { key: 'all', label: t('michelinNoodles.filterAll'), count: data.totalCount },
-              { key: 'naengmyeon', label: t('michelinNoodles.filterNaengmyeon') },
-              { key: 'other', label: t('michelinNoodles.filterOther') },
+              ...Array.from(new Set(data.items.map(p => p.poi_type))).map(key => ({
+                key, label: getRelationLabel(key, locale),
+              })),
             ]}
           />
 

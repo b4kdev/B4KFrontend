@@ -77,7 +77,7 @@ export default function ItineraryMobileSheet({
           <p className="text-f-md font-semibold text-fg leading-snug truncate">{itinerary.title}</p>
           <div className="flex items-center gap-sp-3">
             <span className="flex items-center gap-1 text-f-xs text-muted">
-              <MapPin size={11} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
+              <MapPin size={11} strokeWidth={2} className="text-muted shrink-0" aria-hidden="true" />
               {t('stats.stops', { count: itinerary.stops.length })}
             </span>
             <span className="flex items-center gap-1 text-f-xs text-muted">

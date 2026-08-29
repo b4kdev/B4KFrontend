@@ -211,7 +211,7 @@ export default function SavedPlacesPanel() {
         <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
         <button
           onClick={() => mutate()}
-          className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+          className="flex items-center gap-sp-2 text-f-md font-semibold text-fg hover:opacity-80 transition-opacity mt-sp-2 min-h-touch px-sp-4"
         >
           <RefreshCw size={14} strokeWidth={2} />{t('error.retry')}
         </button>
@@ -238,14 +238,14 @@ export default function SavedPlacesPanel() {
               <>
                 <button
                   onClick={() => setNewFolderOpen(v => !v)}
-                  className="flex items-center gap-sp-2 text-f-sm font-semibold text-lav hover:opacity-80 transition-opacity min-h-touch"
+                  className="flex items-center gap-sp-2 text-f-sm font-semibold text-fg hover:opacity-80 transition-opacity min-h-touch"
                 >
                   <FolderPlus size={16} strokeWidth={2} aria-hidden="true" />{t('folder.newFolder')}
                 </button>
                 {data.folders.length > 0 && (
                   <button
                     onClick={() => enterSelectMode()}
-                    className="flex items-center gap-sp-2 text-f-sm font-semibold text-lav hover:opacity-80 transition-opacity min-h-touch"
+                    className="flex items-center gap-sp-2 text-f-sm font-semibold text-fg hover:opacity-80 transition-opacity min-h-touch"
                   >
                     <Sparkles size={16} strokeWidth={2} aria-hidden="true" />{t('folder.createPlan')}
                   </button>
@@ -265,10 +265,10 @@ export default function SavedPlacesPanel() {
                 maxLength={50}
                 autoFocus
                 aria-label={t('folder.newFolderPlaceholder')}
-                className="flex-1 min-h-touch px-sp-3 rounded-none bg-bg-3 text-f-base text-fg outline-none focus:ring-1 focus:ring-lav-border"
+                className="flex-1 min-h-touch px-sp-3 rounded-none bg-bg-3 text-f-base text-fg outline-none focus:ring-1 focus:ring-fg"
                 style={{ border: '1px solid var(--bdr)' }}
               />
-              <button onClick={handleCreateFolder} disabled={!newFolderName.trim() || crudBusy} className="min-h-touch px-sp-4 rounded-none bg-lav text-bg text-f-sm font-semibold disabled:opacity-40">
+              <button onClick={handleCreateFolder} disabled={!newFolderName.trim() || crudBusy} className="min-h-touch px-sp-4 rounded-none bg-fg text-bg text-f-sm font-semibold disabled:opacity-40">
                 {t('folder.create')}
               </button>
             </div>
@@ -279,7 +279,7 @@ export default function SavedPlacesPanel() {
               <FolderOpen size={40} strokeWidth={2} className="text-fg opacity-[0.15] mb-sp-4" />
               <p className="text-f-xl font-semibold text-fg mb-sp-2">{t('empty.places.title')}</p>
               <p className="text-f-md text-muted max-w-[320px] mb-sp-5">{t('empty.places.desc')}</p>
-              <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-none text-f-md font-semibold text-bg min-h-touch" style={{ background: 'var(--lav)' }}>
+              <Link href="/map" className="flex items-center gap-sp-2 px-sp-5 py-sp-3 rounded-none text-f-md font-semibold text-bg bg-fg min-h-touch">
                 <Map size={15} strokeWidth={2} />{t('empty.places.cta')}
               </Link>
             </div>
@@ -315,7 +315,7 @@ export default function SavedPlacesPanel() {
               <button
                 onClick={handleGenerate}
                 disabled={generating || selectedFolderIds.size === 0 || !isOnline}
-                className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-none font-semibold text-f-base hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40"
+                className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-fg text-bg rounded-none font-semibold text-f-base hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40"
               >
                 {generating
                   ? <span className="font-mono">{t('folder.generating')}</span>
@@ -364,7 +364,7 @@ export default function SavedPlacesPanel() {
                 <button
                   onClick={() => { setPlacesView('folders'); enterSelectMode(activeFolder) }}
                   disabled={visiblePois.length === 0}
-                  className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-lav text-bg rounded-none font-semibold text-f-base hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40"
+                  className="w-full min-h-touch flex items-center justify-center gap-sp-2 bg-fg text-bg rounded-none font-semibold text-f-base hover:opacity-90 active:opacity-75 transition-opacity disabled:opacity-40"
                 >
                   <Sparkles size={16} strokeWidth={2} aria-hidden="true" />{t('folder.generatePlan')}
                 </button>
@@ -402,14 +402,14 @@ export default function SavedPlacesPanel() {
               maxLength={50}
               autoFocus
               aria-label={t('folder.renameTitle')}
-              className="w-full min-h-touch px-sp-3 rounded-none bg-bg-3 text-f-base text-fg outline-none focus:ring-1 focus:ring-lav-border"
+              className="w-full min-h-touch px-sp-3 rounded-none bg-bg-3 text-f-base text-fg outline-none focus:ring-1 focus:ring-fg"
               style={{ border: '1px solid var(--bdr)' }}
             />
             <div className="flex gap-sp-3">
               <button onClick={() => setRenameFolder(null)} className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-muted hover:text-fg transition-colors" style={{ border: '1px solid var(--bdr)' }}>
                 {t('folder.deleteCancel')}
               </button>
-              <button onClick={handleRenameFolder} disabled={!renameValue.trim() || crudBusy} className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-bg bg-lav disabled:opacity-40">
+              <button onClick={handleRenameFolder} disabled={!renameValue.trim() || crudBusy} className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-bg bg-fg disabled:opacity-40">
                 {t('folder.save')}
               </button>
             </div>

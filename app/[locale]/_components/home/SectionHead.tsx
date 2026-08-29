@@ -18,7 +18,7 @@ export default function SectionHead({ title, subtitle, viewAllLabel, viewAllHref
       {viewAllLabel && viewAllHref && (
         <Link
           href={viewAllHref}
-          className="flex items-center gap-1 text-f-sm text-lav hover:opacity-80 transition-opacity whitespace-nowrap shrink-0 ml-sp-4"
+          className="flex items-center gap-1 text-f-sm text-muted hover:text-fg transition-colors whitespace-nowrap shrink-0 ml-sp-4"
         >
           {viewAllLabel}
           <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />

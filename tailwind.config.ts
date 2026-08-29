@@ -63,6 +63,9 @@ const config: Config = {
         "info":       "var(--info)",
         "ok":         "var(--ok)",
         "warn-c":     "var(--warn-c)",
+        // Monochrome reskin — additive
+        "line":       "var(--line)",
+        "on-media":   "var(--on-media)",
       },
       spacing: {
         "sp-1":  "var(--sp-1)",

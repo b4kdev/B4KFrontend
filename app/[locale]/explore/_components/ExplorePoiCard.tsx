@@ -110,7 +110,7 @@ export default function ExplorePoiCard({ poi, domain }: { poi: ExplorePoi; domai
         {dDay && (
           <span
             className="absolute top-sp-2 right-sp-2 text-f-xxs font-bold px-sp-2 py-[3px] rounded-full text-bg leading-none"
-            style={{ background: 'var(--lav)' }}
+            style={{ background: 'var(--fg)' }}
           >
             {dDay}
           </span>
@@ -133,8 +133,8 @@ export default function ExplorePoiCard({ poi, domain }: { poi: ExplorePoi; domai
           <div className="flex items-center gap-sp-1 shrink-0">
             {poi.is_trending && (
               <span
-                className="flex items-center gap-[3px] text-f-xxs font-semibold text-lav px-[6px] py-[2px] rounded-full leading-none"
-                style={{ background: 'var(--lav-dim)' }}
+                className="flex items-center gap-[3px] text-f-xxs font-semibold text-fg px-[6px] py-[2px] rounded-full leading-none"
+                style={{ background: 'var(--bg-3)' }}
               >
                 <TrendingUp size={9} strokeWidth={2} aria-hidden="true" />
                 {t('card.trending')}
@@ -181,7 +181,7 @@ export default function ExplorePoiCard({ poi, domain }: { poi: ExplorePoi; domai
             aria-label={saved ? t('card.unsaveAria', { name }) : t('card.saveAria', { name })}
             aria-pressed={saved}
             className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
-            style={{ background: 'var(--backdrop-50)', color: saved ? 'var(--lav)' : 'var(--fg)' }}
+            style={{ background: 'var(--backdrop-50)', color: 'var(--fg)' }}
           >
             <Bookmark size={15} strokeWidth={2} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
           </button>

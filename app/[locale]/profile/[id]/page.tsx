@@ -34,7 +34,7 @@ type TabId = 'trips' | 'saved' | 'badges'
 const RARITY_COLOR: Record<OtherUserBadge['rarity'], string> = {
   common: 'text-muted',
   rare: 'text-info',
-  epic: 'text-lav',
+  epic: 'text-fg',
   legendary: 'text-warning',
 }
 
@@ -130,9 +130,9 @@ function TripsList({ userId, emptyLabel }: { userId: string; emptyLabel: string 
                 : t('otherTrips.saveAria', { title: trip.title })}
               className={[
                 'shrink-0 min-h-touch px-sp-3 flex items-center gap-1.5 rounded-full text-f-sm font-semibold transition-colors',
-                saved ? 'bg-lav-dim text-lav' : 'text-muted hover:text-fg',
+                saved ? 'bg-muted-3 text-fg' : 'text-muted hover:text-fg',
               ].join(' ')}
-              style={{ border: saved ? '1px solid var(--lav-border)' : '1px solid var(--bdr)' }}
+              style={{ border: '1px solid var(--bdr)' }}
             >
               <Bookmark size={14} strokeWidth={2} aria-hidden="true" fill={saved ? 'currentColor' : 'none'} />
               {saved ? t('otherTrips.saved') : t('otherTrips.save')}
@@ -268,7 +268,7 @@ export default function OtherUserProfilePage({ params }: { params: { id: string 
               className="flex items-center gap-1.5 text-f-sm"
               aria-label={t('header.tripsCountAria', { count: profile.trips_count })}
             >
-              <MapPin size={13} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
+              <MapPin size={13} strokeWidth={2} className="text-fg shrink-0" aria-hidden="true" />
               <span className="font-semibold text-fg">{profile.trips_count}</span>
               <span className="text-muted">{t('header.tripsLabel')}</span>
             </div>
@@ -277,7 +277,7 @@ export default function OtherUserProfilePage({ params }: { params: { id: string 
               className="flex items-center gap-1.5 text-f-sm"
               aria-label={t('header.savesCountAria', { count: profile.saves_count })}
             >
-              <Bookmark size={13} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
+              <Bookmark size={13} strokeWidth={2} className="text-fg shrink-0" aria-hidden="true" />
               <span className="font-semibold text-fg">{profile.saves_count}</span>
               <span className="text-muted">{t('header.savesLabel')}</span>
             </div>
@@ -286,7 +286,7 @@ export default function OtherUserProfilePage({ params }: { params: { id: string 
               className="flex items-center gap-1.5 text-f-sm"
               aria-label={t('header.badgesCountAria', { count: profile.badges_count })}
             >
-              <Award size={13} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
+              <Award size={13} strokeWidth={2} className="text-fg shrink-0" aria-hidden="true" />
               <span className="font-semibold text-fg">{profile.badges_count}</span>
               <span className="text-muted">{t('header.badgesLabel')}</span>
             </div>
@@ -309,9 +309,9 @@ export default function OtherUserProfilePage({ params }: { params: { id: string 
             onClick={() => setActiveTab(tab.id)}
             className={[
               'flex-1 min-h-touch text-f-sm font-semibold transition-colors',
-              activeTab === tab.id ? 'text-lav' : 'text-muted hover:text-fg',
+              activeTab === tab.id ? 'text-fg' : 'text-muted hover:text-fg',
             ].join(' ')}
-            style={activeTab === tab.id ? { borderBottom: '2px solid var(--lav)' } : {}}
+            style={activeTab === tab.id ? { borderBottom: '2px solid var(--fg)' } : {}}
           >
             {tab.label}
           </button>

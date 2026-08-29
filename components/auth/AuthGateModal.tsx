@@ -296,9 +296,9 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
           {showDraftNotice && (
             <div
               className="w-full flex items-center gap-sp-3 px-sp-3 py-sp-2 rounded-none text-left"
-              style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
+              style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
             >
-              <Route size={15} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
+              <Route size={15} strokeWidth={2} className="text-fg shrink-0" aria-hidden="true" />
               <p className="text-f-base text-fg leading-snug">
                 {reason === 'fl3_cap' ? t('fl3Preserved') : t('planPreserved')}
               </p>
@@ -353,9 +353,9 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
                     onClick={() => { setMode(m); setError(null); }}
                     aria-pressed={mode === m}
                     className={`flex-1 min-h-touch text-f-base font-semibold transition-colors ${
-                      mode === m ? 'text-lav' : 'text-muted hover:text-fg'
+                      mode === m ? 'text-fg' : 'text-muted hover:text-fg'
                     }`}
-                    style={mode === m ? { boxShadow: 'inset 0 -2px 0 var(--lav)' } : undefined}
+                    style={mode === m ? { boxShadow: 'inset 0 -2px 0 var(--fg)' } : undefined}
                   >
                     {m === 'signin' ? t('signInTab') : t('signUpTab')}
                   </button>
@@ -369,7 +369,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
                 placeholder={t('emailPlaceholder')}
                 required
                 autoComplete="email"
-                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
+                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-fg"
                 style={{ border: '1px solid var(--bdr)' }}
               />
               <input
@@ -379,7 +379,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
                 placeholder={t('passwordPlaceholder')}
                 required
                 autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
+                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-fg"
                 style={{ border: '1px solid var(--bdr)' }}
               />
               {mode === 'signup' && (
@@ -389,7 +389,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
                     checked={ageConfirmed}
                     onChange={e => setAgeConfirmed(e.target.checked)}
                     className="w-5 h-5 shrink-0"
-                    style={{ accentColor: 'var(--lav)' }}
+                    style={{ accentColor: 'var(--fg)' }}
                   />
                   <span className="text-f-sm text-muted">{t('ageConfirm')}</span>
                 </label>
@@ -432,7 +432,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
                 placeholder={t('emailPlaceholder')}
                 required
                 autoComplete="email"
-                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-lav"
+                className="w-full min-h-touch px-sp-4 bg-bg-3 text-fg text-f-base rounded-none outline-none focus:ring-2 focus:ring-fg"
                 style={{ border: '1px solid var(--bdr)' }}
               />
               <button
@@ -457,7 +457,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
 
           {view === 'check_email' && (
             <div className="w-full flex flex-col items-center gap-sp-3">
-              <MailCheck size={32} strokeWidth={2} className="text-lav" aria-hidden="true" />
+              <MailCheck size={32} strokeWidth={2} className="text-fg" aria-hidden="true" />
               <button
                 type="button"
                 onClick={handleResend}

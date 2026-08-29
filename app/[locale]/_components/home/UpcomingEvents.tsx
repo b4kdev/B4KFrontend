@@ -64,8 +64,8 @@ export default function UpcomingEvents() {
                   />
                 )}
                 <span
-                  className="absolute top-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.08em] uppercase text-fg"
-                  style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)', padding: '3px 8px' }}
+                  className="absolute top-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.08em] uppercase text-fg bg-bg-3"
+                  style={{ border: '1px solid var(--bdr)', padding: '3px 8px' }}
                 >
                   {formatDate(evt.date_start, 'en')}
                 </span>

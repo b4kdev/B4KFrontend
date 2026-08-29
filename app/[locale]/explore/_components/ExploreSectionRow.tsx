@@ -42,7 +42,7 @@ export default function ExploreSectionRow({ id, items, category, hubDomain, view
         </h2>
         <Link
           href={viewAllHref}
-          className="flex items-center gap-1 text-f-sm text-lav hover:opacity-80 transition-opacity whitespace-nowrap shrink-0 ml-sp-4"
+          className="flex items-center gap-1 text-f-sm text-fg hover:opacity-80 transition-opacity whitespace-nowrap shrink-0 ml-sp-4"
           aria-label={t('viewAllAria', { section: t(`sections.${id}`) })}
         >
           {t('viewAll')}

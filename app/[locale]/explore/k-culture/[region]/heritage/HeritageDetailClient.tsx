@@ -6,16 +6,15 @@ import { useLocale, useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
 import { fetcher } from '@/lib/fetcher'
+import { getRelationLabel } from '@/lib/content-relation-labels'
 import type { HeritageDetail } from '@/lib/kculture-heritage'
 import MasonryGrid from '../../../_components/MasonryGrid'
 import TypeFilterChips from '../../../_components/TypeFilterChips'
 
-type TypeFilter = 'all' | 'gyeongju' | 'andong' | 'yeongju' | 'other'
-
 export default function HeritageDetailClient({ region }: { region: string }) {
   const t = useTranslations('explore')
   const locale = useLocale()
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
+  const [typeFilter, setTypeFilter] = useState<string>('all')
 
   const { data, isLoading, error, mutate } = useSWR<HeritageDetail>(
     [`/api/explore/k-culture/heritage/${region}`, locale],
@@ -40,7 +39,7 @@ export default function HeritageDetailClient({ region }: { region: string }) {
           <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+            className="flex items-center gap-sp-2 text-f-md font-semibold text-fg hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
           >
             <RefreshCw size={14} strokeWidth={2} />
             {t('error.retry')}
@@ -61,18 +60,21 @@ export default function HeritageDetailClient({ region }: { region: string }) {
           <h1 className="font-display text-fg text-f-display-tile mb-sp-2">
             {data.regionNameEn} {t('heritage.title')}
           </h1>
+          {data.collectionTitle && (
+            <p className="text-f-sm text-muted-2 mb-sp-1 italic">{data.collectionTitle}</p>
+          )}
           <p className="text-f-md text-muted mb-sp-5">
             {t('heritage.subtitle', { count: data.totalCount })}
           </p>
 
           <TypeFilterChips
             active={typeFilter}
-            onChange={(k) => setTypeFilter(k as TypeFilter)}
+            onChange={setTypeFilter}
             options={[
               { key: 'all', label: t('heritage.filterAll'), count: data.totalCount },
-              { key: 'gyeongju', label: t('heritage.filterGyeongju') },
-              { key: 'andong', label: t('heritage.filterAndong') },
-              { key: 'yeongju', label: t('heritage.filterYeongju') },
+              ...Array.from(new Set(data.items.map(p => p.poi_type))).map(key => ({
+                key, label: getRelationLabel(key, locale),
+              })),
             ]}
           />
 

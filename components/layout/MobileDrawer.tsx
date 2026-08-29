@@ -131,10 +131,10 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
                 className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
                 style={{ background: 'var(--bg-3)' }}
               >
-                <User size={22} strokeWidth={2} className="text-lav" />
+                <User size={22} strokeWidth={2} className="text-fg" />
               </span>
               <span className="flex flex-col">
-                <span className="text-f-base font-semibold text-lav">{t('signIn')}</span>
+                <span className="text-f-base font-semibold text-fg">{t('signIn')}</span>
                 <span className="text-f-sm text-muted">{t('guestSubtitle')}</span>
               </span>
             </button>

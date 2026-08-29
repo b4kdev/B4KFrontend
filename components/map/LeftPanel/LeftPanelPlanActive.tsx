@@ -81,7 +81,7 @@ export default function LeftPanelPlanActive({
             aria-pressed={day === activeDay}
             className="min-h-touch px-sp-3 rounded-full text-f-xxs font-semibold whitespace-nowrap transition-colors"
             style={day === activeDay
-              ? { background: 'var(--lav-dim)', color: 'var(--lav)' }
+              ? { background: 'var(--muted-3)', color: 'var(--fg)' }
               : { color: 'var(--muted)' }}
           >
             {t('dayTab', { n: day })}
@@ -138,7 +138,7 @@ export default function LeftPanelPlanActive({
 
                 {/* Stop number badge */}
                 <span
-                  className="w-5 h-5 rounded-full bg-lav text-bg text-f-xxs font-bold flex items-center justify-center shrink-0 select-none"
+                  className="w-5 h-5 rounded-full bg-fg text-bg text-f-xxs font-bold flex items-center justify-center shrink-0 select-none"
                   aria-hidden="true"
                 >
                   {i + 1}
@@ -156,7 +156,7 @@ export default function LeftPanelPlanActive({
                     value={duration}
                     onChange={e => onDurationChange(poi.poi_id, Math.max(5, Math.min(480, Number(e.target.value) || 60)))}
                     aria-label={t('durationAriaLabel', { name })}
-                    className="w-[42px] text-center text-xs text-fg bg-bg-3 rounded-none py-0.5 outline-none focus:ring-1 focus:ring-lav tabular-nums"
+                    className="w-[42px] text-center text-xs text-fg bg-bg-3 rounded-none py-0.5 outline-none focus:ring-1 focus:ring-fg tabular-nums"
                     style={{ border: '1px solid var(--bdr)' }}
                   />
                   <span className="text-muted text-f-xxs">{t('durationLabel')}</span>

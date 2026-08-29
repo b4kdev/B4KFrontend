@@ -49,7 +49,7 @@ export default function ToastStack() {
         {toast.action && (
           <button
             onClick={() => { toast.action!.onClick(); dismissToast(toast.id) }}
-            className="text-lav text-sm font-semibold whitespace-nowrap hover:opacity-70 transition-opacity"
+            className="text-fg text-sm font-semibold whitespace-nowrap hover:opacity-70 transition-opacity"
           >
             {toast.action.label}
           </button>

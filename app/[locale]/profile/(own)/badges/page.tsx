@@ -13,7 +13,7 @@ import type { ProfileBadge } from '@/app/api/profile/badges/route'
 const RARITY_STYLES: Record<string, { bg: string; icon: string; ring: string; label: string }> = {
   common:    { bg: 'bg-muted-3',     icon: 'text-muted',   ring: 'ring-1 ring-white/10',      label: 'text-muted' },
   rare:      { bg: 'bg-info/10',     icon: 'text-info',    ring: 'ring-1 ring-info/30',       label: 'text-info' },
-  epic:      { bg: 'bg-lav-dim',     icon: 'text-lav',     ring: 'ring-1 ring-lav-border',    label: 'text-lav' },
+  epic:      { bg: 'bg-bg-3',        icon: 'text-fg',      ring: 'ring-1 ring-fg',            label: 'text-fg' },
   legendary: { bg: 'bg-warning/10',  icon: 'text-warning', ring: 'ring-1 ring-warning/40',    label: 'text-warning' },
 }
 
@@ -113,7 +113,7 @@ function BadgeDetailModal({
               className={[
                 'min-h-touch w-full rounded-none text-f-md font-semibold flex items-center justify-center gap-sp-2 transition-colors',
                 badge.is_pinned
-                  ? 'text-lav hover:bg-lav-dim'
+                  ? 'text-fg hover:bg-muted-3'
                   : 'text-muted hover:text-fg',
               ].join(' ')}
               style={{ border: '1px solid var(--bdr)' }}
@@ -194,7 +194,7 @@ export default function BadgesPage() {
           <Link
             href="/map"
             className="min-h-touch px-sp-6 flex items-center gap-sp-2 rounded-full text-f-md font-semibold text-fg"
-            style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
+            style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
           >
             <Map size={15} strokeWidth={2} />
             {t('badges.empty.cta')}
@@ -227,7 +227,7 @@ export default function BadgesPage() {
                   {/* Pinned star — PR_32 */}
                   {badge.is_pinned && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-bg flex items-center justify-center">
-                      <Star size={11} strokeWidth={2} fill="currentColor" className="text-lav" />
+                      <Star size={11} strokeWidth={2} fill="currentColor" className="text-fg" />
                     </span>
                   )}
                 </div>

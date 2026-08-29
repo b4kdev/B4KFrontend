@@ -19,11 +19,11 @@ export default function PlanStrip({ stopCount, expanded, onToggle }: Props) {
       aria-label={expanded ? t('stripCollapse') : t('stripExpand')}
       className="w-full flex items-center gap-sp-2 px-sp-3 py-sp-3 shrink-0 text-left hover:bg-bg-3 transition-colors"
     >
-      <Route size={14} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
+      <Route size={14} strokeWidth={2} className="text-fg shrink-0" aria-hidden="true" />
       <span className="flex-1 text-fg text-xs font-semibold truncate">
         {t('title')}
       </span>
-      <span className="text-f-xxs tabular-nums text-lav font-bold px-sp-1 py-0.5 rounded bg-lav-dim shrink-0">
+      <span className="text-f-xxs tabular-nums text-fg font-bold px-sp-1 py-0.5 rounded bg-bg-3 shrink-0">
         {stopCount}
       </span>
       {expanded

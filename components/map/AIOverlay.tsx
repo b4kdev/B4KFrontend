@@ -122,10 +122,10 @@ function POICard({ poi, isInPlan, planFull, onAdd }: {
         className={[
           'shrink-0 min-w-touch min-h-touch flex items-center justify-center gap-1 px-sp-3 rounded-none text-xs font-semibold transition-all',
           isInPlan
-            ? 'bg-lav-dim text-lav cursor-default'
+            ? 'bg-muted-3 text-fg cursor-default'
             : disabled
               ? 'bg-muted-3 text-muted cursor-not-allowed'
-              : 'bg-lav text-bg hover:opacity-90',
+              : 'bg-fg text-bg hover:opacity-90',
         ].join(' ')}
       >
         {isInPlan
@@ -154,7 +154,7 @@ function PlanResult({ stops }: { stops: MapPoi[] }) {
       <p className="text-muted text-f-xs leading-snug">{t('disclaimer')}</p>
       {stops.map((poi, i) => (
         <div key={poi.poi_id} className="flex items-center gap-sp-2">
-          <span className="w-5 h-5 rounded-full bg-lav text-bg text-f-xxs font-bold flex items-center justify-center shrink-0">
+          <span className="w-5 h-5 rounded-full bg-fg text-bg text-f-xxs font-bold flex items-center justify-center shrink-0">
             {i + 1}
           </span>
           <span className="text-fg text-sm truncate">{getDisplayName(poi)}</span>
@@ -286,14 +286,14 @@ export default function AIOverlay({
         {/* Prompt chips — MP_31 */}
         {showChips && (
           <div className="flex flex-col items-center gap-sp-3 py-sp-6">
-            <Sparkles size={28} strokeWidth={2} className="text-lav" aria-hidden="true" />
+            <Sparkles size={28} strokeWidth={2} className="text-fg" aria-hidden="true" />
             <p className="text-muted text-sm text-center">{t('greeting')}</p>
             <div className="flex flex-wrap justify-center gap-2 mt-sp-2">
               {chips.map(chip => (
                 <button
                   key={chip}
                   onClick={() => handleChip(chip)}
-                  className="px-sp-3 py-1.5 rounded-full bg-lav-dim text-lav text-xs font-medium hover:bg-lav-mid transition-colors min-h-[32px]"
+                  className="px-sp-3 py-1.5 rounded-full bg-muted-3 text-fg text-xs font-medium hover:bg-bg-3 transition-colors min-h-[32px]"
                 >
                   {chip}
                 </button>
@@ -306,7 +306,7 @@ export default function AIOverlay({
           if (msg.role === 'user') {
             return (
               <div key={msg.id} className="flex justify-end">
-                <div className="max-w-[80%] px-sp-3 py-sp-2 bg-lav text-bg rounded-none text-sm">
+                <div className="max-w-[80%] px-sp-3 py-sp-2 bg-fg text-bg rounded-none text-sm">
                   {msg.content}
                 </div>
               </div>
@@ -346,7 +346,7 @@ export default function AIOverlay({
                   <p className="text-muted text-xs">{t('planBuilt')}</p>
                   <div
                     className="p-sp-3 rounded-none bg-bg-3 flex flex-col gap-sp-2"
-                    style={{ border: '1px solid var(--lav-border)' }}
+                    style={{ border: '1px solid var(--bdr)' }}
                   >
                     <PlanResult stops={msg.planStops!} />
                   </div>
@@ -367,7 +367,7 @@ export default function AIOverlay({
             <div className="flex items-center gap-sp-4">
               <button
                 onClick={handleRetry}
-                className="text-lav text-sm hover:underline text-left"
+                className="text-fg text-sm hover:underline text-left"
               >
                 {t('retry')}
               </button>
@@ -392,7 +392,7 @@ export default function AIOverlay({
           <p className="text-f-sm text-muted mb-sp-2">{t('capReached')}</p>
           <button
             onClick={() => openAuthGate('fl3_cap')}
-            className="text-f-sm font-semibold text-lav hover:opacity-80 transition-opacity min-h-touch"
+            className="text-f-sm font-semibold text-fg hover:opacity-80 transition-opacity min-h-touch"
           >
             {t('signInToContinue')}
           </button>
@@ -413,14 +413,14 @@ export default function AIOverlay({
           placeholder={t('inputPlaceholder')}
           disabled={status === 'typing' || isCapHit}
           aria-label={t('inputPlaceholder')}
-          className="flex-1 bg-bg-3 text-fg text-f-sm rounded-full px-sp-3 py-sp-2 outline-none focus:ring-1 focus:ring-lav placeholder:text-muted disabled:opacity-50 min-h-[36px]"
+          className="flex-1 bg-bg-3 text-fg text-f-sm rounded-full px-sp-3 py-sp-2 outline-none focus:ring-1 focus:ring-fg placeholder:text-muted disabled:opacity-50 min-h-[36px]"
           style={{ border: '1px solid var(--bdr)' }}
         />
         <button
           onClick={() => sendMessage(input)}
           disabled={!input.trim() || status === 'typing' || isCapHit}
           aria-label={t('send')}
-          className="min-w-touch min-h-touch flex items-center justify-center text-lav hover:text-fg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          className="min-w-touch min-h-touch flex items-center justify-center text-fg hover:text-fg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
         >
           {status === 'typing'
             ? <Loader2 size={18} strokeWidth={2} className="animate-spin" aria-hidden="true" />
@@ -439,7 +439,7 @@ export default function AIOverlay({
         style={{
           background: 'rgba(17,17,17,0.92)',
           backdropFilter: 'blur(12px)',
-          border: '1px solid var(--lav-border)',
+          border: '1px solid var(--bdr)',
           borderRight: 'none',
           borderBottom: 'none',
           maxHeight: '65%',
@@ -453,7 +453,7 @@ export default function AIOverlay({
           className="flex items-center gap-sp-2 px-sp-4 py-sp-3 shrink-0"
           style={{ borderBottom: '1px solid var(--bdr)' }}
         >
-          <Sparkles size={16} strokeWidth={2} className="text-lav shrink-0" aria-hidden="true" />
+          <Sparkles size={16} strokeWidth={2} className="text-fg shrink-0" aria-hidden="true" />
           <span className="text-fg text-sm font-semibold flex-1">{t('title')}</span>
           {/* FL3_05 / MP_34 — Minimize to pill */}
           <button
@@ -495,7 +495,7 @@ export default function AIOverlay({
           >
             <ArrowLeft size={20} strokeWidth={2} style={{ opacity: 0.35 }} />
           </button>
-          <Sparkles size={16} strokeWidth={2} className="text-lav" aria-hidden="true" />
+          <Sparkles size={16} strokeWidth={2} className="text-fg" aria-hidden="true" />
           <span className="text-fg text-sm font-semibold flex-1">{t('title')}</span>
         </div>
         {chatContent}

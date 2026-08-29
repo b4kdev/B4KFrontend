@@ -984,6 +984,9 @@
       "preferences": {
         "heading": "การตั้งค่าที่ต้องการ",
         "language": "ภาษา",
+        "appearance": "Appearance",
+        "appearanceDark": "Dark",
+        "appearanceLight": "Light",
         "transport": "รูปแบบการเดินทางเริ่มต้น",
         "transportCar": "รถยนต์",
         "transportPublic": "ขนส่งสาธารณะ",
@@ -1357,9 +1360,9 @@
       "filterExperience": "Experience"
     },
     "perfumeFlagships": {
-      "breadcrumb": "Perfume Flagships",
-      "title": "Perfume Flagships",
-      "subtitle": "{count} perfume flagship stores",
+      "breadcrumb": "K-Beauty Flagship Tour",
+      "title": "K-Beauty Flagship Tour",
+      "subtitle": "{count} K-Beauty flagship stores",
       "filterAll": "All",
       "filterSeongsu": "Seongsu",
       "filterHannam": "Hannam",
@@ -1770,6 +1773,10 @@
   },
   "search": {
     "title": "ค้นหา",
+    "pageTitle": "Search Results",
+    "breadcrumb": "Search",
+    "resultsSummary": "\"{query}\" — {places} Places · {plans} Plans · {explore} Explore",
+    "resultsCount": "{count} results",
     "placeholder": "ค้นหาแผนการเดินทาง สถานที่...",
     "recentTitle": "การค้นหาล่าสุด",
     "clearAll": "ล้างทั้งหมด",

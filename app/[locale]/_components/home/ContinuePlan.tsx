@@ -46,16 +46,15 @@ export default function ContinuePlan() {
     return (
       <div
         className="mx-sp-4 lg:mx-sp-8 mt-sp-10 p-sp-4 flex items-center gap-sp-4"
-        style={{ background: 'var(--bg-2)', border: '1px solid var(--lav-border)' }}
+        style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
         role="region"
         aria-label={t('ariaLabel')}
       >
         <span
-          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-          style={{ background: 'var(--lav-dim)' }}
+          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-bg-3"
           aria-hidden="true"
         >
-          <Route size={18} strokeWidth={2} className="text-lav" />
+          <Route size={18} strokeWidth={2} className="text-fg" />
         </span>
         <div className="flex-1 min-w-0">
           <p className="text-f-sm font-semibold text-fg truncate">{serverDraft.title}</p>
@@ -65,7 +64,7 @@ export default function ContinuePlan() {
         </div>
         <button
           onClick={() => router.push(`/map?plan=${serverDraft.id}`)}
-          className="flex items-center gap-1 text-f-sm font-semibold text-lav hover:opacity-80 transition-opacity duration-[80ms] shrink-0 min-h-touch px-sp-3"
+          className="flex items-center gap-1 text-f-sm font-semibold text-fg hover:opacity-80 transition-opacity duration-[80ms] shrink-0 min-h-touch px-sp-3"
         >
           {t('cta')}
           <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />
@@ -86,16 +85,15 @@ export default function ContinuePlan() {
     return (
       <div
         className="mx-sp-4 lg:mx-sp-8 mt-sp-10 p-sp-4 flex items-center gap-sp-4"
-        style={{ background: 'var(--bg-2)', border: '1px solid var(--lav-border)' }}
+        style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
         role="region"
         aria-label={t('ariaLabel')}
       >
         <span
-          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-          style={{ background: 'var(--lav-dim)' }}
+          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-bg-3"
           aria-hidden="true"
         >
-          <Route size={18} strokeWidth={2} className="text-lav" />
+          <Route size={18} strokeWidth={2} className="text-fg" />
         </span>
         <div className="flex-1 min-w-0">
           <p className="text-f-sm font-semibold text-fg">{t('guestTitle')}</p>
@@ -105,7 +103,7 @@ export default function ContinuePlan() {
         </div>
         <button
           onClick={() => router.push('/map')}
-          className="flex items-center gap-1 text-f-sm font-semibold text-lav hover:opacity-80 transition-opacity duration-[80ms] shrink-0 min-h-touch px-sp-3"
+          className="flex items-center gap-1 text-f-sm font-semibold text-fg hover:opacity-80 transition-opacity duration-[80ms] shrink-0 min-h-touch px-sp-3"
         >
           {t('cta')}
           <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />

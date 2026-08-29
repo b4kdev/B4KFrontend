@@ -141,7 +141,7 @@ function TripCard({
                 {trip.like_count} {t('trips.card.likes')}
               </span>
               <span className="flex items-center gap-1">
-                <Bookmark size={12} strokeWidth={2} className="text-lav" />
+                <Bookmark size={12} strokeWidth={2} className="text-fg" />
                 {trip.save_count} {t('trips.card.saves')}
               </span>
             </>
@@ -152,8 +152,8 @@ function TripCard({
         <div className="flex gap-sp-2 mt-auto pt-sp-1">
           <Link
             href={`/map?plan=${trip.id}`}
-            className="flex-1 min-h-touch flex items-center justify-center gap-1.5 rounded-none text-f-sm font-semibold text-lav transition-colors hover:bg-lav-dim"
-            style={{ border: '1px solid var(--lav-border)' }}
+            className="flex-1 min-h-touch flex items-center justify-center gap-1.5 rounded-none text-f-sm font-semibold text-fg transition-colors hover:bg-muted-3"
+            style={{ border: '1px solid var(--bdr)' }}
             aria-label={t('trips.card.editAria', { title: displayTitle })}
           >
             <Edit2 size={14} strokeWidth={2} />
@@ -261,7 +261,7 @@ export default function TripsPage() {
           <Link
             href="/map"
             className="min-h-touch px-sp-6 flex items-center gap-sp-2 rounded-full text-f-md font-semibold text-fg"
-            style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
+            style={{ background: 'var(--bg-3)', border: '1px solid var(--bdr)' }}
           >
             <Map size={15} strokeWidth={2} />
             {t('trips.empty.cta')}
@@ -270,15 +270,15 @@ export default function TripsPage() {
           {/* Auto-gen nudge — PR_16 */}
           <div
             className="w-full max-w-[400px] flex items-center justify-between gap-sp-4 p-sp-4 rounded-none mt-sp-2"
-            style={{ background: 'var(--bg-2)', border: '1px solid var(--lav-border)' }}
+            style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
           >
             <div className="flex items-center gap-sp-3">
-              <Zap size={18} strokeWidth={2} className="text-lav shrink-0" />
+              <Zap size={18} strokeWidth={2} className="text-fg shrink-0" />
               <p className="text-f-md text-fg text-left">{t('trips.nudge.title')}</p>
             </div>
             <Link
               href="/saved"
-              className="shrink-0 text-f-sm font-bold text-lav hover:text-fg transition-colors whitespace-nowrap"
+              className="shrink-0 text-f-sm font-bold text-fg hover:opacity-80 transition-opacity whitespace-nowrap"
             >
               {t('trips.nudge.cta')}
             </Link>
