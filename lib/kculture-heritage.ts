@@ -28,6 +28,11 @@ export interface HeritageDetail {
   regionNameKo: string
   totalCount: number
   items: HeritagePoi[]
+  /** The real collection's own editorial title (e.g. "신라 왕처럼 경주에서 하루 —
+   *  1천년 역사를 걷는 여행"), shown as a byline under the h1 so the page's headcopy
+   *  reflects what the linked entity_type='collection' row is actually titled, not
+   *  just its short region scope. undefined on the seed data path. */
+  collectionTitle?: string
 }
 
 // Dosan Seowon is a real, well-known public UNESCO site (Confucian academy,
@@ -111,15 +116,29 @@ export function getHeritageDetail(region: string, includeUnverified: boolean): H
   }
 }
 
-// region -> core.entities row backing real data. Empty for now — 2026-08-27 investigation:
-// slug guesses (kculture-gyeongbuk etc.) all 404, domain:k-culture only returns generic
-// Seoul spots, not Gyeongbuk-specific heritage sites. Same pattern as
-// lib/kpop-footsteps.ts's TEAM_ENTITY_MAP — once the real entity_id is confirmed, add it
-// here and resolveHeritageDetail() picks it up automatically, no other code changes needed.
-const REGION_ENTITY_MAP: Record<string, { slug: string; entityId: number }> = {}
+// region -> core.entities row backing real data. 2026-08-29: list_entities/PostgREST
+// schema cache fixed (was broken 2026-08-27) — searched all 108 entity_type='collection'
+// rows via GET /entities?type=collection, matched by POI overlap against
+// SEED_HERITAGE.gyeongbuk's placeholder names. entity 576 "신라 왕처럼 경주에서 하루 —
+// 1천년 역사를 걷는 여행" (slide-kculture-c142-121) contains Bulguksa Temple and
+// Cheomseongdae Observatory — name matches. Note: this collection is Gyeongju-city-only
+// (5 items), not the full Gyeongsangbuk-do the seed's "gyeongbuk" key implies — no
+// Andong/Yeongju (Dosan Seowon, Buseoksa) collection exists among the 108. Mapped under
+// the same 'gyeongbuk' key since it's the closest real match; not an exact scope match.
+const REGION_ENTITY_MAP: Record<string, { slug: string; entityId: number }> = {
+  gyeongbuk: { slug: 'slide-kculture-c142-121', entityId: 576 },
+}
+
+// Short, accurate scope label for the h1/breadcrumb — deliberately NOT the collection's
+// own name_ko (a full editorial sentence, not a place name; see collectionTitle below for
+// that). Keyed by the same region slug as REGION_ENTITY_MAP, reflecting what the mapped
+// entity's POIs actually cover (entity 576 = Gyeongju city only), not the broader
+// "gyeongbuk" URL segment/seed framing (full Gyeongsangbuk-do).
+const REGION_DISPLAY_NAME: Record<string, { ko: string; en: string }> = {
+  gyeongbuk: { ko: '경주', en: 'Gyeongju' },
+}
 
 interface EntityProfile {
-  name_en: string
   name_ko: string
 }
 
@@ -158,12 +177,14 @@ async function fetchRealHeritage(region: string, includeUnverified: boolean): Pr
       verified: true,
     }))
 
+    const display = REGION_DISPLAY_NAME[region] ?? { ko: region, en: region }
     return {
       region,
-      regionNameEn: profile.name_en,
-      regionNameKo: profile.name_ko,
+      regionNameEn: display.en,
+      regionNameKo: display.ko,
       totalCount: items.length,
       items: includeUnverified ? items : items.filter(i => i.verified !== false),
+      collectionTitle: profile.name_ko,
     }
   } catch {
     return null

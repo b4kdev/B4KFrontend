@@ -92,12 +92,16 @@ export function getMichelinNoodles(includeUnverified: boolean): MichelinNoodlePo
   return SEED_MICHELIN_NOODLES.filter(poi => includeUnverified || poi.verified !== false)
 }
 
-// core.entities row backing real data. Unset for now — 2026-08-27 investigation:
-// domain:kfood and domain:k-food both return empty, no discoverable entity at all. Same
-// pattern as lib/kpop-footsteps.ts's TEAM_ENTITY_MAP — once the real entity_id is
-// confirmed, set it here and resolveMichelinNoodles() picks it up automatically, no other
-// code changes needed.
-const MICHELIN_NOODLES_ENTITY: { slug: string; entityId: number } | null = null
+// core.entities row backing real data. 2026-08-29: list_entities/PostgREST schema cache
+// fixed (was broken 2026-08-27) — searched all 108 entity_type='collection' rows via
+// GET /entities?type=collection, matched by POI overlap against SEED_MICHELIN_NOODLES'
+// placeholder names. entity 474 "냉면 한 그릇 때문에 간다 — 서울 냉면 성지순례"
+// (slide-kfood-101) contains 우래옥/Woo Lae Oak and 필동면옥/Pildong Myeonok — exact
+// name matches. Note: this collection is naengmyeon-specific (5 items, all naengmyeon
+// restaurants), not the broader "미슐랭이 뽑은 면 요리 20곳" (Michelin-picked noodle
+// dishes generally) the seed's framing implies — no Michelin-badged or non-naengmyeon
+// noodle collection exists among the 108. Closest real match; not an exact scope match.
+const MICHELIN_NOODLES_ENTITY: { slug: string; entityId: number } | null = { slug: 'slide-kfood-101', entityId: 474 }
 
 interface ContextItem {
   poi_id: number

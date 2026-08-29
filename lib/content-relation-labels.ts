@@ -18,6 +18,10 @@ const RELATION_LABELS: Record<string, { ko: string; en: string }> = {
   pilgrimage: { ko: '팬 성지', en: 'Fan Pilgrimage Site' },
   birthplace: { ko: '고향', en: 'Hometown' },
   agency: { ko: '소속사', en: 'Agency' },
+  // core.poi_entity_map.relation for entity_type='collection' rows (curated slide
+  // placements) — migration 041's CHECK constraint. Every item pulled via GET
+  // /context/entity:<id> for a collection carries this relation value.
+  collection_item: { ko: '큐레이션 선정지', en: 'Curated Pick' },
   // kpop-footsteps.ts seed poi_type
   museum: { ko: '박물관·미술관', en: 'Museum' },
   park: { ko: '공원', en: 'Park' },

@@ -198,7 +198,12 @@ const SEED_HERO: Record<string, ExploreHeroSlide[]> = {
   // content plan's canonical page mock. Changdeokgung already has a confirmed
   // core.poi row (KD016-001, reused from the traditional/heritage row below) —
   // real, not placeholder, unlike k-beauty/k-food's heroes.
-  'k-culture': [{ id: 'KD016-001', badge: 'UNESCO WORLD HERITAGE', title: 'Changdeokgung Palace', subtitle: '서울 종로구 율곡로 99 — 1997년 유네스코 세계유산 등재. 51곳의 유네스코 유산 중 하나.', cta_label: 'EXPLORE HERITAGE SITES', cta_href: '/explore/k-culture/gyeongbuk/heritage', image_url: '/images/home/trending/KD016-001_changdeokgung-palace.webp' }],
+  // 2026-08-29: subtitle's "51곳 중 하나" claim dropped — the CTA target
+  // (/explore/k-culture/gyeongbuk/heritage) is now wired to a real collection
+  // (entity 576, Gyeongju-scoped, 5 items — see lib/kculture-heritage.ts
+  // REGION_ENTITY_MAP comment), not a 51-site archive. Keep the copy honest about
+  // what a click actually delivers.
+  'k-culture': [{ id: 'KD016-001', badge: 'UNESCO WORLD HERITAGE', title: 'Changdeokgung Palace', subtitle: '서울 종로구 율곡로 99 — 1997년 유네스코 세계유산 등재. 경주의 유네스코 유산도 함께 둘러보세요.', cta_label: 'EXPLORE HERITAGE SITES', cta_href: '/explore/k-culture/gyeongbuk/heritage', image_url: '/images/home/trending/KD016-001_changdeokgung-palace.webp' }],
   // DEC-61 — new 5th section. "TRIPLE-PICKED" / Woo Lae Oak, per the content
   // plan's own named example (a restaurant all 4 of its merged badge sources agree on).
   // verified:false — same reasoning as k-beauty's hero above; Woo Lae Oak has

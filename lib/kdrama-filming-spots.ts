@@ -117,12 +117,15 @@ export function getFilmingSpotsDetail(workId: string, includeUnverified: boolean
   }
 }
 
-// workId -> core.entities row backing real data. Empty for now — 2026-08-27 investigation
-// confirmed "Tangerines"/폭싹 속았수다 has no discoverable entity (list_entities/list_places
-// broken, every slug guess 404s, domain:k-drama only returns unrelated Seoul locations, not
-// this Jeju-set show). Same pattern as lib/kpop-footsteps.ts's TEAM_ENTITY_MAP — once the
-// real entity_id is confirmed (SQL from dev friend, or list_entities fixed), add it here and
-// resolveFilmingSpotsDetail() picks it up automatically, no other code changes needed.
+// workId -> core.entities row backing real data. Still empty — 2026-08-29 re-check:
+// list_entities/PostgREST schema cache is now fixed (was broken 2026-08-27), so this was
+// re-run for real this time — searched all 108 entity_type='collection' rows (all 20 of
+// the K-Drama section) via GET /entities?type=collection&type=k-drama, none are Jeju/
+// "폭싹 속았수다"/Tangerines-themed (they cover 도깨비/사랑의불시착/이태원클라쓰/etc
+// instead). Not a schema-cache false negative this time — the collection genuinely
+// doesn't exist yet. Same pattern as lib/kpop-footsteps.ts's TEAM_ENTITY_MAP — once it's
+// added to core.entities, set it here and resolveFilmingSpotsDetail() picks it up
+// automatically, no other code changes needed.
 const WORK_ENTITY_MAP: Record<string, { slug: string; entityId: number }> = {}
 
 interface EntityProfile {

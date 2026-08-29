@@ -1360,9 +1360,9 @@
       "filterExperience": "Experience"
     },
     "perfumeFlagships": {
-      "breadcrumb": "Perfume Flagships",
-      "title": "Perfume Flagships",
-      "subtitle": "{count} perfume flagship stores",
+      "breadcrumb": "K-Beauty Flagship Tour",
+      "title": "K-Beauty Flagship Tour",
+      "subtitle": "{count} K-Beauty flagship stores",
       "filterAll": "All",
       "filterSeongsu": "Seongsu",
       "filterHannam": "Hannam",

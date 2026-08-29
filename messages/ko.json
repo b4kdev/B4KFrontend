@@ -1360,9 +1360,9 @@
       "filterExperience": "체험"
     },
     "perfumeFlagships": {
-      "breadcrumb": "향수 플래그십",
-      "title": "향수 플래그십",
-      "subtitle": "향수 플래그십 {count}곳",
+      "breadcrumb": "K-Beauty 플래그십 투어",
+      "title": "K-Beauty 플래그십 투어",
+      "subtitle": "K-Beauty 플래그십 {count}곳",
       "filterAll": "전체",
       "filterSeongsu": "성수",
       "filterHannam": "한남",

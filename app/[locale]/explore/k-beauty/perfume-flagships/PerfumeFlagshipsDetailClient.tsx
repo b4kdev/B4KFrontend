@@ -14,6 +14,7 @@ import TypeFilterChips from '../../_components/TypeFilterChips'
 interface ApiResponse {
   totalCount: number
   items: PerfumeFlagshipPoi[]
+  collectionTitle?: string
 }
 
 export default function PerfumeFlagshipsDetailClient() {
@@ -63,6 +64,9 @@ export default function PerfumeFlagshipsDetailClient() {
           <h1 className="font-display text-fg text-f-display-tile mb-sp-2">
             {t('perfumeFlagships.title')}
           </h1>
+          {data.collectionTitle && (
+            <p className="text-f-sm text-muted-2 mb-sp-1 italic">{data.collectionTitle}</p>
+          )}
           <p className="text-f-md text-muted mb-sp-5">
             {t('perfumeFlagships.subtitle', { count: data.totalCount })}
           </p>
