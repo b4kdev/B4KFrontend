@@ -9,53 +9,33 @@ import MainCarousel from './_components/home/MainCarousel'
 import WeatherWidget from './_components/home/WeatherWidget'
 import TrendingSpots from './_components/home/TrendingSpots'
 import ExploreHub from './_components/home/ExploreHub'
-import EditorialPicks from './_components/home/EditorialPicks'
-import NewOnB4K from './_components/home/NewOnB4K'
-import YouMightLike from './_components/home/YouMightLike'
 import PlanTrip from './_components/home/PlanTrip'
-import ContinuePlan from './_components/home/ContinuePlan'
 import ChallengeCard from './_components/home/ChallengeCard'
 import LeaderboardBadge from './_components/home/LeaderboardBadge'
-import PopularPlans from './_components/home/PopularPlans'
-import PartnerPackages from './_components/home/PartnerPackages'
-import UpcomingEvents from './_components/home/UpcomingEvents'
-import Promotions from './_components/home/Promotions'
 import type { HomeSectionOrder } from '@/app/api/home/section-order/route'
 
 // Personalizable content sections, keyed by the API's section keys.
 // Fixed sections (hero carousel, weather widget) are pinned outside this map.
+// Curated 6-section Home (product owner, 2026-08-26) — editorial/new/
+// youMightLike/continuePlan/popularPlans/partnerPackages/upcomingEvents/
+// promotions dropped from Home's default composition. Components kept on
+// disk, not deleted — may resurface via a future personalization pass.
 const CONTENT_SECTIONS: Record<string, ComponentType> = {
-  trending: TrendingSpots,
   exploreHub: ExploreHub,
-  editorial: EditorialPicks,
-  new: NewOnB4K,
-  youMightLike: YouMightLike,
+  trending: TrendingSpots,
   planTrip: PlanTrip,
-  continuePlan: ContinuePlan,
   challenge: ChallengeCard,
   leaderboardBadge: LeaderboardBadge,
-  popularPlans: PopularPlans,
-  partnerPackages: PartnerPackages,
-  upcomingEvents: UpcomingEvents,
-  promotions: Promotions,
 }
 
 // Default order — the source of truth for fallback. Must list every key in
 // CONTENT_SECTIONS. Used verbatim on loading / empty / error.
 const DEFAULT_ORDER = [
-  'trending',
   'exploreHub',
-  'editorial',
-  'new',
-  'youMightLike',
+  'trending',
   'planTrip',
-  'continuePlan',
   'challenge',
   'leaderboardBadge',
-  'popularPlans',
-  'partnerPackages',
-  'upcomingEvents',
-  'promotions',
 ]
 
 export default function HomeClient({ initialCarousel }: { initialCarousel: HomeCarouselSlide[] }) {

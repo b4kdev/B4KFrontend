@@ -98,7 +98,7 @@ export default function PlanNamingSheet({ open, saving = false, initialTitle = '
               type="submit"
               disabled={!title.trim() || saving}
               className="flex-1 min-h-touch rounded-none text-f-sm font-semibold transition-opacity disabled:opacity-40 flex items-center justify-center gap-sp-2"
-              style={{ background: 'var(--lav)', color: 'var(--bg)' }}
+              style={{ background: 'var(--fg)', color: 'var(--bg)' }}
             >
               {saving
                 ? <Loader2 size={16} strokeWidth={2} className="animate-spin" aria-hidden="true" />

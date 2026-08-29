@@ -3,10 +3,10 @@ import { Link } from '@/i18n/navigation'
 import { Music, Tv, Sparkles, Globe } from 'lucide-react'
 
 const CATEGORIES = [
-  { id: 'k-pop',     href: '/explore/k-pop',     icon: Music,    tKey: 'kpop',     color: 'text-lav' },
-  { id: 'k-drama',   href: '/explore/k-drama',   icon: Tv,       tKey: 'kdrama',   color: 'text-lav' },
-  { id: 'k-beauty',  href: '/explore/k-beauty',  icon: Sparkles, tKey: 'kbeauty',  color: 'text-lav' },
-  { id: 'k-culture', href: '/explore/k-culture', icon: Globe,    tKey: 'kculture', color: 'text-lav' },
+  { id: 'k-pop',     href: '/explore/k-pop',     icon: Music,    tKey: 'kpop',     color: 'text-fg' },
+  { id: 'k-drama',   href: '/explore/k-drama',   icon: Tv,       tKey: 'kdrama',   color: 'text-fg' },
+  { id: 'k-beauty',  href: '/explore/k-beauty',  icon: Sparkles, tKey: 'kbeauty',  color: 'text-fg' },
+  { id: 'k-culture', href: '/explore/k-culture', icon: Globe,    tKey: 'kculture', color: 'text-fg' },
 ] as const
 
 export default function ExploreHubPage() {
@@ -44,7 +44,7 @@ export default function ExploreHubPage() {
               <Icon size={20} strokeWidth={2} className={color} />
             </div>
             <div>
-              <p className="text-f-lg font-semibold text-fg mb-[3px] group-hover:text-lav transition-colors">
+              <p className="text-f-lg font-semibold text-fg mb-[3px] group-hover:opacity-80 transition-opacity">
                 {t(`${tKey}.title`)}
               </p>
               <p className="text-f-md text-muted leading-relaxed">

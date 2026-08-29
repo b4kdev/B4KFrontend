@@ -14,7 +14,7 @@ import type { ProfileData } from '@/app/api/profile/route'
 const RARITY_STYLES: Record<string, { ring: string; icon: string }> = {
   common:    { ring: 'ring-1 ring-white/10',         icon: 'text-muted' },
   rare:      { ring: 'ring-1 ring-info/40',           icon: 'text-info' },
-  epic:      { ring: 'ring-1 ring-lav-border',        icon: 'text-lav' },
+  epic:      { ring: 'ring-1 ring-fg',                icon: 'text-fg' },
   legendary: { ring: 'ring-1 ring-warning/50',        icon: 'text-warning' },
 }
 
@@ -49,7 +49,7 @@ function HeaderError({ onRetry, t }: { onRetry: () => void; t: ReturnType<typeof
       <span className="text-f-md flex-1">{t('header.errorTitle')}</span>
       <button
         onClick={onRetry}
-        className="flex items-center gap-1 text-f-sm font-semibold text-lav hover:text-fg transition-colors min-h-touch px-sp-2"
+        className="flex items-center gap-1 text-f-sm font-semibold text-fg hover:opacity-80 transition-opacity min-h-touch px-sp-2"
         aria-label={t('header.errorRetry')}
       >
         <RefreshCw size={14} strokeWidth={2} />
@@ -69,7 +69,7 @@ function HeaderContent({ profile, t }: { profile: ProfileData; t: ReturnType<typ
       <div className="relative shrink-0">
         <div
           className="relative w-[72px] h-[72px] md:w-[88px] md:h-[88px] rounded-full flex items-center justify-center overflow-hidden"
-          style={{ background: 'var(--lav-dim)', border: '2px solid var(--lav-border)' }}
+          style={{ background: 'var(--bg-3)', border: '2px solid var(--bdr)' }}
           aria-label={t('header.avatarAlt', { name: displayName })}
         >
           {profile.avatar_url ? (
@@ -81,7 +81,7 @@ function HeaderContent({ profile, t }: { profile: ProfileData; t: ReturnType<typ
               className="object-cover"
             />
           ) : (
-            <span className="font-display text-lav text-2xl">{initial}</span>
+            <span className="font-display text-fg text-2xl">{initial}</span>
           )}
         </div>
       </div>
@@ -99,7 +99,7 @@ function HeaderContent({ profile, t }: { profile: ProfileData; t: ReturnType<typ
             className="flex items-center gap-1.5 text-f-md"
             aria-label={t('header.tripsCountAria', { count: profile.trips_count })}
           >
-            <MapPin size={14} strokeWidth={2} className="text-lav shrink-0" />
+            <MapPin size={14} strokeWidth={2} className="text-fg shrink-0" />
             <span className="font-semibold text-fg">{profile.trips_count}</span>
             <span className="text-muted">{t('header.tripsLabel')}</span>
           </div>
@@ -108,7 +108,7 @@ function HeaderContent({ profile, t }: { profile: ProfileData; t: ReturnType<typ
             className="flex items-center gap-1.5 text-f-md"
             aria-label={t('header.savesCountAria', { count: profile.saves_count })}
           >
-            <Bookmark size={14} strokeWidth={2} className="text-lav shrink-0" />
+            <Bookmark size={14} strokeWidth={2} className="text-fg shrink-0" />
             <span className="font-semibold text-fg">{profile.saves_count}</span>
             <span className="text-muted">{t('header.savesLabel')}</span>
           </div>
@@ -117,7 +117,7 @@ function HeaderContent({ profile, t }: { profile: ProfileData; t: ReturnType<typ
             className="flex items-center gap-1.5 text-f-md"
             aria-label={t('header.badgesCountAria', { count: profile.badges_count })}
           >
-            <Award size={14} strokeWidth={2} className="text-lav shrink-0" />
+            <Award size={14} strokeWidth={2} className="text-fg shrink-0" />
             <span className="font-semibold text-fg">{profile.badges_count}</span>
             <span className="text-muted">{t('header.badgesLabel')}</span>
           </div>
@@ -216,7 +216,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                 'px-sp-4 py-sp-3 text-f-md font-semibold tracking-[0.02em] transition-colors',
                 'min-h-[44px] flex items-center rounded-none -mb-px',
                 active
-                  ? 'text-lav border-b-2 border-lav'
+                  ? 'text-fg border-b-2 border-fg'
                   : 'text-muted hover:text-fg',
               ].join(' ')}
             >

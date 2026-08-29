@@ -30,7 +30,7 @@ export default function CookiePreferences() {
             className="shrink-0 flex items-center gap-1.5 px-sp-3 py-1.5 rounded-full text-f-xs font-semibold"
             style={
               consent === 'accepted'
-                ? { background: 'var(--lav-dim)', color: 'var(--lav)' }
+                ? { background: 'var(--muted-3)', color: 'var(--fg)' }
                 : { background: 'var(--muted-3)', color: 'var(--muted)' }
             }
           >
@@ -54,7 +54,7 @@ export default function CookiePreferences() {
         <button
           type="button"
           onClick={() => choose('accepted')}
-          className="min-h-touch px-sp-5 text-f-sm font-semibold rounded-full bg-lav text-bg hover:opacity-90 active:opacity-75 transition-opacity"
+          className="min-h-touch px-sp-5 text-f-sm font-semibold rounded-full bg-fg text-bg hover:opacity-90 active:opacity-75 transition-opacity"
         >
           {t('accept')}
         </button>

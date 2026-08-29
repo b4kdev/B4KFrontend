@@ -207,7 +207,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                 href={c.href}
                 className={[
                   'flex items-center gap-sp-2 px-sp-3 py-[7px] rounded-none text-f-sm font-semibold transition-colors min-h-[36px]',
-                  isActive ? 'bg-lav-dim text-lav' : 'text-muted hover:bg-muted-3 hover:text-fg',
+                  isActive ? 'bg-muted-3 text-fg' : 'text-muted hover:bg-muted-3 hover:text-fg',
                 ].join(' ')}
               >
                 <Icon size={14} strokeWidth={2} className="shrink-0" />
@@ -244,7 +244,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
 
         {/* Page heading */}
         <div className="flex items-center gap-sp-3 mb-sp-5">
-          <CatIcon size={22} strokeWidth={2} className="text-lav shrink-0" />
+          <CatIcon size={22} strokeWidth={2} className="text-fg shrink-0" />
           <h1 className="font-display text-fg text-f-display-tile">
             {t(`${cat.tKey}.title`)}
           </h1>
@@ -268,7 +268,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
                 aria-selected={isActive}
                 className={[
                   'flex items-center gap-[6px] px-sp-4 py-[7px] rounded-full text-f-sm font-semibold whitespace-nowrap transition-colors shrink-0 min-h-touch',
-                  isActive ? 'bg-lav text-bg' : 'text-muted hover:text-fg',
+                  isActive ? 'bg-fg text-bg' : 'text-muted hover:text-fg',
                 ].join(' ')}
                 style={!isActive ? { background: 'var(--bg-3)', border: '1px solid var(--bdr)' } : {}}
               >
@@ -299,7 +299,7 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
             <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('error.title')}</p>
             <button
               onClick={() => mutate()}
-              className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+              className="flex items-center gap-sp-2 text-f-md font-semibold text-muted hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
             >
               <RefreshCw size={14} strokeWidth={2} />
               {t('error.retry')}

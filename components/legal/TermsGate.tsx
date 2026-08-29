@@ -38,12 +38,12 @@ export default function TermsGate() {
         <p className="text-muted text-f-base leading-relaxed mb-sp-5">
           {t.rich('message', {
             terms: chunks => (
-              <Link href="/legal/terms" target="_blank" className="underline text-lav hover:opacity-80">
+              <Link href="/legal/terms" target="_blank" className="underline text-fg hover:opacity-80">
                 {chunks}
               </Link>
             ),
             privacy: chunks => (
-              <Link href="/legal/privacy" target="_blank" className="underline text-lav hover:opacity-80">
+              <Link href="/legal/privacy" target="_blank" className="underline text-fg hover:opacity-80">
                 {chunks}
               </Link>
             ),

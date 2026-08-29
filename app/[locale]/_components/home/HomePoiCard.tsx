@@ -105,7 +105,7 @@ export default function HomePoiCard({ poi, badge }: Props) {
           )}
           {badge && (
             <span
-              className="absolute bottom-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.1em] uppercase text-bg bg-lav px-[6px] py-[3px] leading-none"
+              className="absolute bottom-sp-2 left-sp-2 text-f-xxs font-bold tracking-[0.1em] uppercase text-bg bg-fg px-[6px] py-[3px] leading-none"
               aria-label={badge}
             >
               {badge}
@@ -144,7 +144,7 @@ export default function HomePoiCard({ poi, badge }: Props) {
             aria-label={saved ? t('unsaveAria', { name }) : t('saveAria', { name })}
             aria-pressed={saved}
             className="flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-[80ms]"
-            style={{ background: 'var(--backdrop-50)', color: saved ? 'var(--lav)' : 'var(--fg)' }}
+            style={{ background: 'var(--backdrop-50)', color: 'var(--fg)' }}
           >
             <Bookmark size={15} strokeWidth={2} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
           </button>

@@ -54,7 +54,7 @@ export default function ExploreFeaturedCard({ poi, domain }: { poi: ExplorePoi; 
         )}
       </div>
       <div className="p-sp-4 flex flex-col gap-sp-2 justify-center flex-1">
-        <span className="text-f-xxs font-bold tracking-[0.1em] uppercase text-lav">
+        <span className="text-f-xxs font-bold tracking-[0.1em] uppercase text-fg">
           {t('card.featured')}
         </span>
         <div className="flex items-start justify-between gap-sp-2">
@@ -65,8 +65,8 @@ export default function ExploreFeaturedCard({ poi, domain }: { poi: ExplorePoi; 
           <span className="text-f-sm text-muted truncate">{poi.display_region}</span>
           {poi.is_trending && (
             <span
-              className="flex items-center gap-[3px] text-f-xxs font-semibold text-lav px-[6px] py-[2px] rounded-full leading-none"
-              style={{ background: 'var(--lav-dim)' }}
+              className="flex items-center gap-[3px] text-f-xxs font-semibold text-fg px-[6px] py-[2px] rounded-full leading-none"
+              style={{ background: 'var(--bg-3)' }}
             >
               <TrendingUp size={9} strokeWidth={2} aria-hidden="true" />
               {t('card.trending')}

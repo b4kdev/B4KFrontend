@@ -90,7 +90,7 @@ export default function LeftPanelPOIDetail({
 
         {/* LP_06 — Category + district + open status */}
         <div className="flex flex-wrap items-center gap-sp-2">
-          <span className="px-sp-2 py-0.5 rounded-full bg-lav-dim text-lav text-xs font-medium">
+          <span className="px-sp-2 py-0.5 rounded-full bg-bg-3 text-fg text-xs font-medium">
             {poi.display_domain}
           </span>
           {poi.display_region_detail && (
@@ -126,7 +126,7 @@ export default function LeftPanelPOIDetail({
             href={poi.website_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-sp-2 text-lav text-xs font-medium min-h-touch"
+            className="inline-flex items-center gap-sp-2 text-fg text-xs font-medium min-h-touch"
           >
             <ExternalLink size={12} strokeWidth={2} aria-hidden="true" />
             {t('website')}
@@ -147,7 +147,7 @@ export default function LeftPanelPOIDetail({
             'w-full min-h-touch flex items-center justify-center gap-sp-2',
             'rounded-none font-body font-semibold text-sm',
             isInPlan
-              ? 'bg-lav-dim text-lav cursor-default transition-none'
+              ? 'bg-muted-3 text-fg cursor-default transition-none'
               : addDisabled
                 ? 'bg-muted-3 text-muted cursor-not-allowed transition-none'
                 : 'bg-fg text-bg hover:bg-royal-600 hover:text-fg transition-[background,color] duration-[80ms]',
@@ -189,7 +189,7 @@ export default function LeftPanelPOIDetail({
               size={16}
               strokeWidth={2}
               fill={isSaved ? 'currentColor' : 'none'}
-              className={isSaved ? 'text-lav' : 'text-muted'}
+              className={isSaved ? 'text-fg' : 'text-muted'}
               aria-hidden="true"
             />
             <span className={isSaved ? 'text-fg' : 'text-muted'}>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getFootstepsDetail } from '@/lib/kpop-footsteps'
+import { resolveFootstepsDetail } from '@/lib/kpop-footsteps'
 
 export async function GET(req: NextRequest, { params }: { params: { teamId: string } }) {
   // Same dev-only preview gate as app/api/explore/[category]/route.ts — a no-op
@@ -7,7 +7,7 @@ export async function GET(req: NextRequest, { params }: { params: { teamId: stri
   const includeUnverified =
     process.env.NODE_ENV !== 'production' && req.nextUrl.searchParams.get('includeUnverified') === '1'
 
-  const data = getFootstepsDetail(params.teamId, includeUnverified)
+  const data = await resolveFootstepsDetail(params.teamId, includeUnverified)
   if (!data) return NextResponse.json({ error: 'not_found' }, { status: 404 })
   return NextResponse.json(data)
 }

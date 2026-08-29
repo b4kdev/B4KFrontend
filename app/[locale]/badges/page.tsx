@@ -14,20 +14,20 @@ type Filter = 'all' | BadgeRarity
 const RARITY_RING: Record<BadgeRarity, string> = {
   common:    'ring-1 ring-white/10',
   rare:      'ring-1 ring-info/40',
-  epic:      'ring-1 ring-lav-border',
+  epic:      'ring-1 ring-muted-2',
   legendary: 'ring-1 ring-warning/50',
 }
 const RARITY_COLOR: Record<BadgeRarity, string> = {
   common:    'text-muted',
   rare:      'text-info',
-  epic:      'text-lav',
+  epic:      'text-fg',
   legendary: 'text-warning',
 }
 // Chip background per rarity — token-derived via color-mix, no hex.
 const RARITY_CHIP_BG: Record<BadgeRarity, string> = {
   common:    'color-mix(in srgb, var(--muted) 18%, transparent)',
   rare:      'color-mix(in srgb, var(--info) 18%, transparent)',
-  epic:      'color-mix(in srgb, var(--lav) 18%, transparent)',
+  epic:      'color-mix(in srgb, var(--fg) 18%, transparent)',
   legendary: 'color-mix(in srgb, var(--warning) 18%, transparent)',
 }
 
@@ -159,12 +159,12 @@ function BadgeDetailSheet({
             className={[
               'min-h-touch flex items-center justify-center gap-sp-2 rounded-full text-f-sm font-semibold transition-colors px-sp-4',
               badge.is_pinned
-                ? 'bg-lav text-bg'
+                ? 'bg-fg text-bg'
                 : atPinLimit
                   ? 'text-muted-2 cursor-not-allowed'
-                  : 'text-lav hover:text-fg',
+                  : 'text-fg hover:text-fg',
             ].join(' ')}
-            style={!badge.is_pinned ? { background: 'var(--bg-3)', border: '1px solid var(--lbdr)' } : {}}
+            style={!badge.is_pinned ? { background: 'var(--bg-3)', border: '1px solid var(--bdr)' } : {}}
           >
             {badge.is_pinned ? (
               <PinOff size={16} strokeWidth={2} aria-hidden="true" />
@@ -214,7 +214,7 @@ export default function BadgesPage() {
 
   const pillClass = (active: boolean) => [
     'px-sp-3 py-[6px] rounded-full text-f-xs font-semibold whitespace-nowrap transition-colors min-h-[36px] flex items-center',
-    active ? 'bg-lav text-bg' : 'text-muted hover:text-fg',
+    active ? 'bg-fg text-bg' : 'text-muted hover:text-fg',
   ].join(' ')
 
   const handleBadgeClick = useCallback((badge: Badge) => {
@@ -314,7 +314,7 @@ export default function BadgesPage() {
           <p className="text-f-lg font-semibold text-fg mb-sp-2">{t('badges.error.title')}</p>
           <button
             onClick={() => mutate()}
-            className="flex items-center gap-sp-2 text-f-md font-semibold text-lav hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
+            className="flex items-center gap-sp-2 text-f-md font-semibold text-fg hover:text-fg transition-colors mt-sp-2 min-h-touch px-sp-4"
           >
             <RefreshCw size={14} strokeWidth={2} />{t('badges.error.retry')}
           </button>
@@ -358,7 +358,7 @@ export default function BadgesPage() {
                     {badge.is_pinned && (
                       <span
                         className="absolute -top-[4px] -right-[4px] w-4 h-4 rounded-full flex items-center justify-center text-f-xxs font-bold text-bg"
-                        style={{ background: 'var(--lav)' }}
+                        style={{ background: 'var(--fg)' }}
                         aria-label={t('badges.badge.pinned')}
                       >
                         ★

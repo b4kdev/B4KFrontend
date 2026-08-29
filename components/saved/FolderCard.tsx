@@ -59,13 +59,13 @@ export default function FolderCard({
         onClick={onToggleSelect}
         aria-pressed={selected}
         aria-label={t('selectFolderAria', { name: folder.name })}
-        className="relative rounded-none overflow-hidden bg-bg-2 flex flex-col text-left focus:outline-none focus:ring-2 focus:ring-lav focus:ring-inset"
-        style={{ border: selected ? '1px solid var(--lav)' : '1px solid var(--bdr)' }}
+        className="relative rounded-none overflow-hidden bg-bg-2 flex flex-col text-left focus:outline-none focus:ring-2 focus:ring-fg focus:ring-inset"
+        style={{ border: selected ? '1px solid var(--fg)' : '1px solid var(--bdr)' }}
       >
         <div className="relative">
           {thumbGrid}
           <div
-            className={['absolute top-sp-2 right-sp-2 w-6 h-6 rounded-full flex items-center justify-center', selected ? 'bg-lav' : 'bg-backdrop-50'].join(' ')}
+            className={['absolute top-sp-2 right-sp-2 w-6 h-6 rounded-full flex items-center justify-center', selected ? 'bg-fg' : 'bg-backdrop-50'].join(' ')}
             aria-hidden="true"
           >
             {selected && <Check size={14} strokeWidth={2} className="text-bg" />}
@@ -85,7 +85,7 @@ export default function FolderCard({
       <button
         onClick={onOpen}
         aria-label={t('openAriaLabel', { name: folder.name })}
-        className="w-full hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-lav focus:ring-inset"
+        className="w-full hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-fg focus:ring-inset"
       >
         {thumbGrid}
       </button>
@@ -95,7 +95,7 @@ export default function FolderCard({
           <button
             onClick={onOpen}
             aria-label={t('openAriaLabel', { name: folder.name })}
-            className="text-fg text-f-base font-semibold truncate max-w-full text-left hover:text-lav transition-colors focus:outline-none focus:underline"
+            className="text-fg text-f-base font-semibold truncate max-w-full text-left hover:opacity-80 transition-opacity focus:outline-none focus:underline"
           >
             {folder.name}
           </button>

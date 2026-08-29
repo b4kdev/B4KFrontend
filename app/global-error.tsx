@@ -30,8 +30,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
           </p>
           <button
             onClick={reset}
-            className="inline-flex items-center min-h-touch px-sp-5 rounded-full text-f-sm font-semibold text-lav"
-            style={{ background: 'var(--lav-dim)', border: '1px solid var(--lav-border)' }}
+            className="inline-flex items-center min-h-touch px-sp-5 rounded-full text-f-sm font-semibold bg-fg text-bg"
           >
             Try again
           </button>

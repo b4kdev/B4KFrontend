@@ -984,6 +984,9 @@
       "preferences": {
         "heading": "設定",
         "language": "言語",
+        "appearance": "Appearance",
+        "appearanceDark": "Dark",
+        "appearanceLight": "Light",
         "transport": "デフォルトの移動手段",
         "transportCar": "車",
         "transportPublic": "公共交通機関",
@@ -1357,9 +1360,9 @@
       "filterExperience": "Experience"
     },
     "perfumeFlagships": {
-      "breadcrumb": "Perfume Flagships",
-      "title": "Perfume Flagships",
-      "subtitle": "{count} perfume flagship stores",
+      "breadcrumb": "K-Beauty Flagship Tour",
+      "title": "K-Beauty Flagship Tour",
+      "subtitle": "{count} K-Beauty flagship stores",
       "filterAll": "All",
       "filterSeongsu": "Seongsu",
       "filterHannam": "Hannam",
@@ -1770,6 +1773,10 @@
   },
   "search": {
     "title": "検索",
+    "pageTitle": "Search Results",
+    "breadcrumb": "Search",
+    "resultsSummary": "\"{query}\" — {places} Places · {plans} Plans · {explore} Explore",
+    "resultsCount": "{count} results",
     "placeholder": "旅程、場所を検索...",
     "recentTitle": "最近の検索",
     "clearAll": "すべてクリア",

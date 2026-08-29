@@ -6,8 +6,8 @@ import { SEED_PERFUME_FLAGSHIPS, PERFUME_FLAGSHIPS_TOTAL } from '@/lib/kbeauty-p
 const PATH = '/explore/k-beauty/perfume-flagships'
 
 export function buildPerfumeFlagshipsMetadata(locale: string): Metadata {
-  const title = 'Perfume Flagships — Seoul Scent Route | B4K'
-  const description = `${PERFUME_FLAGSHIPS_TOTAL} real perfume flagship stores across Seoul, curated by B4K.`
+  const title = 'K-Beauty Flagship Tour | B4K'
+  const description = `${PERFUME_FLAGSHIPS_TOTAL} real K-Beauty flagship stores across Seoul, curated by B4K.`
   const url = localizedUrl(locale, PATH)
   const otherLocales = routing.locales.filter(l => l !== locale)
 
@@ -24,7 +24,7 @@ export function buildPerfumeFlagshipsJsonLd(locale: string) {
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: 'Perfume Flagships — Seoul Scent Route',
+    name: 'K-Beauty Flagship Tour',
     numberOfItems: PERFUME_FLAGSHIPS_TOTAL,
     itemListElement: SEED_PERFUME_FLAGSHIPS.map((poi, i) => ({
       '@type': 'ListItem',
