@@ -21,7 +21,9 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 const NAV_ITEMS = [
   { href: '/',        icon: Home,        labelKey: 'home' },
   { href: '/map',     icon: Map,         labelKey: 'map' },
-  { href: '/explore', icon: LayoutGrid,  labelKey: 'explore' },
+  // Links straight into K-Pop (default category) instead of the 4-tile /explore
+  // picker, but stays highlighted for any /explore/* page (k-drama, collections, etc.)
+  { href: '/explore/k-pop', activeMatch: '/explore', icon: LayoutGrid,  labelKey: 'explore' },
   { href: '/saved',   icon: Bookmark,    labelKey: 'saved' },
 ] as const;
 
@@ -99,7 +101,8 @@ export default function Sidebar() {
 
       {/* Main nav */}
       <nav className="flex flex-col gap-[2px] flex-1 px-[3px] pt-sp-3" aria-label={t('mainNavigation')}>
-        {NAV_ITEMS.map(({ href, icon: Icon, labelKey }) => {
+        {NAV_ITEMS.map(({ href, icon: Icon, labelKey, ...rest }) => {
+          const activeMatch = 'activeMatch' in rest ? rest.activeMatch : href;
           return (
             // prefetch={false} — this rail renders on every page, so the
             // default Link prefetch would otherwise re-run Home's 13
@@ -110,11 +113,11 @@ export default function Sidebar() {
               href={href}
               prefetch={false}
               aria-label={t(labelKey)}
-              aria-current={isActive(href) ? 'page' : undefined}
-              className={railClass(isActive(href))}
+              aria-current={isActive(activeMatch) ? 'page' : undefined}
+              className={railClass(isActive(activeMatch))}
               style={railStyle}
             >
-              <Icon size={24} strokeWidth={2} className="shrink-0" style={iconStyle(isActive(href))} />
+              <Icon size={24} strokeWidth={2} className="shrink-0" style={iconStyle(isActive(activeMatch))} />
             </Link>
           );
         })}

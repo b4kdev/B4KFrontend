@@ -11,7 +11,9 @@ import { Home, Map, LayoutGrid, Bookmark } from 'lucide-react';
 const TABS = [
   { href: '/',            icon: Home,        labelKey: 'home' },
   { href: '/map',         icon: Map,         labelKey: 'map' },
-  { href: '/explore',     icon: LayoutGrid,  labelKey: 'explore' },
+  // Links straight into K-Pop (default category) instead of the 4-tile /explore
+  // picker, but stays highlighted for any /explore/* page (k-drama, collections, etc.)
+  { href: '/explore/k-pop', activeMatch: '/explore', icon: LayoutGrid,  labelKey: 'explore' },
   { href: '/map?saved=1', icon: Bookmark,    labelKey: 'saved' },
 ] as const;
 
@@ -32,8 +34,9 @@ export default function MobileBottomNav() {
       }}
       aria-label={t('bottomNav')}
     >
-      {TABS.map(({ href, icon: Icon, labelKey }) => {
-        const active = isActive(href);
+      {TABS.map(({ href, icon: Icon, labelKey, ...rest }) => {
+        const activeMatch = 'activeMatch' in rest ? rest.activeMatch : href;
+        const active = isActive(activeMatch);
         return (
           // prefetch={false} — this bar renders on every page; see Sidebar.tsx
           // for why prefetching Home/Map's heavy uncached fetches is wasteful here.
