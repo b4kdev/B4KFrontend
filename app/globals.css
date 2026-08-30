@@ -494,3 +494,12 @@ a { color: inherit; text-decoration: none; }
   color: var(--fg);
 }
 .catalogue-row:focus-visible { outline: 1px solid var(--lav) inset; }
+
+/* ─── Theme-aware brand logo ───────────────────────────────────
+   AuthGateModal's backdrop is always a fixed dark overlay regardless of theme, so its
+   White logo never needed this. The standalone /login page paints the page's own
+   (theme-responsive) background, so the same logo needs a Black variant in light mode. */
+.brand-logo-white { display: block; }
+.brand-logo-black { display: none; }
+[data-theme="light"] .brand-logo-white { display: none; }
+[data-theme="light"] .brand-logo-black { display: block; }

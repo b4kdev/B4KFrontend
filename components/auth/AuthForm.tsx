@@ -26,9 +26,15 @@ interface Props {
   /** Called synchronously before the OAuth redirect fires — AuthGateModal uses this to
    *  persist the pending gated action (L9) so it survives the round-trip. */
   onOAuthStart?: () => void;
+  /** AuthGateModal's backdrop is a fixed dark overlay regardless of theme ('white' is
+   *  always correct there). The standalone /login page paints the page's own
+   *  theme-responsive background, so it needs 'theme-aware' (swaps via CSS — see
+   *  .brand-logo-white/.brand-logo-black in globals.css). Defaults to the safer
+   *  theme-aware option for any future caller that isn't a fixed-dark surface. */
+  logoVariant?: 'white' | 'theme-aware';
 }
 
-export default function AuthForm({ title, subtitle, draftNotice, onSuccess, onOAuthStart }: Props) {
+export default function AuthForm({ title, subtitle, draftNotice, onSuccess, onOAuthStart, logoVariant = 'theme-aware' }: Props) {
   const t = useTranslations('auth.gate');
   const locale = useLocale();
 
@@ -158,13 +164,32 @@ export default function AuthForm({ title, subtitle, draftNotice, onSuccess, onOA
 
   return (
     <div className="flex flex-col items-center text-center gap-sp-4 pt-sp-2">
-      <Image
-        src="/brand/B4K_BrandLogo_Horizontal_White.svg"
-        alt="B4K"
-        width={108}
-        height={24}
-        className="select-none"
-      />
+      {logoVariant === 'white' ? (
+        <Image
+          src="/brand/B4K_BrandLogo_Horizontal_White.svg"
+          alt="B4K"
+          width={108}
+          height={24}
+          className="select-none"
+        />
+      ) : (
+        <>
+          <Image
+            src="/brand/B4K_BrandLogo_Horizontal_White.svg"
+            alt="B4K"
+            width={108}
+            height={24}
+            className="select-none brand-logo-white"
+          />
+          <Image
+            src="/brand/B4K_BrandLogo_Horizontal_Black.svg"
+            alt="B4K"
+            width={108}
+            height={24}
+            className="select-none brand-logo-black"
+          />
+        </>
+      )}
 
       <div>
         <h2 className="text-fg font-display text-f-2xl mb-sp-2">{viewTitle()}</h2>

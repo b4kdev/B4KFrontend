@@ -121,6 +121,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
           draftNotice={draftNotice}
           onSuccess={handleSuccess}
           onOAuthStart={persistPendingAction}
+          logoVariant="white"
         />
 
         {/* Dismiss */}
