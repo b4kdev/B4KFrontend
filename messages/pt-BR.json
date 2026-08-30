@@ -1384,6 +1384,10 @@
       "filterGyeongju": "Gyeongju",
       "filterAndong": "Andong",
       "filterYeongju": "Yeongju"
+    },
+    "collections": {
+      "itemCount": "{count} lugares",
+      "filterAll": "Todos"
     }
   },
   "saved": {
