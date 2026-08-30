@@ -1384,6 +1384,14 @@
       "filterGyeongju": "경주",
       "filterAndong": "안동",
       "filterYeongju": "영주"
+    },
+    "collections": {
+      "itemCount": "{count}곳",
+      "filterAll": "전체"
+    },
+    "collectionsGrid": {
+      "title": "콘텐츠 모음",
+      "filterAll": "전체"
     }
   },
   "saved": {

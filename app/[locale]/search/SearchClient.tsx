@@ -10,6 +10,7 @@ import useSWR from 'swr'
 import { fetcher } from '@/lib/fetcher'
 import { getDisplayName } from '@/lib/display-name'
 import { track } from '@/lib/analytics'
+import SharedEmptyState from '@/components/shared/EmptyState'
 import type { SearchPoi, SearchPlan, SearchExplore } from '@/app/api/search/route'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -234,34 +235,37 @@ function EmptyState({ query }: { query: string }) {
   }
 
   return (
-    <div className="flex flex-col items-center text-center py-sp-16 px-sp-6">
-      <Search size={40} strokeWidth={2} className="text-muted mb-sp-4" aria-hidden="true" />
-      <p className="text-f-lg font-semibold text-fg mb-sp-2">
-        {t('noResults', { query })}
-      </p>
-      <p className="text-f-base text-muted mb-sp-8">{t('noResultsSubtitle')}</p>
+    <SharedEmptyState
+      icon={Search}
+      title={t('noResults', { query })}
+      description={t('noResultsSubtitle')}
+      iconClassName="text-muted"
+      bordered={false}
+      action={
+        <>
+          <div className="flex flex-wrap gap-sp-2 justify-center mb-sp-6">
+            {categories.map(cat => (
+              <Link
+                key={cat}
+                href={`/search?q=${queries[cat]}`}
+                className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-fg min-h-touch flex items-center hover:bg-muted-3 transition-colors"
+                style={{ border: '1px solid var(--bdr)' }}
+              >
+                {t(`categories.${cat}`)}
+              </Link>
+            ))}
+          </div>
 
-      <div className="flex flex-wrap gap-sp-2 justify-center mb-sp-6">
-        {categories.map(cat => (
           <Link
-            key={cat}
-            href={`/search?q=${queries[cat]}`}
-            className="px-sp-4 py-sp-2 rounded-full text-f-sm font-semibold text-fg min-h-touch flex items-center hover:bg-muted-3 transition-colors"
-            style={{ border: '1px solid var(--bdr)' }}
+            href="/map"
+            className="px-sp-6 py-sp-3 rounded-full text-f-sm font-semibold text-fg min-h-touch flex items-center"
+            style={{ background: 'var(--muted-3)' }}
           >
-            {t(`categories.${cat}`)}
+            {t('mapCta')}
           </Link>
-        ))}
-      </div>
-
-      <Link
-        href="/map"
-        className="px-sp-6 py-sp-3 rounded-full text-f-sm font-semibold text-fg min-h-touch flex items-center"
-        style={{ background: 'var(--muted-3)' }}
-      >
-        {t('mapCta')}
-      </Link>
-    </div>
+        </>
+      }
+    />
   )
 }
 

@@ -18,6 +18,7 @@ import KpopArtistNav from './KpopArtistNav'
 import ExploreHero from './ExploreHero'
 import ExploreChipFilter, { ChipFilterConfig } from './ExploreChipFilter'
 import ExplorePackages from './ExplorePackages'
+import ExploreCollectionsGrid from './ExploreCollectionsGrid'
 
 export type ExploreCategory = 'k-pop' | 'k-drama' | 'k-beauty' | 'k-food' | 'k-culture'
 
@@ -312,6 +313,12 @@ export default function ExplorePage({ category }: { category: ExploreCategory })
           <>
             {/* H2 Hero */}
             {data.hero && data.hero.length > 0 && <ExploreHero slides={data.hero} />}
+
+            {/* Section Entry (Figma) — real entity_type='collection' cards, filterable
+                by primary_type. Added 2026-08-30 alongside the existing POI rows below
+                (different content: curated multi-place collections vs individual
+                places) rather than replacing them. */}
+            <ExploreCollectionsGrid category={category} />
 
             {/* CT_KP_EXT (DEC-60) — k-pop only: global agency filter + artist tile
                 grid + 6(-7) rows, entirely separate from the generic per-hub body
