@@ -52,13 +52,16 @@ export interface CollectionDetail {
 }
 
 // No DB relation exists between a HUB collection and its children (GET /entities/:slug's
-// related_entities is empty for both hubs below, confirmed 2026-08-30) — the only real
+// related_entities is empty for all 4 hubs below, confirmed 2026-08-30) — the only real
 // link is the slug numbering convention itself (hub `h142` -> children `c142-121..124`).
 // Static map, not fabricated: every slug here was confirmed live via GET /entities?type=
-// collection before being added.
+// collection before being added. All 4 real k-culture HUB rows as of that check —
+// re-verify this list if the count in GET /entities?type=collection ever changes.
 const HUB_CHILDREN: Record<string, string[]> = {
   'slide-kculture-h142': ['slide-kculture-c142-121', 'slide-kculture-c142-122', 'slide-kculture-c142-123', 'slide-kculture-c142-124'],
   'slide-kculture-h190': ['slide-kculture-c190-161', 'slide-kculture-c190-162', 'slide-kculture-c190-165'],
+  'slide-kculture-h191': ['slide-kculture-c191-163', 'slide-kculture-c191-164', 'slide-kculture-c191-166'],
+  'slide-kculture-h192': ['slide-kculture-c192-167', 'slide-kculture-c192-168', 'slide-kculture-c192-169'],
 }
 
 function findSiblingSlugs(slug: string): string[] {

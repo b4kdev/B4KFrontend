@@ -1388,6 +1388,10 @@
     "collections": {
       "itemCount": "{count} places",
       "filterAll": "All"
+    },
+    "collectionsGrid": {
+      "title": "Collections",
+      "filterAll": "All"
     }
   },
   "saved": {
