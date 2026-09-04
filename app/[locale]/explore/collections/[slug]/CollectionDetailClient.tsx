@@ -67,10 +67,11 @@ function SiblingSwitcher({ siblings, currentSlug }: { siblings: NonNullable<Coll
 }
 
 function RouteList({ items }: { items: CollectionDetail['items'] }) {
+  const locale = useLocale()
   return (
     <ol className="flex flex-col">
       {items.map((poi, i) => {
-        const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
+        const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko }, locale)
         return (
           <li key={poi.poi_id} className="flex gap-sp-3">
             <div className="flex flex-col items-center shrink-0">

@@ -42,7 +42,7 @@ export default function MasonryGrid({ items, emptyLabelKey = 'sectionEmpty' }: {
   return (
     <div className="[columns:2] lg:[columns:3] [column-gap:var(--sp-3)]">
       {items.map(poi => {
-        const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
+        const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko }, locale)
         const relationship = locale === 'ko' ? poi.relationship_ko : poi.relationship_en
 
         const body = (

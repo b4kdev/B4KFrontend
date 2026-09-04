@@ -27,7 +27,7 @@ export default function HomePoiCard({ poi, badge }: Props) {
   const locale = useLocale()
   const { user } = useAuth()
   const { open: openAuthGate } = useAuthGate()
-  const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
+  const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko }, locale)
   const { data: savedData, mutate: mutateSaved } = useSaved()
 
   const viewRef = useIntersectionOnce<HTMLElement>(() => {

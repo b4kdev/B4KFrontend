@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { ChevronRight } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import type { ExploreArtist } from '@/app/api/explore/[category]/route'
@@ -22,6 +22,7 @@ interface Props {
 // revert), so this reads as a real catalog/index instead of avatar tiles.
 export default function ArtistIndexList({ artists, selectedArtistId, onSelect }: Props) {
   const t = useTranslations('explore')
+  const locale = useLocale()
   const [expanded, setExpanded] = useState(false)
 
   if (artists.length === 0) {
@@ -39,7 +40,7 @@ export default function ArtistIndexList({ artists, selectedArtistId, onSelect }:
         style={{ borderTop: '1px solid var(--bdr)' }}
       >
         {visible.map((artist, i) => {
-          const name = getDisplayName({ name_en: artist.name_en, name_ko: artist.name_ko, id: artist.id })
+          const name = getDisplayName({ name_en: artist.name_en, name_ko: artist.name_ko, id: artist.id }, locale)
           const selected = selectedArtistId === artist.id
           const meta = [
             artist.debut_year,

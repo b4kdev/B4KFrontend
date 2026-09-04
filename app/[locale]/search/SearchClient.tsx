@@ -340,6 +340,7 @@ function PoiSection({
   onToggle: () => void
 }) {
   const t = useTranslations('search')
+  const locale = useLocale()
   const router = useRouter()
   const shown = expanded ? places : places.slice(0, SEE_ALL_LIMIT)
 
@@ -348,7 +349,7 @@ function PoiSection({
       <ResultSectionHead label={t('results.poi')} count={places.length} />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-sp-4 px-sp-4">
         {shown.map(poi => {
-          const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
+          const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko }, locale)
           return (
             <button
               key={poi.poi_id}

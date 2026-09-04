@@ -2,7 +2,7 @@
 
 import { useState, RefObject } from 'react'
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import {
   Heart, Bookmark, Share2, Edit2, Trash2,
   Car, Train, Footprints, MapPin, Route, Clock, Loader2,
@@ -170,6 +170,7 @@ export default function ItineraryPanelContent({
   snap = 'full',
 }: Props) {
   const t = useTranslations('itinerary')
+  const locale = useLocale()
   const isOnline = useOnline() // SC-21 (OFF_04)
 
   // Leg transport mode overrides (owner edits, optimistic) — keyed by from_stop_order
@@ -358,7 +359,7 @@ export default function ItineraryPanelContent({
             name_preferred: stop.poi.name_preferred,
             name_en:        stop.poi.name_en,
             name_ko:        stop.poi.name_ko,
-          })
+          }, locale)
           const isSelected = selectedPoiId === stop.poi.poi_id
           const displayNum = activeDay === null ? stop.stop_order : idx + 1
           const fromStart  = cumulativeMin[stop.stop_order] ?? 0

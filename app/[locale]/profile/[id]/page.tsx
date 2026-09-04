@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import useSWR from 'swr'
 import { Link } from '@/i18n/navigation'
 import { User, MapPin, Bookmark, Award, Lock, Route } from 'lucide-react'
@@ -145,6 +145,7 @@ function TripsList({ userId, emptyLabel }: { userId: string; emptyLabel: string 
 }
 
 function SavedList({ userId, emptyLabel }: { userId: string; emptyLabel: string }) {
+  const locale = useLocale()
   const { data, isLoading } = useSWR<ListResponse<PoiItem>>(
     `/api/profile/${userId}/saved`,
     fetcher
@@ -159,7 +160,7 @@ function SavedList({ userId, emptyLabel }: { userId: string; emptyLabel: string 
           className="p-sp-3 bg-bg-2 rounded-none text-fg text-f-base"
           style={{ border: '1px solid var(--bdr)' }}
         >
-          {getDisplayName({ name_preferred: poi.name_preferred, name_en: poi.name_en, name_ko: poi.name_ko, id: poi.poi_id })}
+          {getDisplayName({ name_preferred: poi.name_preferred, name_en: poi.name_en, name_ko: poi.name_ko, id: poi.poi_id }, locale)}
         </div>
       ))}
     </div>

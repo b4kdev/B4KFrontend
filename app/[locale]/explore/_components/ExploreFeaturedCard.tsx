@@ -13,7 +13,7 @@ import type { ExplorePoi } from '@/app/api/explore/[category]/route'
 export default function ExploreFeaturedCard({ poi, domain }: { poi: ExplorePoi; domain?: string }) {
   const t = useTranslations('explore')
   const locale = useLocale()
-  const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
+  const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko }, locale)
   const isPartner = !!(poi.is_partner && poi.partner_url && /^https?:\/\//.test(poi.partner_url))
   // verified:false rows don't have a real DB id — linking to /place/{poi_id}
   // would 404 now that the page does a real BFF lookup. Same gate

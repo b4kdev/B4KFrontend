@@ -27,7 +27,7 @@ export default function ExplorePoiCard({ poi, domain }: { poi: ExplorePoi; domai
     track('poi_view', { poi_id: poi.poi_id, domain, region: poi.display_region ?? undefined, locale, screen_id: 'explore' })
   })
 
-  const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
+  const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko }, locale)
 
   // Seed from the real saved list — undefined until the SWR fetch resolves, then
   // overridden optimistically by handleSave. See EXPLORE-POI-SEED (orchestrator queue).

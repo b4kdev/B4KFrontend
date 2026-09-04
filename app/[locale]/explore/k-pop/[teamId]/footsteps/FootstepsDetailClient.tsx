@@ -13,7 +13,7 @@ import type { FootstepsDetail, FootstepsPoi } from '@/lib/kpop-footsteps'
 
 function FootstepsCard({ poi, locale }: { poi: FootstepsPoi; locale: string }) {
   const t = useTranslations('explore')
-  const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko })
+  const name = getDisplayName({ name_en: poi.name_en, name_ko: poi.name_ko }, locale)
   const relationship = locale === 'ko' ? poi.relationship_ko : poi.relationship_en
 
   const body = (
