@@ -240,7 +240,7 @@ export default function SettingsPage() {
   const { showToast } = useToast()
   const locale = useLocale()
 
-  const [theme, setThemeState] = useState<Theme>('dark')
+  const [theme, setThemeState] = useState<Theme>('light')
   const [transport, setTransport] = useState<Transport>(profile?.transport_default ?? 'car')
   const [interests, setInterests] = useState<string[]>(profile?.interests ?? [])
   const [saving, setSaving] = useState(false)
