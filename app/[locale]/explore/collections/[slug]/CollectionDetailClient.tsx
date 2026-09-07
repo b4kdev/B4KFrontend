@@ -113,8 +113,8 @@ export default function CollectionDetailClient({ slug }: { slug: string }) {
   const [typeFilter, setTypeFilter] = useState<string>('all')
 
   const { data, isLoading, error, mutate } = useSWR<CollectionDetail>(
-    [`/api/explore/collections/${slug}`, locale],
-    ([url]) => fetcher<CollectionDetail>(url),
+    `/api/explore/collections/${slug}?locale=${locale}`,
+    (url) => fetcher<CollectionDetail>(url),
     { revalidateOnFocus: false },
   )
   const isError = !!error

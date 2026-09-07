@@ -38,8 +38,8 @@ export default function ExploreCollectionsGrid({ category }: { category: string 
   const [typeFilter, setTypeFilter] = useState<string>('all')
 
   const { data, isLoading } = useSWR<{ items: CollectionCard[] }>(
-    [`/api/explore/${category}/collections`, locale],
-    ([url]) => fetcher<{ items: CollectionCard[] }>(url),
+    `/api/explore/${category}/collections?locale=${locale}`,
+    (url) => fetcher<{ items: CollectionCard[] }>(url),
     { revalidateOnFocus: false },
   )
   const items = data?.items ?? []

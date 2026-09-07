@@ -8,7 +8,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const detail = await fetchCollectionDetail(params.slug)
+  const detail = await fetchCollectionDetail(params.slug, params.locale)
   if (!detail) return {}
   return { title: `${detail.title} | B4K` }
 }
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // confirmed live 2026-08-30 via GET /entities?type=collection) — see lib/collections.ts
 // for why one route covers all of them instead of a page per wireframe concept.
 export default async function CollectionPage({ params }: Props) {
-  const detail = await fetchCollectionDetail(params.slug)
+  const detail = await fetchCollectionDetail(params.slug, params.locale)
   if (!detail) notFound()
 
   return <CollectionDetailClient slug={params.slug} />

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { bffFetch } from '@/lib/bff'
+import { pickEntityTitle } from '@/lib/entity-i18n'
 
 // Real entity_type='collection' rows for one Explore section (k-pop/k-drama/k-beauty/
 // k-food/k-culture), confirmed live 2026-08-30 via GET /entities?type=collection (108
@@ -11,6 +12,8 @@ import { bffFetch } from '@/lib/bff'
 interface EntitySummary {
   slug: string
   name_ko: string
+  name_en?: string | null
+  translations?: Record<string, { name?: string; description?: string }>
   primary_image_url: string | null
   metadata?: { frd_domain?: string; primary_type?: string; runtime_kind?: string }
 }
@@ -22,8 +25,9 @@ export interface CollectionCard {
   primaryType: string | null
 }
 
-export async function GET(_req: NextRequest, { params }: { params: { category: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { category: string } }) {
   try {
+    const locale = req.nextUrl.searchParams.get('locale') ?? 'en'
     const [page1, page2] = await Promise.all([
       bffFetch<EntitySummary[]>('/entities?type=collection&limit=100&offset=0', { token: null }),
       bffFetch<EntitySummary[]>('/entities?type=collection&limit=100&offset=100', { token: null }),
@@ -33,7 +37,7 @@ export async function GET(_req: NextRequest, { params }: { params: { category: s
       .filter(e => e.metadata?.frd_domain === params.category && e.metadata?.runtime_kind !== 'CHILD')
       .map(e => ({
         slug: e.slug,
-        title: e.name_ko,
+        title: pickEntityTitle(e, locale),
         primary_image_url: e.primary_image_url,
         primaryType: e.metadata?.primary_type ?? null,
       }))

@@ -14,6 +14,7 @@
 // dispatches on these two real fields instead of 16 hand-built page types.
 import 'server-only'
 import { bffFetch } from './bff'
+import { pickEntityTitle } from './entity-i18n'
 
 export type CollectionPrimaryType = 'FAN_THEME' | 'STORY' | 'EXPERIENCE' | 'ROUTE' | 'CHALLENGE' | 'SHOPPING'
 export type CollectionRuntimeKind = 'HUB' | 'LEAF' | 'CHILD'
@@ -77,6 +78,7 @@ interface EntityProfile {
   name_ko: string
   name_en: string | null
   primary_image_url: string | null
+  translations?: Record<string, { name?: string; description?: string }>
   metadata?: {
     section?: string
     primary_type?: string
@@ -93,19 +95,22 @@ interface ContextItem {
   coords_lng: number
   primary_image_url: string | null
   display_region: string | null
-  base_translations?: { en?: { name?: string } }
+  /** 맥락별 오버레이 이름(예: 특정 콜렉션에서만 쓰는 설명) — 있으면 base_translations보다 우선. */
+  translations?: Record<string, { name?: string; description?: string }>
+  /** poi_translations 원본 — 맥락 오버레이가 없는 언어의 fallback. */
+  base_translations?: Record<string, { name?: string; description?: string }>
 }
 
-async function fetchSummary(slug: string): Promise<CollectionSummary | null> {
+async function fetchSummary(slug: string, locale: string): Promise<CollectionSummary | null> {
   try {
     const p = await bffFetch<EntityProfile>(`/entities/${slug}`, { token: null })
-    return { slug, title: p.name_ko, primary_image_url: p.primary_image_url }
+    return { slug, title: pickEntityTitle(p, locale), primary_image_url: p.primary_image_url }
   } catch {
     return null
   }
 }
 
-export async function fetchCollectionDetail(slug: string): Promise<CollectionDetail | null> {
+export async function fetchCollectionDetail(slug: string, locale: string): Promise<CollectionDetail | null> {
   try {
     const profile = await bffFetch<EntityProfile>(`/entities/${slug}`, { token: null })
     const runtimeKind = (profile.metadata?.runtime_kind as CollectionRuntimeKind | undefined) ?? 'LEAF'
@@ -118,7 +123,10 @@ export async function fetchCollectionDetail(slug: string): Promise<CollectionDet
       items = context.map(c => ({
         poi_id: String(c.poi_id),
         name_ko: c.name_ko,
-        name_en: c.base_translations?.en?.name ?? c.name_ko,
+        name_en: pickEntityTitle(
+          { name_ko: c.name_ko, translations: { ...c.base_translations, ...c.translations } },
+          locale,
+        ),
         primary_image_url: c.primary_image_url,
         display_region: c.display_region ?? '',
         relation: c.relation,
@@ -131,7 +139,7 @@ export async function fetchCollectionDetail(slug: string): Promise<CollectionDet
     let children: CollectionSummary[] | undefined
     if (runtimeKind === 'HUB') {
       const childSlugs = HUB_CHILDREN[slug] ?? []
-      const fetched = await Promise.all(childSlugs.map(fetchSummary))
+      const fetched = await Promise.all(childSlugs.map(s => fetchSummary(s, locale)))
       children = fetched.filter((c): c is CollectionSummary => c !== null)
       if (!children.length) return null
     }
@@ -139,14 +147,14 @@ export async function fetchCollectionDetail(slug: string): Promise<CollectionDet
     let siblings: CollectionSummary[] | undefined
     if (runtimeKind === 'CHILD') {
       const siblingSlugs = findSiblingSlugs(slug)
-      const fetched = await Promise.all(siblingSlugs.map(fetchSummary))
+      const fetched = await Promise.all(siblingSlugs.map(s => fetchSummary(s, locale)))
       siblings = fetched.filter((c): c is CollectionSummary => c !== null)
     }
 
     return {
       slug,
       entityId: profile.entity_id,
-      title: profile.name_ko,
+      title: pickEntityTitle(profile, locale),
       section: profile.metadata?.section ?? '',
       isOrdered,
       totalCount: items.length,
