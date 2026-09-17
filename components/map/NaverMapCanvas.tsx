@@ -793,7 +793,7 @@ export default function NaverMapCanvas({
         <div className="absolute inset-0 flex items-end sm:items-center justify-center pointer-events-none px-sp-4 pb-sp-6 sm:pb-0">
           <div
             className="pointer-events-auto flex flex-col items-center gap-sp-2 text-center px-sp-6 py-sp-4"
-            style={{ background: 'rgba(17,17,17,0.92)', backdropFilter: 'blur(12px)', border: '1px solid var(--bdr)' }}
+            style={{ background: 'rgba(var(--bg-2-rgb), 0.92)', backdropFilter: 'blur(12px)', border: '1px solid var(--bdr)' }}
           >
             <p className="text-fg text-sm font-semibold">{t('error')}</p>
             <button onClick={() => setScriptErr(false)} className="text-lav-map text-sm hover:underline min-h-touch flex items-center">
@@ -813,7 +813,7 @@ export default function NaverMapCanvas({
         <div className="absolute inset-0 flex items-end sm:items-center justify-center pointer-events-none px-sp-4 pb-sp-6 sm:pb-0">
           <div
             className="pointer-events-auto flex flex-col items-center gap-sp-2 text-center px-sp-6 py-sp-4"
-            style={{ background: 'rgba(17,17,17,0.92)', backdropFilter: 'blur(12px)', border: '1px solid var(--bdr)' }}
+            style={{ background: 'rgba(var(--bg-2-rgb), 0.92)', backdropFilter: 'blur(12px)', border: '1px solid var(--bdr)' }}
           >
             <MapPinOff size={20} strokeWidth={2} className="text-muted" aria-hidden="true" />
             <p className="text-fg text-sm font-semibold">{t('empty.title')}</p>
