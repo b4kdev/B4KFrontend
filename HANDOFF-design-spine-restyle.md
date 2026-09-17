@@ -18,10 +18,11 @@ Porting the Design Spine color/radius system (Figma "Token-Extract" file, fileKe
 - **Figma source of truth:** Token-Extract file, fileKey `37octxSrI0LdBzX148HlbI` — its own "00 — Read Me" page (node `53:1290`) has the full build log for the design-system side. Read that before assuming anything about current Figma state; another session has been actively working that file in parallel.
 - **This file** lives at the root of this branch/worktree so it travels with the code.
 
-## Commits so far (2, both pushed)
+## Commits so far (3, all pushed)
 
 1. `a304f1b` — `style(tokens): restyle neutral colors to Design Spine values (DEC-73)` — the core value-only swap in `app/globals.css`
 2. `87f6f5f` — `fix(cta): stop primary/secondary CTAs inverting or breaking in Light mode` — real bugs found via live browser check, not part of the original plan, just caught along the way
+3. `1eff6f6` — `style(type): repoint display type scale to Design Spine measured values (DEC-74)` — `--f-display-tile/feature/hero` repointed 26/36/72px → 22/28/68px. **Chosen "repoint, don't add new slots"** per tokens.md's measured values (trending-card/leaderboard-title/home-hero respectively) — same order preserved (hero>feature>tile), same value-only-swap strategy as the color commits. `--f-xxs`/`-sm`/`-md`/`-2xl` needed no change (already 10/12/13/17px by coincidence). **NOT browser-verified — see gap below, this is the one thing to check first.**
 
 ## Exact scope of what changed
 
@@ -49,7 +50,7 @@ Porting the Design Spine color/radius system (Figma "Token-Extract" file, fileKe
 - **`--lav`/`--lav-*`, `--map-pin*`, `--void*`, `--energy`** — accent colors. Design Spine has **no accent color at all** (confirmed this session, every sampled screen is grayscale + one red). Retiring these needs someone to decide what actually replaces map pins / AI-signal chrome — that's a UX call, not a mechanical value swap. (`--royal-600` was the one exception touched, because it's genuinely just a plain button-fill slot, not a designed accent moment.)
 - **`.cta-ai`, `.catalogue-row`'s `[aria-selected]`/`.selected`/`:focus-visible` states** — still on `--lav`/`--energy`. Left alone on purpose: fixing just the focus ring while the background stays lavender would look inconsistent. Same deferred bucket as above.
 - **`--muted-3` in Light mode** — `tokens.md` itself flags this as unconfirmed (never observed bound on any real Light-mode Spine frame). Left on its old value rather than guessed.
-- **Typography** (`--f-xxs`…`--f-2xl`, `--f-display-tile/feature/hero`) — **not started, biggest remaining piece.** Design Spine's real measured sizes are 10/12/13/17/22/28/68px (from only 2 of ~150 real screens, per `tokens.md`'s own caveat). 10/12/13/17 happen to already match old scale slots by coincidence — safe value swap. 22/28/68 have **no existing slot** — old `--f-display-tile/feature/hero` (26/36/72px) are close but not identical. Needs a real decision (repoint those 3, or add new ones) before touching.
+- **Typography** — done in commit `1eff6f6` (this session). See commit list above.
 - **Spacing** (`--sp-*`) — untouched. Old 8-step scale vs. Design Spine's only-confirmed set (24/32/48/64/96 as real bound Figma variables; everything under 24px is documented as "evidence, not tokens" — no confirmed micro-spacing system exists yet). Same category as typography: needs a decision, not a mechanical swap.
 
 ## What's verified, and how — redo the check, don't trust the claim
@@ -62,9 +63,10 @@ Porting the Design Spine color/radius system (Figma "Token-Extract" file, fileKe
 
 ## What's NOT verified — real gaps
 
-- **Only Home (`/en`) has been visually checked.** Every other route (Map, Explore, Saved, Profile, Plan, Search, Leaderboard, auth, etc.) — zero visual check. Given the hardcoded-rgba bug pattern found on Home, the same class of bug likely exists elsewhere. Needs a real grep + browser sweep per page, not an assumption in either direction.
-- **Only `/en` locale checked.** The other 4 (ko, ja, zh-TW, pt-BR) — nothing checked, including text-length/wrap behavior.
-- **Only desktop viewport** (1489px) screenshotted. Mobile (375px) — nothing checked.
+- **Only Home (`/en`) has been visually checked** — and that was before the typography commit. Every other route (Map, Explore, Saved, Profile, Plan, Search, Leaderboard, auth, etc.) — zero visual check. Given the hardcoded-rgba bug pattern found on Home, the same class of bug likely exists elsewhere. Needs a real grep + browser sweep per page, not an assumption in either direction.
+- **Commit `1eff6f6` (typography repoint) has NO browser verification at all — zero, not even Home.** This session's Chrome extension had no connected browser instance whatsoever (`list_connected_browsers` returned `[]`, and `switch_browser` broadcast found nothing to pair with) — a harder failure than the "flaky reconnect" noted below, this was a full account/pairing gap, not a transient handshake miss. The dev server on `:3001` is still up and serving this worktree (PID confirmed this session) — the very first thing the next session should do is a live `getComputedStyle` check on the Home hero (68px), Leaderboard title (28px), and any `--f-display-tile` page (22px), both themes, per the method below. Only static checks ran: `npx tsc --noEmit` clean, file diff hand-verified.
+- **Only `/en` locale checked.** The other 4 (ko, ja, zh-TW, pt-BR) — nothing checked, including text-length/wrap behavior. Locale font stacks (`:lang(ko)` etc.) don't override the *size* vars, only family/line-height, so the new sizes apply to all locales identically — but real text at 22/28/68px in Korean/Japanese/Chinese hasn't been eyeballed for wrap/overflow.
+- **Only desktop viewport** (1489px) screenshotted. Mobile (375px) — nothing checked. Worth double-checking the `--f-display-hero` mobile override (28px @ max-width:767px) still reads sanely now that desktop hero dropped to 68px from 72px — the override's own comment history (word-wrap/clipping fixes) suggests this value was tuned empirically, not derived, so a shrunk desktop base value doesn't obviously invalidate it, but hasn't been re-checked either.
 - **No accessibility check** (axe, keyboard nav, contrast beyond the color values themselves) run against anything in this branch.
 
 ## Practical gotchas hit this session — avoid repeating
@@ -72,11 +74,11 @@ Porting the Design Spine color/radius system (Figma "Token-Extract" file, fileKe
 - **`.env.local`** — the Bash tool blocks *any* command that references it, even a plain `cp` or a chained existence-check. This is a permission guard, not a bug — ask the human to copy it in manually, don't look for a workaround.
 - **Background dev servers survive a Claude Code session restart** as orphaned processes. Check `lsof -i :<port>` before assuming you need a fresh one — "port already in use" usually means the old server is still fine, not a conflict to fight.
 - **Base-ref mistakes are real** — this branch was originally cut from `origin/devtest`, then explicitly recreated from `origin/main` mid-session per direct instruction. Confirm the base ref you actually want *before* creating a worktree; fixing it after means deleting the branch/worktree and redoing it (only safe if nothing's been pushed under the old base yet).
-- **Chrome extension connection is flaky across session restarts** — a "not connected" error even when the human confirms the extension is running usually means the *session* needs restarting (the MCP handshake happens at session start), not the extension itself.
+- **Chrome extension connection is flaky across session restarts** — a "not connected" error even when the human confirms the extension is running usually means the *session* needs restarting (the MCP handshake happens at session start), not the extension itself. This session hit a step further than that: `list_connected_browsers` came back completely empty (not just a handshake timeout), and re-broadcasting via `switch_browser` found nothing to connect to at all. Worth checking whether the Chrome extension is actually logged into the *same account* running Claude Code — this was a different account than the one that did the color-migration work, and that may be exactly why pairing came back empty.
 
 ## Immediate next steps, in priority order
 
-1. **Typography** — decide + implement the `--f-display-tile/feature/hero` repoint (or new slots) for 22/28/68px. Biggest remaining piece.
+1. **Browser-verify commit `1eff6f6` (typography)** — this is unverified, not just under-verified like everything else. Do this before anything else builds on top of it. Dev server already up on `:3001` for this worktree.
 2. **Sweep every other route** for the same hardcoded-rgba-literal + theme-inversion pattern found on Home. Grep first (`rgba(255,255,255` / `rgba(0,0,0` outside `globals.css`, across `app/` and `components/`), then browser-verify each hit individually — don't batch-fix blind.
 3. **Mobile viewport + other-locale check**, once desktop/`en` is solid.
 4. **Only after all of the above:** bring it back for a full review. Do not merge PR #188 without explicit go-ahead — this was said directly, more than once.
@@ -90,3 +92,4 @@ Porting the Design Spine color/radius system (Figma "Token-Extract" file, fileKe
 
 ---
 Written 2026-09-17, by a Claude Code session on a different account than whoever reads this next.
+Updated 2026-09-17, by yet another account — added the typography commit, and the harder browser-pairing gap noted above.
