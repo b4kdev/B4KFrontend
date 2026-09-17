@@ -47,7 +47,9 @@ body {
   --map-pin-mid:  rgba(251,43,221,0.35);
   --map-pin-dim:  rgba(251,43,221,0.15);
 
-  /* Backgrounds */
+  /* Backgrounds — unchanged: already numerically identical to Design Spine's
+     color/bg / color/bg-raised / color/bg-elevated (DEC-73), confirmed dark mode
+     needs no value change here. */
   --bg:          #0a0a0a;
   --bg-2:        #111111;
   --bg-3:        #1a1a1a;
@@ -55,32 +57,39 @@ body {
   --void-200:    #0D0A1A;
   --void-300:    #150F28;
 
-  /* Accent signals — constrained semantic use */
+  /* Accent signals — constrained semantic use. --energy deliberately NOT
+     touched in this pass — Design Spine has no accent color at all (DEC-73);
+     retiring this needs a real per-usage design decision (AI-signal chrome),
+     not a value swap. Separate follow-up. */
   --energy:      #C42490;  /* AI·ENGINE active / live·realtime signals only */
-  --royal-600:   #7B2FBF;  /* CTA fill — primary button bg, interactive hover */
+  --royal-600:   #171717;  /* CTA fill — primary button bg. Value updated to Design Spine's
+                               color/bg-media (DEC-73/74, 2026-09-11) — new system has no accent,
+                               primary buttons use a fixed-dark neutral fill instead of purple. */
 
   /* Foreground */
-  --fg:          #ffffff;
-  --muted:       rgba(255,255,255,0.60); /* BLK-10: was 0.35 (~3.2:1, WCAG AA fail) — now ~7:1 */
-  --muted-2:     rgba(255,255,255,0.15);
-  --muted-3:     rgba(255,255,255,0.06);
-  --mut2:        rgba(255,255,255,0.22);
-  --mut3:        rgba(255,255,255,0.08);
-  --mut4:        rgba(255,255,255,0.04);
+  --fg:          #f7f6f3; /* Design Spine color/fg (DEC-73) — was pure #ffffff */
+  --muted:       rgba(247,246,243,0.55); /* Design Spine color/fg-muted (DEC-73) */
+  --muted-2:     rgba(247,246,243,0.36); /* Design Spine color/fg-muted-2 (DEC-73) */
+  --muted-3:     rgba(247,246,243,0.06); /* Design Spine color/fg-muted-3 (DEC-73) — opacity unchanged */
+  --mut2:        rgba(255,255,255,0.22); /* unused (0 references) — left on old value, not in new system */
+  --mut3:        rgba(255,255,255,0.08); /* unused (0 references) — left on old value, not in new system */
+  --mut4:        rgba(255,255,255,0.04); /* unused (0 references) — left on old value, not in new system */
 
   /* Overlays — for chips, glass surfaces, backdrops */
   --overlay-10:  rgba(255,255,255,0.10);
   --backdrop-50: rgba(0,0,0,0.50);
 
-  /* Borders — use as: border: var(--border) */
-  --border:      1px solid rgba(196,168,224,0.18);
-  --bdr:         1px solid rgba(255,255,255,0.08);
-  --lbdr:        1px solid rgba(196,168,224,0.15);
+  /* Borders — use as: border: var(--border). Design Spine has one border
+     token, not three (DEC-73) — bdr/lbdr collapsed onto the same new value
+     rather than renamed, so no consuming file needs to change. */
+  --border:      1px solid rgba(247,246,243,0.14);
+  --bdr:         1px solid rgba(247,246,243,0.14);
+  --lbdr:        1px solid rgba(247,246,243,0.14);
 
   /* Semantic */
   --success:     #4ADE80;
   --warning:     #FBBF24;
-  --danger:      #F87171;
+  --danger:      #ff5449; /* Design Spine color/danger, Dark mode (DEC-73, contrast-fixed) — was #F87171 */
   --info:        #60A5FA;
   --ok:          rgba(74,222,128,0.85);
   --warn-c:      rgba(251,191,36,0.85);
@@ -93,7 +102,7 @@ body {
      (never flips with [data-theme="light"] — matches the reskin file's own
      rule, since photography shouldn't invert with the UI theme). */
   --line:        rgba(255,255,255,0.14);
-  --on-media:    #ffffff;
+  --on-media:    #f7f6f3; /* Design Spine color/on-media (DEC-73) — was pure #ffffff */
 
   /* Touch target — Apple HIG + WCAG AAA minimum */
   --touch-min: 44px;
@@ -162,19 +171,19 @@ body {
 /* ─── Light mode overrides ──────────────────────────────────── */
 [data-theme="light"] {
   color-scheme: light;
-  --bg:      #f5f5f2;
-  --bg-2:    #eeeeeb;
-  --bg-3:    #e5e5e2;
-  --fg:      #0a0a0a;
-  --border:  1px solid rgba(0,0,0,0.12);
-  --bdr:     1px solid rgba(0,0,0,0.10);
-  --lbdr:    1px solid rgba(196,168,224,0.35);
-  --muted:   rgba(0,0,0,0.62); /* BLK-10: was 0.45 (~3.3:1, WCAG AA fail) — now ~5.7-6:1. Not yet reachable (dark-mode-only for MVP) but fixed for correctness */
-  --muted-2: rgba(0,0,0,0.25);
-  --muted-3: rgba(0,0,0,0.08);
-  --mut2:    rgba(0,0,0,0.35);
-  --mut3:    rgba(0,0,0,0.08);
-  --mut4:    rgba(0,0,0,0.03);
+  --bg:      #ffffff; /* Design Spine color/bg, Light (DEC-73) — was #f5f5f2 */
+  --bg-2:    #f5f5f3; /* Design Spine color/bg-raised, Light (DEC-73) — was #eeeeeb */
+  --bg-3:    #ebebe7; /* Design Spine color/bg-elevated, Light (DEC-73) — was #e5e5e2 */
+  --fg:      #0a0a0a; /* unchanged — already matches Design Spine color/fg, Light */
+  --border:  1px solid rgba(10,10,10,0.12); /* Design Spine color/border, Light (DEC-73) */
+  --bdr:     1px solid rgba(10,10,10,0.12); /* collapsed onto the single new border value, see dark-mode note above */
+  --lbdr:    1px solid rgba(10,10,10,0.12); /* collapsed onto the single new border value, see dark-mode note above */
+  --muted:   rgba(10,10,10,0.62); /* Design Spine color/fg-muted, Light (DEC-73) — opacity unchanged from BLK-10 fix */
+  --muted-2: rgba(10,10,10,0.46); /* Design Spine color/fg-muted-2, Light (DEC-73) */
+  --muted-3: rgba(0,0,0,0.08); /* no confirmed Design Spine value for Light — tokens.md flags this as unconfirmed, left as-is rather than guessed */
+  --mut2:    rgba(0,0,0,0.35); /* unused (0 references) — left on old value, not in new system */
+  --mut3:    rgba(0,0,0,0.08); /* unused (0 references) — left on old value, not in new system */
+  --mut4:    rgba(0,0,0,0.03); /* unused (0 references) — left on old value, not in new system */
 
   /* Overlays — inverted in light mode for legibility */
   --overlay-10:  rgba(0,0,0,0.06);
@@ -183,6 +192,7 @@ body {
   --warn-c:  rgba(180,130,0,0.85);
   --si-c:    rgba(180,130,0,0.85);
   --line:    rgba(0,0,0,0.12);
+  --danger:  #c81e1e; /* Design Spine color/danger, Light (DEC-73, contrast-fixed) — old --danger had no light override at all */
 }
 
 /* ─── Locale font stacks ────────────────────────────────────── */
