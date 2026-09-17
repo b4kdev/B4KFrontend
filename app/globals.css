@@ -103,6 +103,8 @@ body {
      rule, since photography shouldn't invert with the UI theme). */
   --line:        rgba(255,255,255,0.14);
   --on-media:    #f7f6f3; /* Design Spine color/on-media (DEC-73) — was pure #ffffff */
+  --on-media-rgb:   247, 246, 243; /* same value as --on-media, as an RGB triplet for rgba() composition in inline styles */
+  --royal-600-rgb:  23, 23, 23;    /* same value as --royal-600 (Design Spine bg-media), as an RGB triplet for rgba() composition in inline styles */
 
   /* Touch target — Apple HIG + WCAG AAA minimum */
   --touch-min: 44px;

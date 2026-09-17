@@ -53,7 +53,7 @@ export default function FieldImage({
           left: 0,
           right: 0,
           height: '30%',
-          background: 'linear-gradient(to bottom, rgba(10,10,10,0.70), transparent)',
+          background: 'linear-gradient(to bottom, rgba(var(--royal-600-rgb), 0.70), transparent)',
           pointerEvents: 'none',
         }}
       />
@@ -67,7 +67,7 @@ export default function FieldImage({
           left: 0,
           right: 0,
           height: '30%',
-          background: 'linear-gradient(to top, rgba(10,10,10,0.70), transparent)',
+          background: 'linear-gradient(to top, rgba(var(--royal-600-rgb), 0.70), transparent)',
           pointerEvents: 'none',
         }}
       />
@@ -82,8 +82,8 @@ export default function FieldImage({
           left: 8,
           width: 18,
           height: 18,
-          borderTop: '1px solid rgba(255,255,255,0.30)',
-          borderLeft: '1px solid rgba(255,255,255,0.30)',
+          borderTop: '1px solid rgba(var(--on-media-rgb), 0.30)',
+          borderLeft: '1px solid rgba(var(--on-media-rgb), 0.30)',
           pointerEvents: 'none',
         }}
       />
@@ -96,8 +96,8 @@ export default function FieldImage({
           right: 8,
           width: 18,
           height: 18,
-          borderTop: '1px solid rgba(255,255,255,0.30)',
-          borderRight: '1px solid rgba(255,255,255,0.30)',
+          borderTop: '1px solid rgba(var(--on-media-rgb), 0.30)',
+          borderRight: '1px solid rgba(var(--on-media-rgb), 0.30)',
           pointerEvents: 'none',
         }}
       />
@@ -110,8 +110,8 @@ export default function FieldImage({
           left: 8,
           width: 18,
           height: 18,
-          borderBottom: '1px solid rgba(255,255,255,0.30)',
-          borderLeft: '1px solid rgba(255,255,255,0.30)',
+          borderBottom: '1px solid rgba(var(--on-media-rgb), 0.30)',
+          borderLeft: '1px solid rgba(var(--on-media-rgb), 0.30)',
           pointerEvents: 'none',
         }}
       />
@@ -124,8 +124,8 @@ export default function FieldImage({
           right: 8,
           width: 18,
           height: 18,
-          borderBottom: '1px solid rgba(255,255,255,0.30)',
-          borderRight: '1px solid rgba(255,255,255,0.30)',
+          borderBottom: '1px solid rgba(var(--on-media-rgb), 0.30)',
+          borderRight: '1px solid rgba(var(--on-media-rgb), 0.30)',
           pointerEvents: 'none',
         }}
       />
@@ -142,7 +142,7 @@ export default function FieldImage({
             fontSize: 9,
             letterSpacing: '0.22em',
             textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.50)',
+            color: 'rgba(var(--on-media-rgb), 0.50)',
             pointerEvents: 'none',
             userSelect: 'none',
             zIndex: 10,
@@ -165,7 +165,7 @@ export default function FieldImage({
             fontSize: 'var(--f-xxs)',
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.35)',
+            color: 'rgba(var(--on-media-rgb), 0.35)',
             pointerEvents: 'none',
             userSelect: 'none',
             zIndex: 10,
@@ -188,7 +188,7 @@ export default function FieldImage({
             fontSize: 'var(--f-xxs)',
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.40)',
+            color: 'rgba(var(--on-media-rgb), 0.40)',
             pointerEvents: 'none',
             userSelect: 'none',
             zIndex: 10,
