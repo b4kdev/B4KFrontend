@@ -404,10 +404,14 @@ a { color: inherit; text-decoration: none; }
 
 /* ─── CTA components ───────────────────────────────────────── */
 .cta-primary {
+  /* Fixed-ink fill (DEC-73/74) — background/color must NOT flip with theme,
+     Design Spine's primary buttons stay dark-filled + light-text in both
+     modes. Was background:var(--fg)/color:var(--bg), which inverted per
+     theme — real bug, caught via live browser check in both themes. */
   height: 44px;
   padding: 0 20px;
-  background: var(--fg);
-  color: var(--bg);
+  background: var(--royal-600);
+  color: var(--on-media);
   font-family: var(--f-mono);
   font-size: 12px;
   font-weight: 400;
@@ -419,17 +423,21 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background var(--dur-micro) var(--ease-linear), color var(--dur-micro) var(--ease-linear);
+  transition: opacity var(--dur-micro) var(--ease-linear);
 }
-.cta-primary:hover { background: var(--royal-600); color: var(--fg); }
-.cta-primary:focus-visible { outline: 1px solid var(--lav); outline-offset: 2px; }
+/* Hover — no Design Spine evidence for a hover treatment (undocumented,
+   same as focus was before this pass); opacity dip is a conservative
+   placeholder, not a verified spec. Old hover swapped to --royal-600/--fg,
+   which no longer makes sense now that --royal-600 IS the resting fill. */
+.cta-primary:hover { opacity: 0.85; }
+.cta-primary:focus-visible { outline: 2px solid var(--on-media); outline-offset: 0; }
 .cta-primary:disabled { opacity: 0.40; cursor: not-allowed; }
 
 .cta-secondary {
   height: 44px;
   padding: 0 20px;
   background: transparent;
-  color: rgba(255,255,255,0.55);
+  color: var(--muted); /* was hardcoded rgba(255,255,255,.55) — broke in Light mode (near-invisible white-on-white), real pre-existing bug */
   font-family: var(--f-mono);
   font-size: 12px;
   font-weight: 400;
@@ -443,8 +451,8 @@ a { color: inherit; text-decoration: none; }
   cursor: pointer;
   transition: border-color var(--dur-micro) var(--ease-linear), color var(--dur-micro) var(--ease-linear);
 }
-.cta-secondary:hover { border-color: rgba(255,255,255,0.08); color: var(--fg); }
-.cta-secondary:focus-visible { outline: 1px solid var(--lav); outline-offset: 2px; }
+.cta-secondary:hover { border-color: var(--muted-2); color: var(--fg); } /* was hardcoded rgba(255,255,255,.08) — same theme bug as color above */
+.cta-secondary:focus-visible { outline: 2px solid var(--fg); outline-offset: 0; }
 .cta-secondary:disabled { opacity: 0.30; cursor: not-allowed; }
 
 .cta-ai {
@@ -485,7 +493,7 @@ a { color: inherit; text-decoration: none; }
   content: '';
   flex: 1;
   height: 1px;
-  background: rgba(255,255,255,0.10);
+  background: var(--line); /* was hardcoded rgba(255,255,255,.10) — theme bug, invisible/wrong in Light */
 }
 
 /* ─── Catalogue row ─────────────────────────────────────────── */
@@ -493,11 +501,15 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: var(--border); /* was hardcoded rgba(255,255,255,.08) — theme bug, invisible/wrong in Light */
   transition: background var(--dur-micro) var(--ease-linear);
   cursor: pointer;
 }
-.catalogue-row:hover { background: rgba(255,255,255,0.04); }
+.catalogue-row:hover { background: var(--muted-3); } /* was hardcoded rgba(255,255,255,.04) — same theme bug */
+/* Selected/focus state deliberately left on --lav/--lav-dim — accent retirement
+   for this component is a real design call (what replaces the lavender
+   highlight), not a mechanical value swap. Same deferred bucket as --energy/
+   --map-pin/--void*, see commit log. */
 .catalogue-row[aria-selected="true"],
 .catalogue-row.selected {
   background: var(--lav-dim);
