@@ -149,10 +149,10 @@ body {
   --f-xl:   16px;
   --f-2xl:  17px;
 
-  /* Display type scale — MODERNIZ only (see DESIGN.md §Typography) */
-  --f-display-tile:    26px;
-  --f-display-feature: 36px;
-  --f-display-hero:    72px;
+  /* Display type scale — MODERNIZ only, Design Spine measured values (DEC-74) */
+  --f-display-tile:    22px; /* was 26px — Design Spine: trending-spot card title */
+  --f-display-feature: 28px; /* was 36px — Design Spine: leaderboard page title */
+  --f-display-hero:    68px; /* was 72px — Design Spine: Home hero title */
 }
 
 /* Hero title at 72px overflows a single unbroken word (e.g. "Gyeongbokgung")
