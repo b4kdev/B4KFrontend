@@ -89,7 +89,7 @@ export default function SavedBottomSheet({ open, onClose, onSelectPoi, onFolderC
         aria-modal={snap !== 'peek'}
         aria-label={t('title')}
         className="lg:hidden fixed left-0 right-0 z-40 h-[85vh] flex flex-col rounded-none"
-        style={{ ...sheetStyle, bottom: 'calc(var(--sp-12) + env(safe-area-inset-bottom))', background: 'rgba(17,17,17,0.92)', backdropFilter: 'blur(12px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}
+        style={{ ...sheetStyle, bottom: 'calc(var(--sp-12) + env(safe-area-inset-bottom))', background: 'rgba(var(--bg-2-rgb), 0.92)', backdropFilter: 'blur(12px)', borderTop: 'var(--border)' }}
       >
         {/* Peek zone: handle + title + close — owns the gesture */}
         <div className="shrink-0" style={{ touchAction: 'none' }} {...handleProps}>

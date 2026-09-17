@@ -82,7 +82,7 @@ export default function PlanBottomSheet({
           'transition-transform duration-[250ms] ease-out max-h-[70vh] flex flex-col',
           isOpen ? 'translate-y-0' : 'translate-y-full',
         ].join(' ')}
-        style={{ background: 'rgba(17,17,17,0.92)', backdropFilter: 'blur(12px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}
+        style={{ background: 'rgba(var(--bg-2-rgb), 0.92)', backdropFilter: 'blur(12px)', borderTop: 'var(--border)' }}
       >
         {/* Drag indicator */}
         <div className="flex justify-center pt-sp-2 pb-sp-1 shrink-0" aria-hidden="true">
