@@ -99,7 +99,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
         ref={panelRef}
         tabIndex={-1}
         className="relative w-full lg:w-[420px] rounded-none p-sp-6 outline-none"
-        style={{ background: 'rgba(17,17,17,0.92)', backdropFilter: 'blur(12px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}
+        style={{ background: 'rgba(var(--bg-2-rgb), 0.92)', backdropFilter: 'blur(12px)', borderTop: 'var(--border)' }}
       >
         {/* Drag handle — mobile only */}
         <div className="lg:hidden flex justify-center mb-sp-4" aria-hidden="true">

@@ -52,6 +52,7 @@ body {
      needs no value change here. */
   --bg:          #0a0a0a;
   --bg-2:        #111111;
+  --bg-2-rgb:    17, 17, 17;   /* same value as --bg-2, as an RGB triplet for rgba() composition (e.g. glass/blur panels) */
   --bg-3:        #1a1a1a;
   --void-100:    #080610;  /* hero/photo context — deepest black for gradient fades */
   --void-200:    #0D0A1A;
@@ -175,6 +176,7 @@ body {
   color-scheme: light;
   --bg:      #ffffff; /* Design Spine color/bg, Light (DEC-73) — was #f5f5f2 */
   --bg-2:    #f5f5f3; /* Design Spine color/bg-raised, Light (DEC-73) — was #eeeeeb */
+  --bg-2-rgb: 245, 245, 243; /* same value as --bg-2, as an RGB triplet for rgba() composition */
   --bg-3:    #ebebe7; /* Design Spine color/bg-elevated, Light (DEC-73) — was #e5e5e2 */
   --fg:      #0a0a0a; /* unchanged — already matches Design Spine color/fg, Light */
   --border:  1px solid rgba(10,10,10,0.12); /* Design Spine color/border, Light (DEC-73) */
