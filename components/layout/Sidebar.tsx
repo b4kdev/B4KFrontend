@@ -195,7 +195,7 @@ export default function Sidebar() {
                 role="menu"
                 aria-label={t('profile')}
                 className="absolute left-full bottom-0 ml-sp-2 w-[180px] rounded-none bg-bg-2 py-sp-1 z-[70]"
-                style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                style={{ border: 'var(--border)' }}
               >
                 <Link
                   href="/profile"

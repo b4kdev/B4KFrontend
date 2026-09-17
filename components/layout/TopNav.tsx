@@ -118,7 +118,7 @@ function SearchDropdown({
         background: 'var(--bg-2)',
         maxHeight: 400,
         overflowY: 'auto',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+        border: 'var(--border)',
       }}
     >
       {!showSuggestions ? (
@@ -455,7 +455,7 @@ export default function TopNav({ onMobileMenuOpen }: TopNavProps) {
             {localeOpen && (
               <div
                 className="absolute right-0 top-[calc(100%+4px)] z-50 overflow-hidden min-w-[140px]"
-                style={{ background: 'var(--bg-2)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                style={{ background: 'var(--bg-2)', border: 'var(--border)' }}
                 role="listbox"
                 aria-label={tNav('language')}
               >
