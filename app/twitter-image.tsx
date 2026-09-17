@@ -15,7 +15,7 @@ export default function TwitterImage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#080610', // allow-hex — ImageResponse requires literal colours
+          backgroundColor: '#0a0a0a', // allow-hex — ImageResponse requires literal colours; matches --bg (Design Spine, DEC-73) — was old --void-100
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse (edge OG renderer) can't use next/image */}
