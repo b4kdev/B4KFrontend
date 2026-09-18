@@ -47,13 +47,16 @@ body {
   --map-pin-mid:  rgba(251,43,221,0.35);
   --map-pin-dim:  rgba(251,43,221,0.15);
 
-  /* Backgrounds — unchanged: already numerically identical to Design Spine's
-     color/bg / color/bg-raised / color/bg-elevated (DEC-73), confirmed dark mode
-     needs no value change here. */
+  /* Backgrounds — product-owner decision 2026-09-18: flattened to a single value.
+     Design Spine's real measured spec has 3 distinct tiers here (color/bg #0a0a0a /
+     color/bg-raised #111111 / color/bg-elevated #1a1a1a, confirmed bound Figma
+     variables, see tokens.md) — this is a deliberate deviation from that spec, not
+     a bug fix. Panels/cards no longer separate from the page via background shade;
+     borders are now the only depth signal. */
   --bg:          #0a0a0a;
-  --bg-2:        #111111;
-  --bg-2-rgb:    17, 17, 17;   /* same value as --bg-2, as an RGB triplet for rgba() composition (e.g. glass/blur panels) */
-  --bg-3:        #1a1a1a;
+  --bg-2:        #0a0a0a;
+  --bg-2-rgb:    10, 10, 10;   /* same value as --bg-2, as an RGB triplet for rgba() composition (e.g. glass/blur panels) */
+  --bg-3:        #0a0a0a;
   --void-100:    #080610;  /* hero/photo context — deepest black for gradient fades */
   --void-200:    #0D0A1A;
   --void-300:    #150F28;
@@ -175,9 +178,9 @@ body {
 [data-theme="light"] {
   color-scheme: light;
   --bg:      #ffffff; /* Design Spine color/bg, Light (DEC-73) — was #f5f5f2 */
-  --bg-2:    #f5f5f3; /* Design Spine color/bg-raised, Light (DEC-73) — was #eeeeeb */
-  --bg-2-rgb: 245, 245, 243; /* same value as --bg-2, as an RGB triplet for rgba() composition */
-  --bg-3:    #ebebe7; /* Design Spine color/bg-elevated, Light (DEC-73) — was #e5e5e2 */
+  --bg-2:    #ffffff; /* flattened to match --bg, product-owner decision 2026-09-18 — Design Spine's real bg-raised value (#f5f5f3) is documented above in the dark-mode block's comment */
+  --bg-2-rgb: 255, 255, 255; /* same value as --bg-2, as an RGB triplet for rgba() composition */
+  --bg-3:    #ffffff; /* flattened to match --bg, product-owner decision 2026-09-18 — Design Spine's real bg-elevated value (#ebebe7) is documented above */
   --fg:      #0a0a0a; /* unchanged — already matches Design Spine color/fg, Light */
   --border:  1px solid rgba(10,10,10,0.12); /* Design Spine color/border, Light (DEC-73) */
   --bdr:     1px solid rgba(10,10,10,0.12); /* collapsed onto the single new border value, see dark-mode note above */
