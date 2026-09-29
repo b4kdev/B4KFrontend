@@ -78,7 +78,7 @@ function mapPlace(row: RawPlace, locale: string): MapPoi {
 // value or the BFF's exact-match filter returns zero rows every time. Gyeongju has
 // no city-level row (province is 경북, which also covers other Gyeongbuk cities) —
 // best available match, not exact.
-const REGION_API_NAME: Record<string, string> = {
+export const REGION_API_NAME: Record<string, string> = {
   Seoul:     '서울',
   Busan:     '부산',
   Jeju:      '제주',

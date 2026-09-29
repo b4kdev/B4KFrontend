@@ -28,7 +28,8 @@
     "legalTerms": "利用規約",
     "legalPrivacy": "プライバシーポリシー",
     "legalCookies": "クッキーポリシー",
-    "guestSubtitle": "ログインして場所を保存し、旅行を計画しよう"
+    "guestSubtitle": "ログインして場所を保存し、旅行を計画しよう",
+    "onboarding": "おすすめマップ"
   },
   "topNav": {
     "searchPlaceholder": "旅程、場所、クリエイターを検索…",
@@ -540,7 +541,8 @@
         "save_plan_other": "ログインしてこのプランを保存",
         "saved_tab": "ログインして保存済みの場所を見る",
         "profile_nav": "ログインしてプロフィールを見る",
-        "fl3_cap": "ログインして計画を続ける"
+        "fl3_cap": "ログインして計画を続ける",
+        "onboarding_save": "ログインして好みと旅程を保存"
       },
       "google": "Googleで続ける",
       "apple": "Appleで続ける",
@@ -1910,5 +1912,114 @@
     "viewOnMap": "View on Map",
     "saves": "saves",
     "fallbackDescription": "{name} — discover this spot in Korea."
+  },
+  "mapOnboarding": {
+    "ariaLabel": "おすすめマップを作成",
+    "title": "おすすめマップを作成",
+    "close": "閉じる",
+    "later": "あとで",
+    "prev": "戻る",
+    "next": "次へ",
+    "done": "完了",
+    "saving": "保存中…",
+    "saveFailed": "好みを保存できませんでした。もう一度お試しください。",
+    "savedToast": "好みを保存しました。",
+    "steps": {
+      "where": "行き先・時期",
+      "taste": "好み",
+      "confirm": "確認",
+      "result": "結果"
+    },
+    "where": {
+      "title": "どこへ行きますか？",
+      "subtitle": "都市を選ぶか検索してください。日程と同行者は任意です。",
+      "label": "行き先",
+      "searchPlaceholder": "都市を検索",
+      "noResults": "該当する都市がありません"
+    },
+    "when": {
+      "label": "いつ",
+      "clear": "リセット",
+      "hint": "開始日と終了日を選んでください。スキップも可能です。"
+    },
+    "who": {
+      "label": "誰と",
+      "hint": "これもスキップできます。",
+      "solo": "ひとり",
+      "couple": "恋人と",
+      "friends": "友達と",
+      "family": "家族と"
+    },
+    "calendar": {
+      "prevMonth": "前の月",
+      "nextMonth": "次の月"
+    },
+    "taste": {
+      "title": "何が好きですか？",
+      "subtitle": "選ぶほどおすすめの精度が上がります。",
+      "searchPlaceholder": "好みを検索",
+      "selected": "選択した好み",
+      "emptySelection": "まだ選択されていません",
+      "remove": "{label}を解除",
+      "categories": "カテゴリ",
+      "noResults": "該当する好みがありません",
+      "loading": "好みを読み込み中…",
+      "error": "好みを読み込めませんでした。",
+      "retry": "再試行",
+      "skip": "スキップ"
+    },
+    "confirm": {
+      "title": "この内容で作成しますか？",
+      "subtitle": "各項目をタップして修正できます。",
+      "region": "地域",
+      "period": "時期",
+      "companion": "同行者",
+      "taste": "好み {count}",
+      "unset": "未定",
+      "edit": "修正",
+      "cta": "マップを作成"
+    },
+    "result": {
+      "title": "おすすめコース",
+      "subtitle": "好みに合うスポットで動線を作りました。",
+      "loading": "スポットを検索中…",
+      "error": "スポットを読み込めませんでした。",
+      "retry": "再試行",
+      "emptyTitle": "スポットが見つかりません",
+      "emptyDesc": "別の都市を選ぶか、好みを減らしてみてください。",
+      "guestBanner": "ログインすると好みがアカウントに保存されます。",
+      "editTaste": "好みを修正",
+      "dayTabs": "日程",
+      "dayTab": "{n}日目",
+      "routing": "ルートを計算中…",
+      "summary": "{count}か所 · {dist} · 移動 約{min}分",
+      "leg": "移動 {min}分 · {dist}",
+      "approximate": "一部の区間は直線で表示された概算ルートです。",
+      "saveToPlan": "旅程として保存",
+      "savingPlan": "保存中…",
+      "savedPlan": "保存済み",
+      "planSaved": "マイ旅程に保存しました。",
+      "planSavedView": "旅程を見る",
+      "planSaveFailed": "旅程を保存できませんでした。もう一度お試しください。"
+    },
+    "cities": {
+      "Seoul": "ソウル",
+      "Busan": "釜山",
+      "Jeju": "済州",
+      "Incheon": "仁川",
+      "Gyeongju": "慶州",
+      "Daegu": "大邱",
+      "Gwangju": "光州",
+      "Daejeon": "大田",
+      "Ulsan": "蔚山",
+      "Sejong": "世宗",
+      "Gyeonggi": "京畿",
+      "Gangwon": "江原",
+      "Chungbuk": "忠北",
+      "Chungnam": "忠南",
+      "Jeonbuk": "全北",
+      "Jeonnam": "全南",
+      "Gyeongnam": "慶南"
+    }
   }
 }

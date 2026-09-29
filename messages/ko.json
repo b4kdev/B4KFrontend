@@ -28,7 +28,8 @@
     "legalTerms": "서비스 약관",
     "legalPrivacy": "개인정보 처리방침",
     "legalCookies": "쿠키 정책",
-    "guestSubtitle": "로그인하여 장소를 저장하고 여행을 계획하세요"
+    "guestSubtitle": "로그인하여 장소를 저장하고 여행을 계획하세요",
+    "onboarding": "맞춤 지도"
   },
   "topNav": {
     "searchPlaceholder": "여행지, 플랜, 크리에이터 검색…",
@@ -540,7 +541,8 @@
         "save_plan_other": "이 플랜을 내 여행에 저장하려면 로그인하세요",
         "saved_tab": "저장한 장소를 보려면 로그인하세요",
         "profile_nav": "프로필을 보려면 로그인하세요",
-        "fl3_cap": "계속 계획하려면 로그인하세요"
+        "fl3_cap": "계속 계획하려면 로그인하세요",
+        "onboarding_save": "로그인하고 취향과 일정을 저장하세요"
       },
       "google": "Google로 계속하기",
       "apple": "Apple로 계속하기",
@@ -1910,5 +1912,114 @@
     "viewOnMap": "지도에서 보기",
     "saves": "저장",
     "fallbackDescription": "{name} — 한국에서 만나는 특별한 장소."
+  },
+  "mapOnboarding": {
+    "ariaLabel": "맞춤 지도 만들기",
+    "title": "맞춤 지도 만들기",
+    "close": "닫기",
+    "later": "나중에 하기",
+    "prev": "이전",
+    "next": "다음",
+    "done": "완료",
+    "saving": "저장 중…",
+    "saveFailed": "취향을 저장하지 못했어요. 다시 시도해 주세요.",
+    "savedToast": "취향이 저장됐어요.",
+    "steps": {
+      "where": "어디, 언제",
+      "taste": "취향",
+      "confirm": "확인",
+      "result": "결과"
+    },
+    "where": {
+      "title": "어디로 가세요?",
+      "subtitle": "도시를 고르거나 검색해 보세요. 날짜와 동행은 선택이에요.",
+      "label": "어디",
+      "searchPlaceholder": "도시 검색",
+      "noResults": "일치하는 도시가 없어요"
+    },
+    "when": {
+      "label": "언제",
+      "clear": "초기화",
+      "hint": "시작일과 종료일을 골라 주세요. 건너뛰어도 돼요."
+    },
+    "who": {
+      "label": "누구와",
+      "hint": "이것도 건너뛰어도 돼요.",
+      "solo": "혼자",
+      "couple": "연인과",
+      "friends": "친구들",
+      "family": "가족"
+    },
+    "calendar": {
+      "prevMonth": "이전 달",
+      "nextMonth": "다음 달"
+    },
+    "taste": {
+      "title": "뭘 좋아하세요?",
+      "subtitle": "고른 만큼 추천이 정확해져요.",
+      "searchPlaceholder": "취향 검색",
+      "selected": "선택한 취향",
+      "emptySelection": "아직 고른 취향이 없어요",
+      "remove": "{label} 해제",
+      "categories": "카테고리",
+      "noResults": "일치하는 취향이 없어요",
+      "loading": "취향 불러오는 중…",
+      "error": "취향을 불러오지 못했어요.",
+      "retry": "다시 시도",
+      "skip": "건너뛰기"
+    },
+    "confirm": {
+      "title": "이대로 만들까요?",
+      "subtitle": "각 항목을 눌러 바로 고칠 수 있어요.",
+      "region": "지역",
+      "period": "시기",
+      "companion": "동행",
+      "taste": "취향 {count}",
+      "unset": "미정",
+      "edit": "수정",
+      "cta": "지도 만들기"
+    },
+    "result": {
+      "title": "맞춤 코스",
+      "subtitle": "고른 취향에 맞는 장소로 동선을 짰어요.",
+      "loading": "장소 찾는 중…",
+      "error": "장소를 불러오지 못했어요.",
+      "retry": "다시 시도",
+      "emptyTitle": "장소가 없어요",
+      "emptyDesc": "다른 도시를 고르거나 취향을 줄여 보세요.",
+      "guestBanner": "로그인하면 취향이 내 계정에 저장돼요.",
+      "editTaste": "취향 수정",
+      "dayTabs": "일차",
+      "dayTab": "{n}일차",
+      "routing": "경로 계산 중…",
+      "summary": "{count}곳 · {dist} · 이동 약 {min}분",
+      "leg": "이동 {min}분 · {dist}",
+      "approximate": "일부 구간은 직선으로 표시된 근사 경로예요.",
+      "saveToPlan": "일정으로 저장",
+      "savingPlan": "저장 중…",
+      "savedPlan": "저장됨",
+      "planSaved": "내 일정에 저장했어요.",
+      "planSavedView": "일정 보기",
+      "planSaveFailed": "일정을 저장하지 못했어요. 다시 시도해 주세요."
+    },
+    "cities": {
+      "Seoul": "서울",
+      "Busan": "부산",
+      "Jeju": "제주",
+      "Incheon": "인천",
+      "Gyeongju": "경주",
+      "Daegu": "대구",
+      "Gwangju": "광주",
+      "Daejeon": "대전",
+      "Ulsan": "울산",
+      "Sejong": "세종",
+      "Gyeonggi": "경기",
+      "Gangwon": "강원",
+      "Chungbuk": "충북",
+      "Chungnam": "충남",
+      "Jeonbuk": "전북",
+      "Jeonnam": "전남",
+      "Gyeongnam": "경남"
+    }
   }
 }

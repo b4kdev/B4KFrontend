@@ -28,7 +28,8 @@
     "legalTerms": "Termos de Serviço",
     "legalPrivacy": "Política de Privacidade",
     "legalCookies": "Política de Cookies",
-    "guestSubtitle": "Entre para salvar lugares e planejar viagens"
+    "guestSubtitle": "Entre para salvar lugares e planejar viagens",
+    "onboarding": "Mapa personalizado"
   },
   "topNav": {
     "searchPlaceholder": "Pesquise roteiros, lugares, criadores…",
@@ -540,7 +541,8 @@
         "save_plan_other": "Entre para salvar este plano nas suas viagens",
         "saved_tab": "Entre para ver seus lugares salvos",
         "profile_nav": "Entre para ver seu perfil",
-        "fl3_cap": "Entre para continuar planejando"
+        "fl3_cap": "Entre para continuar planejando",
+        "onboarding_save": "Entre para salvar seus interesses e roteiro"
       },
       "google": "Continuar com Google",
       "apple": "Continuar com Apple",
@@ -1910,5 +1912,114 @@
     "viewOnMap": "Ver no mapa",
     "saves": "salvos",
     "fallbackDescription": "{name} — descubra este lugar na Coreia."
+  },
+  "mapOnboarding": {
+    "ariaLabel": "Crie seu mapa personalizado",
+    "title": "Crie seu mapa personalizado",
+    "close": "Fechar",
+    "later": "Depois",
+    "prev": "Voltar",
+    "next": "Avançar",
+    "done": "Concluir",
+    "saving": "Salvando…",
+    "saveFailed": "Não foi possível salvar seus interesses. Tente novamente.",
+    "savedToast": "Seus interesses foram salvos.",
+    "steps": {
+      "where": "Onde e quando",
+      "taste": "Interesses",
+      "confirm": "Revisar",
+      "result": "Resultado"
+    },
+    "where": {
+      "title": "Para onde você vai?",
+      "subtitle": "Escolha uma cidade ou pesquise. Datas e companhia são opcionais.",
+      "label": "Destino",
+      "searchPlaceholder": "Pesquisar cidades",
+      "noResults": "Nenhuma cidade encontrada"
+    },
+    "when": {
+      "label": "Quando",
+      "clear": "Limpar",
+      "hint": "Escolha as datas de início e fim. Você pode pular."
+    },
+    "who": {
+      "label": "Com quem",
+      "hint": "Você também pode pular.",
+      "solo": "Sozinho(a)",
+      "couple": "Casal",
+      "friends": "Amigos",
+      "family": "Família"
+    },
+    "calendar": {
+      "prevMonth": "Mês anterior",
+      "nextMonth": "Próximo mês"
+    },
+    "taste": {
+      "title": "O que você curte?",
+      "subtitle": "Quanto mais você escolhe, melhores as sugestões.",
+      "searchPlaceholder": "Pesquisar interesses",
+      "selected": "Interesses selecionados",
+      "emptySelection": "Nada selecionado ainda",
+      "remove": "Remover {label}",
+      "categories": "Categorias",
+      "noResults": "Nenhum interesse encontrado",
+      "loading": "Carregando interesses…",
+      "error": "Não foi possível carregar os interesses.",
+      "retry": "Tentar novamente",
+      "skip": "Pular"
+    },
+    "confirm": {
+      "title": "Criar assim?",
+      "subtitle": "Toque em qualquer linha para editar.",
+      "region": "Região",
+      "period": "Datas",
+      "companion": "Companhia",
+      "taste": "Interesses {count}",
+      "unset": "Não definido",
+      "edit": "Editar",
+      "cta": "Criar mapa"
+    },
+    "result": {
+      "title": "Seu roteiro personalizado",
+      "subtitle": "Um percurso montado com lugares que combinam com seus interesses.",
+      "loading": "Buscando lugares…",
+      "error": "Não foi possível carregar os lugares.",
+      "retry": "Tentar novamente",
+      "emptyTitle": "Nenhum lugar encontrado",
+      "emptyDesc": "Tente outra cidade ou menos interesses.",
+      "guestBanner": "Entre para salvar seus interesses na sua conta.",
+      "editTaste": "Editar interesses",
+      "dayTabs": "Dias",
+      "dayTab": "Dia {n}",
+      "routing": "Calculando rota…",
+      "summary": "{count} lugares · {dist} · cerca de {min} min de deslocamento",
+      "leg": "{min} min · {dist}",
+      "approximate": "Alguns trechos são linhas retas aproximadas.",
+      "saveToPlan": "Salvar como roteiro",
+      "savingPlan": "Salvando…",
+      "savedPlan": "Salvo",
+      "planSaved": "Salvo nos seus roteiros.",
+      "planSavedView": "Ver roteiro",
+      "planSaveFailed": "Não foi possível salvar o roteiro. Tente novamente."
+    },
+    "cities": {
+      "Seoul": "Seul",
+      "Busan": "Busan",
+      "Jeju": "Jeju",
+      "Incheon": "Incheon",
+      "Gyeongju": "Gyeongju",
+      "Daegu": "Daegu",
+      "Gwangju": "Gwangju",
+      "Daejeon": "Daejeon",
+      "Ulsan": "Ulsan",
+      "Sejong": "Sejong",
+      "Gyeonggi": "Gyeonggi",
+      "Gangwon": "Gangwon",
+      "Chungbuk": "Chungbuk",
+      "Chungnam": "Chungnam",
+      "Jeonbuk": "Jeonbuk",
+      "Jeonnam": "Jeonnam",
+      "Gyeongnam": "Gyeongnam"
+    }
   }
 }
