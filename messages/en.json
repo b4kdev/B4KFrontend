@@ -28,7 +28,8 @@
     "legalTerms": "Terms of Service",
     "legalPrivacy": "Privacy Policy",
     "legalCookies": "Cookie Policy",
-    "guestSubtitle": "Sign in to save places and plan trips"
+    "guestSubtitle": "Sign in to save places and plan trips",
+    "onboarding": "Custom map"
   },
   "topNav": {
     "searchPlaceholder": "Search itineraries, places, creators…",
@@ -714,7 +715,8 @@
       },
       "save": "Save Plan",
       "savedToast": "Plan saved!",
-      "previewPlan": "Preview Plan",
+      "saveToMyPlans": "Save to My Plans",
+      "replacedDraftToast": "Your previous draft was replaced with this new plan.",
       "close": "Close plan sheet",
       "stripExpand": "Expand plan panel",
       "stripCollapse": "Collapse plan panel",
@@ -728,6 +730,12 @@
       "discardCancel": "Cancel",
       "discardConfirm": "Discard draft",
       "dayTab": "Day {n}",
+      "allDays": "All",
+      "addDay": "Add day",
+      "removeDay": "Delete day {n}",
+      "removeDayTitle": "Delete day {n}?",
+      "removeDayWarning": "This day has {count} stops. Deleting it removes them too, and later days move up by one.",
+      "removeDayConfirm": "Delete",
       "legEstimate": "est {min}m",
       "legAriaLabel": "Estimated travel time from stop {from} to stop {to}"
     },
@@ -1910,5 +1918,86 @@
     "viewOnMap": "View on Map",
     "saves": "saves",
     "fallbackDescription": "{name} — discover this spot in Korea."
+  },
+  "mapOnboarding": {
+    "ariaLabel": "Build your custom map",
+    "title": "Build a custom map",
+    "close": "Close",
+    "prev": "Back",
+    "next": "Next",
+    "saving": "Saving…",
+    "saveFailed": "Couldn't save your interests. Please try again.",
+    "savedToast": "Your interests were saved.",
+    "steps": {
+      "where": "Where & when",
+      "taste": "Interests",
+      "confirm": "Review"
+    },
+    "where": {
+      "title": "Where are you going?",
+      "subtitle": "Pick a city, your dates, and who you're traveling with.",
+      "label": "Destination"
+    },
+    "when": {
+      "label": "When",
+      "clear": "Clear"
+    },
+    "who": {
+      "label": "Who with",
+      "solo": "Solo",
+      "couple": "Partner",
+      "friends": "Friends",
+      "family": "Family"
+    },
+    "calendar": {
+      "prevMonth": "Previous month",
+      "nextMonth": "Next month"
+    },
+    "taste": {
+      "title": "What do you like?",
+      "subtitle": "The more you pick, the better the picks.",
+      "selected": "Selected interests",
+      "emptySelection": "Nothing selected yet",
+      "maxReached": "You can select up to {max}.",
+      "remove": "Remove {label}",
+      "categories": "Categories",
+      "loading": "Loading interests…",
+      "error": "Couldn't load interests.",
+      "retry": "Try again"
+    },
+    "confirm": {
+      "title": "Create this map?",
+      "save": "Save to my plans",
+      "subtitle": "Tap any row to edit it.",
+      "region": "Region",
+      "period": "Dates",
+      "companion": "Companion",
+      "taste": "Interests {count}",
+      "unset": "Not set",
+      "edit": "Edit"
+    },
+    "result": {
+      "error": "Couldn't load places.",
+      "emptyDesc": "Try another city or fewer interests."
+    },
+    "cities": {
+      "Seoul": "Seoul",
+      "Busan": "Busan",
+      "Jeju": "Jeju",
+      "Incheon": "Incheon",
+      "Gyeongju": "Gyeongju",
+      "Daegu": "Daegu",
+      "Gwangju": "Gwangju",
+      "Daejeon": "Daejeon",
+      "Ulsan": "Ulsan",
+      "Sejong": "Sejong",
+      "Gyeonggi": "Gyeonggi",
+      "Gangwon": "Gangwon",
+      "Chungbuk": "Chungbuk",
+      "Chungnam": "Chungnam",
+      "Jeonbuk": "Jeonbuk",
+      "Jeonnam": "Jeonnam",
+      "Gyeongnam": "Gyeongnam"
+    }
   }
 }

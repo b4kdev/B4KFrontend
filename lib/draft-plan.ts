@@ -3,6 +3,8 @@ import type { MapPoi } from '@/hooks/useMapPois'
 export interface DraftPlan {
   stops:     MapPoi[]
   durations: Record<string, number>
+  /** poi_id → 일차 탭(1–7). 없으면(이전 버전 초안) 전부 1일차. */
+  days?:     Record<string, number>
   name?:     string
 }
 

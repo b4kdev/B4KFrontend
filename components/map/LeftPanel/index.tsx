@@ -33,6 +33,11 @@ interface Props {
   stopDays:         Record<string, number>
   activeDay:        number
   onDayChange:      (day: number) => void
+  dayCount:         number
+  onAddDay:         () => void
+  onRemoveDay:      (day: number) => void
+  planExpanded:         boolean
+  onPlanExpandedChange: (expanded: boolean) => void
   onClosePoi:       () => void
   onSelectPoi:      (id: string) => void
   poisLoading:      boolean
@@ -50,16 +55,28 @@ export default function LeftPanel({
   isSaved, isInPlan, planFull, onAddToPlan, onToggleSave,
   isLiked, onToggleLike,
   onReorder, onRemove, onDurationChange, onPreviewPlan, onDiscardPlan,
-  stopDays, activeDay, onDayChange, onClosePoi, onSelectPoi,
+  stopDays, activeDay, onDayChange, dayCount, onAddDay, onRemoveDay, planExpanded, onPlanExpandedChange, onClosePoi, onSelectPoi,
   poisLoading, poisError,
   savedHubOpen, onOpenSaved, onCloseSavedHub, onSavedFolderChange,
 }: Props) {
-  const [planStripExpanded, setPlanStripExpanded] = useState(false)
+  // "내 플랜" 에서 장소를 눌러 상세로 들어왔으면, 상세를 닫을 때 다시 플랜으로 돌아간다.
+  const [returnToPlan, setReturnToPlan] = useState(false)
+
+  function handleSelectStop(id: string) {
+    setReturnToPlan(true)
+    onPlanExpandedChange(false)
+    onSelectPoi(id)
+  }
+
+  function handleClosePoi() {
+    onClosePoi()
+    if (returnToPlan) { setReturnToPlan(false); onPlanExpandedChange(true) }
+  }
 
   const hasPlan = planStops.length > 0
 
   // State B: plan strip expanded → full-height plan active panel
-  if (hasPlan && planStripExpanded) {
+  if (hasPlan && planExpanded) {
     return (
       <div className="flex flex-col h-full">
         <div className="flex-1 min-h-0">
@@ -74,12 +91,16 @@ export default function LeftPanel({
             stopDays={stopDays}
             activeDay={activeDay}
             onDayChange={onDayChange}
+            dayCount={dayCount}
+            onAddDay={onAddDay}
+            onRemoveDay={onRemoveDay}
+            onSelectStop={handleSelectStop}
           />
         </div>
         <PlanStrip
           stopCount={planStops.length}
-          expanded={planStripExpanded}
-          onToggle={() => setPlanStripExpanded(false)}
+          expanded={planExpanded}
+          onToggle={() => onPlanExpandedChange(false)}
         />
       </div>
     )
@@ -99,7 +120,7 @@ export default function LeftPanel({
             onToggleSave={() => onToggleSave(selectedPoi)}
             isLiked={isLiked}
             onToggleLike={onToggleLike}
-            onClose={onClosePoi}
+            onClose={handleClosePoi}
           />
         ) : savedHubOpen ? (
           <LeftPanelSavedHub
@@ -129,8 +150,8 @@ export default function LeftPanel({
       {hasPlan && (
         <PlanStrip
           stopCount={planStops.length}
-          expanded={planStripExpanded}
-          onToggle={() => setPlanStripExpanded(true)}
+          expanded={planExpanded}
+          onToggle={() => { setReturnToPlan(false); onPlanExpandedChange(true) }}
         />
       )}
     </div>

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
-import { fetchDbDraft } from '@/lib/itinerary'
+import { fetchDbDraft, groupPlacesIntoDays } from '@/lib/itinerary'
 
 export interface PlanDraft {
   id: string
@@ -10,10 +10,12 @@ export interface PlanDraft {
 }
 
 // Consumers (useDraftMigration / useQuickAddToPlan / MapView autosave) send
-// the localStorage DraftPlan shape: { stops: MapPoi[], durations, name? }.
+// the localStorage DraftPlan shape: { stops: MapPoi[], durations, days?, name? }.
+// days = poi_id → day tab (1–7); absent (older clients) → everything on day 1.
 interface DraftBody {
   stops?:     Array<{ poi_id?: string | number }>
   durations?: Record<string, number>
+  days?:      Record<string, number>
   name?:      string
 }
 
@@ -50,12 +52,12 @@ export async function POST(request: Request) {
   const stops = Array.isArray(body.stops) ? body.stops : []
   const places = stops
     .filter(s => s?.poi_id !== undefined && Number.isFinite(Number(s.poi_id)))
-    .map((s, i) => {
+    .map(s => {
       const duration = body.durations?.[String(s.poi_id)]
       return {
         poi_id:       Number(s.poi_id),
-        visit_order:  i + 1,
         duration_min: typeof duration === 'number' && duration > 0 ? Math.round(duration) : null,
+        day:          body.days?.[String(s.poi_id)],
       }
     })
   if (places.length === 0) {
@@ -65,7 +67,7 @@ export async function POST(request: Request) {
   try {
     const existing = await fetchDbDraft(auth.token)
     const payload = JSON.stringify({
-      days:   [{ day_number: 1, places }],
+      days:   groupPlacesIntoDays(places),
       title:  typeof body.name === 'string' && body.name.trim() ? body.name : null,
       status: 'draft',
     })

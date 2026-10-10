@@ -28,7 +28,8 @@
     "legalTerms": "서비스 약관",
     "legalPrivacy": "개인정보 처리방침",
     "legalCookies": "쿠키 정책",
-    "guestSubtitle": "로그인하여 장소를 저장하고 여행을 계획하세요"
+    "guestSubtitle": "로그인하여 장소를 저장하고 여행을 계획하세요",
+    "onboarding": "맞춤 지도"
   },
   "topNav": {
     "searchPlaceholder": "여행지, 플랜, 크리에이터 검색…",
@@ -714,7 +715,8 @@
       },
       "save": "플랜 저장",
       "savedToast": "플랜이 저장되었습니다!",
-      "previewPlan": "플랜 미리보기",
+      "saveToMyPlans": "내 플랜으로 저장",
+      "replacedDraftToast": "기존 초안을 지우고 새 플랜을 만들었어요.",
       "close": "플랜 시트 닫기",
       "stripExpand": "플랜 패널 펼치기",
       "stripCollapse": "플랜 패널 접기",
@@ -728,6 +730,12 @@
       "discardCancel": "취소",
       "discardConfirm": "초안 삭제",
       "dayTab": "{n}일차",
+      "allDays": "전체",
+      "addDay": "일차 추가",
+      "removeDay": "{n}일차 삭제",
+      "removeDayTitle": "{n}일차를 삭제할까요?",
+      "removeDayWarning": "이 일차에 일정 {count}곳이 있어요. 삭제하면 장소도 함께 빠지고, 뒤 일차는 하나씩 앞당겨져요.",
+      "removeDayConfirm": "삭제",
       "legEstimate": "약 {min}분",
       "legAriaLabel": "{from}번에서 {to}번까지 예상 이동 시간"
     },
@@ -1910,5 +1918,86 @@
     "viewOnMap": "지도에서 보기",
     "saves": "저장",
     "fallbackDescription": "{name} — 한국에서 만나는 특별한 장소."
+  },
+  "mapOnboarding": {
+    "ariaLabel": "맞춤 지도 만들기",
+    "title": "맞춤 지도 만들기",
+    "close": "닫기",
+    "prev": "이전",
+    "next": "다음",
+    "saving": "저장 중…",
+    "saveFailed": "취향을 저장하지 못했어요. 다시 시도해 주세요.",
+    "savedToast": "취향이 저장됐어요.",
+    "steps": {
+      "where": "어디, 언제",
+      "taste": "취향",
+      "confirm": "확인"
+    },
+    "where": {
+      "title": "어디로 가세요?",
+      "subtitle": "도시, 날짜, 동행을 모두 골라 주세요.",
+      "label": "어디"
+    },
+    "when": {
+      "label": "언제",
+      "clear": "초기화"
+    },
+    "who": {
+      "label": "누구와",
+      "solo": "혼자",
+      "couple": "연인과",
+      "friends": "친구들",
+      "family": "가족"
+    },
+    "calendar": {
+      "prevMonth": "이전 달",
+      "nextMonth": "다음 달"
+    },
+    "taste": {
+      "title": "뭘 좋아하세요?",
+      "subtitle": "고른 만큼 추천이 정확해져요.",
+      "selected": "선택한 취향",
+      "emptySelection": "아직 고른 취향이 없어요",
+      "maxReached": "{max}개 이상 선택할 수 없어요.",
+      "remove": "{label} 해제",
+      "categories": "카테고리",
+      "loading": "취향 불러오는 중…",
+      "error": "취향을 불러오지 못했어요.",
+      "retry": "다시 시도"
+    },
+    "confirm": {
+      "title": "이대로 만들까요?",
+      "save": "내 일정으로 저장",
+      "subtitle": "각 항목을 눌러 바로 고칠 수 있어요.",
+      "region": "지역",
+      "period": "시기",
+      "companion": "동행",
+      "taste": "취향 {count}",
+      "unset": "미정",
+      "edit": "수정"
+    },
+    "result": {
+      "error": "장소를 불러오지 못했어요.",
+      "emptyDesc": "다른 도시를 고르거나 취향을 줄여 보세요."
+    },
+    "cities": {
+      "Seoul": "서울",
+      "Busan": "부산",
+      "Jeju": "제주",
+      "Incheon": "인천",
+      "Gyeongju": "경주",
+      "Daegu": "대구",
+      "Gwangju": "광주",
+      "Daejeon": "대전",
+      "Ulsan": "울산",
+      "Sejong": "세종",
+      "Gyeonggi": "경기",
+      "Gangwon": "강원",
+      "Chungbuk": "충북",
+      "Chungnam": "충남",
+      "Jeonbuk": "전북",
+      "Jeonnam": "전남",
+      "Gyeongnam": "경남"
+    }
   }
 }

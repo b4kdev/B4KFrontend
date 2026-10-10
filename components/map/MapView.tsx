@@ -25,6 +25,8 @@ import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useToast } from '@/contexts/ToastContext'
 import { getDraftPlan, saveDraftPlan, clearDraftPlan } from '@/lib/draft-plan'
 import { MAX_STOPS } from '@/lib/plan-constants'
+import { takeCourseHandoff } from '@/lib/onboarding'
+import { MAX_PLAN_DAYS } from '@/lib/plan-day-colors'
 import type { MapPoi, MapBounds } from '@/hooks/useMapPois'
 import type { DraftMeta } from '@/components/auth/DraftConflictModal'
 import type { ItineraryDetail } from '@/lib/itinerary'
@@ -35,6 +37,7 @@ type PendingPlan = {
   accountDraft: DraftMeta
   ids:          string[]
   durations:    Record<string, number>
+  days:         Record<string, number>
   pois:         MapPoi[]
 }
 
@@ -83,12 +86,28 @@ export default function MapView() {
   const [namingSaving, setNamingSaving] = useState(false)
   // UF-6 (G5.6) — discard-draft confirm dialog
   const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false)
+  // 일차 삭제 확인 — 장소가 있는 일차만 묻는다(빈 일차는 바로 삭제)
+  const [removeDayConfirm, setRemoveDayConfirm] = useState<{ day: number; count: number } | null>(null)
   // UF-5 (G4.2) — day assignment (1–7) per stop; new stops join the active day tab
   const [stopDays, setStopDays]   = useState<Record<string, number>>({})
-  const [activeDay, setActiveDay] = useState(1)
+  // 0 = 전체(일차별 색으로 모두 표시), n = 그 일차만
+  const [activeDay, setActiveDay] = useState(0)
+  // "+" 로 만든 일차 탭 수 — 장소가 없어도 탭은 유지. 실제 탭 수는 사용 중인 최대 일차와 중 큰 값.
+  const [addedDayCount, setAddedDayCount] = useState(1)
   // SC-25 — sticky once 'ai': PlanPill reads this to show "AI Plan · X stops"
   // once any stop came from FL3, even if the user adds more stops manually after.
   const [planSource, setPlanSource] = useState<'manual' | 'ai'>('manual')
+  // 데스크톱 LeftPanel 의 "내 플랜" 패널 펼침 여부 — 온보딩 완료로 들어오면 펼친 채로 시작해야 해서 여기서 관리.
+  const [planExpanded, setPlanExpanded] = useState(false)
+  // 데스크톱(lg) 여부 — "내 플랜" 이 보이는 곳이 데스크톱은 LeftPanel, 모바일은 플랜 시트라서.
+  const [isDesktop, setIsDesktop] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)')
+    const sync = () => setIsDesktop(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
   // DEC-33 T1: track whether draft-conflict check has been resolved this session
   const t1CheckedRef    = useRef(false)
 
@@ -136,12 +155,13 @@ export default function MapView() {
   useEffect(() => {
     if (session) return
     const params = new URLSearchParams(window.location.search)
-    if (params.get('plan')) return
+    if (params.get('plan') || params.get('from') === 'onboarding') return
     const draft = getDraftPlan()
     if (!draft || draft.stops.length === 0) return
     const ids = draft.stops.map(s => s.poi_id)
     setPlanStopIds(ids)
     setStopDurations(draft.durations)
+    setStopDays(draft.days ?? {})
     clearDraftPlan()
   }, [session])
 
@@ -156,7 +176,7 @@ export default function MapView() {
   useEffect(() => {
     if (!session || dbDraftRestoredRef.current) return
     const params = new URLSearchParams(window.location.search)
-    if (params.get('plan')) return
+    if (params.get('plan') || params.get('from') === 'onboarding') return
     if (planStopIds.length > 0) return
     dbDraftRestoredRef.current = true
 
@@ -168,14 +188,17 @@ export default function MapView() {
           .then(r => r.ok ? r.json() as Promise<ItineraryDetail> : null)
       })
       .then(itinerary => {
-        if (!itinerary) return
+        // 응답 전에 온보딩 코스가 들어왔다면 덮어쓰지 않는다.
+        if (!itinerary || onboardingLoadedRef.current) return
         t1CheckedRef.current = true
         const sorted = [...itinerary.stops].sort((a, b) => a.stop_order - b.stop_order)
         const ids:  string[]               = sorted.map(s => s.poi.poi_id)
         const durs: Record<string, number> = {}
+        const dayMap: Record<string, number> = {}
         const lpois: MapPoi[]              = []
         sorted.forEach(s => {
           durs[s.poi.poi_id] = s.duration_min
+          dayMap[s.poi.poi_id] = s.day ?? 1
           lpois.push({
             poi_id:      s.poi.poi_id,
             name_ko:       s.poi.name_ko,
@@ -184,6 +207,7 @@ export default function MapView() {
             coords_lng:    s.poi.coords_lng,
             display_domain: s.poi.display_domain,
             display_region: '',
+            primary_image_url: s.poi.primary_image_url ?? undefined,
             is_trending:   false,
             is_partner:    false,
             quality_score: 0,
@@ -191,10 +215,45 @@ export default function MapView() {
         })
         setPlanStopIds(ids)
         setStopDurations(durs)
+        setStopDays(dayMap)
         setLoadedPlanPois(lpois)
       })
       .catch(() => { /* blank plan — user can keep building, autosave retries */ })
   }, [session, planStopIds.length])
+
+  // 맞춤 지도 온보딩 "완료" → /map?from=onboarding. 코스를 플랜 빌더 초안으로 채우고 "내 플랜" 패널을 펼친다
+  // (모바일은 플랜 시트). 기존 초안은 이 코스로 대체되고 autosave 가 새 초안으로 저장한다.
+  // searchParams 를 추적 — 이미 /map 에서 모달을 연 경우엔 재마운트가 없기 때문.
+  const onboardingLoadedRef = useRef(false)
+  useEffect(() => {
+    if (searchParams.get('from') !== 'onboarding') return
+    const stops = takeCourseHandoff()
+    router.replace('/map')
+    if (!stops) return
+    // 기존 초안(이 화면에서 만들던 것 / 게스트 로컬 / 계정 DB)이 있으면 이 코스로 대체된다고 알린다.
+    const hadDraft = planStopIds.length > 0 || (getDraftPlan()?.stops.length ?? 0) > 0
+    if (hadDraft) showToast(t('plan.replacedDraftToast'))
+    else if (session) {
+      fetch('/api/plans/draft')
+        .then(r => r.ok ? r.json() as Promise<{ id: string } | null> : null)
+        .then(d => { if (d?.id) showToast(t('plan.replacedDraftToast')) })
+        .catch(() => {})
+    }
+    onboardingLoadedRef.current = true
+    dbDraftRestoredRef.current  = true
+    t1CheckedRef.current        = true
+    const capped = stops.slice(0, MAX_STOPS)
+    setPlanStopIds(capped.map(s => s.poi_id))
+    setStopDurations(Object.fromEntries(capped.map(s => [s.poi_id, DEFAULT_DURATION])))
+    setStopDays(Object.fromEntries(capped.map(s => [s.poi_id, s.day])))
+    setLoadedPlanPois(capped.map(({ day: _day, ...poi }) => poi))
+    setActiveDay(0)
+    setAddedDayCount(1)
+    setSelectedPoiId(null)
+    setPlanExpanded(true)
+    if (window.matchMedia('(max-width: 1023px)').matches) setPlanSheetOpen(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   // H13 — Saved sheet reacts to ?saved=1 (toggled from the mobile Saved tab
   // on the same page, so this must track searchParams, not just mount).
@@ -234,10 +293,12 @@ export default function MapView() {
         const sorted = [...itinerary.stops].sort((a, b) => a.stop_order - b.stop_order)
         const ids:  string[]               = sorted.map(s => s.poi.poi_id)
         const durs: Record<string, number> = {}
+        const dayMap: Record<string, number> = {}
         const lpois: MapPoi[]              = []
 
         sorted.forEach(s => {
           durs[s.poi.poi_id] = s.duration_min
+          dayMap[s.poi.poi_id] = s.day ?? 1
           lpois.push({
             poi_id:      s.poi.poi_id,
             name_ko:       s.poi.name_ko,
@@ -246,6 +307,7 @@ export default function MapView() {
             coords_lng:    s.poi.coords_lng,
             display_domain: s.poi.display_domain,
             display_region: '',
+            primary_image_url: s.poi.primary_image_url ?? undefined,
             is_trending:   false,
             is_partner:    false,
             quality_score: 0,
@@ -257,11 +319,12 @@ export default function MapView() {
           setDraftConflict({
             deviceDraft:  { stopCount: localDraft.stops.length, lastModified: new Date().toISOString() },
             accountDraft: { stopCount: ids.length,              lastModified: new Date().toISOString() },
-            ids, durations: durs, pois: lpois,
+            ids, durations: durs, days: dayMap, pois: lpois,
           })
         } else {
           setPlanStopIds(ids)
           setStopDurations(durs)
+          setStopDays(dayMap)
           setLoadedPlanPois(lpois)
         }
       })
@@ -287,6 +350,39 @@ export default function MapView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, poisLoading])
 
+  const maxDayUsed = planStopIds.reduce((max, id) => Math.max(max, stopDays[id] ?? 1), 1)
+  const dayCount   = Math.min(Math.max(maxDayUsed, addedDayCount), MAX_PLAN_DAYS)
+  // 새 장소가 들어갈 일차 — 전체 보기면 마지막 일차
+  const dayForNewStop = activeDay || maxDayUsed
+
+  function handleAddDay() {
+    if (dayCount >= MAX_PLAN_DAYS) return
+    setAddedDayCount(dayCount + 1)
+    setActiveDay(dayCount + 1)
+  }
+
+  // 일차 삭제 — 그 일차 장소를 빼고, 뒤 일차는 하나씩 당긴다. 장소가 있으면 먼저 확인.
+  function handleRemoveDay(day: number) {
+    if (dayCount <= 1) return
+    const count = planStopIds.filter(id => (stopDays[id] ?? 1) === day).length
+    if (count > 0) { setRemoveDayConfirm({ day, count }); return }
+    removeDay(day)
+  }
+
+  function removeDay(day: number) {
+    const removed = new Set(planStopIds.filter(id => (stopDays[id] ?? 1) === day))
+    setPlanStopIds(prev => prev.filter(id => !removed.has(id)))
+    setStopDurations(prev => Object.fromEntries(Object.entries(prev).filter(([id]) => !removed.has(id))))
+    setStopDays(prev => Object.fromEntries(
+      Object.entries(prev)
+        .filter(([id]) => !removed.has(id))
+        .map(([id, d]) => [id, d > day ? d - 1 : d]),
+    ))
+    setAddedDayCount(Math.max(1, dayCount - 1))
+    setActiveDay(0)
+    setRemoveDayConfirm(null)
+  }
+
   // Ordered stop POIs for LeftPanel and polyline — fallback to loadedPlanPois for plan-edit mode
   const planStops = planStopIds
     .map(id => pois.find(p => p.poi_id === id) ?? loadedPlanPois.find(p => p.poi_id === id))
@@ -304,7 +400,7 @@ export default function MapView() {
     if (planStopIds.length === 0) return
 
     const timer = setTimeout(() => {
-      const draft = { stops: planStops, durations: stopDurations }
+      const draft = { stops: planStops, durations: stopDurations, days: stopDays }
       if (session) {
         fetch('/api/plans/draft', {
           method:  'POST',
@@ -318,7 +414,7 @@ export default function MapView() {
 
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [planStopIds, stopDurations, session])
+  }, [planStopIds, stopDurations, stopDays, session])
 
   // List data shows immediately (already loaded); detail (address/description/
   // website_url) fills in once GET /places/:id resolves — see hooks/usePlaceDetail.ts.
@@ -371,7 +467,7 @@ export default function MapView() {
             t1CheckedRef.current = true
             setPlanStopIds(prev => [...prev, poiId])
             setStopDurations(prev => ({ ...prev, [poiId]: DEFAULT_DURATION }))
-            setStopDays(prev => ({ ...prev, [poiId]: activeDay }))
+            setStopDays(prev => ({ ...prev, [poiId]: dayForNewStop }))
             showToast(t('poiDetail.addedToast'))
           }
         })
@@ -380,7 +476,7 @@ export default function MapView() {
           t1CheckedRef.current = true
           setPlanStopIds(prev => [...prev, poiId])
           setStopDurations(prev => ({ ...prev, [poiId]: DEFAULT_DURATION }))
-          setStopDays(prev => ({ ...prev, [poiId]: activeDay }))
+          setStopDays(prev => ({ ...prev, [poiId]: dayForNewStop }))
           showToast(t('poiDetail.addedToast'))
         })
       return
@@ -388,7 +484,7 @@ export default function MapView() {
 
     setPlanStopIds(prev => [...prev, poiId])
     setStopDurations(prev => ({ ...prev, [poiId]: DEFAULT_DURATION }))
-    setStopDays(prev => ({ ...prev, [poiId]: activeDay }))
+    setStopDays(prev => ({ ...prev, [poiId]: dayForNewStop }))
     showToast(t('poiDetail.addedToast'))
   }
 
@@ -401,13 +497,15 @@ export default function MapView() {
     try {
       const res = await fetch(`/api/plans/${draftResumePlanId}`)
       if (!res.ok) return
-      const itinerary = await res.json() as { stops: Array<{ stop_order: number; poi: { poi_id: string; name_ko: string; name_en: string; coords_lat: number; coords_lng: number; display_domain: string }; duration_min: number }> }
+      const itinerary = await res.json() as { stops: Array<{ stop_order: number; poi: { poi_id: string; name_ko: string; name_en: string; coords_lat: number; coords_lng: number; display_domain: string; primary_image_url?: string | null }; duration_min: number; day?: number | null }> }
       const sorted = [...itinerary.stops].sort((a, b) => a.stop_order - b.stop_order)
       const ids:  string[]               = sorted.map(s => s.poi.poi_id)
       const durs: Record<string, number> = {}
+      const dayMap: Record<string, number> = {}
       const lpois: MapPoi[]              = []
       sorted.forEach(s => {
         durs[s.poi.poi_id] = s.duration_min
+        dayMap[s.poi.poi_id] = s.day ?? 1
         lpois.push({
           poi_id:       s.poi.poi_id,
           name_ko:        s.poi.name_ko,
@@ -416,6 +514,7 @@ export default function MapView() {
           coords_lng:     s.poi.coords_lng,
           display_domain: s.poi.display_domain,
           display_region: '',
+          primary_image_url: s.poi.primary_image_url ?? undefined,
           is_trending:    false,
           is_partner:     false,
           quality_score:  0,
@@ -423,6 +522,7 @@ export default function MapView() {
       })
       setPlanStopIds(ids)
       setStopDurations(durs)
+      setStopDays(dayMap)
       setLoadedPlanPois(lpois)
     } catch {
       // Silent failure — user continues with blank plan
@@ -446,7 +546,7 @@ export default function MapView() {
     if (poiToAdd) {
       setPlanStopIds([poiToAdd])
       setStopDurations({ [poiToAdd]: DEFAULT_DURATION })
-      setStopDays({ [poiToAdd]: activeDay })
+      setStopDays({ [poiToAdd]: dayForNewStop })
       showToast(t('poiDetail.addedToast'))
     }
   }
@@ -492,6 +592,9 @@ export default function MapView() {
     clearDraftPlan()
     setPlanStopIds([])
     setStopDurations({})
+    setStopDays({})
+    setActiveDay(0)
+    setAddedDayCount(1)
     setLoadedPlanPois([])
     setPlanSource('manual')
     if (session) {
@@ -511,7 +614,7 @@ export default function MapView() {
   // DEC-29: user confirmed title → POST draft then PATCH is_published=true → navigate IT_01
   async function handleConfirmNaming(title: string) {
     setNamingSaving(true)
-    saveDraftPlan({ stops: planStops, durations: stopDurations })
+    saveDraftPlan({ stops: planStops, durations: stopDurations, days: stopDays })
     try {
       const res = await fetch('/api/plans', {
         method: 'POST',
@@ -522,6 +625,7 @@ export default function MapView() {
             poi_id:       s.poi_id,
             stop_order:   i + 1,
             duration_min: stopDurations[s.poi_id] ?? DEFAULT_DURATION,
+            day:          stopDays[s.poi_id] ?? 1,
           })),
           is_published: false,
         }),
@@ -560,6 +664,7 @@ export default function MapView() {
     clearDraftPlan()
     setPlanStopIds(draftConflict.ids)
     setStopDurations(draftConflict.durations)
+    setStopDays(draftConflict.days)
     setLoadedPlanPois(draftConflict.pois)
     setDraftConflict(null)
   }
@@ -596,6 +701,11 @@ export default function MapView() {
           stopDays={stopDays}
           activeDay={activeDay}
           onDayChange={setActiveDay}
+          dayCount={dayCount}
+          onAddDay={handleAddDay}
+          onRemoveDay={handleRemoveDay}
+          planExpanded={planExpanded}
+          onPlanExpandedChange={setPlanExpanded}
           onClosePoi={() => setSelectedPoiId(null)}
           onSelectPoi={setSelectedPoiId}
           poisLoading={poisLoading}
@@ -613,6 +723,11 @@ export default function MapView() {
           pois={pois}
           selectedPoiId={selectedPoiId}
           planStopIds={planStopIds}
+          planPois={planStops}
+          planDays={stopDays}
+          activePlanDay={activeDay}
+          // "내 플랜" 을 보는 동안엔 플랜 핀만
+          hideFreePois={planStopIds.length > 0 && (isDesktop ? planExpanded : planSheetOpen)}
           onPoiSelect={setSelectedPoiId}
           showAiPill={showAiPill}
           onAiPillDismiss={() => setShowAiPill(false)}
@@ -673,7 +788,10 @@ export default function MapView() {
         onDismiss={() => setPlanSheetOpen(false)}
         stopDays={stopDays}
         activeDay={activeDay}
+        dayCount={dayCount}
         onDayChange={setActiveDay}
+        onAddDay={handleAddDay}
+        onRemoveDay={handleRemoveDay}
       />
 
       {/* Mobile Saved bottom sheet — H13 (S-IGOSPS), opened via /map?saved=1 */}
@@ -711,6 +829,29 @@ export default function MapView() {
         onResume={handleResumeExistingDraft}
         onStartFresh={handleStartFresh}
       />
+
+      {/* 일차 삭제 확인 — 장소가 있는 일차 */}
+      {removeDayConfirm && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-sp-4" style={{ background: 'var(--backdrop-50)' }} role="dialog" aria-modal="true" aria-label={t('plan.removeDayTitle', { n: removeDayConfirm.day })}>
+          <div className="w-full max-w-[360px] rounded-none p-sp-6 flex flex-col gap-sp-4" style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}>
+            <div className="flex items-start gap-sp-3">
+              <AlertTriangle size={20} strokeWidth={2} className="text-danger shrink-0 mt-0.5" aria-hidden="true" />
+              <div>
+                <p className="text-f-lg font-semibold text-fg">{t('plan.removeDayTitle', { n: removeDayConfirm.day })}</p>
+                <p className="text-f-md text-muted mt-sp-2">{t('plan.removeDayWarning', { count: removeDayConfirm.count })}</p>
+              </div>
+            </div>
+            <div className="flex gap-sp-3">
+              <button onClick={() => setRemoveDayConfirm(null)} className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-muted hover:text-fg transition-colors" style={{ border: '1px solid var(--bdr)' }}>
+                {t('plan.discardCancel')}
+              </button>
+              <button onClick={() => removeDay(removeDayConfirm.day)} className="flex-1 min-h-touch rounded-none text-f-md font-semibold text-fg" style={{ background: 'var(--danger)' }}>
+                {t('plan.removeDayConfirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* UF-6 (G5.6) — discard draft confirm */}
       {discardConfirmOpen && (

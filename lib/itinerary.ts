@@ -165,6 +165,22 @@ export async function fetchDbDraft(token: string): Promise<DbDraftSummary | null
   return items?.[0] ?? null
 }
 
+/** Group the map builder's flat ordered stop list (each stop tagged with its
+ *  day tab, 1–7; missing/invalid → day 1) into the BFF days body. visit_order
+ *  restarts at 1 inside each day, preserving the input order. */
+export function groupPlacesIntoDays<P extends { day?: number }>(places: P[]) {
+  const byDay = new Map<number, Array<Omit<P, 'day'> & { visit_order: number }>>()
+  for (const { day, ...place } of places) {
+    const d = typeof day === 'number' && Number.isInteger(day) && day >= 1 ? day : 1
+    const list = byDay.get(d) ?? []
+    list.push({ ...place, visit_order: list.length + 1 })
+    byDay.set(d, list)
+  }
+  return Array.from(byDay.entries())
+    .sort(([a], [b]) => a - b)
+    .map(([day_number, dayPlaces]) => ({ day_number, places: dayPlaces }))
+}
+
 /** Flatten BFF days into a single ordered stop list with a global stop_order
  *  (1-based, day order then visit order) — the frontend contract has no
  *  day-scoped ordering, only the flat stop_order. */

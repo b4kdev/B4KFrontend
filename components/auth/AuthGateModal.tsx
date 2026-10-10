@@ -83,7 +83,7 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end lg:items-center justify-center"
+      className="fixed inset-0 z-[80] flex items-end lg:items-center justify-center"
       role="dialog"
       aria-modal="true"
       aria-label={t('ariaLabel')}

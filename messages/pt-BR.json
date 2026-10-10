@@ -28,7 +28,8 @@
     "legalTerms": "Termos de Serviço",
     "legalPrivacy": "Política de Privacidade",
     "legalCookies": "Política de Cookies",
-    "guestSubtitle": "Entre para salvar lugares e planejar viagens"
+    "guestSubtitle": "Entre para salvar lugares e planejar viagens",
+    "onboarding": "Mapa personalizado"
   },
   "topNav": {
     "searchPlaceholder": "Pesquise roteiros, lugares, criadores…",
@@ -714,7 +715,8 @@
       },
       "save": "Salvar Plano",
       "savedToast": "Plano salvo!",
-      "previewPlan": "Pré-visualizar Plano",
+      "saveToMyPlans": "Salvar em Meus planos",
+      "replacedDraftToast": "Seu rascunho anterior foi substituído por este novo plano.",
       "close": "Fechar painel do plano",
       "stripExpand": "Expandir painel do plano",
       "stripCollapse": "Recolher painel do plano",
@@ -728,6 +730,12 @@
       "discardCancel": "Cancelar",
       "discardConfirm": "Descartar rascunho",
       "dayTab": "Dia {n}",
+      "allDays": "Todos",
+      "addDay": "Adicionar dia",
+      "removeDay": "Excluir dia {n}",
+      "removeDayTitle": "Excluir o dia {n}?",
+      "removeDayWarning": "Este dia tem {count} paradas. Ao excluí-lo, elas também serão removidas e os dias seguintes avançam um.",
+      "removeDayConfirm": "Excluir",
       "legEstimate": "aprox {min}min",
       "legAriaLabel": "Tempo estimado de viagem da parada {from} até a parada {to}"
     },
@@ -1910,5 +1918,86 @@
     "viewOnMap": "Ver no mapa",
     "saves": "salvos",
     "fallbackDescription": "{name} — descubra este lugar na Coreia."
+  },
+  "mapOnboarding": {
+    "ariaLabel": "Crie seu mapa personalizado",
+    "title": "Crie seu mapa personalizado",
+    "close": "Fechar",
+    "prev": "Voltar",
+    "next": "Avançar",
+    "saving": "Salvando…",
+    "saveFailed": "Não foi possível salvar seus interesses. Tente novamente.",
+    "savedToast": "Seus interesses foram salvos.",
+    "steps": {
+      "where": "Onde e quando",
+      "taste": "Interesses",
+      "confirm": "Revisar"
+    },
+    "where": {
+      "title": "Para onde você vai?",
+      "subtitle": "Escolha a cidade, as datas e com quem você vai.",
+      "label": "Destino"
+    },
+    "when": {
+      "label": "Quando",
+      "clear": "Limpar"
+    },
+    "who": {
+      "label": "Com quem",
+      "solo": "Sozinho(a)",
+      "couple": "Casal",
+      "friends": "Amigos",
+      "family": "Família"
+    },
+    "calendar": {
+      "prevMonth": "Mês anterior",
+      "nextMonth": "Próximo mês"
+    },
+    "taste": {
+      "title": "O que você curte?",
+      "subtitle": "Quanto mais você escolhe, melhores as sugestões.",
+      "selected": "Interesses selecionados",
+      "emptySelection": "Nada selecionado ainda",
+      "maxReached": "Você pode escolher no máximo {max}.",
+      "remove": "Remover {label}",
+      "categories": "Categorias",
+      "loading": "Carregando interesses…",
+      "error": "Não foi possível carregar os interesses.",
+      "retry": "Tentar novamente"
+    },
+    "confirm": {
+      "title": "Criar assim?",
+      "save": "Salvar nos meus roteiros",
+      "subtitle": "Toque em qualquer linha para editar.",
+      "region": "Região",
+      "period": "Datas",
+      "companion": "Companhia",
+      "taste": "Interesses {count}",
+      "unset": "Não definido",
+      "edit": "Editar"
+    },
+    "result": {
+      "error": "Não foi possível carregar os lugares.",
+      "emptyDesc": "Tente outra cidade ou menos interesses."
+    },
+    "cities": {
+      "Seoul": "Seul",
+      "Busan": "Busan",
+      "Jeju": "Jeju",
+      "Incheon": "Incheon",
+      "Gyeongju": "Gyeongju",
+      "Daegu": "Daegu",
+      "Gwangju": "Gwangju",
+      "Daejeon": "Daejeon",
+      "Ulsan": "Ulsan",
+      "Sejong": "Sejong",
+      "Gyeonggi": "Gyeonggi",
+      "Gangwon": "Gangwon",
+      "Chungbuk": "Chungbuk",
+      "Chungnam": "Chungnam",
+      "Jeonbuk": "Jeonbuk",
+      "Jeonnam": "Jeonnam",
+      "Gyeongnam": "Gyeongnam"
+    }
   }
 }

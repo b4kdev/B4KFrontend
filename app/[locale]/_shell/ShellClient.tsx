@@ -17,6 +17,8 @@ import OfflineBanner from '@/components/layout/OfflineBanner';
 import Analytics from '@/components/analytics/Analytics';
 import CookieBanner from '@/components/analytics/CookieBanner';
 import TermsGate from '@/components/legal/TermsGate';
+import { MapOnboardingProvider } from '@/contexts/MapOnboardingContext';
+import MapOnboardingModal from '@/components/onboarding/MapOnboardingModal';
 
 function ShellInner({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -34,6 +36,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       <OfflineBanner />
       <Analytics />
       <CookieBanner />
+      <MapOnboardingModal />
       <AuthGateModal open={isOpen} onDismiss={close} />
       {/* DEC-33 T3 — post-login draft collision (device draft vs. existing account draft) */}
       <DraftConflictModal
@@ -53,7 +56,9 @@ export default function ShellClient({ children }: { children: React.ReactNode })
     <AuthProvider>
       <AuthGateProvider>
         <ToastProvider>
-          <ShellInner>{children}</ShellInner>
+          <MapOnboardingProvider>
+            <ShellInner>{children}</ShellInner>
+          </MapOnboardingProvider>
         </ToastProvider>
       </AuthGateProvider>
     </AuthProvider>

@@ -28,7 +28,8 @@
     "legalTerms": "服务条款",
     "legalPrivacy": "隐私政策",
     "legalCookies": "Cookie政策",
-    "guestSubtitle": "登录以保存地点并规划行程"
+    "guestSubtitle": "登录以保存地点并规划行程",
+    "onboarding": "定制地图"
   },
   "topNav": {
     "searchPlaceholder": "搜索行程、地点、创作者…",
@@ -714,7 +715,8 @@
       },
       "save": "保存行程",
       "savedToast": "行程已保存！",
-      "previewPlan": "预览行程",
+      "saveToMyPlans": "保存到我的计划",
+      "replacedDraftToast": "已删除之前的草稿并创建了新计划。",
       "close": "关闭行程面板",
       "stripExpand": "展开行程面板",
       "stripCollapse": "收起行程面板",
@@ -728,6 +730,12 @@
       "discardCancel": "取消",
       "discardConfirm": "放弃草稿",
       "dayTab": "第{n}天",
+      "allDays": "全部",
+      "addDay": "添加一天",
+      "removeDay": "删除第{n}天",
+      "removeDayTitle": "要删除第{n}天吗？",
+      "removeDayWarning": "这一天有{count}个行程。删除后这些地点也会一并移除，之后的天数将依次提前。",
+      "removeDayConfirm": "删除",
       "legEstimate": "约{min}分钟",
       "legAriaLabel": "从第{from}个地点到第{to}个地点的预计所需时间"
     },
@@ -1910,5 +1918,86 @@
     "viewOnMap": "View on Map",
     "saves": "saves",
     "fallbackDescription": "{name} — discover this spot in Korea."
+  },
+  "mapOnboarding": {
+    "ariaLabel": "创建定制地图",
+    "title": "创建定制地图",
+    "close": "关闭",
+    "prev": "上一步",
+    "next": "下一步",
+    "saving": "保存中…",
+    "saveFailed": "无法保存你的偏好，请重试。",
+    "savedToast": "偏好已保存。",
+    "steps": {
+      "where": "去哪·何时",
+      "taste": "偏好",
+      "confirm": "确认"
+    },
+    "where": {
+      "title": "要去哪里？",
+      "subtitle": "请选择城市、日期和同行者。",
+      "label": "目的地"
+    },
+    "when": {
+      "label": "何时",
+      "clear": "清除"
+    },
+    "who": {
+      "label": "和谁去",
+      "solo": "一个人",
+      "couple": "情侣",
+      "friends": "朋友",
+      "family": "家人"
+    },
+    "calendar": {
+      "prevMonth": "上个月",
+      "nextMonth": "下个月"
+    },
+    "taste": {
+      "title": "你喜欢什么？",
+      "subtitle": "选得越多，推荐越准确。",
+      "selected": "已选偏好",
+      "emptySelection": "还没有选择",
+      "maxReached": "最多只能选择{max}个。",
+      "remove": "移除{label}",
+      "categories": "分类",
+      "loading": "正在加载偏好…",
+      "error": "无法加载偏好。",
+      "retry": "重试"
+    },
+    "confirm": {
+      "title": "确定创建吗？",
+      "save": "保存到我的行程",
+      "subtitle": "点击任意一项即可修改。",
+      "region": "地区",
+      "period": "日期",
+      "companion": "同行人",
+      "taste": "偏好 {count}",
+      "unset": "未设置",
+      "edit": "修改"
+    },
+    "result": {
+      "error": "无法加载地点。",
+      "emptyDesc": "换个城市或减少偏好试试。"
+    },
+    "cities": {
+      "Seoul": "首尔",
+      "Busan": "釜山",
+      "Jeju": "济州",
+      "Incheon": "仁川",
+      "Gyeongju": "庆州",
+      "Daegu": "大邱",
+      "Gwangju": "光州",
+      "Daejeon": "大田",
+      "Ulsan": "蔚山",
+      "Sejong": "世宗",
+      "Gyeonggi": "京畿",
+      "Gangwon": "江原",
+      "Chungbuk": "忠北",
+      "Chungnam": "忠南",
+      "Jeonbuk": "全北",
+      "Jeonnam": "全南",
+      "Gyeongnam": "庆南"
+    }
   }
 }

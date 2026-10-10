@@ -10,6 +10,8 @@ import { Home, Map, LayoutGrid, Bookmark, User, Bell, Settings, LogOut } from 'l
 import { fetcher } from '@/lib/fetcher';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuthGate } from '@/contexts/AuthGateContext';
+import { useMapOnboardingOptional } from '@/contexts/MapOnboardingContext';
+import OnboardingNavButton from './OnboardingNavButton';
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 
 // Desktop-only SideNav rail (SN_01–07). The mobile hamburger menu is a
@@ -34,6 +36,7 @@ export default function Sidebar() {
   const router = useRouter();
   const { session, loading } = useAuth();
   const { open } = useAuthGate();
+  const onboardingOpen = useMapOnboardingOptional()?.isOpen ?? false;
   const { data: profile } = useProfile();
   const isGuest = !loading && !session;
   const { data: unreadData } = useSWR<{ count: number }>(
@@ -121,6 +124,13 @@ export default function Sidebar() {
             </Link>
           );
         })}
+
+        {/* 맞춤 지도 온보딩 — 로그인 여부와 무관하게 항상 표시 (OnboardingNavButton 은 인증 상태를 보지 않는다) */}
+        <OnboardingNavButton
+          className={railClass(onboardingOpen)}
+          style={railStyle}
+          iconStyle={iconStyle(onboardingOpen)}
+        />
       </nav>
 
       {/* Bottom anchors: Notifications + Profile — M18: guests are gated (variant #6) */}
