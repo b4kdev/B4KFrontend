@@ -541,8 +541,7 @@
         "save_plan_other": "登入以將此行程收藏到你的旅程中",
         "saved_tab": "登入以查看你收藏的地點",
         "profile_nav": "登入以查看你的個人主頁",
-        "fl3_cap": "登入以繼續規劃",
-        "onboarding_save": "登入以儲存偏好與行程"
+        "fl3_cap": "登入以繼續規劃"
       },
       "google": "使用Google繼續",
       "apple": "使用Apple繼續",
@@ -716,7 +715,8 @@
       },
       "save": "儲存行程",
       "savedToast": "行程已儲存！",
-      "previewPlan": "預覽行程",
+      "saveToMyPlans": "儲存到我的計畫",
+      "replacedDraftToast": "已刪除先前的草稿並建立了新計畫。",
       "close": "關閉行程面板",
       "stripExpand": "展開行程面板",
       "stripCollapse": "收合行程面板",
@@ -730,6 +730,12 @@
       "discardCancel": "取消",
       "discardConfirm": "捨棄草稿",
       "dayTab": "第{n}天",
+      "allDays": "全部",
+      "addDay": "新增一天",
+      "removeDay": "刪除第{n}天",
+      "removeDayTitle": "要刪除第{n}天嗎？",
+      "removeDayWarning": "這一天有{count}個行程。刪除後這些地點也會一併移除，之後的天數將依序提前。",
+      "removeDayConfirm": "刪除",
       "legEstimate": "約{min}分鐘",
       "legAriaLabel": "從第{from}個地點到第{to}個地點的預估交通時間"
     },
@@ -1917,34 +1923,27 @@
     "ariaLabel": "建立客製地圖",
     "title": "建立客製地圖",
     "close": "關閉",
-    "later": "稍後再說",
     "prev": "上一步",
     "next": "下一步",
-    "done": "完成",
     "saving": "儲存中…",
     "saveFailed": "無法儲存你的偏好，請重試。",
     "savedToast": "偏好已儲存。",
     "steps": {
       "where": "去哪·何時",
       "taste": "偏好",
-      "confirm": "確認",
-      "result": "結果"
+      "confirm": "確認"
     },
     "where": {
       "title": "要去哪裡？",
-      "subtitle": "選擇城市或搜尋。日期與同行者為選填。",
-      "label": "目的地",
-      "searchPlaceholder": "搜尋城市",
-      "noResults": "沒有符合的城市"
+      "subtitle": "請選擇城市、日期和同行者。",
+      "label": "目的地"
     },
     "when": {
       "label": "何時",
-      "clear": "清除",
-      "hint": "請選擇開始與結束日期，也可以略過。"
+      "clear": "清除"
     },
     "who": {
       "label": "和誰去",
-      "hint": "這項也可以略過。",
       "solo": "一個人",
       "couple": "情侶",
       "friends": "朋友",
@@ -1957,50 +1956,29 @@
     "taste": {
       "title": "你喜歡什麼？",
       "subtitle": "選得越多，推薦越準確。",
-      "searchPlaceholder": "搜尋偏好",
       "selected": "已選偏好",
       "emptySelection": "尚未選擇",
+      "maxReached": "最多只能選擇{max}個。",
       "remove": "移除{label}",
       "categories": "分類",
-      "noResults": "沒有符合的偏好",
       "loading": "正在載入偏好…",
       "error": "無法載入偏好。",
-      "retry": "重試",
-      "skip": "略過"
+      "retry": "重試"
     },
     "confirm": {
       "title": "確定建立嗎？",
+      "save": "儲存到我的行程",
       "subtitle": "點選任一項即可修改。",
       "region": "地區",
       "period": "日期",
       "companion": "同行者",
       "taste": "偏好 {count}",
       "unset": "未設定",
-      "edit": "修改",
-      "cta": "建立地圖"
+      "edit": "修改"
     },
     "result": {
-      "title": "專屬路線",
-      "subtitle": "已依你的偏好規劃好路線。",
-      "loading": "正在尋找地點…",
       "error": "無法載入地點。",
-      "retry": "重試",
-      "emptyTitle": "找不到地點",
-      "emptyDesc": "換個城市或減少偏好試試。",
-      "guestBanner": "登入後偏好將儲存到你的帳號。",
-      "editTaste": "修改偏好",
-      "dayTabs": "天數",
-      "dayTab": "第{n}天",
-      "routing": "正在計算路線…",
-      "summary": "{count} 個地點 · {dist} · 交通約 {min} 分鐘",
-      "leg": "{min} 分鐘 · {dist}",
-      "approximate": "部分路段為直線近似路線。",
-      "saveToPlan": "儲存為行程",
-      "savingPlan": "儲存中…",
-      "savedPlan": "已儲存",
-      "planSaved": "已儲存到我的行程。",
-      "planSavedView": "查看行程",
-      "planSaveFailed": "無法儲存行程，請重試。"
+      "emptyDesc": "換個城市或減少偏好試試。"
     },
     "cities": {
       "Seoul": "首爾",

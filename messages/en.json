@@ -541,8 +541,7 @@
         "save_plan_other": "Sign in to save this plan to your trips",
         "saved_tab": "Sign in to see your saved places",
         "profile_nav": "Sign in to view your profile",
-        "fl3_cap": "Sign in to keep planning",
-        "onboarding_save": "Sign in to save your interests and itinerary"
+        "fl3_cap": "Sign in to keep planning"
       },
       "google": "Continue with Google",
       "apple": "Continue with Apple",
@@ -716,7 +715,8 @@
       },
       "save": "Save Plan",
       "savedToast": "Plan saved!",
-      "previewPlan": "Preview Plan",
+      "saveToMyPlans": "Save to My Plans",
+      "replacedDraftToast": "Your previous draft was replaced with this new plan.",
       "close": "Close plan sheet",
       "stripExpand": "Expand plan panel",
       "stripCollapse": "Collapse plan panel",
@@ -730,6 +730,12 @@
       "discardCancel": "Cancel",
       "discardConfirm": "Discard draft",
       "dayTab": "Day {n}",
+      "allDays": "All",
+      "addDay": "Add day",
+      "removeDay": "Delete day {n}",
+      "removeDayTitle": "Delete day {n}?",
+      "removeDayWarning": "This day has {count} stops. Deleting it removes them too, and later days move up by one.",
+      "removeDayConfirm": "Delete",
       "legEstimate": "est {min}m",
       "legAriaLabel": "Estimated travel time from stop {from} to stop {to}"
     },
@@ -1917,34 +1923,27 @@
     "ariaLabel": "Build your custom map",
     "title": "Build a custom map",
     "close": "Close",
-    "later": "Later",
     "prev": "Back",
     "next": "Next",
-    "done": "Done",
     "saving": "Saving…",
     "saveFailed": "Couldn't save your interests. Please try again.",
     "savedToast": "Your interests were saved.",
     "steps": {
       "where": "Where & when",
       "taste": "Interests",
-      "confirm": "Review",
-      "result": "Results"
+      "confirm": "Review"
     },
     "where": {
       "title": "Where are you going?",
-      "subtitle": "Pick a city or search. Dates and companions are optional.",
-      "label": "Destination",
-      "searchPlaceholder": "Search cities",
-      "noResults": "No matching city"
+      "subtitle": "Pick a city, your dates, and who you're traveling with.",
+      "label": "Destination"
     },
     "when": {
       "label": "When",
-      "clear": "Clear",
-      "hint": "Pick a start and end date. You can skip this."
+      "clear": "Clear"
     },
     "who": {
       "label": "Who with",
-      "hint": "You can skip this too.",
       "solo": "Solo",
       "couple": "Partner",
       "friends": "Friends",
@@ -1957,50 +1956,29 @@
     "taste": {
       "title": "What do you like?",
       "subtitle": "The more you pick, the better the picks.",
-      "searchPlaceholder": "Search interests",
       "selected": "Selected interests",
       "emptySelection": "Nothing selected yet",
+      "maxReached": "You can select up to {max}.",
       "remove": "Remove {label}",
       "categories": "Categories",
-      "noResults": "No matching interests",
       "loading": "Loading interests…",
       "error": "Couldn't load interests.",
-      "retry": "Try again",
-      "skip": "Skip"
+      "retry": "Try again"
     },
     "confirm": {
       "title": "Create this map?",
+      "save": "Save to my plans",
       "subtitle": "Tap any row to edit it.",
       "region": "Region",
       "period": "Dates",
       "companion": "Companion",
       "taste": "Interests {count}",
       "unset": "Not set",
-      "edit": "Edit",
-      "cta": "Create map"
+      "edit": "Edit"
     },
     "result": {
-      "title": "Your custom course",
-      "subtitle": "A route built from places that match your interests.",
-      "loading": "Finding places…",
       "error": "Couldn't load places.",
-      "retry": "Try again",
-      "emptyTitle": "No places found",
-      "emptyDesc": "Try another city or fewer interests.",
-      "guestBanner": "Sign in to save your interests to your account.",
-      "editTaste": "Edit interests",
-      "dayTabs": "Days",
-      "dayTab": "Day {n}",
-      "routing": "Calculating route…",
-      "summary": "{count} places · {dist} · about {min} min travel",
-      "leg": "{min} min · {dist}",
-      "approximate": "Some legs are approximate straight lines.",
-      "saveToPlan": "Save as itinerary",
-      "savingPlan": "Saving…",
-      "savedPlan": "Saved",
-      "planSaved": "Saved to your itineraries.",
-      "planSavedView": "View itinerary",
-      "planSaveFailed": "Couldn't save the itinerary. Please try again."
+      "emptyDesc": "Try another city or fewer interests."
     },
     "cities": {
       "Seoul": "Seoul",

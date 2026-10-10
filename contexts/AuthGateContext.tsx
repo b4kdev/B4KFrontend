@@ -12,7 +12,6 @@ export type GateReason =
   | 'saved_tab'        // /saved nav or FL2 entry
   | 'profile_nav'      // profile / notifications nav
   | 'fl3_cap'          // FL3 6th request cap (in-overlay)
-  | 'onboarding_save'  // map onboarding modal — save picked interests
   | null;
 
 // L9 — return-to-action across OAuth redirects. The pending action is a

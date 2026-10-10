@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import { Plus, Minus, Sparkles, X, MapPinOff } from 'lucide-react'
 import type { MapPoi, MapBounds } from '@/hooks/useMapPois'
 import { getDisplayName } from '@/lib/display-name'
+import { planDayColor, textOnColor } from '@/lib/plan-day-colors'
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,6 +58,14 @@ interface Props {
   // Whether useMapPois's fetch for the current viewport is still in flight —
   // gates the empty-viewport overlay below so it doesn't flash during load.
   poisLoading?: boolean
+  // 일차 모드(지도 플랜 빌더) — planDays 를 주면 켜진다. planPois(순서대로, 뷰포트 밖이어도 그림)
+  // 를 일차별로 끊어 핀 번호를 1부터 다시 매기고, 일차마다 경로를 따로 긋는다.
+  // activePlanDay 0 = 전체, n = 그 일차만. 색은 항상 일차 색. 생략하면 기존 동작 그대로.
+  planPois?:      MapPoi[]
+  planDays?:      Record<string, number>
+  activePlanDay?: number
+  // 플랜만 보기 — 일반 POI 핀·클러스터·focusPoi 를 숨기고 플랜 핀만 남긴다("내 플랜" 패널/시트가 열렸을 때).
+  hideFreePois?:  boolean
 }
 
 // Extra margin around the viewport so panning within it doesn't need an
@@ -110,11 +119,13 @@ function poiMarkerHtml(poi: MapPoi, selected: boolean): string {
   return `<div class="poi-hit"><div class="poi-wrap${sel}${tr}"><div class="poi-dot"></div></div></div>`
 }
 
-function planMarkerHtml(index: number, selected: boolean): string {
+function planMarkerHtml(index: number, selected: boolean, color?: string): string {
   const sel = selected ? ' plan-marker--selected' : ''
+  // 일차 색이 있으면 배경만 바꾼다(없으면 기본 .plan-marker 분홍).
+  const style = color ? ` style="background:${color};color:${textOnColor(color)}"` : ''
   // .plan-marker-hit is an invisible 44px hit-area wrapper (CLAUDE.md §6
   // touch-target minimum) — the visual circle inside stays its existing size.
-  return `<div class="plan-marker-hit"><div class="plan-marker${sel}">${index + 1}</div></div>`
+  return `<div class="plan-marker-hit"><div class="plan-marker${sel}"${style}>${index + 1}</div></div>`
 }
 
 function clusterMarkerHtml(count: number): string {
@@ -152,7 +163,28 @@ export default function NaverMapCanvas({
   initialCenter,
   initialZoom,
   poisLoading = false,
+  planPois,
+  planDays,
+  activePlanDay = 0,
+  hideFreePois = false,
 }: Props) {
+  // 일차 모드: 보여줄 플랜 정류장(전체 또는 선택 일차), 일차 안 번호, 색.
+  const dayMode = !!planDays
+  const shownPlan: Array<{ poi: MapPoi; day: number; label: number; color: string }> = []
+  if (dayMode) {
+    const counters = new Map<number, number>()
+    for (const poi of planPois ?? []) {
+      const day = planDays![poi.poi_id] ?? 1
+      if (activePlanDay && day !== activePlanDay) continue
+      const label = (counters.get(day) ?? 0) + 1
+      counters.set(day, label)
+      shownPlan.push({ poi, day, label, color: planDayColor(day) })
+    }
+  }
+  const effectivePlanIds = dayMode ? shownPlan.map(s => s.poi.poi_id) : planStopIds
+  // 의존성 비교용 — 내용이 같으면 effect 를 다시 돌리지 않는다.
+  const planSig = dayMode ? shownPlan.map(s => `${s.poi.poi_id}:${s.label}:${s.color}`).join('|') : planStopIds.join('|')
+
   const t = useTranslations('map')
   // For the aria-live selection announcement below — fires whether selection
   // came from a pin tap or LeftPanel, since both set the same selectedPoiId.
@@ -310,11 +342,11 @@ export default function NaverMapCanvas({
     // is active, since an exclusive set is already fully individual (see
     // clusterActive/same-point gates below), whether or not focusPoi happens
     // to be a member of it.
-    const showFocus = !!focusPoi && !restrictToPois && !planStopIds.includes(focusPoi.poi_id)
+    const showFocus = !hideFreePois && !!focusPoi && !restrictToPois && !effectivePlanIds.includes(focusPoi.poi_id)
 
-    const planPois = visiblePois.filter(p => planStopIds.includes(p.poi_id))
-    const freePois = visiblePois.filter(p =>
-      !planStopIds.includes(p.poi_id) &&
+    const markerPlanPois = dayMode ? shownPlan.map(s => s.poi) : visiblePois.filter(p => planStopIds.includes(p.poi_id))
+    const freePois = hideFreePois ? [] : visiblePois.filter(p =>
+      !effectivePlanIds.includes(p.poi_id) &&
       !(showFocus && p.poi_id === focusPoi!.poi_id)
     )
 
@@ -448,7 +480,7 @@ export default function NaverMapCanvas({
     }
 
     const individualPois = [
-      ...planPois,
+      ...markerPlanPois,
       ...(showFocus ? [focusPoi!] : []),
       ...freePois.filter(p => !clusteredIds.has(p.poi_id)),
     ]
@@ -460,10 +492,11 @@ export default function NaverMapCanvas({
 
     individualPois.forEach(poi => {
       const selected   = poi.poi_id === selectedPoiId
-      const planIndex  = planStopIds.indexOf(poi.poi_id)
+      const planIndex  = effectivePlanIds.indexOf(poi.poi_id)
       const isInPlan   = planIndex !== -1
+      const dayStop    = dayMode && isInPlan ? shownPlan[planIndex] : null
       const content    = isInPlan
-        ? planMarkerHtml(planIndex, selected)
+        ? (dayStop ? planMarkerHtml(dayStop.label - 1, selected, dayStop.color) : planMarkerHtml(planIndex, selected))
         : poiMarkerHtml(poi, selected)
 
       const existing = markersRef.current.get(poi.poi_id)
@@ -537,7 +570,8 @@ export default function NaverMapCanvas({
         return marker
       })
     }
-  }, [mapReady, pois, selectedPoiId, planStopIds, onPoiSelect, zoom, restrictToPois, focusPoi])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady, pois, selectedPoiId, planSig, onPoiSelect, zoom, restrictToPois, focusPoi, hideFreePois])
 
   // Pan to the selected POI whenever selection CHANGES externally (e.g.
   // LeftPanel card click) — marker click already pans itself, this covers
@@ -641,6 +675,24 @@ export default function NaverMapCanvas({
     routeLegPolylinesRef.current.forEach(pl => pl.setMap(null))
     routeLegPolylinesRef.current = []
 
+    // 일차 모드 — 일차마다 따로(일차 사이는 잇지 않음), 그 일차 색으로 직선 연결.
+    if (dayMode) {
+      const byDay = new Map<number, typeof shownPlan>()
+      shownPlan.forEach(s => byDay.set(s.day, [...(byDay.get(s.day) ?? []), s]))
+      byDay.forEach(stops => {
+        if (stops.length < 2) return
+        routeLegPolylinesRef.current.push(new window.naver.maps.Polyline({
+          path:          stops.map(s => new window.naver.maps.LatLng(s.poi.coords_lat, s.poi.coords_lng)),
+          strokeColor:   stops[0].color,
+          strokeOpacity: 0.85,
+          strokeWeight:  3,
+          strokeStyle:   'solid',
+          map:           mapRef.current,
+        }))
+      })
+      return
+    }
+
     if (routeLegs && routeLegs.length > 0) {
       routeLegPolylinesRef.current = routeLegs
         .filter(leg => leg.path.length >= 2)
@@ -672,7 +724,8 @@ export default function NaverMapCanvas({
       strokeStyle:    'solid',
       map:            mapRef.current,
     })
-  }, [mapReady, planStopIds, pois, routeLegs])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady, planStopIds, pois, routeLegs, planSig])
 
   // Fit the viewport to the plan route once per load — covers "saved plan
   // shows somewhere random" (map was defaulting to the fixed Seoul center/
@@ -681,10 +734,18 @@ export default function NaverMapCanvas({
   // the live builder) and re-arms when they clear back to empty, so it
   // doesn't fight the user's own pan/zoom while they keep adding stops.
   const hasFitRouteRef = useRef(false)
+  // 일차 탭을 바꾸면 그 일차(또는 전체)에 다시 맞춘다.
+  const lastFitDayRef = useRef(activePlanDay)
   useEffect(() => {
     if (!mapReady || !mapRef.current || !window.naver?.maps) return
+    if (lastFitDayRef.current !== activePlanDay) {
+      lastFitDayRef.current = activePlanDay
+      hasFitRouteRef.current = false
+    }
 
-    const points: Array<{ lat: number; lng: number }> = routeLegs && routeLegs.length > 0
+    const points: Array<{ lat: number; lng: number }> = dayMode
+      ? shownPlan.map(s => ({ lat: s.poi.coords_lat, lng: s.poi.coords_lng }))
+      : routeLegs && routeLegs.length > 0
       ? routeLegs.flatMap(leg => leg.path)
       : planStopIds
           .map(id => pois.find(p => p.poi_id === id))
@@ -710,7 +771,8 @@ export default function NaverMapCanvas({
     )
     points.forEach(p => bounds.extend(new window.naver.maps.LatLng(p.lat, p.lng)))
     mapRef.current.fitBounds(bounds)
-  }, [mapReady, routeLegs, planStopIds, pois])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady, routeLegs, planStopIds, pois, planSig, activePlanDay])
 
   useEffect(() => () => {
     markersRef.current.forEach(({ marker }) => marker.setMap(null))

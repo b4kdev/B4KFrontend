@@ -1,13 +1,14 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { GripVertical, X, Clock, AlertTriangle } from 'lucide-react'
+import { GripVertical, X, Clock, AlertTriangle, ImageOff } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { estimateLegMinutes } from '@/lib/plan-estimate'
+import { groupStopsByDay, planDayColor, textOnColor } from '@/lib/plan-day-colors'
+import PlanDayTabs from '../PlanDayTabs'
 import type { MapPoi } from '@/hooks/useMapPois'
-
-const MAX_DAYS = 7
 
 interface Props {
   stops:            MapPoi[]
@@ -19,33 +20,38 @@ interface Props {
   onPreviewPlan:    () => void
   onDiscardPlan:    () => void
   stopDays:         Record<string, number>
-  activeDay:        number
+  activeDay:        number              // 0 = 전체
+  dayCount:         number
   onDayChange:      (day: number) => void
+  onAddDay:         () => void
+  onRemoveDay:      (day: number) => void
+  /** 장소(썸네일·이름)를 누르면 LeftPanel 이 POI 상세로 전환 */
+  onSelectStop:     (id: string) => void
 }
 
 export default function LeftPanelPlanActive({
   stops, stopDurations, routeError = false,
   onReorder, onRemove, onDurationChange, onPreviewPlan, onDiscardPlan,
-  stopDays, activeDay, onDayChange,
+  stopDays, activeDay, dayCount, onDayChange, onAddDay, onRemoveDay, onSelectStop,
 }: Props) {
   const t = useTranslations('map.plan')
-  const dragItem = useRef<number | null>(null)
-  const dragOver = useRef<number | null>(null)
-  const [dragging, setDragging] = useState<number | null>(null)
+  // 드래그는 같은 일차 안에서만 — {일차, 그 일차 안 위치}.
+  const dragItem = useRef<{ day: number; i: number } | null>(null)
+  const dragOver = useRef<{ day: number; i: number } | null>(null)
+  const [dragging, setDragging] = useState<string | null>(null)
   const [errorDismissed, setErrorDismissed] = useState(false)
 
-  // UF-5 (G4.2) — day tabs: always offer one more than the highest day in use, capped at 7
-  const maxDayUsed = stops.reduce((max, s) => Math.max(max, stopDays[s.poi_id] ?? 1), 1)
-  const dayCount = Math.min(Math.max(maxDayUsed, activeDay) + (maxDayUsed < MAX_DAYS ? 1 : 0), MAX_DAYS)
-  const dayStops = stops.filter(s => (stopDays[s.poi_id] ?? 1) === activeDay)
+  // 전체(0) = 일차별로 묶어 헤더와 함께, n = 그 일차만. 번호는 일차마다 1부터(지도 핀과 같음).
+  const groups = groupStopsByDay(stops, stopDays, activeDay)
 
-  function handleDragStart(i: number) { dragItem.current = i; setDragging(i) }
-  function handleDragEnter(i: number) { dragOver.current = i }
+  function handleDragStart(day: number, i: number) { dragItem.current = { day, i }; setDragging(`${day}:${i}`) }
+  function handleDragEnter(day: number, i: number) { dragOver.current = { day, i } }
   function handleDragEnd() {
-    if (dragItem.current !== null && dragOver.current !== null && dragItem.current !== dragOver.current) {
-      const ids = dayStops.map(s => s.poi_id)
-      const [moved] = ids.splice(dragItem.current, 1)
-      ids.splice(dragOver.current, 0, moved)
+    const from = dragItem.current, to = dragOver.current
+    if (from && to && from.day === to.day && from.i !== to.i) {
+      const ids = (groups.find(g => g.day === from.day)?.stops ?? []).map(s => s.poi_id)
+      const [moved] = ids.splice(from.i, 1)
+      ids.splice(to.i, 0, moved)
       onReorder(ids)
     }
     dragItem.current = null
@@ -72,21 +78,9 @@ export default function LeftPanelPlanActive({
         </span>
       </div>
 
-      {/* UF-5 (G4.2) — Day tabs */}
-      <div className="flex gap-1 px-sp-3 py-sp-2 shrink-0 overflow-x-auto">
-        {Array.from({ length: dayCount }, (_, i) => i + 1).map(day => (
-          <button
-            key={day}
-            onClick={() => onDayChange(day)}
-            aria-pressed={day === activeDay}
-            className="min-h-touch px-sp-3 rounded-full text-f-xxs font-semibold whitespace-nowrap transition-colors"
-            style={day === activeDay
-              ? { background: 'var(--muted-3)', color: 'var(--fg)' }
-              : { color: 'var(--muted)' }}
-          >
-            {t('dayTab', { n: day })}
-          </button>
-        ))}
+      {/* 일차 탭 — [전체] [1일차] … [+]. 가로 스크롤(바 숨김) — 마우스 세로 휠도 가로로 넘긴다 */}
+      <div className="flex items-center gap-1 px-sp-3 py-sp-2 shrink-0 overflow-x-auto scrollbar-hide" onWheel={e => { const el = e.currentTarget; if (e.deltaY && el.scrollWidth > el.clientWidth) el.scrollLeft += e.deltaY }}>
+        <PlanDayTabs dayCount={dayCount} activeDay={activeDay} onDayChange={onDayChange} onAddDay={onAddDay} onRemoveDay={onRemoveDay} />
       </div>
 
       {/* ERR_03 — Route generation failure banner */}
@@ -110,22 +104,31 @@ export default function LeftPanelPlanActive({
 
       {/* Stop list — LP_11, LP_12, LP_13 */}
       <div className="flex-1 overflow-y-auto themed-scrollbar">
-        {dayStops.map((poi, i) => {
+        {groups.map(g => (
+          <div key={g.day}>
+            {activeDay === 0 && (
+              <div className="flex items-center gap-sp-2 px-sp-4 pt-sp-3 pb-sp-1 text-f-xxs font-semibold text-muted">
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ background: planDayColor(g.day) }} aria-hidden="true" />
+                {t('dayTab', { n: g.day })}
+              </div>
+            )}
+        {g.stops.map((poi, i) => {
+          const badgeColor = planDayColor(g.day)
           const name     = getDisplayName(poi)
           const duration = stopDurations[poi.poi_id] ?? 60
-          const next     = dayStops[i + 1]
+          const next     = g.stops[i + 1]
 
           return (
             <div key={poi.poi_id}>
               <div
                 draggable
-                onDragStart={() => handleDragStart(i)}
-                onDragEnter={() => handleDragEnter(i)}
+                onDragStart={() => handleDragStart(g.day, i)}
+                onDragEnter={() => handleDragEnter(g.day, i)}
                 onDragEnd={handleDragEnd}
                 onDragOver={e => e.preventDefault()}
                 className={[
                   'flex items-center gap-sp-2 px-sp-2 py-2 group transition-opacity',
-                  dragging === i ? 'opacity-40' : 'opacity-100',
+                  dragging === `${g.day}:${i}` ? 'opacity-40' : 'opacity-100',
                 ].join(' ')}
               >
                 {/* LP_12 — Drag handle (visible on hover) */}
@@ -136,16 +139,28 @@ export default function LeftPanelPlanActive({
                   <GripVertical size={13} strokeWidth={2} />
                 </button>
 
-                {/* Stop number badge */}
+                {/* Stop number badge — 지도 핀과 같은 번호·일차 색 */}
                 <span
-                  className="w-5 h-5 rounded-full bg-fg text-bg text-f-xxs font-bold flex items-center justify-center shrink-0 select-none"
+                  className="w-5 h-5 rounded-full text-f-xxs font-bold flex items-center justify-center shrink-0 select-none"
+                  style={{ background: badgeColor, color: textOnColor(badgeColor) }}
                   aria-hidden="true"
                 >
                   {i + 1}
                 </span>
 
-                {/* LP_11 — POI name */}
-                <span className="flex-1 text-fg text-xs truncate min-w-0">{name}</span>
+                {/* LP_11 — 썸네일 + 이름. 누르면 POI 상세 패널로 */}
+                <button
+                  type="button"
+                  onClick={() => onSelectStop(poi.poi_id)}
+                  className="flex-1 min-w-0 flex items-center gap-sp-2 text-left hover:opacity-80 transition-opacity"
+                >
+                  <span className="relative w-10 h-10 shrink-0 overflow-hidden bg-bg-3 flex items-center justify-center rounded-none">
+                    {poi.primary_image_url
+                      ? <Image src={poi.primary_image_url} alt="" fill sizes="40px" className="object-cover" />
+                      : <ImageOff size={14} strokeWidth={2} className="text-fg opacity-[0.15]" aria-hidden="true" />}
+                  </span>
+                  <span className="flex-1 text-fg text-xs truncate min-w-0">{name}</span>
+                </button>
 
                 {/* LP_13 — Duration */}
                 <div className="flex items-center gap-1 shrink-0">
@@ -187,6 +202,8 @@ export default function LeftPanelPlanActive({
             </div>
           )
         })}
+          </div>
+        ))}
       </div>
 
       {/* Footer — LP_14, LP_15, MP_23 */}
@@ -201,12 +218,12 @@ export default function LeftPanelPlanActive({
           </span>
         </div>
 
-        {/* LP_15 — Preview plan */}
+        {/* LP_15 — 내 플랜으로 저장 (이름 입력 시트 → 게시) */}
         <button
           onClick={onPreviewPlan}
           className="w-full min-h-touch flex items-center justify-center rounded-none bg-fg text-bg font-body font-semibold text-sm px-sp-5 hover:bg-royal-600 hover:text-fg transition-[background,color] duration-[80ms]"
         >
-          {t('previewPlan')}
+          {t('saveToMyPlans')}
         </button>
 
         {/* UF-6 (G5.6) — Discard draft */}

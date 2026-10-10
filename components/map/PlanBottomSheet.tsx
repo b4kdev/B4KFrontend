@@ -5,9 +5,9 @@ import { useTranslations } from 'next-intl'
 import { GripVertical, X, Clock, ArrowRight, AlertTriangle } from 'lucide-react'
 import { getDisplayName } from '@/lib/display-name'
 import { estimateLegMinutes } from '@/lib/plan-estimate'
+import { groupStopsByDay, planDayColor, textOnColor } from '@/lib/plan-day-colors'
+import PlanDayTabs from './PlanDayTabs'
 import type { MapPoi } from '@/hooks/useMapPois'
-
-const MAX_DAYS = 7
 
 interface Props {
   isOpen:           boolean
@@ -20,34 +20,37 @@ interface Props {
   onDiscardPlan:    () => void
   onDismiss:        () => void
   stopDays:         Record<string, number>
-  activeDay:        number
+  activeDay:        number              // 0 = 전체
+  dayCount:         number
   onDayChange:      (day: number) => void
+  onAddDay:         () => void
+  onRemoveDay:      (day: number) => void
 }
 
 export default function PlanBottomSheet({
   isOpen, stops, stopDurations,
   onReorder, onRemove, onDurationChange, onSavePlan, onDiscardPlan, onDismiss,
-  stopDays, activeDay, onDayChange,
+  stopDays, activeDay, dayCount, onDayChange, onAddDay, onRemoveDay,
 }: Props) {
   const t = useTranslations('map.plan')
 
-  const dragItem = useRef<number | null>(null)
-  const dragOver = useRef<number | null>(null)
-  const [dragging, setDragging] = useState<number | null>(null)
+  // 드래그는 같은 일차 안에서만 — {일차, 그 일차 안 위치}.
+  const dragItem = useRef<{ day: number; i: number } | null>(null)
+  const dragOver = useRef<{ day: number; i: number } | null>(null)
+  const [dragging, setDragging] = useState<string | null>(null)
   const [routeError]            = useState(false)
 
-  // UF-5 (G4.2) — day tabs: always offer one more than the highest day in use, capped at 7
-  const maxDayUsed = stops.reduce((max, s) => Math.max(max, stopDays[s.poi_id] ?? 1), 1)
-  const dayCount = Math.min(Math.max(maxDayUsed, activeDay) + (maxDayUsed < MAX_DAYS ? 1 : 0), MAX_DAYS)
-  const dayStops = stops.filter(s => (stopDays[s.poi_id] ?? 1) === activeDay)
+  // 전체(0) = 일차별로 묶어 헤더와 함께, n = 그 일차만. 번호는 일차마다 1부터(지도 핀과 같음).
+  const groups = groupStopsByDay(stops, stopDays, activeDay)
 
-  function handleDragStart(i: number) { dragItem.current = i; setDragging(i) }
-  function handleDragEnter(i: number) { dragOver.current = i }
+  function handleDragStart(day: number, i: number) { dragItem.current = { day, i }; setDragging(`${day}:${i}`) }
+  function handleDragEnter(day: number, i: number) { dragOver.current = { day, i } }
   function handleDragEnd() {
-    if (dragItem.current !== null && dragOver.current !== null && dragItem.current !== dragOver.current) {
-      const ids = dayStops.map(s => s.poi_id)
-      const [moved] = ids.splice(dragItem.current, 1)
-      ids.splice(dragOver.current, 0, moved)
+    const from = dragItem.current, to = dragOver.current
+    if (from && to && from.day === to.day && from.i !== to.i) {
+      const ids = (groups.find(g => g.day === from.day)?.stops ?? []).map(s => s.poi_id)
+      const [moved] = ids.splice(from.i, 1)
+      ids.splice(to.i, 0, moved)
       onReorder(ids)
     }
     dragItem.current = null
@@ -111,41 +114,38 @@ export default function PlanBottomSheet({
           </div>
         </div>
 
-        {/* UF-5 (G4.2) — Day tabs */}
-        <div className="flex gap-1 px-sp-3 py-sp-2 shrink-0 overflow-x-auto" style={{ borderBottom: '1px solid var(--bdr)' }}>
-          {Array.from({ length: dayCount }, (_, i) => i + 1).map(day => (
-            <button
-              key={day}
-              onClick={() => onDayChange(day)}
-              aria-pressed={day === activeDay}
-              className="min-h-touch px-sp-3 rounded-full text-f-xxs font-semibold whitespace-nowrap transition-colors"
-              style={day === activeDay
-                ? { background: 'var(--muted-3)', color: 'var(--fg)' }
-                : { color: 'var(--muted)' }}
-            >
-              {t('dayTab', { n: day })}
-            </button>
-          ))}
+        {/* 일차 탭 — [전체] [1일차] … [+]. 가로 스크롤(바 숨김) — 마우스 세로 휠도 가로로 넘긴다 */}
+        <div className="flex items-center gap-1 px-sp-3 py-sp-2 shrink-0 overflow-x-auto scrollbar-hide" style={{ borderBottom: '1px solid var(--bdr)' }} onWheel={e => { const el = e.currentTarget; if (e.deltaY && el.scrollWidth > el.clientWidth) el.scrollLeft += e.deltaY }}>
+          <PlanDayTabs dayCount={dayCount} activeDay={activeDay} onDayChange={onDayChange} onAddDay={onAddDay} onRemoveDay={onRemoveDay} />
         </div>
 
         {/* Stop list */}
         <div className="flex-1 overflow-y-auto themed-scrollbar">
-          {dayStops.map((poi, i) => {
+          {groups.map(g => (
+            <div key={g.day}>
+              {activeDay === 0 && (
+                <div className="flex items-center gap-sp-2 px-sp-4 pt-sp-3 pb-sp-1 text-f-xxs font-semibold text-muted">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: planDayColor(g.day) }} aria-hidden="true" />
+                  {t('dayTab', { n: g.day })}
+                </div>
+              )}
+          {g.stops.map((poi, i) => {
+            const badgeColor = planDayColor(g.day)
             const name     = getDisplayName(poi)
             const duration = stopDurations[poi.poi_id] ?? 60
-            const next     = dayStops[i + 1]
+            const next     = g.stops[i + 1]
 
             return (
               <div key={poi.poi_id}>
                 <div
                   draggable
-                  onDragStart={() => handleDragStart(i)}
-                  onDragEnter={() => handleDragEnter(i)}
+                  onDragStart={() => handleDragStart(g.day, i)}
+                  onDragEnter={() => handleDragEnter(g.day, i)}
                   onDragEnd={handleDragEnd}
                   onDragOver={e => e.preventDefault()}
                   className={[
                     'flex items-center gap-sp-2 px-sp-3 py-sp-3 group transition-opacity',
-                    dragging === i ? 'opacity-40' : 'opacity-100',
+                    dragging === `${g.day}:${i}` ? 'opacity-40' : 'opacity-100',
                   ].join(' ')}
                   style={{ borderBottom: '1px solid var(--bdr)' }}
                 >
@@ -157,7 +157,8 @@ export default function PlanBottomSheet({
                   </button>
 
                   <span
-                    className="w-5 h-5 rounded-full bg-fg text-bg text-f-xxs font-bold flex items-center justify-center shrink-0 select-none"
+                    className="w-5 h-5 rounded-full text-f-xxs font-bold flex items-center justify-center shrink-0 select-none"
+                    style={{ background: badgeColor, color: textOnColor(badgeColor) }}
                     aria-hidden="true"
                   >
                     {i + 1}
@@ -203,6 +204,8 @@ export default function PlanBottomSheet({
               </div>
             )
           })}
+            </div>
+          ))}
         </div>
 
         {/* ERR_03 — Route generation failure */}

@@ -541,8 +541,7 @@
         "save_plan_other": "Entre para salvar este plano nas suas viagens",
         "saved_tab": "Entre para ver seus lugares salvos",
         "profile_nav": "Entre para ver seu perfil",
-        "fl3_cap": "Entre para continuar planejando",
-        "onboarding_save": "Entre para salvar seus interesses e roteiro"
+        "fl3_cap": "Entre para continuar planejando"
       },
       "google": "Continuar com Google",
       "apple": "Continuar com Apple",
@@ -716,7 +715,8 @@
       },
       "save": "Salvar Plano",
       "savedToast": "Plano salvo!",
-      "previewPlan": "Pré-visualizar Plano",
+      "saveToMyPlans": "Salvar em Meus planos",
+      "replacedDraftToast": "Seu rascunho anterior foi substituído por este novo plano.",
       "close": "Fechar painel do plano",
       "stripExpand": "Expandir painel do plano",
       "stripCollapse": "Recolher painel do plano",
@@ -730,6 +730,12 @@
       "discardCancel": "Cancelar",
       "discardConfirm": "Descartar rascunho",
       "dayTab": "Dia {n}",
+      "allDays": "Todos",
+      "addDay": "Adicionar dia",
+      "removeDay": "Excluir dia {n}",
+      "removeDayTitle": "Excluir o dia {n}?",
+      "removeDayWarning": "Este dia tem {count} paradas. Ao excluí-lo, elas também serão removidas e os dias seguintes avançam um.",
+      "removeDayConfirm": "Excluir",
       "legEstimate": "aprox {min}min",
       "legAriaLabel": "Tempo estimado de viagem da parada {from} até a parada {to}"
     },
@@ -1917,34 +1923,27 @@
     "ariaLabel": "Crie seu mapa personalizado",
     "title": "Crie seu mapa personalizado",
     "close": "Fechar",
-    "later": "Depois",
     "prev": "Voltar",
     "next": "Avançar",
-    "done": "Concluir",
     "saving": "Salvando…",
     "saveFailed": "Não foi possível salvar seus interesses. Tente novamente.",
     "savedToast": "Seus interesses foram salvos.",
     "steps": {
       "where": "Onde e quando",
       "taste": "Interesses",
-      "confirm": "Revisar",
-      "result": "Resultado"
+      "confirm": "Revisar"
     },
     "where": {
       "title": "Para onde você vai?",
-      "subtitle": "Escolha uma cidade ou pesquise. Datas e companhia são opcionais.",
-      "label": "Destino",
-      "searchPlaceholder": "Pesquisar cidades",
-      "noResults": "Nenhuma cidade encontrada"
+      "subtitle": "Escolha a cidade, as datas e com quem você vai.",
+      "label": "Destino"
     },
     "when": {
       "label": "Quando",
-      "clear": "Limpar",
-      "hint": "Escolha as datas de início e fim. Você pode pular."
+      "clear": "Limpar"
     },
     "who": {
       "label": "Com quem",
-      "hint": "Você também pode pular.",
       "solo": "Sozinho(a)",
       "couple": "Casal",
       "friends": "Amigos",
@@ -1957,50 +1956,29 @@
     "taste": {
       "title": "O que você curte?",
       "subtitle": "Quanto mais você escolhe, melhores as sugestões.",
-      "searchPlaceholder": "Pesquisar interesses",
       "selected": "Interesses selecionados",
       "emptySelection": "Nada selecionado ainda",
+      "maxReached": "Você pode escolher no máximo {max}.",
       "remove": "Remover {label}",
       "categories": "Categorias",
-      "noResults": "Nenhum interesse encontrado",
       "loading": "Carregando interesses…",
       "error": "Não foi possível carregar os interesses.",
-      "retry": "Tentar novamente",
-      "skip": "Pular"
+      "retry": "Tentar novamente"
     },
     "confirm": {
       "title": "Criar assim?",
+      "save": "Salvar nos meus roteiros",
       "subtitle": "Toque em qualquer linha para editar.",
       "region": "Região",
       "period": "Datas",
       "companion": "Companhia",
       "taste": "Interesses {count}",
       "unset": "Não definido",
-      "edit": "Editar",
-      "cta": "Criar mapa"
+      "edit": "Editar"
     },
     "result": {
-      "title": "Seu roteiro personalizado",
-      "subtitle": "Um percurso montado com lugares que combinam com seus interesses.",
-      "loading": "Buscando lugares…",
       "error": "Não foi possível carregar os lugares.",
-      "retry": "Tentar novamente",
-      "emptyTitle": "Nenhum lugar encontrado",
-      "emptyDesc": "Tente outra cidade ou menos interesses.",
-      "guestBanner": "Entre para salvar seus interesses na sua conta.",
-      "editTaste": "Editar interesses",
-      "dayTabs": "Dias",
-      "dayTab": "Dia {n}",
-      "routing": "Calculando rota…",
-      "summary": "{count} lugares · {dist} · cerca de {min} min de deslocamento",
-      "leg": "{min} min · {dist}",
-      "approximate": "Alguns trechos são linhas retas aproximadas.",
-      "saveToPlan": "Salvar como roteiro",
-      "savingPlan": "Salvando…",
-      "savedPlan": "Salvo",
-      "planSaved": "Salvo nos seus roteiros.",
-      "planSavedView": "Ver roteiro",
-      "planSaveFailed": "Não foi possível salvar o roteiro. Tente novamente."
+      "emptyDesc": "Tente outra cidade ou menos interesses."
     },
     "cities": {
       "Seoul": "Seul",

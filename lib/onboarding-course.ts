@@ -1,7 +1,7 @@
-// lib/onboarding-course.ts — 온보딩 결과 단계의 코스 생성 (순수 함수, 서버 호출 없음).
+// lib/onboarding-course.ts — 온보딩 "내 일정으로 저장" 시 코스 생성 (순수 함수, 서버 호출 없음).
 // 매칭 상위 후보 중 기준점(1순위 장소) 근처만 골라 최근접 이웃 순서로 잇고, 일수대로 나눈다.
 import {
-  COURSE_POOL_SIZE, MAX_COURSE_DAYS, STOPS_PER_DAY, toISODate, type OnboardingPlace,
+  COURSE_POOL_SIZE, MAX_COURSE_DAYS, STOPS_PER_DAY, type OnboardingPlace,
 } from './onboarding'
 
 export interface CoursePlace extends OnboardingPlace {
@@ -27,14 +27,6 @@ export function courseDayCount(start: string | null, end: string | null): number
   const ms = new Date(`${end}T00:00:00`).getTime() - new Date(`${start}T00:00:00`).getTime()
   const days = Math.round(ms / 86_400_000) + 1
   return Math.min(Math.max(days, 1), MAX_COURSE_DAYS)
-}
-
-/** n일차의 날짜(YYYY-MM-DD). 시작일이 없으면 null. */
-export function courseDayDate(start: string | null, dayIndex: number): string | null {
-  if (!start) return null
-  const d = new Date(`${start}T00:00:00`)
-  d.setDate(d.getDate() + dayIndex)
-  return toISODate(d)
 }
 
 /**

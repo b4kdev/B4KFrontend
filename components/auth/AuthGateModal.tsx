@@ -28,7 +28,6 @@ export default function AuthGateModal({ open, onDismiss }: Props) {
       case 'saved_tab':        return t('context.saved_tab');
       case 'profile_nav':      return t('context.profile_nav');
       case 'fl3_cap':          return t('context.fl3_cap');
-      case 'onboarding_save':  return t('context.onboarding_save');
       default:                 return t('title');
     }
   }

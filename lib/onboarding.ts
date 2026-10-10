@@ -123,38 +123,35 @@ export function toISODate(d: Date): string {
   return `${d.getFullYear()}-${m}-${day}`
 }
 
-// ── 일정 저장 (게스트 → 로그인 후 저장) ─────────────────────────────────────────
-// POST /itineraries 본문. 게스트가 저장을 누르면 로컬에 보관했다가 로그인(OAuth 리다이렉트 포함) 직후 전송한다.
-export interface NewItineraryBody {
-  days: Array<{
-    day_number: number
-    places: Array<{ poi_id: number; visit_order: number; travel_mode: string }>
-  }>
-  start_date?: string
-  region?: string
-  status: 'confirmed'
+// ─── 온보딩 결과 → 지도 "내 플랜" 패널 인계 ──────────────────────────────
+// "완료" 를 누르면 코스를 여기 담고 /map?from=onboarding 으로 이동 → MapView 가 한 번 꺼내
+// 플랜 빌더(초안)에 채운다. 저장(게시)은 사용자가 "내 플랜으로 저장" 으로 직접 한다.
+// 탭 단위 1회성이라 sessionStorage.
+export interface CourseHandoffStop {
+  poi_id:             string
+  name_ko:            string
+  name_preferred?:    string
+  coords_lat:         number
+  coords_lng:         number
+  display_region?:    string | null
+  primary_image_url?: string
+  day:                number
 }
 
-const PENDING_PLAN_KEY = 'b4k_onboarding_pending_plan'
-const PENDING_PLAN_TTL_MS = 30 * 60 * 1000
+const COURSE_HANDOFF_KEY = 'b4k_onboarding_course'
 
-export function savePendingPlan(body: NewItineraryBody): void {
-  try { localStorage.setItem(PENDING_PLAN_KEY, JSON.stringify({ body, ts: Date.now() })) } catch { /* storage unavailable */ }
+export function saveCourseHandoff(stops: CourseHandoffStop[]): void {
+  try { sessionStorage.setItem(COURSE_HANDOFF_KEY, JSON.stringify(stops)) } catch { /* storage unavailable */ }
 }
 
-export function readPendingPlan(): NewItineraryBody | null {
+/** 꺼내면서 지운다 — 새로고침으로 다시 덮어쓰지 않게. */
+export function takeCourseHandoff(): CourseHandoffStop[] | null {
   try {
-    const raw = localStorage.getItem(PENDING_PLAN_KEY)
-    if (!raw) return null
-    const d = JSON.parse(raw) as { body?: NewItineraryBody; ts?: number }
-    if (!d.body || typeof d.ts !== 'number' || Date.now() - d.ts > PENDING_PLAN_TTL_MS) {
-      localStorage.removeItem(PENDING_PLAN_KEY)
-      return null
-    }
-    return d.body
-  } catch { return null }
-}
-
-export function clearPendingPlan(): void {
-  try { localStorage.removeItem(PENDING_PLAN_KEY) } catch { /* storage unavailable */ }
+    const raw = sessionStorage.getItem(COURSE_HANDOFF_KEY)
+    sessionStorage.removeItem(COURSE_HANDOFF_KEY)
+    const stops = raw ? JSON.parse(raw) as CourseHandoffStop[] : null
+    return Array.isArray(stops) && stops.length > 0 ? stops : null
+  } catch {
+    return null
+  }
 }
