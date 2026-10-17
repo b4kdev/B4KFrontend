@@ -35,14 +35,20 @@ const walk = (node, path) => {
 walk(src, [])
 const byPath = Object.fromEntries(tokens.map((t) => [t.path, t]))
 
-// Fonts the app already loads through next/font map to their CSS variable; the rest fall back to
-// the family name until they are hosted (Phase 2, UI-36).
+// Every family is self-hosted through next/font (app/layout.tsx) under these CSS variables.
 const FONT_VARS = {
   MODERNIZ: 'var(--font-moderniz)',
-  'Noto Sans TC': 'var(--font-noto-sans-tc)',
+  Inter: 'var(--font-ui-inter)',
+  'Archivo Black': 'var(--font-ui-archivo-black)',
+  'Noto Sans KR': 'var(--font-ui-noto-sans-kr)',
+  'Noto Sans JP': 'var(--font-ui-noto-sans-jp)',
+  'Noto Sans TC': 'var(--font-ui-noto-sans-tc)',
+  'Dela Gothic One': 'var(--font-ui-dela-gothic-one)',
 }
-const fontStack = (family, kind) =>
-  [FONT_VARS[family] ?? `"${family}"`, kind === 'display' ? 'sans-serif' : 'system-ui, sans-serif'].join(', ')
+const fontStack = (family, kind) => {
+  if (!FONT_VARS[family]) throw new Error(`font ${family} is not loaded in app/layout.tsx; add it there and to FONT_VARS`)
+  return [FONT_VARS[family], kind === 'display' ? 'sans-serif' : 'system-ui, sans-serif'].join(', ')
+}
 
 const cssValue = (t, v) => {
   if (typeof v === 'string' && v.startsWith('{')) {

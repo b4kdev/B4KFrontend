@@ -154,7 +154,7 @@
   --container-xl: 1280px;
   --container-2xl: 1536px;
   --font-family-display: var(--font-moderniz), sans-serif;
-  --font-family-body: "Inter", system-ui, sans-serif;
+  --font-family-body: var(--font-ui-inter), system-ui, sans-serif;
   --font-weight-regular: 400;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
@@ -335,27 +335,27 @@
 }
 
 :root:lang(pt-BR) {
-  --font-family-display: "Archivo Black", sans-serif;
+  --font-family-display: var(--font-ui-archivo-black), sans-serif;
 }
 
 :root:lang(ko) {
-  --font-family-display: "Noto Sans KR", sans-serif;
-  --font-family-body: "Noto Sans KR", system-ui, sans-serif;
+  --font-family-display: var(--font-ui-noto-sans-kr), sans-serif;
+  --font-family-body: var(--font-ui-noto-sans-kr), system-ui, sans-serif;
   --font-weight-semibold: 700;
   --font-weight-extrabold: 900;
   --font-weight-display: 900;
 }
 
 :root:lang(ja) {
-  --font-family-display: "Dela Gothic One", sans-serif;
-  --font-family-body: "Noto Sans JP", system-ui, sans-serif;
+  --font-family-display: var(--font-ui-dela-gothic-one), sans-serif;
+  --font-family-body: var(--font-ui-noto-sans-jp), system-ui, sans-serif;
   --font-weight-semibold: 700;
   --font-weight-extrabold: 900;
 }
 
 :root:lang(zh-TW) {
-  --font-family-display: var(--font-noto-sans-tc), sans-serif;
-  --font-family-body: var(--font-noto-sans-tc), system-ui, sans-serif;
+  --font-family-display: var(--font-ui-noto-sans-tc), sans-serif;
+  --font-family-body: var(--font-ui-noto-sans-tc), system-ui, sans-serif;
   --font-weight-semibold: 700;
   --font-weight-extrabold: 900;
   --font-weight-display: 900;
