@@ -6,7 +6,8 @@ const config: StorybookConfig = {
   stories: ['../components/library/**/*.stories.@(ts|tsx)'],
   addons: ['@storybook/addon-essentials', '@storybook/addon-a11y'],
   framework: { name: '@storybook/nextjs', options: {} },
-  staticDirs: ['../public'],
+  // next/font/local resolves local fonts to /public/fonts/... inside Storybook.
+  staticDirs: ['../public', { from: '../public/fonts', to: '/public/fonts' }],
   docs: { autodocs: 'tag' },
 }
 

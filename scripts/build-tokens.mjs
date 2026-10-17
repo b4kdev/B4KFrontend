@@ -197,10 +197,16 @@ const b4kTokens: Partial<Config> = {
       keyframes: {
         'b4k-pulse': { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0.5' } },
         'b4k-indeterminate': { '0%': { left: '-40%' }, '100%': { left: '100%' } },
+        'b4k-sheet-in': { from: { transform: 'translateY(100%)' }, to: { transform: 'translateY(0)' } },
+        'b4k-drawer-in': { from: { transform: 'translateX(-100%)' }, to: { transform: 'translateX(0)' } },
+        'b4k-fade-in': { from: { opacity: '0' }, to: { opacity: '1' } },
       },
       animation: {
         'b4k-pulse': 'b4k-pulse calc(var(--duration-long4) * 2) var(--easing-standard) infinite',
         'b4k-indeterminate': 'b4k-indeterminate var(--duration-long2) var(--easing-linear) infinite',
+        'b4k-sheet-in': 'b4k-sheet-in var(--duration-medium2) var(--easing-emphasized-decelerate)',
+        'b4k-drawer-in': 'b4k-drawer-in var(--duration-medium2) var(--easing-emphasized-decelerate)',
+        'b4k-fade-in': 'b4k-fade-in var(--duration-short4) var(--easing-standard)',
       },
       transitionDuration: ${JSON.stringify(durations, null, 2).replace(/\n/g, '\n      ')},
       transitionTimingFunction: ${JSON.stringify(easings, null, 2).replace(/\n/g, '\n      ')},
