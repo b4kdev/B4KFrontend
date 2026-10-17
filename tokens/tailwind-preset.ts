@@ -77,6 +77,15 @@ const b4kTokens: Partial<Config> = {
       backgroundImage: {
         'overlay-fade': 'var(--gradient-overlay-fade)',
       },
+      // Motion patterns from the Motion spec (UI-20, UI-56): skeleton pulse, indeterminate progress.
+      keyframes: {
+        'b4k-pulse': { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0.5' } },
+        'b4k-indeterminate': { '0%': { left: '-40%' }, '100%': { left: '100%' } },
+      },
+      animation: {
+        'b4k-pulse': 'b4k-pulse calc(var(--duration-long4) * 2) var(--easing-standard) infinite',
+        'b4k-indeterminate': 'b4k-indeterminate var(--duration-long2) var(--easing-linear) infinite',
+      },
       transitionDuration: {
         "short1": "var(--duration-short1)",
         "short2": "var(--duration-short2)",
