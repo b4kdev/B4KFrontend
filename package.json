@@ -10,7 +10,9 @@
     "a11y:check": "node b4k-a11y-audit.mjs",
     "a11y:interactive": "node b4k-a11y-interactive-audit.mjs",
     "i18n:overflow": "node b4k-i18n-overflow-audit.mjs",
-    "tokens:build": "node scripts/build-tokens.mjs"
+    "tokens:build": "node scripts/build-tokens.mjs",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.67.0",
@@ -32,6 +34,12 @@
     "tailwind-merge": "^2.6.1"
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "~8.6.19",
+    "@storybook/addon-essentials": "~8.6.19",
+    "@storybook/blocks": "~8.6.19",
+    "@storybook/nextjs": "~8.6.19",
+    "@storybook/react": "~8.6.19",
+    "@storybook/test": "~8.6.19",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -40,7 +48,9 @@
     "eslint-config-next": "14.2.35",
     "playwright": "^1.61.1",
     "postcss": "^8",
+    "storybook": "~8.6.19",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "webpack": "^5.99.9"
   }
 }

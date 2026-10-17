@@ -11,6 +11,7 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./lib/**/*.{js,ts,jsx,tsx,mdx}",
+    "./.storybook/**/*.{ts,tsx}",
   ],
   // Layout classes generated at runtime — must be safelisted so Tailwind doesn't purge them
   safelist: [
