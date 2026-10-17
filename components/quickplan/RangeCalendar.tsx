@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { toISODate } from '@/lib/onboarding';
+import { toISODate } from '@/lib/quickplan';
 
 export interface DateRange { start: string | null; end: string | null }
 
@@ -14,7 +14,7 @@ interface Props {
 
 // 의존성 없는 기간 선택 캘린더. 첫 클릭 = 시작일, 두 번째 클릭 = 종료일 (시작일보다 앞이면 시작일 재지정).
 export default function RangeCalendar({ value, onChange }: Props) {
-  const t      = useTranslations('mapOnboarding.calendar');
+  const t      = useTranslations('quickPlan.calendar');
   const locale = useLocale();
   const today  = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
   const [cursor, setCursor] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));

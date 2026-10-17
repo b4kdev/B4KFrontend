@@ -5,19 +5,19 @@ import { useLocale, useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { useMapOnboarding } from '@/contexts/MapOnboardingContext';
+import { useQuickPlan } from '@/contexts/QuickPlanContext';
 import { useInterests } from '@/hooks/useInterests';
 import { apiFetch } from '@/lib/api';
 import { useRouter } from '@/i18n/navigation';
 import {
   MAX_INTEREST_CHIPS, RESULT_LIMIT, cityToApiRegion, labelOf, placeName, readDraftTags, saveCourseHandoff, saveDraftTags,
-  type Companion, type OnboardingCity, type OnboardingPlace,
-} from '@/lib/onboarding';
+  type Companion, type QuickPlanCity, type QuickPlanPlace,
+} from '@/lib/quickplan';
 import StepWhere from './StepWhere';
 import StepTaste from './StepTaste';
 import StepConfirm from './StepConfirm';
 import type { DateRange } from './RangeCalendar';
-import { buildCourse, courseDayCount } from '@/lib/onboarding-course';
+import { buildCourse, courseDayCount } from '@/lib/quickplan-course';
 
 type Step = 1 | 2 | 3;
 const STEPS: Step[] = [1, 2, 3];
@@ -26,22 +26,22 @@ const STEP_KEYS = { 1: 'where', 2: 'taste', 3: 'confirm' } as const;
 const FOCUSABLE = 'button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
 // 마운트될 때마다 상태가 초기화되도록 바깥 컴포넌트는 isOpen 일 때만 안쪽을 렌더한다.
-export default function MapOnboardingModal() {
-  const { isOpen } = useMapOnboarding();
+export default function QuickPlanModal() {
+  const { isOpen } = useQuickPlan();
   return isOpen ? <ModalBody /> : null;
 }
 
 function ModalBody() {
-  const t      = useTranslations('mapOnboarding');
+  const t      = useTranslations('quickPlan');
   const lang   = useLocale();
-  const { close } = useMapOnboarding();
+  const { close } = useQuickPlan();
   const router    = useRouter();
   const { user }  = useAuth();
   const { showToast } = useToast();
   const { categories, isLoading, isError, retry } = useInterests(true);
 
   const [step, setStep]           = useState<Step>(1);
-  const [city, setCity]           = useState<OnboardingCity | null>(null);
+  const [city, setCity]           = useState<QuickPlanCity | null>(null);
   const [range, setRange]         = useState<DateRange>({ start: null, end: null });
   const [companion, setCompanion] = useState<Companion | null>(null);
   const [tags, setTags]           = useState<string[]>(() => readDraftTags() ?? []);
@@ -92,7 +92,7 @@ function ModalBody() {
       const params = new URLSearchParams({ limit: String(RESULT_LIMIT) });
       if (city) params.set('region', cityToApiRegion(city));
       if (tags.length > 0) { params.set('tags', tags.join(',')); params.set('sort', 'match'); }
-      const places = await apiFetch<OnboardingPlace[]>(`/places?${params.toString()}`);
+      const places = await apiFetch<QuickPlanPlace[]>(`/places?${params.toString()}`);
       const course = buildCourse(places ?? [], courseDayCount(range.start, range.end));
       const stops  = course.flatMap((day, i) => day.map(p => ({
         poi_id:            String(p.poi_id),
@@ -110,7 +110,7 @@ function ModalBody() {
       }
       saveCourseHandoff(stops);
       close();
-      router.push('/map?from=onboarding');
+      router.push('/map?from=quickplan');
     } catch {
       showToast(t('result.error'), 'error');
     } finally {

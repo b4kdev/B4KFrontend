@@ -20,7 +20,6 @@ const ROUTES = [
   { id: '18-profile-settings', path: '/en/profile/me/settings',label: 'PR_50-53 Profile settings' },
   { id: '19-badges',           path: '/en/badges',             label: 'BD_01-12 Badges catalog' },
   { id: '20-leaderboard',      path: '/en/leaderboard',        label: 'LB_01-04 Leaderboard' },
-  { id: '22-onboarding',       path: '/en/onboarding',         label: 'ON_01-04 Onboarding' },
   { id: '23-notifications',    path: '/en/notifications',      label: 'NTF_01-06 Notifications' },
   { id: '24-help',             path: '/en/help',               label: 'HLP_01-05 Help' },
   { id: '06-plan-manual',      path: '/en/plan/manual',        label: 'FL1 Manual plan (stub)' },

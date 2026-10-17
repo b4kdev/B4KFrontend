@@ -2,14 +2,14 @@
 
 import { useTranslations } from 'next-intl';
 import { Check } from 'lucide-react';
-import { COMPANIONS, ONBOARDING_CITIES, type Companion, type OnboardingCity } from '@/lib/onboarding';
+import { COMPANIONS, QUICKPLAN_CITIES, type Companion, type QuickPlanCity } from '@/lib/quickplan';
 import RangeCalendar, { type DateRange } from './RangeCalendar';
 
 interface Props {
-  city:        OnboardingCity | null;
+  city:        QuickPlanCity | null;
   range:       DateRange;
   companion:   Companion | null;
-  onCity:      (c: OnboardingCity) => void;
+  onCity:      (c: QuickPlanCity) => void;
   onRange:     (r: DateRange) => void;
   onCompanion: (c: Companion | null) => void;
   /** "다음" 을 눌렀을 때 빠진 항목 — true 인 섹션 라벨을 빨간색으로 표시 */
@@ -24,7 +24,7 @@ const chipClass = (on: boolean, size = 'min-h-touch px-sp-4') => [
 const labelClass = (err?: boolean) => `text-f-sm ${err ? 'text-danger font-medium' : 'text-muted'}`;
 
 export default function StepWhere({ city, range, companion, onCity, onRange, onCompanion, errors }: Props) {
-  const t = useTranslations('mapOnboarding');
+  const t = useTranslations('quickPlan');
 
   return (
     <div className="flex flex-col lg:flex-row gap-sp-6 min-h-0">
@@ -32,7 +32,7 @@ export default function StepWhere({ city, range, companion, onCity, onRange, onC
       <section className="flex-1 min-w-0 flex flex-col gap-sp-3" aria-labelledby="onb-where">
         <h4 id="onb-where" className={labelClass(errors?.city)}>{t('where.label')}</h4>
         <ul className="grid grid-cols-2 sm:grid-cols-3 gap-[6px] content-start">
-          {ONBOARDING_CITIES.map(c => (
+          {QUICKPLAN_CITIES.map(c => (
             <li key={c}>
               <button
                 type="button"

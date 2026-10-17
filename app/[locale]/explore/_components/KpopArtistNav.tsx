@@ -35,10 +35,10 @@ export default function KpopArtistNav({ data }: { data: ExploreData }) {
   const [selectedAgency, setSelectedAgency] = useState<string | null>(null)
   const [selectedArtistId, setSelectedArtistId] = useState<string | null>(null)
 
-  const artists = data.artists ?? []
+  const artists = useMemo(() => data.artists ?? [], [data.artists])
   const artistIndex = useMemo(
-    () => Object.fromEntries((data.artists ?? []).map(a => [a.id, a])),
-    [data.artists],
+    () => Object.fromEntries(artists.map(a => [a.id, a])),
+    [artists],
   )
   const visibleArtists = useMemo(
     () => (selectedAgency ? artists.filter(a => a.agency === selectedAgency) : artists),

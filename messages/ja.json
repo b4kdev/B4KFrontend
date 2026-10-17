@@ -29,7 +29,7 @@
     "legalPrivacy": "プライバシーポリシー",
     "legalCookies": "クッキーポリシー",
     "guestSubtitle": "ログインして場所を保存し、旅行を計画しよう",
-    "onboarding": "おすすめマップ"
+    "quickPlan": "おすすめマップ"
   },
   "topNav": {
     "searchPlaceholder": "旅程、場所、クリエイターを検索…",
@@ -452,14 +452,6 @@
       "empty": {
         "title": "近日公開",
         "desc": "バッジコレクションの全一覧。"
-      }
-    },
-    "onboarding": {
-      "breadcrumb": "B4Kへようこそ",
-      "title": "B4Kへようこそ",
-      "empty": {
-        "title": "近日公開",
-        "desc": "最初の旅行をパーソナライズする簡単な興味タグ。"
       }
     },
     "help": {
@@ -1744,49 +1736,6 @@
       "cookies": "クッキーポリシー"
     }
   },
-  "onboarding": {
-    "ariaLabel": "オンボーディング — 興味を選択",
-    "title": "韓国旅行の目的は？",
-    "subtitle": "B4Kの体験をパーソナライズしましょう。",
-    "desc": "興味のあるものを選択してください。後で変更できます。",
-    "interests": {
-      "label": "興味を選択",
-      "kpop": {
-        "label": "K-Pop",
-        "desc": "コンサート、会場、ファンダム"
-      },
-      "kdrama": {
-        "label": "K-Drama",
-        "desc": "撮影地とツアー"
-      },
-      "kbeauty": {
-        "label": "K-Beauty",
-        "desc": "スキンケア、メイク、スパ"
-      },
-      "kculture": {
-        "label": "K-Culture",
-        "desc": "グルメ、市場、伝統"
-      },
-      "food": {
-        "label": "グルメ",
-        "desc": "屋台グルメとローカルダイニング"
-      },
-      "nature": {
-        "label": "自然",
-        "desc": "公園、トレイル、アウトドア"
-      },
-      "nightlife": {
-        "label": "ナイトライフ",
-        "desc": "バー、クラブ、深夜の時間"
-      },
-      "history": {
-        "label": "歴史",
-        "desc": "宮殿、寺院、文化遺産"
-      }
-    },
-    "cta": "続ける",
-    "skip": "今はスキップ"
-  },
   "search": {
     "title": "検索",
     "pageTitle": "Search Results",
@@ -1919,7 +1868,7 @@
     "saves": "saves",
     "fallbackDescription": "{name} — discover this spot in Korea."
   },
-  "mapOnboarding": {
+  "quickPlan": {
     "ariaLabel": "おすすめマップを作成",
     "title": "おすすめマップを作成",
     "close": "閉じる",

@@ -29,7 +29,7 @@
     "legalPrivacy": "Privacy Policy",
     "legalCookies": "Cookie Policy",
     "guestSubtitle": "Sign in to save places and plan trips",
-    "onboarding": "Custom map"
+    "quickPlan": "Custom map"
   },
   "topNav": {
     "searchPlaceholder": "Search itineraries, places, creators…",
@@ -452,14 +452,6 @@
       "empty": {
         "title": "Coming soon",
         "desc": "Browse the full badge collection."
-      }
-    },
-    "onboarding": {
-      "breadcrumb": "Welcome to B4K",
-      "title": "Welcome to B4K",
-      "empty": {
-        "title": "Coming soon",
-        "desc": "Quick interest tags to personalise your first trip."
       }
     },
     "help": {
@@ -1744,49 +1736,6 @@
       "cookies": "Cookie Policy"
     }
   },
-  "onboarding": {
-    "ariaLabel": "Onboarding — choose your interests",
-    "title": "What brings you to Korea?",
-    "subtitle": "Personalise your B4K experience.",
-    "desc": "Select the things you're most excited about. You can change this later.",
-    "interests": {
-      "label": "Pick your interests",
-      "kpop": {
-        "label": "K-Pop",
-        "desc": "Concerts, venues & fandom"
-      },
-      "kdrama": {
-        "label": "K-Drama",
-        "desc": "Filming locations & tours"
-      },
-      "kbeauty": {
-        "label": "K-Beauty",
-        "desc": "Skincare, makeup & spas"
-      },
-      "kculture": {
-        "label": "K-Culture",
-        "desc": "Food, markets & traditions"
-      },
-      "food": {
-        "label": "Food",
-        "desc": "Street food & local dining"
-      },
-      "nature": {
-        "label": "Nature",
-        "desc": "Parks, trails & outdoors"
-      },
-      "nightlife": {
-        "label": "Nightlife",
-        "desc": "Bars, clubs & late nights"
-      },
-      "history": {
-        "label": "History",
-        "desc": "Palaces, temples & heritage"
-      }
-    },
-    "cta": "Continue",
-    "skip": "Skip for now"
-  },
   "search": {
     "title": "Search",
     "pageTitle": "Search Results",
@@ -1919,7 +1868,7 @@
     "saves": "saves",
     "fallbackDescription": "{name} — discover this spot in Korea."
   },
-  "mapOnboarding": {
+  "quickPlan": {
     "ariaLabel": "Build your custom map",
     "title": "Build a custom map",
     "close": "Close",

@@ -1,4 +1,4 @@
-// lib/onboarding.ts — 맞춤 지도 온보딩 모달의 상수 · 타입 · 순수 헬퍼.
+// lib/quickplan.ts — 퀵플랜 모달의 상수 · 타입 · 순수 헬퍼.
 // 칩/카테고리 라벨은 GET /interests 가 주므로 여기에 하드코딩하지 않는다.
 import { REGION_API_NAME } from '@/hooks/useMapPois'
 
@@ -23,13 +23,13 @@ export const MAX_COURSE_DAYS = 7
 export const COURSE_POOL_SIZE = 40
 
 /** 1단계 주요 도시 목록. 키는 REGION_API_NAME(=/places?region= 값) 의 키와 같다. */
-export const ONBOARDING_CITIES = [
+export const QUICKPLAN_CITIES = [
   'Seoul', 'Busan', 'Jeju', 'Incheon', 'Gyeongju', 'Daegu', 'Gwangju', 'Daejeon', 'Ulsan',
   'Sejong', 'Gyeonggi', 'Gangwon', 'Chungbuk', 'Chungnam', 'Jeonbuk', 'Jeonnam', 'Gyeongnam',
 ] as const
-export type OnboardingCity = (typeof ONBOARDING_CITIES)[number]
+export type QuickPlanCity = (typeof QUICKPLAN_CITIES)[number]
 
-export function cityToApiRegion(city: OnboardingCity): string {
+export function cityToApiRegion(city: QuickPlanCity): string {
   return REGION_API_NAME[city] ?? city
 }
 
@@ -73,7 +73,7 @@ export function visibleCategories(categories: InterestCategory[]): InterestCateg
 }
 
 // ── 결과 단계 장소 ───────────────────────────────────────────────────────────
-export interface OnboardingPlace {
+export interface QuickPlanPlace {
   poi_id: number
   name_ko: string
   primary_image_url: string | null
@@ -85,14 +85,14 @@ export interface OnboardingPlace {
   translations: Record<string, { name?: string }> | null
 }
 
-export function placeName(p: OnboardingPlace, lang: string): string {
+export function placeName(p: QuickPlanPlace, lang: string): string {
   const t = p.translations ?? {}
   return t[lang]?.name ?? (lang === 'ko' ? p.name_ko : t.en?.name ?? p.name_ko)
 }
 
 // ── 게스트 임시 보관 ─────────────────────────────────────────────────────────
 // 비로그인은 칩 선택까지 가능. 저장(PUT)은 로그인 필요 → 로컬에 보관했다가 로그인 후 전송.
-const DRAFT_KEY = 'b4k_onboarding_draft'
+const DRAFT_KEY = 'b4k_quickplan_draft'
 const DRAFT_TTL_MS = 30 * 24 * 60 * 60 * 1000
 
 export function saveDraftTags(tags: string[]): void {
@@ -123,8 +123,8 @@ export function toISODate(d: Date): string {
   return `${d.getFullYear()}-${m}-${day}`
 }
 
-// ─── 온보딩 결과 → 지도 "내 플랜" 패널 인계 ──────────────────────────────
-// "완료" 를 누르면 코스를 여기 담고 /map?from=onboarding 으로 이동 → MapView 가 한 번 꺼내
+// ─── 퀵플랜 결과 → 지도 "내 플랜" 패널 인계 ──────────────────────────────
+// "완료" 를 누르면 코스를 여기 담고 /map?from=quickplan 으로 이동 → MapView 가 한 번 꺼내
 // 플랜 빌더(초안)에 채운다. 저장(게시)은 사용자가 "내 플랜으로 저장" 으로 직접 한다.
 // 탭 단위 1회성이라 sessionStorage.
 export interface CourseHandoffStop {
@@ -138,7 +138,7 @@ export interface CourseHandoffStop {
   day:                number
 }
 
-const COURSE_HANDOFF_KEY = 'b4k_onboarding_course'
+const COURSE_HANDOFF_KEY = 'b4k_quickplan_course'
 
 export function saveCourseHandoff(stops: CourseHandoffStop[]): void {
   try { sessionStorage.setItem(COURSE_HANDOFF_KEY, JSON.stringify(stops)) } catch { /* storage unavailable */ }

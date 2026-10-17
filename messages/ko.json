@@ -29,7 +29,7 @@
     "legalPrivacy": "개인정보 처리방침",
     "legalCookies": "쿠키 정책",
     "guestSubtitle": "로그인하여 장소를 저장하고 여행을 계획하세요",
-    "onboarding": "맞춤 지도"
+    "quickPlan": "맞춤 지도"
   },
   "topNav": {
     "searchPlaceholder": "여행지, 플랜, 크리에이터 검색…",
@@ -452,14 +452,6 @@
       "empty": {
         "title": "준비 중입니다",
         "desc": "전체 배지 컬렉션 둘러보기."
-      }
-    },
-    "onboarding": {
-      "breadcrumb": "B4K에 오신 것을 환영합니다",
-      "title": "B4K에 오신 것을 환영합니다",
-      "empty": {
-        "title": "준비 중입니다",
-        "desc": "첫 여행을 맞춤 설정할 간단한 관심사 선택."
       }
     },
     "help": {
@@ -1744,49 +1736,6 @@
       "cookies": "쿠키 정책"
     }
   },
-  "onboarding": {
-    "ariaLabel": "온보딩 — 관심사 선택",
-    "title": "한국에 오신 이유는 무엇인가요?",
-    "subtitle": "나만의 B4K 경험을 맞춤 설정하세요.",
-    "desc": "가장 기대되는 것들을 선택하세요. 나중에 변경할 수 있습니다.",
-    "interests": {
-      "label": "관심사 선택",
-      "kpop": {
-        "label": "K-팝",
-        "desc": "콘서트, 공연장 & 팬덤"
-      },
-      "kdrama": {
-        "label": "K-드라마",
-        "desc": "촬영지 & 투어"
-      },
-      "kbeauty": {
-        "label": "K-뷰티",
-        "desc": "스킨케어, 메이크업 & 스파"
-      },
-      "kculture": {
-        "label": "K-컬처",
-        "desc": "음식, 시장 & 전통"
-      },
-      "food": {
-        "label": "음식",
-        "desc": "길거리 음식 & 현지 식당"
-      },
-      "nature": {
-        "label": "자연",
-        "desc": "공원, 트레킹 & 야외"
-      },
-      "nightlife": {
-        "label": "나이트라이프",
-        "desc": "바, 클럽 & 심야"
-      },
-      "history": {
-        "label": "역사",
-        "desc": "궁궐, 사원 & 문화유산"
-      }
-    },
-    "cta": "계속",
-    "skip": "나중에"
-  },
   "search": {
     "title": "검색",
     "pageTitle": "검색 결과",
@@ -1919,7 +1868,7 @@
     "saves": "저장",
     "fallbackDescription": "{name} — 한국에서 만나는 특별한 장소."
   },
-  "mapOnboarding": {
+  "quickPlan": {
     "ariaLabel": "맞춤 지도 만들기",
     "title": "맞춤 지도 만들기",
     "close": "닫기",

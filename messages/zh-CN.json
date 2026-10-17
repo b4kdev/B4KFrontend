@@ -29,7 +29,7 @@
     "legalPrivacy": "隐私政策",
     "legalCookies": "Cookie政策",
     "guestSubtitle": "登录以保存地点并规划行程",
-    "onboarding": "定制地图"
+    "quickPlan": "定制地图"
   },
   "topNav": {
     "searchPlaceholder": "搜索行程、地点、创作者…",
@@ -452,14 +452,6 @@
       "empty": {
         "title": "即将上线",
         "desc": "浏览完整的徽章收藏。"
-      }
-    },
-    "onboarding": {
-      "breadcrumb": "欢迎来到B4K",
-      "title": "欢迎来到B4K",
-      "empty": {
-        "title": "即将上线",
-        "desc": "快速兴趣标签，个性化你的第一次旅行。"
       }
     },
     "help": {
@@ -1744,49 +1736,6 @@
       "cookies": "Cookie政策"
     }
   },
-  "onboarding": {
-    "ariaLabel": "新手引导 — 选择你的兴趣",
-    "title": "是什么让你来到韩国？",
-    "subtitle": "个性化你的B4K体验。",
-    "desc": "选择你最感兴趣的内容，稍后仍可更改。",
-    "interests": {
-      "label": "选择你的兴趣",
-      "kpop": {
-        "label": "K-Pop",
-        "desc": "演唱会、场馆与粉丝文化"
-      },
-      "kdrama": {
-        "label": "K-Drama",
-        "desc": "拍摄地与参观行程"
-      },
-      "kbeauty": {
-        "label": "K-Beauty",
-        "desc": "护肤、彩妆与水疗"
-      },
-      "kculture": {
-        "label": "K-Culture",
-        "desc": "美食、市场与传统"
-      },
-      "food": {
-        "label": "美食",
-        "desc": "街头小吃与本地美食"
-      },
-      "nature": {
-        "label": "自然",
-        "desc": "公园、步道与户外活动"
-      },
-      "nightlife": {
-        "label": "夜生活",
-        "desc": "酒吧、夜店与深夜时光"
-      },
-      "history": {
-        "label": "历史",
-        "desc": "宫殿、寺庙与文化遗产"
-      }
-    },
-    "cta": "继续",
-    "skip": "暂时跳过"
-  },
   "search": {
     "title": "搜索",
     "pageTitle": "Search Results",
@@ -1919,7 +1868,7 @@
     "saves": "saves",
     "fallbackDescription": "{name} — discover this spot in Korea."
   },
-  "mapOnboarding": {
+  "quickPlan": {
     "ariaLabel": "创建定制地图",
     "title": "创建定制地图",
     "close": "关闭",

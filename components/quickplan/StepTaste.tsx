@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
-import { MAX_INTEREST_CHIPS, labelOf, type InterestCategory } from '@/lib/onboarding';
+import { MAX_INTEREST_CHIPS, labelOf, type InterestCategory } from '@/lib/quickplan';
 
 interface Props {
   categories: InterestCategory[];
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export default function StepTaste({ categories, isLoading, isError, onRetry, tags, onToggle, error }: Props) {
-  const t    = useTranslations('mapOnboarding.taste');
+  const t    = useTranslations('quickPlan.taste');
   const lang = useLocale();
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [overLimit, setOverLimit]   = useState(false);

@@ -25,7 +25,7 @@ import { useAuthGate } from '@/contexts/AuthGateContext'
 import { useToast } from '@/contexts/ToastContext'
 import { getDraftPlan, saveDraftPlan, clearDraftPlan } from '@/lib/draft-plan'
 import { MAX_STOPS } from '@/lib/plan-constants'
-import { takeCourseHandoff } from '@/lib/onboarding'
+import { takeCourseHandoff } from '@/lib/quickplan'
 import { MAX_PLAN_DAYS } from '@/lib/plan-day-colors'
 import type { MapPoi, MapBounds } from '@/hooks/useMapPois'
 import type { DraftMeta } from '@/components/auth/DraftConflictModal'
@@ -97,7 +97,7 @@ export default function MapView() {
   // SC-25 — sticky once 'ai': PlanPill reads this to show "AI Plan · X stops"
   // once any stop came from FL3, even if the user adds more stops manually after.
   const [planSource, setPlanSource] = useState<'manual' | 'ai'>('manual')
-  // 데스크톱 LeftPanel 의 "내 플랜" 패널 펼침 여부 — 온보딩 완료로 들어오면 펼친 채로 시작해야 해서 여기서 관리.
+  // 데스크톱 LeftPanel 의 "내 플랜" 패널 펼침 여부 — 퀵플랜 완료로 들어오면 펼친 채로 시작해야 해서 여기서 관리.
   const [planExpanded, setPlanExpanded] = useState(false)
   // 데스크톱(lg) 여부 — "내 플랜" 이 보이는 곳이 데스크톱은 LeftPanel, 모바일은 플랜 시트라서.
   const [isDesktop, setIsDesktop] = useState(false)
@@ -155,7 +155,7 @@ export default function MapView() {
   useEffect(() => {
     if (session) return
     const params = new URLSearchParams(window.location.search)
-    if (params.get('plan') || params.get('from') === 'onboarding') return
+    if (params.get('plan') || params.get('from') === 'quickplan') return
     const draft = getDraftPlan()
     if (!draft || draft.stops.length === 0) return
     const ids = draft.stops.map(s => s.poi_id)
@@ -176,7 +176,7 @@ export default function MapView() {
   useEffect(() => {
     if (!session || dbDraftRestoredRef.current) return
     const params = new URLSearchParams(window.location.search)
-    if (params.get('plan') || params.get('from') === 'onboarding') return
+    if (params.get('plan') || params.get('from') === 'quickplan') return
     if (planStopIds.length > 0) return
     dbDraftRestoredRef.current = true
 
@@ -188,8 +188,8 @@ export default function MapView() {
           .then(r => r.ok ? r.json() as Promise<ItineraryDetail> : null)
       })
       .then(itinerary => {
-        // 응답 전에 온보딩 코스가 들어왔다면 덮어쓰지 않는다.
-        if (!itinerary || onboardingLoadedRef.current) return
+        // 응답 전에 퀵플랜 코스가 들어왔다면 덮어쓰지 않는다.
+        if (!itinerary || quickPlanLoadedRef.current) return
         t1CheckedRef.current = true
         const sorted = [...itinerary.stops].sort((a, b) => a.stop_order - b.stop_order)
         const ids:  string[]               = sorted.map(s => s.poi.poi_id)
@@ -221,12 +221,12 @@ export default function MapView() {
       .catch(() => { /* blank plan — user can keep building, autosave retries */ })
   }, [session, planStopIds.length])
 
-  // 맞춤 지도 온보딩 "완료" → /map?from=onboarding. 코스를 플랜 빌더 초안으로 채우고 "내 플랜" 패널을 펼친다
+  // 퀵플랜 "완료" → /map?from=quickplan. 코스를 플랜 빌더 초안으로 채우고 "내 플랜" 패널을 펼친다
   // (모바일은 플랜 시트). 기존 초안은 이 코스로 대체되고 autosave 가 새 초안으로 저장한다.
   // searchParams 를 추적 — 이미 /map 에서 모달을 연 경우엔 재마운트가 없기 때문.
-  const onboardingLoadedRef = useRef(false)
+  const quickPlanLoadedRef = useRef(false)
   useEffect(() => {
-    if (searchParams.get('from') !== 'onboarding') return
+    if (searchParams.get('from') !== 'quickplan') return
     const stops = takeCourseHandoff()
     router.replace('/map')
     if (!stops) return
@@ -239,7 +239,7 @@ export default function MapView() {
         .then(d => { if (d?.id) showToast(t('plan.replacedDraftToast')) })
         .catch(() => {})
     }
-    onboardingLoadedRef.current = true
+    quickPlanLoadedRef.current = true
     dbDraftRestoredRef.current  = true
     t1CheckedRef.current        = true
     const capped = stops.slice(0, MAX_STOPS)

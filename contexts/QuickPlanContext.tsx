@@ -5,24 +5,24 @@ import { useTranslations } from 'next-intl';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { apiFetch } from '@/lib/api';
-import { clearDraftTags, readDraftTags } from '@/lib/onboarding';
+import { clearDraftTags, readDraftTags } from '@/lib/quickplan';
 
-// 맞춤 지도 온보딩 모달의 전역 진입점. 사이드바 버튼은 호출자 중 하나일 뿐 —
-// 어느 페이지/컴포넌트에서든 `useMapOnboarding().open()` 으로 열 수 있다.
+// 퀵플랜 모달의 전역 진입점. 사이드바 버튼은 호출자 중 하나일 뿐 —
+// 어느 페이지/컴포넌트에서든 `useQuickPlan().open()` 으로 열 수 있다.
 // 플랜 저장은 모달이 아니라 지도 "내 플랜" 패널("내 플랜으로 저장")이 담당한다.
-interface MapOnboardingContextValue {
+interface QuickPlanContextValue {
   isOpen: boolean;
   open:   () => void;
   close:  () => void;
 }
 
-const MapOnboardingContext = createContext<MapOnboardingContextValue | null>(null);
+const QuickPlanContext = createContext<QuickPlanContextValue | null>(null);
 
-export function MapOnboardingProvider({ children }: { children: React.ReactNode }) {
+export function QuickPlanProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const { user, loading }   = useAuth();
   const { showToast }       = useToast();
-  const t                   = useTranslations('mapOnboarding');
+  const t                   = useTranslations('quickPlan');
   const syncingTags         = useRef(false);
 
   const open  = useCallback(() => setIsOpen(true), []);
@@ -41,16 +41,16 @@ export function MapOnboardingProvider({ children }: { children: React.ReactNode 
   }, [user, loading, showToast, t]);
 
   const value = useMemo(() => ({ isOpen, open, close }), [isOpen, open, close]);
-  return <MapOnboardingContext.Provider value={value}>{children}</MapOnboardingContext.Provider>;
+  return <QuickPlanContext.Provider value={value}>{children}</QuickPlanContext.Provider>;
 }
 
 /** 컨텍스트가 없어도 throw 하지 않는 버전 — 사이드바 버튼처럼 "항상 보여야 하는" UI 용. */
-export function useMapOnboardingOptional() {
-  return useContext(MapOnboardingContext);
+export function useQuickPlanOptional() {
+  return useContext(QuickPlanContext);
 }
 
-export function useMapOnboarding() {
-  const ctx = useContext(MapOnboardingContext);
-  if (!ctx) throw new Error('useMapOnboarding must be used within MapOnboardingProvider');
+export function useQuickPlan() {
+  const ctx = useContext(QuickPlanContext);
+  if (!ctx) throw new Error('useQuickPlan must be used within QuickPlanProvider');
   return ctx;
 }

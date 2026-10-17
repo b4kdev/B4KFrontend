@@ -1,11 +1,11 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import type { Companion, OnboardingCity } from '@/lib/onboarding';
+import type { Companion, QuickPlanCity } from '@/lib/quickplan';
 import type { DateRange } from './RangeCalendar';
 
 interface Props {
-  city:       OnboardingCity | null;
+  city:       QuickPlanCity | null;
   range:      DateRange;
   companion:  Companion | null;
   tagLabels:  string[];
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default function StepConfirm({ city, range, companion, tagLabels, onEdit }: Props) {
-  const t      = useTranslations('mapOnboarding');
+  const t      = useTranslations('quickPlan');
   const locale = useLocale();
   const fmt    = (iso: string) => new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(`${iso}T00:00:00`));
 

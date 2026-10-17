@@ -29,7 +29,7 @@
     "legalPrivacy": "Política de Privacidade",
     "legalCookies": "Política de Cookies",
     "guestSubtitle": "Entre para salvar lugares e planejar viagens",
-    "onboarding": "Mapa personalizado"
+    "quickPlan": "Mapa personalizado"
   },
   "topNav": {
     "searchPlaceholder": "Pesquise roteiros, lugares, criadores…",
@@ -452,14 +452,6 @@
       "empty": {
         "title": "Em breve",
         "desc": "Navegue pela coleção completa de emblemas."
-      }
-    },
-    "onboarding": {
-      "breadcrumb": "Bem-vindo ao B4K",
-      "title": "Bem-vindo ao B4K",
-      "empty": {
-        "title": "Em breve",
-        "desc": "Tags de interesse rápidas para personalizar sua primeira viagem."
       }
     },
     "help": {
@@ -1744,49 +1736,6 @@
       "cookies": "Política de Cookies"
     }
   },
-  "onboarding": {
-    "ariaLabel": "Onboarding — escolha seus interesses",
-    "title": "O que te traz à Coreia?",
-    "subtitle": "Personalize sua experiência no B4K.",
-    "desc": "Selecione as coisas que mais te empolgam. Você pode alterar isso depois.",
-    "interests": {
-      "label": "Escolha seus interesses",
-      "kpop": {
-        "label": "K-Pop",
-        "desc": "Shows, locais e fandom"
-      },
-      "kdrama": {
-        "label": "K-Drama",
-        "desc": "Locações de filmagem e tours"
-      },
-      "kbeauty": {
-        "label": "K-Beauty",
-        "desc": "Skincare, maquiagem e spas"
-      },
-      "kculture": {
-        "label": "K-Culture",
-        "desc": "Comida, mercados e tradições"
-      },
-      "food": {
-        "label": "Comida",
-        "desc": "Comida de rua e gastronomia local"
-      },
-      "nature": {
-        "label": "Natureza",
-        "desc": "Parques, trilhas e ar livre"
-      },
-      "nightlife": {
-        "label": "Vida Noturna",
-        "desc": "Bares, baladas e noites badaladas"
-      },
-      "history": {
-        "label": "História",
-        "desc": "Palácios, templos e patrimônio"
-      }
-    },
-    "cta": "Continuar",
-    "skip": "Pular por enquanto"
-  },
   "search": {
     "title": "Buscar",
     "pageTitle": "Resultados da Busca",
@@ -1919,7 +1868,7 @@
     "saves": "salvos",
     "fallbackDescription": "{name} — descubra este lugar na Coreia."
   },
-  "mapOnboarding": {
+  "quickPlan": {
     "ariaLabel": "Crie seu mapa personalizado",
     "title": "Crie seu mapa personalizado",
     "close": "Fechar",
