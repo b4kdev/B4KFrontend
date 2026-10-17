@@ -32,6 +32,7 @@ import { usePhone } from '@/components/library/hooks'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMapPois, type MapBounds, type MapPoi } from '@/hooks/useMapPois'
 import { usePlaceDetail } from '@/hooks/usePlaceDetail'
+import { getDraftPlan } from '@/lib/draft-plan'
 import { takeCourseHandoff } from '@/lib/quickplan'
 import type { SavedData } from '@/app/api/saved/route'
 import type { ItineraryDetail } from '@/lib/itinerary'
@@ -83,6 +84,8 @@ export function MapScreen() {
   const [discardOpen, setDiscardOpen] = useState(false)
   const [durationFor, setDurationFor] = useState<string | null>(null)
   const [folderId, setFolderId] = useState<string | null>(params?.get('folder'))
+  const [editing, setEditing] = useState<{ id: string; title: string } | null>(null)
+  const [pendingEdit, setPendingEdit] = useState<ItineraryDetail | null>(null)
 
   const { pois, isLoading } = useMapPois(null, filter ? [filter] : [], bounds, zoom)
   const { detail } = usePlaceDetail(selectedId)
@@ -90,6 +93,23 @@ export function MapScreen() {
   const saved = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
   const savedIds = useMemo(() => new Set((saved.data?.pois ?? []).map((p) => p.poi_id)), [saved.data])
   const [liked, setLiked] = useState<Set<string>>(new Set())
+
+  const loadForEdit = (it: ItineraryDetail) => {
+    const sorted = [...it.stops].sort((a, b) => a.stop_order - b.stop_order)
+    const stops = sorted.map((s) => ({ poi_id: String(s.poi.poi_id), name_ko: s.poi.name_ko, name_en: s.poi.name_en, name_preferred: s.poi.name_preferred ?? undefined, coords_lat: s.poi.coords_lat, coords_lng: s.poi.coords_lng, display_region: null, primary_image_url: s.poi.primary_image_url ?? undefined })) as MapPoi[]
+    draft.replace(stops, Object.fromEntries(sorted.map((s) => [String(s.poi.poi_id), s.day ?? 1])), it.title, Object.fromEntries(sorted.map((s) => [String(s.poi.poi_id), s.duration_min])))
+    setEditing({ id: it.id, title: it.title })
+    setPendingEdit(null)
+    setCart('open')
+    if (phone) setPlanSheet(true)
+    if (stops[0]) mapRef.current?.panTo(stops[0].coords_lat, stops[0].coords_lng)
+  }
+  const stopEditing = () => {
+    const id = editing?.id
+    draft.discard()
+    setEditing(null)
+    if (id) router.push(`/v2/plan/${id}`)
+  }
 
   // Hand-offs: Quick plan (PD-45) and Plan from Saved (SCR-035) open the plan unsaved; ?plan=edit
   // loads a published plan for editing (PD-28).
@@ -109,11 +129,11 @@ export function MapScreen() {
     }
     const editId = params?.get('plan') === 'edit' ? params.get('id') : null
     if (editId) {
-      fetch(`/api/plans/${editId}`).then((r) => r.json()).then((it: ItineraryDetail) => {
-        const stops = it.stops.map((s) => ({ poi_id: String(s.poi.poi_id), name_ko: s.poi.name_ko, name_preferred: s.poi.name_preferred ?? undefined, coords_lat: s.poi.coords_lat, coords_lng: s.poi.coords_lng, display_region: null, primary_image_url: s.poi.primary_image_url ?? undefined })) as MapPoi[]
-        draft.replace(stops, Object.fromEntries(it.stops.map((s) => [String(s.poi.poi_id), s.day ?? 1])), it.title)
-        setCart('open')
-      }).catch(() => {})
+      fetch(`/api/plans/${editId}`).then((r) => (r.ok ? r.json() : Promise.reject())).then((it: ItineraryDetail) => {
+        // SCR-008: a plan in progress is saved or discarded before the published plan loads.
+        if (getDraftPlan()?.stops.length) setPendingEdit(it)
+        else loadForEdit(it)
+      }).catch(() => toast({ type: 'critical', message: k('itinerary.error.title') }))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -151,12 +171,17 @@ export function MapScreen() {
       const res = await send('/api/plans', 'POST', {
         title: planName.trim(),
         stops: order.map((p, i) => ({ poi_id: p.poi_id, stop_order: i + 1, duration_min: draft.plan.durations[p.poi_id] ?? 60, day: draft.dayOf(p.poi_id) })),
+        is_published: false,
       })
+      const id: string | undefined = res?.plan?.id
+      // Saving publishes it, as on the live map (DEC-29).
+      if (id) await send(`/api/plans/${id}`, 'PATCH', { is_published: true })
       draft.discard()
       setSaveOpen(false)
       toast({ type: 'success', message: t('CD1636') })
-      const id = res?.id ?? res?.itinerary_id
-      if (id) router.push(`/v2/plan/${id}`)
+      // SCR-008 Save plan: the plan in progress is saved, then the published plan opens for editing.
+      if (pendingEdit) loadForEdit(pendingEdit)
+      else if (id) router.push(`/v2/plan/${id}`)
     } catch {
       toast({ type: 'critical', message: k('map.plan.saveError') })
     } finally {
@@ -253,16 +278,16 @@ export function MapScreen() {
       activeDay={activeDay}
       onDayChange={(d) => setActiveDay(d)}
       onAddDay={draft.addDay}
-      summary={order.length ? `${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })} · ${formatMinutes(totalMin, k)}` : t('CD1359')}
+      summary={editing ? GAP.editing(editing.title) : order.length ? `${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })} · ${formatMinutes(totalMin, k)}` : t('CD1359')}
       lastAdded={order.length ? nameOf(order[order.length - 1], locale) : undefined}
       dayTotal={dayTotal !== null ? `${k('map.plan.dayTab', { n: activeDay })} · ${formatMinutes(dayTotal, k)}` : undefined}
       onDuration={setDurationFor}
       onRemove={draft.remove}
       onSave={() => { setPlanName(draft.plan.name ?? ''); setSaveOpen(true) }}
-      onDiscard={() => setDiscardOpen(true)}
+      onDiscard={() => (editing ? stopEditing() : setDiscardOpen(true))}
       labels={{
         region: k('map.plan.title'), emptyTitle: t('CD1359'), emptyBody: t('CD1607'), all: k('map.plan.allDays'),
-        day: (n) => k('map.plan.dayTab', { n }), addDay: k('map.plan.addDay'), save: k('map.plan.save'), discard: k('map.plan.discardDraft'),
+        day: (n) => k('map.plan.dayTab', { n }), addDay: k('map.plan.addDay'), save: editing ? t('CD0993') : k('map.plan.save'), discard: editing ? t('CD1528') : k('map.plan.discardDraft'),
         remove: (n) => `${k('saved.poi.removeLabel')} ${n}`, reorder: (n) => k('map.plan.dragHandle', { n }),
         open: k('map.plan.stripExpand'), close: k('map.plan.stripCollapse'), about: GAP.about,
       }}
@@ -315,6 +340,15 @@ export function MapScreen() {
         body={GAP.discardBody(order.length)}
         cancel={<Button variant="ghost" data-autofocus onClick={() => setDiscardOpen(false)}>{k('map.plan.discardCancel')}</Button>}
         confirm={<Button variant="danger" onClick={() => { draft.discard(); setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
+      />
+      <Dialog
+        open={!!pendingEdit}
+        onCancel={() => { setPendingEdit(null); if (pendingEdit) router.push(`/v2/plan/${pendingEdit.id}`) }}
+        title={t('CD1525')}
+        body={pendingEdit ? GAP.editDraftBody(order.length, pendingEdit.title) : ''}
+        cancel={<Button variant="ghost" data-autofocus onClick={() => { const id = pendingEdit?.id; setPendingEdit(null); if (id) router.push(`/v2/plan/${id}`) }}>{k('map.plan.discardCancel')}</Button>}
+        third={<Button variant="ghost" onClick={() => { if (pendingEdit) { draft.discard(); loadForEdit(pendingEdit) } }}>{t('CD1527')}</Button>}
+        confirm={<Button onClick={() => { setPlanName(draft.plan.name ?? ''); setSaveOpen(true) }}>{k('map.plan.save')}</Button>}
       />
       <Modal open={!!durationFor} onClose={() => setDurationFor(null)} size="sm" title={k('map.plan.durationAriaLabel', { name: order.find((p) => p.poi_id === durationFor) ? nameOf(order.find((p) => p.poi_id === durationFor)!, locale) : '' })} closeLabel={k('badges.detail.close')}>
         <div role="menu" className="-mx-[var(--space-6)]">

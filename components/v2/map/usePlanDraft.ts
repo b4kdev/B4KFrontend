@@ -49,9 +49,9 @@ export function usePlanDraft() {
   }
   const setDuration = (id: string, min: number) => commit({ ...plan, durations: { ...plan.durations, [id]: min } })
   const addDay = () => setDays((d) => Math.min(MAX_DAYS, d + 1))
-  const replace = (stops: MapPoi[], dayMap: Record<string, number>, name?: string) => {
+  const replace = (stops: MapPoi[], dayMap: Record<string, number>, name?: string, durations?: Record<string, number>) => {
     setDays(Math.max(1, ...Object.values(dayMap)))
-    commit({ stops, durations: Object.fromEntries(stops.map((s) => [s.poi_id, 60])), days: dayMap, name })
+    commit({ stops, durations: Object.fromEntries(stops.map((s) => [s.poi_id, durations?.[s.poi_id] ?? 60])), days: dayMap, name })
   }
   const discard = () => {
     clearDraftPlan()

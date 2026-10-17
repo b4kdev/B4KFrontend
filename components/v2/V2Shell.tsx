@@ -47,7 +47,7 @@ const COOKIE_KEY = 'b4k-v2-preview-cookie-choice'
 function activeFrom(path: string): Destination | null {
   const seg = path.split('/')[3] ?? ''
   if (seg === '') return 'home'
-  if (seg === 'map') return 'map'
+  if (seg === 'map' || seg === 'plan') return 'map'
   if (seg === 'explore') return 'explore'
   if (seg === 'saved') return 'saved'
   return null
@@ -99,7 +99,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const meta = authUser?.user_metadata as { full_name?: string; name?: string; avatar_url?: string } | undefined
   const user: ShellUser = authUser ? { name: meta?.full_name ?? meta?.name ?? authUser.email?.split('@')[0] ?? '', avatarSrc: meta?.avatar_url ?? null } : null
   const active = activeFrom(pathname)
-  const onMap = pathname.split('/')[3] === 'map'
+  const onMap = ['map', 'plan'].includes(pathname.split('/')[3] ?? '')
   const choose = (v: 'accepted' | 'declined') => {
     try {
       localStorage.setItem(COOKIE_KEY, v)

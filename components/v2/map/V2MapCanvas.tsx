@@ -29,6 +29,8 @@ type Props = {
   onBounds?: (b: MapBounds, zoom: number) => void
   onZoom?: (zoom: number) => void
   center?: { lat: number; lng: number }
+  /** Published plan: zoom to show every stop once they load. */
+  fitStops?: boolean
   label: string
   errorText: string
 }
@@ -66,7 +68,7 @@ function boundsOf(map: any): MapBounds {
 }
 
 export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
-  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', routeLegs, onBounds, onZoom, center, label, errorText },
+  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', routeLegs, onBounds, onZoom, center, fitStops, label, errorText },
   ref,
 ) {
   const el = useRef<HTMLDivElement>(null)
@@ -129,6 +131,15 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   useEffect(() => {
     if (map.current && center) map.current.panTo(new window.naver.maps.LatLng(center.lat, center.lng))
   }, [center?.lat, center?.lng]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Fit the plan's stops.
+  useEffect(() => {
+    if (!map.current || !fitStops || planStops.length < 2) return
+    const N = window.naver.maps
+    const lats = planStops.map((s) => s.poi.coords_lat)
+    const lngs = planStops.map((s) => s.poi.coords_lng)
+    map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), { top: 80, right: 80, bottom: 80, left: 80 })
+  }, [fitStops, planStops, ready])
 
   // Markers.
   useEffect(() => {
