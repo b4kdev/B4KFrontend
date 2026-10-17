@@ -40,6 +40,8 @@ import { CATEGORIES, jsonFetch, RowState } from './A2Home'
 // (PD-20); the Planning cue sits after the first row (PD-36).
 
 const CAT_KEY: Record<string, string> = { 'k-pop': 'kpop', 'k-drama': 'kdrama', 'k-beauty': 'kbeauty', 'k-culture': 'kculture', 'k-food': 'kfood' }
+// Collection types (lib/collections) → their Copy Deck chip labels (Explore collections).
+const COLLECTION_TYPE: Record<string, string> = { ROUTE: 'CD1336', FAN_THEME: 'CD1337', STORY: 'CD1338', CHALLENGE: 'CD1339' }
 const poiName = (p: { name_ko: string; name_en?: string | null }, locale: string) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
 
 function CategoryIndex({ category, sections, active }: { category: string; sections: string[]; active?: string }) {
@@ -154,7 +156,7 @@ export function CategoryScreen({ category }: { category: string }) {
         {cols.data?.items.length ? (
           <ExploreCollections
             title={t('CD0162')}
-            filters={[{ id: 'all', label: t('CD1267') }, ...colTypes.map((c) => ({ id: c, label: c.charAt(0) + c.slice(1).toLowerCase().replace('_', ' ') }))]}
+            filters={[{ id: 'all', label: t('CD1267') }, ...colTypes.map((c) => ({ id: c, label: COLLECTION_TYPE[c] ? t(COLLECTION_TYPE[c]) : c }))]}
             active={colType}
             onFilter={setColType}
             cards={cols.data.items
@@ -167,7 +169,7 @@ export function CategoryScreen({ category }: { category: string }) {
           <ExplorePackages
             title={t('CD1341')}
             cards={data.packages.map((p) => (
-              <Card key={p.id} type="package" href={p.partner_url} external={{ newTabLabel: GAP.newTab }} title={p.title} imageSrc={p.cover_image_url} partner={p.partner_name} cta={t('CD1342').replace('Klook', p.partner_name)} sponsored={t('CD0476')} />
+              <Card key={p.id} type="package" href={p.partner_url} external={{ newTabLabel: GAP.newTab }} title={p.title} imageSrc={p.cover_image_url} partner={p.partner_name} cta={GAP.viewOnPartner(p.partner_name)} sponsored={t('CD0476')} />
             ))}
           />
         ) : null}
@@ -243,7 +245,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
       {loading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div> : null}
       {failed ? <EmptyState type="error" container="bordered" title={t('CD1571')} action={<Button size="md" variant="secondary" onClick={() => location.reload()}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
       {!loading && !failed && !filtered.length ? (
-        <EmptyState type="no-results" title={t('CD1569').replace('K-Food', chip === 'all' ? '' : t(CATEGORIES.find((c) => c.slug === chip)?.label ?? 'CD0251'))} action={<Button size="md" variant="secondary" onClick={() => setChip('all')}>{t('CD1433')}</Button>}>{t('CD1570')}</EmptyState>
+        <EmptyState type="no-results" title={GAP.noCategoryTrending(chip === 'all' ? '' : t(CATEGORIES.find((c) => c.slug === chip)?.label ?? 'CD0251'))} action={<Button size="md" variant="secondary" onClick={() => setChip('all')}>{t('CD1433')}</Button>}>{t('CD1570')}</EmptyState>
       ) : null}
       <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{filtered.slice(0, shown).map((p) => <li key={p.id}>{p.node}</li>)}</ul>
       {filtered.length > shown ? <Button variant="secondary" className="self-center" onClick={() => setShown((s) => s + PAGE)}>{k('explore.viewAll')}</Button> : null}
