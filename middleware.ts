@@ -3,7 +3,7 @@ import createIntlMiddleware from 'next-intl/middleware'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import { createServerClient } from '@supabase/ssr'
-import { routing } from './i18n/routing'
+import { routing, RETIRED_LOCALES } from './i18n/routing'
 
 // ── Security headers ────────────────────────────────────────────────────────────
 // 'unsafe-eval' is added to script-src only in dev — Next.js Fast Refresh
@@ -84,6 +84,10 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
 
 // ── Intl middleware (non-api routes only) ──────────────────────────────────────
 const intlMiddleware = createIntlMiddleware(routing)
+
+// /zh-CN/... and /th/... (PD-06 retired locales) → /en/... with a permanent
+// redirect, keeping the rest of the path and the query string.
+const RETIRED_LOCALE_RE = new RegExp(`^/(${RETIRED_LOCALES.join('|')})(?=/|$)`, 'i')
 
 // ── Maintenance mode ─────────────────────────────────────────────────────────────
 // Gate everything behind a 503 when MAINTENANCE_MODE=1. Never gates Preview deploys
@@ -201,6 +205,13 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
     }
 
     return withSecurityHeaders(NextResponse.next())
+  }
+
+  // ── Retired locales → en ──────────────────────────────────────────────────
+  if (RETIRED_LOCALE_RE.test(pathname)) {
+    const url = req.nextUrl.clone()
+    url.pathname = pathname.replace(RETIRED_LOCALE_RE, '/en')
+    return withSecurityHeaders(NextResponse.redirect(url, 308))
   }
 
   // ── Non-API routes: Supabase session refresh + intl routing ──────────────

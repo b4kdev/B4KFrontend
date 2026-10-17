@@ -12,8 +12,9 @@ import { useToast } from '@/contexts/ToastContext'
 import { track } from '@/lib/analytics'
 import { getStoredTheme, setTheme as persistTheme, type Theme } from '@/lib/theme'
 import CookiePreferences from '@/app/[locale]/legal/cookies/_CookiePreferences'
+import { routing } from '@/i18n/routing'
 
-const LOCALES = ['en', 'ko', 'ja', 'zh-CN', 'zh-TW', 'th', 'pt-BR'] as const
+const LOCALES = routing.locales
 const INTERESTS = ['kpop', 'kdrama', 'kbeauty', 'kculture'] as const
 
 const NOTIF_TYPES = [

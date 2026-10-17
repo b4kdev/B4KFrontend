@@ -11,7 +11,7 @@ const REPORT_DATE = new Date().toISOString().split('T')[0];
 const OUT_DIR = join(__dirname, 'reports/a11y-interactive');
 const OUT_REPORT = join(OUT_DIR, `${REPORT_DATE}-wcag-interactive-audit.md`);
 
-const LOCALES = ['ko', 'en', 'ja', 'zh-CN', 'zh-TW', 'th', 'pt-BR'];
+const LOCALES = ['ko', 'en', 'ja', 'zh-TW', 'pt-BR'];
 const VIEWPORTS = {
   mobile:  { width: 375,  height: 812 },
   desktop: { width: 1280, height: 800 },

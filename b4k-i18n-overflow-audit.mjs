@@ -13,7 +13,7 @@ const OUT_REPORT = join(OUT_DIR, `${REPORT_DATE}-i18n-overflow-audit.md`);
 // CLAUDE.md Section 1 / tokens.md §Typography — word-break rules differ per
 // locale (zh-CN/zh-TW must NOT use keep-all, it causes 375px overflow). This
 // script catches actual rendered overflow, not just token config.
-const LOCALES = ['ko', 'en', 'ja', 'zh-CN', 'zh-TW', 'th', 'pt-BR'];
+const LOCALES = ['ko', 'en', 'ja', 'zh-TW', 'pt-BR'];
 
 const ROUTES = [
   { id: '01-home',               path: '',                       label: 'HM_01 Home' },
