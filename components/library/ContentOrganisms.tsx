@@ -37,7 +37,7 @@ export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action
       <div aria-hidden className="absolute inset-0 bg-overlay-fade" />
       <div className="absolute inset-x-0 bottom-0 flex max-w-[1000px] flex-col items-start gap-[var(--space-3)] p-[var(--space-11)] max-md:p-[var(--space-4)]">
         {eyebrow ? <Badge variant="on-image">{eyebrow}</Badge> : null}
-        <H className={cn(size === 'home' ? 'type-display-hero' : 'type-display-hub', '[text-wrap:balance] [&:lang(ko)]:break-keep')}>{title}</H>
+        <H className={cn(size === 'home' ? 'type-display-hero' : 'type-display-hub', 'max-w-full break-words hyphens-auto [text-wrap:balance] [&:lang(ko)]:break-keep')}>{title}</H>
         {subtitle ? <p className="max-w-[400px] type-body-long text-ui-fg-muted max-md:hidden">{subtitle}</p> : null}
         {action ? <div className="pt-[var(--space-3)]">{action}</div> : null}
       </div>

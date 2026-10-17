@@ -4,4 +4,5 @@
 export const GAP = {
   breadcrumb: 'Breadcrumb',
   lastUpdated: (date: string) => `Last updated ${date}`,
+  newTab: '(opens in a new tab)',
 } as const
