@@ -1,0 +1,173 @@
+'use client'
+
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { usePathname } from 'next/navigation'
+import { useLocale } from 'next-intl'
+import { useAuth } from '@/contexts/AuthContext'
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
+import {
+  CookieBanner,
+  Drawer,
+  Header,
+  NavigationBar,
+  NavigationRail,
+  SearchPill,
+  SkipLink,
+  Toast,
+  type Destination,
+  type ShellLabels,
+  type ShellUser,
+} from '@/components/library'
+import { useCd } from './cd'
+import V2QuickPlan from './V2QuickPlan'
+import { LanguageSheet } from './V2Settings'
+
+// Shell of the preview (original layout with the Header, UI-101 still open): desktop Header + rail,
+// phones Top app bar (per page) + Navigation bar + Drawer. Quick plan, Drawer and the language
+// sheet are opened from anywhere through useV2Shell().
+
+type ShellCtx = {
+  openDrawer: () => void
+  openQuickPlan: () => void
+  openLanguage: () => void
+  user: ShellUser
+  labels: ShellLabels
+  toast: (t: { type?: 'info' | 'success' | 'warning' | 'critical'; message: string }) => void
+}
+
+const Ctx = createContext<ShellCtx | null>(null)
+export const useV2Shell = () => {
+  const c = useContext(Ctx)
+  if (!c) throw new Error('useV2Shell outside V2Shell')
+  return c
+}
+
+const COOKIE_KEY = 'b4k-v2-preview-cookie-choice'
+
+function activeFrom(path: string): Destination | null {
+  const seg = path.split('/')[3] ?? ''
+  if (seg === '') return 'home'
+  if (seg === 'map') return 'map'
+  if (seg === 'explore') return 'explore'
+  if (seg === 'saved') return 'saved'
+  return null
+}
+
+export default function V2Shell({ children }: { children: ReactNode }) {
+  const t = useCd()
+  const locale = useLocale()
+  const pathname = usePathname() ?? ''
+  const { user: authUser } = useAuth()
+  const [drawer, setDrawer] = useState(false)
+  const [quick, setQuick] = useState(false)
+  const [language, setLanguage] = useState(false)
+  const [cookie, setCookie] = useState<string | null>('unknown')
+  const [online, setOnline] = useState(true)
+  const [toastMsg, setToastMsg] = useState<{ type?: 'info' | 'success' | 'warning' | 'critical'; message: string } | null>(null)
+
+  useEffect(() => {
+    try {
+      setCookie(localStorage.getItem(COOKIE_KEY))
+    } catch {
+      setCookie('declined')
+    }
+    const on = () => setOnline(navigator.onLine)
+    on()
+    window.addEventListener('online', on)
+    window.addEventListener('offline', on)
+    return () => {
+      window.removeEventListener('online', on)
+      window.removeEventListener('offline', on)
+    }
+  }, [])
+  useEffect(() => {
+    if (!toastMsg || toastMsg.type === 'critical') return
+    const id = setTimeout(() => setToastMsg(null), 4000)
+    return () => clearTimeout(id)
+  }, [toastMsg])
+
+  const labels: ShellLabels = useMemo(
+    () => ({
+      main: t('CD0814'), home: t('CD0807'), map: t('CD0815'), explore: t('CD0804'), saved: t('CD0822'),
+      quickPlan: t('CD1361'), notifications: t('CD0818'), account: t('CD0821'), signIn: t('CD0825'),
+      search: t('CD1383'), language: t('CD0808'), help: t('CD0806'), menu: t('CD0817'), close: t('CD0816'),
+      back: t('CD0121'), settings: t('CD0823'), legal: t('CD0809'), viewProfile: t('CD1447'), signOut: t('CD1015'),
+      signInHint: t('CD1450'), quickPlanHint: t('CD1448'), homeLink: t('CD0813'),
+    }),
+    [t],
+  )
+  const meta = authUser?.user_metadata as { full_name?: string; name?: string; avatar_url?: string } | undefined
+  const user: ShellUser = authUser ? { name: meta?.full_name ?? meta?.name ?? authUser.email?.split('@')[0] ?? '', avatarSrc: meta?.avatar_url ?? null } : null
+  const active = activeFrom(pathname)
+  const onMap = pathname.split('/')[3] === 'map'
+  const choose = (v: 'accepted' | 'declined') => {
+    try {
+      localStorage.setItem(COOKIE_KEY, v)
+    } catch {}
+    setCookie(v)
+  }
+  const ctx: ShellCtx = {
+    openDrawer: () => setDrawer(true),
+    openQuickPlan: () => setQuick(true),
+    openLanguage: () => setLanguage(true),
+    user,
+    labels,
+    toast: setToastMsg,
+  }
+  const LANG_NAMES: Record<string, string> = { en: 'English', ko: '한국어', ja: '日本語', 'zh-TW': '繁體中文', 'pt-BR': 'Português (Brasil)' }
+
+  return (
+    <Ctx.Provider value={ctx}>
+      <SkipLink>{t('CD1377')}</SkipLink>
+      <div className="flex min-h-dvh flex-col bg-ui-bg text-ui-fg type-body-base lg:h-dvh lg:overflow-hidden">
+        <Header
+          className="max-lg:hidden"
+          labels={labels}
+          signedIn={!!user}
+          search={<SearchPill label={labels.search} href="/v2/search" />}
+          onLanguage={() => setLanguage(true)}
+          helpHref="/v2/help"
+        />
+        <div className="flex min-h-0 flex-1">
+          <NavigationRail className="max-lg:hidden" active={active} labels={labels} user={user} onQuickPlan={() => setQuick(true)} />
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto">{children}</div>
+        </div>
+        {onMap ? null : <NavigationBar className="sticky bottom-0 z-30 lg:hidden" active={active} labels={labels} onQuickPlan={() => setQuick(true)} />}
+      </div>
+      <Drawer
+        open={drawer}
+        onClose={() => setDrawer(false)}
+        labels={labels}
+        user={user}
+        onQuickPlan={() => setQuick(true)}
+        language={{ current: LANG_NAMES[locale] ?? locale, onOpen: () => { setDrawer(false); setLanguage(true) } }}
+        links={{ notifications: '/v2/notifications', settings: '/v2/settings', help: '/v2/help', legal: '/v2/legal/terms', profile: '/v2/profile', signIn: '/v2/login' }}
+      />
+      <V2QuickPlan open={quick} onClose={() => setQuick(false)} />
+      <LanguageSheet open={language} onClose={() => setLanguage(false)} />
+      {cookie === null ? (
+        <CookieBanner
+          label={t('CD0131')}
+          message={t('CD0130')}
+          learnMore={{ href: '/v2/legal/cookies', label: t('CD0129') }}
+          acceptLabel={t('CD0126')}
+          declineLabel={t('CD0127')}
+          onAccept={() => choose('accepted')}
+          onDecline={() => choose('declined')}
+        />
+      ) : null}
+      <div aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-[calc(var(--fab-size)+var(--space-4))] z-50 flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-auto lg:right-[var(--space-6)] lg:top-[calc(var(--layout-header-height)+var(--space-4))] lg:items-end">
+        {!online ? <Toast type="warning" message={onMap ? t('CD0120') : t('CD0119')} className="pointer-events-auto" /> : null}
+        {toastMsg ? <Toast type={toastMsg.type} message={toastMsg.message} onClose={() => setToastMsg(null)} closeLabel={labels.close} className="pointer-events-auto" /> : null}
+      </div>
+    </Ctx.Provider>
+  )
+}
+
+/** Sign out for the preview (same Supabase session as the live site). */
+export function useV2SignOut() {
+  return async () => {
+    await createSupabaseBrowserClient().auth.signOut()
+    window.location.assign(window.location.pathname.replace(/\/v2.*/, '/v2'))
+  }
+}

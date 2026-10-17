@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { AuthProvider } from '@/contexts/AuthContext';
 import Sidebar from '@/components/layout/Sidebar';
 import MobileDrawer from '@/components/layout/MobileDrawer';
@@ -51,7 +52,23 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Preview of the new design (PD-53 update 2): /[locale]/v2/... pages bring their own shell from
+// components/library, so they get the providers but none of the live chrome. Live routes unchanged.
+const V2_PREVIEW = /^\/[^/]+\/v2(\/|$)/;
+
 export default function ShellClient({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (pathname && V2_PREVIEW.test(pathname)) {
+    return (
+      <AuthProvider>
+        <AuthGateProvider>
+          <ToastProvider>
+            <QuickPlanProvider>{children}</QuickPlanProvider>
+          </ToastProvider>
+        </AuthGateProvider>
+      </AuthProvider>
+    );
+  }
   return (
     <AuthProvider>
       <AuthGateProvider>
