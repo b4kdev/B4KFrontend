@@ -13,6 +13,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SITE_URL } from '@/lib/site-url';
 import { THEME_BOOT_SCRIPT } from '@/lib/theme';
+import './tokens.css';
 import './globals.css';
 
 const openSans = Open_Sans({

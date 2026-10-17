@@ -1,6 +1,9 @@
 import type { Config } from "tailwindcss";
+import b4kTokens from "./tokens/tailwind-preset";
 
 const config: Config = {
+  // New design tokens from B4K UI Foundations (generated: npm run tokens:build)
+  presets: [b4kTokens],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
