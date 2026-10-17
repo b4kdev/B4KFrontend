@@ -90,7 +90,7 @@ export function FileUpload({ type = 'button', label, hint, error, accept, onFile
   const id = useId()
   const [over, setOver] = useState(false)
   const pick = (files: FileList | null) => files?.[0] && onFile(files[0])
-  const field = <input ref={input} id={id} type="file" accept={accept} className="sr-only" tabIndex={-1} onChange={(e) => pick(e.target.files)} />
+  const field = <input ref={input} id={id} type="file" accept={accept} aria-label={label} className="sr-only" tabIndex={-1} onChange={(e) => pick(e.target.files)} />
   const status =
     progress !== undefined ? <ProgressBar value={progress} label={progressLabel ?? label} /> : <FieldMessage id={`${id}-msg`} help={hint} error={error} />
   if (type === 'button') {

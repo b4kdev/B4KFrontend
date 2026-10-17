@@ -178,7 +178,7 @@ export function ProgressIndicator({ step, steps, label, className }: ProgressInd
   return (
     <div className={cn('flex flex-col gap-[var(--space-2)]', className)}>
       <span className="type-body-caption text-ui-fg-muted">{label}</span>
-      <div role="progressbar" aria-valuemin={1} aria-valuemax={steps} aria-valuenow={step} aria-valuetext={label} className="flex gap-[var(--space-1)]">
+      <div role="progressbar" aria-label={label} aria-valuemin={1} aria-valuemax={steps} aria-valuenow={step} aria-valuetext={label} className="flex gap-[var(--space-1)]">
         {Array.from({ length: steps }, (_, i) => (
           <span key={i} className={cn('h-[var(--progress-height)] flex-1 rounded-full', i < step ? 'bg-ui-fg' : 'bg-ui-state-selected')} />
         ))}
