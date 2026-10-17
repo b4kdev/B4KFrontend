@@ -76,7 +76,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       type={type}
       aria-busy={loading || undefined}
       aria-disabled={loading || props.disabled || undefined}
-      onClick={loading ? undefined : onClick}
+      // Keyboard activation and Enter in a form field still fire click on a submit button, so a
+      // loading button cancels it (no double submit) instead of only dropping the handler.
+      onClick={loading ? (e) => e.preventDefault() : onClick}
       className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     >
