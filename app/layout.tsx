@@ -3,9 +3,7 @@ import {
   Open_Sans,
   IBM_Plex_Mono,
   M_PLUS_1,
-  Noto_Sans_SC,
   Noto_Sans_TC,
-  IBM_Plex_Sans_Thai,
 } from 'next/font/google';
 import localFont from 'next/font/local';
 import { getLocale } from 'next-intl/server';
@@ -36,24 +34,10 @@ const mPlus1 = M_PLUS_1({
   display: 'swap',
 });
 
-const notoSansSC = Noto_Sans_SC({
-  subsets: ['latin'],
-  weight: ['400'],
-  variable: '--font-noto-sans-sc',
-  display: 'swap',
-});
-
 const notoSansTC = Noto_Sans_TC({
   subsets: ['latin'],
   weight: ['400'],
   variable: '--font-noto-sans-tc',
-  display: 'swap',
-});
-
-const ibmPlexSansThai = IBM_Plex_Sans_Thai({
-  subsets: ['thai'],
-  weight: ['400'],
-  variable: '--font-ibm-plex-sans-thai',
   display: 'swap',
 });
 
@@ -97,7 +81,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`${openSans.variable} ${ibmPlexMono.variable} ${mPlus1.variable} ${notoSansSC.variable} ${notoSansTC.variable} ${ibmPlexSansThai.variable} ${moderniz.variable}`}
+      className={`${openSans.variable} ${ibmPlexMono.variable} ${mPlus1.variable} ${notoSansTC.variable} ${moderniz.variable}`}
     >
       <body className="antialiased">
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />

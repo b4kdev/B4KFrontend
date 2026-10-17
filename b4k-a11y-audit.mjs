@@ -12,7 +12,7 @@ const OUT_DIR = join(__dirname, 'reports/a11y');
 const OUT_REPORT = join(OUT_DIR, `${REPORT_DATE}-wcag-audit.md`);
 
 // CLAUDE.md Section 1 — supported languages
-const LOCALES = ['ko', 'en', 'ja', 'zh-CN', 'zh-TW', 'th', 'pt-BR'];
+const LOCALES = ['ko', 'en', 'ja', 'zh-TW', 'pt-BR'];
 
 // path is relative to the locale root, e.g. '' -> /en, '/map' -> /en/map
 const ROUTES = [

@@ -14,8 +14,9 @@ import { fetcher } from '@/lib/fetcher';
 import { useAuthGate } from '@/contexts/AuthGateContext';
 import { useProfile } from '@/hooks/useProfile';
 import { track } from '@/lib/analytics';
+import { routing } from '@/i18n/routing';
 
-const LOCALES = ['en', 'ko', 'ja', 'zh-CN', 'zh-TW', 'th', 'pt-BR'] as const;
+const LOCALES = routing.locales;
 
 const LEGAL_LINKS = [
   { key: 'legalTerms',   href: '/legal/terms' },
