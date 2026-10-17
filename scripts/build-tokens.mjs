@@ -167,7 +167,10 @@ const textStyles = Object.fromEntries(
       letterSpacing: s.ls ? `${s.ls}em` : '0',
     }
     if (s.tc === 'UPPER') rule.textTransform = 'uppercase'
-    return [`.type-${s.n.replace('/', '-')}`, rule]
+    // The :lang copies outrank the live :lang(ko|ja|zh-TW) line-height in app/globals.css, so the
+    // token leading applies in every language (B4K UI Foundations has one leading per style).
+    const cls = `.type-${s.n.replace('/', '-')}`
+    return [[cls, ...['ko', 'ja', 'zh-TW'].map((l) => `${cls}:lang(${l})`)].join(', '), rule]
   }),
 )
 

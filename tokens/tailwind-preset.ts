@@ -125,7 +125,7 @@ const b4kTokens: Partial<Config> = {
     // Text styles from B4K UI Foundations: class .type-<group>-<name>, e.g. .type-display-hero
     plugin(({ addComponents }) => {
       addComponents({
-        ".type-display-hero": {
+        ".type-display-hero, .type-display-hero:lang(ko), .type-display-hero:lang(ja), .type-display-hero:lang(zh-TW)": {
           "fontFamily": "var(--font-family-display)",
           "fontSize": "var(--display-size-hero)",
           "fontWeight": "var(--font-weight-display)",
@@ -133,7 +133,7 @@ const b4kTokens: Partial<Config> = {
           "letterSpacing": "0",
           "textTransform": "uppercase"
         },
-        ".type-display-hub": {
+        ".type-display-hub, .type-display-hub:lang(ko), .type-display-hub:lang(ja), .type-display-hub:lang(zh-TW)": {
           "fontFamily": "var(--font-family-display)",
           "fontSize": "var(--display-size-hub)",
           "fontWeight": "var(--font-weight-display)",
@@ -141,7 +141,7 @@ const b4kTokens: Partial<Config> = {
           "letterSpacing": "0",
           "textTransform": "uppercase"
         },
-        ".type-display-h1": {
+        ".type-display-h1, .type-display-h1:lang(ko), .type-display-h1:lang(ja), .type-display-h1:lang(zh-TW)": {
           "fontFamily": "var(--font-family-display)",
           "fontSize": "var(--display-size-h1)",
           "fontWeight": "var(--font-weight-display)",
@@ -149,7 +149,7 @@ const b4kTokens: Partial<Config> = {
           "letterSpacing": "0",
           "textTransform": "uppercase"
         },
-        ".type-display-h2": {
+        ".type-display-h2, .type-display-h2:lang(ko), .type-display-h2:lang(ja), .type-display-h2:lang(zh-TW)": {
           "fontFamily": "var(--font-family-display)",
           "fontSize": "var(--display-size-h2)",
           "fontWeight": "var(--font-weight-display)",
@@ -157,7 +157,7 @@ const b4kTokens: Partial<Config> = {
           "letterSpacing": "0",
           "textTransform": "uppercase"
         },
-        ".type-display-h3": {
+        ".type-display-h3, .type-display-h3:lang(ko), .type-display-h3:lang(ja), .type-display-h3:lang(zh-TW)": {
           "fontFamily": "var(--font-family-display)",
           "fontSize": "var(--display-size-h3)",
           "fontWeight": "var(--font-weight-display)",
@@ -165,7 +165,7 @@ const b4kTokens: Partial<Config> = {
           "letterSpacing": "0",
           "textTransform": "uppercase"
         },
-        ".type-display-h4": {
+        ".type-display-h4, .type-display-h4:lang(ko), .type-display-h4:lang(ja), .type-display-h4:lang(zh-TW)": {
           "fontFamily": "var(--font-family-display)",
           "fontSize": "var(--display-size-h4)",
           "fontWeight": "var(--font-weight-display)",
@@ -173,63 +173,63 @@ const b4kTokens: Partial<Config> = {
           "letterSpacing": "0",
           "textTransform": "uppercase"
         },
-        ".type-title-empty-state": {
+        ".type-title-empty-state, .type-title-empty-state:lang(ko), .type-title-empty-state:lang(ja), .type-title-empty-state:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-xl)",
           "fontWeight": "var(--font-weight-bold)",
           "lineHeight": "var(--leading-snug)",
           "letterSpacing": "0"
         },
-        ".type-title-card": {
+        ".type-title-card, .type-title-card:lang(ko), .type-title-card:lang(ja), .type-title-card:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-base)",
           "fontWeight": "var(--font-weight-bold)",
           "lineHeight": "var(--leading-snug)",
           "letterSpacing": "0"
         },
-        ".type-body-long": {
+        ".type-body-long, .type-body-long:lang(ko), .type-body-long:lang(ja), .type-body-long:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-base)",
           "fontWeight": "var(--font-weight-regular)",
           "lineHeight": "var(--leading-normal)",
           "letterSpacing": "0"
         },
-        ".type-body-base": {
+        ".type-body-base, .type-body-base:lang(ko), .type-body-base:lang(ja), .type-body-base:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-sm)",
           "fontWeight": "var(--font-weight-regular)",
           "lineHeight": "var(--leading-normal)",
           "letterSpacing": "0"
         },
-        ".type-body-label": {
+        ".type-body-label, .type-body-label:lang(ko), .type-body-label:lang(ja), .type-body-label:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-xs)",
           "fontWeight": "var(--font-weight-semibold)",
           "lineHeight": "var(--leading-tight)",
           "letterSpacing": "0.05em"
         },
-        ".type-body-chip": {
+        ".type-body-chip, .type-body-chip:lang(ko), .type-body-chip:lang(ja), .type-body-chip:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-xs)",
           "fontWeight": "var(--font-weight-regular)",
           "lineHeight": "var(--leading-tight)",
           "letterSpacing": "0"
         },
-        ".type-body-caption": {
+        ".type-body-caption, .type-body-caption:lang(ko), .type-body-caption:lang(ja), .type-body-caption:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-xs)",
           "fontWeight": "var(--font-weight-regular)",
           "lineHeight": "var(--leading-normal)",
           "letterSpacing": "0"
         },
-        ".type-body-link": {
+        ".type-body-link, .type-body-link:lang(ko), .type-body-link:lang(ja), .type-body-link:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-sm)",
           "fontWeight": "var(--font-weight-regular)",
           "lineHeight": "var(--leading-normal)",
           "letterSpacing": "0"
         },
-        ".type-label-button": {
+        ".type-label-button, .type-label-button:lang(ko), .type-label-button:lang(ja), .type-label-button:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-xs)",
           "fontWeight": "var(--font-weight-regular)",
@@ -237,7 +237,7 @@ const b4kTokens: Partial<Config> = {
           "letterSpacing": "0.05em",
           "textTransform": "uppercase"
         },
-        ".type-eyebrow-category": {
+        ".type-eyebrow-category, .type-eyebrow-category:lang(ko), .type-eyebrow-category:lang(ja), .type-eyebrow-category:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-2xs)",
           "fontWeight": "var(--font-weight-semibold)",
@@ -245,7 +245,7 @@ const b4kTokens: Partial<Config> = {
           "letterSpacing": "0.05em",
           "textTransform": "uppercase"
         },
-        ".type-eyebrow-badge": {
+        ".type-eyebrow-badge, .type-eyebrow-badge:lang(ko), .type-eyebrow-badge:lang(ja), .type-eyebrow-badge:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-2xs)",
           "fontWeight": "var(--font-weight-extrabold)",
@@ -253,49 +253,49 @@ const b4kTokens: Partial<Config> = {
           "letterSpacing": "0.1em",
           "textTransform": "uppercase"
         },
-        ".type-numeric-rank": {
+        ".type-numeric-rank, .type-numeric-rank:lang(ko), .type-numeric-rank:lang(ja), .type-numeric-rank:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-lg)",
           "fontWeight": "var(--font-weight-bold)",
           "lineHeight": "var(--leading-tight)",
           "letterSpacing": "0"
         },
-        ".type-numeric-count": {
+        ".type-numeric-count, .type-numeric-count:lang(ko), .type-numeric-count:lang(ja), .type-numeric-count:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-2xs)",
           "fontWeight": "var(--font-weight-bold)",
           "lineHeight": "var(--leading-none)",
           "letterSpacing": "0"
         },
-        ".type-avatar-initials-xs": {
+        ".type-avatar-initials-xs, .type-avatar-initials-xs:lang(ko), .type-avatar-initials-xs:lang(ja), .type-avatar-initials-xs:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-2xs)",
           "fontWeight": "var(--font-weight-bold)",
           "lineHeight": "var(--leading-none)",
           "letterSpacing": "0"
         },
-        ".type-avatar-initials-sm": {
+        ".type-avatar-initials-sm, .type-avatar-initials-sm:lang(ko), .type-avatar-initials-sm:lang(ja), .type-avatar-initials-sm:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-xs)",
           "fontWeight": "var(--font-weight-bold)",
           "lineHeight": "var(--leading-none)",
           "letterSpacing": "0"
         },
-        ".type-avatar-initials-md": {
+        ".type-avatar-initials-md, .type-avatar-initials-md:lang(ko), .type-avatar-initials-md:lang(ja), .type-avatar-initials-md:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-base)",
           "fontWeight": "var(--font-weight-bold)",
           "lineHeight": "var(--leading-none)",
           "letterSpacing": "0"
         },
-        ".type-avatar-initials-lg": {
+        ".type-avatar-initials-lg, .type-avatar-initials-lg:lang(ko), .type-avatar-initials-lg:lang(ja), .type-avatar-initials-lg:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-2xl)",
           "fontWeight": "var(--font-weight-bold)",
           "lineHeight": "var(--leading-none)",
           "letterSpacing": "0"
         },
-        ".type-avatar-initials-xl": {
+        ".type-avatar-initials-xl, .type-avatar-initials-xl:lang(ko), .type-avatar-initials-xl:lang(ja), .type-avatar-initials-xl:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-3xl)",
           "fontWeight": "var(--font-weight-bold)",

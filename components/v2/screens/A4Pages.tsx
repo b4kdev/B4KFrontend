@@ -33,6 +33,7 @@ import { cookiePolicyContactEmail, cookiePolicyLastUpdated, cookiePolicySections
 import type { SearchExplore, SearchPlan, SearchPoi } from '@/app/api/search/route'
 import { useCd, useCdKey } from '../cd'
 import { GAP } from '../gaps'
+import { keepKNamesDeep } from '../text'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 
@@ -269,9 +270,9 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
   const cfg = useMemo(
     () =>
       ({
-        terms: { title: k('routes.legalTerms.title'), updated: termsLastUpdated, email: termsContactEmail, sections: termsSections },
-        privacy: { title: k('routes.legalPrivacy.title'), updated: privacyPolicyLastUpdated, email: privacyPolicyContactEmail, sections: privacyPolicySections },
-        cookies: { title: k('routes.legalCookies.title'), updated: cookiePolicyLastUpdated, email: cookiePolicyContactEmail, sections: cookiePolicySections },
+        terms: { title: k('routes.legalTerms.title'), updated: termsLastUpdated, email: termsContactEmail, sections: keepKNamesDeep(termsSections) },
+        privacy: { title: k('routes.legalPrivacy.title'), updated: privacyPolicyLastUpdated, email: privacyPolicyContactEmail, sections: keepKNamesDeep(privacyPolicySections) },
+        cookies: { title: k('routes.legalCookies.title'), updated: cookiePolicyLastUpdated, email: cookiePolicyContactEmail, sections: keepKNamesDeep(cookiePolicySections) },
       })[doc],
     [doc, k],
   )
