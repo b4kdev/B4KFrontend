@@ -48,7 +48,7 @@ export function SignedOutPrompt({ title, text }: { title: string; text: string }
     <EmptyState
       container="bordered"
       title={title}
-      action={<IntlLink href="/v2/login" className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0050')}</IntlLink>}
+      action={<IntlLink href="/login" className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0050')}</IntlLink>}
     >
       {text}
     </EmptyState>
@@ -114,7 +114,7 @@ export function SavedScreen() {
     <div className="flex flex-wrap items-end justify-between gap-[var(--space-4)]">
       <h1 className="type-display-h1 max-lg:hidden">{k('saved.title')}</h1>
       {user ? (
-        <IntlLink href="/v2/saved/plan" aria-disabled={!data?.pois.length} className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse aria-disabled:pointer-events-none aria-disabled:bg-ui-bg-disabled aria-disabled:text-ui-fg-disabled">
+        <IntlLink href="/saved/plan" aria-disabled={!data?.pois.length} className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse aria-disabled:pointer-events-none aria-disabled:bg-ui-bg-disabled aria-disabled:text-ui-fg-disabled">
           {t('CD1363')}
         </IntlLink>
       ) : null}
@@ -134,7 +134,7 @@ export function SavedScreen() {
       <div className="flex items-center gap-[var(--space-2)]">
         <IconButton label={k('saved.folder.back')} icon={<ArrowLeft />} onClick={() => setFolderId(null)} />
         <h2 className="flex-1 type-display-h3">{folder.name}</h2>
-        <IntlLink href={`/v2/map?saved=1&folder=${folder.id}`} className="inline-flex items-center gap-[var(--space-1-5)] type-label-button text-ui-link hover:text-ui-link-hover"><MapIcon aria-hidden className="size-[var(--icon-size-sm)]" />{k('saved.folder.viewOnMap')}</IntlLink>
+        <IntlLink href={`/map?saved=1&folder=${folder.id}`} className="inline-flex items-center gap-[var(--space-1-5)] type-label-button text-ui-link hover:text-ui-link-hover"><MapIcon aria-hidden className="size-[var(--icon-size-sm)]" />{k('saved.folder.viewOnMap')}</IntlLink>
         {!folder.is_default ? (
           <DropdownMenu label={k('saved.folder.folderMenu', { name: folder.name })} align="end" trigger={<IconButton label={k('saved.folder.folderMenu', { name: folder.name })} icon={<Ellipsis />} />}>
             <MenuGroup>
@@ -148,12 +148,12 @@ export function SavedScreen() {
       </div>
       <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">
         {folder.pois.map((p) => (
-          <li key={p.poi_id}><Card type="place" href={`/v2/map?poi=${p.poi_id}`} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /></li>
+          <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /></li>
         ))}
       </ul>
     </div>
   ) : data && !data.pois.length ? (
-    <EmptyState container="bordered" title={k('saved.empty.places.title')} action={<IntlLink href="/v2/map" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('saved.empty.places.cta')}</IntlLink>}>{t('CD1429')}</EmptyState>
+    <EmptyState container="bordered" title={k('saved.empty.places.title')} action={<IntlLink href="/map" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('saved.empty.places.cta')}</IntlLink>}>{t('CD1429')}</EmptyState>
   ) : (
     <div className="flex flex-col gap-[var(--space-4)]">
       <Button variant="secondary" size="md" leadingIcon={<Plus />} className="self-start" onClick={() => setSheet({ mode: 'new' })}>{t('CD1206')}</Button>
@@ -188,13 +188,13 @@ export function SavedScreen() {
           title={p.title || k('profile.untitledPlan')}
           secondary={`${k('saved.plan.stops', { count: p.stop_count })} · ${k('saved.plan.days', { count: p.duration_days })}`}
           leading={p.is_draft ? <Badge>{k('saved.myPlan.draft')}</Badge> : <Badge variant="outline" leadingIcon={<Globe />}>{k('profile.settings.privacy.public')}</Badge>}
-          href={`/v2/plan/${p.id}`}
+          href={`/plan/${p.id}`}
           renderLink={({ href, className, children }) => (
             <div className="flex items-center">
               <IntlLink href={href} className={`${className} flex-1`}>{children}</IntlLink>
               <DropdownMenu label={p.title} align="end" trigger={<IconButton label={k('saved.myPlan.ariaLabel', { title: p.title })} icon={<Ellipsis />} className="mr-[var(--space-2)]" />}>
                 <MenuGroup>
-                  <MenuItem icon={<Pencil />} onClick={() => router.push(`/v2/map?plan=edit&id=${p.id}`)}>{k('saved.myPlan.edit')}</MenuItem>
+                  <MenuItem icon={<Pencil />} onClick={() => router.push(`/map?plan=edit&id=${p.id}`)}>{k('saved.myPlan.edit')}</MenuItem>
                   <MenuItem icon={<Share2 />} onClick={() => { navigator.clipboard?.writeText(`${location.origin}/${locale}/plan/${p.id}`); toast({ type: 'success', message: k('profile.trips.card.shareCopiedToast') }) }}>{k('saved.myPlan.share')}</MenuItem>
                   {!p.is_draft ? (
                     <MenuItem icon={<Lock />} onClick={async () => { await send(`/api/plans/${p.id}`, 'PATCH', { is_published: false }).catch(() => {}); mutate() }}>{k('profile.settings.privacy.private')}</MenuItem>
@@ -210,13 +210,13 @@ export function SavedScreen() {
       ))}
     </ul>
   ) : (
-    <EmptyState container="bordered" title={k('saved.empty.myPlans.title')} action={<IntlLink href="/v2/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('saved.empty.myPlans.cta')}</IntlLink>}>{k('saved.empty.myPlans.desc')}</EmptyState>
+    <EmptyState container="bordered" title={k('saved.empty.myPlans.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('saved.empty.myPlans.cta')}</IntlLink>}>{k('saved.empty.myPlans.desc')}</EmptyState>
   )
 
   const savedPlans = data?.plans.length ? (
     <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">
       {data.plans.map((p) => (
-        <li key={p.id}><Card type="plan" href={`/v2/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.saves_count)} stops={k('saved.plan.stops', { count: p.stop_count })} /></li>
+        <li key={p.id}><Card type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.saves_count)} stops={k('saved.plan.stops', { count: p.stop_count })} /></li>
       ))}
     </ul>
   ) : (
@@ -314,7 +314,7 @@ export function PlanFromSavedScreen() {
     saveCourseHandoff(
       chosen.map((p, i) => ({ poi_id: p.poi_id, name_ko: p.name_ko, name_preferred: poiName(p, locale), coords_lat: p.coords_lat, coords_lng: p.coords_lng, display_region: p.display_region, primary_image_url: p.primary_image_url ?? undefined, day: Math.floor(i / PER_DAY) + 1 })),
     )
-    router.push('/v2/map?from=saved')
+    router.push('/map?from=saved')
   }
   const group = (title: string, pois: SavedPoi[]) => {
     const ids = pois.map((p) => p.poi_id)

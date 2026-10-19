@@ -55,7 +55,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
 // New design (PD-53 update 2): /[locale]/v2/... preview pages, and the live areas listed in
 // lib/v2-live.ts (served by the same v2 screens), bring their own shell from components/library,
-// so they get the providers but none of the live chrome.
+// so they get the providers and analytics but none of the live chrome. V2Shell carries the terms
+// gate, cookie banner and post-login draft migration in the new design.
 const V2_PREVIEW = /^\/[^/]+\/v2(\/|$)/;
 const isV2Page = (pathname: string) =>
   V2_PREVIEW.test(pathname) || isV2Live(pathname.replace(/^\/[^/]+/, ''));
@@ -67,7 +68,10 @@ export default function ShellClient({ children }: { children: React.ReactNode })
       <AuthProvider>
         <AuthGateProvider>
           <ToastProvider>
-            <QuickPlanProvider>{children}</QuickPlanProvider>
+            <QuickPlanProvider>
+              {children}
+              <Analytics />
+            </QuickPlanProvider>
           </ToastProvider>
         </AuthGateProvider>
       </AuthProvider>

@@ -211,15 +211,18 @@ jobs:
               with open(p, encoding="utf-8") as f:
                   data = json.load(f)
               keyset = set(flatten(data).keys())
-              # v2 Copy Deck texts: English rows plus the locale's own, as the v2 layout merges
-              # them (untranslated rows fall back to English).
-              cd = {}
-              for v2_loc in ("en", loc):
-                  v2_path = os.path.join(messages_dir, "v2", f"{v2_loc}.json")
+              # v2 texts as the v2 layout merges them (components/v2/messages.ts): Copy Deck rows
+              # (`cd`) and supplement texts without a row (`gap`), English plus the locale's own
+              # (untranslated rows fall back to English).
+              v2 = {"cd": {}, "gap": {}}
+              for v2_name in ("en", loc, "supplement/en", f"supplement/{loc}"):
+                  v2_path = os.path.join(messages_dir, "v2", f"{v2_name}.json")
                   if os.path.exists(v2_path):
                       with open(v2_path, encoding="utf-8") as f:
-                          cd.update(json.load(f).get("cd", {}))
-              keyset |= set(flatten({"cd": cd}).keys())
+                          v2_data = json.load(f)
+                      for ns in v2:
+                          v2[ns].update(v2_data.get(ns, {}))
+              keyset |= set(flatten(v2).keys())
               missing = []
               for cands in key_candidates:
                   if not any(has_key(keyset, c) for c in cands):

@@ -37,10 +37,10 @@ import { takeCourseHandoff } from '@/lib/quickplan'
 import type { SavedData } from '@/app/api/saved/route'
 import type { ItineraryDetail } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
-import { GAP } from '../gaps'
+import { useGap } from '../gaps'
 import { useV2Shell } from '../V2Shell'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
-import { DURATIONS, MAX_STOPS, formatMinutes, legMinutes, usePlanDraft } from '../map/usePlanDraft'
+import { DURATIONS, MAX_STOPS, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
 import { CATEGORIES, jsonFetch } from './A2Home'
 
 // The map (A1; PD-20, PD-24 to PD-31, PD-45, PD-48; UI-74, UI-77, UI-89, UI-90): Map browse
@@ -57,7 +57,9 @@ const send = (url: string, method: string, body?: unknown) =>
 
 const nameOf = (p: { name_ko: string; name_en?: string; name_preferred?: string }, locale: string) => p.name_preferred ?? (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
 
-export function MapScreen() {
+/** `poiId`: the place to open (the /place/[poiId] page); otherwise ?poi= in the address. */
+export function MapScreen({ poiId }: { poiId?: string } = {}) {
+  const GAP = useGap()
   const t = useCd()
   const k = useCdKey()
   const locale = useLocale()
@@ -73,7 +75,7 @@ export function MapScreen() {
   const [zoom, setZoom] = useState(13)
   const [filter, setFilter] = useState<string | null>(null)
   const [mode, setMode] = useState<'nearby' | 'saved'>(params?.get('saved') ? 'saved' : 'nearby')
-  const [selectedId, setSelectedId] = useState<string | null>(params?.get('poi'))
+  const [selectedId, setSelectedId] = useState<string | null>(poiId ?? params?.get('poi') ?? null)
   const [cart, setCart] = useState<'collapsed' | 'open'>(params?.get('plan') ? 'open' : 'collapsed')
   const [activeDay, setActiveDay] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>('all')
   const [snap, setSnap] = useState<SheetSnap>('mid')
@@ -95,9 +97,8 @@ export function MapScreen() {
   const [liked, setLiked] = useState<Set<string>>(new Set())
 
   const loadForEdit = (it: ItineraryDetail) => {
-    const sorted = [...it.stops].sort((a, b) => a.stop_order - b.stop_order)
-    const stops = sorted.map((s) => ({ poi_id: String(s.poi.poi_id), name_ko: s.poi.name_ko, name_en: s.poi.name_en, name_preferred: s.poi.name_preferred ?? undefined, coords_lat: s.poi.coords_lat, coords_lng: s.poi.coords_lng, display_region: null, primary_image_url: s.poi.primary_image_url ?? undefined })) as MapPoi[]
-    draft.replace(stops, Object.fromEntries(sorted.map((s) => [String(s.poi.poi_id), s.day ?? 1])), it.title, Object.fromEntries(sorted.map((s) => [String(s.poi.poi_id), s.duration_min])))
+    const { stops, days: dayMap, durations } = itineraryToDraft(it)
+    draft.replace(stops, dayMap, it.title, durations, { editing: true })
     setEditing({ id: it.id, title: it.title })
     setPendingEdit(null)
     setCart('open')
@@ -108,7 +109,7 @@ export function MapScreen() {
     const id = editing?.id
     draft.discard()
     setEditing(null)
-    if (id) router.push(`/v2/plan/${id}`)
+    if (id) router.push(`/plan/${id}`)
   }
 
   // Hand-offs: Quick plan (PD-45) and Plan from Saved (SCR-035) open the plan unsaved; ?plan=edit
@@ -129,9 +130,13 @@ export function MapScreen() {
     }
     const editId = params?.get('plan') === 'edit' ? params.get('id') : null
     if (editId) {
-      fetch(`/api/plans/${editId}`).then((r) => (r.ok ? r.json() : Promise.reject())).then((it: ItineraryDetail) => {
+      // A plan in progress: on this device, or in the account (signed in; 401 for guests).
+      const inProgress = async () =>
+        !!getDraftPlan()?.stops.length ||
+        (await fetch('/api/plans/draft').then((r) => (r.ok ? r.json() : null)).then((d: { stop_count?: number } | null) => (d?.stop_count ?? 0) > 0).catch(() => false))
+      fetch(`/api/plans/${editId}`).then((r) => (r.ok ? r.json() : Promise.reject())).then(async (it: ItineraryDetail) => {
         // SCR-008: a plan in progress is saved or discarded before the published plan loads.
-        if (getDraftPlan()?.stops.length) setPendingEdit(it)
+        if (await inProgress()) setPendingEdit(it)
         else loadForEdit(it)
       }).catch(() => toast({ type: 'critical', message: k('itinerary.error.title') }))
     }
@@ -150,13 +155,13 @@ export function MapScreen() {
     else toast({ type: 'success', message: GAP.addedToDay(day) })
   }
   const toggleSave = async (poi: { poi_id: string }) => {
-    if (!user) return router.push(`/v2/login?next=/v2/map?poi=${poi.poi_id}`)
+    if (!user) return router.push(`/login?next=/map?poi=${poi.poi_id}`)
     const on = savedIds.has(poi.poi_id)
     await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: poi.poi_id }).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: t('CD1426') }))
     saved.mutate()
   }
   const toggleLike = async (id: string) => {
-    if (!user) return router.push(`/v2/login?next=/v2/map?poi=${id}`)
+    if (!user) return router.push(`/login?next=/map?poi=${id}`)
     const on = liked.has(id)
     await send('/api/likes/poi', on ? 'DELETE' : 'POST', { poi_id: id }).catch(() => {})
     setLiked((s) => { const n = new Set(s); if (on) n.delete(id); else n.add(id); return n })
@@ -165,7 +170,7 @@ export function MapScreen() {
   const dayTotal = typeof activeDay === 'number' ? order.filter((p) => draft.dayOf(p.poi_id) === activeDay).reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0) : null
 
   const savePlan = async () => {
-    if (!user) return router.push('/v2/login?next=/v2/map?plan=open')
+    if (!user) return router.push('/login?next=/map?plan=open')
     setSaving(true)
     try {
       const res = await send('/api/plans', 'POST', {
@@ -181,7 +186,7 @@ export function MapScreen() {
       toast({ type: 'success', message: t('CD1636') })
       // SCR-008 Save plan: the plan in progress is saved, then the published plan opens for editing.
       if (pendingEdit) loadForEdit(pendingEdit)
-      else if (id) router.push(`/v2/plan/${id}`)
+      else if (id) router.push(`/plan/${id}`)
     } catch {
       toast({ type: 'critical', message: k('map.plan.saveError') })
     } finally {
@@ -227,7 +232,7 @@ export function MapScreen() {
           <li key={p.poi_id}>
             <Card
               type="place"
-              href={`/v2/map?poi=${p.poi_id}`}
+              href={`/map?poi=${p.poi_id}`}
               title={nameOf(p, locale)}
               imageSrc={p.primary_image_url}
               meta={p.display_region ?? ''}
@@ -241,7 +246,7 @@ export function MapScreen() {
     </div>
   )
   const savedView = !user ? (
-    <EmptyState title={t('CD1577')} action={<Button size="md" onClick={() => router.push('/v2/login?next=/v2/map?saved=1')}>{t('CD0050')}</Button>}>{t('CD1578')}</EmptyState>
+    <EmptyState title={t('CD1577')} action={<Button size="md" onClick={() => router.push('/login?next=/map?saved=1')}>{t('CD0050')}</Button>}>{t('CD1578')}</EmptyState>
   ) : (
     <SavedHub
       view={!saved.data?.pois.length ? 'empty' : folderId ? 'folder' : 'places'}
@@ -343,10 +348,10 @@ export function MapScreen() {
       />
       <Dialog
         open={!!pendingEdit}
-        onCancel={() => { setPendingEdit(null); if (pendingEdit) router.push(`/v2/plan/${pendingEdit.id}`) }}
+        onCancel={() => { setPendingEdit(null); if (pendingEdit) router.push(`/plan/${pendingEdit.id}`) }}
         title={t('CD1525')}
         body={pendingEdit ? GAP.editDraftBody(order.length, pendingEdit.title) : ''}
-        cancel={<Button variant="ghost" data-autofocus onClick={() => { const id = pendingEdit?.id; setPendingEdit(null); if (id) router.push(`/v2/plan/${id}`) }}>{k('map.plan.discardCancel')}</Button>}
+        cancel={<Button variant="ghost" data-autofocus onClick={() => { const id = pendingEdit?.id; setPendingEdit(null); if (id) router.push(`/plan/${id}`) }}>{k('map.plan.discardCancel')}</Button>}
         third={<Button variant="ghost" onClick={() => { if (pendingEdit) { draft.discard(); loadForEdit(pendingEdit) } }}>{t('CD1527')}</Button>}
         confirm={<Button onClick={() => { setPlanName(draft.plan.name ?? ''); setSaveOpen(true) }}>{k('map.plan.save')}</Button>}
       />
@@ -365,7 +370,7 @@ export function MapScreen() {
       <div className="relative h-[calc(100dvh)] w-full overflow-hidden">
         <main id="main" className="absolute inset-0">{map}</main>
         <div className="absolute inset-x-0 top-0 z-20 flex flex-col gap-[var(--space-2)]">
-          <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/v2/search" />} />
+          <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} />
           <div className="px-[var(--space-2)]">{chips}</div>
         </div>
         {order.length ? (

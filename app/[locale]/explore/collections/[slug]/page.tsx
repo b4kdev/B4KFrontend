@@ -1,16 +1,15 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { fetchCollectionDetail } from '@/lib/collections'
 import CollectionDetailClient from './CollectionDetailClient'
+import { fetchCollectionDetail } from '@/lib/collections'
+import { collectionMetadata } from '@/app/[locale]/_seo/page-metadata'
 
 interface Props {
   params: { locale: string; slug: string }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const detail = await fetchCollectionDetail(params.slug, params.locale)
-  if (!detail) return {}
-  return { title: `${detail.title} | B4K` }
+  return collectionMetadata(params.slug, params.locale)
 }
 
 // Generalized detail page for every entity_type='collection' row (108 real rows,

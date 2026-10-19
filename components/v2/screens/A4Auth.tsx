@@ -18,7 +18,7 @@ const post = (url: string, body: unknown) => fetch(url, { method: 'POST', header
 export function LoginScreen() {
   const t = useCd()
   const router = useRouter()
-  const next = useSearchParams()?.get('next') ?? '/v2'
+  const next = useSearchParams()?.get('next') ?? '/'
   const [view, setView] = useState<SignInView>('providers')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | undefined>()
@@ -110,7 +110,7 @@ export function ResetPasswordScreen() {
       return setError({ field: 'form', text: body?.code === 'expired' ? t('CD0060') : t('CD0061') })
     }
     toast({ type: 'success', message: t('CD0072') })
-    router.push('/v2')
+    router.push('/')
   }
   return (
     <V2Page bar={{ type: 'page', title: t('CD1500') }} className="flex items-center justify-center">
@@ -129,7 +129,7 @@ export function ResetPasswordScreen() {
 export function ConsentScreen() {
   const t = useCd()
   const router = useRouter()
-  const next = useSearchParams()?.get('next') ?? '/v2'
+  const next = useSearchParams()?.get('next') ?? '/'
   const [checked, setChecked] = useState<Record<string, boolean>>({})
   const cancel = async () => {
     await createSupabaseBrowserClient().auth.signOut()
@@ -142,8 +142,8 @@ export function ConsentScreen() {
           title={t('CD1504')}
           items={[
             { id: 'age', label: t('CD1464'), required: true },
-            { id: 'terms', label: t('CD0812'), required: true, viewHref: '/v2/legal/terms' },
-            { id: 'privacy', label: t('CD0811'), required: true, viewHref: '/v2/legal/privacy' },
+            { id: 'terms', label: t('CD0812'), required: true, viewHref: '/legal/terms' },
+            { id: 'privacy', label: t('CD0811'), required: true, viewHref: '/legal/privacy' },
             { id: 'marketing', label: t('CD1508'), required: false },
           ]}
           checked={checked}

@@ -4,7 +4,7 @@ import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import { createServerClient } from '@supabase/ssr'
 import { routing, RETIRED_LOCALES } from './i18n/routing'
-import { isV2Live, V2_LIVE_HEADER } from './lib/v2-live'
+import { isV2Live, v2LiveAlias, V2_LIVE_HEADER } from './lib/v2-live'
 
 // ── Security headers ────────────────────────────────────────────────────────────
 // 'unsafe-eval' is added to script-src only in dev — Next.js Fast Refresh
@@ -236,13 +236,15 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
   }
 
   // ── New design: live areas are served by their v2 screens ─────────────────
-  // The old preview address of a live area moves to the live address (v2 screens still link
-  // to /v2/...); the live address renders the v2 screen without changing the URL.
+  // The old preview address of a live area, and the old live addresses without a v2 screen,
+  // move to the live address; the live address renders the v2 screen without changing the URL.
   const v2Route = V2_ROUTE_RE.exec(pathname)
   const v2Path = v2Route?.[3] ?? ''
-  if (v2Route?.[2] && isV2Live(v2Path)) {
+  const v2Alias = v2Route && !v2Route[2] ? v2LiveAlias(v2Path) : null
+  if (v2Route && ((v2Route[2] && isV2Live(v2Path)) || v2Alias)) {
+    const target = v2Alias ?? v2Path
     const url = req.nextUrl.clone()
-    url.pathname = `/${v2Route[1]}${v2Path === '/' ? '' : v2Path}`
+    url.pathname = `/${v2Route[1]}${target === '/' ? '' : target}`
     return withSecurityHeaders(NextResponse.redirect(url, 307))
   }
 

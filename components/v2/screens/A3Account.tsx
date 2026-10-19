@@ -61,6 +61,7 @@ const BADGE_ICON = (category: string) => {
 // ── Profile (own, SCR-017) ───────────────────────────────────────────────────
 
 export function ProfileOwnScreen() {
+  const badgeName = useBadgeName()
   const k = useCdKey()
   const t = useCd()
   const phone = usePhone()
@@ -85,8 +86,8 @@ export function ProfileOwnScreen() {
               { number: p.saves_count, label: k('profile.header.savesLabel') },
               { number: p.badges_count, label: k('profile.header.badgesLabel') },
             ]}
-            badges={p.pinned_badges.length ? p.pinned_badges.map((b) => <AchievementBadge key={b.id} name={b.name} detail={k(`badges.rarity.${b.rarity}`)} icon={<Trophy />} rarity={b.rarity} />) : undefined}
-            action={<IntlLink href="/v2/settings" className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover"><Pencil aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1515')}</IntlLink>}
+            badges={p.pinned_badges.length ? p.pinned_badges.map((b) => <AchievementBadge key={b.id} name={badgeName(b)} detail={k(`badges.rarity.${b.rarity}`)} icon={<Trophy />} rarity={b.rarity} />) : undefined}
+            action={<IntlLink href="/settings" className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover"><Pencil aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1515')}</IntlLink>}
           />
         ) : profile.error ? (
           <EmptyState type="error" container="bordered" title={k('profile.header.errorTitle')} action={<Button size="md" variant="secondary" onClick={() => profile.mutate()}>{k('profile.header.errorRetry')}</Button>} />
@@ -96,17 +97,17 @@ export function ProfileOwnScreen() {
         {trips.data?.length ? (
           <RowSection
             title={k('saved.tabs.myPlans')}
-            seeAll={{ href: '/v2/saved?tab=my-plans', label: t('CD1309') }}
-            cards={trips.data.map((tr) => <Card key={tr.id} type="plan" href={`/v2/plan/${tr.id}`} title={tr.title} imageSrc={tr.thumbnail_url} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} />)}
+            seeAll={{ href: '/saved?tab=my-plans', label: t('CD1309') }}
+            cards={trips.data.map((tr) => <Card key={tr.id} type="plan" href={`/plan/${tr.id}`} title={tr.title} imageSrc={tr.thumbnail_url} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} />)}
           />
         ) : trips.data ? (
-          <EmptyState container="bordered" title={k('profile.trips.empty.title')} action={<IntlLink href="/v2/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('profile.trips.empty.cta')}</IntlLink>}>{k('profile.trips.empty.desc')}</EmptyState>
+          <EmptyState container="bordered" title={k('profile.trips.empty.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('profile.trips.empty.cta')}</IntlLink>}>{k('profile.trips.empty.desc')}</EmptyState>
         ) : null}
         {badges.data ? (
           <RowSection
             title={k('badges.title')}
             subtitle={t('CD1590', { n: badges.data.earned_count })}
-            seeAll={{ href: '/v2/badges', label: t('CD1309') }}
+            seeAll={{ href: '/badges', label: t('CD1309') }}
             cards={badges.data.badges.map((b) => <BadgeTile key={b.id} b={b} />)}
           />
         ) : null}
@@ -115,13 +116,27 @@ export function ProfileOwnScreen() {
   )
 }
 
+// Badge names from the Copy Deck by slug (CD-1615 to CD-1626), so they show in the reader's
+// language; a badge the deck does not have keeps the name the server sends (English).
+const BADGE_NAME_CD: Record<string, string> = {
+  'first-save': 'CD1615', 'map-maker': 'CD1616', 'k-pop-pilgrim': 'CD1617', 'social-butterfly': 'CD1618',
+  'drama-chaser': 'CD1619', 'beauty-hunter': 'CD1620', 'culture-keeper': 'CD1621', 'jeju-explorer': 'CD1622',
+  'seoul-insider': 'CD1623', 'taste-seeker': 'CD1624', 'leaderboard-top': 'CD1625', 'legendary-guide': 'CD1626',
+}
+
+function useBadgeName() {
+  const t = useCd()
+  return (b: { slug: string; name: string }) => (BADGE_NAME_CD[b.slug] ? t(BADGE_NAME_CD[b.slug]) : b.name)
+}
+
 function BadgeTile({ b, onOpen }: { b: BadgeT; onOpen?: () => void }) {
+  const badgeName = useBadgeName()
   const k = useCdKey()
   const locale = useLocale()
   const detail = b.earned && b.earned_at
     ? `${k(`badges.rarity.${b.rarity}`)} · ${k('badges.badge.earnedOn', { date: new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(new Date(b.earned_at)) })}`
     : b.unlock_criteria.description
-  const tile = <AchievementBadge name={b.name} detail={detail} icon={BADGE_ICON(b.category)} rarity={b.rarity} locked={!b.earned} lockedLabel={k('badges.badge.locked')} />
+  const tile = <AchievementBadge name={badgeName(b)} detail={detail} icon={BADGE_ICON(b.category)} rarity={b.rarity} locked={!b.earned} lockedLabel={k('badges.badge.locked')} />
   return onOpen ? (
     <button type="button" onClick={onOpen} className="rounded-2xl p-[var(--space-2)] hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{tile}</button>
   ) : tile
@@ -132,6 +147,7 @@ function BadgeTile({ b, onOpen }: { b: BadgeT; onOpen?: () => void }) {
 type OtherProfile = { id: number; name: string | null; avatar_url: string | null; trips_count: number; saves_count: number; badges_count: number; trips_public: boolean; badges_public: boolean }
 
 export function ProfileVisitorScreen({ id }: { id: string }) {
+  const badgeName = useBadgeName()
   const k = useCdKey()
   const phone = usePhone()
   const { toast } = useV2Shell()
@@ -159,10 +175,10 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
           />
         ) : <Skeleton className="h-[120px]" />}
         {trips.data?.length ? (
-          <RowSection title={k('search.results.plans')} cards={trips.data.map((tr) => <Card key={tr.id} type="plan" href={`/v2/plan/${tr.id}`} title={tr.title} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} />)} />
+          <RowSection title={k('search.results.plans')} cards={trips.data.map((tr) => <Card key={tr.id} type="plan" href={`/plan/${tr.id}`} title={tr.title} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} />)} />
         ) : p && !p.trips_public ? <p className="type-body-base text-ui-fg-muted">{k('profile.privateTab')}</p> : null}
         {badgeList.filter((b) => b.earned).length ? (
-          <RowSection title={k('badges.title')} cards={badgeList.filter((b) => b.earned).map((b) => <AchievementBadge key={b.badge_id} name={b.name} detail={k(`badges.rarity.${b.rarity}`)} icon={<Trophy />} rarity={b.rarity} />)} />
+          <RowSection title={k('badges.title')} cards={badgeList.filter((b) => b.earned).map((b) => <AchievementBadge key={b.badge_id} name={badgeName(b)} detail={k(`badges.rarity.${b.rarity}`)} icon={<Trophy />} rarity={b.rarity} />)} />
         ) : null}
       </div>
     </V2Page>
@@ -172,6 +188,7 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
 // ── Badges (SCR-019) ─────────────────────────────────────────────────────────
 
 export function BadgesScreen() {
+  const badgeName = useBadgeName()
   const k = useCdKey()
   const t = useCd()
   const locale = useLocale()
@@ -198,7 +215,7 @@ export function BadgesScreen() {
           {list.map((b) => <li key={b.id} className="flex items-start justify-center"><BadgeTile b={b} onOpen={() => setOpen(b)} /></li>)}
         </ul>
       </div>
-      <Modal open={!!open} onClose={() => setOpen(null)} size="sm" title={open?.name ?? ''} closeLabel={k('badges.detail.close')}
+      <Modal open={!!open} onClose={() => setOpen(null)} size="sm" title={open ? badgeName(open) : ''} closeLabel={k('badges.detail.close')}
         primaryAction={open?.earned ? (
           <Button
             onClick={async () => {
@@ -215,7 +232,7 @@ export function BadgesScreen() {
       >
         {open ? (
           <div className="flex flex-col items-center gap-[var(--space-4)] pb-[var(--space-2)]">
-            <AchievementBadge name={open.name} detail={k(`badges.rarity.${open.rarity}`)} icon={BADGE_ICON(open.category)} rarity={open.rarity} locked={!open.earned} />
+            <AchievementBadge name={badgeName(open)} detail={k(`badges.rarity.${open.rarity}`)} icon={BADGE_ICON(open.category)} rarity={open.rarity} locked={!open.earned} />
             <dl className="grid w-full grid-cols-2 gap-[var(--space-2)] type-body-caption">
               <dt className="text-ui-fg-muted">{k('badges.detail.category')}</dt><dd>{open.category}</dd>
               <dt className="text-ui-fg-muted">{k('badges.detail.status')}</dt>
@@ -246,7 +263,7 @@ export function LeaderboardScreen() {
         {isLoading ? <Skeleton className="h-[320px]" /> : null}
         {error ? <EmptyState type="error" container="bordered" title={k('leaderboard.error.title')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{k('leaderboard.error.retry')}</Button>} /> : null}
         {data && !data.entries.length ? (
-          <EmptyState container="bordered" title={k('leaderboard.empty.title')} action={<IntlLink href="/v2/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{t('CD1594')}</IntlLink>}>{t('CD1593')}</EmptyState>
+          <EmptyState container="bordered" title={k('leaderboard.empty.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{t('CD1594')}</IntlLink>}>{t('CD1593')}</EmptyState>
         ) : null}
         <ol className="border-t border-ui-border">
           {data?.entries.map((e) => (
@@ -259,7 +276,7 @@ export function LeaderboardScreen() {
               detail={`${k('leaderboard.plans', { count: e.plans_count })} · ${k('profile.header.badgesCountAria', { count: e.badge_count })}`}
               score={`${e.score.toLocaleString()} ${k('leaderboard.scoreUnit')}`}
               trend={trend(e.trend)}
-              href={`/v2/profile/${e.user.id}`}
+              href={`/profile/${e.user.id}`}
               renderLink={({ href, className, children }) => <IntlLink href={href} className={className}>{children}</IntlLink>}
             />
           ))}
@@ -319,7 +336,7 @@ export function NotificationsScreen() {
                     time={time(n.created_at)}
                     read={n.is_read}
                     unreadLabel={k('notifications.unread', { count: 1 })}
-                    href={n.deep_link_url ? `/v2${n.deep_link_url}` : '/v2/notifications'}
+                    href={n.deep_link_url ? `${n.deep_link_url}` : '/notifications'}
                     renderLink={({ href, className, children }) => (
                       <IntlLink href={href} className={className} onClick={() => !n.is_read && send(`/api/notifications/${n.id}`, 'PATCH', { is_read: true }).then(() => mutate()).catch(() => {})}>{children}</IntlLink>
                     )}
@@ -386,7 +403,7 @@ export function SettingsScreen() {
             </ul>
           </>
         ) : (
-          <ul className="border-t border-ui-border"><ListItem title={k('nav.signIn')} secondary={t('CD1450')} chevron onClick={() => router.push('/v2/login')} /></ul>
+          <ul className="border-t border-ui-border"><ListItem title={k('nav.signIn')} secondary={t('CD1450')} chevron onClick={() => router.push('/login')} /></ul>
         )}
 
         <h2 className={heading}>{k('profile.settings.preferences.heading')}</h2>
@@ -397,7 +414,7 @@ export function SettingsScreen() {
           ) : (
             <ListItem title={k('profile.settings.preferences.appearance')} trailing={<SegmentedControl label={k('profile.settings.preferences.appearance')} options={themeOptions} value={theme} onValueChange={(v) => chooseTheme(v as ThemeChoice)} className="w-[360px]" />} />
           )}
-          {user ? <ListItem title={t('CD1599')} chevron onClick={() => router.push('/v2?interests=1')} /> : null}
+          {user ? <ListItem title={t('CD1599')} chevron onClick={() => router.push('/?interests=1')} /> : null}
         </ul>
 
         {user ? (
@@ -413,7 +430,7 @@ export function SettingsScreen() {
 
         <h2 className={heading}>{k('profile.settings.privacy.heading')}</h2>
         <ul className="border-t border-ui-border">
-          <ListItem title={t('CD1603')} chevron onClick={() => router.push('/v2/legal/cookies')} />
+          <ListItem title={t('CD1603')} chevron onClick={() => router.push('/legal/cookies')} />
           {user && profile.data ? (
             <>
               <ListItem title={k('profile.settings.privacy.trips')} secondary={k('profile.settings.privacy.tripsNote')} trailing={<Toggle label={k('profile.settings.privacy.trips')} hideLabel checked={profile.data.trips_public} onCheckedChange={async (v) => { await send('/api/account/profile', 'PATCH', { trips_public: v }).catch(() => {}); profile.mutate() }} />} />

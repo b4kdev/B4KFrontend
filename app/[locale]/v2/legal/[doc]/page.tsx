@@ -1,9 +1,16 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { LegalScreen } from '@/components/v2/screens/A4Pages'
+import { LEGAL_DOCS, legalMetadata, type LegalDoc } from '@/app/[locale]/_seo/page-metadata'
 
-const DOCS = ['terms', 'privacy', 'cookies'] as const
+type Props = { params: { locale: string; doc: string } }
+const isDoc = (d: string): d is LegalDoc => (LEGAL_DOCS as readonly string[]).includes(d)
 
-export default function Page({ params }: { params: { doc: string } }) {
-  if (!DOCS.includes(params.doc as (typeof DOCS)[number])) notFound()
-  return <LegalScreen doc={params.doc as (typeof DOCS)[number]} />
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  return isDoc(params.doc) ? legalMetadata(params.doc, params.locale) : {}
+}
+
+export default function Page({ params }: Props) {
+  if (!isDoc(params.doc)) notFound()
+  return <LegalScreen doc={params.doc} />
 }

@@ -122,7 +122,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
       }
       saveCourseHandoff(stops)
       close()
-      router.push('/v2/map?from=quickplan')
+      router.push('/map?from=quickplan')
     } catch {
       toast({ type: 'critical', message: t('CD0771') })
     } finally {

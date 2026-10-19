@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
-import { hreflangAlternates, localizedUrl } from '@/lib/site-url';
 import { LegalDocument } from '@/components/legal/LegalDocument';
 import {
   cookiePolicySections,
@@ -9,18 +7,11 @@ import {
   cookiePolicyContactEmail,
 } from '@/content/legal/cookie-policy-content';
 import CookiePreferences from './_CookiePreferences';
+import { getTranslations } from 'next-intl/server';
+import { legalMetadata } from '@/app/[locale]/_seo/page-metadata';
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
-  const t = await getTranslations({ locale: params.locale, namespace: 'routes.legalCookies' });
-  const title = `${t('title')} | B4K`;
-  const description = t('empty.desc');
-  const url = localizedUrl(params.locale, '/legal/cookies');
-  return {
-    title,
-    description,
-    alternates: { canonical: url, languages: hreflangAlternates('/legal/cookies') },
-    openGraph: { title, description, url, siteName: 'B4K', locale: params.locale, type: 'article' },
-  };
+  return legalMetadata('cookies', params.locale);
 }
 
 export default async function Page({ params }: { params: { locale: string } }) {

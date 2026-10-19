@@ -622,13 +622,13 @@
     "zoomIn": "放大",
     "zoomOut": "縮小",
     "empty": {
-      "title": "No spots in this area"
+      "title": "此區域沒有地點"
     },
     "leftPanel": {
       "ariaLabel": "探索面板",
       "viewSaved": "查看收藏的地點",
-      "tagline": "Find your place",
-      "savedLabel": "Saved"
+      "tagline": "找到你的地點",
+      "savedLabel": "收藏"
     },
     "regions": {
       "title": "依地區探索",
@@ -637,20 +637,20 @@
       "jeju": "濟州",
       "incheon": "仁川",
       "gyeongju": "慶州",
-      "daegu": "Daegu",
-      "gwangju": "Gwangju",
-      "daejeon": "Daejeon",
-      "ulsan": "Ulsan",
-      "sejong": "Sejong",
-      "gyeonggi": "Gyeonggi",
-      "gangwon": "Gangwon",
-      "chungbuk": "North Chungcheong",
-      "chungnam": "South Chungcheong",
-      "jeonbuk": "North Jeolla",
-      "jeonnam": "South Jeolla",
-      "gyeongnam": "South Gyeongsang",
+      "daegu": "大邱",
+      "gwangju": "光州",
+      "daejeon": "大田",
+      "ulsan": "蔚山",
+      "sejong": "世宗",
+      "gyeonggi": "京畿道",
+      "gangwon": "江原道",
+      "chungbuk": "忠清北道",
+      "chungnam": "忠清南道",
+      "jeonbuk": "全羅北道",
+      "jeonnam": "全羅南道",
+      "gyeongnam": "慶尚南道",
       "more": "更多地區",
-      "less": "Show fewer"
+      "less": "收合"
     },
     "filters": {
       "title": "依類型篩選",
@@ -984,9 +984,9 @@
       "preferences": {
         "heading": "偏好設定",
         "language": "語言",
-        "appearance": "Appearance",
-        "appearanceDark": "Dark",
-        "appearanceLight": "Light",
+        "appearance": "外觀",
+        "appearanceDark": "深色",
+        "appearanceLight": "淺色",
         "transport": "預設交通方式",
         "transportCar": "自駕",
         "transportPublic": "大眾運輸",
@@ -1190,7 +1190,7 @@
         "desc": "美食、傳統市場與文化遺產體驗"
       },
       "kfood": {
-        "desc": "Michelin picks, award-winning dishes, and traditional recipes"
+        "desc": "米其林推薦、得獎料理與傳統食譜"
       }
     },
     "kpop": {
@@ -1242,19 +1242,19 @@
       "festivals": "節慶活動",
       "crafts": "手工藝",
       "trending": "當前熱門",
-      "agencyHq": "Agency HQ",
-      "memberFootsteps": "Member Footsteps",
-      "birthdayCafe": "This Month's Birthday Cafés",
-      "shopping": "Shopping & Select Shops",
-      "brandFlagship": "Brand Flagships",
-      "derma": "Pharmacy & Derma",
-      "noodles": "Noodles",
-      "soups": "Soups & Stews",
-      "hanjeongsik": "Hanjeongsik & Bapsang",
-      "heritage": "Historical Heritage",
-      "nature": "Nature & Scenery",
-      "temple": "Temples & Religion",
-      "museum": "Museums & Galleries"
+      "agencyHq": "經紀公司總部",
+      "memberFootsteps": "成員足跡",
+      "birthdayCafe": "本月生日咖啡廳",
+      "shopping": "購物與選物店",
+      "brandFlagship": "品牌旗艦店",
+      "derma": "藥妝與醫美保養",
+      "noodles": "麵食",
+      "soups": "湯品與鍋物",
+      "hanjeongsik": "韓定食與家常飯桌",
+      "heritage": "歷史遺產",
+      "nature": "自然與風景",
+      "temple": "寺廟與宗教",
+      "museum": "博物館與美術館"
     },
     "viewAll": "查看全部",
     "viewAllAria": "查看{section}的全部內容",
@@ -1280,25 +1280,25 @@
         "Myeongdong": "明洞",
         "Hongdae": "弘大",
         "Gangnam": "江南",
-        "Seongsu": "Seongsu",
-        "Jongno": "Jongno",
-        "Jamsil": "Jamsil"
+        "Seongsu": "聖水",
+        "Jongno": "鍾路",
+        "Jamsil": "蠶室"
       },
       "region": {
         "Seoul": "首爾",
         "Jeonju": "全州",
         "Gyeongju": "慶州",
         "Andong": "安東",
-        "Jeju": "Jeju",
-        "Ulsan": "Ulsan",
-        "Jeonbuk": "Jeonbuk",
-        "Jongno": "Jongno",
-        "Gangwon": "Gangwon",
-        "Gyeongbuk": "Gyeongbuk",
-        "Busan": "Busan",
-        "GyeongnamUlsan": "Gyeongnam·Ulsan",
-        "GangwonChungbuk": "Gangwon·Chungbuk",
-        "GyeonggiIncheon": "Gyeonggi·Incheon"
+        "Jeju": "濟州",
+        "Ulsan": "蔚山",
+        "Jeonbuk": "全北",
+        "Jongno": "鍾路",
+        "Gangwon": "江原",
+        "Gyeongbuk": "慶北",
+        "Busan": "釜山",
+        "GyeongnamUlsan": "慶南·蔚山",
+        "GangwonChungbuk": "江原·忠北",
+        "GyeonggiIncheon": "京畿·仁川"
       },
       "broadcaster": {
         "tvN": "tvN",
@@ -1309,13 +1309,13 @@
         "Netflix": "Netflix"
       },
       "badge": {
-        "MICHELIN": "Michelin",
-        "REDRIBBON": "Red Ribbon",
-        "B4KPICK": "B4K Pick",
+        "MICHELIN": "米其林",
+        "REDRIBBON": "紅緞帶",
+        "B4KPICK": "B4K精選",
         "WOOSOLLANG": "Woosollang",
-        "MULTI": "2+ Badges",
+        "MULTI": "2枚以上徽章",
         "UNESCO": "UNESCO",
-        "NATIONAL_HERITAGE": "National Heritage"
+        "NATIONAL_HERITAGE": "國家文化遺產"
       }
     },
     "packages": {
@@ -1326,71 +1326,71 @@
     },
     "kpopArtistNav": {
       "tileGrid": {
-        "ariaLabel": "Browse by artist",
-        "showMore": "{count} more",
-        "showLess": "Show less",
-        "selectAria": "Filter by {name}",
-        "empty": "No artists to show yet",
-        "memberCount": "{count, plural, one {# member} other {# members}}"
+        "ariaLabel": "依藝人瀏覽",
+        "showMore": "還有{count}個",
+        "showLess": "收合",
+        "selectAria": "依{name}篩選",
+        "empty": "尚無可顯示的藝人",
+        "memberCount": "{count, plural, one {#位成員} other {#位成員}}"
       }
     },
     "footsteps": {
-      "breadcrumb": "Footsteps",
-      "title": "Footsteps",
-      "subtitle": "{count} places",
+      "breadcrumb": "足跡",
+      "title": "足跡",
+      "subtitle": "{count}個地點",
       "filterAll": "All",
-      "filterMuseum": "Museums",
-      "filterPark": "Parks",
+      "filterMuseum": "博物館",
+      "filterPark": "公園",
       "filterCafe": "Cafés"
     },
     "kfood": {
       "title": "K-Food",
       "empty": {
-        "title": "No K-Food spots yet",
-        "desc": "K-Food content is coming soon."
+        "title": "尚無K-Food打卡地",
+        "desc": "K-Food內容即將推出。"
       }
     },
     "filmingSpots": {
-      "breadcrumb": "Filming Spots",
-      "title": "Filming Spots",
-      "subtitle": "{count} real filming locations",
+      "breadcrumb": "拍攝地",
+      "title": "拍攝地",
+      "subtitle": "{count}個真實拍攝地",
       "filterAll": "All",
-      "filterNature": "Nature",
-      "filterHistoric": "Historic",
-      "filterExperience": "Experience"
+      "filterNature": "自然",
+      "filterHistoric": "歷史古蹟",
+      "filterExperience": "體驗"
     },
     "perfumeFlagships": {
-      "breadcrumb": "K-Beauty Flagship Tour",
-      "title": "K-Beauty Flagship Tour",
-      "subtitle": "{count} K-Beauty flagship stores",
+      "breadcrumb": "K-Beauty旗艦店巡禮",
+      "title": "K-Beauty旗艦店巡禮",
+      "subtitle": "{count}家K-Beauty旗艦店",
       "filterAll": "All",
-      "filterSeongsu": "Seongsu",
-      "filterHannam": "Hannam",
-      "filterGarosugil": "Garosu-gil"
+      "filterSeongsu": "聖水",
+      "filterHannam": "漢南",
+      "filterGarosugil": "林蔭道"
     },
     "michelinNoodles": {
-      "breadcrumb": "Michelin Noodles",
-      "title": "Michelin-Picked Noodles",
-      "subtitle": "{count} Michelin-recognized noodle restaurants",
+      "breadcrumb": "米其林麵食",
+      "title": "米其林推薦麵食",
+      "subtitle": "{count}家米其林認證麵食餐廳",
       "filterAll": "All",
-      "filterNaengmyeon": "Naengmyeon",
-      "filterOther": "Other"
+      "filterNaengmyeon": "冷麵",
+      "filterOther": "其他"
     },
     "heritage": {
-      "breadcrumb": "UNESCO Heritage",
-      "title": "UNESCO Heritage",
-      "subtitle": "{count} UNESCO heritage sites",
+      "breadcrumb": "UNESCO世界遺產",
+      "title": "UNESCO世界遺產",
+      "subtitle": "{count}處UNESCO世界遺產",
       "filterAll": "All",
-      "filterGyeongju": "Gyeongju",
-      "filterAndong": "Andong",
-      "filterYeongju": "Yeongju"
+      "filterGyeongju": "慶州",
+      "filterAndong": "安東",
+      "filterYeongju": "榮州"
     },
     "collections": {
-      "itemCount": "{count} places",
+      "itemCount": "{count}個地點",
       "filterAll": "All"
     },
     "collectionsGrid": {
-      "title": "Collections",
+      "title": "精選合輯",
       "filterAll": "All"
     }
   },
@@ -1738,10 +1738,10 @@
   },
   "search": {
     "title": "搜尋",
-    "pageTitle": "Search Results",
-    "breadcrumb": "Search",
-    "resultsSummary": "\"{query}\" — {places} Places · {plans} Plans · {explore} Explore",
-    "resultsCount": "{count} results",
+    "pageTitle": "搜尋結果",
+    "breadcrumb": "搜尋",
+    "resultsSummary": "「{query}」— {places}個地點 · {plans}個行程 · {explore}項探索",
+    "resultsCount": "{count}筆結果",
     "placeholder": "搜尋行程、地點...",
     "recentTitle": "最近搜尋",
     "clearAll": "清除全部",
@@ -1863,10 +1863,10 @@
     "actionFailed": "發生錯誤，請再試一次。"
   },
   "place": {
-    "imagePending": "Image being prepared",
-    "viewOnMap": "View on Map",
-    "saves": "saves",
-    "fallbackDescription": "{name} — discover this spot in Korea."
+    "imagePending": "圖片準備中",
+    "viewOnMap": "在地圖上查看",
+    "saves": "次收藏",
+    "fallbackDescription": "{name} — 探索這個韓國景點。"
   },
   "quickPlan": {
     "ariaLabel": "建立客製地圖",

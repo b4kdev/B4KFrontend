@@ -1,0 +1,19 @@
+{
+  "gap": {
+    "breadcrumb": "Breadcrumb",
+    "lastUpdated": "Last updated {date}",
+    "newTab": "(opens in a new tab)",
+    "about": "About",
+    "mapError": "The map couldn't load. Check your connection, then try again.",
+    "addedToDay": "Added to Day {day}",
+    "discardBody": "The {count, plural, one {# stop} other {# stops}} in your plan in progress will be removed. This cannot be undone.",
+    "viewOnPartner": "View on {partner}",
+    "noCategoryTrending": "No {category} places are trending yet",
+    "noTrending": "No places are trending yet",
+    "editing": "Editing · {title}",
+    "editDraftBody": "The map has a plan in progress with {count, plural, one {# stop} other {# stops}}. Save it or discard it before editing {title}.",
+    "createdBy": "Created by {name}",
+    "deletePlanTitle": "Delete {title}?",
+    "days": "{count, plural, one {# day} other {# days}}"
+  }
+}

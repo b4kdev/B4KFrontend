@@ -28,7 +28,7 @@ export function V2Page({ bar = { type: 'home' }, bleed, noFooter, children, clas
   return (
     <>
       {bar.type === 'home' ? (
-        <TopAppBar type="home" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/v2/search" />} className="sticky top-0 z-30 lg:hidden" />
+        <TopAppBar type="home" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} className="sticky top-0 z-30 lg:hidden" />
       ) : bar.type === 'page' ? (
         <TopAppBar type="page" labels={labels} onBack={() => router.back()} title={bar.title} action={bar.action} className="sticky top-0 z-30 lg:hidden" />
       ) : null}
@@ -40,10 +40,10 @@ export function V2Page({ bar = { type: 'home' }, bleed, noFooter, children, clas
           navLabel={t('CD0809')}
           copyright={t('CD1462')}
           links={[
-            { label: t('CD0320'), href: '/v2/help' },
-            { label: t('CD1000'), href: '/v2/legal/privacy' },
-            { label: t('CD1460'), href: '/v2/legal/terms' },
-            { label: t('CD1461'), href: '/v2/legal/cookies' },
+            { label: t('CD0320'), href: '/help' },
+            { label: t('CD1000'), href: '/legal/privacy' },
+            { label: t('CD1460'), href: '/legal/terms' },
+            { label: t('CD1461'), href: '/legal/cookies' },
           ]}
         />
       )}

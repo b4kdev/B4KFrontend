@@ -32,7 +32,7 @@ import { privacyPolicyContactEmail, privacyPolicyLastUpdated, privacyPolicySecti
 import { cookiePolicyContactEmail, cookiePolicyLastUpdated, cookiePolicySections } from '@/content/legal/cookie-policy-content'
 import type { SearchExplore, SearchPlan, SearchPoi } from '@/app/api/search/route'
 import { useCd, useCdKey } from '../cd'
-import { GAP } from '../gaps'
+import { useGap } from '../gaps'
 import { keepKNamesDeep } from '../text'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
@@ -94,7 +94,7 @@ export function SearchScreen() {
     if (!text.trim()) return
     recents.add(text.trim())
     setFocused(false)
-    router.push(`/v2/search?q=${encodeURIComponent(text.trim())}`)
+    router.push(`/search?q=${encodeURIComponent(text.trim())}`)
   }
   const groups: FilterGroup[] = [
     { id: 'show', label: t('CD1271'), options: [['all', 'CD1267'], ['places', 'CD1269'], ['plans', 'CD1270'], ['explore', 'CD1268']].map(([id, cd]) => ({ id, label: t(cd) })) },
@@ -109,12 +109,12 @@ export function SearchScreen() {
       state={draft.trim() ? 'typing' : 'empty'}
       query={draft}
       onSearch={go}
-      places={(sugg?.suggestions ?? []).slice(0, 3).map((s, i) => ({ id: `s${i}`, name: s, meta: '', href: `/v2/search?q=${encodeURIComponent(s)}` }))}
+      places={(sugg?.suggestions ?? []).slice(0, 3).map((s, i) => ({ id: `s${i}`, name: s, meta: '', href: `/search?q=${encodeURIComponent(s)}` }))}
       recent={recents.recent.map((r) => ({ id: r, text: r }))}
       onRemoveRecent={recents.remove}
       onClearRecent={recents.clear}
       trending={[['K-Pop', 'CD1247'], ['K-Drama', 'CD1246'], ['K-Beauty', 'CD1244']].map(([id, cd]) => ({ id, text: t(cd) }))}
-      categories={[['k-pop', 'CD1247'], ['k-drama', 'CD1246'], ['k-beauty', 'CD1244'], ['k-culture', 'CD1245']].map(([id, cd]) => ({ id, name: t(cd), href: `/v2/explore/${id}` }))}
+      categories={[['k-pop', 'CD1247'], ['k-drama', 'CD1246'], ['k-beauty', 'CD1244'], ['k-culture', 'CD1245']].map(([id, cd]) => ({ id, name: t(cd), href: `/explore/${id}` }))}
       labels={{ searchFor: (x) => `${t('CD1317')}: “${x}”`, places: t('CD1316'), plans: t('CD1300'), explore: t('CD1299'), recent: t('CD1297'), clearAll: t('CD1248'), trending: t('CD0313'), browse: t('CD1299'), remove: (x) => t('CD1298', { query: x }) }}
     />
   )
@@ -149,7 +149,7 @@ export function SearchScreen() {
           <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">
             {(show === 'places' ? data.places : data.places.slice(0, 3)).map((p) => (
               <li key={p.poi_id}>
-                <Card type="place" href={`/v2/map?poi=${p.poi_id}`} title={locale === 'ko' ? p.name_ko : p.name_en || p.name_ko} imageSrc={p.primary_image_url} meta={[p.display_region, p.display_domain].filter(Boolean).join(' · ')} />
+                <Card type="place" href={`/map?poi=${p.poi_id}`} title={locale === 'ko' ? p.name_ko : p.name_en || p.name_ko} imageSrc={p.primary_image_url} meta={[p.display_region, p.display_domain].filter(Boolean).join(' · ')} />
               </li>
             ))}
           </ul>
@@ -162,7 +162,7 @@ export function SearchScreen() {
           <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">
             {data.plans.slice(0, show === 'plans' ? 60 : 3).map((p) => (
               <li key={p.id}>
-                <Card type="plan" href={`/v2/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD1315', { count: p.stop_count })} sponsored={p.is_partner ? t('CD1314') : undefined} />
+                <Card type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD1315', { count: p.stop_count })} sponsored={p.is_partner ? t('CD1314') : undefined} />
               </li>
             ))}
           </ul>
@@ -173,7 +173,7 @@ export function SearchScreen() {
           <SectionHeader title={t('CD1306')} />
           <div className="flex flex-wrap gap-[var(--space-2)]">
             {data.explore.map((e) => (
-              <IntlLink key={e.href} href={`/v2${e.href}`} className="inline-flex h-[var(--control-height-sm)] items-center rounded-full border border-ui-border-strong px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover">
+              <IntlLink key={e.href} href={`${e.href}`} className="inline-flex h-[var(--control-height-sm)] items-center rounded-full border border-ui-border-strong px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover">
                 {t(({ kpop: 'CD1247', kdrama: 'CD1246', kbeauty: 'CD1244', kculture: 'CD1245' } as Record<string, string>)[e.label_key] ?? 'CD1306')}
               </IntlLink>
             ))}
@@ -216,7 +216,7 @@ export function SearchScreen() {
         </div>
         <h1 className="sr-only">{t('CD1293')}</h1>
         {results}
-        {q ? <IntlLink href="/v2/map" className="inline-flex items-center gap-[var(--space-2)] self-start type-label-button text-ui-link hover:text-ui-link-hover"><Map aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1287')}</IntlLink> : null}
+        {q ? <IntlLink href="/map" className="inline-flex items-center gap-[var(--space-2)] self-start type-label-button text-ui-link hover:text-ui-link-hover"><Map aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1287')}</IntlLink> : null}
       </main>
     </div>
   )
@@ -262,6 +262,7 @@ export function HelpScreen() {
 // ── Legal pages (SCR-029) and cookie preferences (SCR-026) ──────────────────
 
 export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
+  const GAP = useGap()
   const t = useCd()
   const k = useCdKey()
   const phone = usePhone()
@@ -287,7 +288,7 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
               label={t('CD0137')}
               status={consent === 'accepted' ? t('CD0135') : consent === 'declined' ? t('CD0136') : undefined}
               message={t('CD0134')}
-              learnMore={{ href: '/v2/legal/cookies', label: '' }}
+              learnMore={{ href: '/legal/cookies', label: '' }}
               acceptLabel={t('CD0132')}
               declineLabel={t('CD0133')}
               onAccept={() => { setConsent('accepted'); setConsentState('accepted') }}
@@ -297,7 +298,7 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
         ) : null}
         <LegalDocument
           viewport={phone ? 'mobile' : 'desktop'}
-          breadcrumbs={[{ label: t('CD0807'), href: '/v2' }, { label: t('CD0809') }, { label: cfg.title }]}
+          breadcrumbs={[{ label: t('CD0807'), href: '/' }, { label: t('CD0809') }, { label: cfg.title }]}
           title={cfg.title}
           updated={GAP.lastUpdated(cfg.updated)}
           contact={<a href={`mailto:${cfg.email}`} className="underline underline-offset-2">{cfg.email}</a>}
@@ -319,8 +320,8 @@ export function NotFoundScreen() {
         title={<span className="type-display-h1">{t('CD0116')}</span>}
         action={
           <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
-            <IntlLink href="/v2" className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0114')}</IntlLink>
-            <IntlLink href="/v2/map" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD1287')}</IntlLink>
+            <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0114')}</IntlLink>
+            <IntlLink href="/map" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD1287')}</IntlLink>
           </div>
         }
       >
@@ -340,7 +341,7 @@ export function ErrorScreen({ reset }: { reset: () => void }) {
         action={
           <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
             <Button onClick={reset}>{t('CD0110')}</Button>
-            <IntlLink href="/v2" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover">{t('CD0112')}</IntlLink>
+            <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover">{t('CD0112')}</IntlLink>
           </div>
         }
       >

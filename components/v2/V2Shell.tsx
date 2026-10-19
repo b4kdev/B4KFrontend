@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import { useAuth } from '@/contexts/AuthContext'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
+import { getConsent, setConsent } from '@/lib/consent'
 import { v2Area } from '@/lib/v2-live'
 import {
   CookieBanner,
@@ -20,6 +21,7 @@ import {
   type ShellUser,
 } from '@/components/library'
 import { useCd } from './cd'
+import { V2DraftMigration, V2TermsGate } from './V2Gates'
 import V2QuickPlan from './V2QuickPlan'
 import { LanguageSheet } from './V2Settings'
 
@@ -43,12 +45,10 @@ export const useV2Shell = () => {
   return c
 }
 
-const COOKIE_KEY = 'b4k-v2-preview-cookie-choice'
-
 function activeFrom(path: string): Destination | null {
   const seg = v2Area(path)
   if (seg === '') return 'home'
-  if (seg === 'map' || seg === 'plan') return 'map'
+  if (seg === 'map' || seg === 'plan' || seg === 'place') return 'map'
   if (seg === 'explore') return 'explore'
   if (seg === 'saved') return 'saved'
   return null
@@ -68,7 +68,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      setCookie(localStorage.getItem(COOKIE_KEY))
+      setCookie(getConsent())
     } catch {
       setCookie('declined')
     }
@@ -100,10 +100,11 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const meta = authUser?.user_metadata as { full_name?: string; name?: string; avatar_url?: string } | undefined
   const user: ShellUser = authUser ? { name: meta?.full_name ?? meta?.name ?? authUser.email?.split('@')[0] ?? '', avatarSrc: meta?.avatar_url ?? null } : null
   const active = activeFrom(pathname)
-  const onMap = ['map', 'plan'].includes(v2Area(pathname))
+  const onMap = ['map', 'plan', 'place'].includes(v2Area(pathname))
+  // The live consent (DEC-16): updates GA4 consent mode and lets Analytics load Clarity.
   const choose = (v: 'accepted' | 'declined') => {
     try {
-      localStorage.setItem(COOKIE_KEY, v)
+      setConsent(v)
     } catch {}
     setCookie(v)
   }
@@ -125,9 +126,9 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           className="max-lg:hidden"
           labels={labels}
           signedIn={!!user}
-          search={<SearchPill label={labels.search} href="/v2/search" />}
+          search={<SearchPill label={labels.search} href="/search" />}
           onLanguage={() => setLanguage(true)}
-          helpHref="/v2/help"
+          helpHref="/help"
         />
         <div className="flex min-h-0 flex-1">
           <NavigationRail className="max-lg:hidden" active={active} labels={labels} user={user} onQuickPlan={() => setQuick(true)} />
@@ -142,15 +143,17 @@ export default function V2Shell({ children }: { children: ReactNode }) {
         user={user}
         onQuickPlan={() => setQuick(true)}
         language={{ current: LANG_NAMES[locale] ?? locale, onOpen: () => { setDrawer(false); setLanguage(true) } }}
-        links={{ notifications: '/v2/notifications', settings: '/v2/settings', help: '/v2/help', legal: '/v2/legal/terms', profile: '/v2/profile', signIn: '/v2/login' }}
+        links={{ notifications: '/notifications', settings: '/settings', help: '/help', legal: '/legal/terms', profile: '/profile', signIn: '/login' }}
       />
       <V2QuickPlan open={quick} onClose={() => setQuick(false)} />
+      <V2TermsGate />
+      <V2DraftMigration />
       <LanguageSheet open={language} onClose={() => setLanguage(false)} />
       {cookie === null ? (
         <CookieBanner
           label={t('CD0131')}
           message={t('CD0130')}
-          learnMore={{ href: '/v2/legal/cookies', label: t('CD0129') }}
+          learnMore={{ href: '/legal/cookies', label: t('CD0129') }}
           acceptLabel={t('CD0126')}
           declineLabel={t('CD0127')}
           onAccept={() => choose('accepted')}
@@ -169,7 +172,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
 export function useV2SignOut() {
   return async () => {
     await createSupabaseBrowserClient().auth.signOut()
-    // v2 Home of the current locale; middleware moves it to the live Home once Home is live.
-    window.location.assign(window.location.pathname.replace(/^(\/[^/]+).*/, '$1/v2'))
+    // Home of the current locale.
+    window.location.assign(window.location.pathname.replace(/^(\/[^/]+).*/, '$1'))
   }
 }

@@ -28,7 +28,7 @@ import { useItinerary, useItineraryMeta } from '@/hooks/useItinerary'
 import type { MapPoi } from '@/hooks/useMapPois'
 import type { ItineraryStop } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
-import { GAP } from '../gaps'
+import { useGap } from '../gaps'
 import { useV2Shell } from '../V2Shell'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
 import { formatMinutes } from '../map/usePlanDraft'
@@ -50,6 +50,7 @@ const send = (url: string, method: string, body?: unknown) =>
 const stopName = (s: ItineraryStop, locale: string) => s.poi.name_preferred ?? (locale === 'ko' ? s.poi.name_ko : s.poi.name_en || s.poi.name_ko)
 
 export function PlanScreen({ id }: { id: string }) {
+  const GAP = useGap()
   const t = useCd()
   const k = useCdKey()
   const locale = useLocale()
@@ -84,7 +85,7 @@ export function PlanScreen({ id }: { id: string }) {
 
   const isLiked = liked ?? it?.viewer.is_liked ?? false
   const isSaved = saved ?? it?.viewer.is_saved ?? false
-  const toLogin = () => router.push(`/v2/login?next=/v2/plan/${id}`)
+  const toLogin = () => router.push(`/login?next=/plan/${id}`)
 
   const like = () => {
     if (!user) return toLogin()
@@ -128,7 +129,7 @@ export function PlanScreen({ id }: { id: string }) {
     try {
       await send(`/api/plans/${id}`, 'DELETE')
       await Promise.all([globalMutate('/api/plans/draft'), globalMutate('/api/profile/trips')])
-      router.push('/v2/map')
+      router.push('/map')
     } catch {
       toast({ type: 'critical', message: k('itinerary.actions.deleteErrorToast') })
       setDeleting(false)
@@ -153,7 +154,7 @@ export function PlanScreen({ id }: { id: string }) {
   } else if (isPrivate || isNotFound) {
     panel = (
       <div className="p-[var(--space-4)]">
-        <EmptyState title={t('CD1542')} action={<Button size="md" variant="secondary" onClick={() => router.push('/v2')}>{t('CD1544')}</Button>}>{t('CD1543')}</EmptyState>
+        <EmptyState title={t('CD1542')} action={<Button size="md" variant="secondary" onClick={() => router.push('/')}>{t('CD1544')}</Button>}>{t('CD1543')}</EmptyState>
       </div>
     )
   } else if (isError || !it) {
@@ -197,7 +198,7 @@ export function PlanScreen({ id }: { id: string }) {
             <ul className="flex flex-col gap-[var(--space-3)]">
               {it.related.map((r) => (
                 <li key={r.id}>
-                  <Card type="compact" href={`/v2/plan/${r.id}`} title={r.title} imageSrc={r.thumbnail_url} meta={`${k('itinerary.related.stops', { count: r.stop_count })} · ${k('itinerary.related.likes', { count: r.like_count })}`} />
+                  <Card type="compact" href={`/plan/${r.id}`} title={r.title} imageSrc={r.thumbnail_url} meta={`${k('itinerary.related.stops', { count: r.stop_count })} · ${k('itinerary.related.likes', { count: r.like_count })}`} />
                 </li>
               ))}
             </ul>
@@ -206,7 +207,7 @@ export function PlanScreen({ id }: { id: string }) {
         footer={
           isOwner ? (
             <>
-              <Button variant="secondary" className="flex-1" onClick={() => router.push(`/v2/map?plan=edit&id=${id}`)}>{t('CD1487')}</Button>
+              <Button variant="secondary" className="flex-1" onClick={() => router.push(`/map?plan=edit&id=${id}`)}>{t('CD1487')}</Button>
               <IconButton variant="secondary" label={k('itinerary.actions.shareAria')} icon={<Share2 />} onClick={share} />
               <IconButton variant="ghost" label={t('CD1454')} icon={<Trash2 />} onClick={() => setDeleteOpen(true)} />
             </>
@@ -264,7 +265,7 @@ export function PlanScreen({ id }: { id: string }) {
       <div className="relative h-[calc(100dvh)] w-full overflow-hidden">
         <main id="main" className="absolute inset-0">{map}</main>
         <div className="absolute inset-x-0 top-0 z-20">
-          <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/v2/search" />} />
+          <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} />
         </div>
         <BottomSheet type="map" open label={k('itinerary.sheet.ariaLabel')} snap={snap} onSnapChange={setSnap} onClose={() => setSnap('peek')} resizeLabel={k('itinerary.sheet.handle')}>
           <div className="-mx-[var(--space-4)] h-[calc(100dvh-160px)]">{panel}</div>

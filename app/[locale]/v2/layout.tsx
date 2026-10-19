@@ -4,13 +4,15 @@ import { headers } from 'next/headers'
 import { getMessages } from 'next-intl/server'
 import en from '@/messages/v2/en.json'
 import V2Shell from '@/components/v2/V2Shell'
+import { mergeCd, mergeGap } from '@/components/v2/messages'
 import { keepKNamesDeep } from '@/components/v2/text'
 import { V2_LIVE_HEADER } from '@/lib/v2-live'
 import '@/components/v2/v2.css'
 
 // Preview of the new design (PD-53 update 2): every Figma screen under /[locale]/v2, built from
 // components/library. Hidden: noindex, not linked from live pages. Texts come from the Copy Deck
-// (messages/v2, `cd` namespace); untranslated rows fall back to English.
+// (messages/v2, `cd` namespace) with the supplement for rows not translated yet and texts with no
+// row (`gap`); see components/v2/messages.ts.
 // Areas listed in lib/v2-live.ts are served here from their live address (middleware rewrite);
 // those keep the live site's metadata instead of the preview's.
 export async function generateMetadata(): Promise<Metadata> {
@@ -23,14 +25,21 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function V2Layout({ children, params }: { children: React.ReactNode; params: { locale: string } }) {
   const base = await getMessages()
-  let local: { cd: Record<string, string> } = { cd: {} }
-  try {
-    local = (await import(`@/messages/v2/${params.locale}.json`)).default
-  } catch {
-    // locale without v2 texts yet: English only
+  // A locale without a file yet gets the English texts.
+  const load = (name: string): Promise<{ cd?: Record<string, string>; gap?: Record<string, string> }> =>
+    import(`@/messages/v2/${name}.json`).then((m) => m.default).catch(() => ({}))
+  const [deck, supplement, supplementEn] = await Promise.all([
+    load(params.locale),
+    load(`supplement/${params.locale}`),
+    load('supplement/en'),
+  ])
+  const messages = {
+    ...base,
+    cd: keepKNamesDeep(mergeCd(en.cd, deck.cd, supplement.cd)),
+    gap: keepKNamesDeep(mergeGap(supplementEn.gap, supplement.gap)),
   }
   return (
-    <NextIntlClientProvider locale={params.locale} messages={{ ...base, cd: keepKNamesDeep({ ...en.cd, ...local.cd }) }}>
+    <NextIntlClientProvider locale={params.locale} messages={messages}>
       <V2Shell>{children}</V2Shell>
     </NextIntlClientProvider>
   )

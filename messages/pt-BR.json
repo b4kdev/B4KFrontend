@@ -984,9 +984,9 @@
       "preferences": {
         "heading": "Preferências",
         "language": "Idioma",
-        "appearance": "Appearance",
-        "appearanceDark": "Dark",
-        "appearanceLight": "Light",
+        "appearance": "Aparência",
+        "appearanceDark": "Escuro",
+        "appearanceLight": "Claro",
         "transport": "Transporte padrão",
         "transportCar": "Carro",
         "transportPublic": "Transporte público",
@@ -1223,7 +1223,7 @@
     },
     "sections": {
       "concerts": "Shows",
-      "tours": "Tours",
+      "tours": "Passeios",
       "agencies": "Agências",
       "merchandise": "Produtos",
       "filming": "Locações de Filmagem",
@@ -1793,7 +1793,7 @@
         "myeongdong": "Myeongdong",
         "haeundae": "Haeundae",
         "seomyeon": "Seomyeon",
-        "jejuCity": "Jeju City",
+        "jejuCity": "Cidade de Jeju",
         "seogwipo": "Seogwipo"
       },
       "tag": {
