@@ -19,6 +19,7 @@ import Analytics from '@/components/analytics/Analytics';
 import CookieBanner from '@/components/analytics/CookieBanner';
 import TermsGate from '@/components/legal/TermsGate';
 import { QuickPlanProvider } from '@/contexts/QuickPlanContext';
+import { isV2Live } from '@/lib/v2-live';
 import QuickPlanModal from '@/components/quickplan/QuickPlanModal';
 
 function ShellInner({ children }: { children: React.ReactNode }) {
@@ -52,13 +53,16 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Preview of the new design (PD-53 update 2): /[locale]/v2/... pages bring their own shell from
-// components/library, so they get the providers but none of the live chrome. Live routes unchanged.
+// New design (PD-53 update 2): /[locale]/v2/... preview pages, and the live areas listed in
+// lib/v2-live.ts (served by the same v2 screens), bring their own shell from components/library,
+// so they get the providers but none of the live chrome.
 const V2_PREVIEW = /^\/[^/]+\/v2(\/|$)/;
+const isV2Page = (pathname: string) =>
+  V2_PREVIEW.test(pathname) || isV2Live(pathname.replace(/^\/[^/]+/, ''));
 
 export default function ShellClient({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  if (pathname && V2_PREVIEW.test(pathname)) {
+  if (pathname && isV2Page(pathname)) {
     return (
       <AuthProvider>
         <AuthGateProvider>

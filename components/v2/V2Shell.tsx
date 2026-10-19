@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import { useAuth } from '@/contexts/AuthContext'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
+import { v2Area } from '@/lib/v2-live'
 import {
   CookieBanner,
   Drawer,
@@ -45,7 +46,7 @@ export const useV2Shell = () => {
 const COOKIE_KEY = 'b4k-v2-preview-cookie-choice'
 
 function activeFrom(path: string): Destination | null {
-  const seg = path.split('/')[3] ?? ''
+  const seg = v2Area(path)
   if (seg === '') return 'home'
   if (seg === 'map' || seg === 'plan') return 'map'
   if (seg === 'explore') return 'explore'
@@ -99,7 +100,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const meta = authUser?.user_metadata as { full_name?: string; name?: string; avatar_url?: string } | undefined
   const user: ShellUser = authUser ? { name: meta?.full_name ?? meta?.name ?? authUser.email?.split('@')[0] ?? '', avatarSrc: meta?.avatar_url ?? null } : null
   const active = activeFrom(pathname)
-  const onMap = ['map', 'plan'].includes(pathname.split('/')[3] ?? '')
+  const onMap = ['map', 'plan'].includes(v2Area(pathname))
   const choose = (v: 'accepted' | 'declined') => {
     try {
       localStorage.setItem(COOKIE_KEY, v)
@@ -168,6 +169,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
 export function useV2SignOut() {
   return async () => {
     await createSupabaseBrowserClient().auth.signOut()
-    window.location.assign(window.location.pathname.replace(/\/v2.*/, '/v2'))
+    // v2 Home of the current locale; middleware moves it to the live Home once Home is live.
+    window.location.assign(window.location.pathname.replace(/^(\/[^/]+).*/, '$1/v2'))
   }
 }

@@ -4,6 +4,7 @@ import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import { createServerClient } from '@supabase/ssr'
 import { routing, RETIRED_LOCALES } from './i18n/routing'
+import { isV2Live, V2_LIVE_HEADER } from './lib/v2-live'
 
 // ── Security headers ────────────────────────────────────────────────────────────
 // 'unsafe-eval' is added to script-src only in dev — Next.js Fast Refresh
@@ -88,6 +89,26 @@ const intlMiddleware = createIntlMiddleware(routing)
 // /zh-CN/... and /th/... (PD-06 retired locales) → /en/... with a permanent
 // redirect, keeping the rest of the path and the query string.
 const RETIRED_LOCALE_RE = new RegExp(`^/(${RETIRED_LOCALES.join('|')})(?=/|$)`, 'i')
+
+// ── New design, live areas (lib/v2-live.ts) ──────────────────────────────────────
+// /<locale>[/v2]<path>: groups are the locale, the /v2 preview prefix, and the rest of the path.
+const V2_ROUTE_RE = new RegExp(`^/(${routing.locales.join('|')})(/v2(?=/|$))?(/.*)?$`)
+
+// Serves /<locale><path> from the v2 screen at /<locale>/v2<path>, keeping what the intl
+// middleware set on its own response (locale cookie, alternate links) and the locale request
+// header it forwards.
+function rewriteToV2(req: NextRequest, intl: NextResponse, locale: string, path: string): NextResponse {
+  const url = req.nextUrl.clone()
+  url.pathname = `/${locale}/v2${path === '/' ? '' : path}`
+  const headers = new Headers(req.headers)
+  headers.set('X-NEXT-INTL-LOCALE', locale)
+  headers.set(V2_LIVE_HEADER, '1')
+  const res = NextResponse.rewrite(url, { request: { headers } })
+  intl.cookies.getAll().forEach((c) => res.cookies.set(c))
+  const link = intl.headers.get('Link')
+  if (link) res.headers.set('Link', link)
+  return res
+}
 
 // ── Maintenance mode ─────────────────────────────────────────────────────────────
 // Gate everything behind a 503 when MAINTENANCE_MODE=1. Never gates Preview deploys
@@ -214,9 +235,23 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
     return withSecurityHeaders(NextResponse.redirect(url, 308))
   }
 
+  // ── New design: live areas are served by their v2 screens ─────────────────
+  // The old preview address of a live area moves to the live address (v2 screens still link
+  // to /v2/...); the live address renders the v2 screen without changing the URL.
+  const v2Route = V2_ROUTE_RE.exec(pathname)
+  const v2Path = v2Route?.[3] ?? ''
+  if (v2Route?.[2] && isV2Live(v2Path)) {
+    const url = req.nextUrl.clone()
+    url.pathname = `/${v2Route[1]}${v2Path === '/' ? '' : v2Path}`
+    return withSecurityHeaders(NextResponse.redirect(url, 307))
+  }
+
   // ── Non-API routes: Supabase session refresh + intl routing ──────────────
   // Build the intl response first so we can pass its headers through.
-  const response = intlMiddleware(req)
+  let response = intlMiddleware(req)
+  if (v2Route && !v2Route[2] && isV2Live(v2Path) && response.status < 300 && !response.headers.has('x-middleware-rewrite')) {
+    response = rewriteToV2(req, response, v2Route[1], v2Path)
+  }
 
   // Refresh the Supabase auth token so SSR can read the session on every page.
   // Fail-open on missing/invalid config — a bad env var should degrade auth,

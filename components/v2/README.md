@@ -21,6 +21,16 @@ Option A). Screen IDs (SCR-nnn) are rows in the "B4K UI Worksheet" Screens tab.
 | Texts not in the deck yet | `gaps.ts` | English placeholders; each becomes a Copy Deck row (2nd review) |
 | Line breaks | `v2.css`, `text.ts` | UI-102: default breaks in ko/ja/zh-TW on v2 (live `globals.css` keeps its own), K-names never split |
 
+## Live areas
+
+Once an area is signed off it serves its live routes from the same v2 screens: add its path to
+`V2_LIVE_PATHS` in `lib/v2-live.ts`. Middleware then rewrites `/[locale]<path>` to the v2 screen
+(the address stays), redirects the old `/[locale]/v2<path>` address there (307, so v2 links keep
+working), the live shell steps aside, and the page keeps the live metadata (no `noindex`). The live
+screens stay in the code base; removing the line switches the area back.
+
+Live now: `/` (Home) and `/explore` (A2).
+
 ## Areas
 
 ### A1 Map and planning
