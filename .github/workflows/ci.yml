@@ -1,12 +1,13 @@
 name: CI
 
 # OQ-20 — B4KFrontend CI hardening
-# Adds 5 jobs on top of the existing gitleaks workflow:
+# Adds 6 jobs on top of the existing gitleaks workflow:
 #   1. lint            — next lint (eslint)
 #   2. typecheck       — tsc --noEmit
 #   3. build           — next build (no deploy)
 #   4. i18n-keys       — every t() key exists in every locale file
 #   5. token-compliance — no hardcoded hex / arbitrary Tailwind / forbidden tokens
+#   6. storybook       — storybook build (components/library)
 
 on:
   pull_request:
@@ -77,8 +78,26 @@ jobs:
           NEXT_PUBLIC_SITE_URL: https://b4k.app
         run: npm run build
 
+  storybook:
+    name: Storybook build (component library)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/jod
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Storybook
+        run: npm run build-storybook -- --quiet
+
   i18n-keys:
-    name: i18n completeness (7 locales)
+    name: i18n completeness (5 service locales)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -100,7 +119,7 @@ jobs:
 
           frontend = sys.argv[1]
           messages_dir = os.path.join(frontend, "messages")
-          locales = ["en", "ko", "ja", "zh-CN", "zh-TW", "th", "pt-BR"]
+          locales = ["en", "ko", "ja", "zh-TW", "pt-BR"]  # service languages; zh-CN and th were removed
 
           t_call_re = re.compile(
               r"""(?:^|[\s\{\(\|&!?:,=;])t(?:\.(?:rich|raw|markup))?\(\s*['"]([a-zA-Z0-9_\.]+)['"]"""
@@ -224,6 +243,7 @@ jobs:
             -type f \( -name '*.tsx' -o -name '*.ts' \) \
             ! -name '*.test.tsx' ! -name '*.test.ts' \
             ! -name '*.spec.tsx' ! -name '*.spec.ts' \
+            ! -name '*.stories.tsx' \
             ! -path '*/node_modules/*' ! -path '*/.next/*' \
             ! -name 'global-error.tsx' \
             ! -path '*/test/*' \
@@ -237,7 +257,7 @@ jobs:
           while IFS= read -r f; do
             [ -z "$f" ] && continue
             grep -nE '#[0-9a-fA-F]{3,8}\b' "$f" 2>/dev/null \
-              | grep -vE '//\s*allow-hex' \
+              | grep -vE '(//|/\*)\s*allow-hex' \
               | grep -vE '^\s*[0-9]+:\s*//' \
               | grep -vE '^\s*[0-9]+:\s*\*' \
               | sed "s|^|$f:|" || true
