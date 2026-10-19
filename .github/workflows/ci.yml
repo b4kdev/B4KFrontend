@@ -133,6 +133,10 @@ jobs:
           dynamic_ns_re = re.compile(
               r"""(?:useTranslations|getTranslations)\(\s*[a-zA-Z_][a-zA-Z0-9_.]*\s*\)"""
           )
+          # v2 preview: useCd() (components/v2/cd.ts) is useTranslations('cd'), the Copy Deck
+          # namespace that app/[locale]/v2/layout.tsx loads from messages/v2/{locale}.json.
+          cd_hook_re = re.compile(r"""\buseCd\(\s*\)""")
+          comment_line_re = re.compile(r"""^\s*(?://|/\*|\*)""")
 
           key_candidates = []
           files_scanned = 0
@@ -144,7 +148,11 @@ jobs:
                   src = open(path, encoding="utf-8").read()
               except Exception:
                   return
+              # t('...') written in a comment is documentation, not a call site.
+              src = "\n".join(l for l in src.splitlines() if not comment_line_re.match(l))
               ns_matches = ns_call_re.findall(src) + ns_call_obj_re.findall(src)
+              if cd_hook_re.search(src):
+                  ns_matches.append("cd")
               if not ns_matches and dynamic_ns_re.search(src):
                   # useTranslations()/getTranslations() called with a variable
                   # namespace (not a string literal) — we can't statically
@@ -203,6 +211,15 @@ jobs:
               with open(p, encoding="utf-8") as f:
                   data = json.load(f)
               keyset = set(flatten(data).keys())
+              # v2 Copy Deck texts: English rows plus the locale's own, as the v2 layout merges
+              # them (untranslated rows fall back to English).
+              cd = {}
+              for v2_loc in ("en", loc):
+                  v2_path = os.path.join(messages_dir, "v2", f"{v2_loc}.json")
+                  if os.path.exists(v2_path):
+                      with open(v2_path, encoding="utf-8") as f:
+                          cd.update(json.load(f).get("cd", {}))
+              keyset |= set(flatten({"cd": cd}).keys())
               missing = []
               for cands in key_candidates:
                   if not any(has_key(keyset, c) for c in cands):
