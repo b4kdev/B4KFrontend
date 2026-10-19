@@ -1,8 +1,9 @@
 'use client'
 
 import { useId, type ReactNode } from 'react'
-import { ArrowLeft, Bookmark, ChevronDown, ChevronRight, Clock, Folder, Globe, Heart, Lock, MapPin, Minus, Plus, Share2, X } from 'lucide-react'
+import { ArrowLeft, Bookmark, ChevronDown, Clock, Folder, Globe, Heart, Lock, MapPin, Minus, Plus, Share2, Sparkles, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { Avatar } from './Avatar'
 import { Badge } from './Badge'
 import { Button } from './Button'
 import { ChatBubble } from './Content'
@@ -45,23 +46,26 @@ export function AiPanel({ viewport, title, greeting, suggestions, onSuggestion, 
     <section
       role={desktop ? 'complementary' : 'dialog'}
       aria-labelledby={id}
-      className={cn('flex flex-col bg-ui-bg-elevated text-ui-fg', desktop ? 'h-[min(65vh,640px)] w-[380px] rounded-2xl border border-ui-border' : 'h-full w-full', className)}
+      className={cn('flex flex-col bg-ui-bg-raised text-ui-fg', desktop ? 'h-[min(65vh,640px)] w-[380px] border border-ui-border' : 'h-full w-full', className)}
     >
-      <div className="flex items-center gap-[var(--space-2)] px-[var(--space-4)] py-[var(--space-2)]">
-        {desktop ? null : <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onMinimize} className="-ml-[var(--space-2)]" />}
+      <div className={cn('flex items-center gap-[var(--space-2)] border-b border-ui-border', desktop ? 'py-[var(--space-1)] pl-[var(--space-4)] pr-[var(--space-1)]' : 'p-[var(--space-1)]')}>
+        {desktop ? null : <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onMinimize} />}
+        <Sparkles aria-hidden className="size-[var(--icon-size-sm)] shrink-0" />
         <h2 id={id} className="flex-1 type-title-card">{title}</h2>
         {desktop ? (
           <>
             <IconButton label={labels.minimize} icon={<Minus />} onClick={onMinimize} />
-            <IconButton label={labels.close} icon={<X />} onClick={onClose} className="-mr-[var(--space-2)]" />
+            <IconButton label={labels.close} icon={<X />} onClick={onClose} />
           </>
         ) : null}
       </div>
-      <div role="log" aria-live="polite" className="flex min-h-0 flex-1 flex-col gap-[var(--space-2)] overflow-y-auto px-[var(--space-4)] py-[var(--space-2)]">
+      <div role="log" aria-live="polite" className="flex min-h-0 flex-1 flex-col gap-[var(--space-3)] overflow-y-auto p-[var(--space-4)]">
         {messages.length === 0 ? (
-          <div className="flex flex-col gap-[var(--space-4)]">
-            <p className="type-body-base text-ui-fg">{greeting}</p>
-            <div className="flex flex-wrap gap-[var(--space-2)]">
+          // Figma Empty: sparkles 32, greeting and chips centred in the log.
+          <div className="flex flex-1 flex-col items-center justify-center gap-[var(--space-3)] text-center">
+            <Sparkles aria-hidden className="size-[var(--icon-size-xl)] text-ui-fg-muted" />
+            <p className="max-w-[300px] type-body-base text-ui-fg-muted">{greeting}</p>
+            <div className="flex flex-wrap justify-center gap-[var(--space-2)]">
               {suggestions.map((s) => <Chip key={s} onClick={() => onSuggestion(s)}>{s}</Chip>)}
             </div>
           </div>
@@ -70,7 +74,7 @@ export function AiPanel({ viewport, title, greeting, suggestions, onSuggestion, 
         )}
         {typing ? <ChatBubble role="typing" typingLabel={labels.typing} /> : null}
       </div>
-      <div className="px-[var(--space-4)] pb-[var(--space-4)] pt-[var(--space-2)]">
+      <div className="border-t border-ui-border p-[var(--space-3)]">
         <AiInput {...input} />
       </div>
     </section>
@@ -131,17 +135,17 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
   const id = useId()
   if (state === 'empty') {
     return (
-      <section aria-label={labels.region} className={cn('border-t border-ui-border bg-ui-bg px-[var(--space-4)] py-[var(--space-4)]', className)}>
+      <section aria-label={labels.region} className={cn('rounded-t-3xl bg-ui-bg-sunken p-[var(--space-4)]', className)}>
         <p className="type-title-card text-ui-fg">{labels.emptyTitle}</p>
-        <p className="mt-[var(--space-1)] type-body-caption text-ui-fg-muted">{labels.emptyBody}</p>
+        <p className="mt-[var(--space-3)] type-body-caption text-ui-fg-muted">{labels.emptyBody}</p>
       </section>
     )
   }
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
-    <section aria-labelledby={id} className={cn('flex flex-col text-ui-fg', state === 'open' ? 'h-full bg-ui-bg' : 'border-t border-ui-border bg-ui-bg-sunken', className)}>
-      {/* Open: the Left panel's color/bg; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
-      <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('flex w-full flex-col gap-[var(--space-3)] px-[var(--space-4)] text-left hover:bg-ui-state-hover', state === 'collapsed' ? 'py-[var(--space-4)]' : 'py-[var(--space-3)]', FOCUS_RING_INSET)}>
+    <section aria-labelledby={id} className={cn('flex flex-col rounded-t-3xl text-ui-fg', state === 'open' ? 'h-full gap-[var(--space-3)] bg-ui-bg p-[var(--space-4)]' : 'bg-ui-bg-sunken', className)}>
+      {/* Open: the Left panel's color/bg, everything inside the root's 16 padding; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
+      <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('flex w-full flex-col gap-[var(--space-3)] text-left hover:bg-ui-state-hover', state === 'collapsed' && 'p-[var(--space-4)]', FOCUS_RING_INSET)}>
         <span className="flex w-full items-center gap-[var(--space-2)]">
           <span id={id} aria-live="polite" className="min-w-0 flex-1 type-title-card">{summary}</span>
           <span className="sr-only">{state === 'open' ? labels.close : labels.open}</span>
@@ -160,9 +164,10 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
       </button>
       {state === 'open' ? (
         <>
-          <div className="flex items-center gap-[var(--space-1)] pr-[var(--space-2)]">
+          <div className="flex items-center gap-[var(--space-1)]">
             <Tabs
               label={labels.region}
+              baseline={false}
               value={String(activeDay)}
               onValueChange={(v) => onDayChange(v === 'all' ? 'all' : (Number(v) as Day))}
               tabs={[
@@ -179,21 +184,31 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
               scrollLabels={labels.previousDays && labels.nextDays ? { previous: labels.previousDays, next: labels.nextDays } : undefined}
               className="min-w-0 flex-1"
             />
-            {onAddDay && days < 8 ? <IconButton label={labels.addDay} icon={<Plus />} onClick={onAddDay} /> : null}
+            {/* Figma "+ Day": a Tab-styled text button (44 high, px 16, body/base, fg-muted). */}
+            {onAddDay && days < 8 ? (
+              <button type="button" onClick={onAddDay} className={cn('inline-flex min-h-[var(--target-touch-min)] shrink-0 items-center whitespace-nowrap px-[var(--space-4)] type-body-base text-ui-fg-muted hover:bg-ui-state-hover hover:text-ui-fg', FOCUS_RING_INSET)}>
+                {labels.addDay}
+              </button>
+            ) : null}
           </div>
-          <ol className="min-h-0 flex-1 overflow-y-auto px-[var(--space-4)] py-[var(--space-2)]">
+          <ol className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
             {shown.map((s, i) => (
               <li key={s.id} className="list-none">
                 <ul>
                   <PlanStopRow name={s.name} thumbnail={s.imageSrc} number={stops.indexOf(s) + 1} day={s.day} duration={s.duration} durationLabel={s.durationLabel} onDuration={() => onDuration(s.id)} onRemove={() => onRemove(s.id)} removeLabel={labels.remove(s.name)} reorderLabel={labels.reorder(s.name)} />
                 </ul>
-                {s.leg && i < shown.length - 1 ? <div className="ml-[34px]"><TransportMode mode="estimate" modeLabel={labels.about} time={s.leg} /></div> : null}
+                {s.leg && i < shown.length - 1 ? <div className="ml-[56px]"><TransportMode mode="estimate" modeLabel={labels.about} time={s.leg} /></div> : null}
               </li>
             ))}
           </ol>
-          {dayTotal ? <p className="px-[var(--space-4)] pb-[var(--space-2)] type-body-caption text-ui-fg-muted">{dayTotal}</p> : null}
-          <div className="flex flex-col gap-[var(--space-2)] px-[var(--space-4)] pb-[var(--space-4)]">
-            <Button onClick={onSave} className="w-full">{labels.save}</Button>
+          {dayTotal ? (
+            <p className="flex items-center gap-[var(--space-1)] type-body-caption text-ui-fg-muted">
+              <Clock aria-hidden className="size-[var(--icon-size-xs)] shrink-0" />
+              {dayTotal}
+            </p>
+          ) : null}
+          <div className="flex flex-col gap-[var(--space-3)]">
+            <Button size="md" onClick={onSave} className="w-full">{labels.save}</Button>
             <Button variant="ghost" size="md" onClick={onDiscard} className="w-full">{labels.discard}</Button>
           </div>
         </>
@@ -240,23 +255,33 @@ export type SavedHubProps = {
 
 /** Saved hub (UI-77, PD-48): saved places inside the map, for adding them to a plan. */
 export function SavedHub({ view, folders = [], folder, onOpenFolder, onBack, onAdd, emptyAction, labels }: SavedHubProps) {
-  if (view === 'empty') return <EmptyState title={labels.emptyTitle} action={emptyAction}>{labels.emptyBody}</EmptyState>
+  // Figma Saved hub root: color/bg-raised, padding 16, gap 16 in every view.
+  const root = 'flex flex-col gap-[var(--space-4)] bg-ui-bg-raised p-[var(--space-4)] text-ui-fg'
+  if (view === 'empty') {
+    return (
+      <div className={root}>
+        <EmptyState container="bordered" icon={<Bookmark />} title={labels.emptyTitle} action={emptyAction}>{labels.emptyBody}</EmptyState>
+      </div>
+    )
+  }
   if (view === 'places') {
     return (
-      <ul>
-        {folders.map((f) => (
-          <ListItem key={f.id} title={f.name} secondary={f.count} leading={<Folder />} chevron onClick={() => onOpenFolder(f.id)} />
-        ))}
-      </ul>
+      <div className={root}>
+        <ul>
+          {folders.map((f) => (
+            <ListItem key={f.id} title={f.name} secondary={f.count} leading={<Folder />} chevron onClick={() => onOpenFolder(f.id)} />
+          ))}
+        </ul>
+      </div>
     )
   }
   return (
-    <div>
-      <button type="button" onClick={onBack} className={cn('flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-2)] px-[var(--space-4)] type-title-card text-ui-fg hover:bg-ui-state-hover', FOCUS_RING_INSET)}>
-        <ArrowLeft aria-hidden className="size-[var(--icon-size-sm)]" />
-        <span className="sr-only">{labels.back}: </span>
-        {folder?.name}
-      </button>
+    <div className={root}>
+      {/* Figma Folder › Back: Ghost icon button 40 + title/card, gap 4, hugging. */}
+      <div className="flex items-center gap-[var(--space-1)]">
+        <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onBack} />
+        <p className="type-title-card">{folder?.name}</p>
+      </div>
       <ul>
         {folder?.places.map((p) => (
           <ListItem
@@ -275,6 +300,8 @@ export function SavedHub({ view, folders = [], folder, onOpenFolder, onBack, onA
 export type ItineraryPanelProps = {
   title: string
   owner: string
+  /** Figma Owner row › Avatar xs before the name: the owner's photo (null shows initials from `owner`); left out, no avatar. */
+  ownerAvatarSrc?: string | null
   /** Owner only: lock and Private beside the owner name. */
   privateLabel?: string
   stats: string[]
@@ -293,40 +320,43 @@ export type ItineraryPanelProps = {
 }
 
 /** Itinerary panel (UI-77, ADD-68): title is the page h1; day tabs; stops as an ordered list. */
-export function ItineraryPanel({ title, owner, privateLabel, stats, days, activeDay, onDayChange, stops, selectedStop, onSelectStop, onLeg, related, footer, labels }: ItineraryPanelProps) {
+export function ItineraryPanel({ title, owner, ownerAvatarSrc, privateLabel, stats, days, activeDay, onDayChange, stops, selectedStop, onSelectStop, onLeg, related, footer, labels }: ItineraryPanelProps) {
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
-    <div className="flex h-full flex-col text-ui-fg">
-      <div className="flex flex-col gap-[var(--space-2)] px-[var(--space-4)] pb-[var(--space-3)] pt-[var(--space-4)]">
-        <h1 className="type-display-h2">{title}</h1>
+    <div className="flex h-full flex-col gap-[var(--space-4)] bg-ui-bg-raised p-[var(--space-4)] text-ui-fg">
+      <div className="flex flex-col gap-[var(--space-2)]">
+        <h1 className="type-display-h3">{title}</h1>
         <p className="flex items-center gap-[var(--space-2)] type-body-caption text-ui-fg-muted">
+          {ownerAvatarSrc !== undefined ? <Avatar size="xs" src={ownerAvatarSrc} name={owner} decorative /> : null}
           {owner}
-          {privateLabel ? <span className="inline-flex items-center gap-[var(--gap-xs)]"><Lock aria-hidden className="size-[var(--icon-size-xs)]" />{privateLabel}</span> : null}
+          {privateLabel ? <span className="inline-flex items-center gap-[var(--space-2)]"><Lock aria-hidden className="size-[var(--icon-size-xs)]" />{privateLabel}</span> : null}
         </p>
-        <p className="type-body-caption text-ui-fg-muted">{stats.join(' · ')}</p>
+        <p className="bg-ui-bg-sunken p-[var(--space-3)] type-body-caption text-ui-fg">{stats.join(' · ')}</p>
       </div>
-      <Tabs label={labels.days} value={String(activeDay)} onValueChange={(v) => onDayChange(v === 'all' ? 'all' : (Number(v) as Day))} tabs={[{ id: 'all', label: labels.all }, ...Array.from({ length: days }, (_, i) => ({ id: String(i + 1), label: labels.day(i + 1), day: (i + 1) as Day }))]} />
+      <Tabs baseline={false} label={labels.days} value={String(activeDay)} onValueChange={(v) => onDayChange(v === 'all' ? 'all' : (Number(v) as Day))} tabs={[{ id: 'all', label: labels.all }, ...Array.from({ length: days }, (_, i) => ({ id: String(i + 1), label: labels.day(i + 1), day: (i + 1) as Day }))]} />
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <ol className="px-[var(--space-2)] py-[var(--space-2)]">
+        <ol>
           {shown.map((s, i) => (
             <li key={s.id} className="list-none">
+              {/* Figma Timeline: an eyebrow/category day heading ("DAY 1") where a day starts. */}
+              {i === 0 || shown[i - 1].day !== s.day ? <p className="type-eyebrow-category text-ui-fg-muted">{labels.day(s.day)}</p> : null}
               <ul>
                 <ItineraryStop name={s.name} number={stops.indexOf(s) + 1} day={s.day} meta={s.meta} note={s.note} thumbnail={s.imageSrc} selected={selectedStop === s.id} onSelect={onSelectStop ? () => onSelectStop(s.id) : undefined} />
               </ul>
               {s.leg && i < shown.length - 1 ? (
-                <div className="ml-[19px]"><TransportMode mode={s.leg.mode} modeLabel={s.leg.label} time={s.leg.time} onChange={onLeg ? () => onLeg(s.id) : undefined} /></div>
+                <div className="pl-[var(--space-5)]"><TransportMode mode={s.leg.mode} modeLabel={s.leg.label} time={s.leg.time} onChange={onLeg ? () => onLeg(s.id) : undefined} /></div>
               ) : null}
             </li>
           ))}
         </ol>
         {related ? (
-          <section className="flex flex-col gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-4)]">
-            <h2 className="type-display-h3">{labels.related}</h2>
+          <section className="flex flex-col gap-[var(--space-2)]">
+            <h2 className="type-title-card">{labels.related}</h2>
             {related}
           </section>
         ) : null}
       </div>
-      <div className="flex gap-[var(--space-2)] border-t border-ui-border px-[var(--space-4)] py-[var(--space-3)]">{footer}</div>
+      <div className="flex gap-[var(--space-2)] border-t border-ui-border pt-[var(--space-4)]">{footer}</div>
     </div>
   )
 }
@@ -355,27 +385,27 @@ export type PlaceDetailProps = {
 export function PlaceDetail({ viewport, name, meta, imageSrc, imageAlt, description, sponsored, details, saved, liked, onAdd, onSave, onLike, onShare, labels }: PlaceDetailProps) {
   const ICON = { hours: Clock, address: MapPin, website: Globe } as const
   return (
-    <section aria-label={name} className="flex flex-col gap-[var(--space-4)] text-ui-fg">
+    <section aria-label={name} className="flex flex-col gap-[var(--space-4)] py-[var(--space-4)] text-ui-fg">
       <Image ratio={viewport === 'desktop' ? '4:3' : '16:9'} src={imageSrc} alt={imageAlt ?? ''} sizes="420px" />
-      <div className="flex flex-col gap-[var(--space-1)] px-[var(--space-4)]">
+      <div className="flex flex-col gap-[var(--space-2)] px-[var(--space-4)]">
         {sponsored ? <Badge variant="normal" className="self-start">{sponsored}</Badge> : null}
         <h2 className="type-display-h2">{name}</h2>
-        <p className="type-body-caption text-ui-fg-muted">{meta}</p>
+        <p className="type-body-base text-ui-fg-muted">{meta}</p>
       </div>
       <div className="flex items-center gap-[var(--space-2)] px-[var(--space-4)]">
-        <Button leadingIcon={<Plus />} onClick={onAdd} className="flex-1">{labels.add}</Button>
+        <Button size="md" leadingIcon={<Plus />} onClick={onAdd} className="flex-1">{labels.add}</Button>
         <IconButton variant="secondary" label={labels.save} aria-pressed={saved} icon={<Bookmark className={saved ? 'fill-current' : undefined} />} onClick={onSave} />
         <IconButton variant="secondary" label={labels.like} aria-pressed={liked} icon={<Heart className={liked ? 'fill-current' : undefined} />} onClick={onLike} />
         <IconButton variant="secondary" label={labels.share} icon={<Share2 />} onClick={onShare} />
       </div>
-      {description ? <p className="px-[var(--space-4)] type-body-base text-ui-fg-muted">{description}</p> : null}
-      <ul className="border-t border-ui-border">
+      {description ? <p className="px-[var(--space-4)] type-body-base text-ui-fg">{description}</p> : null}
+      <ul>
         {details.map((d) => {
           const Icon = ICON[d.icon]
           return d.href ? (
-            <ListItem key={d.title} title={d.title} leading={<Icon />} trailing={<ChevronRight className="size-[var(--icon-size-sm)]" />} onClick={() => window.open(d.href, '_blank', 'noopener')} />
+            <ListItem key={d.title} title={d.title} leading={<Icon />} divider={false} onClick={() => window.open(d.href, '_blank', 'noopener')} />
           ) : (
-            <ListItem key={d.title} title={d.title} leading={<Icon />} />
+            <ListItem key={d.title} title={d.title} leading={<Icon />} divider={false} />
           )
         })}
       </ul>

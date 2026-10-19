@@ -24,21 +24,21 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
   return (
     <div
       className={cn(
-        'flex items-center gap-[var(--gap-sm)] rounded-full border border-ui-border-strong px-[var(--space-4)] text-ui-fg type-body-base',
-        'transition-colors duration-short4 ease-standard hover:border-ui-fg-muted focus-within:border-[length:var(--border-width-2)] focus-within:border-ui-border-focus',
+        'flex items-center gap-[var(--gap-sm)] rounded-full border border-ui-border-strong bg-ui-bg-raised px-[var(--space-4)] text-ui-fg type-body-base',
+        'transition-colors duration-short4 ease-standard hover:border-ui-border-focus focus-within:border-[length:var(--border-width-2)] focus-within:border-ui-border-focus',
         size === 'lg' ? 'h-[var(--control-height-lg)]' : 'h-[var(--control-height-md)]',
-        disabled && 'cursor-not-allowed border-ui-border-disabled text-ui-fg-disabled',
+        disabled && 'cursor-not-allowed border-ui-border-disabled bg-ui-bg-disabled text-ui-fg-disabled hover:border-ui-border-disabled',
         className,
       )}
     >
-      <Search aria-hidden className="size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted" />
+      <Search aria-hidden className={cn('size-[var(--icon-size-sm)] shrink-0', disabled ? 'text-ui-fg-disabled' : 'text-ui-fg-muted')} />
       <input
         ref={ref}
         type="search"
         aria-label={label}
         value={value}
         disabled={disabled}
-        className="h-full min-w-0 flex-1 bg-transparent outline-none placeholder:text-ui-fg-placeholder [&::-webkit-search-cancel-button]:hidden"
+        className="h-full min-w-0 flex-1 bg-transparent outline-none placeholder:text-ui-fg-placeholder disabled:cursor-not-allowed disabled:placeholder:text-ui-fg-disabled [&::-webkit-search-cancel-button]:hidden"
         {...props}
       />
       {onClear && hasValue ? (

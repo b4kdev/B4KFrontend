@@ -392,7 +392,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         secondaryAction={<Button variant="ghost" onClick={() => setSaveOpen(false)}>{k('map.plan.discardCancel')}</Button>}
         primaryAction={<Button loading={saving} disabled={!planName.trim()} onClick={savePlan}>{k('map.plan.save')}</Button>}
       >
-        <div className="flex flex-col gap-[var(--space-4)] pb-[var(--space-2)]">
+        <div className="flex flex-col gap-[var(--space-4)]">
           <p className="type-body-base text-ui-fg-muted">{t('CD1458')}</p>
           <TextInput label={t('CD1459')} showLabel value={planName} maxLength={80} onChange={(e) => setPlanName(e.target.value)} help={`${planName.length}/80`} data-autofocus />
           {!user ? <p className="type-body-caption text-ui-fg-muted">{t('CD1489')}</p> : null}
@@ -450,7 +450,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           {content}
         </BottomSheet>
         <BottomSheet type="modal" open={planSheet} onClose={() => setPlanSheet(false)} label={k('map.plan.title')}>
-          <div className="-mx-[var(--space-4)] h-[70dvh]">{cartNode}</div>
+          <div className="-mx-[var(--space-6)] h-[70dvh]">{cartNode}</div>
         </BottomSheet>
         {dialogs}
       </div>

@@ -27,7 +27,7 @@ export const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab({ select
       aria-selected={selected}
       tabIndex={selected ? 0 : -1}
       className={cn(
-        'relative inline-flex h-[var(--target-touch-min)] shrink-0 items-center gap-[var(--space-1-5)] px-[var(--space-4)] type-body-base',
+        'relative inline-flex h-[var(--target-touch-min)] shrink-0 items-center justify-center gap-[var(--space-1-5)] px-[var(--space-4)] type-body-base',
         'transition-colors duration-short4 ease-standard disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
         selected ? 'text-ui-fg' : 'text-ui-fg-muted enabled:hover:text-ui-fg',
         "after:absolute after:inset-x-0 after:bottom-0 after:h-[var(--border-width-2)] after:content-['']",
@@ -56,7 +56,7 @@ export const Segment = forwardRef<HTMLButtonElement, SegmentProps>(function Segm
       className={cn(
         'relative inline-flex h-[var(--control-height-sm)] flex-1 items-center justify-center whitespace-nowrap rounded-full px-[var(--space-3)] type-body-base',
         'transition-colors duration-short4 ease-standard disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
-        selected ? 'bg-ui-bg-inverse text-ui-fg-inverse' : 'text-ui-fg-muted enabled:hover:bg-ui-state-hover enabled:hover:text-ui-fg',
+        selected ? 'bg-ui-bg-inverse text-ui-fg-inverse disabled:bg-ui-bg-disabled disabled:text-ui-fg-disabled' : 'text-ui-fg enabled:hover:bg-ui-state-hover',
         FOCUS_RING,
         HIT_AREA,
         className,
@@ -118,7 +118,7 @@ export function NavItem({ icon, label, active = false, badge, className }: NavIt
     >
       <span className="relative inline-flex size-[var(--icon-size-md)] [&>svg]:size-full">
         {icon}
-        {badge ? <span className="absolute -right-[6px] -top-[4px]">{badge}</span> : null}
+        {badge ? <span className="absolute -right-[var(--space-0-5)] -top-[var(--space-0-5)]">{badge}</span> : null}
       </span>
       <span aria-hidden className={cn('size-[var(--space-1)] rounded-full', active ? 'bg-ui-fg' : 'bg-transparent')} />
       <span className="sr-only">{label}</span>
@@ -152,7 +152,7 @@ export function StepItem({ label, number, state = 'upcoming', className }: StepI
       >
         {state === 'done' ? <Check className="size-[var(--icon-size-xs)]" strokeWidth={3} /> : number}
       </span>
-      <span className={cn(state === 'current' ? 'type-body-label text-ui-fg' : 'type-body-caption text-ui-fg-muted')}>{label}</span>
+      <span className={cn(state === 'current' ? 'type-body-label text-ui-fg' : state === 'done' ? 'type-body-base text-ui-fg' : 'type-body-base text-ui-fg-muted')}>{label}</span>
     </li>
   )
 }

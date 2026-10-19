@@ -35,9 +35,9 @@ export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action
     <section data-theme="dark" className={cn('relative w-full overflow-hidden bg-ui-bg-media text-ui-fg', size === 'home' ? 'h-[var(--hero-height-home)]' : 'h-[var(--hero-height-section)]', className)}>
       <Image ratio="16:9" src={imageSrc} alt="" priority sizes="100vw" className="!absolute inset-0 h-full !aspect-auto" />
       <div aria-hidden className="absolute inset-0 bg-overlay-fade" />
-      <div className="absolute inset-x-0 bottom-0 flex max-w-[1000px] flex-col items-start gap-[var(--space-3)] p-[var(--space-11)] max-md:p-[var(--space-4)]">
+      <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-[var(--space-3)] p-[var(--space-11)] max-md:px-[var(--space-6)] max-md:pb-[var(--space-10)] max-md:pt-[var(--space-6)]">
         {eyebrow ? <Badge variant="on-image">{eyebrow}</Badge> : null}
-        <H className={cn(size === 'home' ? 'type-display-hero' : 'type-display-hub', 'max-w-full break-words hyphens-auto [text-wrap:balance] [&:lang(ko)]:break-keep')}>{title}</H>
+        <H className={cn(size === 'home' ? 'type-display-hero' : 'type-display-hub', 'max-w-[960px] break-words hyphens-auto [text-wrap:balance] [&:lang(ko)]:break-keep')}>{title}</H>
         {subtitle ? <p className="max-w-[400px] type-body-long text-ui-fg-muted max-md:hidden">{subtitle}</p> : null}
         {action ? <div className="pt-[var(--space-3)]">{action}</div> : null}
       </div>
@@ -81,9 +81,9 @@ export function Carousel({ type, label, children, seeAll, subtitle, previousLabe
     return (
       <section aria-labelledby={titleId} className={cn('flex flex-col gap-[var(--space-4)]', className)}>
         <SectionHeader id={titleId} title={label} subtitle={subtitle} seeAll={seeAll} arrows={{ onPrevious: () => scroll(-1), onNext: () => scroll(1), previousLabel, nextLabel, atStart: edges.start, atEnd: edges.end }} />
-        <ul ref={rail} className="-mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory gap-[var(--space-4)] overflow-x-auto scroll-px-[var(--grid-gutter-mobile)] px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] [scrollbar-width:none] lg:mx-0 lg:px-0">
+        <ul ref={rail} className="-mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory gap-[var(--space-3)] overflow-x-auto scroll-px-[var(--grid-gutter-mobile)] px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] [scrollbar-width:none] lg:mx-0 lg:px-0">
           {items.map((c, n) => (
-            <li key={n} className="w-[280px] shrink-0 snap-start max-sm:w-[78%]">{c}</li>
+            <li key={n} className="w-[280px] shrink-0 snap-start">{c}</li>
           ))}
         </ul>
       </section>
@@ -100,10 +100,10 @@ export function Carousel({ type, label, children, seeAll, subtitle, previousLabe
           {c}
         </div>
       ))}
-      <div className="absolute bottom-[var(--space-6)] left-[var(--space-11)] max-md:left-[var(--space-4)]" data-theme="dark">
+      <div className="absolute bottom-[var(--space-4)] left-[var(--space-11)] max-md:left-[var(--space-6)]" data-theme="dark">
         <Pagination type="dots" label={label} page={i + 1} pageCount={items.length} statusText={slideLabel(i + 1, items.length)} />
       </div>
-      <div className="absolute bottom-[var(--space-4)] right-[var(--space-11)] flex gap-[var(--space-2)] max-lg:hidden" data-theme="dark">
+      <div className="absolute bottom-[var(--space-5)] right-[var(--space-6)] flex gap-[var(--space-2)] max-lg:hidden" data-theme="dark">
         <IconButton variant="secondary" label={previousLabel} icon={<ChevronLeft />} disabled={i === 0} onClick={() => setI(i - 1)} />
         <IconButton variant="secondary" label={nextLabel} icon={<ChevronRight />} disabled={i === items.length - 1} onClick={() => setI(i + 1)} />
       </div>
@@ -122,9 +122,9 @@ export type FooterProps = {
 /** Footer (CMP-048): one row of legal links and the copyright; content pages only. */
 export function Footer({ links, copyright, navLabel, className }: FooterProps) {
   return (
-    <footer className={cn('flex flex-wrap items-center gap-[var(--space-4)] border-t border-ui-border bg-ui-bg px-[var(--space-8)] py-[var(--space-6)] type-body-caption text-ui-fg-muted max-md:px-[var(--space-4)]', className)}>
+    <footer className={cn('flex flex-wrap items-center gap-[var(--space-4)] border-t border-ui-border bg-ui-bg px-[var(--space-8)] py-[var(--space-6)] type-body-caption text-ui-fg-muted max-md:flex-col max-md:items-start max-md:gap-[var(--space-3)] max-md:px-[var(--space-4)]', className)}>
       <nav aria-label={navLabel} className="flex-1">
-        <ul className="flex flex-wrap gap-[var(--space-4)]">
+        <ul className="flex flex-wrap gap-x-[var(--space-4)] gap-y-[var(--space-2)]">
           {links.map((l) => (
             <li key={l.href}>
               <IntlLink href={l.href} className="hover:text-ui-link-hover focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus">{l.label}</IntlLink>
@@ -169,7 +169,7 @@ export function Form({ onSubmit, errorSummary, children, actions, className }: F
         </div>
       ) : null}
       {children}
-      <div className="flex gap-[var(--gap-sm)] max-md:flex-col max-md:[&>*]:w-full">{actions}</div>
+      <div className="flex gap-[var(--gap-sm)] pt-[var(--space-1)] max-md:flex-col max-md:[&>*]:w-full">{actions}</div>
     </form>
   )
 }

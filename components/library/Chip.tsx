@@ -41,14 +41,13 @@ export const Chip = forwardRef<HTMLButtonElement, ChipProps>(function Chip(
         'relative inline-flex h-[var(--control-height-sm)] shrink-0 items-center justify-center gap-[var(--gap-sm)] rounded-full type-body-chip',
         'transition-colors duration-short4 ease-standard focus-visible:shadow-focus-ring focus-visible:outline-none disabled:cursor-not-allowed',
         iconOnly ? 'w-[var(--control-height-sm)]' : 'px-[var(--chip-padding-x)]',
-        type === 'map'
-          ? isSelected
-            ? 'bg-ui-bg-inverse text-ui-fg-inverse'
-            : 'bg-ui-bg text-ui-fg enabled:hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]'
-          : isSelected
-            ? 'bg-ui-bg-inverse text-ui-fg-inverse enabled:hover:bg-[image:linear-gradient(var(--button-overlay-filled-hover),var(--button-overlay-filled-hover))] enabled:active:bg-[image:linear-gradient(var(--button-overlay-filled-pressed),var(--button-overlay-filled-pressed))]'
+        isSelected
+          ? 'bg-ui-bg-inverse text-ui-fg-inverse enabled:hover:bg-[image:linear-gradient(var(--button-overlay-filled-hover),var(--button-overlay-filled-hover))] enabled:active:bg-[image:linear-gradient(var(--button-overlay-filled-pressed),var(--button-overlay-filled-pressed))]'
+          : type === 'map'
+            ? 'bg-ui-bg text-ui-fg enabled:hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] enabled:active:bg-[image:linear-gradient(var(--color-state-pressed),var(--color-state-pressed))]'
             : 'border border-ui-border-strong text-ui-fg-muted enabled:hover:bg-ui-state-hover enabled:active:bg-ui-state-pressed',
-        'disabled:border-ui-border-disabled disabled:bg-transparent disabled:text-ui-fg-disabled',
+        'disabled:border-ui-border-disabled disabled:text-ui-fg-disabled',
+        isSelected && type !== 'map' ? 'disabled:bg-ui-bg-disabled' : 'disabled:bg-transparent',
         HIT_AREA,
         className,
       )}

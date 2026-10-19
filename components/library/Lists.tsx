@@ -30,19 +30,19 @@ export type ListItemProps = {
   className?: string
 }
 
-const ROW = 'flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-2)] text-left'
+const ROW = 'flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left'
 
 /** List item (CMP-062): one row with slots, 44 high minimum, 1px divider, hover layer, inset focus ring. */
 export function ListItem({ title, secondary, leading, trailing, chevron, divider = true, onClick, href, renderLink, disabled, className }: ListItemProps) {
   const body = (
     <>
-      {leading ? <span className="inline-flex shrink-0 items-center text-ui-fg-muted [&>svg]:size-[var(--icon-size-sm)]">{leading}</span> : null}
+      {leading ? <span className={cn('inline-flex shrink-0 items-center [&>svg]:size-[var(--icon-size-md)]', disabled ? 'text-ui-fg-disabled' : 'text-ui-fg-muted')}>{leading}</span> : null}
       <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-0-5)]">
-        <span className={cn('type-body-base', disabled ? 'text-ui-fg-disabled' : 'text-ui-fg')}>{title}</span>
-        {secondary ? <span className="type-body-caption text-ui-fg-muted">{secondary}</span> : null}
+        <span className={cn('truncate type-body-base', disabled ? 'text-ui-fg-disabled' : 'text-ui-fg')}>{title}</span>
+        {secondary ? <span className={cn('truncate type-body-caption', disabled ? 'text-ui-fg-disabled' : 'text-ui-fg-muted')}>{secondary}</span> : null}
       </span>
       {trailing ? <span className="inline-flex shrink-0 items-center type-body-base text-ui-fg-muted">{trailing}</span> : null}
-      {chevron ? <ChevronRight aria-hidden className="size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted" /> : null}
+      {chevron ? <ChevronRight aria-hidden className={cn('size-[var(--icon-size-sm)] shrink-0', disabled ? 'text-ui-fg-disabled' : 'text-ui-fg-muted')} /> : null}
     </>
   )
   const interactive = cn(ROW, 'hover:bg-ui-state-hover disabled:cursor-not-allowed', FOCUS_RING_INSET)
@@ -81,7 +81,7 @@ export function AccordionItem({ title, children, defaultExpanded = false, headin
           aria-controls={`${id}-panel`}
           id={`${id}-btn`}
           onClick={() => setOpen((o) => !o)}
-          className={cn('flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left type-title-card text-ui-fg hover:bg-ui-state-hover', FOCUS_RING_INSET)}
+          className={cn('flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] p-[var(--space-4)] text-left type-title-card text-ui-fg hover:bg-ui-state-hover', FOCUS_RING_INSET)}
         >
           <span className="flex-1">{title}</span>
           <ChevronDown aria-hidden className={cn('size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted transition-transform duration-short4 ease-standard motion-reduce:transition-none', open && 'rotate-180')} />
@@ -113,22 +113,29 @@ export type TreeItemProps = {
 export function TreeItem({ label, kind, level = 1, selected, count, checkbox, onToggle, onSelect, children }: TreeItemProps) {
   return (
     <li role="treeitem" aria-expanded={kind === 'leaf' ? undefined : kind === 'expanded'} aria-selected={selected} aria-level={level}>
-      <div
-        className={cn('flex min-h-[var(--target-touch-min)] items-center gap-[var(--space-2)] pr-[var(--space-4)]', selected ? 'bg-ui-state-selected' : 'hover:bg-ui-state-hover')}
-        style={{ paddingLeft: `calc(var(--space-4) * ${level})` }}
-      >
-        {kind === 'leaf' ? (
-          <span aria-hidden className="size-[var(--icon-size-sm)] shrink-0" />
-        ) : (
-          <button type="button" tabIndex={-1} aria-hidden onClick={onToggle} className="inline-flex shrink-0 text-ui-fg-muted">
-            <ChevronRight className={cn('size-[var(--icon-size-sm)] transition-transform duration-short4 ease-standard', kind === 'expanded' && 'rotate-90')} />
+      {/* Indent (16 per level) sits outside the row, so the selected fill starts at it. */}
+      <div style={{ paddingLeft: `calc(var(--space-4) * ${level - 1})` }}>
+        <div
+          className={cn(
+            'flex min-h-[var(--target-touch-min)] items-center gap-[var(--space-2)] pl-[var(--space-2)] pr-[var(--space-3)]',
+            selected ? 'bg-ui-state-selected' : 'hover:bg-ui-state-hover',
+            // Focus ring around the whole row while the label button has keyboard focus.
+            '[&:has(>button:last-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-border-focus)]',
+          )}
+        >
+          {kind === 'leaf' ? (
+            <span aria-hidden className="size-[var(--icon-size-sm)] shrink-0" />
+          ) : (
+            <button type="button" tabIndex={-1} aria-hidden onClick={onToggle} className="inline-flex shrink-0 text-ui-fg-muted">
+              <ChevronRight className={cn('size-[var(--icon-size-sm)] transition-transform duration-short4 ease-standard', kind === 'expanded' && 'rotate-90')} />
+            </button>
+          )}
+          {checkbox}
+          <button type="button" onClick={onSelect ?? onToggle} className="flex min-h-[var(--target-touch-min)] min-w-0 flex-1 items-center gap-[var(--space-2)] text-left type-body-base text-ui-fg focus-visible:outline-none">
+            <span className="min-w-0 flex-1 truncate">{label}</span>
+            {count !== undefined ? <span className="type-body-caption text-ui-fg-muted">{count}</span> : null}
           </button>
-        )}
-        {checkbox}
-        <button type="button" onClick={onSelect ?? onToggle} className={cn('flex min-h-[var(--target-touch-min)] flex-1 items-center gap-[var(--space-2)] text-left type-body-base text-ui-fg', FOCUS_RING_INSET)}>
-          <span className="flex-1">{label}</span>
-          {count !== undefined ? <span className="type-body-caption text-ui-fg-muted">{count}</span> : null}
-        </button>
+        </div>
       </div>
       {kind === 'expanded' && children ? <ul role="group">{children}</ul> : null}
     </li>
@@ -158,19 +165,20 @@ export function LeaderboardRow({ rank, name, detail, score, avatarSrc, trend, yo
   const TrendIcon = trend?.direction === 'down' ? TrendingDown : TrendingUp
   const body = (
     <>
-      <span className="inline-flex w-[var(--space-6)] shrink-0 justify-center type-numeric-rank text-ui-fg">
-        {rank <= 3 ? <Trophy role="img" aria-label={rankLabel} className="size-[var(--icon-size-md)]" /> : <span aria-label={rankLabel}>{rank}</span>}
+      <span className="inline-flex w-[var(--space-6)] shrink-0 justify-center text-ui-fg">
+        {rank <= 3 ? <Trophy role="img" aria-label={rankLabel} className="size-[var(--icon-size-lg)]" /> : <span aria-label={rankLabel} className="type-body-base text-ui-fg-muted">{rank}</span>}
       </span>
       <Avatar size="md" src={avatarSrc} name={name} decorative />
-      <span className="flex min-w-0 flex-1 flex-col">
+      <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-0-5)]">
         <span className="truncate type-body-base text-ui-fg">{you ?? name}</span>
         {detail ? <span className="truncate type-body-caption text-ui-fg-muted">{detail}</span> : null}
       </span>
-      {trend ? <TrendIcon role="img" aria-label={trend.label} className="size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted" /> : null}
-      <span className="shrink-0 type-title-card tabular-nums text-ui-fg">{score}</span>
+      {trend ? <TrendIcon role="img" aria-label={trend.label} className="size-[var(--icon-size-lg)] shrink-0 text-ui-fg-muted" /> : null}
+      <span className="shrink-0 type-body-base tabular-nums text-ui-fg">{score}</span>
     </>
   )
-  const cls = cn(ROW, 'min-h-[calc(var(--target-touch-min)+var(--space-4))]', href && 'hover:bg-ui-state-hover', href && FOCUS_RING_INSET)
+  // 64 high: Avatar md 40 + py 12.
+  const cls = cn(ROW, href && 'hover:bg-ui-state-hover', href && FOCUS_RING_INSET)
   return (
     <li className={cn('border-b border-ui-border', you && 'bg-ui-bg-raised')}>
       {href && renderLink ? renderLink({ href, className: cls, children: body }) : <div className={cls}>{body}</div>}
@@ -194,17 +202,15 @@ export type NotificationItemProps = {
 export function NotificationItem({ icon, title, body, time, read = false, unreadLabel, href, renderLink }: NotificationItemProps) {
   const children = (
     <>
-      <span aria-hidden className="relative inline-flex size-[var(--icon-size-md)] shrink-0 text-ui-fg [&>svg]:size-full">
-        {icon}
-        {!read ? <CountBadge className="absolute -right-[2px] -top-[2px]" /> : null}
-      </span>
+      <span aria-hidden className="inline-flex size-[var(--icon-size-md)] shrink-0 text-ui-fg-muted [&>svg]:size-full">{icon}</span>
       <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-0-5)]">
         {!read ? <span className="sr-only">{unreadLabel}</span> : null}
-        <span className="type-body-base text-ui-fg">{title}</span>
-        {body ? <span className="type-body-caption text-ui-fg-muted">{body}</span> : null}
+        <span className="truncate type-body-base text-ui-fg">{title}</span>
+        {body ? <span className="truncate type-body-caption text-ui-fg-muted">{body}</span> : null}
+        <span className="type-body-caption text-ui-fg-muted">{time}</span>
       </span>
-      <span className="shrink-0 type-body-caption text-ui-fg-muted">{time}</span>
+      {!read ? <CountBadge className="shrink-0" /> : null}
     </>
   )
-  return <li className="border-b border-ui-border">{renderLink({ href, className: cn(ROW, 'items-start hover:bg-ui-state-hover', FOCUS_RING_INSET), children })}</li>
+  return <li className="border-b border-ui-border">{renderLink({ href, className: cn(ROW, 'hover:bg-ui-state-hover', FOCUS_RING_INSET), children })}</li>
 }

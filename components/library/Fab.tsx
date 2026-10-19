@@ -29,7 +29,7 @@ export const Fab = forwardRef<HTMLButtonElement, FabProps>(function Fab(
       className={cn(
         'inline-flex h-[var(--fab-size)] shrink-0 items-center justify-center gap-[var(--gap-sm)] rounded-full',
         'transition-[background-color,background-image] duration-short4 ease-standard focus-visible:shadow-focus-ring focus-visible:outline-none',
-        type === 'icon' ? 'w-[var(--fab-size)]' : 'px-[var(--space-5)] type-label-button',
+        type === 'icon' ? 'w-[var(--fab-size)]' : 'pl-[var(--space-5)] pr-[var(--space-6)] type-label-button',
         open
           ? 'border border-ui-border-strong bg-ui-bg-raised text-ui-fg hover:bg-ui-state-hover'
           : 'bg-ui-bg-inverse text-ui-fg-inverse hover:bg-[image:linear-gradient(var(--button-overlay-filled-hover),var(--button-overlay-filled-hover))] active:bg-[image:linear-gradient(var(--button-overlay-filled-pressed),var(--button-overlay-filled-pressed))]',

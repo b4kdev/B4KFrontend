@@ -13,7 +13,7 @@ const SIZE = {
   sm: 'size-[var(--avatar-size-sm)] type-avatar-initials-sm [&>svg]:size-[var(--icon-size-sm)]',
   md: 'size-[var(--avatar-size-md)] type-avatar-initials-md [&>svg]:size-[var(--icon-size-md)]',
   lg: 'size-[var(--avatar-size-lg)] type-avatar-initials-lg [&>svg]:size-[var(--icon-size-xl)]',
-  xl: 'size-[var(--avatar-size-xl)] type-avatar-initials-xl [&>svg]:size-[var(--icon-size-2xl)]',
+  xl: 'size-[var(--avatar-size-xl)] type-avatar-initials-xl [&>svg]:size-[var(--icon-size-xl)]',
 } as const
 
 const PX = { xs: 24, sm: 32, md: 40, lg: 64, xl: 80 } as const
@@ -43,7 +43,7 @@ export function Avatar({ size = 'md', src, name, initials, decorative, className
   const [failed, setFailed] = useState(false)
   const letters = initials ?? initialsOf(name)
   const box = cn(
-    'relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-ui-state-selected text-ui-fg',
+    'relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-ui-state-selected text-ui-fg [&>svg]:text-ui-fg-muted',
     SIZE[size],
     className,
   )

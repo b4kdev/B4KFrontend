@@ -35,8 +35,9 @@ export function Table<T>({ caption, captionHidden, columns, rows, rowKey, sort, 
       <table className="w-full border-collapse text-left">
         <caption className={cn('pb-[var(--space-2)] text-left type-title-card text-ui-fg', captionHidden && 'sr-only')}>{caption}</caption>
         <thead>
-          <tr className="h-[var(--table-header-height)] border border-ui-border bg-ui-bg-raised">
-            {select ? <th scope="col" className="w-[var(--space-12)] px-[var(--table-cell-padding-x)]">{select.header}</th> : null}
+          <tr className="h-[var(--table-header-height)] border-b border-ui-border bg-ui-bg-raised">
+            {/* Select column hugs the checkbox: padding + 20 + padding. */}
+            {select ? <th scope="col" className="w-0 px-[var(--table-cell-padding-x)]">{select.header}</th> : null}
             {columns.map((c) => {
               const sorted = sort?.id === c.id
               const Icon = !sorted ? ChevronsUpDown : sort?.direction === 'ascending' ? ArrowUp : ArrowDown
@@ -66,8 +67,16 @@ export function Table<T>({ caption, captionHidden, columns, rows, rowKey, sort, 
             return (
               <tr key={rowKey(r)} aria-selected={select ? selected : undefined} className={cn('h-[var(--table-row-height)] border-b border-ui-border-subtle', selected ? 'bg-ui-state-selected' : 'hover:bg-ui-state-hover')}>
                 {select ? <td className="px-[var(--table-cell-padding-x)]">{select.cell(r)}</td> : null}
-                {columns.map((c) => (
-                  <td key={c.id} className={cn('px-[var(--table-cell-padding-x)] type-body-base text-ui-fg', c.numeric && 'text-right tabular-nums')}>
+                {columns.map((c, i) => (
+                  <td
+                    key={c.id}
+                    className={cn(
+                      'px-[var(--table-cell-padding-x)] type-body-base',
+                      // First column: fg, one line with an ellipsis (max-w-0 lets the cell shrink); the rest fg-muted.
+                      i === 0 ? 'max-w-0 truncate text-ui-fg' : 'text-ui-fg-muted',
+                      c.numeric && 'text-right tabular-nums',
+                    )}
+                  >
                     {c.cell(r)}
                   </td>
                 ))}

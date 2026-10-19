@@ -7,7 +7,6 @@ import V2Shell from '@/components/v2/V2Shell'
 import { mergeCd, mergeGap } from '@/components/v2/messages'
 import { keepKNamesDeep } from '@/components/v2/text'
 import { V2_LIVE_HEADER } from '@/lib/v2-live'
-import '@/components/v2/v2.css'
 
 // Preview of the new design (PD-53 update 2): every Figma screen under /[locale]/v2, built from
 // components/library. Hidden: noindex, not linked from live pages. Texts come from the Copy Deck

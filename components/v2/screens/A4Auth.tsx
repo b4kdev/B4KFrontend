@@ -137,27 +137,25 @@ export function ConsentScreen() {
   }
   return (
     <V2Page bar={{ type: 'none' }} noFooter className="flex items-center justify-center">
-      <div className="flex w-full max-w-[400px] flex-col gap-[var(--space-3)]">
-        <ConsentStep
-          title={t('CD1504')}
-          items={[
-            { id: 'age', label: t('CD1464'), required: true },
-            { id: 'terms', label: t('CD0812'), required: true, viewHref: '/legal/terms' },
-            { id: 'privacy', label: t('CD0811'), required: true, viewHref: '/legal/privacy' },
-            { id: 'marketing', label: t('CD1508'), required: false },
-          ]}
-          checked={checked}
-          onCheckedChange={setChecked}
-          onView={(i) => window.open(`/${document.documentElement.lang}${i.viewHref}`, '_blank', 'noopener')}
-          onContinue={() => {
-            acceptTerms()
-            router.push(next)
-          }}
-          onCancel={cancel}
-          labels={{ agreeAll: t('CD1506'), required: t('CD1507'), optional: t('CD1509'), view: t('CD0760'), continue: t('CD0768'), cancel: t('CD1510'), back: t('CD0121'), legend: t('CD1505') }}
-        />
-        <p className="type-body-caption text-ui-fg-muted">{t('CD1511')}</p>
-      </div>
+      <ConsentStep
+        title={t('CD1504')}
+        items={[
+          { id: 'age', label: t('CD1464'), required: true },
+          { id: 'terms', label: t('CD0812'), required: true, viewHref: '/legal/terms' },
+          { id: 'privacy', label: t('CD0811'), required: true, viewHref: '/legal/privacy' },
+          { id: 'marketing', label: t('CD1508'), required: false },
+        ]}
+        checked={checked}
+        onCheckedChange={setChecked}
+        onView={(i) => window.open(`/${document.documentElement.lang}${i.viewHref}`, '_blank', 'noopener')}
+        onContinue={() => {
+          acceptTerms()
+          router.push(next)
+        }}
+        onCancel={cancel}
+        labels={{ agreeAll: t('CD1506'), required: t('CD1507'), optional: t('CD1509'), view: t('CD0760'), continue: t('CD0768'), cancel: t('CD1510'), back: t('CD0121'), legend: t('CD1505') }}
+        footnote={t('CD1511')}
+      />
     </V2Page>
   )
 }

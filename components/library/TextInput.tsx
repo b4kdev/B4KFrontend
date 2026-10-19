@@ -48,7 +48,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
           'flex items-center gap-[var(--gap-sm)] px-[var(--input-padding-x)]',
           size === 'lg' ? 'h-[var(--control-height-lg)]' : 'h-[var(--control-height-md)]',
           error && 'border-ui-danger-border hover:border-ui-danger-border focus-within:border-ui-danger-border',
-          disabled && 'cursor-not-allowed border-ui-border-disabled text-ui-fg-disabled hover:border-ui-border-disabled',
+          disabled && 'cursor-not-allowed border-ui-border-disabled bg-ui-bg-disabled text-ui-fg-disabled hover:border-ui-border-disabled',
         )}
       >
         {leadingIcon ? (
@@ -64,7 +64,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
           disabled={disabled}
           aria-invalid={error ? true : undefined}
           aria-describedby={help || error ? msgId : undefined}
-          className="h-full min-w-0 flex-1 bg-transparent outline-none placeholder:text-ui-fg-placeholder disabled:cursor-not-allowed"
+          className="h-full min-w-0 flex-1 bg-transparent outline-none placeholder:text-ui-fg-placeholder disabled:cursor-not-allowed disabled:placeholder:text-ui-fg-disabled"
           {...props}
         />
         {onClear && hasValue && !disabled ? (
@@ -78,7 +78,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
           </button>
         ) : null}
       </div>
-      <FieldMessage id={msgId} help={help} error={error} />
+      <FieldMessage id={msgId} help={help} error={error} disabled={disabled} />
     </div>
   )
 })

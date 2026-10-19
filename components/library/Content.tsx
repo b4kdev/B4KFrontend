@@ -77,7 +77,7 @@ export function ForecastDay({ day, icon, range, label }: ForecastDayProps) {
   return (
     <div role="group" aria-label={label} className="flex flex-col items-center gap-[var(--space-1)]">
       <span aria-hidden className="type-eyebrow-category text-ui-fg-muted">{day}</span>
-      <span aria-hidden className="inline-flex size-[var(--icon-size-sm)] text-ui-fg [&>svg]:size-full">{icon}</span>
+      <span aria-hidden className="inline-flex size-[var(--icon-size-sm)] text-ui-fg-muted [&>svg]:size-full">{icon}</span>
       <span aria-hidden className="type-body-caption text-ui-fg">{range}</span>
     </div>
   )
@@ -102,7 +102,7 @@ export function ChatBubble({ role, children, typingLabel }: ChatBubbleProps) {
         )}
       >
         {role === 'typing' ? (
-          <span className="flex items-center gap-[var(--space-1)] py-[var(--space-2)]">
+          <span className="flex items-center gap-[var(--space-1)]">
             <span className="sr-only">{typingLabel}</span>
             {[0, 1, 2].map((i) => (
               <span
@@ -158,13 +158,14 @@ export const CalendarDay = forwardRef<HTMLButtonElement, CalendarDayProps>(funct
         'relative inline-flex size-[var(--control-height-md)] items-center justify-center',
         end ? 'bg-ui-bg-inverse type-body-label text-ui-fg-inverse' : position === 'in-range' ? 'bg-ui-state-selected type-body-base text-ui-fg' : 'type-body-base text-ui-fg enabled:hover:bg-ui-state-hover',
         'disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
-        'focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-border-focus)]',
+        // Focus ring: 2px square, 2px in from the cell edge.
+        'focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:-outline-offset-[calc(var(--focus-ring-offset)_+_var(--focus-ring-width))] focus-visible:outline-ui-border-focus',
         HIT_AREA,
         className,
       )}
       {...props}
     >
-      {today && !end ? <span aria-hidden className="absolute inset-[4px] rounded-full border border-ui-border-strong" /> : null}
+      {today && !end ? <span aria-hidden className="absolute inset-0 rounded-full border border-ui-border-strong" /> : null}
       <span className="relative">{day}</span>
     </button>
   )

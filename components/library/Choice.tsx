@@ -9,6 +9,11 @@ import { cn } from '@/lib/cn'
 
 const ROW = 'group relative inline-flex min-h-[var(--target-touch-min)] cursor-pointer items-center gap-[var(--gap-sm)] type-body-base text-ui-fg has-[:disabled]:cursor-not-allowed has-[:disabled]:text-ui-fg-disabled'
 const BOX_FOCUS = 'peer-focus-visible:shadow-focus-ring'
+/** Hover state layer: state-hover 6px (space-1-5) around the 20 box = the 32 Figma layer, any value. */
+const BOX_HOVER_LAYER =
+  'group-hover:peer-[:enabled:not(:focus-visible)]:shadow-[0_0_0_var(--space-1-5)_var(--color-state-hover)] group-hover:peer-[:enabled:focus-visible]:shadow-[shadow:var(--focus-ring),0_0_0_var(--space-1-5)_var(--color-state-hover)]'
+/** Unselected hover: border-focus, state-hover fill inside the box. */
+const BOX_HOVER_EMPTY = 'group-hover:peer-[:enabled:not(:checked)]:border-ui-border-focus group-hover:peer-[:enabled:not(:checked)]:bg-ui-state-hover'
 
 type ChoiceBase = Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> & {
   /** Figma Label. */
@@ -52,11 +57,12 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
         aria-hidden
         className={cn(
           'inline-flex size-[var(--control-box-size)] shrink-0 items-center justify-center rounded-none border-[length:var(--border-width-1-5)] border-ui-border-strong text-ui-fg-inverse',
-          'group-hover:bg-ui-state-hover peer-checked:border-ui-bg-inverse peer-checked:bg-ui-bg-inverse',
-          indeterminate && 'border-ui-bg-inverse bg-ui-bg-inverse',
+          'peer-checked:border-ui-bg-inverse peer-checked:bg-ui-bg-inverse',
+          indeterminate ? 'border-ui-bg-inverse bg-ui-bg-inverse' : !invalid && BOX_HOVER_EMPTY,
           invalid && 'border-ui-danger-border',
-          'peer-disabled:border-ui-border-disabled peer-disabled:bg-transparent peer-disabled:text-ui-fg-disabled peer-checked:peer-disabled:bg-ui-bg-disabled',
+          'peer-disabled:border-ui-border-disabled peer-disabled:bg-ui-bg-disabled peer-disabled:text-ui-fg-disabled peer-checked:peer-disabled:bg-ui-bg-disabled',
           BOX_FOCUS,
+          BOX_HOVER_LAYER,
           '[&>svg]:hidden peer-checked:[&>svg.check]:block',
           indeterminate && '[&>svg.minus]:block peer-checked:[&>svg.check]:hidden',
         )}
@@ -83,13 +89,15 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
         aria-hidden
         className={cn(
           'inline-flex size-[var(--control-box-size)] shrink-0 items-center justify-center rounded-full border-[length:var(--border-width-1-5)] border-ui-border-strong',
-          'group-hover:bg-ui-state-hover peer-checked:border-ui-bg-inverse peer-checked:bg-ui-bg-inverse',
-          'peer-disabled:border-ui-border-disabled peer-disabled:bg-transparent peer-checked:peer-disabled:bg-ui-bg-disabled',
+          BOX_HOVER_EMPTY,
+          'peer-checked:border-ui-bg-inverse peer-checked:bg-ui-bg-inverse',
+          'peer-disabled:border-ui-border-disabled peer-disabled:bg-ui-bg-disabled peer-checked:peer-disabled:bg-ui-bg-disabled',
           BOX_FOCUS,
+          BOX_HOVER_LAYER,
           '[&>span]:hidden peer-checked:[&>span]:block',
         )}
       >
-        <span className="size-[var(--radio-dot-size)] rounded-full bg-ui-fg-inverse" />
+        <span className="size-[var(--radio-dot-size)] rounded-full bg-ui-fg-inverse group-has-[:disabled]:bg-ui-fg-disabled" />
       </span>
       <span className={cn(hideLabel && 'sr-only')}>{label}</span>
     </label>
@@ -127,8 +135,12 @@ export function Toggle({ label, hideLabel, checked, onCheckedChange, disabled, c
           'relative inline-flex h-[var(--toggle-track-height)] w-[var(--toggle-track-width)] shrink-0 items-center rounded-full px-[var(--space-0-5)]',
           'transition-colors duration-short4 ease-standard focus-visible:shadow-focus-ring focus-visible:outline-none',
           "before:absolute before:inset-x-0 before:top-1/2 before:h-[var(--target-touch-min)] before:-translate-y-1/2 before:content-['']",
-          checked ? 'bg-ui-bg-inverse' : 'border border-ui-border-strong hover:bg-ui-state-hover',
-          disabled && (checked ? 'bg-ui-bg-disabled' : 'border-ui-border-disabled'),
+          // Hover state layer: state-hover 4px (space-1) around the track = the 52x32 Figma pill.
+          '[&:enabled:hover:not(:focus-visible)]:shadow-[0_0_0_var(--space-1)_var(--color-state-hover)] [&:enabled:hover:focus-visible]:shadow-[shadow:var(--focus-ring),0_0_0_var(--space-1)_var(--color-state-hover)]',
+          checked
+            ? 'bg-ui-bg-inverse'
+            : 'border-[length:var(--border-width-1-5)] border-ui-border-strong enabled:hover:border-ui-border-focus enabled:hover:bg-ui-state-hover',
+          disabled && (checked ? 'bg-ui-bg-disabled' : 'border-ui-border-disabled bg-ui-bg-disabled'),
           disabled && 'cursor-not-allowed',
         )}
       >
@@ -136,7 +148,7 @@ export function Toggle({ label, hideLabel, checked, onCheckedChange, disabled, c
           aria-hidden
           className={cn(
             'size-[var(--toggle-knob-size)] rounded-full transition-transform duration-short4 ease-standard motion-reduce:transition-none',
-            checked ? 'translate-x-[calc(var(--toggle-track-width)-var(--toggle-knob-size)-var(--space-1))] bg-ui-fg-inverse' : '-translate-x-[1px] bg-ui-fg',
+            checked ? 'translate-x-[calc(var(--toggle-track-width)-var(--toggle-knob-size)-var(--space-1))] bg-ui-fg-inverse' : 'bg-ui-fg',
             disabled && 'bg-ui-fg-disabled',
           )}
         />

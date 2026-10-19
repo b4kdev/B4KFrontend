@@ -18,6 +18,13 @@ const Portal = ({ children }: { children: ReactNode }) => (useMounted() ? create
 const SHEET =
   'fixed inset-x-0 bottom-0 z-50 flex max-h-[85dvh] flex-col rounded-t-3xl bg-ui-bg-raised pb-[env(safe-area-inset-bottom)] text-ui-fg motion-safe:animate-b4k-sheet-in'
 
+/** Grabber on phone sheets: the 32x4 bar with py 8 (area 20). */
+const GRABBER = (
+  <div aria-hidden className="flex shrink-0 justify-center py-[var(--space-2)]">
+    <span className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" />
+  </div>
+)
+
 export type ModalProps = {
   open: boolean
   onClose: () => void
@@ -42,13 +49,13 @@ export function Modal({ open, onClose, title, closeLabel, size = 'md', children,
   const id = useId()
   if (!open) return null
   const header = (
-    <div className="flex items-center gap-[var(--space-2)] px-[var(--space-6)] pb-[var(--space-2)] pt-[var(--space-5)]">
-      <h2 id={id} className="flex-1 type-display-h3">{title}</h2>
-      {hideClose ? null : <IconButton label={closeLabel} icon={<X />} onClick={onClose} className="-mr-[var(--space-2)]" />}
+    <div className="flex items-center gap-[var(--space-2)] py-[var(--space-3)] pl-[var(--modal-padding)] pr-[var(--space-3)]">
+      <h2 id={id} className="flex-1 type-title-card">{title}</h2>
+      {hideClose ? null : <IconButton label={closeLabel} icon={<X />} onClick={onClose} />}
     </div>
   )
   const actions = primaryAction || secondaryAction ? (
-    <div className={cn('flex gap-[var(--gap-sm)] px-[var(--space-6)] pb-[var(--space-6)] pt-[var(--space-4)]', phone ? 'flex-col [&>*]:w-full' : 'justify-end')}>
+    <div className={cn('flex gap-[var(--gap-sm)] px-[var(--modal-padding)] py-[var(--space-4)]', phone ? 'flex-col [&>*]:w-full' : 'justify-end')}>
       {phone ? <>{primaryAction}{secondaryAction}</> : <>{secondaryAction}{primaryAction}</>}
     </div>
   ) : null
@@ -64,16 +71,16 @@ export function Modal({ open, onClose, title, closeLabel, size = 'md', children,
         className={cn(
           'outline-none',
           phone
-            ? SHEET
+            ? cn(SHEET, 'bg-ui-bg-elevated')
             : cn(
                 'fixed left-1/2 top-1/2 z-50 flex max-h-[90dvh] w-[calc(100%-var(--space-8))] -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl border border-ui-border bg-ui-bg-elevated text-ui-fg',
                 size === 'sm' ? 'max-w-[400px]' : size === 'md' ? 'max-w-[560px]' : 'max-w-[720px]',
               ),
         )}
       >
-        {phone ? <div className="flex justify-center pt-[var(--space-2)]"><span aria-hidden className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" /></div> : null}
+        {phone ? GRABBER : null}
         {header}
-        <div className="min-h-0 flex-1 overflow-y-auto px-[var(--space-6)] py-[var(--space-2)] type-body-base">{children}</div>
+        <div className="flex min-h-0 flex-1 flex-col gap-[var(--space-4)] overflow-y-auto p-[var(--modal-padding)] type-body-base">{children}</div>
         {actions}
       </div>
     </Portal>
@@ -111,10 +118,11 @@ export function Dialog({ open, onCancel, title, body, confirm, cancel, third }: 
         aria-describedby={`${id}-b`}
         className={cn(
           'outline-none',
-          phone ? cn(SHEET, 'px-[var(--space-6)] pb-[var(--space-6)] pt-[var(--space-6)]') : 'fixed left-1/2 top-1/2 z-50 w-[calc(100%-var(--space-8))] max-w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg',
+          phone ? cn(SHEET, 'px-[var(--space-6)] pb-[var(--space-6)]') : 'fixed left-1/2 top-1/2 z-50 w-[calc(100%-var(--space-8))] max-w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg',
         )}
       >
-        <h2 id={`${id}-t`} className="type-display-h3">{title}</h2>
+        {phone ? <div className="mb-[var(--space-2)]">{GRABBER}</div> : null}
+        <h2 id={`${id}-t`} className="type-title-card">{title}</h2>
         <div id={`${id}-b`} className="mt-[var(--space-2)] type-body-base text-ui-fg-muted">{body}</div>
         <div className={cn('mt-[var(--space-6)] flex gap-[var(--gap-sm)]', phone ? 'flex-col [&>*]:w-full' : 'items-center')}>
           {phone ? (
@@ -147,6 +155,8 @@ export type BottomSheetProps = {
   resizeLabel?: string
   /** Header shown at peek (map sheets). */
   header?: ReactNode
+  /** Modal: stacked actions under the content (Figma: primary, secondary, optional third Ghost). */
+  actions?: ReactNode
   children: ReactNode
   className?: string
 }
@@ -155,7 +165,7 @@ const SNAP_VH: Record<SheetSnap, string> = { peek: '76px', mid: '50dvh', full: '
 const ORDER: SheetSnap[] = ['peek', 'mid', 'full']
 
 /** Bottom sheet (CMP-051): radius/3xl top, bg-raised, grabber 32 by 4; map sheets drag between snaps. */
-export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', header, children, className }: BottomSheetProps) {
+export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', header, actions, children, className }: BottomSheetProps) {
   const modal = type === 'modal'
   const ref = useFocusTrap<HTMLDivElement>(open && modal, onClose)
   const [drag, setDrag] = useState<number | null>(null)
@@ -180,7 +190,7 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
         style={!modal ? { height: drag !== null ? `calc(${SNAP_VH[snap]} + ${drag}px)` : SNAP_VH[snap], maxHeight: '85dvh' } : undefined}
       >
         <div
-          className="flex shrink-0 touch-none justify-center pt-[var(--space-1)]"
+          className="flex shrink-0 touch-none justify-center py-[var(--space-2)]"
           onPointerDown={(e) => {
             if (modal) return
             start.current = e.clientY
@@ -198,14 +208,25 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
           <DragHandle
             type="grabber"
             label={resizeLabel}
+            className="h-[var(--space-1)]"
             onKeyDown={(e) => {
               if (e.key === 'ArrowUp') step(1)
               else if (e.key === 'ArrowDown') step(-1)
             }}
           />
         </div>
-        {header ? <div className="shrink-0 px-[var(--space-4)] pb-[var(--space-2)]">{header}</div> : null}
-        <div className="min-h-0 flex-1 overflow-y-auto px-[var(--space-4)] pb-[var(--space-4)]">{children}</div>
+        {header ? <div className="shrink-0 pb-[var(--space-2)] pl-[var(--space-4)] pr-[var(--space-1)]">{header}</div> : null}
+        <div
+          className={cn(
+            'flex min-h-0 flex-1 flex-col overflow-y-auto',
+            modal ? 'gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-2)]' : 'gap-[var(--space-4)] px-[var(--space-4)] pb-[var(--space-6)] pt-[var(--space-2)]',
+          )}
+        >
+          {children}
+        </div>
+        {modal && actions ? (
+          <div className="flex shrink-0 flex-col gap-[var(--space-2)] px-[var(--space-6)] pb-[var(--space-6)] pt-[var(--space-4)] [&>*]:w-full">{actions}</div>
+        ) : null}
       </div>
     </Portal>
   )

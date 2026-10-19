@@ -66,16 +66,16 @@ export function DateRangePicker({ value, onValueChange, previousLabel, nextLabel
   }
 
   return (
-    <div className={cn('flex w-[280px] flex-col gap-[var(--space-3)]', className)}>
+    <div className={cn('flex w-[280px] flex-col gap-[var(--space-1)]', className)}>
       <div className="flex items-center justify-between">
         <IconButton label={previousLabel} icon={<ChevronLeft />} disabled={atCurrent} onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} />
         <span aria-live="polite" className="type-body-label text-ui-fg">{monthName}</span>
         <IconButton label={nextLabel} icon={<ChevronRight />} onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} />
       </div>
-      <div ref={grid} role="grid" aria-label={monthName} onKeyDown={onKey} className="flex flex-col">
+      <div ref={grid} role="grid" aria-label={monthName} onKeyDown={onKey} className="flex flex-col gap-[var(--space-0-5)]">
         <div role="row" className="grid grid-cols-7">
           {Array.from({ length: 7 }, (_, i) => (
-            <span key={`w${i}`} role="columnheader" className="flex h-[var(--control-height-sm)] items-center justify-center type-body-caption text-ui-fg-muted">
+            <span key={`w${i}`} role="columnheader" className="flex items-center justify-center py-[var(--space-1)] type-body-caption text-ui-fg-muted">
               {weekday.format(new Date(2026, 9, 4 + i))}
             </span>
           ))}
@@ -109,7 +109,7 @@ export function DateRangePicker({ value, onValueChange, previousLabel, nextLabel
         ))}
       </div>
       {value.start ? (
-        <button type="button" onClick={() => onValueChange({ start: null, end: null })} className="self-end type-label-button text-ui-link hover:text-ui-link-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+        <button type="button" onClick={() => onValueChange({ start: null, end: null })} className="self-end type-body-link text-ui-link underline underline-offset-2 transition-colors duration-short4 ease-standard hover:text-ui-link-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
           {clearLabel}
         </button>
       ) : null}

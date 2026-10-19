@@ -24,10 +24,10 @@ export type ImageProps = {
   className?: string
 }
 
-export function Image({ ratio = '4:3', src, alt, sizes = '100vw', priority, className }: ImageProps) {
+export function Image({ ratio = '1:1', src, alt, sizes = '100vw', priority, className }: ImageProps) {
   const [state, setState] = useState<'loading' | 'loaded' | 'missing'>(src ? 'loading' : 'missing')
   return (
-    <span className={cn('relative block w-full overflow-hidden rounded-none bg-ui-state-selected', RATIO[ratio], className)}>
+    <span className={cn('relative block w-full overflow-hidden rounded-none', state !== 'loading' && 'bg-ui-state-selected', RATIO[ratio], className)}>
       {src && state !== 'missing' ? (
         <NextImage
           src={src}
@@ -43,7 +43,7 @@ export function Image({ ratio = '4:3', src, alt, sizes = '100vw', priority, clas
       {state === 'loading' ? <Skeleton className="absolute inset-0" /> : null}
       {state === 'missing' ? (
         <span className="absolute inset-0 flex items-center justify-center text-ui-fg-muted">
-          <ImageIcon aria-hidden className="size-[var(--icon-size-lg)]" />
+          <ImageIcon aria-hidden className="size-[var(--icon-size-xl)]" />
         </span>
       ) : null}
     </span>

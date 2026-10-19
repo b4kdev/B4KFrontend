@@ -42,10 +42,14 @@ export type SelectionBarProps = {
 /** Button group Type=Selection bar: shows while items are selected; sticks to the bottom of the list. */
 export function SelectionBar({ countText, children, onClear, clearLabel, label, className }: SelectionBarProps) {
   return (
-    <div role="toolbar" aria-label={label} className={cn('sticky bottom-0 flex items-center gap-[var(--space-3)] border border-ui-border bg-ui-bg-raised px-[var(--space-2)] py-[var(--space-1)]', className)}>
-      <IconButton label={clearLabel} icon={<X />} onClick={onClear} />
-      <span aria-live="polite" className="flex-1 type-body-label text-ui-fg">{countText}</span>
+    <div
+      role="toolbar"
+      aria-label={label}
+      className={cn('sticky bottom-0 flex min-h-[var(--space-12)] items-center gap-[var(--space-2)] border border-ui-border bg-ui-bg-raised py-[var(--space-1)] pl-[var(--space-4)] pr-[var(--space-1)]', className)}
+    >
+      <span aria-live="polite" className="flex-1 type-title-card text-ui-fg">{countText}</span>
       <div className="flex items-center gap-[var(--gap-sm)]">{children}</div>
+      <IconButton label={clearLabel} icon={<X />} onClick={onClear} />
     </div>
   )
 }
@@ -83,24 +87,24 @@ export function Rating(props: RatingProps) {
               <Star aria-hidden className={cn('size-[var(--icon-size-lg)]', n <= value ? 'fill-current' : 'text-ui-border-strong')} />
             </button>
           ))}
-          {valueText ? <span className="ml-[var(--space-2)] type-body-caption text-ui-fg-muted">{valueText}</span> : null}
         </div>
+        {valueText ? <span className="type-body-caption text-ui-fg-muted">{valueText}</span> : null}
       </div>
     )
   }
   const { value, countText, label, className } = props
   return (
-    <span className={cn('inline-flex items-center gap-[var(--space-1)] type-body-caption text-ui-fg', className)}>
+    <span className={cn('inline-flex items-center gap-[var(--space-2)] type-body-caption text-ui-fg', className)}>
       <span className="sr-only">{label}</span>
-      <span aria-hidden className="inline-flex">
+      <span aria-hidden className="inline-flex gap-[var(--space-0-5)]">
         {[1, 2, 3, 4, 5].map((n) => (
-          <span key={n} className="relative inline-flex size-[var(--icon-size-xs)]">
+          <span key={n} className="relative inline-flex size-[var(--icon-size-sm)]">
             <Star className="absolute inset-0 size-full text-ui-border-strong" />
             {value >= n ? <Star className="absolute inset-0 size-full fill-current" /> : value >= n - 0.5 ? <StarHalf className="absolute inset-0 size-full fill-current" /> : null}
           </span>
         ))}
       </span>
-      <span aria-hidden>{value.toFixed(1)}</span>
+      <span aria-hidden className="type-body-label">{value.toFixed(1)}</span>
       {countText ? <span aria-hidden className="text-ui-fg-muted">({countText})</span> : null}
     </span>
   )
@@ -139,7 +143,7 @@ const DAY_BG = ['', 'bg-plan-day-1 text-plan-day-1-fg', 'bg-plan-day-2 text-plan
 /** Route map preview: small map with Stop badges md on a 2px fg route line, radius/2xl. Decorative. */
 export function RouteMapPreview({ src, stops, className }: RouteMapPreviewProps) {
   return (
-    <div aria-hidden className={cn('relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-ui-bg-sunken', className)}>
+    <div aria-hidden className={cn('relative aspect-[320/140] w-full overflow-hidden rounded-2xl bg-ui-bg-sunken', className)}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {src ? <img src={src} alt="" className="absolute inset-0 size-full object-cover" /> : null}
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full text-ui-fg">
@@ -148,7 +152,7 @@ export function RouteMapPreview({ src, stops, className }: RouteMapPreviewProps)
       {stops.map((s, i) => (
         <span
           key={i}
-          className={cn('absolute inline-flex size-[var(--stop-badge-size-md)] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full type-numeric-count', s.day ? DAY_BG[s.day] : 'bg-ui-bg-inverse text-ui-fg-inverse')}
+          className={cn('absolute inline-flex size-[var(--stop-badge-size-md)] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full type-body-label', s.day ? DAY_BG[s.day] : 'bg-ui-bg-inverse text-ui-fg-inverse')}
           style={{ left: `${s.x}%`, top: `${s.y}%` }}
         >
           {i + 1}

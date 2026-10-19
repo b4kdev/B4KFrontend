@@ -28,7 +28,7 @@ export function ProgressBar({ value, label, className }: ProgressBarProps) {
           style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
         />
       ) : (
-        <div className="absolute inset-y-0 w-2/5 rounded-full bg-ui-fg motion-safe:animate-b4k-indeterminate motion-reduce:left-0" />
+        <div className="absolute inset-y-0 w-[35%] rounded-full bg-ui-fg motion-safe:animate-b4k-indeterminate motion-reduce:left-0" />
       )}
     </div>
   )

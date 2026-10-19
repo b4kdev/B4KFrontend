@@ -6,7 +6,9 @@ import { X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { IconButton } from './IconButton'
 import { SearchInput } from './SearchInput'
+import { Separator } from './Separator'
 import { Spinner } from './Spinner'
+import { FOCUS_RING } from './styles'
 
 // Overlay molecules (UI-66; Figma Molecules): Dropdown menu, Popover, Combobox.
 // Elevated surface, radius/2xl, 1px color/border, no shadow (UI-05), 8 from the trigger.
@@ -76,7 +78,7 @@ export function DropdownMenu({ trigger, label, children, align = 'start', classN
           aria-label={label}
           onKeyDown={onKey}
           onClick={(e) => (e.target as HTMLElement).closest('[role^=menuitem]') && setOpen(false)}
-          className={cn(SURFACE, 'top-full min-w-[240px] py-[var(--space-2)]', align === 'end' ? 'right-0' : 'left-0', className)}
+          className={cn(SURFACE, 'top-full min-w-[240px] py-[var(--space-1)]', align === 'end' ? 'right-0' : 'left-0', className)}
         >
           {children}
         </div>
@@ -85,11 +87,15 @@ export function DropdownMenu({ trigger, label, children, align = 'start', classN
   )
 }
 
-/** Group inside a Dropdown menu: space between groups, optional group label (Select type). */
+/** Group label (Dropdown menu Select type, Combobox): eyebrow/category, pt 8 pb 4 px 16. */
+const GROUP_LABEL = 'px-[var(--space-4)] pb-[var(--space-1)] pt-[var(--space-2)] type-eyebrow-category text-ui-fg-muted'
+
+/** Group inside a Dropdown menu: a Separator (py 4) before every group but the first, optional group label (Select type). */
 export function MenuGroup({ label, children }: { label?: string; children: ReactNode }) {
   return (
-    <div role="group" aria-label={label} className="py-[var(--space-1)]">
-      {label ? <div className="px-[var(--space-4)] py-[var(--space-2)] type-body-label text-ui-fg-muted">{label}</div> : null}
+    <div role="group" aria-label={label}>
+      <div aria-hidden className="hidden py-[var(--space-1)] [[role=group]+[role=group]>&]:block"><Separator /></div>
+      {label ? <div className={GROUP_LABEL}>{label}</div> : null}
       {children}
     </div>
   )
@@ -131,16 +137,24 @@ export function Popover({ trigger, title, label, closeLabel, children, action, s
           tabIndex={-1}
           aria-labelledby={title ? `${id}-t` : undefined}
           aria-label={title ? undefined : label}
-          className={cn(SURFACE, 'left-0 w-[320px] p-[var(--space-4)] outline-none', side === 'bottom' ? 'top-full' : 'bottom-full mb-[var(--space-2)]', className)}
+          className={cn(
+            SURFACE,
+            'left-0 flex w-[320px] flex-col gap-[var(--space-1)] pb-[var(--space-4)] pl-[var(--space-4)] pr-[var(--space-2)] pt-[var(--space-2)] outline-none',
+            side === 'bottom' ? 'top-full' : 'bottom-full mb-[var(--space-2)]',
+            className,
+          )}
         >
-          <div className="flex items-start gap-[var(--space-2)]">
-            <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
-              {title ? <h3 id={`${id}-t`} className="type-title-card">{title}</h3> : null}
-              <div className="type-body-base text-ui-fg-muted">{children}</div>
+          {/* Header row: title + close, 40 high; Content: body + action, gap 12, pr 8. */}
+          {title || closeLabel ? (
+            <div className="flex min-h-[var(--control-height-md)] items-center gap-[var(--space-2)]">
+              {title ? <h3 id={`${id}-t`} className="min-w-0 flex-1 type-title-card">{title}</h3> : null}
+              {closeLabel ? <IconButton label={closeLabel} icon={<X />} onClick={() => setOpen(false)} className="ml-auto" /> : null}
             </div>
-            {closeLabel ? <IconButton label={closeLabel} icon={<X />} onClick={() => setOpen(false)} className="-mr-[var(--space-2)] -mt-[var(--space-2)]" /> : null}
+          ) : null}
+          <div className="flex flex-col gap-[var(--space-3)] pr-[var(--space-2)]">
+            <div className="type-body-base text-ui-fg-muted">{children}</div>
+            {action ? <div>{action}</div> : null}
           </div>
-          {action ? <div className="mt-[var(--space-3)]">{action}</div> : null}
         </div>
       ) : null}
     </div>
@@ -161,9 +175,13 @@ export type ComboboxProps = {
   items: ComboboxItem[]
   /** Recent: heading and Clear all. */
   recentLabel?: string
+  /** Results: group heading (Figma "Places"); left out = no heading. */
+  resultsLabel?: string
   clearAllLabel?: string
   onClearAll?: () => void
-  /** Empty: the hint. Loading: screen reader text. */
+  /** Empty: title (body/base) above the hint. */
+  emptyTitle?: ReactNode
+  /** Empty: the hint. Loading: the text beside the spinner (Figma "Searching"). */
   emptyText?: ReactNode
   loadingLabel?: string
   clearLabel?: string
@@ -174,7 +192,7 @@ export type ComboboxProps = {
 
 /** Combobox (CMP-010): WAI-ARIA combobox pattern; arrows move, Enter picks, Delete removes a recent, Esc closes. */
 export function Combobox(props: ComboboxProps) {
-  const { label, placeholder, value, onValueChange, state, items, recentLabel, clearAllLabel, onClearAll, emptyText, loadingLabel, clearLabel, onSubmit, className } = props
+  const { label, placeholder, value, onValueChange, state, items, recentLabel, resultsLabel, clearAllLabel, onClearAll, emptyTitle, emptyText, loadingLabel, clearLabel, onSubmit, className } = props
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(state === 'results' ? 0 : -1)
   const root = useRef<HTMLDivElement>(null)
@@ -215,21 +233,29 @@ export function Combobox(props: ComboboxProps) {
         aria-activedescendant={open && active >= 0 ? items[active]?.id : undefined}
       />
       {open ? (
-        <div className={cn(SURFACE, 'inset-x-0 top-full overflow-hidden py-[var(--space-2)]')}>
+        <div className={cn(SURFACE, 'inset-x-0 top-full overflow-hidden py-[var(--space-1)]')}>
           {state === 'recent' && items.length ? (
-            <div className="flex items-center justify-between px-[var(--space-4)] py-[var(--space-2)]">
-              <span className="type-body-label text-ui-fg-muted">{recentLabel}</span>
+            <div className={cn(GROUP_LABEL, 'flex items-center justify-between')}>
+              <span>{recentLabel}</span>
               {onClearAll ? (
-                <button type="button" onClick={onClearAll} className="type-body-caption text-ui-fg-muted underline-offset-2 hover:text-ui-fg hover:underline">
+                // Figma Link Inline (body/link, underlined, color/link); a button because it acts.
+                <button type="button" onClick={onClearAll} className={cn('type-body-link text-ui-link underline underline-offset-2 transition-colors duration-short4 ease-standard hover:text-ui-link-hover', FOCUS_RING)}>
                   {clearAllLabel}
                 </button>
               ) : null}
             </div>
           ) : null}
+          {state === 'results' && resultsLabel && items.length ? <div className={GROUP_LABEL}>{resultsLabel}</div> : null}
           {state === 'loading' ? (
-            <div className="flex justify-center py-[var(--space-4)]"><Spinner label={loadingLabel} /></div>
+            <div role="status" className="flex items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] type-body-base text-ui-fg-muted">
+              <Spinner size="sm" />
+              {loadingLabel}
+            </div>
           ) : state === 'empty' ? (
-            <p role="status" className="px-[var(--space-4)] py-[var(--space-3)] type-body-base text-ui-fg-muted">{emptyText}</p>
+            <div role="status" className="flex min-h-[var(--target-touch-min)] flex-col justify-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)]">
+              {emptyTitle ? <p className="type-body-base text-ui-fg">{emptyTitle}</p> : null}
+              <p className={emptyTitle ? 'type-body-caption text-ui-fg-muted' : 'type-body-base text-ui-fg-muted'}>{emptyText}</p>
+            </div>
           ) : (
             <ul id={listId} role="listbox" aria-label={label}>
               {items.map((it, i) => cloneElement(it.node, { key: it.id, active: i === active }))}

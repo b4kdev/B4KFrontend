@@ -1,7 +1,7 @@
 'use client'
 
 import { Fragment, useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
-import { ChevronLeft, ChevronRight, Ellipsis, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { Link as IntlLink } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
 import { IconButton } from './IconButton'
@@ -21,11 +21,13 @@ export type TabsProps = {
   width?: 'hug' | 'equal'
   /** Hug: accessible names of the scroll arrows shown when the tabs overflow. */
   scrollLabels?: { previous: string; next: string }
+  /** 1px color/border line under the row (Figma: Profile header tabs); false in carts, panels and cards. */
+  baseline?: boolean
   className?: string
 }
 
 /** Tabs (CMP-044): switches views in a page or panel, never filters. Arrow keys move. */
-export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollLabels, className }: TabsProps) {
+export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollLabels, baseline = true, className }: TabsProps) {
   const list = useRef<HTMLDivElement>(null)
   const [edges, setEdges] = useState({ start: false, end: false })
   const measure = useCallback(() => {
@@ -71,7 +73,7 @@ export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollL
       aria-label={label}
       onKeyDown={onKey}
       onScroll={measure}
-      className={cn('flex overflow-x-auto border-b border-ui-border [scrollbar-width:none] [&::-webkit-scrollbar]:hidden', scrollLabels ? 'min-w-0 flex-1' : className)}
+      className={cn('flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden', baseline && 'border-b border-ui-border', scrollLabels ? 'min-w-0 flex-1' : className)}
     >
       {tabs.map((t) =>
         t.onClose ? (
@@ -124,7 +126,7 @@ export function SegmentedControl({ label, options, value, onValueChange, classNa
     e.preventDefault()
   }
   return (
-    <div role="radiogroup" aria-label={label} onKeyDown={onKey} className={cn('flex rounded-full bg-ui-state-selected p-[var(--space-0-5)]', className)}>
+    <div role="radiogroup" aria-label={label} onKeyDown={onKey} className={cn('flex gap-[var(--space-1)] rounded-full bg-ui-state-selected p-[var(--space-1)]', className)}>
       {options.map((o) => (
         <Segment key={o.id} selected={o.id === value} tabIndex={o.id === value ? 0 : -1} onClick={() => onValueChange(o.id)}>
           {o.label}
@@ -149,13 +151,13 @@ export function Breadcrumbs({ label, items, collapseLabel, className }: Breadcru
   const last = items.length - 1
   return (
     <nav aria-label={label} className={className}>
-      <ol className="flex flex-wrap items-center gap-[var(--space-1-5)] type-eyebrow-category">
+      <ol className="flex flex-wrap items-center gap-[var(--space-2)] type-eyebrow-category">
         {items.map((it, i) => (
           <Fragment key={`${it.label}-${i}`}>
             {i > 0 ? <ChevronRight aria-hidden className={cn('size-[var(--icon-size-xs)] text-ui-fg-muted', i > 1 && i < last && 'max-md:hidden')} /> : null}
             {collapseLabel && i === 1 && last > 1 ? (
               <li className="md:hidden">
-                <span aria-label={collapseLabel} className="inline-flex text-ui-fg-muted"><Ellipsis aria-hidden className="size-[var(--icon-size-xs)]" /></span>
+                <span aria-label={collapseLabel} className="inline-flex text-ui-fg-muted"><span aria-hidden>…</span></span>
               </li>
             ) : null}
             <li className={cn(i > 0 && i < last && collapseLabel && 'max-md:hidden')}>
@@ -211,7 +213,7 @@ export function Pagination({ label, type = 'numbered', page, pageCount, onPageCh
       <IconButton label={previousLabel} icon={<ChevronLeft />} disabled={page <= 1} onClick={() => onPageChange?.(page - 1)} />
       {pages.map((p, i) => (
         <Fragment key={p}>
-          {i > 0 && p - pages[i - 1] > 1 ? <span aria-hidden className="px-[var(--space-1)] text-ui-fg-muted">…</span> : null}
+          {i > 0 && p - pages[i - 1] > 1 ? <span aria-hidden className="inline-flex size-[var(--control-height-md)] shrink-0 items-center justify-center type-body-base text-ui-fg-muted">…</span> : null}
           <PageItem current={p === page} onClick={() => onPageChange?.(p)}>{p}</PageItem>
         </Fragment>
       ))}
@@ -258,7 +260,7 @@ export function StepList({ steps, current, label, className }: StepListProps) {
     <ol aria-label={label} className={cn('flex items-center gap-[var(--space-2)]', className)}>
       {steps.map((s, i) => (
         <Fragment key={s}>
-          {i > 0 ? <ChevronRight aria-hidden className="size-[var(--icon-size-xs)] text-ui-fg-muted max-md:hidden" /> : null}
+          {i > 0 ? <ChevronRight aria-hidden className="size-[var(--icon-size-sm)] text-ui-fg-muted max-md:hidden" /> : null}
           <StepItem label={s} number={i + 1} state={i + 1 < current ? 'done' : i + 1 === current ? 'current' : 'upcoming'} className={i + 1 !== current ? 'max-md:hidden' : undefined} />
         </Fragment>
       ))}

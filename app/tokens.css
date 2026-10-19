@@ -83,7 +83,7 @@
   --input-padding-x: var(--space-3-5);
   --chip-padding-x: var(--space-3-5);
   --card-padding: var(--space-8);
-  --modal-padding: var(--space-10);
+  --modal-padding: var(--space-6);
   --badge-padding-x: var(--space-2-5);
   --badge-height: 20px;
   --badge-count-size: 16px;

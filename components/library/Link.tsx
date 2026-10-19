@@ -34,7 +34,7 @@ export type LinkProps = InternalProps | ExternalProps
 const base =
   'text-ui-link hover:text-ui-link-hover transition-colors duration-short4 ease-standard focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus'
 const types = {
-  inline: 'underline underline-offset-2',
+  inline: 'underline decoration-from-font underline-offset-auto [text-underline-position:from-font]',
   standalone:
     "relative inline-flex items-center gap-[var(--space-1-5)] type-label-button before:absolute before:inset-x-0 before:top-1/2 before:h-[var(--target-touch-min)] before:-translate-y-1/2 before:content-['']",
 }

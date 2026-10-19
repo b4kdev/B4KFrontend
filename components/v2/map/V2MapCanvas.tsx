@@ -41,24 +41,27 @@ const CLUSTER_BELOW = 15
 // window.naver and window.navermap_authFailure are declared in components/map/NaverMapCanvas.tsx.
 
 const ICONS: Record<string, string> = {}
-const iconFor = (domain?: string | null) => {
-  const key = domain ?? 'generic'
+// Pin icon: icon-size-xs, icon-size-md when selected (Figma Map pin State=Selected).
+const iconFor = (domain: string | null | undefined, selected: boolean) => {
+  const domainKey = domain ?? 'generic'
+  const size = selected ? '--icon-size-md' : '--icon-size-xs'
+  const key = `${domainKey}:${size}`
   if (!ICONS[key]) {
-    const C = key === 'k-pop' ? Music : key === 'k-drama' ? Clapperboard : key === 'k-beauty' ? Sparkles : key === 'k-food' ? Utensils : key === 'k-culture' ? Landmark : MapPin
-    ICONS[key] = renderToStaticMarkup(<C size={14} strokeWidth={2} aria-hidden />)
+    const C = domainKey === 'k-pop' ? Music : domainKey === 'k-drama' ? Clapperboard : domainKey === 'k-beauty' ? Sparkles : domainKey === 'k-food' ? Utensils : domainKey === 'k-culture' ? Landmark : MapPin
+    ICONS[key] = renderToStaticMarkup(<C strokeWidth={2} aria-hidden style={{ width: `var(${size})`, height: `var(${size})` }} />)
   }
   return ICONS[key]
 }
 
 const HIT = 'width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer'
 const pinHtml = (p: MapPoi, selected: boolean) =>
-  `<div style="${HIT}" role="img" aria-label="${(p.name_preferred ?? p.name_en ?? p.name_ko).replace(/"/g, '')}"><span style="width:var(${selected ? '--map-pin-size-selected' : '--map-pin-size'});height:var(${selected ? '--map-pin-size-selected' : '--map-pin-size'});border-radius:9999px;background:var(${selected ? '--map-pin-selected' : '--map-pin-fill'});border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);transition:all var(--duration-short4) var(--easing-standard)">${iconFor(p.display_domain)}</span></div>`
+  `<div style="${HIT}" role="img" aria-label="${(p.name_preferred ?? p.name_en ?? p.name_ko).replace(/"/g, '')}"><span style="width:var(${selected ? '--map-pin-size-selected' : '--map-pin-size'});height:var(${selected ? '--map-pin-size-selected' : '--map-pin-size'});border-radius:9999px;background:var(${selected ? '--map-pin-selected' : '--map-pin-fill'});border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);transition:all var(--duration-short4) var(--easing-standard)">${iconFor(p.display_domain, selected)}</span></div>`
 const clusterHtml = (n: number) => {
   const size = n < 10 ? '--map-cluster-size-sm' : n < 50 ? '--map-cluster-size-md' : '--map-cluster-size-lg'
-  return `<div style="${HIT};width:52px;height:52px"><span style="width:var(${size});height:var(${size});border-radius:9999px;background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);font:var(--font-weight-semibold) var(--font-size-xs)/1 var(--font-family-body)">${n}</span></div>`
+  return `<div style="${HIT};width:52px;height:52px"><span style="width:var(${size});height:var(${size});border-radius:9999px;background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${n}</span></div>`
 }
 const stopHtml = (order: number, day: number, selected: boolean) =>
-  `<div style="${HIT}"><span style="width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:9999px;background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-bold) var(--font-size-2xs)/1 var(--font-family-body);${selected ? 'outline:var(--border-width-2) solid var(--map-pin-selected);outline-offset:2px' : ''}">${order}</span></div>`
+  `<div style="${HIT}"><span style="width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:9999px;background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider);${selected ? 'outline:var(--border-width-2) solid var(--map-pin-selected);outline-offset:2px' : ''}">${order}</span></div>`
 
 function boundsOf(map: any): MapBounds {
   const b = map.getBounds()

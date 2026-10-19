@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { CircleAlert, CircleCheck, Info, SearchX, TriangleAlert, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
-import { IconButton } from './IconButton'
+import { FOCUS_RING, HIT_AREA } from './styles'
 
 // Feedback molecules (UI-68; Figma Molecules): Alert, Empty state. (Toast: Toast.tsx.)
 
@@ -32,18 +32,30 @@ export function Alert({ type = 'info', title, children, action, onDismiss, dismi
     <div
       role={critical ? 'alert' : 'status'}
       className={cn(
-        'flex gap-[var(--space-3)] rounded-none border p-[var(--space-4)]',
+        'flex gap-[var(--space-3)] rounded-none border pb-[var(--space-4)] pl-[var(--space-4)] pr-[var(--space-3)] pt-[var(--space-3)]',
         critical ? 'border-ui-danger-border bg-ui-danger-bg' : 'border-ui-border bg-ui-bg-raised',
         className,
       )}
     >
-      <Icon aria-hidden className={cn('mt-[2px] size-[var(--icon-size-sm)] shrink-0', critical ? 'text-ui-danger' : 'text-ui-fg')} />
-      <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
-        {title ? <p className={cn('type-title-card', critical ? 'text-ui-danger' : 'text-ui-fg')}>{title}</p> : null}
-        <div className="type-body-base text-ui-fg">{children}</div>
+      <span aria-hidden className="inline-flex shrink-0 pt-[var(--space-1)]">
+        <Icon className={cn('size-[var(--icon-size-md)]', critical ? 'text-ui-danger' : 'text-ui-fg')} />
+      </span>
+      <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)] pt-[var(--space-1)]">
+        {title ? <p className="type-title-card text-ui-fg">{title}</p> : null}
+        <div className="type-body-base text-ui-fg-muted">{children}</div>
         {action ? <div className="mt-[var(--space-1)]">{action}</div> : null}
       </div>
-      {onDismiss ? <IconButton label={dismissLabel ?? ''} icon={<X />} onClick={onDismiss} className="-my-[var(--space-2)] -mr-[var(--space-2)]" /> : null}
+      {onDismiss ? (
+        // Figma Dismissible: a bare 16 x, top right; the 44 tap area comes from HIT_AREA.
+        <button
+          type="button"
+          aria-label={dismissLabel ?? ''}
+          onClick={onDismiss}
+          className={cn('relative inline-flex shrink-0 self-start text-ui-fg', FOCUS_RING, HIT_AREA)}
+        >
+          <X aria-hidden className="size-[var(--icon-size-sm)]" />
+        </button>
+      ) : null}
     </div>
   )
 }
@@ -72,17 +84,18 @@ export function EmptyState({ type = 'empty', container = 'plain', icon, title, c
     <div
       role={type === 'error' ? 'alert' : undefined}
       className={cn(
-        'flex flex-col items-center gap-[var(--space-3)] px-[var(--space-6)] py-[var(--space-12)] text-center',
+        'flex flex-col items-center gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-12)] text-center',
         container === 'bordered' && 'border border-ui-border bg-ui-bg-raised',
         className,
       )}
     >
-      <span aria-hidden className={cn('inline-flex size-[var(--icon-size-2xl)] [&>svg]:size-full', type === 'error' ? 'text-ui-danger' : 'text-ui-fg-muted')}>
+      <span aria-hidden className={cn('mb-[var(--space-4)] inline-flex size-[var(--icon-size-2xl)] [&>svg]:size-full', type === 'error' ? 'text-ui-danger' : 'text-ui-fg-muted')}>
         {icon ?? <Icon />}
       </span>
       <p className="type-title-empty-state text-ui-fg">{title}</p>
-      {children ? <p className="max-w-[40ch] type-body-base text-ui-fg-muted">{children}</p> : null}
-      {action ? <div className="mt-[var(--space-2)]">{action}</div> : null}
+      {/* Figma body: 320 fixed, never wider than the container. */}
+      {children ? <p className="w-[320px] max-w-full type-body-base text-ui-fg-muted">{children}</p> : null}
+      {action ? <div className="mt-[var(--space-4)]">{action}</div> : null}
     </div>
   )
 }

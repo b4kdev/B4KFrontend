@@ -47,7 +47,7 @@ export const MapPin = forwardRef<HTMLButtonElement, MapPinProps>(function MapPin
       )}
       {...props}
     >
-      <Icon aria-hidden className={selected ? 'size-[var(--icon-size-sm)]' : 'size-[var(--icon-size-xs)]'} />
+      <Icon aria-hidden className={selected ? 'size-[var(--icon-size-md)]' : 'size-[var(--icon-size-xs)]'} />
     </button>
   )
 })
@@ -89,6 +89,10 @@ export type MapControlProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'typ
   label: string
 }
 
+/** Focus ring 3 to 5px outside: the focus/ring gap plus the 1px border. */
+const CONTROL_FOCUS_RING =
+  'focus-visible:outline-none focus-visible:shadow-[0_0_0_calc(var(--focus-ring-offset)_+_var(--border-width-1))_var(--color-focus-halo),0_0_0_calc(var(--focus-ring-offset)_+_var(--focus-ring-width)_+_var(--border-width-1))_var(--color-border-focus)]'
+
 /** Map control: square 44 map button (Zoom, later Locate me): bg-raised, 1px border, icon 16. */
 export const MapControl = forwardRef<HTMLButtonElement, MapControlProps>(function MapControl(
   { icon, label, className, ...props },
@@ -103,7 +107,7 @@ export const MapControl = forwardRef<HTMLButtonElement, MapControlProps>(functio
         'inline-flex size-[var(--target-touch-min)] shrink-0 items-center justify-center rounded-none border border-ui-border bg-ui-bg-raised text-ui-fg',
         'enabled:hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] enabled:active:bg-[image:linear-gradient(var(--color-state-pressed),var(--color-state-pressed))]',
         'disabled:cursor-not-allowed disabled:text-ui-fg-disabled [&>svg]:size-[var(--icon-size-sm)]',
-        FOCUS_RING,
+        CONTROL_FOCUS_RING,
         className,
       )}
       {...props}

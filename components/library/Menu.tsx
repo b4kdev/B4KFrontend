@@ -28,8 +28,10 @@ export const MenuItem = forwardRef<HTMLButtonElement, MenuItemProps>(function Me
       aria-checked={checked}
       className={cn(
         'flex h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] text-left type-body-base',
-        'enabled:hover:bg-ui-state-hover focus-visible:bg-ui-state-hover disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
-        variant === 'danger' ? 'text-ui-danger' : 'text-ui-fg',
+        'disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
+        variant === 'danger'
+          ? 'text-ui-danger enabled:hover:bg-ui-danger-bg focus-visible:bg-ui-danger-bg'
+          : 'text-ui-fg enabled:hover:bg-ui-state-hover focus-visible:bg-ui-state-hover',
         FOCUS_RING_INSET,
         className,
       )}
@@ -67,7 +69,7 @@ function highlight(title: string, match?: string) {
   return (
     <>
       {title.slice(0, i)}
-      <strong className="font-[var(--font-weight-bold)]">{title.slice(i, i + match.length)}</strong>
+      <strong className="font-[var(--font-weight-semibold)]">{title.slice(i, i + match.length)}</strong>
       {title.slice(i + match.length)}
     </>
   )

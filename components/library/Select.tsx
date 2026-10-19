@@ -39,7 +39,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
           'relative flex items-center gap-[var(--gap-sm)] px-[var(--input-padding-x)]',
           size === 'lg' ? 'h-[var(--control-height-lg)]' : 'h-[var(--control-height-md)]',
           error && 'border-ui-danger-border hover:border-ui-danger-border focus-within:border-ui-danger-border',
-          disabled && 'cursor-not-allowed border-ui-border-disabled text-ui-fg-disabled hover:border-ui-border-disabled',
+          disabled && 'cursor-not-allowed border-ui-border-disabled bg-ui-bg-disabled text-ui-fg-disabled hover:border-ui-border-disabled',
         )}
       >
         {leadingIcon ? (
@@ -54,7 +54,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
           disabled={disabled}
           aria-invalid={error ? true : undefined}
           aria-describedby={help || error ? msgId : undefined}
-          className="h-full min-w-0 flex-1 appearance-none bg-transparent pr-[var(--space-6)] outline-none disabled:cursor-not-allowed invalid:text-ui-fg-placeholder"
+          className="h-full min-w-0 flex-1 appearance-none bg-transparent pr-[var(--space-6)] outline-none disabled:cursor-not-allowed invalid:text-ui-fg-placeholder disabled:invalid:text-ui-fg-disabled"
           {...props}
         >
           {placeholder ? (
@@ -66,7 +66,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
         </select>
         <ChevronDown aria-hidden className="pointer-events-none absolute right-[var(--input-padding-x)] size-[var(--icon-size-sm)] text-ui-fg-muted" />
       </div>
-      <FieldMessage id={msgId} help={help} error={error} />
+      <FieldMessage id={msgId} help={help} error={error} disabled={disabled} />
     </div>
   )
 })

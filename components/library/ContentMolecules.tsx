@@ -27,7 +27,7 @@ export type SectionHeaderProps = {
 
 export function SectionHeader({ title, subtitle, seeAll, arrows, id, className }: SectionHeaderProps) {
   return (
-    <div className={cn('flex items-center gap-[var(--space-2)]', className)}>
+    <div className={cn('flex min-h-[var(--control-height-md)] items-end gap-[var(--space-2)] max-md:pr-[var(--space-4)]', className)}>
       <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
         <h2 id={id} className="type-display-h3 text-ui-fg">{title}</h2>
         {subtitle ? <p className="type-body-base text-ui-fg-muted">{subtitle}</p> : null}
@@ -64,15 +64,15 @@ export type SaveLikeOverlayProps = {
 /** Save-like overlay: top right of a Card photo, 8 from the edges; monochrome, filled when on. */
 export function SaveLikeOverlay({ saved, onSave, saveLabel, like, className }: SaveLikeOverlayProps) {
   return (
-    <div className={cn('absolute right-[var(--space-2)] top-[var(--space-2)] flex gap-[var(--space-2)]', className)}>
-      {like ? <ImageAction on={like.liked} icon={<Heart />} label={like.label} onClick={like.onLike} /> : null}
+    <div className={cn('absolute right-[var(--space-2)] top-[var(--space-2)] flex gap-[var(--space-1)]', className)}>
       <ImageAction on={saved} icon={<Bookmark />} label={saveLabel} onClick={onSave} />
+      {like ? <ImageAction on={like.liked} icon={<Heart />} label={like.label} onClick={like.onLike} /> : null}
     </div>
   )
 }
 
 const MEDAL = {
-  common: 'bg-ui-bg-sunken border border-ui-border-subtle text-ui-fg',
+  common: 'bg-ui-bg-sunken text-ui-fg',
   rare: 'bg-ui-bg-raised border border-ui-border text-ui-fg',
   epic: 'bg-ui-bg-inverse text-ui-fg-inverse',
   legendary: 'bg-ui-bg-inverse text-ui-fg-inverse',
@@ -94,8 +94,8 @@ export type AchievementBadgeProps = {
 export function AchievementBadge({ name, detail, icon, rarity = 'common', locked, lockedLabel, className }: AchievementBadgeProps) {
   return (
     <div className={cn('flex w-[96px] flex-col items-center gap-[var(--space-2)] text-center', className)}>
-      <span aria-hidden className={cn('inline-flex rounded-full border p-[calc(var(--space-1)-1px)]', rarity === 'legendary' && !locked ? 'border-ui-fg' : 'border-transparent')}>
-        <span className={cn('inline-flex size-[var(--achievement-size)] items-center justify-center rounded-full [&>svg]:size-[var(--icon-size-lg)]', locked ? MEDAL.common : MEDAL[rarity], locked && 'text-ui-fg-muted')}>
+      <span aria-hidden className={cn('inline-flex rounded-full border', rarity === 'legendary' && !locked ? 'border-ui-fg p-[var(--space-1)]' : 'border-transparent p-[calc(var(--space-1)-1px)]')}>
+        <span className={cn('inline-flex size-[var(--achievement-size)] items-center justify-center rounded-full [&>svg]:size-[var(--icon-size-xl)]', locked ? MEDAL.common : MEDAL[rarity], locked && 'text-ui-fg-disabled')}>
           {locked ? <Lock /> : icon}
         </span>
       </span>
@@ -137,7 +137,7 @@ export function AiInput({ value, onValueChange, onSend, placeholder, sendLabel, 
     }
   }
   return (
-    <div className={cn('flex items-end gap-[var(--space-2)]', className)}>
+    <div className={cn('flex items-center gap-[var(--space-2)]', className)}>
       <div className="flex min-h-[var(--control-height-md)] flex-1 items-center rounded-full bg-ui-bg-sunken px-[var(--input-padding-x)] focus-within:shadow-[inset_0_0_0_var(--border-width-2)_var(--color-border-focus)]">
         <textarea
           ref={ref}
@@ -148,7 +148,7 @@ export function AiInput({ value, onValueChange, onSend, placeholder, sendLabel, 
           placeholder={placeholder}
           onChange={(e) => onValueChange(e.target.value)}
           onKeyDown={onKey}
-          className="w-full resize-none bg-transparent py-[var(--space-2)] type-body-base text-ui-fg outline-none placeholder:text-ui-fg-placeholder disabled:cursor-not-allowed"
+          className="w-full resize-none bg-transparent py-[var(--space-2)] type-body-base text-ui-fg outline-none placeholder:text-ui-fg-placeholder disabled:cursor-not-allowed disabled:text-ui-fg-disabled disabled:placeholder:text-ui-fg-disabled"
         />
       </div>
       {loading ? (
@@ -181,7 +181,7 @@ export type PlanStopRowProps = {
 /** Plan stop row (UI-77): grip, Stop badge sm, optional thumbnail, name, Duration button, Remove. */
 export function PlanStopRow({ name, number, day, duration, durationLabel, onDuration, onRemove, removeLabel, reorderLabel, dragging, thumbnail, className }: PlanStopRowProps) {
   return (
-    <li className={cn('group flex items-center gap-[var(--space-2)] py-[var(--space-1)]', dragging && 'bg-ui-bg-elevated outline outline-1 outline-ui-border-strong', className)}>
+    <li className={cn('group flex h-[var(--control-height-md)] items-center gap-[var(--space-2)]', dragging && 'bg-ui-state-dragged', className)}>
       <DragHandle label={reorderLabel} className="md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100" />
       <StopBadge number={number} day={day} />
       {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="40px" className="w-[var(--control-height-md)] shrink-0" /> : null}
@@ -191,7 +191,7 @@ export function PlanStopRow({ name, number, day, duration, durationLabel, onDura
         aria-label={durationLabel}
         aria-haspopup="menu"
         onClick={onDuration}
-        className="relative inline-flex h-[var(--control-height-sm)] items-center gap-[var(--space-1)] px-[var(--space-1)] type-body-label text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"
+        className="relative inline-flex h-[var(--control-height-sm)] items-center gap-[var(--space-1)] type-body-label text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"
       >
         <Clock aria-hidden className="size-[var(--icon-size-xs)] text-ui-fg-muted" />
         {duration}
@@ -219,7 +219,7 @@ export type ItineraryStopProps = {
 /** Itinerary stop (UI-77): Stop badge md on the route rail, name, meta, optional note and 40 thumbnail. */
 export function ItineraryStop({ name, number, day, meta, note, thumbnail, selected, onSelect, className }: ItineraryStopProps) {
   return (
-    <li aria-current={selected || undefined} className={cn('flex items-start gap-[var(--space-3)] p-[var(--space-2)]', selected && 'bg-ui-state-selected', onSelect && 'cursor-pointer hover:bg-ui-state-hover', className)} onClick={onSelect}>
+    <li aria-current={selected || undefined} className={cn('flex min-h-[var(--space-20)] items-start gap-[var(--space-3)] p-[var(--space-2)]', selected && 'bg-ui-state-selected', onSelect && 'cursor-pointer hover:bg-ui-state-hover', className)} onClick={onSelect}>
       <StopBadge number={number} day={day} size="md" />
       <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
         <span className="type-title-card text-ui-fg">{name}</span>

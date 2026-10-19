@@ -44,6 +44,15 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
     el.style.height = `${Math.min(el.scrollHeight, line * MAX_ROWS + 24)}px`
   }, [value])
   const length = typeof value === 'string' ? value.length : 0
+  const counter =
+    showCounter && maxLength ? (
+      <p
+        aria-live={length > maxLength * 0.9 ? 'polite' : 'off'}
+        className={cn('shrink-0 type-body-caption', !error && 'ml-auto', disabled ? 'text-ui-fg-disabled' : 'text-ui-fg-muted')}
+      >
+        {length} / {maxLength}
+      </p>
+    ) : null
   return (
     <div className={cn('flex flex-col gap-[var(--space-1-5)]', className)}>
       <Label htmlFor={areaId} required={required} disabled={disabled} srOnly={!showLabel}>
@@ -52,9 +61,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
       <div
         className={cn(
           FIELD_FRAME,
-          'flex px-[var(--input-padding-x)] py-[var(--space-3)]',
+          'flex px-[var(--input-padding-x)] py-[var(--space-2-5)]',
           error && 'border-ui-danger-border hover:border-ui-danger-border focus-within:border-ui-danger-border',
-          disabled && 'cursor-not-allowed border-ui-border-disabled text-ui-fg-disabled hover:border-ui-border-disabled',
+          disabled && 'cursor-not-allowed border-ui-border-disabled bg-ui-bg-disabled text-ui-fg-disabled hover:border-ui-border-disabled',
         )}
       >
         <textarea
@@ -67,18 +76,22 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
           disabled={disabled}
           aria-invalid={error ? true : undefined}
           aria-describedby={help || error || showCounter ? msgId : undefined}
-          className="min-h-[calc(var(--textarea-min-height)-var(--space-6))] w-full resize-none bg-transparent outline-none placeholder:text-ui-fg-placeholder disabled:cursor-not-allowed"
+          className="min-h-[calc(var(--textarea-min-height)-2*var(--space-2-5)-2*var(--border-width-1))] w-full resize-none bg-transparent outline-none placeholder:text-ui-fg-placeholder disabled:cursor-not-allowed disabled:placeholder:text-ui-fg-disabled"
           {...props}
         />
       </div>
-      <div className="flex items-start justify-between gap-[var(--space-3)]">
-        <FieldMessage id={msgId} help={help} error={error} />
-        {showCounter && maxLength ? (
-          <p aria-live={length > maxLength * 0.9 ? 'polite' : 'off'} className="ml-auto shrink-0 type-body-caption text-ui-fg-muted">
-            {length} / {maxLength}
-          </p>
-        ) : null}
-      </div>
+      {/* Help and counter share a row; with an error the counter gets its own row above the message. */}
+      {error ? (
+        <>
+          {counter}
+          <FieldMessage id={msgId} help={help} error={error} disabled={disabled} />
+        </>
+      ) : (
+        <div className="flex items-start justify-between gap-[var(--space-2)]">
+          <FieldMessage id={msgId} help={help} error={error} disabled={disabled} />
+          {counter}
+        </div>
+      )}
     </div>
   )
 })

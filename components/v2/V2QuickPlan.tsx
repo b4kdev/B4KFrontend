@@ -59,7 +59,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
   // Figma A1 / Quick plan / Step 1 to 3 (SCR-009).
   const body =
     step === 1 ? (
-      <div className="flex flex-col gap-[var(--space-5)]">
+      <div className={phone ? 'flex flex-col gap-[var(--space-6)]' : 'flex flex-col gap-[var(--space-5)]'}>
         <fieldset className="flex flex-col gap-[var(--space-2)]">
           <legend className={`mb-[var(--space-2)] ${lbl}`}>{t('CD0791')}</legend>
           <div className="flex flex-wrap gap-[var(--space-2)]">
@@ -90,9 +90,9 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
           </p>
         ) : null}
         {group ? (
-          <div className={phone ? 'flex flex-col gap-[var(--space-4)]' : 'flex gap-[var(--space-6)]'}>
+          <div className={phone ? 'flex flex-col gap-[var(--space-6)]' : 'flex gap-[var(--space-6)]'}>
             {/* Categories: a list on desktop, a row of chips on phones (Figma Step 2 Mobile). */}
-            <div role="group" aria-label={t('CD0778')} className={phone ? '-mx-[var(--space-4)] flex gap-[var(--space-2)] overflow-x-auto px-[var(--space-4)] [scrollbar-width:none]' : 'flex w-[136px] shrink-0 flex-col items-start gap-[var(--space-3)]'}>
+            <div role="group" aria-label={t('CD0778')} className={phone ? 'flex gap-[var(--space-2)] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : 'flex w-[136px] shrink-0 flex-col items-start gap-[var(--space-3)]'}>
               {categories.map((g) =>
                 phone ? (
                   <Chip key={g.slug} selected={g.slug === group.slug} onClick={() => setActiveGroup(g.slug)} className="shrink-0">{labelOf(g, lang)}</Chip>
@@ -123,7 +123,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
         ) : null}
       </div>
     ) : (
-      <ul className="rounded-md border border-ui-border">
+      <ul className="border border-ui-border">
         {[
           { key: t('CD0762'), value: t(CITY_CD[city]), to: 1 as const },
           { key: t('CD0759'), value: who ? t(WHO.find((w) => w[0] === who)![1]) : t('CD0767'), to: 1 as const },
@@ -137,7 +137,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
               aria-label={`${t('CD0760')} ${r.key}: ${r.value}`}
               className="flex w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] focus-visible:shadow-focus-ring focus-visible:outline-none"
             >
-              <span className={phone ? 'type-body-label text-ui-fg' : 'w-[140px] shrink-0 type-body-label text-ui-fg'}>{r.key}</span>
+              <span className={phone ? 'shrink-0 whitespace-nowrap type-body-label text-ui-fg' : 'w-[140px] shrink-0 type-body-label text-ui-fg'}>{r.key}</span>
               <span className="min-w-0 flex-1 type-body-base text-ui-fg-muted">{r.value}</span>
               <span aria-hidden className="inline-flex shrink-0 items-center gap-[var(--space-1-5)] type-label-button text-ui-link">
                 {t('CD0760')}

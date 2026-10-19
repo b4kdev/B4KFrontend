@@ -37,8 +37,8 @@ export function StopBadge({ number, size = 'sm', day = 0, label, className }: St
       aria-label={label}
       aria-hidden={label ? undefined : true}
       className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded-full type-numeric-count',
-        size === 'sm' ? 'size-[var(--stop-badge-size-sm)]' : 'size-[var(--stop-badge-size-md)]',
+        'inline-flex shrink-0 items-center justify-center rounded-full',
+        size === 'sm' ? 'size-[var(--stop-badge-size-sm)] type-numeric-count' : 'size-[var(--stop-badge-size-md)] type-body-label',
         DAY_FILL[day],
         className,
       )}
@@ -110,7 +110,7 @@ export function TransportMode({ mode, modeLabel, time, onChange, loading, classN
     </>
   )
   return (
-    <div className={cn('flex items-center py-[var(--space-1-5)] pl-[var(--space-3)]', mode !== 'estimate' && 'border-l border-ui-border-strong', className)}>
+    <div className={cn('flex items-center py-[var(--space-1-5)]', mode !== 'estimate' && 'border-l border-ui-border-strong pl-[var(--space-3)]', className)}>
       {onChange && mode !== 'estimate' ? (
         <button
           type="button"
@@ -135,6 +135,10 @@ export type PlanPillProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'
   expanded?: boolean
 }
 
+/** Focus ring 3 to 5px outside: the focus/ring gap plus the 1px border. */
+const PILL_FOCUS_RING =
+  'focus-visible:outline-none focus-visible:shadow-[0_0_0_calc(var(--focus-ring-offset)_+_var(--border-width-1))_var(--color-focus-halo),0_0_0_calc(var(--focus-ring-offset)_+_var(--focus-ring-width)_+_var(--border-width-1))_var(--color-border-focus)]'
+
 /** Plan pill: the plan cart on phones, bottom left over the map; hidden with 0 stops. */
 export const PlanPill = forwardRef<HTMLButtonElement, PlanPillProps>(function PlanPill(
   { label, accessibleLabel, expanded, className, ...props },
@@ -149,7 +153,7 @@ export const PlanPill = forwardRef<HTMLButtonElement, PlanPillProps>(function Pl
       className={cn(
         'inline-flex h-[var(--target-touch-min)] items-center gap-[var(--space-2)] rounded-full border border-ui-border-strong bg-ui-bg-raised px-[var(--space-4)] type-body-label text-ui-fg',
         'hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]',
-        FOCUS_RING,
+        PILL_FOCUS_RING,
         className,
       )}
       {...props}

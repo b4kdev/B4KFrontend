@@ -9,7 +9,7 @@ import { LOGO_PATHS } from './logo-paths'
 export type LogoProps = {
   /** Figma Type. */
   type?: 'wordmark' | 'mark'
-  /** Height via className, e.g. h-6 (Figma Wordmark 24) or h-9 (Mark 36, UI-93). */
+  /** Height via className; default 24 for both (Figma Wordmark 24, Mark 24). The rail and header pass h-9 (Mark 36, UI-93). */
   className?: string
   /** Accessible name; leave out when the logo is decorative or the link is labelled. */
   label?: string
@@ -23,7 +23,7 @@ export function Logo({ type = 'wordmark', className, label }: LogoProps) {
       role={label ? 'img' : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}
-      className={cn('w-auto fill-current text-ui-fg', type === 'wordmark' ? 'h-6' : 'h-9', className)}
+      className={cn('h-6 w-auto fill-current text-ui-fg', className)}
     >
       {art.paths.map((d) => (
         <path key={d.slice(0, 24)} d={d} />
