@@ -338,7 +338,7 @@ export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, 
             <section key={s.id} aria-labelledby={s.id} className="flex flex-col gap-[var(--space-3)]">
               {i > 0 ? <Separator className="my-[var(--space-6)]" /> : null}
               <h2 id={s.id} className="scroll-mt-[var(--space-6)] type-display-h3">{i + 1}. {s.title}</h2>
-              <div className="type-body-long text-ui-fg-muted [&_p+p]:mt-[var(--space-3)]">{s.body}</div>
+              <div className="type-body-long text-ui-fg-muted [&_a]:underline [&_a]:underline-offset-2 [&_li]:mt-[var(--space-1)] [&_ol]:list-decimal [&_ol]:pl-[var(--space-5)] [&_p+p]:mt-[var(--space-3)] [&_ul]:list-disc [&_ul]:pl-[var(--space-5)]">{s.body}</div>
             </section>
           ))}
         </div>

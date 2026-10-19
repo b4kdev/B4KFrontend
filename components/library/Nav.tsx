@@ -54,7 +54,7 @@ export const Segment = forwardRef<HTMLButtonElement, SegmentProps>(function Segm
       role="radio"
       aria-checked={selected}
       className={cn(
-        'relative inline-flex h-[var(--control-height-sm)] flex-1 items-center justify-center rounded-full px-[var(--space-3)] type-body-base',
+        'relative inline-flex h-[var(--control-height-sm)] flex-1 items-center justify-center whitespace-nowrap rounded-full px-[var(--space-3)] type-body-base',
         'transition-colors duration-short4 ease-standard disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
         selected ? 'bg-ui-bg-inverse text-ui-fg-inverse' : 'text-ui-fg-muted enabled:hover:bg-ui-state-hover enabled:hover:text-ui-fg',
         FOCUS_RING,

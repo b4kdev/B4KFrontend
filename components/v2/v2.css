@@ -1,0 +1,12 @@
+/* UI-102 line breaks for the v2 preview only. app/globals.css sets keep-all on Korean and
+   Japanese and break-all on Chinese for the live pages; UI-102: never break-all on Latin text,
+   Korean body text keeps the default syllable breaks, Japanese and Chinese keep the default
+   line-break. Korean card titles keep their own keep-all ([&:lang(ko)]:break-keep).
+   :has() covers dialogs and sheets that render outside the shell. */
+html:has(.b4k-v2) :lang(ko):not([class*='break-keep']),
+html:has(.b4k-v2) :lang(ja):not([class*='break-keep']),
+html:has(.b4k-v2) :lang(zh-TW):not([class*='break-keep']) {
+  word-break: normal;
+  line-break: auto;
+  overflow-wrap: break-word;
+}
