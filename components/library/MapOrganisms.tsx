@@ -139,8 +139,8 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
   }
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
-    <section aria-labelledby={id} className={cn('flex flex-col bg-ui-bg-sunken text-ui-fg', state === 'open' ? 'h-full' : 'border-t border-ui-border', className)}>
-      {/* Figma Plan cart fill: color/bg-sunken. */}
+    <section aria-labelledby={id} className={cn('flex flex-col text-ui-fg', state === 'open' ? 'h-full bg-ui-bg' : 'border-t border-ui-border bg-ui-bg-sunken', className)}>
+      {/* Open: the Left panel's color/bg; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
       <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('flex w-full flex-col gap-[var(--space-3)] px-[var(--space-4)] text-left hover:bg-ui-state-hover', state === 'collapsed' ? 'py-[var(--space-4)]' : 'py-[var(--space-3)]', FOCUS_RING_INSET)}>
         <span className="flex w-full items-center gap-[var(--space-2)]">
           <span id={id} aria-live="polite" className="min-w-0 flex-1 type-title-card">{summary}</span>
