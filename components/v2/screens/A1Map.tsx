@@ -40,7 +40,7 @@ import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
 import { useV2Shell } from '../V2Shell'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
-import { DURATIONS, MAX_STOPS, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
+import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_STOPS, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
 import { CATEGORIES, jsonFetch } from './A2Home'
 
 // The map (A1; PD-20, PD-24 to PD-31, PD-45, PD-48; UI-74, UI-77, UI-89, UI-90): Map browse
@@ -84,6 +84,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const [planName, setPlanName] = useState('')
   const [saving, setSaving] = useState(false)
   const [discardOpen, setDiscardOpen] = useState(false)
+  const [deleteDay, setDeleteDay] = useState<number | null>(null)
   const [durationFor, setDurationFor] = useState<string | null>(null)
   const [folderId, setFolderId] = useState<string | null>(params?.get('folder'))
   const [editing, setEditing] = useState<{ id: string; title: string } | null>(null)
@@ -132,21 +133,31 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   // Hand-offs: Quick plan (PD-45) and Plan from Saved (SCR-035) open the plan unsaved; ?plan=edit
   // loads a published plan for editing (PD-28).
+  const takeHandoff = () => {
+    const stops = takeCourseHandoff()
+    if (!stops) return
+    const had = draft.plan.stops.length > 0
+    const asPois: MapPoi[] = stops.map((s) => ({ poi_id: s.poi_id, name_ko: s.name_ko, name_preferred: s.name_preferred, coords_lat: s.coords_lat, coords_lng: s.coords_lng, display_region: s.display_region ?? null, primary_image_url: s.primary_image_url }))
+    draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])))
+    setActiveDay('all')
+    setSelectedId(null)
+    setCollectionOn(false)
+    setCart('open')
+    setPlanOnly(true)
+    if (phone) setPlanSheet(true)
+    fitPlan(asPois)
+    toast({ type: 'success', message: had ? k('map.plan.replacedDraftToast') : t('CD1548') })
+  }
+  // A hand-off made while this map is open (same address, so no remount).
+  const handoffRef = useRef(takeHandoff)
+  handoffRef.current = takeHandoff
   useEffect(() => {
-    const from = params?.get('from')
-    if (from) {
-      const stops = takeCourseHandoff()
-      if (stops) {
-        const had = draft.plan.stops.length > 0
-        const asPois: MapPoi[] = stops.map((s) => ({ poi_id: s.poi_id, name_ko: s.name_ko, name_preferred: s.name_preferred, coords_lat: s.coords_lat, coords_lng: s.coords_lng, display_region: s.display_region ?? null, primary_image_url: s.primary_image_url }))
-        draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])))
-        setCart('open')
-        setPlanOnly(true)
-        if (phone) setPlanSheet(true)
-        fitPlan(asPois)
-        toast({ type: 'success', message: had ? k('map.plan.replacedDraftToast') : t('CD1548') })
-      }
-    }
+    const on = () => handoffRef.current()
+    window.addEventListener(COURSE_HANDOFF_EVENT, on)
+    return () => window.removeEventListener(COURSE_HANDOFF_EVENT, on)
+  }, [])
+  useEffect(() => {
+    if (params?.get('from')) takeHandoff()
     const editId = params?.get('plan') === 'edit' ? params.get('id') : null
     if (editId) {
       // A plan in progress: on this device, or in the account (signed in; 401 for guests).
@@ -199,6 +210,11 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     const on = liked.has(id)
     await send('/api/likes/poi', on ? 'DELETE' : 'POST', { poi_id: id }).catch(() => {})
     setLiked((s) => { const n = new Set(s); if (on) n.delete(id); else n.add(id); return n })
+  }
+  const removeDay = (d: number) => {
+    draft.removeDay(d)
+    setActiveDay(d > 1 ? ((d - 1) as 1) : 'all')
+    setDeleteDay(null)
   }
   const totalMin = order.reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0)
   const dayTotal = typeof activeDay === 'number' ? order.filter((p) => draft.dayOf(p.poi_id) === activeDay).reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0) : null
@@ -308,6 +324,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       stops={order.map((p, i) => ({
         id: p.poi_id,
         name: nameOf(p, locale),
+        imageSrc: p.primary_image_url ?? null,
         day: Math.min(draft.dayOf(p.poi_id), 8) as 1,
         duration: formatMinutes(draft.plan.durations[p.poi_id] ?? 60, k),
         durationLabel: k('map.plan.durationAriaLabel', { name: nameOf(p, locale) }),
@@ -317,6 +334,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       activeDay={activeDay}
       onDayChange={(d) => setActiveDay(d)}
       onAddDay={draft.addDay}
+      onRemoveDay={(d) => (draft.countOn(d) ? setDeleteDay(d) : removeDay(d))}
       summary={editing ? GAP.editing(editing.title) : order.length ? `${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })} · ${formatMinutes(totalMin, k)}` : t('CD1359')}
       lastAdded={order.length ? nameOf(order[order.length - 1], locale) : undefined}
       lastAddedImage={order.length ? order[order.length - 1].primary_image_url ?? null : undefined}
@@ -328,7 +346,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       onDiscard={() => (editing ? stopEditing() : setDiscardOpen(true))}
       labels={{
         region: k('map.plan.title'), emptyTitle: t('CD1359'), emptyBody: t('CD1607'), all: k('map.plan.allDays'),
-        day: (n) => k('map.plan.dayTab', { n }), addDay: k('map.plan.addDay'), save: editing ? t('CD0993') : k('map.plan.save'), discard: editing ? t('CD1528') : k('map.plan.discardDraft'),
+        day: (n) => k('map.plan.dayTab', { n }), addDay: k('map.plan.addDay'), removeDay: GAP.deleteDay, previousDays: GAP.previousDays, nextDays: GAP.nextDays, save: editing ? t('CD0993') : k('map.plan.save'), discard: editing ? t('CD1528') : k('map.plan.discardDraft'),
         remove: (n) => `${k('saved.poi.removeLabel')} ${n}`, reorder: (n) => k('map.plan.dragHandle', { n }),
         open: k('map.plan.stripExpand'), close: k('map.plan.stripCollapse'), about: GAP.about,
       }}
@@ -381,6 +399,14 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         body={GAP.discardBody(order.length)}
         cancel={<Button variant="ghost" data-autofocus onClick={() => setDiscardOpen(false)}>{k('map.plan.discardCancel')}</Button>}
         confirm={<Button variant="danger" onClick={() => { draft.discard(); setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
+      />
+      <Dialog
+        open={deleteDay !== null}
+        onCancel={() => setDeleteDay(null)}
+        title={deleteDay !== null ? GAP.deleteDayTitle(deleteDay) : ''}
+        body={deleteDay !== null ? GAP.deleteDayBody(draft.countOn(deleteDay)) : ''}
+        cancel={<Button variant="ghost" data-autofocus onClick={() => setDeleteDay(null)}>{k('map.plan.discardCancel')}</Button>}
+        confirm={<Button variant="danger" onClick={() => deleteDay !== null && removeDay(deleteDay)}>{GAP.deleteDayConfirm}</Button>}
       />
       <Dialog
         open={!!pendingEdit}

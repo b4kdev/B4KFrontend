@@ -173,15 +173,18 @@ export type PlanStopRowProps = {
   reorderLabel: string
   /** Figma State=Dragging. */
   dragging?: boolean
+  /** Photo of the place (40, as the Itinerary stop); omitted: no thumbnail. */
+  thumbnail?: string | null
   className?: string
 }
 
-/** Plan stop row (UI-77): grip, Stop badge sm, name, Duration button, Remove. */
-export function PlanStopRow({ name, number, day, duration, durationLabel, onDuration, onRemove, removeLabel, reorderLabel, dragging, className }: PlanStopRowProps) {
+/** Plan stop row (UI-77): grip, Stop badge sm, optional thumbnail, name, Duration button, Remove. */
+export function PlanStopRow({ name, number, day, duration, durationLabel, onDuration, onRemove, removeLabel, reorderLabel, dragging, thumbnail, className }: PlanStopRowProps) {
   return (
     <li className={cn('group flex items-center gap-[var(--space-2)] py-[var(--space-1)]', dragging && 'bg-ui-bg-elevated outline outline-1 outline-ui-border-strong', className)}>
       <DragHandle label={reorderLabel} className="md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100" />
       <StopBadge number={number} day={day} />
+      {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="40px" className="w-[var(--control-height-md)] shrink-0" /> : null}
       <span className="min-w-0 flex-1 truncate type-body-base text-ui-fg">{name}</span>
       <button
         type="button"

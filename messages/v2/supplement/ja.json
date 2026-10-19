@@ -502,6 +502,12 @@
     "createdBy": "{name}作成",
     "deletePlanTitle": "「{title}」を削除しますか？",
     "days": "{count, plural, one {#日間} other {#日間}}",
-    "lastAddedMore": "{count, plural, =0 {最後に追加} other {最後に追加 · 他#件}}"
+    "lastAddedMore": "{count, plural, =0 {最後に追加} other {最後に追加 · 他#件}}",
+    "deleteDay": "{n}日目を削除",
+    "deleteDayTitle": "{n}日目を削除しますか？",
+    "deleteDayBody": "この日の{count}件のスポットがプランから削除されます。",
+    "deleteDayConfirm": "削除",
+    "previousDays": "前の日",
+    "nextDays": "次の日"
   }
 }

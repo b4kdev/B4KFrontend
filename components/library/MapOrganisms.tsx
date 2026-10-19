@@ -1,7 +1,7 @@
 'use client'
 
 import { useId, type ReactNode } from 'react'
-import { ArrowLeft, Bookmark, ChevronDown, ChevronRight, Clock, Folder, Globe, Heart, Lock, MapPin, Minus, Plus, Share2, X } from 'lucide-react'
+import { ArrowLeft, Bookmark, ChevronDown, ChevronRight, Clock, Folder, Globe, Heart, Lock, MapPin, Minus, Plus, Share2, Trash2, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Badge } from './Badge'
 import { Button } from './Button'
@@ -77,7 +77,7 @@ export function AiPanel({ viewport, title, greeting, suggestions, onSuggestion, 
   )
 }
 
-export type PlanStop = { id: string; name: string; day: Day; duration: string; durationLabel: string; leg?: string }
+export type PlanStop = { id: string; name: string; day: Day; duration: string; durationLabel: string; leg?: string; imageSrc?: string | null }
 
 export type PlanCartProps = {
   /** Figma State. */
@@ -88,6 +88,8 @@ export type PlanCartProps = {
   activeDay: 'all' | Day
   onDayChange: (d: 'all' | Day) => void
   onAddDay?: () => void
+  /** Delete a day (shown for the selected day while there is more than one). */
+  onRemoveDay?: (day: Day) => void
   /** Collapsed summary, e.g. "5 stops · about 6 h"; last added place. */
   summary: string
   lastAdded?: string
@@ -108,6 +110,11 @@ export type PlanCartProps = {
     all: string
     day: (n: number) => string
     addDay: string
+    /** Accessible name of the delete-day button, e.g. "Delete Day 2". */
+    removeDay?: (n: number) => string
+    /** Day tabs scroll arrows. */
+    previousDays?: string
+    nextDays?: string
     save: string
     discard: string
     remove: (name: string) => string
@@ -120,7 +127,7 @@ export type PlanCartProps = {
 }
 
 /** Plan cart (UI-77): the plan as a shopping cart at the bottom of the Left panel. */
-export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, onRemove, onSave, onDiscard, labels, className }: PlanCartProps) {
+export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, onRemove, onSave, onDiscard, labels, className }: PlanCartProps) {
   const id = useId()
   if (state === 'empty') {
     return (
@@ -132,7 +139,8 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
   }
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
-    <section aria-labelledby={id} className={cn('flex flex-col bg-ui-bg-raised text-ui-fg', state === 'open' ? 'h-full' : 'border-t border-ui-border', className)}>
+    <section aria-labelledby={id} className={cn('flex flex-col bg-ui-bg-sunken text-ui-fg', state === 'open' ? 'h-full' : 'border-t border-ui-border', className)}>
+      {/* Figma Plan cart fill: color/bg-sunken. */}
       <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('flex w-full flex-col gap-[var(--space-3)] px-[var(--space-4)] text-left hover:bg-ui-state-hover', state === 'collapsed' ? 'py-[var(--space-4)]' : 'py-[var(--space-3)]', FOCUS_RING_INSET)}>
         <span className="flex w-full items-center gap-[var(--space-2)]">
           <span id={id} aria-live="polite" className="min-w-0 flex-1 type-title-card">{summary}</span>
@@ -158,15 +166,17 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
               value={String(activeDay)}
               onValueChange={(v) => onDayChange(v === 'all' ? 'all' : (Number(v) as Day))}
               tabs={[{ id: 'all', label: labels.all }, ...Array.from({ length: days }, (_, i) => ({ id: String(i + 1), label: labels.day(i + 1), day: (i + 1) as Day }))]}
+              scrollLabels={labels.previousDays && labels.nextDays ? { previous: labels.previousDays, next: labels.nextDays } : undefined}
               className="min-w-0 flex-1"
             />
+            {onRemoveDay && activeDay !== 'all' && days > 1 ? <IconButton label={labels.removeDay?.(activeDay) ?? ''} icon={<Trash2 />} onClick={() => onRemoveDay(activeDay)} /> : null}
             {onAddDay && days < 8 ? <IconButton label={labels.addDay} icon={<Plus />} onClick={onAddDay} /> : null}
           </div>
           <ol className="min-h-0 flex-1 overflow-y-auto px-[var(--space-4)] py-[var(--space-2)]">
             {shown.map((s, i) => (
               <li key={s.id} className="list-none">
                 <ul>
-                  <PlanStopRow name={s.name} number={stops.indexOf(s) + 1} day={s.day} duration={s.duration} durationLabel={s.durationLabel} onDuration={() => onDuration(s.id)} onRemove={() => onRemove(s.id)} removeLabel={labels.remove(s.name)} reorderLabel={labels.reorder(s.name)} />
+                  <PlanStopRow name={s.name} thumbnail={s.imageSrc} number={stops.indexOf(s) + 1} day={s.day} duration={s.duration} durationLabel={s.durationLabel} onDuration={() => onDuration(s.id)} onRemove={() => onRemove(s.id)} removeLabel={labels.remove(s.name)} reorderLabel={labels.reorder(s.name)} />
                 </ul>
                 {s.leg && i < shown.length - 1 ? <div className="ml-[34px]"><TransportMode mode="estimate" modeLabel={labels.about} time={s.leg} /></div> : null}
               </li>

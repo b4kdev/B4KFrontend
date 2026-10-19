@@ -11,6 +11,7 @@ import { useInterests } from '@/hooks/useInterests'
 import { apiFetch } from '@/lib/api'
 import { cityToApiRegion, labelOf, placeName, RESULT_LIMIT, saveCourseHandoff, saveDraftTags, toISODate, type QuickPlanCity, type QuickPlanPlace } from '@/lib/quickplan'
 import { buildCourse, courseDayCount } from '@/lib/quickplan-course'
+import { COURSE_HANDOFF_EVENT } from './map/usePlanDraft'
 import { useCd } from './cd'
 import { useV2Shell } from './V2Shell'
 
@@ -168,6 +169,8 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
         return
       }
       saveCourseHandoff(stops)
+      // Already on the map: it does not remount on the same address, so it listens for this.
+      window.dispatchEvent(new Event(COURSE_HANDOFF_EVENT))
       close()
       router.push('/map?from=quickplan')
     } catch {

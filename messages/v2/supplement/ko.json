@@ -421,6 +421,12 @@
     "createdBy": "만든 사람: {name}",
     "deletePlanTitle": "{title}을(를) 삭제할까요?",
     "days": "{count, plural, one {#일} other {#일}}",
-    "lastAddedMore": "{count, plural, =0 {최근 추가} other {최근 추가 · 외 #곳}}"
+    "lastAddedMore": "{count, plural, =0 {최근 추가} other {최근 추가 · 외 #곳}}",
+    "deleteDay": "{n}일차 삭제",
+    "deleteDayTitle": "{n}일차를 삭제할까요?",
+    "deleteDayBody": "이 일차의 장소 {count}곳이 플랜에서 삭제됩니다.",
+    "deleteDayConfirm": "삭제",
+    "previousDays": "이전 일차",
+    "nextDays": "다음 일차"
   }
 }

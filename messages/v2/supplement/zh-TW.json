@@ -502,6 +502,12 @@
     "createdBy": "由{name}建立",
     "deletePlanTitle": "要刪除「{title}」嗎？",
     "days": "{count, plural, one {#天} other {#天}}",
-    "lastAddedMore": "{count, plural, =0 {最近加入} other {最近加入 · 還有#個}}"
+    "lastAddedMore": "{count, plural, =0 {最近加入} other {最近加入 · 還有#個}}",
+    "deleteDay": "刪除第{n}天",
+    "deleteDayTitle": "要刪除第{n}天嗎？",
+    "deleteDayBody": "這一天的{count}個地點將從你的行程中移除。",
+    "deleteDayConfirm": "刪除",
+    "previousDays": "前幾天",
+    "nextDays": "後幾天"
   }
 }

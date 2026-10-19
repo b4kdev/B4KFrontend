@@ -15,6 +15,12 @@
     "createdBy": "Created by {name}",
     "deletePlanTitle": "Delete {title}?",
     "days": "{count, plural, one {# day} other {# days}}",
-    "lastAddedMore": "{count, plural, =0 {Last added} other {Last added · # more}}"
+    "lastAddedMore": "{count, plural, =0 {Last added} other {Last added · # more}}",
+    "deleteDay": "Delete Day {n}",
+    "deleteDayTitle": "Delete Day {n}?",
+    "deleteDayBody": "{count, plural, one {# place} other {# places}} on this day will be removed from your plan.",
+    "deleteDayConfirm": "Delete",
+    "previousDays": "Earlier days",
+    "nextDays": "Later days"
   }
 }

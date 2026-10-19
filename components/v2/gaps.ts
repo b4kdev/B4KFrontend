@@ -30,6 +30,13 @@ export function useGap() {
       days: (count: number) => t('days', { count }), // CD-1484 part
       legLabel: (mode: string, time: string) => `${mode} · ${time}`, // CD-1538 to CD-1540
       lastAddedMore: (count: number) => t('lastAddedMore', { count }), // CD-1478 "Last added · 2 more"
+      // Delete a day of the plan in progress (no Figma or CD row yet).
+      deleteDay: (n: number) => t('deleteDay', { n }),
+      deleteDayTitle: (n: number) => t('deleteDayTitle', { n }),
+      deleteDayBody: (count: number) => t('deleteDayBody', { count }),
+      deleteDayConfirm: t('deleteDayConfirm'),
+      previousDays: t('previousDays'),
+      nextDays: t('nextDays'),
     }),
     [t],
   )

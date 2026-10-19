@@ -392,6 +392,12 @@
     "createdBy": "Criado por {name}",
     "deletePlanTitle": "Excluir {title}?",
     "days": "{count, plural, one {# dia} other {# dias}}",
-    "lastAddedMore": "{count, plural, =0 {Último adicionado} other {Último adicionado · mais #}}"
+    "lastAddedMore": "{count, plural, =0 {Último adicionado} other {Último adicionado · mais #}}",
+    "deleteDay": "Excluir dia {n}",
+    "deleteDayTitle": "Excluir o dia {n}?",
+    "deleteDayBody": "{count, plural, one {# lugar} other {# lugares}} deste dia {count, plural, one {será removido} other {serão removidos}} do seu plano.",
+    "deleteDayConfirm": "Excluir",
+    "previousDays": "Dias anteriores",
+    "nextDays": "Próximos dias"
   }
 }

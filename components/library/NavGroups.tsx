@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useRef, type KeyboardEvent, type ReactNode } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { ChevronLeft, ChevronRight, Ellipsis } from 'lucide-react'
 import { Link as IntlLink } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
@@ -18,12 +18,42 @@ export type TabsProps = {
   onValueChange: (id: string) => void
   /** Figma Width: Hug (scrolls sideways) or Equal (shares the width, mobile). */
   width?: 'hug' | 'equal'
+  /** Hug: accessible names of the scroll arrows shown when the tabs overflow. */
+  scrollLabels?: { previous: string; next: string }
   className?: string
 }
 
 /** Tabs (CMP-044): switches views in a page or panel, never filters. Arrow keys move. */
-export function Tabs({ label, tabs, value, onValueChange, width = 'hug', className }: TabsProps) {
+export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollLabels, className }: TabsProps) {
   const list = useRef<HTMLDivElement>(null)
+  const [edges, setEdges] = useState({ start: false, end: false })
+  const measure = useCallback(() => {
+    const el = list.current
+    if (!el) return
+    setEdges({ start: el.scrollLeft > 1, end: el.scrollLeft + el.clientWidth < el.scrollWidth - 1 })
+  }, [])
+  useEffect(() => {
+    const el = list.current
+    if (!el || width !== 'hug') return
+    measure()
+    // A vertical wheel scrolls the row sideways (non-passive so the page does not scroll too).
+    const onWheel = (e: WheelEvent) => {
+      if (el.scrollWidth <= el.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return
+      e.preventDefault()
+      el.scrollLeft += e.deltaY
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => {
+      el.removeEventListener('wheel', onWheel)
+      ro.disconnect()
+    }
+  }, [width, measure, tabs.length])
+  useEffect(() => {
+    list.current?.querySelector<HTMLElement>('[aria-selected=true]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  }, [value, tabs.length])
+  const page = (dir: 1 | -1) => list.current?.scrollBy({ left: dir * list.current.clientWidth * 0.8, behavior: 'smooth' })
   const onKey = (e: KeyboardEvent) => {
     const enabled = tabs.filter((t) => !t.disabled)
     const i = enabled.findIndex((t) => t.id === value)
@@ -33,19 +63,28 @@ export function Tabs({ label, tabs, value, onValueChange, width = 'hug', classNa
     onValueChange(next.id)
     requestAnimationFrame(() => list.current?.querySelector<HTMLElement>('[aria-selected=true]')?.focus())
   }
-  return (
+  const row = (
     <div
       ref={list}
       role="tablist"
       aria-label={label}
       onKeyDown={onKey}
-      className={cn('flex overflow-x-auto border-b border-ui-border [scrollbar-width:none]', className)}
+      onScroll={measure}
+      className={cn('flex overflow-x-auto border-b border-ui-border [scrollbar-width:none] [&::-webkit-scrollbar]:hidden', scrollLabels ? 'min-w-0 flex-1' : className)}
     >
       {tabs.map((t) => (
-        <Tab key={t.id} id={`tab-${t.id}`} selected={t.id === value} day={t.day} disabled={t.disabled} onClick={() => onValueChange(t.id)} className={width === 'equal' ? 'flex-1 justify-center' : undefined}>
+        <Tab key={t.id} id={`tab-${t.id}`} selected={t.id === value} day={t.day} disabled={t.disabled} onClick={() => onValueChange(t.id)} className={width === 'equal' ? 'flex-1 justify-center' : 'shrink-0'}>
           {t.label}
         </Tab>
       ))}
+    </div>
+  )
+  if (!scrollLabels || width !== 'hug') return row
+  return (
+    <div className={cn('flex items-center', className)}>
+      {edges.start ? <IconButton label={scrollLabels.previous} icon={<ChevronLeft />} onClick={() => page(-1)} className="shrink-0" /> : null}
+      {row}
+      {edges.end ? <IconButton label={scrollLabels.next} icon={<ChevronRight />} onClick={() => page(1)} className="shrink-0" /> : null}
     </div>
   )
 }

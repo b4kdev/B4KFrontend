@@ -19,6 +19,9 @@ export const DURATIONS = [30, 60, 90, 120, 180, 240] as const
 
 const AUTOSAVE_MS = 800
 
+/** Fired by Quick plan / Plan from Saved after saveCourseHandoff, for a map that is already open. */
+export const COURSE_HANDOFF_EVENT = 'b4k:course-handoff'
+
 /** A saved plan as builder state (stops in order, day and duration per stop). */
 export function itineraryToDraft(it: ItineraryDetail): { stops: MapPoi[]; days: Record<string, number>; durations: Record<string, number> } {
   const sorted = [...it.stops].sort((a, b) => a.stop_order - b.stop_order)
@@ -123,6 +126,15 @@ export function usePlanDraft() {
   }
   const setDuration = (id: string, min: number) => commit({ ...plan, durations: { ...plan.durations, [id]: min } })
   const addDay = () => setDays((d) => Math.min(MAX_DAYS, d + 1))
+  /** Deletes day `n` with its stops; later days move up one. The first day of a one-day plan stays. */
+  const removeDay = (n: number) => {
+    if (days <= 1) return
+    const stops = plan.stops.filter((s) => dayOf(s.poi_id) !== n)
+    const dayMap = Object.fromEntries(stops.map((s) => [s.poi_id, dayOf(s.poi_id) > n ? dayOf(s.poi_id) - 1 : dayOf(s.poi_id)]))
+    const durations = Object.fromEntries(stops.map((s) => [s.poi_id, plan.durations[s.poi_id] ?? 60]))
+    setDays((d) => Math.max(1, d - 1))
+    commit({ ...plan, stops, days: dayMap, durations })
+  }
   /** Replaces the plan; `editing` marks a published plan open for editing (not autosaved). */
   const replace = (stops: MapPoi[], dayMap: Record<string, number>, name?: string, durations?: Record<string, number>, opts?: { editing?: boolean }) => {
     editing.current = !!opts?.editing
@@ -139,7 +151,7 @@ export function usePlanDraft() {
     setPlan({ stops: [], durations: {}, days: {} })
     setDays(1)
   }
-  return { plan, days, dayOf, countOn, add, remove, setDuration, addDay, replace, discard }
+  return { plan, days, dayOf, countOn, add, remove, setDuration, addDay, removeDay, replace, discard }
 }
 
 export function formatMinutes(min: number, f: (key: string, v: Record<string, number>) => string) {
