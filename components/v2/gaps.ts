@@ -29,6 +29,7 @@ export function useGap() {
       planStats: (parts: string[]) => parts.join(' · '), // CD-1484 sample "5 stops · 2 days · 6h 30m · 6.2 km"
       days: (count: number) => t('days', { count }), // CD-1484 part
       legLabel: (mode: string, time: string) => `${mode} · ${time}`, // CD-1538 to CD-1540
+      lastAddedMore: (count: number) => t('lastAddedMore', { count }), // CD-1478 "Last added · 2 more"
     }),
     [t],
   )

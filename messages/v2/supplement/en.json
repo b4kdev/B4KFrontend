@@ -14,6 +14,7 @@
     "editDraftBody": "The map has a plan in progress with {count, plural, one {# stop} other {# stops}}. Save it or discard it before editing {title}.",
     "createdBy": "Created by {name}",
     "deletePlanTitle": "Delete {title}?",
-    "days": "{count, plural, one {# day} other {# days}}"
+    "days": "{count, plural, one {# day} other {# days}}",
+    "lastAddedMore": "{count, plural, =0 {Last added} other {Last added · # more}}"
   }
 }

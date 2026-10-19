@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { ArrowRight } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
-import { Chip, DateRangePicker, ListItem, QuickPlan, Spinner, type DateRange } from '@/components/library'
+import { Chip, DateRangePicker, QuickPlan, Spinner, type DateRange } from '@/components/library'
+import { usePhone } from '@/components/library/hooks'
 import { useAuth } from '@/contexts/AuthContext'
 import { useInterests } from '@/hooks/useInterests'
 import { apiFetch } from '@/lib/api'
@@ -34,6 +36,8 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
   const [range, setRange] = useState<DateRange>({ start: null, end: null })
   const [picked, setPicked] = useState<string[]>([])
   const [building, setBuilding] = useState(false)
+  const [activeGroup, setActiveGroup] = useState<string | null>(null)
+  const phone = usePhone()
   const lang = useLocale()
   const { user } = useAuth()
   const { toast } = useV2Shell()
@@ -46,18 +50,23 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
   const dates = range.start ? `${fmt.format(range.start)}${range.end ? ` – ${fmt.format(range.end)}` : ''}` : t('CD0767')
   const progress = step === 1 ? t('CD1344') : step === 2 ? t('CD1346') : t('CD1356')
 
+  const lbl = 'type-eyebrow-category text-ui-fg-muted'
+  const chipLabel = new Map(categories.flatMap((g) => g.chips.map((c) => [c.slug, labelOf(c, lang)] as const)))
+  const group = categories.find((g) => g.slug === activeGroup) ?? categories[0]
+  const toggle = (slug: string) => setPicked((p) => (p.includes(slug) ? p.filter((x) => x !== slug) : p.length < MAX ? [...p, slug] : p))
+
+  // Figma A1 / Quick plan / Step 1 to 3 (SCR-009).
   const body =
     step === 1 ? (
-      <div className="flex flex-col gap-[var(--space-6)]">
-        <p className="type-body-base text-ui-fg-muted">{t('CD1345')}</p>
+      <div className="flex flex-col gap-[var(--space-5)]">
         <fieldset className="flex flex-col gap-[var(--space-2)]">
-          <legend className="mb-[var(--space-2)] type-body-label text-ui-fg-muted">{t('CD0791')}</legend>
+          <legend className={`mb-[var(--space-2)] ${lbl}`}>{t('CD0791')}</legend>
           <div className="flex flex-wrap gap-[var(--space-2)]">
             {CITIES.map((c) => <Chip key={c} selected={city === c} onClick={() => setCity(c)}>{t(CITY_CD[c])}</Chip>)}
           </div>
         </fieldset>
         <fieldset className="flex flex-col gap-[var(--space-2)]">
-          <legend className="mb-[var(--space-2)] type-body-label text-ui-fg-muted">{t('CD0797')}</legend>
+          <legend className={`mb-[var(--space-2)] ${lbl}`}>{t('CD0797')}</legend>
           <div className="flex flex-wrap gap-[var(--space-2)]">
             {WHO.map(([id, cd]) => <Chip key={id} selected={who === id} onClick={() => setWho(id)}>{t(cd)}</Chip>)}
           </div>
@@ -65,40 +74,78 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
       </div>
     ) : step === 2 ? (
       <div className="flex flex-col gap-[var(--space-5)]">
-        <p className="type-body-base text-ui-fg-muted">{t('CD1347')}</p>
-        <p aria-live="polite" className="type-eyebrow-category text-ui-fg-muted">{t('CD0785')} · {picked.length} / {MAX}</p>
+        <div className="flex flex-col gap-[var(--space-2)]">
+          <p aria-live="polite" className={lbl}>{t('CD0785')} · {picked.length} / {MAX}</p>
+          {picked.length ? (
+            <div className="flex flex-wrap gap-[var(--space-2)]">
+              {picked.map((slug) => <Chip key={slug} type="dismissible" dismissLabel={t('CD0783', { label: chipLabel.get(slug) ?? slug })} onClick={() => toggle(slug)}>{chipLabel.get(slug) ?? slug}</Chip>)}
+            </div>
+          ) : <p className="type-body-caption text-ui-fg-muted">{t('CD0779')}</p>}
+        </div>
         {isLoading ? <Spinner label={t('CD0781')} /> : null}
         {isError ? (
           <p role="alert" className="type-body-base text-ui-danger">
             {t('CD0780')} <button type="button" onClick={retry} className="underline underline-offset-2">{t('CD0784')}</button>
           </p>
         ) : null}
-        {categories.map((g) => (
-          <fieldset key={g.slug} className="flex flex-col gap-[var(--space-2)]">
-            <legend className="mb-[var(--space-2)] type-body-label text-ui-fg-muted">{labelOf(g, lang)}</legend>
-            <div className="flex flex-wrap gap-[var(--space-2)]">
-              {g.chips.map((c) => {
+        {group ? (
+          <div className={phone ? 'flex flex-col gap-[var(--space-4)]' : 'flex gap-[var(--space-6)]'}>
+            {/* Categories: a list on desktop, a row of chips on phones (Figma Step 2 Mobile). */}
+            <div role="group" aria-label={t('CD0778')} className={phone ? '-mx-[var(--space-4)] flex gap-[var(--space-2)] overflow-x-auto px-[var(--space-4)] [scrollbar-width:none]' : 'flex w-[136px] shrink-0 flex-col items-start gap-[var(--space-3)]'}>
+              {categories.map((g) =>
+                phone ? (
+                  <Chip key={g.slug} selected={g.slug === group.slug} onClick={() => setActiveGroup(g.slug)} className="shrink-0">{labelOf(g, lang)}</Chip>
+                ) : (
+                  <button
+                    key={g.slug}
+                    type="button"
+                    aria-pressed={g.slug === group.slug}
+                    onClick={() => setActiveGroup(g.slug)}
+                    className={`text-left focus-visible:shadow-focus-ring focus-visible:outline-none ${g.slug === group.slug ? 'type-body-label text-ui-fg' : 'type-body-base text-ui-fg-muted hover:text-ui-fg'}`}
+                  >
+                    {labelOf(g, lang)}
+                  </button>
+                ),
+              )}
+            </div>
+            <div className="flex min-w-0 flex-1 flex-wrap content-start gap-[var(--space-2)]">
+              {group.chips.map((c) => {
                 const on = picked.includes(c.slug)
                 return (
-                  <Chip key={c.slug} selected={on} disabled={!on && picked.length >= MAX} onClick={() => setPicked((p) => (on ? p.filter((x) => x !== c.slug) : [...p, c.slug]))}>
+                  <Chip key={c.slug} selected={on} disabled={!on && picked.length >= MAX} onClick={() => toggle(c.slug)}>
                     {labelOf(c, lang)}
                   </Chip>
                 )
               })}
             </div>
-          </fieldset>
-        ))}
+          </div>
+        ) : null}
       </div>
     ) : (
-      <div className="flex flex-col gap-[var(--space-4)]">
-        <p className="type-body-base text-ui-fg-muted">{t('CD0764')}</p>
-        <ul className="border-t border-ui-border">
-          <ListItem title={t('CD0762')} trailing={t(CITY_CD[city])} chevron onClick={() => setStep(1)} />
-          <ListItem title={t('CD0759')} trailing={who ? t(WHO.find((w) => w[0] === who)![1]) : t('CD0767')} chevron onClick={() => setStep(1)} />
-          <ListItem title={t('CD0761')} trailing={dates} chevron onClick={() => setStep(1)} />
-          <ListItem title={t('CD0765', { count: picked.length })} trailing={picked.length ? picked.length : t('CD0767')} chevron onClick={() => setStep(2)} />
-        </ul>
-      </div>
+      <ul className="rounded-md border border-ui-border">
+        {[
+          { key: t('CD0762'), value: t(CITY_CD[city]), to: 1 as const },
+          { key: t('CD0759'), value: who ? t(WHO.find((w) => w[0] === who)![1]) : t('CD0767'), to: 1 as const },
+          { key: t('CD0761'), value: dates, to: 1 as const },
+          { key: `${t('CD0776')} · ${picked.length}`, value: picked.length ? picked.map((x) => chipLabel.get(x) ?? x).join(', ') : t('CD0767'), to: 2 as const },
+        ].map((r, i) => (
+          <li key={r.key} className={i ? 'border-t border-ui-border' : undefined}>
+            <button
+              type="button"
+              onClick={() => setStep(r.to)}
+              aria-label={`${t('CD0760')} ${r.key}: ${r.value}`}
+              className="flex w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] focus-visible:shadow-focus-ring focus-visible:outline-none"
+            >
+              <span className={phone ? 'type-body-label text-ui-fg' : 'w-[140px] shrink-0 type-body-label text-ui-fg'}>{r.key}</span>
+              <span className="min-w-0 flex-1 type-body-base text-ui-fg-muted">{r.value}</span>
+              <span aria-hidden className="inline-flex shrink-0 items-center gap-[var(--space-1-5)] type-label-button text-ui-link">
+                {t('CD0760')}
+                <ArrowRight className="size-[var(--icon-size-sm)]" />
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
     )
 
   const make = async () => {
@@ -138,10 +185,11 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
       closeLabel={t('CD0758')}
       progressLabel={progress}
       stepTitle={step === 1 ? t('CD0793') : step === 2 ? t('CD0787') : t('CD0766')}
+      stepSubtitle={step === 1 ? t('CD1345') : step === 2 ? t('CD1347') : t('CD0764')}
       aside={step === 1 ? (
         <div className="flex flex-col gap-[var(--space-2)]">
-          <span className="type-body-label text-ui-fg-muted">{t('CD0790')}</span>
-          <DateRangePicker value={range} onValueChange={setRange} previousLabel={t('CD0740')} nextLabel={t('CD0739')} clearLabel={t('CD0789')} maxDays={8} className="self-center" />
+          <span className={lbl}>{t('CD0790')}</span>
+          <DateRangePicker value={range} onValueChange={setRange} previousLabel={t('CD0740')} nextLabel={t('CD0739')} clearLabel={t('CD0789')} maxDays={8} className={phone ? 'self-center' : undefined} />
         </div>
       ) : undefined}
       back={step > 1 ? { label: t('CD0769'), onClick: () => setStep((s) => (s - 1) as 1 | 2) } : undefined}

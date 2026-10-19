@@ -3,6 +3,7 @@
 import useSWR from 'swr'
 import { useLocale } from 'next-intl'
 import { apiFetch } from '@/lib/api'
+import { dbPoiId } from '@/lib/db-poi-mapping'
 import type { MapPoi } from './useMapPois'
 
 // api.get_place (BFF: GET /places/:id) — richer fields than the list, fetched
@@ -58,10 +59,12 @@ function mapDetail(row: RawPlaceDetail, locale: string): MapPoi {
 
 export function usePlaceDetail(poiId: string | null) {
   const locale = useLocale()
+  // Old seed links carry content-sheet codes ('KD016-007'); the BFF only knows the DB id.
+  const id = poiId ? dbPoiId(poiId) ?? poiId : null
 
   const { data, isLoading } = useSWR(
-    poiId ? ['/places', poiId, locale] : null,
-    () => apiFetch<RawPlaceDetail>(`/places/${poiId}`),
+    id ? ['/places', id, locale] : null,
+    () => apiFetch<RawPlaceDetail>(`/places/${id}`),
     { revalidateOnFocus: false }
   )
 

@@ -501,6 +501,7 @@
     "editDraftBody": "地圖上有一份包含{count, plural, one {#個地點} other {#個地點}}的進行中行程。編輯「{title}」前，請先儲存或捨棄。",
     "createdBy": "由{name}建立",
     "deletePlanTitle": "要刪除「{title}」嗎？",
-    "days": "{count, plural, one {#天} other {#天}}"
+    "days": "{count, plural, one {#天} other {#天}}",
+    "lastAddedMore": "{count, plural, =0 {最近加入} other {最近加入 · 還有#個}}"
   }
 }

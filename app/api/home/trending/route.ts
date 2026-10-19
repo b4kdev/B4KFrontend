@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { withDbPoiIds } from '@/lib/db-poi-mapping'
 
 export interface HomeTrendingPoi {
   poi_id: string
@@ -29,5 +30,5 @@ const SEED: HomeTrendingPoi[] = [
 ]
 
 export async function GET() {
-  return NextResponse.json(SEED)
+  return NextResponse.json(withDbPoiIds(SEED))
 }

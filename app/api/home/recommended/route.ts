@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { withDbPoiIds } from '@/lib/db-poi-mapping'
 import type { HomeTrendingPoi } from '../trending/route'
 
 // Interim content seed — cross-checked against B4K_POI_DB_IMPORT_CLEANED_1500.xlsx.
@@ -13,5 +14,5 @@ const SEED: HomeTrendingPoi[] = [
 ]
 
 export async function GET() {
-  return NextResponse.json(SEED)
+  return NextResponse.json(withDbPoiIds(SEED))
 }

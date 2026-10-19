@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { withDbPoiIds } from '@/lib/db-poi-mapping'
 import { resolveFootstepsDetail } from '@/lib/kpop-footsteps'
 
 export async function GET(req: NextRequest, { params }: { params: { teamId: string } }) {
@@ -9,5 +10,5 @@ export async function GET(req: NextRequest, { params }: { params: { teamId: stri
 
   const data = await resolveFootstepsDetail(params.teamId, includeUnverified)
   if (!data) return NextResponse.json({ error: 'not_found' }, { status: 404 })
-  return NextResponse.json(data)
+  return NextResponse.json({ ...data, items: withDbPoiIds(data.items) })
 }

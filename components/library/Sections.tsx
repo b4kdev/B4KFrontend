@@ -11,6 +11,7 @@ import { IconButton } from './IconButton'
 import { ProgressIndicator, StepList } from './NavGroups'
 import { useFocusTrap, usePhone } from './hooks'
 import { Scrim } from './Content'
+import { Separator } from './Separator'
 
 // Sections (UI-81, UI-82, UI-97; Figma Sections): Explore section row, Explore collections,
 // Explore packages, Plan card row, Quick plan, Planning cue, Interests card. Built from cards and
@@ -149,31 +150,38 @@ export type QuickPlanProps = {
   step: 1 | 2 | 3
   /** Heading of the current step (focus moves to it). */
   stepTitle: string
+  /** Line under the heading, e.g. "Pick a city, your dates and who you're traveling with." */
+  stepSubtitle?: string
   /** Progress text, e.g. "Step 2 of 3". */
   progressLabel: string
   /** Figma Show step list (option B spare) instead of the progress bar. */
   stepList?: string[]
-  /** Step body (destination and who-with chips plus the Date range picker; interest chips; review rows). */
+  /** Step body (destination and who-with chips; interest chips; review rows). */
   children: ReactNode
-  /** Desktop: the right column of step 1 (the calendar). */
+  /** Desktop: the right column of step 1 (the calendar); below the body on phones. */
   aside?: ReactNode
   /** Footer: Back (steps 2, 3) and Next / Make my plan. */
   back?: { label: string; onClick: () => void }
   next: { label: string; onClick: () => void; disabled?: boolean }
+  /** Accessible name of the dialog, e.g. "Quick plan". */
   title: string
   closeLabel: string
 }
 
-/** Quick plan (planning flow 4, PD-33, PD-45): a 3-step dialog; Modal 864 on desktop, sheet on phones. */
-export function QuickPlan({ open, onClose, step, stepTitle, progressLabel, stepList, children, aside, back, next, title, closeLabel }: QuickPlanProps) {
+/**
+ * Quick plan (planning flow 4, PD-33, PD-45; Figma Quick plan): a 3-step dialog, Modal 864 on
+ * desktop, sheet on phones. Top bar (progress, Close), separator, body (heading, subtitle, step
+ * content), separator, footer (Back ghost, Next primary; right on desktop, Next fills on phones).
+ */
+export function QuickPlan({ open, onClose, step, stepTitle, stepSubtitle, progressLabel, stepList, children, aside, back, next, title, closeLabel }: QuickPlanProps) {
   const phone = usePhone()
   const ref = useFocusTrap<HTMLDivElement>(open, onClose)
   const heading = useRef<HTMLHeadingElement>(null)
-  const id = useId()
   useEffect(() => {
     if (open) heading.current?.focus()
   }, [step, open])
   if (!open) return null
+  const padX = phone ? 'px-[var(--space-4)]' : 'px-[var(--space-6)]'
   return (
     <>
       <Scrim onClick={onClose} className="z-50" />
@@ -181,27 +189,41 @@ export function QuickPlan({ open, onClose, step, stepTitle, progressLabel, stepL
         ref={ref}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={id}
+        aria-label={title}
         className={cn(
-          'fixed z-50 flex flex-col bg-ui-bg-elevated text-ui-fg',
+          'fixed z-50 flex flex-col overflow-hidden bg-ui-bg-elevated text-ui-fg',
           phone ? 'inset-x-0 bottom-0 max-h-[min(768px,92dvh)] rounded-t-3xl motion-safe:animate-b4k-sheet-in' : 'left-1/2 top-1/2 max-h-[90dvh] w-[min(864px,calc(100%-var(--space-8)))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ui-border',
         )}
       >
-        {phone ? <div className="flex justify-center pt-[var(--space-2)]"><span aria-hidden className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" /></div> : null}
-        <div className="flex flex-col gap-[var(--space-3)] px-[var(--space-6)] pt-[var(--space-4)]">
-          <div className="flex items-center gap-[var(--space-2)]">
-            <p id={id} className="flex-1 type-body-label text-ui-fg-muted">{title}</p>
-            <IconButton label={closeLabel} icon={<X />} onClick={onClose} className="-mr-[var(--space-2)]" />
+        {phone ? <div className="flex justify-center py-[var(--space-2)]"><span aria-hidden className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" /></div> : null}
+        <div className={cn('flex items-center gap-[var(--space-4)] pr-[var(--space-3)]', phone ? 'pb-[var(--space-4)] pl-[var(--space-4)] pt-[var(--space-2)]' : 'py-[var(--space-4)] pl-[var(--space-6)]')}>
+          <div className="min-w-0 flex-1">
+            {stepList ? <StepList label={progressLabel} steps={stepList} current={step} /> : <ProgressIndicator step={step} steps={3} label={progressLabel} className="max-w-[320px]" />}
           </div>
-          {stepList ? <StepList label={progressLabel} steps={stepList} current={step} /> : <ProgressIndicator step={step} steps={3} label={progressLabel} />}
-          <h2 ref={heading} tabIndex={-1} className="type-display-h3 outline-none">{stepTitle}</h2>
+          <IconButton label={closeLabel} icon={<X />} onClick={onClose} />
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-[var(--space-6)] py-[var(--space-4)]">
-          {aside && !phone ? <div className="grid grid-cols-2 gap-[var(--space-8)]"><div>{children}</div><div>{aside}</div></div> : <>{children}{aside}</>}
+        <Separator className="shrink-0" />
+        <div className={cn('flex min-h-0 flex-1 flex-col gap-[var(--space-5)] overflow-y-auto py-[var(--space-6)]', padX)}>
+          <div className="flex flex-col gap-[var(--space-2)]">
+            <h2 ref={heading} tabIndex={-1} className="type-display-h3 outline-none">{stepTitle}</h2>
+            {stepSubtitle ? <p className="type-body-base text-ui-fg-muted">{stepSubtitle}</p> : null}
+          </div>
+          {aside && !phone ? (
+            <div className="flex gap-[var(--space-6)]">
+              <div className="min-w-0 flex-1">{children}</div>
+              <div className="w-[280px] shrink-0">{aside}</div>
+            </div>
+          ) : (
+            <>
+              {children}
+              {aside}
+            </>
+          )}
         </div>
-        <div className={cn('sticky bottom-0 flex gap-[var(--gap-sm)] bg-ui-bg-elevated px-[var(--space-6)] pb-[calc(var(--space-6)+env(safe-area-inset-bottom))] pt-[var(--space-3)]', phone ? 'flex-col-reverse [&>*]:w-full' : 'justify-end')}>
-          {back ? <Button variant="ghost" onClick={back.onClick}>{back.label}</Button> : null}
-          <Button onClick={next.onClick} disabled={next.disabled}>{next.label}</Button>
+        <Separator className="shrink-0" />
+        <div className={cn('flex gap-[var(--gap-sm)] py-[var(--space-4)]', padX, phone ? 'pb-[calc(var(--space-4)+env(safe-area-inset-bottom))] [&>:last-child]:flex-1' : 'justify-end')}>
+          {back ? <Button variant="ghost" size="lg" onClick={back.onClick}>{back.label}</Button> : null}
+          <Button size="lg" onClick={next.onClick} disabled={next.disabled}>{next.label}</Button>
         </div>
       </div>
     </>

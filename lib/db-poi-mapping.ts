@@ -173,3 +173,26 @@ export const UNMAPPED_PLACEHOLDER_IDS = [
   'KF-PLACEHOLDER-HANWOLGWAN', 'KF-PLACEHOLDER-BIBIJAE', 'KF-PLACEHOLDER-SONGHEONJIP',
   'KF-PLACEHOLDER-MOEMILJIP', 'KF-PLACEHOLDER-SOBAKKEORLSUZU', 'KF-PLACEHOLDER-100PYEONGNAENG',
 ] as const
+
+/**
+ * 시드 poi_id → DB place_id(문자열). 이미 숫자 id면 그대로, 매핑에 없으면 null
+ * (DB에 없는 장소 — 눌러도 상세가 뜨지 않으므로 화면에 내보내지 않는다).
+ */
+export function dbPoiId(poiId: string): string | null {
+  if (/^\d+$/.test(poiId)) return poiId
+  const mapped = DB_POI_MAPPING[poiId]
+  return mapped !== undefined ? String(mapped) : null
+}
+
+/** 시드 목록을 DB id로 바꾸고, DB에 없는 장소와 같은 장소 중복은 뺀다. */
+export function withDbPoiIds<T extends { poi_id: string }>(items: T[]): T[] {
+  const seen = new Set<string>()
+  const out: T[] = []
+  for (const it of items) {
+    const id = dbPoiId(String(it.poi_id))
+    if (!id || seen.has(id)) continue
+    seen.add(id)
+    out.push({ ...it, poi_id: id })
+  }
+  return out
+}

@@ -88,22 +88,40 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const [folderId, setFolderId] = useState<string | null>(params?.get('folder'))
   const [editing, setEditing] = useState<{ id: string; title: string } | null>(null)
   const [pendingEdit, setPendingEdit] = useState<ItineraryDetail | null>(null)
+  // Viewing a made plan (Quick plan, Plan from Saved, Continue, Edit): the map shows the plan's
+  // stops only. Picking a category (or folding the plan cart on desktop) goes back to browsing.
+  const [planOnly, setPlanOnly] = useState(!!params?.get('from') || params?.get('plan') === 'open' || params?.get('plan') === 'edit')
 
   const { pois, isLoading } = useMapPois(null, filter ? [filter] : [], bounds, zoom)
+  // View on map from a category special page (?collection=/api/explore/...): that page's places
+  // only, on the map and in the list, until a category is picked.
+  const collectionApi = params?.get('collection')
+  const [collectionOn, setCollectionOn] = useState(!!collectionApi)
+  const collection = useSWR<{ items: (Omit<MapPoi, 'primary_image_url'> & { primary_image_url?: string | null })[] }>(
+    collectionOn && collectionApi?.startsWith('/api/explore/') ? collectionApi : null,
+    jsonFetch,
+  )
+  const collectionPois = useMemo<MapPoi[] | null>(
+    () => (collection.data ? collection.data.items.filter((p) => Number.isFinite(p.coords_lat) && Number.isFinite(p.coords_lng)).map((p) => ({ ...p, primary_image_url: p.primary_image_url ?? undefined })) : null),
+    [collection.data],
+  )
+  const listPois = collectionOn && collectionPois ? collectionPois : pois
   const { detail } = usePlaceDetail(selectedId)
   const detailName = detail ? nameOf(detail, locale) : ''
   const saved = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
   const savedIds = useMemo(() => new Set((saved.data?.pois ?? []).map((p) => p.poi_id)), [saved.data])
   const [liked, setLiked] = useState<Set<string>>(new Set())
 
+  const fitPlan = (stops: { coords_lat: number; coords_lng: number }[]) => mapRef.current?.fitTo(stops.map((s) => ({ lat: s.coords_lat, lng: s.coords_lng })))
   const loadForEdit = (it: ItineraryDetail) => {
     const { stops, days: dayMap, durations } = itineraryToDraft(it)
     draft.replace(stops, dayMap, it.title, durations, { editing: true })
     setEditing({ id: it.id, title: it.title })
     setPendingEdit(null)
     setCart('open')
+    setPlanOnly(true)
     if (phone) setPlanSheet(true)
-    if (stops[0]) mapRef.current?.panTo(stops[0].coords_lat, stops[0].coords_lng)
+    fitPlan(stops)
   }
   const stopEditing = () => {
     const id = editing?.id
@@ -123,8 +141,9 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         const asPois: MapPoi[] = stops.map((s) => ({ poi_id: s.poi_id, name_ko: s.name_ko, name_preferred: s.name_preferred, coords_lat: s.coords_lat, coords_lng: s.coords_lng, display_region: s.display_region ?? null, primary_image_url: s.primary_image_url }))
         draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])))
         setCart('open')
+        setPlanOnly(true)
         if (phone) setPlanSheet(true)
-        if (asPois[0]) mapRef.current?.panTo(asPois[0].coords_lat, asPois[0].coords_lng)
+        fitPlan(asPois)
         toast({ type: 'success', message: had ? k('map.plan.replacedDraftToast') : t('CD1548') })
       }
     }
@@ -144,11 +163,26 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   }, [])
 
   useEffect(() => {
+    if (collectionPois?.length) fitPlan(collectionPois)
+  }, [collectionPois]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Continue your plan (?plan=open): fit the draft once it has loaded (device or account).
+  const fittedOpen = useRef(false)
+  useEffect(() => {
+    if (fittedOpen.current || params?.get('plan') !== 'open' || !draft.plan.stops.length) return
+    fittedOpen.current = true
+    fitPlan(draft.plan.stops)
+  }, [draft.plan.stops]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
     if (detail) mapRef.current?.panTo(detail.coords_lat, detail.coords_lng)
   }, [detail?.poi_id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const order = draft.plan.stops
   const planStops = order.map((poi, i) => ({ poi, day: draft.dayOf(poi.poi_id), order: i + 1 }))
+  const showPlanOnly = planOnly && order.length > 0
+  // Plan only: no other places on the map, except the one opened from the list.
+  const mapPois = showPlanOnly ? (detail && !order.some((p) => p.poi_id === detail.poi_id) ? [detail] : []) : listPois
   const addToPlan = (poi: MapPoi) => {
     const day = draft.add(poi, typeof activeDay === 'number' ? activeDay : undefined)
     if (day === null) toast({ type: 'warning', message: k('map.plan.maxStopsToast', { max: MAX_STOPS }) })
@@ -225,10 +259,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   const nearbyList = (
     <div className="flex flex-col gap-[var(--space-3)] p-[var(--space-4)]">
-      {isLoading && !pois.length ? Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-[80px]" />) : null}
-      {!isLoading && !pois.length ? <EmptyState title={k('map.empty.title')} action={<Button size="md" variant="secondary" onClick={() => mapRef.current?.zoomOut()}>{k('map.zoomOut')}</Button>}>{t('CD1531')}</EmptyState> : null}
+      {(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-[80px]" />) : null}
+      {!(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? <EmptyState title={k('map.empty.title')} action={<Button size="md" variant="secondary" onClick={() => mapRef.current?.zoomOut()}>{k('map.zoomOut')}</Button>}>{t('CD1531')}</EmptyState> : null}
       <ul className="flex flex-col gap-[var(--space-3)]">
-        {pois.slice(0, 40).map((p) => (
+        {listPois.slice(0, 40).map((p) => (
           <li key={p.poi_id}>
             <Card
               type="place"
@@ -270,7 +304,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const cartNode = (
     <PlanCart
       state={order.length || cart === 'open' ? cart : 'empty'}
-      onToggle={() => { setCart((c) => (c === 'open' ? 'collapsed' : 'open')); if (phone) setPlanSheet(false) }}
+      onToggle={() => { if (cart === 'open' && !phone) setPlanOnly(false); setCart((c) => (c === 'open' ? 'collapsed' : 'open')); if (phone) setPlanSheet(false) }}
       stops={order.map((p, i) => ({
         id: p.poi_id,
         name: nameOf(p, locale),
@@ -285,6 +319,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       onAddDay={draft.addDay}
       summary={editing ? GAP.editing(editing.title) : order.length ? `${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })} · ${formatMinutes(totalMin, k)}` : t('CD1359')}
       lastAdded={order.length ? nameOf(order[order.length - 1], locale) : undefined}
+      lastAddedImage={order.length ? order[order.length - 1].primary_image_url ?? null : undefined}
+      lastAddedMeta={order.length ? GAP.lastAddedMore(order.length - 1) : undefined}
       dayTotal={dayTotal !== null ? `${k('map.plan.dayTab', { n: activeDay })} · ${formatMinutes(dayTotal, k)}` : undefined}
       onDuration={setDurationFor}
       onRemove={draft.remove}
@@ -302,7 +338,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const chips = (
     <div className="flex gap-[var(--space-2)] overflow-x-auto [scrollbar-width:none]">
       {CATEGORIES.map((c) => (
-        <Chip key={c.slug} type="map" selected={filter === c.slug} onClick={() => setFilter((f) => (f === c.slug ? null : c.slug))}>{t(c.label)}</Chip>
+        <Chip key={c.slug} type="map" selected={filter === c.slug} onClick={() => { setPlanOnly(false); setCollectionOn(false); setFilter((f) => (f === c.slug ? null : c.slug)) }}>{t(c.label)}</Chip>
       ))}
     </div>
   )
@@ -310,7 +346,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const map = (
     <V2MapCanvas
       ref={mapRef}
-      pois={pois}
+      pois={mapPois}
       selectedId={selectedId}
       onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
       planStops={planStops}
@@ -375,7 +411,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         </div>
         {order.length ? (
           <div className="absolute bottom-[calc(76px+var(--space-3))] left-[var(--space-3)] z-30">
-            <PlanPill label={`${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })}`} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true) }} />
+            <PlanPill label={`${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })}`} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); setPlanOnly(true); fitPlan(order) }} />
           </div>
         ) : null}
         <BottomSheet type="map" open label={k('map.plan.title')} snap={snap} onSnapChange={setSnap} onClose={() => setSnap('peek')} resizeLabel={k('itinerary.sheet.handle')} header={selectedId ? undefined : switcher}>

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { withDbPoiIds } from '@/lib/db-poi-mapping'
 import type { HomeTrendingPoi } from '../trending/route'
 
 // Interim content seed — cross-checked against B4K_POI_DB_IMPORT_CLEANED_1500.xlsx.
@@ -18,5 +19,5 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const category = searchParams.get('category')
   const items = category ? SEED.filter(p => p.display_domain === category) : SEED
-  return NextResponse.json(items)
+  return NextResponse.json(withDbPoiIds(items))
 }

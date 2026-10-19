@@ -16,7 +16,7 @@ import { TOKEN_HEX } from '@/tokens/colors'
 // Zoom buttons are the library Zoom control (outside), so the SDK controls are off.
 
 export type PlanStopOnMap = { poi: MapPoi; day: number; order: number }
-export type V2MapHandle = { zoomIn: () => void; zoomOut: () => void; panTo: (lat: number, lng: number) => void }
+export type V2MapHandle = { zoomIn: () => void; zoomOut: () => void; panTo: (lat: number, lng: number) => void; fitTo: (points: { lat: number; lng: number }[]) => void }
 
 type Props = {
   pois: MapPoi[]
@@ -81,11 +81,26 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID
   const select = useRef(onSelect)
   select.current = onSelect
+  const pendingFit = useRef<{ lat: number; lng: number }[] | null>(null)
+
+  const fitPoints = (points: { lat: number; lng: number }[]) => {
+    if (!map.current || !points.length) return
+    const N = window.naver.maps
+    if (points.length === 1) return map.current.setCenter(new N.LatLng(points[0].lat, points[0].lng))
+    const lats = points.map((p) => p.lat)
+    const lngs = points.map((p) => p.lng)
+    map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), { top: 80, right: 80, bottom: 80, left: 80 })
+  }
 
   useImperativeHandle(ref, () => ({
     zoomIn: () => map.current?.setZoom(map.current.getZoom() + 1, true),
     zoomOut: () => map.current?.setZoom(map.current.getZoom() - 1, true),
     panTo: (lat, lng) => map.current?.panTo(new window.naver.maps.LatLng(lat, lng)),
+    fitTo: (points) => {
+      // Before the SDK is up (a hand-off on first load) the fit waits for the map.
+      if (!map.current) pendingFit.current = points
+      else fitPoints(points)
+    },
   }))
 
   useEffect(() => {
@@ -123,6 +138,10 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     }
     N.Event.addListener(map.current, 'idle', idle)
     N.Event.addListener(map.current, 'click', () => select.current(null))
+    if (pendingFit.current) {
+      fitPoints(pendingFit.current)
+      pendingFit.current = null
+    }
     idle()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready])

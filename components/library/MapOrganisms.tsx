@@ -91,6 +91,10 @@ export type PlanCartProps = {
   /** Collapsed summary, e.g. "5 stops · about 6 h"; last added place. */
   summary: string
   lastAdded?: string
+  /** Collapsed: the last added place's photo (Figma Last added › Thumbnail, 48). */
+  lastAddedImage?: string | null
+  /** Collapsed: the line under the last added place, e.g. "Last added · 2 more". */
+  lastAddedMeta?: string
   /** Day total for the open day, e.g. "Day 1 · about 4 h". */
   dayTotal?: string
   onDuration: (id: string) => void
@@ -116,7 +120,7 @@ export type PlanCartProps = {
 }
 
 /** Plan cart (UI-77): the plan as a shopping cart at the bottom of the Left panel. */
-export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, summary, lastAdded, dayTotal, onDuration, onRemove, onSave, onDiscard, labels, className }: PlanCartProps) {
+export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, onRemove, onSave, onDiscard, labels, className }: PlanCartProps) {
   const id = useId()
   if (state === 'empty') {
     return (
@@ -129,13 +133,22 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
     <section aria-labelledby={id} className={cn('flex flex-col bg-ui-bg-raised text-ui-fg', state === 'open' ? 'h-full' : 'border-t border-ui-border', className)}>
-      <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('flex w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left hover:bg-ui-state-hover', FOCUS_RING_INSET)}>
-        <span className="flex min-w-0 flex-1 flex-col">
-          <span id={id} aria-live="polite" className="type-title-card">{summary}</span>
-          {state === 'collapsed' && lastAdded ? <span className="truncate type-body-caption text-ui-fg-muted">{lastAdded}</span> : null}
+      <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('flex w-full flex-col gap-[var(--space-3)] px-[var(--space-4)] text-left hover:bg-ui-state-hover', state === 'collapsed' ? 'py-[var(--space-4)]' : 'py-[var(--space-3)]', FOCUS_RING_INSET)}>
+        <span className="flex w-full items-center gap-[var(--space-2)]">
+          <span id={id} aria-live="polite" className="min-w-0 flex-1 type-title-card">{summary}</span>
+          <span className="sr-only">{state === 'open' ? labels.close : labels.open}</span>
+          <ChevronDown aria-hidden className={cn('size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted transition-transform', state === 'collapsed' && 'rotate-180')} />
         </span>
-        <span className="sr-only">{state === 'open' ? labels.close : labels.open}</span>
-        <ChevronDown aria-hidden className={cn('size-[var(--icon-size-sm)] text-ui-fg-muted transition-transform', state === 'collapsed' && 'rotate-180')} />
+        {/* Figma Plan cart Collapsed › Last added: photo, place, "Last added · 2 more". */}
+        {state === 'collapsed' && lastAdded ? (
+          <span className="flex min-w-0 items-center gap-[var(--space-3)]">
+            {lastAddedImage !== undefined ? <Image ratio="1:1" src={lastAddedImage} alt="" sizes="48px" className="w-[var(--space-12)] shrink-0" /> : null}
+            <span className="flex min-w-0 flex-col gap-[var(--space-0-5)]">
+              <span className="truncate type-body-base text-ui-fg">{lastAdded}</span>
+              {lastAddedMeta ? <span className="truncate type-body-caption text-ui-fg-muted">{lastAddedMeta}</span> : null}
+            </span>
+          </span>
+        ) : null}
       </button>
       {state === 'open' ? (
         <>
