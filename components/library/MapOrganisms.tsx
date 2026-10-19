@@ -1,7 +1,7 @@
 'use client'
 
 import { useId, type ReactNode } from 'react'
-import { ArrowLeft, Bookmark, ChevronDown, ChevronRight, Clock, Folder, Globe, Heart, Lock, MapPin, Minus, Plus, Share2, Trash2, X } from 'lucide-react'
+import { ArrowLeft, Bookmark, ChevronDown, ChevronRight, Clock, Folder, Globe, Heart, Lock, MapPin, Minus, Plus, Share2, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Badge } from './Badge'
 import { Button } from './Button'
@@ -88,7 +88,7 @@ export type PlanCartProps = {
   activeDay: 'all' | Day
   onDayChange: (d: 'all' | Day) => void
   onAddDay?: () => void
-  /** Delete a day (shown for the selected day while there is more than one). */
+  /** Delete a day: a × inside each day tab while the plan has more than one day. */
   onRemoveDay?: (day: Day) => void
   /** Collapsed summary, e.g. "5 stops · about 6 h"; last added place. */
   summary: string
@@ -165,11 +165,19 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
               label={labels.region}
               value={String(activeDay)}
               onValueChange={(v) => onDayChange(v === 'all' ? 'all' : (Number(v) as Day))}
-              tabs={[{ id: 'all', label: labels.all }, ...Array.from({ length: days }, (_, i) => ({ id: String(i + 1), label: labels.day(i + 1), day: (i + 1) as Day }))]}
+              tabs={[
+                { id: 'all', label: labels.all },
+                ...Array.from({ length: days }, (_, i) => ({
+                  id: String(i + 1),
+                  label: labels.day(i + 1),
+                  day: (i + 1) as Day,
+                  onClose: onRemoveDay && days > 1 ? () => onRemoveDay((i + 1) as Day) : undefined,
+                  closeLabel: labels.removeDay?.(i + 1),
+                })),
+              ]}
               scrollLabels={labels.previousDays && labels.nextDays ? { previous: labels.previousDays, next: labels.nextDays } : undefined}
               className="min-w-0 flex-1"
             />
-            {onRemoveDay && activeDay !== 'all' && days > 1 ? <IconButton label={labels.removeDay?.(activeDay) ?? ''} icon={<Trash2 />} onClick={() => onRemoveDay(activeDay)} /> : null}
             {onAddDay && days < 8 ? <IconButton label={labels.addDay} icon={<Plus />} onClick={onAddDay} /> : null}
           </div>
           <ol className="min-h-0 flex-1 overflow-y-auto px-[var(--space-4)] py-[var(--space-2)]">

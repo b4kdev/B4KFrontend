@@ -191,7 +191,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   const order = draft.plan.stops
   const planStops = order.map((poi, i) => ({ poi, day: draft.dayOf(poi.poi_id), order: i + 1 }))
-  const showPlanOnly = planOnly && order.length > 0
+  // The plan's stops and route show on the map only while the plan is open (desktop: the Plan
+  // cart opened from the bottom of the Left panel; phones: the plan sheet).
+  const planVisible = phone ? planSheet : cart === 'open'
+  const showPlanOnly = planOnly && planVisible && order.length > 0
   // Plan only: no other places on the map, except the one opened from the list.
   const mapPois = showPlanOnly ? (detail && !order.some((p) => p.poi_id === detail.poi_id) ? [detail] : []) : listPois
   const addToPlan = (poi: MapPoi) => {
@@ -212,8 +215,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     setLiked((s) => { const n = new Set(s); if (on) n.delete(id); else n.add(id); return n })
   }
   const removeDay = (d: number) => {
+    const left = draft.days - 1
     draft.removeDay(d)
-    setActiveDay(d > 1 ? ((d - 1) as 1) : 'all')
+    // Later days move up one: keep the selection on the same day, or on the day now in its place.
+    setActiveDay((a) => (a === 'all' ? 'all' : a > d ? ((a - 1) as 1) : a === d ? (Math.min(d, left) as 1) : a))
     setDeleteDay(null)
   }
   const totalMin = order.reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0)
@@ -320,7 +325,12 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const cartNode = (
     <PlanCart
       state={order.length || cart === 'open' ? cart : 'empty'}
-      onToggle={() => { if (cart === 'open' && !phone) setPlanOnly(false); setCart((c) => (c === 'open' ? 'collapsed' : 'open')); if (phone) setPlanSheet(false) }}
+      onToggle={() => {
+        if (cart === 'open' && !phone) setPlanOnly(false)
+        if (cart !== 'open' && order.length) fitPlan(order)
+        setCart((c) => (c === 'open' ? 'collapsed' : 'open'))
+        if (phone) setPlanSheet(false)
+      }}
       stops={order.map((p, i) => ({
         id: p.poi_id,
         name: nameOf(p, locale),
@@ -367,7 +377,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       pois={mapPois}
       selectedId={selectedId}
       onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
-      planStops={planStops}
+      planStops={planVisible ? planStops : []}
       activeDay={activeDay}
       onBounds={(b, z) => { setBounds(b); setZoom(z) }}
       label={k('itinerary.mapAriaLabel')}
