@@ -88,7 +88,7 @@ export type PlanCartProps = {
   activeDay: 'all' | Day
   onDayChange: (d: 'all' | Day) => void
   onAddDay?: () => void
-  /** Delete a day: a × inside each day tab while the plan has more than one day. */
+  /** Delete a day: a × inside the selected day tab while the plan has more than one day. */
   onRemoveDay?: (day: Day) => void
   /** Collapsed summary, e.g. "5 stops · about 6 h"; last added place. */
   summary: string
@@ -171,7 +171,8 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
                   id: String(i + 1),
                   label: labels.day(i + 1),
                   day: (i + 1) as Day,
-                  onClose: onRemoveDay && days > 1 ? () => onRemoveDay((i + 1) as Day) : undefined,
+                  // The × shows on the selected day only.
+                  onClose: onRemoveDay && days > 1 && activeDay === i + 1 ? () => onRemoveDay((i + 1) as Day) : undefined,
                   closeLabel: labels.removeDay?.(i + 1),
                 })),
               ]}

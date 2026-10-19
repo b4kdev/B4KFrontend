@@ -89,9 +89,6 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const [folderId, setFolderId] = useState<string | null>(params?.get('folder'))
   const [editing, setEditing] = useState<{ id: string; title: string } | null>(null)
   const [pendingEdit, setPendingEdit] = useState<ItineraryDetail | null>(null)
-  // Viewing a made plan (Quick plan, Plan from Saved, Continue, Edit): the map shows the plan's
-  // stops only. Picking a category (or folding the plan cart on desktop) goes back to browsing.
-  const [planOnly, setPlanOnly] = useState(!!params?.get('from') || params?.get('plan') === 'open' || params?.get('plan') === 'edit')
 
   const { pois, isLoading } = useMapPois(null, filter ? [filter] : [], bounds, zoom)
   // View on map from a category special page (?collection=/api/explore/...): that page's places
@@ -120,7 +117,6 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     setEditing({ id: it.id, title: it.title })
     setPendingEdit(null)
     setCart('open')
-    setPlanOnly(true)
     if (phone) setPlanSheet(true)
     fitPlan(stops)
   }
@@ -143,7 +139,6 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     setSelectedId(null)
     setCollectionOn(false)
     setCart('open')
-    setPlanOnly(true)
     if (phone) setPlanSheet(true)
     fitPlan(asPois)
     toast({ type: 'success', message: had ? k('map.plan.replacedDraftToast') : t('CD1548') })
@@ -194,7 +189,9 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // The plan's stops and route show on the map only while the plan is open (desktop: the Plan
   // cart opened from the bottom of the Left panel; phones: the plan sheet).
   const planVisible = phone ? planSheet : cart === 'open'
-  const showPlanOnly = planOnly && planVisible && order.length > 0
+  // Any plan (Quick plan, Plan from Saved, built by hand, opened for editing) works the same: while
+  // it is open the map shows its stops only; a category chip folds it and goes back to browsing.
+  const showPlanOnly = planVisible && order.length > 0
   // Plan only: no other places on the map, except the one opened from the list.
   const mapPois = showPlanOnly ? (detail && !order.some((p) => p.poi_id === detail.poi_id) ? [detail] : []) : listPois
   const addToPlan = (poi: MapPoi) => {
@@ -326,7 +323,6 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     <PlanCart
       state={order.length || cart === 'open' ? cart : 'empty'}
       onToggle={() => {
-        if (cart === 'open' && !phone) setPlanOnly(false)
         if (cart !== 'open' && order.length) fitPlan(order)
         setCart((c) => (c === 'open' ? 'collapsed' : 'open'))
         if (phone) setPlanSheet(false)
@@ -366,7 +362,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const chips = (
     <div className="flex gap-[var(--space-2)] overflow-x-auto [scrollbar-width:none]">
       {CATEGORIES.map((c) => (
-        <Chip key={c.slug} type="map" selected={filter === c.slug} onClick={() => { setPlanOnly(false); setCollectionOn(false); setFilter((f) => (f === c.slug ? null : c.slug)) }}>{t(c.label)}</Chip>
+        <Chip key={c.slug} type="map" selected={filter === c.slug} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setFilter((f) => (f === c.slug ? null : c.slug)) }}>{t(c.label)}</Chip>
       ))}
     </div>
   )
@@ -447,7 +443,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         </div>
         {order.length ? (
           <div className="absolute bottom-[calc(76px+var(--space-3))] left-[var(--space-3)] z-30">
-            <PlanPill label={`${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })}`} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); setPlanOnly(true); fitPlan(order) }} />
+            <PlanPill label={`${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })}`} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} />
           </div>
         ) : null}
         <BottomSheet type="map" open label={k('map.plan.title')} snap={snap} onSnapChange={setSnap} onClose={() => setSnap('peek')} resizeLabel={k('itinerary.sheet.handle')} header={selectedId ? undefined : switcher}>
