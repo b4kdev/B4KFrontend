@@ -1,0 +1,209 @@
+'use client'
+
+import { useEffect, useId, useRef, type ReactNode } from 'react'
+import { ChevronRight, Bookmark, Map, Route, X, Zap } from 'lucide-react'
+import { Link as IntlLink } from '@/i18n/navigation'
+import { cn } from '@/lib/cn'
+import { Button } from './Button'
+import { Chip } from './Chip'
+import { SectionHeader } from './ContentMolecules'
+import { IconButton } from './IconButton'
+import { ProgressIndicator, StepList } from './NavGroups'
+import { useFocusTrap, usePhone } from './hooks'
+import { Scrim } from './Content'
+
+// Sections (UI-81, UI-82, UI-97; Figma Sections): Explore section row, Explore collections,
+// Explore packages, Plan card row, Quick plan, Planning cue, Interests card. Built from cards and
+// molecules; data as props, texts as labels.
+
+const RAIL = '-mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory gap-[var(--space-4)] overflow-x-auto px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] [scrollbar-width:none] lg:mx-0 lg:px-0'
+
+export type RowSectionProps = {
+  title: string
+  subtitle?: string
+  seeAll?: { href: string; label: string }
+  /** Explore section row: an optional Card Featured before the row. */
+  featured?: ReactNode
+  /** Cards (Card Place for Explore rows, Card Plan for plan rows). */
+  cards: ReactNode[]
+  className?: string
+}
+
+/** Explore section row (ADD-69) and Plan card row (ADD-72): header, optional featured card, a sideways row. */
+export function RowSection({ title, subtitle, seeAll, featured, cards, className }: RowSectionProps) {
+  const id = useId()
+  return (
+    <section aria-labelledby={id} className={cn('flex flex-col gap-[var(--space-4)]', className)}>
+      <SectionHeader id={id} title={title} subtitle={subtitle} seeAll={seeAll} />
+      {featured}
+      <ul className={RAIL}>
+        {cards.map((c, i) => <li key={i} className="w-[280px] shrink-0 snap-start max-sm:w-[78%]">{c}</li>)}
+      </ul>
+    </section>
+  )
+}
+
+export type ExploreCollectionsProps = {
+  title: string
+  filters: { id: string; label: string }[]
+  active: string
+  onFilter: (id: string) => void
+  cards: ReactNode[]
+}
+
+/** Explore collections (ADD-70): header, filter chips, grid of Card Collection (4 across, 2 on phones). */
+export function ExploreCollections({ title, filters, active, onFilter, cards }: ExploreCollectionsProps) {
+  const id = useId()
+  return (
+    <section aria-labelledby={id} className="flex flex-col gap-[var(--space-4)]">
+      <SectionHeader id={id} title={title} />
+      <div className="flex flex-wrap gap-[var(--space-2)]">
+        {filters.map((f) => <Chip key={f.id} selected={f.id === active} onClick={() => onFilter(f.id)}>{f.label}</Chip>)}
+      </div>
+      <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{cards.map((c, i) => <li key={i}>{c}</li>)}</ul>
+    </section>
+  )
+}
+
+/** Explore packages (ADD-71): header and up to 3 Card Package, 3 across from 768, stacked on phones. */
+export function ExplorePackages({ title, cards }: { title: string; cards: ReactNode[] }) {
+  const id = useId()
+  return (
+    <section aria-labelledby={id} className="flex flex-col gap-[var(--space-4)]">
+      <SectionHeader id={id} title={title} />
+      <ul className="grid gap-[var(--space-4)] md:grid-cols-3">{cards.slice(0, 3).map((c, i) => <li key={i}>{c}</li>)}</ul>
+    </section>
+  )
+}
+
+export type PlanningCueProps = {
+  /** Figma State: Continue when a plan is in progress (PD-28). */
+  state: 'start' | 'continue'
+  label: string
+  tiles: {
+    newPlan: { href: string; title: string; text: string }
+    quickPlan: { onOpen: () => void; title: string; text: string }
+    fromSaved: { href: string; title: string; text: string }
+    continue?: { href: string; title: string; text: string }
+  }
+}
+
+/** Planning cue (PD-36, UI-97): three tiles between content rows; side by side on desktop, stacked on phones. */
+export function PlanningCue({ state, label, tiles }: PlanningCueProps) {
+  const tile = 'flex min-h-[var(--target-touch-min)] flex-1 items-center gap-[var(--space-3)] rounded-2xl bg-ui-bg-raised p-[var(--space-4)] text-left text-ui-fg hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] focus-visible:shadow-focus-ring focus-visible:outline-none'
+  const body = (icon: ReactNode, t: { title: string; text: string }) => (
+    <>
+      <span aria-hidden className="inline-flex size-[var(--icon-size-lg)] shrink-0 [&>svg]:size-full">{icon}</span>
+      <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
+        <span className="type-title-card">{t.title}</span>
+        <span className="line-clamp-2 [text-wrap:pretty] type-body-caption text-ui-fg-muted">{t.text}</span>
+      </span>
+      <ChevronRight aria-hidden className="size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted" />
+    </>
+  )
+  const first = state === 'continue' && tiles.continue ? tiles.continue : tiles.newPlan
+  return (
+    <section aria-label={label} className="flex gap-[var(--space-3)] max-md:flex-col">
+      <IntlLink href={first.href} className={tile}>{body(state === 'continue' ? <Route /> : <Map />, first)}</IntlLink>
+      <button type="button" onClick={tiles.quickPlan.onOpen} className={tile}>{body(<Zap />, tiles.quickPlan)}</button>
+      <IntlLink href={tiles.fromSaved.href} className={tile}>{body(<Bookmark />, tiles.fromSaved)}</IntlLink>
+    </section>
+  )
+}
+
+export type InterestsCardProps = {
+  title: string
+  text: string
+  tags: { id: string; label: string }[]
+  selected: string[]
+  onToggle: (id: string) => void
+  onSave: () => void
+  onDismiss: () => void
+  labels: { save: string; dismiss: string }
+}
+
+/** Interests card (PD-40, SCR-036): optional, once per account; Selectable chips, Save, Dismiss. */
+export function InterestsCard({ title, text, tags, selected, onToggle, onSave, onDismiss, labels }: InterestsCardProps) {
+  const id = useId()
+  return (
+    <section aria-labelledby={id} className="flex flex-col gap-[var(--space-4)] rounded-2xl bg-ui-bg-raised p-[var(--space-5)] text-ui-fg">
+      <div className="flex items-start gap-[var(--space-2)]">
+        <div className="flex flex-1 flex-col gap-[var(--space-1)]">
+          <h2 id={id} className="type-display-h3">{title}</h2>
+          <p className="type-body-base text-ui-fg-muted">{text}</p>
+        </div>
+        <IconButton label={labels.dismiss} icon={<X />} onClick={onDismiss} className="-mr-[var(--space-2)] -mt-[var(--space-2)]" />
+      </div>
+      <div className="flex flex-wrap gap-[var(--space-2)]">
+        {tags.map((t) => <Chip key={t.id} selected={selected.includes(t.id)} onClick={() => onToggle(t.id)}>{t.label}</Chip>)}
+      </div>
+      <Button size="md" disabled={!selected.length} onClick={onSave} className="self-start">{labels.save}</Button>
+    </section>
+  )
+}
+
+export type QuickPlanProps = {
+  open: boolean
+  onClose: () => void
+  /** Figma Step 1 to 3. */
+  step: 1 | 2 | 3
+  /** Heading of the current step (focus moves to it). */
+  stepTitle: string
+  /** Progress text, e.g. "Step 2 of 3". */
+  progressLabel: string
+  /** Figma Show step list (option B spare) instead of the progress bar. */
+  stepList?: string[]
+  /** Step body (destination and who-with chips plus the Date range picker; interest chips; review rows). */
+  children: ReactNode
+  /** Desktop: the right column of step 1 (the calendar). */
+  aside?: ReactNode
+  /** Footer: Back (steps 2, 3) and Next / Make my plan. */
+  back?: { label: string; onClick: () => void }
+  next: { label: string; onClick: () => void; disabled?: boolean }
+  title: string
+  closeLabel: string
+}
+
+/** Quick plan (planning flow 4, PD-33, PD-45): a 3-step dialog; Modal 864 on desktop, sheet on phones. */
+export function QuickPlan({ open, onClose, step, stepTitle, progressLabel, stepList, children, aside, back, next, title, closeLabel }: QuickPlanProps) {
+  const phone = usePhone()
+  const ref = useFocusTrap<HTMLDivElement>(open, onClose)
+  const heading = useRef<HTMLHeadingElement>(null)
+  const id = useId()
+  useEffect(() => {
+    if (open) heading.current?.focus()
+  }, [step, open])
+  if (!open) return null
+  return (
+    <>
+      <Scrim onClick={onClose} className="z-50" />
+      <div
+        ref={ref}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={id}
+        className={cn(
+          'fixed z-50 flex flex-col bg-ui-bg-elevated text-ui-fg',
+          phone ? 'inset-x-0 bottom-0 max-h-[min(768px,92dvh)] rounded-t-3xl motion-safe:animate-b4k-sheet-in' : 'left-1/2 top-1/2 max-h-[90dvh] w-[min(864px,calc(100%-var(--space-8)))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ui-border',
+        )}
+      >
+        {phone ? <div className="flex justify-center pt-[var(--space-2)]"><span aria-hidden className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" /></div> : null}
+        <div className="flex flex-col gap-[var(--space-3)] px-[var(--space-6)] pt-[var(--space-4)]">
+          <div className="flex items-center gap-[var(--space-2)]">
+            <p id={id} className="flex-1 type-body-label text-ui-fg-muted">{title}</p>
+            <IconButton label={closeLabel} icon={<X />} onClick={onClose} className="-mr-[var(--space-2)]" />
+          </div>
+          {stepList ? <StepList label={progressLabel} steps={stepList} current={step} /> : <ProgressIndicator step={step} steps={3} label={progressLabel} />}
+          <h2 ref={heading} tabIndex={-1} className="type-display-h3 outline-none">{stepTitle}</h2>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-[var(--space-6)] py-[var(--space-4)]">
+          {aside && !phone ? <div className="grid grid-cols-2 gap-[var(--space-8)]"><div>{children}</div><div>{aside}</div></div> : <>{children}{aside}</>}
+        </div>
+        <div className={cn('sticky bottom-0 flex gap-[var(--gap-sm)] bg-ui-bg-elevated px-[var(--space-6)] pb-[calc(var(--space-6)+env(safe-area-inset-bottom))] pt-[var(--space-3)]', phone ? 'flex-col-reverse [&>*]:w-full' : 'justify-end')}>
+          {back ? <Button variant="ghost" onClick={back.onClick}>{back.label}</Button> : null}
+          <Button onClick={next.onClick} disabled={next.disabled}>{next.label}</Button>
+        </div>
+      </div>
+    </>
+  )
+}

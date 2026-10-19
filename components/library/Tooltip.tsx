@@ -17,9 +17,11 @@ export type TooltipProps = {
   /** The trigger: one focusable element. */
   children: ReactElement
   className?: string
+  /** Class for the wrapper around the trigger (e.g. full width in the rail). */
+  wrapperClassName?: string
 }
 
-export function Tooltip({ text, side = 'bottom', children, className }: TooltipProps) {
+export function Tooltip({ text, side = 'bottom', children, className, wrapperClassName }: TooltipProps) {
   const id = useId()
   const [open, setOpen] = useState(false)
   useEffect(() => {
@@ -30,7 +32,7 @@ export function Tooltip({ text, side = 'bottom', children, className }: TooltipP
   }, [open])
   return (
     <span
-      className="relative inline-flex"
+      className={cn('relative inline-flex', wrapperClassName)}
       onPointerEnter={(e) => e.pointerType === 'mouse' && setOpen(true)}
       onPointerLeave={() => setOpen(false)}
       onFocus={(e) => (e.target as HTMLElement).matches(':focus-visible') && setOpen(true)}
