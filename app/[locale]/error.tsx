@@ -4,8 +4,10 @@ import { useEffect } from 'react';
 import * as Sentry from '@sentry/nextjs';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/library/Button';
+import { EmptyState } from '@/components/library/Feedback';
 
+// Fallback outside the v2 shell (v2 pages have their own error screen, SCR-031).
 export default function ErrorBoundary({
   error,
   reset,
@@ -20,30 +22,24 @@ export default function ErrorBoundary({
   }, [error]);
 
   return (
-    <main className="px-3.5 md:px-8 pt-7 pb-16 max-w-[1200px]" aria-label={t('title')}>
-      <div
-        className="flex flex-col items-center justify-center text-center py-20 px-6 rounded-none"
-        style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+    <main className="flex min-h-dvh items-center justify-center bg-ui-bg px-[var(--grid-gutter-mobile)]">
+      <EmptyState
+        type="error"
+        title={t('title')}
+        action={
+          <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
+            <Button onClick={reset}>{t('cta')}</Button>
+            <Link
+              href="/"
+              className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"
+            >
+              {t('goHome')}
+            </Link>
+          </div>
+        }
       >
-        <AlertTriangle size={48} strokeWidth={2} className="text-danger mb-4" />
-        <p className="text-f-2xl font-bold text-fg mb-2">{t('title')}</p>
-        <p className="text-f-md text-muted mb-5 max-w-[320px]">{t('desc')}</p>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={reset}
-            className="inline-flex items-center min-h-touch px-4 rounded-full text-f-sm font-semibold bg-fg text-bg"
-          >
-            {t('cta')}
-          </button>
-          <Link
-            href="/"
-            className="inline-flex items-center min-h-touch px-4 rounded-full text-f-sm font-semibold text-fg"
-            style={{ border: '1px solid var(--bdr)' }}
-          >
-            {t('goHome')}
-          </Link>
-        </div>
-      </div>
+        {t('desc')}
+      </EmptyState>
     </main>
   );
 }

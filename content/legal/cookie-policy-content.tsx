@@ -1,4 +1,4 @@
-import type { LegalSection } from '@/components/legal/LegalDocument';
+import type { LegalSection } from './types';
 
 export const cookiePolicyLastUpdated = 'July 24, 2026';
 export const cookiePolicyContactEmail = 'support@b4korea.com';

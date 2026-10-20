@@ -19,7 +19,7 @@ the areas listed in `lib/v2-live.ts` (PD-53 update 2, Option A). Screen IDs (SCR
 | Map | `map/V2MapCanvas.tsx`, `map/usePlanDraft.ts` | Naver SDK, token-styled markers, day-colored routes (`tokens/colors.ts`); the plan draft as live: localStorage for guests, the account draft (`/api/plans/draft`, autosaved) when signed in |
 | Texts | `messages/v2/{locale}.json`, `messages/v2/keys.json`, `cd.ts`, `messages.ts` | `t('CD0807')` = Copy Deck row; `k('help.title')` = live key through its Copy Deck row. Built by `copydeck_to_messages.py` (B4K_v4.0 `ui-catalog/work/code`) from approved rows |
 | Texts not in the deck yet | `messages/v2/supplement/{locale}.json`, `gaps.ts` | `cd`: translations of rows the deck has not translated (or holds in English), to review into the deck; an approved deck translation always wins. `gap`: texts with no deck row yet (`useGap()`), English source plus translations; each becomes a deck row (2nd review) |
-| Line breaks | `text.ts` | UI-102: default breaks in ko/ja/zh-TW on v2 (the pre-v2 `app/legacy.css` rules stop at pages without `.b4k-v2`), K-names never split |
+| Line breaks | `text.ts` | UI-102: default breaks in ko/ja/zh-TW, K-names never split |
 
 ## Live areas
 

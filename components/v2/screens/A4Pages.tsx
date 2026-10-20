@@ -4,12 +4,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import useSWR from 'swr'
-import { Copy, Map, SlidersHorizontal } from 'lucide-react'
+import { Copy, Map, SlidersHorizontal, WifiOff } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
   Accordion,
   AccordionItem,
   BottomSheet,
+  Breadcrumbs,
   Button,
   Card,
   Chip,
@@ -347,6 +348,38 @@ export function ErrorScreen({ reset }: { reset: () => void }) {
       >
         {t('CD0111')}
       </EmptyState>
+    </V2Page>
+  )
+}
+
+// ── Offline page and Site map (pre-v2 addresses nothing links to, kept on the new design) ──
+
+export function OfflineScreen() {
+  const k = useCdKey()
+  return (
+    <V2Page bar={{ type: 'home' }} className="flex items-center justify-center">
+      <EmptyState
+        icon={<WifiOff />}
+        title={k('boundary.offline.title')}
+        action={<Button variant="secondary" onClick={() => window.location.reload()}>{k('boundary.offline.retry')}</Button>}
+      >
+        {k('boundary.offline.desc')}
+      </EmptyState>
+    </V2Page>
+  )
+}
+
+export function SiteMapScreen() {
+  const t = useCd()
+  const k = useCdKey()
+  const GAP = useGap()
+  return (
+    <V2Page bar={{ type: 'page', title: k('routes.sitemap.title') }}>
+      <div className="flex flex-col gap-[var(--space-6)]">
+        <Breadcrumbs label={GAP.breadcrumb} items={[{ label: t('CD0807'), href: '/' }, { label: k('routes.sitemap.breadcrumb') }]} />
+        <h1 className="type-display-h1 text-ui-fg">{k('routes.sitemap.title')}</h1>
+        <EmptyState title={k('routes.sitemap.empty.title')}>{k('routes.sitemap.empty.desc')}</EmptyState>
+      </div>
     </V2Page>
   )
 }

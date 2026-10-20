@@ -1,5 +1,5 @@
 /* Base for the new design (components/library, components/v2). Tokens: app/tokens.css, built
-   from B4K UI Foundations (npm run tokens:build). The pre-v2 styles live in app/legacy.css. */
+   from B4K UI Foundations (npm run tokens:build). */
 
 @tailwind base;
 @tailwind components;

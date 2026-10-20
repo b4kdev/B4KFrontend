@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { hreflangAlternates, localizedUrl } from '@/lib/site-url'
-import type { ExploreCategory } from './ExplorePage'
+
+export type ExploreCategory = 'k-pop' | 'k-drama' | 'k-beauty' | 'k-food' | 'k-culture'
 
 const CATEGORY_MAP: Record<ExploreCategory, { tKey: string; path: string }> = {
   'k-pop':     { tKey: 'kpop',    path: '/explore/k-pop' },

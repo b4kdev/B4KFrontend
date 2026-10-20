@@ -6,7 +6,6 @@ import { SITE_URL } from '@/lib/site-url';
 import { THEME_BOOT_SCRIPT } from '@/lib/theme';
 import './tokens.css';
 import './globals.css';
-import './legacy.css';
 import { fontVariables } from './fonts';
 
 export const metadata: Metadata = {

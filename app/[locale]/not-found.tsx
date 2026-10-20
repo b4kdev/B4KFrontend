@@ -1,26 +1,27 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { Compass } from 'lucide-react';
+import { EmptyState } from '@/components/library/Feedback';
 
+// Fallback outside the v2 shell (every address is served by components/v2, whose own
+// not-found is the Page not found screen, SCR-031). Same texts and Empty state.
 export default function NotFound() {
   const t = useTranslations('boundary.notFound');
 
   return (
-    <main className="px-3.5 md:px-8 pt-7 pb-16 max-w-[1200px]" aria-label={t('title')}>
-      <div
-        className="flex flex-col items-center justify-center text-center py-20 px-6 rounded-none"
-        style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)' }}
+    <main className="flex min-h-dvh items-center justify-center bg-ui-bg px-[var(--grid-gutter-mobile)]">
+      <EmptyState
+        title={t('title')}
+        action={
+          <Link
+            href="/"
+            className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none"
+          >
+            {t('cta')}
+          </Link>
+        }
       >
-        <Compass size={48} strokeWidth={2} className="text-fg opacity-[0.15] mb-4" />
-        <p className="text-f-2xl font-bold text-fg mb-2">{t('title')}</p>
-        <p className="text-f-md text-muted mb-5 max-w-[320px]">{t('desc')}</p>
-        <Link
-          href="/"
-          className="inline-flex items-center min-h-touch px-4 rounded-full text-f-sm font-semibold bg-fg text-bg"
-        >
-          {t('cta')}
-        </Link>
-      </div>
+        {t('desc')}
+      </EmptyState>
     </main>
   );
 }

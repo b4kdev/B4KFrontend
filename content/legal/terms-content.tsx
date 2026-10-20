@@ -1,4 +1,4 @@
-import type { LegalSection } from '@/components/legal/LegalDocument';
+import type { LegalSection } from './types';
 
 export const termsLastUpdated = 'July 24, 2026';
 export const termsContactEmail = 'support@b4korea.com';

@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
-import { Button, ConsentStep, SignInCard, TextInput, type SignInView } from '@/components/library'
+import { Button, ConsentStep, EmptyState, SignInCard, Spinner, TextInput, type SignInView } from '@/components/library'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { acceptTerms } from '@/lib/terms-consent'
-import { useCd } from '../cd'
+import { track } from '@/lib/analytics'
+import { useCd, useCdKey } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 
@@ -156,6 +158,80 @@ export function ConsentScreen() {
         labels={{ agreeAll: t('CD1506'), required: t('CD1507'), optional: t('CD1509'), view: t('CD0760'), continue: t('CD0768'), cancel: t('CD1510'), back: t('CD0121'), legend: t('CD1505') }}
         footnote={t('CD1511')}
       />
+    </V2Page>
+  )
+}
+
+// ── Sign-in landing (/auth/callback): OAuth code and email link, no screen of its own ──
+
+/** Exchanges the OAuth code or email token for a session, then returns to returnTo (same origin only). */
+export function AuthCallbackScreen() {
+  const k = useCdKey()
+  const locale = useLocale()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    // Only honour a same-origin relative path (guards against open redirect).
+    const returnTo = searchParams.get('returnTo')
+    const safe = returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/'
+
+    async function completeAuth() {
+      const supabase = createSupabaseBrowserClient()
+      const code = searchParams.get('code')
+      const tokenHash = searchParams.get('token_hash')
+      const otpType = searchParams.get('type')
+
+      let error = null
+      let user = null
+      if (code) {
+        const result = await supabase.auth.exchangeCodeForSession(code)
+        error = result.error
+        user = result.data.session?.user ?? null
+      } else if (tokenHash && otpType) {
+        // Email confirmation / magic link: Supabase's older non-PKCE param scheme
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const result = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: otpType as any })
+        error = result.error
+        user = result.data.session?.user ?? null
+      }
+
+      if (error) {
+        setFailed(true)
+        return
+      }
+
+      // 'recovery' only verifies password-reset ownership, not a sign-in. is_new_user is a
+      // created_at / last_sign_in_at proximity heuristic (Supabase has no "just created" flag).
+      if (user && otpType !== 'recovery') {
+        const createdAt = new Date(user.created_at).getTime()
+        const lastSignIn = user.last_sign_in_at ? new Date(user.last_sign_in_at).getTime() : createdAt
+        track('sign_in', {
+          method: user.app_metadata?.provider ?? 'email',
+          is_new_user: lastSignIn - createdAt < 10_000,
+          locale,
+          screen_id: 'AG_01',
+        })
+      }
+
+      router.replace(safe)
+    }
+
+    completeAuth()
+  }, [searchParams, router, locale])
+
+  return (
+    <V2Page bar={{ type: 'none' }} noFooter className="flex items-center justify-center">
+      <div role="status" aria-live="polite">
+        <EmptyState
+          type={failed ? 'error' : 'empty'}
+          icon={failed ? undefined : <Spinner size="lg" />}
+          title={failed ? k('auth.callback.error') : k('auth.callback.verifying')}
+        >
+          {failed ? k('auth.callback.errorRetry') : k('auth.callback.redirecting')}
+        </EmptyState>
+      </div>
     </V2Page>
   )
 }
