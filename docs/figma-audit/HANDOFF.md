@@ -1,4 +1,11 @@
-# Figma 정합 작업 인수인계 (2026-10-19, devtest)
+# Figma 정합 작업 인수인계 (2026-10-19, 갱신 2026-10-21, devtest)
+
+## 2026-10-21 갱신
+
+- **예전 CSS 완전 삭제**: `app/legacy.css`, 옛 Tailwind 테마(lav, bg-2, sp-*, f-* …), 옛 셸, 옛 라우트 페이지와 그것만 쓰던 컴포넌트·훅·lib 전부 삭제(약 19,500줄). 404·오프라인·사이트맵·로그인 콜백도 v2로 옮겼고, 모르는 주소는 v2 "페이지를 찾을 수 없습니다"(404)로 간다. 이전 화면으로 되돌리려면 그 커밋을 revert.
+  - 점검 결과: 삭제 전에도 legacy.css가 v2 화면에 새는 경로는 없었다(요소 규칙은 `.b4k-v2` 없는 페이지 한정, v2 코드는 옛 변수·클래스를 하나도 안 씀). 그래서 v2 화면 모양은 이번 삭제로 바뀌지 않는다.
+- **화면 대조 A1→A5: 진행 불가.** Figma MCP가 4개 파일 모두 "edit access 없음"으로 거부한다(gyulim@b4korea.com, B4K 팀 Dev 좌석. 10/19 13:43까지는 정상). 파일 위치·공유 권한이 바뀐 것으로 보임. 권한이 돌아오면 아래 "남은 작업 1"부터 이어서 한다.
+
 
 v2 화면과 `components/library`를 Figma(B4K_Main: UX IA / UI Screens / UI Components / UI Foundations)에 1:1로 맞추는 작업의 진행 상황.
 같은 폴더의 `01`~`06` 파일이 컴포넌트별 대조 결과 원본(변형/상태, 요소, 속성, Figma 값, 당시 코드 위치)이다. 라인 번호는 수정 전 기준이라 지금과 다를 수 있다.
@@ -52,7 +59,8 @@ v2 화면과 `components/library`를 Figma(B4K_Main: UX IA / UI Screens / UI Com
    이미 알려진 항목:
    - `A3Account` ProfileHeader: 컴포넌트가 자체 pt24/px 패딩을 갖게 돼서 V2Page 패딩과 겹칠 수 있다.
    - Search filters 모바일: A4Pages의 BottomSheet 안에서 패딩이 맞는지 확인이 필요하다.
-2. 404·에러·오프라인·사이트맵을 v2로 옮긴 뒤 `app/legacy.css`를 삭제한다.
+2. ~~404·에러·오프라인·사이트맵을 v2로 옮긴 뒤 `app/legacy.css`를 삭제한다.~~ 완료(2026-10-21).
+3. 화면 대조 범위에서 **Quick plan(`V2QuickPlan`)과 내 플랜(Plan cart, 플랜 진행 중 화면)은 제외**한다. 요청자가 직접 수정한 부분이라 Figma 기준으로 되돌리지 않는다(2026-10-21 지시).
 
 ## 요청자 결정 대기
 

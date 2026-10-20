@@ -23,17 +23,14 @@ the areas listed in `lib/v2-live.ts` (PD-53 update 2, Option A). Screen IDs (SCR
 
 ## Live areas
 
-Signed-off areas serve their live addresses from the same v2 screens: `V2_LIVE_PATHS` in
-`lib/v2-live.ts`. Middleware rewrites `/[locale]<path>` to the v2 screen (the address stays) and
-redirects the old `/[locale]/v2<path>` address there (307). Live addresses without a screen of
-their own move to one (`V2_LIVE_ALIASES`: `/plan` and the old `/profile/*` tabs). The v2 screens
-link to the live addresses. The live screens stay in the code base; removing a line switches that
-area back.
-
-Live now: every area (A1 to A5), including `/place/[poiId]` (the map with the place selected,
-keeping the indexable SSR shell). Still on the old screens: `/plan/ai`, `/plan/auto`,
-`/plan/manual` (they only redirect), `/auth/callback` (no screen), `/offline` and `/sitemap`
-(placeholder pages nothing links to).
+Every address is served by the v2 screens (`lib/v2-live.ts`). Middleware rewrites
+`/[locale]<path>` to the v2 screen (the address stays; an unknown address gets the v2 Page not
+found with a 404) and redirects the old `/[locale]/v2<path>` address there (307). Old addresses
+without a screen of their own move to one (`V2_LIVE_ALIASES`: `/plan` and the old `/profile/*`
+tabs); `/plan/ai`, `/plan/auto` and `/plan/manual` only redirect. The pre-v2 screens, their
+components and `app/legacy.css` were removed on 2026-10-21 (going back means reverting that
+commit). `/offline`, `/sitemap` and `/auth/callback` are v2 pages built from the library Empty
+state; Figma has no frame for them.
 
 ## Areas
 
@@ -109,12 +106,12 @@ Static category folders each carry their own `[row]` pages so they do not shadow
 
 ## 한국어
 
-새 디자인(Figma "B4K UI Screens", A1~A5)의 모든 화면을 `components/library`로 만들어 실데이터로 연결했습니다. 화면은 `/[locale]/v2/...`에 있고, `lib/v2-live.ts`에 등록된 영역은 라이브 주소(`/ko/explore` 등)에서 같은 화면을 보여줍니다(PD-53 업데이트 2, 옵션 A). 지금은 모든 영역이 등록되어 있고, 줄을 지우면 그 영역은 이전 화면으로 돌아갑니다.
+새 디자인(Figma "B4K UI Screens", A1~A5)의 모든 화면을 `components/library`로 만들어 실데이터로 연결했습니다. 화면은 `/[locale]/v2/...`에 있고, `lib/v2-live.ts`에 등록된 영역은 라이브 주소(`/ko/explore` 등)에서 같은 화면을 보여줍니다(PD-53 업데이트 2, 옵션 A). 지금은 모든 주소가 v2 화면이고, 이전 화면과 `app/legacy.css`는 2026-10-21에 삭제했습니다(되돌리려면 그 커밋을 revert).
 
 - **라이브 연결**: 미들웨어가 라이브 주소를 v2 화면으로 rewrite(주소 유지), 예전 `/v2/...` 주소는 라이브 주소로 307. `/plan`, `/profile/trips|saved|badges|settings`는 v2 화면 주소로 이동. 메타데이터·canonical·JSON-LD는 라이브와 같은 함수를 씁니다.
 - **라이브 기능 유지**: 약관 동의 게이트, 쿠키 동의(라이브 저장값 공유, GA 동의 모드), Analytics, 로그인 후 초안 이전과 충돌 선택, 로그인 사용자 초안 서버 자동 저장.
 - **텍스트**: Copy Deck 승인 행 → `messages/v2/*.json`. 덱에 번역이 없는 행과 덱에 없는 문구(`gap`)는 `messages/v2/supplement/*.json`(검수 전 번역). 덱에 승인 번역이 들어오면 그게 우선입니다.
-- **줄바꿈(UI-102)**: v2에서만 한·일·중 기본 줄바꿈, K-Pop 등 하이픈에서 끊기지 않음. 라이브 `globals.css`는 그대로.
+- **줄바꿈(UI-102)**: 한·일·중 기본 줄바꿈, K-Pop 등 하이픈에서 끊기지 않음.
 
 **개발팀 확인 필요**
 1. Naver 지도 키와 BFF CORS에 Vercel 프리뷰 도메인 허용 (안 하면 프리뷰에서 지도·장소가 비어 보임. 로컬은 3000 포트).
