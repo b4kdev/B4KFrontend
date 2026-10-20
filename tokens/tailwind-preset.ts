@@ -301,6 +301,20 @@ const b4kTokens: Partial<Config> = {
           "fontWeight": "var(--font-weight-bold)",
           "lineHeight": "var(--leading-none)",
           "letterSpacing": "0"
+        },
+        ".type-body-legal, .type-body-legal:lang(ko), .type-body-legal:lang(ja), .type-body-legal:lang(zh-TW)": {
+          "fontFamily": "var(--font-family-body)",
+          "fontSize": "var(--font-size-2xs)",
+          "fontWeight": "var(--font-weight-regular)",
+          "lineHeight": "var(--leading-normal)",
+          "letterSpacing": "0"
+        },
+        ".type-body-legal-strong, .type-body-legal-strong:lang(ko), .type-body-legal-strong:lang(ja), .type-body-legal-strong:lang(zh-TW)": {
+          "fontFamily": "var(--font-family-body)",
+          "fontSize": "var(--font-size-2xs)",
+          "fontWeight": "var(--font-weight-semibold)",
+          "lineHeight": "var(--leading-normal)",
+          "letterSpacing": "0"
         }
       })
     }),
