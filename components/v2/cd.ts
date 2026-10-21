@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import keys from '@/messages/v2/keys.json'
 
-/** Copy Deck texts (DOC-197): t('CD0807') = Home. Keys are Copy Deck ids without the dash. */
+/** Copy Deck texts: t('CD0807') = Home. Keys are Copy Deck ids without the dash. */
 export const useCd = () => useTranslations('cd')
 
 const KEY_TO_CD = keys as Record<string, string>

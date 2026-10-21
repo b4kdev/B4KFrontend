@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 
-// Texts the v2 screens need that the Copy Deck (DOC-197) does not have yet. They live in the `gap`
+// Texts the v2 screens need that the Copy Deck does not have yet. They live in the `gap`
 // namespace of messages/v2/supplement/{locale}.json (English source plus translations); each one
 // becomes a new design-only row in the deck (2nd review), then the screen switches to
 // t('CDxxxx') and the entry here goes.
@@ -22,7 +22,7 @@ export function useGap() {
       discardBody: (count: number) => t('discardBody', { count }), // CD-1537
       viewOnPartner: (partner: string) => t('viewOnPartner', { partner }), // CD-1342 "View on Klook"
       noCategoryTrending: (category: string) => (category ? t('noCategoryTrending', { category }) : t('noTrending')), // CD-1569
-      editing: (title: string) => t('editing', { title }), // SCR-008 panel title (Figma, no CD row)
+      editing: (title: string) => t('editing', { title }), // edit-mode panel title (no Copy Deck row yet)
       editDraftBody: (count: number, title: string) => t('editDraftBody', { count, title }), // CD-1526
       createdBy: (name: string) => t('createdBy', { name }), // CD-1483 "Created by Minji"
       deletePlanTitle: (title: string) => t('deletePlanTitle', { title }), // CD-1545
