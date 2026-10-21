@@ -27,6 +27,7 @@ import {
 import { usePhone } from '@/components/library/hooks'
 import { useAuth } from '@/contexts/AuthContext'
 import { getThemeChoice, setTheme, type ThemeChoice } from '@/lib/theme'
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import type { ProfileData } from '@/app/api/profile/route'
 import type { ProfileTrip } from '@/app/api/profile/trips/route'
 import type { Badge as BadgeT, BadgesData } from '@/app/api/badges/route'
@@ -373,6 +374,41 @@ export function SettingsScreen() {
   const [pwSheet, setPwSheet] = useState(false)
   const [pw, setPw] = useState({ current: '', next: '' })
   const [deleting, setDeleting] = useState(false)
+  // Account delete needs a sign-in within the last 10 minutes (the delete route enforces it too):
+  // password accounts re-enter the password, Google accounts sign in with Google again.
+  const [reauth, setReauth] = useState(false)
+  const [reauthPw, setReauthPw] = useState('')
+  const [reauthError, setReauthError] = useState('')
+  const [reauthBusy, setReauthBusy] = useState(false)
+  const providers: string[] = (user?.app_metadata?.providers as string[] | undefined) ?? [user?.app_metadata?.provider ?? 'email']
+  const hasPassword = providers.includes('email')
+  const hasGoogle = providers.includes('google')
+  const startDelete = async () => {
+    const res = await fetch('/api/account/recent-login').then((r) => r.json()).catch(() => ({ recent: false }))
+    if (res.recent) setDeleting(true)
+    else { setReauthPw(''); setReauthError(''); setReauth(true) }
+  }
+  const confirmPassword = async () => {
+    setReauthBusy(true)
+    setReauthError('')
+    const ok = await send('/api/account/recent-login', 'POST', { password: reauthPw }).then(() => true, () => false)
+    setReauthBusy(false)
+    if (!ok) return setReauthError(t('CD1010'))
+    setReauth(false)
+    setDeleting(true)
+  }
+  const confirmGoogle = () =>
+    createSupabaseBrowserClient().auth.signInWithOAuth({
+      provider: 'google',
+      options: { scopes: 'email profile', redirectTo: `${window.location.origin}/auth/callback?returnTo=${encodeURIComponent('/settings?delete=1')}` },
+    })
+  // Back from the Google sign-in: continue the delete flow.
+  useEffect(() => {
+    if (!user || new URLSearchParams(window.location.search).get('delete') !== '1') return
+    window.history.replaceState(null, '', window.location.pathname)
+    startDelete()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
   const themeOptions: { id: ThemeChoice; label: string }[] = [
     { id: 'light', label: t('CD0988') },
     { id: 'dark', label: t('CD0987') },
@@ -443,7 +479,7 @@ export function SettingsScreen() {
           <div className="flex flex-col items-start gap-[var(--space-2)] px-[var(--space-4)] py-[var(--space-8)]">
             <Button variant="secondary" onClick={signOut}>{k('profile.settings.signOut')}</Button>
             <Button variant="ghost" onClick={async () => { await send('/api/account/signout-all', 'POST').catch(() => toast({ type: 'critical', message: k('profile.settings.signOutAllError') })); signOut() }}>{t('CD1604')}</Button>
-            <Button variant="ghost" className="text-ui-danger" onClick={() => setDeleting(true)}>{k('profile.settings.deleteAccount')}</Button>
+            <Button variant="ghost" className="text-ui-danger" onClick={startDelete}>{k('profile.settings.deleteAccount')}</Button>
           </div>
         ) : null}
       </div>
@@ -470,8 +506,29 @@ export function SettingsScreen() {
         title={t('CD1605')}
         body={t('CD1606')}
         cancel={<Button variant="ghost" data-autofocus onClick={() => setDeleting(false)}>{k('profile.settings.deleteCancel')}</Button>}
-        confirm={<Button variant="danger" onClick={async () => { try { await send('/api/account/delete', 'DELETE'); signOut() } catch { toast({ type: 'critical', message: k('profile.settings.deleteError') }) } }}>{k('profile.settings.deleteAccount')}</Button>}
+        confirm={<Button variant="danger" onClick={async () => {
+          try { await send('/api/account/delete', 'DELETE'); signOut() } catch (e) {
+            if ((e as Error).message === '403') { setDeleting(false); setReauthPw(''); setReauthError(''); setReauth(true) }
+            else toast({ type: 'critical', message: k('profile.settings.deleteError') })
+          }
+        }}>{k('profile.settings.deleteAccount')}</Button>}
       />
+      <Modal open={reauth} onClose={() => setReauth(false)} size="sm" title={t('CD1011')} closeLabel={k('badges.detail.close')}
+        secondaryAction={<Button variant="ghost" onClick={() => setReauth(false)}>{t('CD1008')}</Button>}
+        primaryAction={hasPassword
+          ? <Button disabled={!reauthPw || reauthBusy} loading={reauthBusy} onClick={confirmPassword}>{reauthBusy ? t('CD1014') : t('CD1009')}</Button>
+          : <Button onClick={confirmGoogle}>{t('CD0043')}</Button>}>
+        {hasPassword ? (
+          <>
+            <p className="type-body-base text-ui-fg-muted">{t('CD1012')}</p>
+            <TextInput label={t('CD1013')} showLabel type="password" autoComplete="current-password" value={reauthPw}
+              onChange={(e) => { setReauthPw(e.target.value); setReauthError('') }}
+              onKeyDown={(e) => { if (e.key === 'Enter' && reauthPw) confirmPassword() }}
+              error={reauthError || undefined} data-autofocus />
+            {hasGoogle ? <Button variant="secondary" onClick={confirmGoogle}>{t('CD0043')}</Button> : null}
+          </>
+        ) : null}
+      </Modal>
     </V2Page>
   )
 }
