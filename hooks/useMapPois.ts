@@ -70,6 +70,8 @@ function mapPlace(row: RawPlace, locale: string): MapPoi {
     save_count:         row.save_count,
     like_count:         row.like_count,
     primary_image_url:  row.primary_image_url ?? undefined,
+    // One-line note on the list card, in the visitor's language when there is one.
+    description:        cur.description ?? en.description,
   }
 }
 
