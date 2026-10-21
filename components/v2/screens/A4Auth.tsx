@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
-import { Button, ConsentStep, EmptyState, SignInCard, Spinner, TextInput } from '@/components/library'
+import { ConsentStep, EmptyState, SignInCard, Spinner, type SignInView } from '@/components/library'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { afterSignIn } from '@/lib/terms-consent'
 import { safePath } from '@/lib/safe-path'
@@ -36,40 +36,35 @@ export function ResetPasswordScreen() {
   const t = useCd()
   const router = useRouter()
   const { toast } = useV2Shell()
+  // The reset link carries the page the person asked from (same site only).
+  const next = safePath(useSearchParams()?.get('next'))
+  const { labels } = useSignInFlow(next, () => {})
   const [token, setToken] = useState<string | null>(null)
-  const [pw, setPw] = useState('')
-  const [confirm, setConfirm] = useState('')
-  const [error, setError] = useState<{ field: 'pw' | 'confirm' | 'form'; text: string } | null>(null)
+  const [error, setError] = useState<string | undefined>()
   const [busy, setBusy] = useState(false)
   useEffect(() => {
     const p = new URLSearchParams(window.location.hash.slice(1) || window.location.search)
     setToken(p.get('access_token') ?? p.get('code'))
   }, [])
-  const save = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (pw.length < 8) return setError({ field: 'pw', text: t('CD0063') })
-    if (pw !== confirm) return setError({ field: 'confirm', text: t('CD0062') })
-    if (!token) return setError({ field: 'form', text: t('CD0060') })
+  const save = async (_v: SignInView, values: Record<string, string>) => {
+    const pw = values.password ?? ''
+    if (pw.length < 8) return setError(t('CD0063'))
+    if (pw !== (values.confirm ?? '')) return setError(t('CD0062'))
+    if (!token) return setError(t('CD0060'))
+    setError(undefined)
     setBusy(true)
     const res = await post('/api/auth/reset-password', { token, password: pw }).catch(() => null)
     setBusy(false)
     if (!res?.ok) {
       const body = await res?.json().catch(() => ({}))
-      return setError({ field: 'form', text: body?.code === 'expired' ? t('CD0060') : t('CD0061') })
+      return setError(body?.code === 'expired' ? t('CD0060') : t('CD0061'))
     }
     toast({ type: 'success', message: t('CD0072') })
-    router.push('/')
+    router.push(next)
   }
   return (
     <V2Page bar={{ type: 'page', title: t('CD1500') }} className="flex items-center justify-center">
-      <form noValidate onSubmit={save} className="flex w-full max-w-[400px] flex-col gap-[var(--space-5)] rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)]">
-        <h1 className="type-display-h4">{t('CD1500')}</h1>
-        <p className="type-body-base text-ui-fg-muted">{t('CD1501')}</p>
-        {error?.field === 'form' ? <p role="alert" className="type-body-caption text-ui-danger">{error.text}</p> : null}
-        <TextInput label={t('CD0066')} showLabel type="password" autoComplete="new-password" value={pw} onChange={(e) => setPw(e.target.value)} help={t('CD1468')} error={error?.field === 'pw' ? error.text : undefined} />
-        <TextInput label={t('CD0058')} showLabel type="password" autoComplete="new-password" placeholder={t('CD1502')} value={confirm} onChange={(e) => setConfirm(e.target.value)} error={error?.field === 'confirm' ? error.text : undefined} />
-        <Button type="submit" loading={busy} className="w-full">{t('CD1503')}</Button>
-      </form>
+      <SignInCard view="new-password" onViewChange={() => {}} title={t('CD1500')} onGoogle={() => {}} onSubmit={save} busy={busy} error={error} labels={labels} />
     </V2Page>
   )
 }

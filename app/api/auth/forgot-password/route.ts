@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { safePath } from '@/lib/safe-path'
 
 // Supabase Auth password reset (S-JNCTDV Flow 6). resetPasswordForEmail()
 // itself never errors for a non-existent account (Supabase's own enumeration
@@ -8,7 +9,7 @@ import { createSupabaseServerClient } from '@/lib/supabase-server'
 // app/[locale]/auth/reset-password/page.tsx which completes the flow via
 // POST /api/auth/reset-password.
 export async function POST(req: Request) {
-  const { email } = await req.json().catch(() => ({}))
+  const { email, next } = await req.json().catch(() => ({}))
 
   if (typeof email !== 'string' || !email.includes('@')) {
     return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
@@ -18,7 +19,8 @@ export async function POST(req: Request) {
   const supabase = createSupabaseServerClient()
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/reset-password`,
+    // The reset link brings the person back to the page they asked from (same site only).
+    redirectTo: `${origin}/auth/reset-password?next=${encodeURIComponent(safePath(next))}`,
   })
 
   if (error) {

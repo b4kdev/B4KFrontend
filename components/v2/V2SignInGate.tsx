@@ -91,7 +91,7 @@ export function useSignInFlow(next: string, onSignedIn: (user: User) => void, be
         } else setError(t('CD0036'))
       } else if (v === 'forgot') {
         if (view === 'check-email' && resendLeft > 0) return
-        const res = await post(kind === 'signup' && view === 'check-email' ? '/api/auth/signup/resend' : '/api/auth/forgot-password', { email: values.email ?? email })
+        const res = await post(kind === 'signup' && view === 'check-email' ? '/api/auth/signup/resend' : '/api/auth/forgot-password', { email: values.email ?? email, next })
         if (res.ok) {
           if (view !== 'check-email') setKind('reset')
           setView('check-email')
