@@ -6,7 +6,7 @@ import { useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { Button, ConsentStep, EmptyState, SignInCard, Spinner, TextInput, type SignInView } from '@/components/library'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { acceptTerms, needsConsent } from '@/lib/terms-consent'
+import { needsConsent } from '@/lib/terms-consent'
 import { track } from '@/lib/analytics'
 import { useCd, useCdKey } from '../cd'
 import { V2Page } from '../V2Page'
@@ -162,7 +162,6 @@ export function ConsentScreen() {
         onContinue={async () => {
           const res = await post('/api/account/consent', { age: !!checked.age, marketing: !!checked.marketing }).catch(() => null)
           if (!res?.ok) return toast({ type: 'critical', message: t('CD0061') })
-          acceptTerms()
           // Pick up the new consent record in the session before moving on.
           await createSupabaseBrowserClient().auth.refreshSession()
           router.push(next)

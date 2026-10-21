@@ -1,17 +1,5 @@
 import type { User } from '@supabase/supabase-js'
 
-const KEY = 'b4k_terms_accepted_v1'
-
-export function hasAcceptedTerms(): boolean {
-  if (typeof window === 'undefined') return true
-  return localStorage.getItem(KEY) === 'true'
-}
-
-export function acceptTerms(): void {
-  if (typeof window === 'undefined') return
-  localStorage.setItem(KEY, 'true')
-}
-
 /** Date of the Terms and Privacy Policy the Consent step agrees to; a newer date asks again. */
 export const CONSENT_VERSION = '2026-07-24'
 

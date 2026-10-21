@@ -21,7 +21,7 @@ import {
   type ShellUser,
 } from '@/components/library'
 import { useCd } from './cd'
-import { V2DraftMigration, V2TermsGate } from './V2Gates'
+import { V2DraftMigration } from './V2Gates'
 import V2QuickPlan from './V2QuickPlan'
 import { LanguageSheet } from './V2Settings'
 
@@ -146,7 +146,6 @@ export default function V2Shell({ children }: { children: ReactNode }) {
         links={{ notifications: '/notifications', settings: '/settings', help: '/help', legal: '/legal/terms', profile: '/profile', signIn: '/login' }}
       />
       <V2QuickPlan open={quick} onClose={() => setQuick(false)} />
-      <V2TermsGate />
       <V2DraftMigration />
       <LanguageSheet open={language} onClose={() => setLanguage(false)} />
       {cookie === null ? (
