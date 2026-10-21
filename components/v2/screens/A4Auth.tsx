@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
-import { ConsentStep, EmptyState, SignInCard, Spinner, type SignInView } from '@/components/library'
+import { ConsentStep, EmptyState, Modal, Scrim, SignInCard, Spinner, usePhone, type SignInView } from '@/components/library'
+import { termsSections } from '@/content/legal/terms-content'
+import { privacyPolicySections } from '@/content/legal/privacy-policy-content'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { afterSignIn } from '@/lib/terms-consent'
 import { safePath } from '@/lib/safe-path'
@@ -75,12 +77,18 @@ export function ConsentScreen() {
   const next = safePath(useSearchParams()?.get('next'))
   const { toast } = useV2Shell()
   const [checked, setChecked] = useState<Record<string, boolean>>({})
+  // View opens the document over the step (sheet on phones) so the person never leaves it.
+  const [doc, setDoc] = useState<'terms' | 'privacy' | null>(null)
+  const phone = usePhone()
   const cancel = async () => {
     await createSupabaseBrowserClient().auth.signOut()
     router.push(next)
   }
   return (
     <V2Page bar={{ type: 'none' }} noFooter className="flex items-center justify-center">
+      {/* The step sits over the screen: centered over the scrim on desktop, a sheet from the bottom on phones. */}
+      <Scrim kind="blocking" className="z-40" />
+      <div className={phone ? 'fixed inset-x-0 bottom-0 z-40 max-h-[90dvh] overflow-y-auto rounded-t-3xl bg-ui-bg-elevated pb-[env(safe-area-inset-bottom)]' : 'fixed left-1/2 top-1/2 z-40 max-h-[90dvh] w-[calc(100%-var(--space-8))] max-w-[480px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto'}>
       <ConsentStep
         title={t('CD1504')}
         items={[
@@ -91,7 +99,7 @@ export function ConsentScreen() {
         ]}
         checked={checked}
         onCheckedChange={setChecked}
-        onView={(i) => window.open(`/${document.documentElement.lang}${i.viewHref}`, '_blank', 'noopener')}
+        onView={(i) => setDoc(i.id === 'terms' ? 'terms' : 'privacy')}
         onContinue={async () => {
           const res = await post('/api/account/consent', { age: !!checked.age, marketing: !!checked.marketing }).catch(() => null)
           if (!res?.ok) return toast({ type: 'critical', message: t('CD0061') })
@@ -100,9 +108,18 @@ export function ConsentScreen() {
           router.push(next)
         }}
         onCancel={cancel}
-        labels={{ agreeAll: t('CD1506'), required: t('CD1507'), optional: t('CD1509'), view: t('CD0760'), continue: t('CD0768'), cancel: t('CD1510'), back: t('CD0121'), legend: t('CD1505') }}
+        labels={{ agreeAll: t('CD1506'), required: t('CD1507'), optional: t('CD1509'), view: t('CD0271'), continue: t('CD0768'), cancel: t('CD1510'), back: t('CD0121'), legend: t('CD1505') }}
         footnote={t('CD1511')}
       />
+      </div>
+      <Modal open={!!doc} onClose={() => setDoc(null)} size="lg" title={doc === 'terms' ? t('CD0812') : t('CD0811')} closeLabel={t('CD0758')}>
+        {(doc === 'terms' ? termsSections : privacyPolicySections).map((sec) => (
+          <section key={sec.id} className="flex flex-col gap-[var(--space-2)] [&_a]:underline [&_li]:ml-[var(--space-4)] [&_li]:list-disc [&_table]:w-full">
+            <h2 className="type-title-card">{sec.heading}</h2>
+            <div className="type-body-base text-ui-fg-muted">{sec.body}</div>
+          </section>
+        ))}
+      </Modal>
     </V2Page>
   )
 }

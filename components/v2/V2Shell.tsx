@@ -114,7 +114,8 @@ export default function V2Shell({ children }: { children: ReactNode }) {
     [t, unreadCount],
   )
   const meta = authUser?.user_metadata as { full_name?: string; name?: string; avatar_url?: string } | undefined
-  const user: ShellUser = authUser ? { name: meta?.full_name ?? meta?.name ?? authUser.email?.split('@')[0] ?? '', avatarSrc: meta?.avatar_url ?? null, unread: unreadCount } : null
+  // During the Consent step the person counts as signed out until Continue (Back signs them out).
+  const user: ShellUser = authUser && v2Area(pathname) !== 'consent' ? { name: meta?.full_name ?? meta?.name ?? authUser.email?.split('@')[0] ?? '', avatarSrc: meta?.avatar_url ?? null, unread: unreadCount } : null
   const active = activeFrom(pathname)
   const onMap = ['map', 'plan', 'place'].includes(v2Area(pathname))
   // Sign-in, reset and consent are full-screen flows on phones: no Navigation bar.
