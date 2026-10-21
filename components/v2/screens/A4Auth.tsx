@@ -15,12 +15,16 @@ import { useV2Shell } from '../V2Shell'
 // A4 auth screens (UI-82, PD-04, PD-12, PD-37): Sign in (SCR-023), Reset password (SCR-024),
 // Consent step (SCR-025). Same auth calls as the live AuthForm.
 
+/** A redirect target from the URL, kept only if it is a path on this site (guards against open redirect). */
+const safePath = (target: string | null | undefined) =>
+  target && target.startsWith('/') && !target.startsWith('//') && !target.includes('\\') ? target : '/'
+
 const post = (url: string, body: unknown) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
 
 export function LoginScreen() {
   const t = useCd()
   const router = useRouter()
-  const next = useSearchParams()?.get('next') ?? '/'
+  const next = safePath(useSearchParams()?.get('next'))
   const [view, setView] = useState<SignInView>('providers')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | undefined>()
@@ -131,7 +135,7 @@ export function ResetPasswordScreen() {
 export function ConsentScreen() {
   const t = useCd()
   const router = useRouter()
-  const next = useSearchParams()?.get('next') ?? '/'
+  const next = safePath(useSearchParams()?.get('next'))
   const [checked, setChecked] = useState<Record<string, boolean>>({})
   const cancel = async () => {
     await createSupabaseBrowserClient().auth.signOut()
@@ -173,9 +177,7 @@ export function AuthCallbackScreen() {
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
-    // Only honour a same-origin relative path (guards against open redirect).
-    const returnTo = searchParams.get('returnTo')
-    const safe = returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/'
+    const safe = safePath(searchParams.get('returnTo'))
 
     async function completeAuth() {
       const supabase = createSupabaseBrowserClient()
