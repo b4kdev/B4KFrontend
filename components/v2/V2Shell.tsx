@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { usePathname } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from '@/i18n/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { getConsent, setConsent } from '@/lib/consent'
 import { v2Area } from '@/lib/v2-live'
@@ -24,6 +25,7 @@ import { useCd } from './cd'
 import { V2DraftMigration } from './V2Gates'
 import V2QuickPlan from './V2QuickPlan'
 import { LanguageSheet } from './V2Settings'
+import { SignInGate, type GateRequest } from './V2SignInGate'
 
 // Shell of the preview (original layout with the Header, UI-101 still open): desktop Header + rail,
 // phones Top app bar (per page) + Navigation bar + Drawer. Quick plan, Drawer and the language
@@ -36,6 +38,8 @@ type ShellCtx = {
   user: ShellUser
   labels: ShellLabels
   toast: (t: { type?: 'info' | 'success' | 'warning' | 'critical'; message: string }) => void
+  /** Runs `run` now when signed in; a guest gets the sign-in gate and `run` after the sign-in. */
+  requireSignIn: (r: GateRequest) => void
 }
 
 const Ctx = createContext<ShellCtx | null>(null)
@@ -64,6 +68,8 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState(false)
   const [cookie, setCookie] = useState<string | null>('unknown')
   const [online, setOnline] = useState(true)
+  const [gate, setGate] = useState<GateRequest | null>(null)
+  const router = useRouter()
   const [toastMsg, setToastMsg] = useState<{ type?: 'info' | 'success' | 'warning' | 'critical'; message: string } | null>(null)
 
   useEffect(() => {
@@ -115,6 +121,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
     user,
     labels,
     toast: setToastMsg,
+    requireSignIn: (r) => (authUser ? r.run() : setGate(r)),
   }
   const LANG_NAMES: Record<string, string> = { en: 'English', ko: '한국어', ja: '日本語', 'zh-TW': '繁體中文', 'pt-BR': 'Português (Brasil)' }
 
@@ -147,6 +154,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
       />
       <V2QuickPlan open={quick} onClose={() => setQuick(false)} />
       <V2DraftMigration />
+      <SignInGate request={gate} onClose={() => setGate(null)} onConsent={(next) => router.push(`/consent?next=${encodeURIComponent(next)}`)} />
       <LanguageSheet open={language} onClose={() => setLanguage(false)} />
       {cookie === null ? (
         <CookieBanner

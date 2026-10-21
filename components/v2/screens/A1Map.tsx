@@ -39,6 +39,7 @@ import type { ItineraryDetail } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
 import { useV2Shell } from '../V2Shell'
+import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
 import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_STOPS, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
 import { CATEGORIES, jsonFetch } from './A2Home'
@@ -67,7 +68,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const phone = usePhone()
   const params = useSearchParams()
   const { user } = useAuth()
-  const { labels, openDrawer, toast } = useV2Shell()
+  const { labels, openDrawer, toast, requireSignIn } = useV2Shell()
   const mapRef = useRef<V2MapHandle>(null)
   const draft = usePlanDraft()
 
@@ -199,18 +200,23 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     if (day === null) toast({ type: 'warning', message: k('map.plan.maxStopsToast', { max: MAX_STOPS }) })
     else toast({ type: 'success', message: GAP.addedToDay(day) })
   }
-  const toggleSave = async (poi: { poi_id: string }) => {
-    if (!user) return router.push(`/login?next=/map?poi=${poi.poi_id}`)
-    const on = savedIds.has(poi.poi_id)
-    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: poi.poi_id }).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: t('CD1426') }))
+  // `on` = currently saved / liked; after a sign-in the action only ever turns it on.
+  const setSave = async (id: string, on: boolean) => {
+    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: t('CD1426') }))
     saved.mutate()
   }
-  const toggleLike = async (id: string) => {
-    if (!user) return router.push(`/login?next=/map?poi=${id}`)
-    const on = liked.has(id)
+  const setLike = async (id: string, on: boolean) => {
     await send('/api/likes/poi', on ? 'DELETE' : 'POST', { poi_id: id }).catch(() => {})
     setLiked((s) => { const n = new Set(s); if (on) n.delete(id); else n.add(id); return n })
   }
+  const toggleSave = (poi: { poi_id: string }) =>
+    user ? setSave(poi.poi_id, savedIds.has(poi.poi_id)) : requireSignIn({ title: t('CD0027'), pending: { type: 'save_poi', id: poi.poi_id }, run: () => setSave(poi.poi_id, false) })
+  const toggleLike = (id: string) =>
+    user ? setLike(id, liked.has(id)) : requireSignIn({ title: t('CD0054'), pending: { type: 'like_poi', id }, run: () => setLike(id, false) })
+  const openSaveSheet = () => { setPlanName(draft.plan.name ?? ''); setSaveOpen(true) }
+  usePendingAction('save_poi', !!user, (id) => { if (id) setSave(id, false) })
+  usePendingAction('like_poi', !!user, (id) => { if (id) setLike(id, false) })
+  usePendingAction('save_own_plan', !!user, () => { setCart('open'); openSaveSheet() })
   const removeDay = (d: number) => {
     const left = draft.days - 1
     draft.removeDay(d)
@@ -222,7 +228,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const dayTotal = typeof activeDay === 'number' ? order.filter((p) => draft.dayOf(p.poi_id) === activeDay).reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0) : null
 
   const savePlan = async () => {
-    if (!user) return router.push('/login?next=/map?plan=open')
+    if (!user) return requireSignIn({ title: t('CD0025'), draftNotice: t('CD1489'), pending: { type: 'save_own_plan' }, run: openSaveSheet })
     setSaving(true)
     const stops = order.map((p, i) => ({ poi_id: p.poi_id, stop_order: i + 1, duration_min: draft.plan.durations[p.poi_id] ?? 60, day: draft.dayOf(p.poi_id) }))
     // Save changes on a plan opened for editing updates that plan in place (same link, PD-28).
@@ -316,7 +322,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     </div>
   )
   const savedView = !user ? (
-    <EmptyState title={t('CD1577')} action={<Button size="md" onClick={() => router.push('/login?next=/map?saved=1')}>{t('CD0050')}</Button>}>{t('CD1578')}</EmptyState>
+    <EmptyState title={t('CD1577')} action={<Button size="md" onClick={() => requireSignIn({ title: t('CD1577'), run: () => {} })}>{t('CD0050')}</Button>}>{t('CD1578')}</EmptyState>
   ) : (
     <SavedHub
       view={!saved.data?.pois.length ? 'empty' : folderId ? 'folder' : 'places'}
@@ -367,7 +373,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       onDuration={setDurationFor}
       onRemove={draft.remove}
       onMove={draft.move}
-      onSave={() => { setPlanName(draft.plan.name ?? ''); setSaveOpen(true) }}
+      onSave={() => (user || editing ? openSaveSheet() : requireSignIn({ title: t('CD0025'), draftNotice: t('CD1489'), pending: { type: 'save_own_plan' }, run: openSaveSheet }))}
       onDiscard={() => (editing ? stopEditing() : setDiscardOpen(true))}
       labels={{
         region: k('map.plan.title'), emptyTitle: t('CD1359'), emptyBody: t('CD1607'), all: k('map.plan.allDays'),

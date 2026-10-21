@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { safePath } from '@/lib/safe-path'
 
 // Supabase Auth sign-up with email verification (S-JNCTDV Flow 1).
 // Verification link → user confirms → auto-sign-in → interrupted action resumes.
@@ -8,7 +9,7 @@ import { createSupabaseServerClient } from '@/lib/supabase-server'
 // email — signUp returns no error and a user with an empty `identities`
 // array — so this route never needs to special-case it to avoid enumeration).
 export async function POST(req: Request) {
-  const { email, password } = await req.json().catch(() => ({}))
+  const { email, password, next } = await req.json().catch(() => ({}))
 
   if (typeof email !== 'string' || !email.includes('@')) {
     return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
@@ -23,7 +24,8 @@ export async function POST(req: Request) {
   const { error } = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: `${origin}/auth/callback` },
+    // The confirmation link comes back to the page the visitor signed up from (same site only).
+    options: { emailRedirectTo: `${origin}/auth/callback?returnTo=${encodeURIComponent(safePath(next))}` },
   })
 
   if (error) {

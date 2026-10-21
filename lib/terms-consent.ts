@@ -9,3 +9,7 @@ export function needsConsent(user: User | null | undefined): boolean {
   const consent = user.user_metadata?.consent as { terms_version?: string } | undefined
   return consent?.terms_version !== CONSENT_VERSION
 }
+
+/** After a sign-in: the Consent step first if the account has not agreed yet, then the target. */
+export const afterSignIn = (user: User | null | undefined, target: string) =>
+  needsConsent(user) ? `/consent?next=${encodeURIComponent(target)}` : target

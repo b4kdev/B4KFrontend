@@ -30,6 +30,7 @@ import type { ItineraryStop } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
 import { useV2Shell } from '../V2Shell'
+import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
 import { formatMinutes } from '../map/usePlanDraft'
 
@@ -57,7 +58,7 @@ export function PlanScreen({ id }: { id: string }) {
   const router = useRouter()
   const phone = usePhone()
   const { user } = useAuth()
-  const { labels, openDrawer, toast } = useV2Shell()
+  const { labels, openDrawer, toast, requireSignIn } = useV2Shell()
   const { mutate: globalMutate } = useSWRConfig()
   const mapRef = useRef<V2MapHandle>(null)
   const { itinerary: it, isLoading, isError, isPrivate, isNotFound, mutate } = useItinerary(id)
@@ -85,22 +86,23 @@ export function PlanScreen({ id }: { id: string }) {
 
   const isLiked = liked ?? it?.viewer.is_liked ?? false
   const isSaved = saved ?? it?.viewer.is_saved ?? false
-  const toLogin = () => router.push(`/login?next=/plan/${id}`)
-
-  const like = () => {
-    if (!user) return toLogin()
-    const next = !isLiked
+  // A guest gets the sign-in gate; after the sign-in the action only ever turns it on.
+  const like = (force?: boolean) => {
+    if (!user && !force) return requireSignIn({ title: t('CD0054'), pending: { type: 'like_plan', id }, run: () => like(true) })
+    const next = force ? true : !isLiked
     setLiked(next)
     toast({ type: 'success', message: next ? k('itinerary.actions.likedToast') : k('itinerary.actions.unlikedToast') })
     send('/api/likes/plan', next ? 'POST' : 'DELETE', { plan_id: id }).then(() => mutate()).catch(() => setLiked(!next))
   }
-  const save = () => {
-    if (!user) return toLogin()
-    const next = !isSaved
+  const save = (force?: boolean) => {
+    if (!user && !force) return requireSignIn({ title: t('CD1541'), pending: { type: 'save_plan', id }, run: () => save(true) })
+    const next = force ? true : !isSaved
     setSaved(next)
     toast({ type: 'success', message: next ? k('itinerary.actions.savedToast') : k('itinerary.actions.unsavedToast') })
     send('/api/saved/plan', next ? 'POST' : 'DELETE', { plan_id: id }).then(() => mutate()).catch(() => setSaved(!next))
   }
+  usePendingAction('like_plan', !!user, () => like(true))
+  usePendingAction('save_plan', !!user, () => save(true))
   const share = async () => {
     const url = new URL(it?.share_url ?? window.location.href, window.location.origin)
     url.searchParams.set('ref', 'share')
@@ -213,8 +215,8 @@ export function PlanScreen({ id }: { id: string }) {
             </>
           ) : (
             <>
-              <Button className="flex-1" leadingIcon={<Bookmark className={isSaved ? 'fill-current' : undefined} />} aria-pressed={isSaved} onClick={save}>{isSaved ? k('itinerary.actions.saved') : k('itinerary.actions.save')}</Button>
-              <IconButton variant="secondary" label={k('itinerary.actions.likeAria')} aria-pressed={isLiked} icon={<Heart className={isLiked ? 'fill-current' : undefined} />} onClick={like} />
+              <Button className="flex-1" leadingIcon={<Bookmark className={isSaved ? 'fill-current' : undefined} />} aria-pressed={isSaved} onClick={() => save()}>{isSaved ? k('itinerary.actions.saved') : k('itinerary.actions.save')}</Button>
+              <IconButton variant="secondary" label={k('itinerary.actions.likeAria')} aria-pressed={isLiked} icon={<Heart className={isLiked ? 'fill-current' : undefined} />} onClick={() => like()} />
               <IconButton variant="secondary" label={k('itinerary.actions.shareAria')} icon={<Share2 />} onClick={share} />
             </>
           )
