@@ -23,7 +23,7 @@ Responsive `Mobile` = base, `Tablet` = `min-width: 768px`, `Desktop` = `min-widt
 Using them:
 
 - Colors: `bg-ui-bg`, `text-ui-fg`, `text-ui-fg-muted`, `border-ui-border`, `bg-plan-day-1` …
-  (the `ui-` prefix keeps them apart from the old `bg`, `fg`, `danger` keys until those are removed)
+  (the preset is the only Tailwind theme; the `ui-` prefix is part of the key names)
 - Text: `type-display-hero`, `type-body-base`, `type-label-button` …
 - Spacing, font sizes and radius: the Tailwind defaults already match the tokens (`p-4` = `space/4`,
   `text-sm` = `font-size/sm`, `rounded-2xl` = `radius/2xl`); `text-2xs` is the one extra size
@@ -37,12 +37,12 @@ Using them:
 Values change only in Figma, with a recorded design decision. Then:
 
 1. Read the variables from B4K UI Foundations with the Figma plugin API (export script kept in
-   the design workspace; ask Sun). It returns every variable with its code name and mode values,
+   the design workspace; ask the product team). It returns every variable with its code name and mode values,
    plus the text, effect and paint styles, converted to `tokens/tokens.json`.
 2. `npm run tokens:build`, check the diff of `app/tokens.css` (it shows exactly what changed),
    commit `tokens.json` and the generated files together.
 
 The Figma Variables REST API needs an Enterprise plan, so the export goes through the plugin API
 instead of a CI job. A Figma plugin that writes the same JSON (for example Tokens Studio or
-Variables to JSON) could replace step 1 later. The old variables in `app/globals.css` stay until
-every page has moved over.
+Variables to JSON) could replace step 1 later. `app/globals.css` holds only the base styles
+(Tailwind layers, theme color scheme, reduced motion); every value comes from `app/tokens.css`.
