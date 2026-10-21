@@ -224,10 +224,28 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const savePlan = async () => {
     if (!user) return router.push('/login?next=/map?plan=open')
     setSaving(true)
+    const stops = order.map((p, i) => ({ poi_id: p.poi_id, stop_order: i + 1, duration_min: draft.plan.durations[p.poi_id] ?? 60, day: draft.dayOf(p.poi_id) }))
+    // Save changes on a plan opened for editing updates that plan in place (same link, PD-28).
+    if (editing) {
+      try {
+        await send(`/api/plans/${editing.id}`, 'PUT', { title: planName.trim() || editing.title, stops })
+        const id = editing.id
+        draft.discard()
+        setEditing(null)
+        setSaveOpen(false)
+        toast({ type: 'success', message: t('CD1636') })
+        router.push(`/plan/${id}`)
+      } catch {
+        toast({ type: 'critical', message: k('map.plan.saveError') })
+      } finally {
+        setSaving(false)
+      }
+      return
+    }
     try {
       const res = await send('/api/plans', 'POST', {
         title: planName.trim(),
-        stops: order.map((p, i) => ({ poi_id: p.poi_id, stop_order: i + 1, duration_min: draft.plan.durations[p.poi_id] ?? 60, day: draft.dayOf(p.poi_id) })),
+        stops,
         is_published: false,
       })
       const id: string | undefined = res?.plan?.id
