@@ -137,6 +137,18 @@ function toSavedPoi(b: BffBookmark, locale: string): SavedPoi {
   }
 }
 
+// Every bookmark, a page at a time (the BFF list takes limit/offset and may cap a page): pages
+// are read until one comes back empty, up to 5,000 saves.
+async function fetchAllBookmarks(token: string): Promise<BffBookmark[]> {
+  const all: BffBookmark[] = []
+  for (let page = 0; page < 50; page++) {
+    const rows = await bffFetch<BffBookmark[]>(`/me/bookmarks?limit=100&offset=${all.length}`, { token })
+    if (!rows.length) break
+    all.push(...rows)
+  }
+  return all
+}
+
 export async function GET() {
   const auth = await getSessionAuth()
   // Signed out — same shape the stub returned; the page's auth gate handles prompting.
@@ -146,7 +158,7 @@ export async function GET() {
 
   try {
     const [bookmarks, folders, savedItins, myItins] = await Promise.all([
-      bffFetch<BffBookmark[]>('/me/bookmarks?limit=100',       { token: auth.token }),
+      fetchAllBookmarks(auth.token),
       bffFetch<BffFolder[]>('/me/bookmark-folders',            { token: auth.token }),
       bffFetch<BffSavedItinerary[]>('/me/saved-itineraries',   { token: auth.token }),
       bffFetch<BffMyItinerary[]>('/me/itineraries',            { token: auth.token }),
