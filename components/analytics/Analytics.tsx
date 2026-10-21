@@ -7,15 +7,15 @@ import { getConsent } from '@/lib/consent'
 const GA_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID
 
-// DEC-16 — GA4 (Consent Mode v2, cookieless-until-consent) + Clarity (hard block until
-// accepted). GA4 mounts unconditionally; Clarity only mounts once consent is 'accepted'.
+// GA4 and Clarity both stay off until the visitor accepts in the cookie banner: no script
+// tag, no request, not even a cookieless ping. A later Decline sends a consent update to GA4.
 export default function Analytics() {
-  const [clarityGranted, setClarityGranted] = useState(false)
+  const [granted, setGranted] = useState(false)
 
   useEffect(() => {
-    setClarityGranted(getConsent() === 'accepted')
+    setGranted(getConsent() === 'accepted')
     const onChange = (e: Event) => {
-      setClarityGranted((e as CustomEvent<'accepted' | 'declined'>).detail === 'accepted')
+      setGranted((e as CustomEvent<'accepted' | 'declined'>).detail === 'accepted')
     }
     window.addEventListener('b4k-consent-change', onChange)
     return () => window.removeEventListener('b4k-consent-change', onChange)
@@ -23,18 +23,15 @@ export default function Analytics() {
 
   return (
     <>
-      {/* Reads consent directly from localStorage at execution time — avoids a React
-          round-trip race between mount and the gtag() consent default call. */}
-      {GA_ID && (
+      {granted && GA_ID && (
         <>
           <Script id="ga4-init" strategy="afterInteractive">
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               window.gtag = gtag;
-              var consent = localStorage.getItem('b4k_analytics_consent');
               gtag('consent', 'default', {
-                analytics_storage: consent === 'accepted' ? 'granted' : 'denied',
+                analytics_storage: 'granted',
                 ad_storage: 'denied',
                 ad_user_data: 'denied',
                 ad_personalization: 'denied'
@@ -47,7 +44,7 @@ export default function Analytics() {
         </>
       )}
 
-      {clarityGranted && CLARITY_ID && (
+      {granted && CLARITY_ID && (
         <Script id="clarity-init" strategy="afterInteractive">
           {`
             (function(c,l,a,r,i,t,y){

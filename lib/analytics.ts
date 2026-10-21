@@ -1,7 +1,6 @@
 // GA4 event taxonomy — B4K-MVP-Sprint-Plan-2026-07-25.md §3. 10 locked events, snake_case.
-// No-ops without window.gtag (script not yet loaded, or SSR) — GA4 Consent Mode v2 in
-// Analytics.tsx already handles the privacy gate at the transport level, track() doesn't
-// need its own consent check (see DEC-16).
+// No-ops without window.gtag (SSR, script not yet loaded, or no Accept yet: Analytics.tsx
+// loads gtag only after Accept), so track() needs no consent check of its own.
 
 // Supabase provider id, passed through as-is (email/google/apple/azure) — not narrowed to
 // the taxonomy doc's literal names since Apple/Microsoft OAuth is still broken (BLK-18).

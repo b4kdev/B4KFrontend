@@ -8,9 +8,8 @@ export function getConsent(): ConsentState {
   return raw === 'accepted' || raw === 'declined' ? raw : null
 }
 
-// DEC-16 — GA4 Consent Mode v2: 'declined' keeps analytics_storage denied (GA4 still
-// pings cookieless). Clarity has no consent-mode equivalent — Analytics.tsx hard-blocks
-// its script tag entirely until this resolves to 'accepted'.
+// Analytics.tsx loads GA4 and Clarity only once this is 'accepted'. Declining after an
+// Accept in the same visit sends GA4 a consent update; the scripts go away on next load.
 export function setConsent(value: 'accepted' | 'declined'): void {
   if (typeof window === 'undefined') return
   localStorage.setItem(KEY, value)
