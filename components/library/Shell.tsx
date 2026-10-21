@@ -302,10 +302,10 @@ export function Drawer({ open, onClose, labels, user, onQuickPlan, language, lin
   )
 }
 
-export type AccountMenuProps = { labels: ShellLabels; user: ShellUser; onSignOut: () => void; links?: { profile?: string; settings?: string; help?: string; signIn?: string } }
+export type AccountMenuProps = { labels: ShellLabels; user: ShellUser; onSignOut: () => void; links?: { profile?: string; settings?: string; help?: string; signIn?: string }; /** Help item: off on desktop, where the Header has the Help icon. */ showHelp?: boolean }
 
-/** Account menu (UI-101, Proposed): menu button on the rail avatar; signed in or out. */
-export function AccountMenu({ labels, user, onSignOut, links = {} }: AccountMenuProps) {
+/** Account menu: menu button on the rail avatar; signed in (profile, Settings, Sign out) or signed out (Sign in, Settings). */
+export function AccountMenu({ labels, user, onSignOut, links = {}, showHelp = false }: AccountMenuProps) {
   const L = { profile: '/v2/profile', settings: '/v2/settings', help: '/v2/help', signIn: '/v2/login', ...links }
   const go = (href: string) => () => window.location.assign(href)
   return (
@@ -334,7 +334,7 @@ export function AccountMenu({ labels, user, onSignOut, links = {} }: AccountMenu
       )}
       <MenuGroup>
         <MenuItem icon={<Settings />} onClick={go(L.settings)}>{labels.settings}</MenuItem>
-        <MenuItem icon={<CircleHelp />} onClick={go(L.help)}>{labels.help}</MenuItem>
+        {showHelp ? <MenuItem icon={<CircleHelp />} onClick={go(L.help)}>{labels.help}</MenuItem> : null}
       </MenuGroup>
       {user ? <MenuGroup><MenuItem onClick={onSignOut}>{labels.signOut}</MenuItem></MenuGroup> : null}
     </DropdownMenu>

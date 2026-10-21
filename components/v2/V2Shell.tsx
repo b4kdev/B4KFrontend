@@ -10,6 +10,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { getConsent, setConsent } from '@/lib/consent'
 import { v2Area } from '@/lib/v2-live'
 import {
+  AccountMenu,
   CookieBanner,
   Drawer,
   Header,
@@ -74,6 +75,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const [online, setOnline] = useState(true)
   const [gate, setGate] = useState<GateRequest | null>(null)
   const router = useRouter()
+  const signOut = useV2SignOut()
   const [toastMsg, setToastMsg] = useState<{ type?: 'info' | 'success' | 'warning' | 'critical'; message: string } | null>(null)
 
   useEffect(() => {
@@ -146,7 +148,14 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           helpHref="/help"
         />
         <div className="flex min-h-0 flex-1">
-          <NavigationRail className="max-lg:hidden" active={active} labels={labels} user={user} onQuickPlan={() => setQuick(true)} />
+          <NavigationRail
+            className="max-lg:hidden"
+            active={active}
+            labels={labels}
+            user={user}
+            onQuickPlan={() => setQuick(true)}
+            accountMenu={<AccountMenu labels={labels} user={user} onSignOut={signOut} links={{ profile: `/${locale}/profile`, settings: `/${locale}/settings`, signIn: `/${locale}/login` }} />}
+          />
           <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto">{children}</div>
         </div>
         {onMap ? null : <NavigationBar className="sticky bottom-0 z-30 lg:hidden" active={active} labels={labels} onQuickPlan={() => setQuick(true)} />}
