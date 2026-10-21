@@ -3,16 +3,17 @@
 
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import Script from 'next/script'
-import { renderToStaticMarkup } from 'react-dom/server'
-import { Clapperboard, Landmark, MapPin, Music, Sparkles, Utensils } from 'lucide-react'
 import type { MapBounds, MapPoi } from '@/hooks/useMapPois'
 import { TOKEN_HEX } from '@/tokens/colors'
 
-// Map canvas of the preview (UI-74, UI-39, UI-78; PD-02): the Naver map with the new markers.
-// Map pin = round map/pin-fill with a map/pin-stroke ring and the K-domain icon; Selected =
-// map/pin-selected at map/pin-size-selected; clusters below street zoom; plan stops as Stop
-// badges in plan/day-N; the route as a straight line per day in the day color (the SDK needs
-// hex: tokens/colors.ts). Markers are DOM, so they read the token CSS variables directly.
+// Map canvas: the Naver map with the B4K markers. Map pin = the place photo in a circle with a
+// tail, no icon, by zoom tier: zoom 15 a dot, zoom 16 a small photo pin, zoom 17 and closer the
+// photo pin with the name below where it does not overlap another name. The selected place is the
+// large photo pin with a map/pin-selected ring and its name at every zoom, drawn on top. Below
+// zoom 15 places cluster on a 60 px screen grid; a cluster tap fits its places (zoom 17 at most).
+// Colors are monochrome and inverse to the map (map/pin-fill and map/pin-stroke). Plan stops are
+// Stop badges in plan/day-N, never clustered; the route is a line per day in the day color (the
+// SDK needs hex: tokens/colors.ts). Markers are DOM, so they read the token CSS variables.
 // Zoom buttons are the library Zoom control (outside), so the SDK controls are off.
 
 export type PlanStopOnMap = { poi: MapPoi; day: number; order: number }
@@ -37,21 +38,12 @@ type Props = {
 
 const SEOUL = { lat: 37.5665, lng: 126.978 }
 const CLUSTER_BELOW = 15
+const CLUSTER_GRID_PX = 60
+// The Naver tiles are light in both themes until the dark map style exists, so the pins use the
+// light-map colors (dark pins). Set to 'dark' with the dark map style.
+const MAP_TONE: 'light' | 'dark' = 'light'
 
 // window.naver and window.navermap_authFailure are declared in components/map/NaverMapCanvas.tsx.
-
-const ICONS: Record<string, string> = {}
-// Pin icon: icon-size-xs, icon-size-md when selected (Figma Map pin State=Selected).
-const iconFor = (domain: string | null | undefined, selected: boolean) => {
-  const domainKey = domain ?? 'generic'
-  const size = selected ? '--icon-size-md' : '--icon-size-xs'
-  const key = `${domainKey}:${size}`
-  if (!ICONS[key]) {
-    const C = domainKey === 'k-pop' ? Music : domainKey === 'k-drama' ? Clapperboard : domainKey === 'k-beauty' ? Sparkles : domainKey === 'k-food' ? Utensils : domainKey === 'k-culture' ? Landmark : MapPin
-    ICONS[key] = renderToStaticMarkup(<C strokeWidth={2} aria-hidden style={{ width: `var(${size})`, height: `var(${size})` }} />)
-  }
-  return ICONS[key]
-}
 
 const HIT = 'width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer'
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -60,8 +52,24 @@ const poiLabel = (p: MapPoi) => esc(p.name_preferred ?? p.name_en ?? p.name_ko)
 // globals.css (.b4k-map-marker). Clusters stay pointer-only: zoom in with the Zoom control instead.
 const markerAttrs = (id: string, label: string, selected: boolean) =>
   `class="b4k-map-marker" role="button" tabindex="0" data-poi-id="${esc(id)}" aria-pressed="${selected}" aria-label="${label}"`
-const pinHtml = (p: MapPoi, selected: boolean) =>
-  `<div style="${HIT}" ${markerAttrs(p.poi_id, poiLabel(p), selected)}><span style="width:var(${selected ? '--map-pin-size-selected' : '--map-pin-size'});height:var(${selected ? '--map-pin-size-selected' : '--map-pin-size'});border-radius:9999px;background:var(${selected ? '--map-pin-selected' : '--map-pin-fill'});border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);transition:all var(--duration-short4) var(--easing-standard)">${iconFor(p.display_domain, selected)}</span></div>`
+type PinTier = 'dot' | 'small' | 'large' | 'selected'
+const tierFor = (zoom: number, selected: boolean): PinTier => (selected ? 'selected' : zoom >= 17 ? 'large' : zoom >= 16 ? 'small' : 'dot')
+const PIN_SIZE: Record<Exclude<PinTier, 'dot'>, string> = { small: '--map-pin-size-sm', large: '--map-pin-size', selected: '--map-pin-size-selected' }
+const PIN_PX: Record<PinTier, number> = { dot: 12, small: 32, large: 40, selected: 56 }
+const TAIL_PX = 6
+const LABEL = 'margin-top:var(--space-0-5);max-width:120px;padding:0 var(--space-1);border-radius:var(--radius-full);background:var(--map-pin-stroke);color:var(--map-pin-fill);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis'
+const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
+  const selected = tier === 'selected'
+  if (tier === 'dot') {
+    return `<div style="${HIT}" ${markerAttrs(p.poi_id, poiLabel(p), false)}><span style="width:var(--map-pin-dot-size);height:var(--map-pin-dot-size);border-radius:var(--radius-full);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke)"></span></div>`
+  }
+  const size = `var(${PIN_SIZE[tier]})`
+  const ring = selected ? 'var(--border-width-3) solid var(--map-pin-selected)' : 'var(--border-width-2) solid var(--map-pin-fill)'
+  const tail = selected ? 'var(--map-pin-selected)' : 'var(--map-pin-fill)'
+  const photo = p.primary_image_url ? `background:var(--map-pin-stroke) url('${esc(p.primary_image_url)}') center/cover no-repeat` : 'background:var(--map-pin-fill)'
+  const name = showName || selected ? `<span style="${LABEL}">${poiLabel(p)}</span>` : ''
+  return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;min-width:44px" ${markerAttrs(p.poi_id, poiLabel(p), selected)}><span style="box-sizing:border-box;width:${size};height:${size};border-radius:var(--radius-full);border:${ring};${photo};transition:all var(--duration-short4) var(--easing-standard)"></span><span aria-hidden style="width:0;height:0;border-left:${TAIL_PX}px solid transparent;border-right:${TAIL_PX}px solid transparent;border-top:${TAIL_PX}px solid ${tail}"></span>${name}</div>`
+}
 const clusterHtml = (n: number) => {
   const size = n < 10 ? '--map-cluster-size-sm' : n < 50 ? '--map-cluster-size-md' : '--map-cluster-size-lg'
   return `<div style="${HIT};width:52px;height:52px"><span style="width:var(${size});height:var(${size});border-radius:9999px;background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${n}</span></div>`
@@ -188,37 +196,58 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     overlays.current = []
     const inPlan = new Set(planStops.map((s) => s.poi.poi_id))
     const free = pois.filter((p) => !inPlan.has(p.poi_id))
-    const add = (lat: number, lng: number, html: string, size: number, onClick: () => void, z = 1) => {
-      const m = new N.Marker({ position: new N.LatLng(lat, lng), map: map.current, icon: { content: html, anchor: new N.Point(size / 2, size / 2) }, zIndex: z })
+    const add = (lat: number, lng: number, html: string, anchor: { x: number; y: number }, onClick: () => void, z = 1) => {
+      const m = new N.Marker({ position: new N.LatLng(lat, lng), map: map.current, icon: { content: html, anchor: new N.Point(anchor.x, anchor.y) }, zIndex: z })
       N.Event.addListener(m, 'click', (e: any) => {
         e?.domEvent?.stopPropagation?.()
         onClick()
       })
       overlays.current.push(m)
     }
-    if (zoom < CLUSTER_BELOW && free.length > 40) {
-      const grid = zoom <= 10 ? 0.08 : zoom <= 12 ? 0.03 : 0.012
+    const proj = map.current.getProjection()
+    const px = (p: { coords_lat: number; coords_lng: number }) => proj.fromCoordToOffset(new N.LatLng(p.coords_lat, p.coords_lng))
+    // Photo pins hang from the tail tip; dots and badges sit on their center.
+    const anchorFor = (tier: PinTier) => (tier === 'dot' ? { x: 22, y: 22 } : { x: Math.max(44, PIN_PX[tier]) / 2, y: PIN_PX[tier] + TAIL_PX })
+    // Names show at zoom 17 and closer where they do not overlap a name already placed.
+    const taken: { x: number; y: number }[] = []
+    const nameFits = (p: MapPoi) => {
+      const o = px(p)
+      if (taken.some((t) => Math.abs(t.x - o.x) < 120 && Math.abs(t.y - o.y) < 56)) return false
+      taken.push({ x: o.x, y: o.y })
+      return true
+    }
+    const addPin = (p: MapPoi) => {
+      const selected = p.poi_id === selectedId
+      const tier = tierFor(zoom, selected)
+      const showName = tier === 'large' && nameFits(p)
+      add(p.coords_lat, p.coords_lng, pinHtml(p, tier, showName), anchorFor(tier), () => select.current(p.poi_id), selected ? 50 : 1)
+    }
+    const sel = free.find((p) => p.poi_id === selectedId)
+    if (sel && zoom >= 17) taken.push({ x: px(sel).x, y: px(sel).y })
+    const rest = free.filter((p) => p !== sel)
+    if (zoom < CLUSTER_BELOW) {
       const buckets = new Map<string, MapPoi[]>()
-      for (const p of free) {
-        const key = `${Math.floor(p.coords_lat / grid)}:${Math.floor(p.coords_lng / grid)}`
+      for (const p of rest) {
+        const o = px(p)
+        const key = `${Math.floor(o.x / CLUSTER_GRID_PX)}:${Math.floor(o.y / CLUSTER_GRID_PX)}`
         buckets.set(key, [...(buckets.get(key) ?? []), p])
       }
       buckets.forEach((members) => {
-        if (members.length === 1) {
-          const p = members[0]
-          add(p.coords_lat, p.coords_lng, pinHtml(p, p.poi_id === selectedId), 44, () => select.current(p.poi_id), p.poi_id === selectedId ? 50 : 1)
-          return
-        }
-        const lat = members.reduce((s, p) => s + p.coords_lat, 0) / members.length
-        const lng = members.reduce((s, p) => s + p.coords_lng, 0) / members.length
-        add(lat, lng, clusterHtml(members.length), 52, () => map.current.morph(new N.LatLng(lat, lng), Math.min(zoom + 2, 18)), 5)
+        if (members.length === 1) return addPin(members[0])
+        const lat = members.reduce((sum, p) => sum + p.coords_lat, 0) / members.length
+        const lng = members.reduce((sum, p) => sum + p.coords_lng, 0) / members.length
+        add(lat, lng, clusterHtml(members.length), { x: 26, y: 26 }, () => {
+          fitPoints(members.map((p) => ({ lat: p.coords_lat, lng: p.coords_lng })))
+          if (map.current.getZoom() > 17) map.current.setZoom(17, true)
+        }, 5)
       })
     } else {
-      for (const p of free) add(p.coords_lat, p.coords_lng, pinHtml(p, p.poi_id === selectedId), 44, () => select.current(p.poi_id), p.poi_id === selectedId ? 50 : 1)
+      for (const p of rest) addPin(p)
     }
+    if (sel) addPin(sel)
     for (const s of planStops) {
       if (activeDay !== 'all' && s.day !== activeDay) continue
-      add(s.poi.coords_lat, s.poi.coords_lng, stopHtml(s.poi, s.order, s.day, s.poi.poi_id === selectedId), 44, () => select.current(s.poi.poi_id), 40)
+      add(s.poi.coords_lat, s.poi.coords_lng, stopHtml(s.poi, s.order, s.day, s.poi.poi_id === selectedId), { x: 22, y: 22 }, () => select.current(s.poi.poi_id), 40)
     }
     if (focusedId) requestAnimationFrame(() => el.current?.querySelector<HTMLElement>(`[data-poi-id="${CSS.escape(focusedId)}"]`)?.focus())
   }, [pois, planStops, selectedId, zoom, activeDay, ready]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -247,7 +276,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
       {clientId ? (
         <Script src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}`} strategy="afterInteractive" onReady={() => setReady(true)} onError={() => setFailed(true)} />
       ) : null}
-      <div ref={el} role="application" aria-label={label} className="size-full" />
+      <div ref={el} role="application" aria-label={label} data-map-tone={MAP_TONE} className="size-full" />
       {failed || !clientId ? (
         <p role="alert" className="absolute inset-0 flex items-center justify-center p-[var(--space-6)] text-center type-body-base text-ui-fg-muted">{errorText}</p>
       ) : null}

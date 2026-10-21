@@ -15,6 +15,9 @@ body {
 }
 
 /* Map pins and plan stops are focusable buttons inside the Naver map (V2MapCanvas). */
+/* Map pins are inverse to the map, not to the page theme: dark pins on the light map tiles. */
+[data-map-tone="light"] { --map-pin-fill: var(--neutral-950); --map-pin-stroke: var(--neutral-50); }
+[data-map-tone="dark"] { --map-pin-fill: var(--neutral-50); --map-pin-stroke: var(--neutral-950); }
 .b4k-map-marker:focus { outline: none; }
 .b4k-map-marker:focus-visible > span { box-shadow: var(--focus-ring); }
 
