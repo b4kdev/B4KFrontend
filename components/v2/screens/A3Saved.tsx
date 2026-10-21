@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
-import { ArrowLeft, Ellipsis, Folder, Map as MapIcon, Pencil, Plus, Share2, Trash2, Lock, Globe } from 'lucide-react'
+import { ArrowLeft, Ellipsis, Map as MapIcon, Pencil, Plus, Share2, Trash2, Lock, Globe } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
   Badge,
@@ -164,12 +164,7 @@ export function SavedScreen() {
           <li key={f.id}>
             <button type="button" onClick={() => setFolderId(f.id)} aria-label={k('saved.folder.openAriaLabel', { name: f.name })} className="block w-full text-left focus-visible:shadow-focus-ring focus-visible:outline-none">
               <span className="flex flex-col bg-ui-bg-raised hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]">
-                <span className="relative block aspect-[4/3] w-full bg-ui-state-selected">
-                  {f.pois[0]?.primary_image_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={f.pois[0].primary_image_url} alt="" className="absolute inset-0 size-full object-cover" />
-                  ) : <Folder aria-hidden className="absolute left-1/2 top-1/2 size-[var(--icon-size-xl)] -translate-x-1/2 -translate-y-1/2 text-ui-fg-muted" />}
-                </span>
+                <ListCover name={f.name} photos={f.pois.map((p) => p.primary_image_url).filter((u): u is string => !!u)} />
                 <span className="flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
                   <span className="type-title-card text-ui-fg">{f.name}</span>
                   <span className="type-body-caption text-ui-fg-muted">{k('saved.folder.poiCount', { count: f.pois.length })}</span>
@@ -356,5 +351,26 @@ export function PlanFromSavedScreen() {
         </div>
       </div>
     </V2Page>
+  )
+}
+
+/** List card cover: 4 or more photos = 2 by 2 mosaic; 1 to 3 = the first photo full size; none = the list name as a typographic cover. */
+function ListCover({ name, photos }: { name: string; photos: string[] }) {
+  return (
+    <span aria-hidden className="relative block aspect-[4/3] w-full overflow-hidden bg-ui-state-selected">
+      {photos.length >= 4 ? (
+        <span className="grid size-full grid-cols-2 grid-rows-2 gap-[var(--space-0-5)] bg-ui-bg">
+          {photos.slice(0, 4).map((src) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={src} src={src} alt="" className="size-full object-cover" />
+          ))}
+        </span>
+      ) : photos.length ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={photos[0]} alt="" className="absolute inset-0 size-full object-cover" />
+      ) : (
+        <span className="absolute inset-0 flex items-end p-[var(--space-3)] type-display-h4 text-ui-fg line-clamp-3">{name}</span>
+      )}
+    </span>
   )
 }
