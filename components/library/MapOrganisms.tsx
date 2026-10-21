@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, type ReactNode } from 'react'
+import { useId, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
 import { ArrowLeft, Bookmark, ChevronDown, Clock, Folder, Globe, Heart, Lock, MapPin, Minus, Plus, Share2, Sparkles, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Avatar } from './Avatar'
@@ -105,6 +105,8 @@ export type PlanCartProps = {
   dayTotal?: string
   onDuration: (id: string) => void
   onRemove: (id: string) => void
+  /** Reorder within a day: put stop `id` in the slot of `toId` (drag the grip, or arrow keys on it). */
+  onMove?: (id: string, toId: string) => void
   onSave: () => void
   onDiscard: () => void
   labels: {
@@ -131,8 +133,34 @@ export type PlanCartProps = {
 }
 
 /** Plan cart (UI-77): the plan as a shopping cart at the bottom of the Left panel. */
-export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, onRemove, onSave, onDiscard, labels, className }: PlanCartProps) {
+export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, onRemove, onMove, onSave, onDiscard, labels, className }: PlanCartProps) {
   const id = useId()
+  const [dragId, setDragId] = useState<string | null>(null)
+  // Grip handlers: arrow keys swap with the next stop of the same day; a pointer drag (mouse or
+  // touch) moves the stop into the slot of the same-day row under the pointer as it passes.
+  const handleProps = (s: PlanStop) =>
+    onMove
+      ? {
+          onKeyDown: (e: KeyboardEvent<HTMLButtonElement>) => {
+            if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return
+            e.preventDefault()
+            const sameDay = stops.filter((x) => x.day === s.day)
+            const next = sameDay[sameDay.indexOf(s) + (e.key === 'ArrowUp' ? -1 : 1)]
+            if (next) onMove(s.id, next.id)
+          },
+          onPointerDown: (e: PointerEvent<HTMLButtonElement>) => {
+            e.currentTarget.setPointerCapture(e.pointerId)
+            setDragId(s.id)
+          },
+          onPointerMove: (e: PointerEvent<HTMLButtonElement>) => {
+            if (dragId !== s.id) return
+            const over = document.elementFromPoint(e.clientX, e.clientY)?.closest('[data-stop-id]')?.getAttribute('data-stop-id')
+            if (over && over !== s.id && stops.find((x) => x.id === over)?.day === s.day) onMove(s.id, over)
+          },
+          onPointerUp: () => setDragId(null),
+          onPointerCancel: () => setDragId(null),
+        }
+      : undefined
   if (state === 'empty') {
     return (
       <section aria-label={labels.region} className={cn('rounded-t-3xl bg-ui-bg-sunken p-[var(--space-4)]', className)}>
@@ -195,7 +223,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
             {shown.map((s, i) => (
               <li key={s.id} className="list-none">
                 <ul>
-                  <PlanStopRow name={s.name} thumbnail={s.imageSrc} number={stops.indexOf(s) + 1} day={s.day} duration={s.duration} durationLabel={s.durationLabel} onDuration={() => onDuration(s.id)} onRemove={() => onRemove(s.id)} removeLabel={labels.remove(s.name)} reorderLabel={labels.reorder(s.name)} />
+                  <PlanStopRow name={s.name} thumbnail={s.imageSrc} number={stops.indexOf(s) + 1} day={s.day} duration={s.duration} durationLabel={s.durationLabel} onDuration={() => onDuration(s.id)} onRemove={() => onRemove(s.id)} removeLabel={labels.remove(s.name)} reorderLabel={labels.reorder(s.name)} stopId={s.id} handleProps={handleProps(s)} dragging={dragId === s.id} />
                 </ul>
                 {s.leg && i < shown.length - 1 ? <div className="ml-[56px]"><TransportMode mode="estimate" modeLabel={labels.about} time={s.leg} /></div> : null}
               </li>

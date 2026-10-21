@@ -5,7 +5,7 @@ import { ArrowRight, Bookmark, ChevronDown, ChevronLeft, ChevronRight, Clock, He
 import { Link as IntlLink } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
 import { ImageAction } from './Content'
-import { DragHandle, StopBadge } from './Plan'
+import { DragHandle, StopBadge, type DragHandleProps } from './Plan'
 import { IconButton } from './IconButton'
 import { Image } from './Image'
 import { Spinner } from './Spinner'
@@ -173,16 +173,20 @@ export type PlanStopRowProps = {
   reorderLabel: string
   /** Figma State=Dragging. */
   dragging?: boolean
+  /** Marks the row for drag hit-testing (data-stop-id). */
+  stopId?: string
+  /** Pointer and key handlers for the grip (drag to reorder, arrow keys move). */
+  handleProps?: Omit<DragHandleProps, 'label' | 'type'>
   /** Photo of the place (40, as the Itinerary stop); omitted: no thumbnail. */
   thumbnail?: string | null
   className?: string
 }
 
 /** Plan stop row (UI-77): grip, Stop badge sm, optional thumbnail, name, Duration button, Remove. */
-export function PlanStopRow({ name, number, day, duration, durationLabel, onDuration, onRemove, removeLabel, reorderLabel, dragging, thumbnail, className }: PlanStopRowProps) {
+export function PlanStopRow({ name, number, day, duration, durationLabel, onDuration, onRemove, removeLabel, reorderLabel, dragging, stopId, handleProps, thumbnail, className }: PlanStopRowProps) {
   return (
-    <li className={cn('group flex h-[var(--control-height-md)] items-center gap-[var(--space-2)]', dragging && 'bg-ui-state-dragged', className)}>
-      <DragHandle label={reorderLabel} className="md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100" />
+    <li data-stop-id={stopId} className={cn('group flex h-[var(--control-height-md)] items-center gap-[var(--space-2)]', dragging && 'bg-ui-state-dragged', className)}>
+      <DragHandle label={reorderLabel} {...handleProps} className={cn('touch-none md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100', dragging && 'md:opacity-100')} />
       <StopBadge number={number} day={day} />
       {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="40px" className="w-[var(--control-height-md)] shrink-0" /> : null}
       <span className="min-w-0 flex-1 truncate type-body-base text-ui-fg">{name}</span>

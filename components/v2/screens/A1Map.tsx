@@ -348,6 +348,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       dayTotal={dayTotal !== null ? `${k('map.plan.dayTab', { n: activeDay })} · ${formatMinutes(dayTotal, k)}` : undefined}
       onDuration={setDurationFor}
       onRemove={draft.remove}
+      onMove={draft.move}
       onSave={() => { setPlanName(draft.plan.name ?? ''); setSaveOpen(true) }}
       onDiscard={() => (editing ? stopEditing() : setDiscardOpen(true))}
       labels={{

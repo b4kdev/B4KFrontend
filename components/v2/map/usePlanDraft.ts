@@ -124,6 +124,18 @@ export function usePlanDraft() {
     const { [id]: _y, ...rest } = plan.days ?? {}
     commit({ ...plan, stops: plan.stops.filter((s) => s.poi_id !== id), durations, days: rest })
   }
+  /** Moves stop `id` to the slot of `toId` on the same day; other days' stops keep their slots. */
+  const move = (id: string, toId: string) => {
+    const day = dayOf(id)
+    if (id === toId || dayOf(toId) !== day) return
+    const ids = plan.stops.filter((s) => dayOf(s.poi_id) === day).map((s) => s.poi_id)
+    const to = ids.indexOf(toId)
+    ids.splice(ids.indexOf(id), 1)
+    ids.splice(to, 0, id)
+    const byId = new Map(plan.stops.map((s) => [s.poi_id, s]))
+    let i = 0
+    commit({ ...plan, stops: plan.stops.map((s) => (dayOf(s.poi_id) === day ? byId.get(ids[i++])! : s)) })
+  }
   const setDuration = (id: string, min: number) => commit({ ...plan, durations: { ...plan.durations, [id]: min } })
   const addDay = () => setDays((d) => Math.min(MAX_DAYS, d + 1))
   /** Deletes day `n` with its stops; later days move up one. The first day of a one-day plan stays. */
@@ -151,7 +163,7 @@ export function usePlanDraft() {
     setPlan({ stops: [], durations: {}, days: {} })
     setDays(1)
   }
-  return { plan, days, dayOf, countOn, add, remove, setDuration, addDay, removeDay, replace, discard }
+  return { plan, days, dayOf, countOn, add, remove, move, setDuration, addDay, removeDay, replace, discard }
 }
 
 export function formatMinutes(min: number, f: (key: string, v: Record<string, number>) => string) {
