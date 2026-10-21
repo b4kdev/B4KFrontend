@@ -363,7 +363,7 @@ export function SettingsScreen() {
   const { user } = useAuth()
   const { openLanguage, toast } = useV2Shell()
   const signOut = useV2SignOut()
-  const prefs = useSWR<NotificationPref[]>(user ? '/api/account/notification-prefs' : null, jsonFetch)
+  const prefs = useSWR<{ prefs: NotificationPref[] }>(user ? '/api/account/notification-prefs' : null, jsonFetch)
   const profile = useSWR<ProfileData>(user ? '/api/profile' : null, jsonFetch)
   const [theme, setThemeState] = useState<ThemeChoice>('system')
   useEffect(() => setThemeState(getThemeChoice()), [])
@@ -382,7 +382,7 @@ export function SettingsScreen() {
     setTheme(v)
     setThemeState(v)
   }
-  const optOut = (type: string) => prefs.data?.find((p) => p.notif_type === type)?.opt_out ?? false
+  const optOut = (type: string) => prefs.data?.prefs?.find((p) => p.notif_type === type)?.opt_out ?? false
   const toggleNotif = async (type: string, on: boolean) => {
     await send('/api/account/notification-prefs', 'PATCH', { notif_type: type, opt_out: !on }).catch(() => toast({ type: 'critical', message: k('profile.settings.notifications.error') }))
     prefs.mutate()
