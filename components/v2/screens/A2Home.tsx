@@ -78,7 +78,8 @@ export function HomeScreen() {
   const trending = useSWR<HomeTrendingPoi[]>('/api/home/trending', jsonFetch)
   const plans = useSWR<HomePopularPlan[]>('/api/home/popular-plans', jsonFetch)
   const events = useSWR<HomeEvent[]>('/api/home/events', jsonFetch)
-  // Continue your plan: the device draft for guests, the account draft when signed in (as live).
+  // Continue your plan when signed in (the account draft, or a device draft not yet moved to the
+  // account); signed out the cue always reads Start, as drawn.
   const [deviceDraft, setDeviceDraft] = useState<{ name?: string; stops: number } | null>(null)
   useEffect(() => {
     const d = getDraftPlan()
@@ -87,7 +88,7 @@ export function HomeScreen() {
   const accountDraft = useSWR<{ title?: string; stop_count: number } | null>(user ? '/api/plans/draft' : null, jsonFetch)
   const draft = user
     ? accountDraft.data?.stop_count ? { name: accountDraft.data.title || undefined, stops: accountDraft.data.stop_count } : deviceDraft
-    : deviceDraft
+    : null
 
   // Interests card (SCR-036): signed in, no interests saved yet, not dismissed on this device.
   const mine = useSWR(user ? '/me/interests' : null, (p: string) => apiFetch<{ interest_tags: string[] }>(p))
