@@ -117,6 +117,8 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const user: ShellUser = authUser ? { name: meta?.full_name ?? meta?.name ?? authUser.email?.split('@')[0] ?? '', avatarSrc: meta?.avatar_url ?? null, unread: unreadCount } : null
   const active = activeFrom(pathname)
   const onMap = ['map', 'plan', 'place'].includes(v2Area(pathname))
+  // Sign-in, reset and consent are full-screen flows on phones: no Navigation bar.
+  const inFlow = ['login', 'auth', 'consent'].includes(v2Area(pathname))
   // The live consent (DEC-16): updates GA4 consent mode and lets Analytics load Clarity.
   const choose = (v: 'accepted' | 'declined') => {
     try {
@@ -158,7 +160,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           />
           <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto">{children}</div>
         </div>
-        {onMap ? null : <NavigationBar className="sticky bottom-0 z-30 lg:hidden" active={active} labels={labels} onQuickPlan={() => setQuick(true)} />}
+        {onMap || inFlow ? null : <NavigationBar className="sticky bottom-0 z-30 lg:hidden" active={active} labels={labels} onQuickPlan={() => setQuick(true)} />}
       </div>
       <Drawer
         open={drawer}
