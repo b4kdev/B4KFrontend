@@ -6,7 +6,7 @@ import { useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { Button, ConsentStep, EmptyState, SignInCard, Spinner, TextInput, type SignInView } from '@/components/library'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { acceptTerms } from '@/lib/terms-consent'
+import { acceptTerms, needsConsent } from '@/lib/terms-consent'
 import { track } from '@/lib/analytics'
 import { useCd, useCdKey } from '../cd'
 import { V2Page } from '../V2Page'
@@ -20,6 +20,10 @@ const safePath = (target: string | null | undefined) =>
   target && target.startsWith('/') && !target.startsWith('//') && !target.includes('\\') ? target : '/'
 
 const post = (url: string, body: unknown) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+
+/** After a sign-in: the Consent step first if the account has not agreed yet, then the target. */
+const afterSignIn = (user: Parameters<typeof needsConsent>[0], target: string) =>
+  needsConsent(user) ? `/consent?next=${encodeURIComponent(target)}` : target
 
 export function LoginScreen() {
   const t = useCd()
@@ -37,9 +41,9 @@ export function LoginScreen() {
     setBusy(true)
     try {
       if (v === 'sign-in') {
-        const { error: e } = await createSupabaseBrowserClient().auth.signInWithPassword({ email: values.email ?? '', password: values.password ?? '' })
+        const { data, error: e } = await createSupabaseBrowserClient().auth.signInWithPassword({ email: values.email ?? '', password: values.password ?? '' })
         if (e) setError(t('CD0034'))
-        else router.push(next)
+        else router.push(afterSignIn(data.user, next))
       } else if (v === 'sign-up') {
         if ((values.password ?? '').length < 8) return setError(t('CD0037'))
         const res = await post('/api/auth/signup', { email: values.email, password: values.password })
@@ -63,7 +67,7 @@ export function LoginScreen() {
 
   const google = async () => {
     setBusy(true)
-    await createSupabaseBrowserClient().auth.signInWithOAuth({ provider: 'google', options: { scopes: 'email profile', redirectTo: `${window.location.origin}/auth/callback` } })
+    await createSupabaseBrowserClient().auth.signInWithOAuth({ provider: 'google', options: { scopes: 'email profile', redirectTo: `${window.location.origin}/auth/callback?returnTo=${encodeURIComponent(next)}` } })
   }
 
   return (
@@ -136,6 +140,7 @@ export function ConsentScreen() {
   const t = useCd()
   const router = useRouter()
   const next = safePath(useSearchParams()?.get('next'))
+  const { toast } = useV2Shell()
   const [checked, setChecked] = useState<Record<string, boolean>>({})
   const cancel = async () => {
     await createSupabaseBrowserClient().auth.signOut()
@@ -154,8 +159,12 @@ export function ConsentScreen() {
         checked={checked}
         onCheckedChange={setChecked}
         onView={(i) => window.open(`/${document.documentElement.lang}${i.viewHref}`, '_blank', 'noopener')}
-        onContinue={() => {
+        onContinue={async () => {
+          const res = await post('/api/account/consent', { age: !!checked.age, marketing: !!checked.marketing }).catch(() => null)
+          if (!res?.ok) return toast({ type: 'critical', message: t('CD0061') })
           acceptTerms()
+          // Pick up the new consent record in the session before moving on.
+          await createSupabaseBrowserClient().auth.refreshSession()
           router.push(next)
         }}
         onCancel={cancel}
@@ -217,7 +226,7 @@ export function AuthCallbackScreen() {
         })
       }
 
-      router.replace(safe)
+      router.replace(otpType === 'recovery' ? safe : afterSignIn(user, safe))
     }
 
     completeAuth()

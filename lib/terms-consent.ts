@@ -1,3 +1,5 @@
+import type { User } from '@supabase/supabase-js'
+
 const KEY = 'b4k_terms_accepted_v1'
 
 export function hasAcceptedTerms(): boolean {
@@ -8,4 +10,14 @@ export function hasAcceptedTerms(): boolean {
 export function acceptTerms(): void {
   if (typeof window === 'undefined') return
   localStorage.setItem(KEY, 'true')
+}
+
+/** Date of the Terms and Privacy Policy the Consent step agrees to; a newer date asks again. */
+export const CONSENT_VERSION = '2026-07-24'
+
+/** True when a signed-in user has not completed the Consent step for the current documents. */
+export function needsConsent(user: User | null | undefined): boolean {
+  if (!user) return false
+  const consent = user.user_metadata?.consent as { terms_version?: string } | undefined
+  return consent?.terms_version !== CONSENT_VERSION
 }
