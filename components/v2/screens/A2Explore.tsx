@@ -29,6 +29,7 @@ import type { CollectionDetail } from '@/lib/collections'
 import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 import type { HomePopularPlan } from '@/app/api/home/popular-plans/route'
 import { useCd, useCdKey } from '../cd'
+import { usePlaceActions } from '../usePlaceActions'
 import { useGap } from '../gaps'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
@@ -100,6 +101,7 @@ function ExploreFrame({ category, sections, active, children }: { category: stri
 }
 
 export function CategoryScreen({ category }: { category: string }) {
+  const act = usePlaceActions({ resume: true })
   const GAP = useGap()
   const t = useCd()
   const k = useCdKey()
@@ -148,7 +150,7 @@ export function CategoryScreen({ category }: { category: string }) {
                 title={k(`explore.sections.${s.id}`)}
                 seeAll={{ href: `/explore/${category}/${s.id}`, label: t('CD1309') }}
                 featured={featured ? <Card type="featured" href={`/map?poi=${featured.poi_id}`} title={poiName(featured, locale)} imageSrc={featured.primary_image_url} eyebrow={t('CD0423')} meta={featured.display_region} /> : undefined}
-                cards={s.items.filter((p) => p !== featured).map((p) => <PoiCard key={p.poi_id} p={p} />)}
+                cards={s.items.filter((p) => p !== featured).map((p) => <PoiCard key={p.poi_id} p={p} act={act} />)}
               />
               {i === 0 ? cue : null}
             </div>
@@ -179,13 +181,14 @@ export function CategoryScreen({ category }: { category: string }) {
   )
 }
 
-function PoiCard({ p }: { p: ExplorePoi }) {
+function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceActions> }) {
   const locale = useLocale()
   const t = useCd()
   return (
     <Card
       type="place"
       href={`/map?poi=${p.poi_id}`}
+      {...act(p.poi_id, poiName(p, locale))}
       title={poiName(p, locale)}
       imageSrc={p.primary_image_url}
       meta={p.display_region}
@@ -201,6 +204,7 @@ function PoiCard({ p }: { p: ExplorePoi }) {
 const PAGE = 12
 
 export function SeeAllScreen({ category, row }: { category: string; row: string }) {
+  const act = usePlaceActions({ resume: true })
   const GAP = useGap()
   const t = useCd()
   const k = useCdKey()
@@ -217,9 +221,9 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const subtitle = fromHome ? (row === 'trending' ? t('CD1566') : t('CD1568')) : undefined
   const places: { id: string; node: React.ReactNode; domain?: string }[] = fromHome
     ? row === 'trending'
-      ? (trending.data ?? []).map((p) => ({ id: p.poi_id, domain: p.display_domain, node: <Card type="place" href={`/map?poi=${p.poi_id}`} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /> }))
+      ? (trending.data ?? []).map((p) => ({ id: p.poi_id, domain: p.display_domain, node: <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /> }))
       : (plans.data ?? []).map((p) => ({ id: p.id, node: <Card type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD0473', { n: p.stop_count })} /> }))
-    : (explore.data?.sections.find((s) => s.id === row)?.items ?? []).map((p) => ({ id: p.poi_id, node: <PoiCard p={p} /> }))
+    : (explore.data?.sections.find((s) => s.id === row)?.items ?? []).map((p) => ({ id: p.poi_id, node: <PoiCard p={p} act={act} /> }))
   const filtered = chip === 'all' ? places : places.filter((p) => p.domain === chip)
   const loading = explore.isLoading || trending.isLoading || plans.isLoading
   const failed = explore.error || trending.error || plans.error
@@ -260,6 +264,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
 // ── Collection page (SCR-014) ───────────────────────────────────────────────
 
 export function CollectionScreen({ slug }: { slug: string }) {
+  const act = usePlaceActions({ resume: true })
   const t = useCd()
   const locale = useLocale()
   const { data, error, isLoading } = useSWR<CollectionDetail>(`/api/explore/collections/${slug}?locale=${locale}`, jsonFetch)
@@ -272,7 +277,7 @@ export function CollectionScreen({ slug }: { slug: string }) {
         {error ? <EmptyState type="error" container="bordered" title={t('CD1571')}>{t('CD1572')}</EmptyState> : null}
         <ol className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">
           {data?.items.map((p) => (
-            <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /></li>
+            <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /></li>
           ))}
         </ol>
       </div>
@@ -285,6 +290,7 @@ export function CollectionScreen({ slug }: { slug: string }) {
 type SpecialItem = { poi_id: string; name_ko: string; name_en: string; primary_image_url: string | null; display_region: string; relationship_en?: string; relationship_ko?: string }
 
 export function SpecialScreen({ api, category }: { api: string; category: string }) {
+  const act = usePlaceActions({ resume: true })
   const t = useCd()
   const locale = useLocale()
   const { data, error, isLoading } = useSWR<Record<string, unknown> & { items: SpecialItem[] }>(api, jsonFetch)
@@ -309,7 +315,7 @@ export function SpecialScreen({ api, category }: { api: string; category: string
         <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">
           {data?.items.map((p) => (
             <li key={p.poi_id}>
-              <Card type="place" href={`/map?poi=${p.poi_id}`} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={(locale === 'ko' ? p.relationship_ko : p.relationship_en) ?? p.display_region} />
+              <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={(locale === 'ko' ? p.relationship_ko : p.relationship_en) ?? p.display_region} />
             </li>
           ))}
         </ul>

@@ -28,6 +28,7 @@ import type { HomeEvent } from '@/app/api/home/events/route'
 import { useCd } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
+import { usePlaceActions } from '../usePlaceActions'
 
 // Home (SCR-001, PD-19, PD-36, PD-40; UI-81, UI-97): hero, Explore by category, Trending now,
 // Planning cue (after Trending), Interests card (SCR-036), Upcoming events, Popular plans.
@@ -66,6 +67,7 @@ export function RowState({ title, error, onRetry, loading }: { title: string; er
 }
 
 export function HomeScreen() {
+  const act = usePlaceActions({ resume: true })
   const t = useCd()
   const locale = useLocale()
   const { openQuickPlan } = useV2Shell()
@@ -142,7 +144,7 @@ export function HomeScreen() {
             title={t('CD0313')}
             seeAll={{ href: '/explore/all/trending', label: t('CD1309') }}
             cards={trending.data.map((p) => (
-              <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} title={name(p)} imageSrc={p.primary_image_url} meta={p.display_region} />
+              <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, name(p))} title={name(p)} imageSrc={p.primary_image_url} meta={p.display_region} />
             ))}
           />
         ) : (
