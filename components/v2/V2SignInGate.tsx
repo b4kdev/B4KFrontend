@@ -7,7 +7,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { needsConsent as needsConsentFor } from '@/lib/terms-consent'
 import { useCd } from './cd'
 
-// Sign-in gate (SCR-023 gate versions, PD-37): the Sign-in card over the screen when a guest taps
+// Sign-in gate: the Sign-in card over the screen when a guest taps
 // an action that needs an account, and the action finished after the sign-in. Email sign-in runs
 // the action in place; Google and the Consent step leave the page, so the action is kept as a
 // pending action (sessionStorage, 10 minutes) and the screen finishes it when the visitor is back.

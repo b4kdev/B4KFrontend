@@ -231,7 +231,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     if (!user) return requireSignIn({ title: t('CD0025'), draftNotice: t('CD1489'), pending: { type: 'save_own_plan' }, run: openSaveSheet })
     setSaving(true)
     const stops = order.map((p, i) => ({ poi_id: p.poi_id, stop_order: i + 1, duration_min: draft.plan.durations[p.poi_id] ?? 60, day: draft.dayOf(p.poi_id) }))
-    // Save changes on a plan opened for editing updates that plan in place (same link, PD-28).
+    // Save changes on a plan opened for editing updates that plan in place (same link).
     if (editing) {
       try {
         await send(`/api/plans/${editing.id}`, 'PUT', { title: planName.trim() || editing.title, stops })
