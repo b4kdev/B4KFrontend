@@ -29,6 +29,7 @@ import { useCd } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 import { usePlaceActions } from '../usePlaceActions'
+import { useDDay } from '../useDDay'
 
 // Home (SCR-001, PD-19, PD-36, PD-40; UI-81, UI-97): hero, Explore by category, Trending now,
 // Planning cue (after Trending), Interests card (SCR-036), Upcoming events, Popular plans.
@@ -68,6 +69,7 @@ export function RowState({ title, error, onRetry, loading }: { title: string; er
 
 export function HomeScreen() {
   const act = usePlaceActions({ resume: true })
+  const dDay = useDDay()
   const t = useCd()
   const locale = useLocale()
   const { openQuickPlan } = useV2Shell()
@@ -182,7 +184,7 @@ export function HomeScreen() {
           <RowSection
             title={t('CD0425')}
             cards={events.data.map((e) => (
-              <Card key={e.id} type="place" href={`/map?event=${e.id}`} title={e.title} imageSrc={e.image_url} meta={e.location} dDay={new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(new Date(e.date_start))} />
+              <Card key={e.id} type="place" href={`/map?event=${e.id}`} title={e.title} imageSrc={e.image_url} meta={e.location} dDay={dDay(e.date_start)} />
             ))}
           />
         ) : (

@@ -30,6 +30,7 @@ import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 import type { HomePopularPlan } from '@/app/api/home/popular-plans/route'
 import { useCd, useCdKey } from '../cd'
 import { usePlaceActions } from '../usePlaceActions'
+import { useDDay } from '../useDDay'
 import { useGap } from '../gaps'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
@@ -184,6 +185,7 @@ export function CategoryScreen({ category }: { category: string }) {
 function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceActions> }) {
   const locale = useLocale()
   const t = useCd()
+  const dDay = useDDay()
   return (
     <Card
       type="place"
@@ -194,7 +196,7 @@ function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceAct
       meta={p.display_region}
       trending={p.is_trending ? t('CD0313') : undefined}
       sponsored={p.is_partner ? t('CD0476') : undefined}
-      dDay={p.event_date ? new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(new Date(p.event_date)) : undefined}
+      dDay={p.event_date ? dDay(p.event_date) : undefined}
     />
   )
 }
