@@ -28,6 +28,7 @@ import { usePhone } from '@/components/library/hooks'
 import { useAuth } from '@/contexts/AuthContext'
 import { getThemeChoice, setTheme, type ThemeChoice } from '@/lib/theme'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
+import { GAMIFICATION } from '@/lib/features'
 import type { ProfileData } from '@/app/api/profile/route'
 import type { ProfileTrip } from '@/app/api/profile/trips/route'
 import type { Badge as BadgeT, BadgesData } from '@/app/api/badges/route'
@@ -69,7 +70,7 @@ export function ProfileOwnScreen() {
   const { user } = useAuth()
   const profile = useSWR<ProfileData>(user ? '/api/profile' : null, jsonFetch)
   const trips = useSWR<ProfileTrip[]>(user ? '/api/profile/trips' : null, jsonFetch)
-  const badges = useSWR<BadgesData>(user ? '/api/badges' : null, jsonFetch)
+  const badges = useSWR<BadgesData>(user && GAMIFICATION ? '/api/badges' : null, jsonFetch)
   if (!user) {
     return <V2Page bar={{ type: 'page', title: k('profile.header.breadcrumb') }}><SignedOutPrompt title={k('auth.gate.context.profile_nav')} text={k('auth.gate.valueProp')} /></V2Page>
   }
@@ -84,10 +85,12 @@ export function ProfileOwnScreen() {
             avatarSrc={p.avatar_url}
             stats={[
               { number: p.trips_count, label: k('profile.header.tripsLabel') },
-              { number: p.saves_count, label: k('profile.header.savesLabel') },
-              { number: p.badges_count, label: k('profile.header.badgesLabel') },
+              ...(GAMIFICATION ? [
+                { number: p.saves_count, label: k('profile.header.savesLabel') },
+                { number: p.badges_count, label: k('profile.header.badgesLabel') },
+              ] : []),
             ]}
-            badges={p.pinned_badges.length ? p.pinned_badges.map((b) => <AchievementBadge key={b.id} name={badgeName(b)} detail={k(`badges.rarity.${b.rarity}`)} icon={<Trophy />} rarity={b.rarity} />) : undefined}
+            badges={GAMIFICATION && p.pinned_badges.length ? p.pinned_badges.map((b) => <AchievementBadge key={b.id} name={badgeName(b)} detail={k(`badges.rarity.${b.rarity}`)} icon={<Trophy />} rarity={b.rarity} />) : undefined}
             action={<IntlLink href="/settings" className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover"><Pencil aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1515')}</IntlLink>}
           />
         ) : profile.error ? (
@@ -155,7 +158,7 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
   const locale = useLocale()
   const profile = useSWR<OtherProfile>(`/api/profile/${id}`, jsonFetch)
   const trips = useSWR<OtherUserTrip[]>(`/api/profile/${id}/trips`, jsonFetch)
-  const badges = useSWR<OtherUserBadge[] | { badges: OtherUserBadge[] }>(`/api/profile/${id}/badges`, jsonFetch)
+  const badges = useSWR<OtherUserBadge[] | { badges: OtherUserBadge[] }>(GAMIFICATION ? `/api/profile/${id}/badges` : null, jsonFetch)
   const badgeList = Array.isArray(badges.data) ? badges.data : badges.data?.badges ?? []
   const p = profile.data
   if (profile.error) return <V2Page bar={{ type: 'page', title: '' }}><EmptyState title={k('profile.notFound')} /></V2Page>
@@ -169,15 +172,17 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
             avatarSrc={p.avatar_url}
             stats={[
               { number: p.trips_count, label: k('profile.header.tripsLabel') },
-              { number: p.saves_count, label: k('profile.header.savesLabel') },
-              { number: p.badges_count, label: k('profile.header.badgesLabel') },
+              ...(GAMIFICATION ? [
+                { number: p.saves_count, label: k('profile.header.savesLabel') },
+                { number: p.badges_count, label: k('profile.header.badgesLabel') },
+              ] : []),
             ]}
             action={<Button variant="secondary" size="md" leadingIcon={<Share2 />} onClick={() => { navigator.clipboard?.writeText(`${location.origin}/${locale}/profile/${id}`); toast({ type: 'success', message: k('profile.trips.card.shareCopiedToast') }) }}>{k('saved.myPlan.share')}</Button>}
           />
         ) : <Skeleton className="h-[120px]" />}
         {trips.data?.length ? (
           <RowSection title={k('search.results.plans')} cards={trips.data.map((tr) => <Card key={tr.id} type="plan" href={`/plan/${tr.id}`} title={tr.title} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} />)} />
-        ) : p && !p.trips_public ? <p className="type-body-base text-ui-fg-muted">{k('profile.privateTab')}</p> : null}
+        ) : null}
         {badgeList.filter((b) => b.earned).length ? (
           <RowSection title={k('badges.title')} cards={badgeList.filter((b) => b.earned).map((b) => <AchievementBadge key={b.badge_id} name={badgeName(b)} detail={k(`badges.rarity.${b.rarity}`)} icon={<Trophy />} rarity={b.rarity} />)} />
         ) : null}
@@ -305,7 +310,7 @@ export function NotificationsScreen() {
     const today = new Date().toDateString()
     const y = new Date(Date.now() - 864e5).toDateString()
     const g: Record<'today' | 'yesterday' | 'earlier', Notification[]> = { today: [], yesterday: [], earlier: [] }
-    for (const n of (data?.notifications ?? []).slice(0, shown)) {
+    for (const n of (data?.notifications ?? []).filter((n) => GAMIFICATION || n.type !== 'badge_earned').slice(0, shown)) {
       const d = new Date(n.created_at).toDateString()
       g[d === today ? 'today' : d === y ? 'yesterday' : 'earlier'].push(n)
     }
@@ -457,7 +462,7 @@ export function SettingsScreen() {
           <>
             <h2 className={heading}>{k('profile.settings.notifications.heading')}</h2>
             <ul className="border-t border-ui-border">
-              {([['badge_earned', 'CD1600'], ['event_drop', 'CD1602'], ['editorial_pick', 'CD0971']] as const).map(([type, cd]) => (
+              {([['badge_earned', 'CD1600'], ['event_drop', 'CD1602'], ['editorial_pick', 'CD0971']] as const).filter(([type]) => GAMIFICATION || type !== 'badge_earned').map(([type, cd]) => (
                 <ListItem key={type} title={t(cd)} trailing={<Toggle label={t(cd)} hideLabel checked={!optOut(type)} onCheckedChange={(on) => toggleNotif(type, on)} />} />
               ))}
             </ul>

@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { routing } from '@/i18n/routing'
 import { SITE_URL, hreflangAlternates } from '@/lib/site-url'
 import { MOCK_PLANS } from '@/lib/mock/plans-list'
+import { GAMIFICATION } from '@/lib/features'
 
 // SC-28 (F-DGWQGW) — Home, Explore hubs, static public pages, and published
 // plans. Excludes /profile/*, /notifications, drafts, /plan/preview (never
@@ -23,8 +24,10 @@ const STATIC_PATHS: Array<{
   { path: '/explore/k-drama',    changeFrequency: 'daily',   priority: 0.8 },
   { path: '/explore/k-beauty',   changeFrequency: 'daily',   priority: 0.8 },
   { path: '/explore/k-culture',  changeFrequency: 'daily',   priority: 0.8 },
-  { path: '/leaderboard',        changeFrequency: 'daily',   priority: 0.5 },
-  { path: '/badges',             changeFrequency: 'weekly',  priority: 0.4 },
+  ...(GAMIFICATION ? [
+    { path: '/leaderboard',      changeFrequency: 'daily' as const,  priority: 0.5 },
+    { path: '/badges',           changeFrequency: 'weekly' as const, priority: 0.4 },
+  ] : []),
   { path: '/help',                changeFrequency: 'monthly', priority: 0.3 },
   { path: '/sitemap',            changeFrequency: 'monthly', priority: 0.2 },
   { path: '/legal/terms',        changeFrequency: 'yearly',  priority: 0.2 },
