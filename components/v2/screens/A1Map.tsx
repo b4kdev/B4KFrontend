@@ -73,6 +73,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const draft = usePlanDraft()
 
   const [bounds, setBounds] = useState<MapBounds | null>(null)
+  // Places refresh 300 ms after the map stops, not on every idle in a row.
+  const boundsTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [zoom, setZoom] = useState(13)
   const [filter, setFilter] = useState<string | null>(null)
   const [mode, setMode] = useState<'nearby' | 'saved'>(params?.get('saved') ? 'saved' : 'nearby')
@@ -407,7 +409,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
       planStops={planVisible ? planStops : []}
       activeDay={activeDay}
-      onBounds={(b, z) => { setBounds(b); setZoom(z) }}
+      onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => setBounds(b), 300) }}
       label={k('itinerary.mapAriaLabel')}
       errorText={GAP.mapError}
     />
