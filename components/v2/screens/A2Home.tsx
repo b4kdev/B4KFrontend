@@ -67,6 +67,17 @@ export function RowState({ title, error, onRetry, loading }: { title: string; er
   )
 }
 
+/** The interests card shows 6 tags, as drawn: taken one per category in turn (first chip of each, then the second). */
+function interestTags<T>(categories: { chips: T[] }[], count = 6): T[] {
+  const out: T[] = []
+  for (let round = 0; out.length < count; round++) {
+    const next = categories.map((c) => c.chips[round]).filter((x): x is T => x !== undefined)
+    if (!next.length) break
+    out.push(...next.slice(0, count - out.length))
+  }
+  return out
+}
+
 export function HomeScreen() {
   const act = usePlaceActions({ resume: true })
   const dDay = useDDay()
@@ -169,7 +180,7 @@ export function HomeScreen() {
           <InterestsCard
             title={t('CD1609')}
             text={t('CD1347')}
-            tags={categories.flatMap((c) => c.chips.slice(0, 3)).slice(0, 12).map((c) => ({ id: c.slug, label: labelOf(c, locale) }))}
+            tags={interestTags(categories).map((c) => ({ id: c.slug, label: labelOf(c, locale) }))}
             selected={picked}
             onToggle={(id) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : p.length < 10 ? [...p, id] : p))}
             onSave={async () => {

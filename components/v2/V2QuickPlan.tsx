@@ -19,12 +19,14 @@ import { useV2Shell } from './V2Shell'
 // Review. Make my plan builds the course the same way as live (/places + buildCourse) and opens
 // it in the Plan editor unsaved (/v2/map?from=quickplan).
 
-const CITIES = ['Seoul', 'Busan', 'Jeju', 'Gyeongju', 'Incheon', 'Gangwon', 'Daegu', 'Gwangju', 'Daejeon', 'Ulsan', 'Sejong', 'Gyeonggi', 'Chungbuk', 'Chungnam', 'Jeonbuk', 'Jeonnam', 'Gyeongnam'] as const
+// Destinations as drawn (SCR-009, in its order). Gangneung, Sokcho and Yeosu are drawn too but
+// have no text yet, so they are added once their texts exist. A city with no city-level data
+// searches its province, as Gyeongju does.
+const CITIES = ['Seoul', 'Busan', 'Jeju', 'Gyeongju', 'Incheon', 'Jeonju'] as const
 const CITY_CD: Record<string, string> = {
-  Busan: 'CD0741', Chungbuk: 'CD0742', Chungnam: 'CD0743', Daegu: 'CD0744', Daejeon: 'CD0745', Gangwon: 'CD0746', Gwangju: 'CD0747',
-  Gyeonggi: 'CD0748', Gyeongju: 'CD0749', Gyeongnam: 'CD0750', Incheon: 'CD0751', Jeju: 'CD0752', Jeonbuk: 'CD0753', Jeonnam: 'CD0754',
-  Sejong: 'CD0755', Seoul: 'CD0756', Ulsan: 'CD0757',
+  Seoul: 'CD0756', Busan: 'CD0741', Jeju: 'CD0752', Gyeongju: 'CD0749', Incheon: 'CD0751', Jeonju: 'CD0211',
 }
+const CITY_REGION: Record<string, string> = { Jeonju: 'Jeonbuk' }
 const WHO = [['solo', 'CD0798'], ['couple', 'CD0794'], ['friends', 'CD0796'], ['family', 'CD0795']] as const
 const MAX = 10
 
@@ -176,7 +178,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
       } catch {}
       if (user) await apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) }).catch(() => {})
       else saveDraftTags(picked)
-      const params = new URLSearchParams({ limit: String(RESULT_LIMIT), region: cityToApiRegion(city as QuickPlanCity) })
+      const params = new URLSearchParams({ limit: String(RESULT_LIMIT), region: cityToApiRegion((CITY_REGION[city] ?? city) as QuickPlanCity) })
       if (picked.length) {
         params.set('tags', picked.join(','))
         params.set('sort', 'match')
