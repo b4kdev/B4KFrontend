@@ -54,14 +54,20 @@ const iconFor = (domain: string | null | undefined, selected: boolean) => {
 }
 
 const HIT = 'width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer'
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+const poiLabel = (p: MapPoi) => esc(p.name_preferred ?? p.name_en ?? p.name_ko)
+// Pins and plan stops are buttons (Tab reaches them, Enter or Space selects); the focus ring is in
+// globals.css (.b4k-map-marker). Clusters stay pointer-only: zoom in with the Zoom control instead.
+const markerAttrs = (id: string, label: string, selected: boolean) =>
+  `class="b4k-map-marker" role="button" tabindex="0" data-poi-id="${esc(id)}" aria-pressed="${selected}" aria-label="${label}"`
 const pinHtml = (p: MapPoi, selected: boolean) =>
-  `<div style="${HIT}" role="img" aria-label="${(p.name_preferred ?? p.name_en ?? p.name_ko).replace(/"/g, '')}"><span style="width:var(${selected ? '--map-pin-size-selected' : '--map-pin-size'});height:var(${selected ? '--map-pin-size-selected' : '--map-pin-size'});border-radius:9999px;background:var(${selected ? '--map-pin-selected' : '--map-pin-fill'});border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);transition:all var(--duration-short4) var(--easing-standard)">${iconFor(p.display_domain, selected)}</span></div>`
+  `<div style="${HIT}" ${markerAttrs(p.poi_id, poiLabel(p), selected)}><span style="width:var(${selected ? '--map-pin-size-selected' : '--map-pin-size'});height:var(${selected ? '--map-pin-size-selected' : '--map-pin-size'});border-radius:9999px;background:var(${selected ? '--map-pin-selected' : '--map-pin-fill'});border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);transition:all var(--duration-short4) var(--easing-standard)">${iconFor(p.display_domain, selected)}</span></div>`
 const clusterHtml = (n: number) => {
   const size = n < 10 ? '--map-cluster-size-sm' : n < 50 ? '--map-cluster-size-md' : '--map-cluster-size-lg'
   return `<div style="${HIT};width:52px;height:52px"><span style="width:var(${size});height:var(${size});border-radius:9999px;background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${n}</span></div>`
 }
-const stopHtml = (order: number, day: number, selected: boolean) =>
-  `<div style="${HIT}"><span style="width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:9999px;background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider);${selected ? 'outline:var(--border-width-2) solid var(--map-pin-selected);outline-offset:2px' : ''}">${order}</span></div>`
+const stopHtml = (p: MapPoi, order: number, day: number, selected: boolean) =>
+  `<div style="${HIT}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected)}><span style="width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:9999px;background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider);${selected ? 'outline:var(--border-width-2) solid var(--map-pin-selected);outline-offset:2px' : ''}">${order}</span></div>`
 
 function boundsOf(map: any): MapBounds {
   const b = map.getBounds()
@@ -141,6 +147,15 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     }
     N.Event.addListener(map.current, 'idle', idle)
     N.Event.addListener(map.current, 'click', () => select.current(null))
+    // Keyboard on a focused pin or stop: Enter or Space selects it.
+    el.current.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return
+      const id = (e.target as HTMLElement | null)?.closest?.('[data-poi-id]')?.getAttribute('data-poi-id')
+      if (!id) return
+      e.preventDefault()
+      e.stopPropagation()
+      select.current(id)
+    })
     if (pendingFit.current) {
       fitPoints(pendingFit.current)
       pendingFit.current = null
@@ -167,6 +182,8 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   useEffect(() => {
     if (!map.current) return
     const N = window.naver.maps
+    // Markers are rebuilt on every change; a pin that had the keyboard focus gets it back.
+    const focusedId = (document.activeElement as HTMLElement | null)?.closest?.('[data-poi-id]')?.getAttribute('data-poi-id')
     overlays.current.forEach((m) => m.setMap(null))
     overlays.current = []
     const inPlan = new Set(planStops.map((s) => s.poi.poi_id))
@@ -201,8 +218,9 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     }
     for (const s of planStops) {
       if (activeDay !== 'all' && s.day !== activeDay) continue
-      add(s.poi.coords_lat, s.poi.coords_lng, stopHtml(s.order, s.day, s.poi.poi_id === selectedId), 44, () => select.current(s.poi.poi_id), 40)
+      add(s.poi.coords_lat, s.poi.coords_lng, stopHtml(s.poi, s.order, s.day, s.poi.poi_id === selectedId), 44, () => select.current(s.poi.poi_id), 40)
     }
+    if (focusedId) requestAnimationFrame(() => el.current?.querySelector<HTMLElement>(`[data-poi-id="${CSS.escape(focusedId)}"]`)?.focus())
   }, [pois, planStops, selectedId, zoom, activeDay, ready]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Route lines in the day colors.

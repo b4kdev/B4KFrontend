@@ -14,6 +14,10 @@ body {
   color: var(--color-fg);
 }
 
+/* Map pins and plan stops are focusable buttons inside the Naver map (V2MapCanvas). */
+.b4k-map-marker:focus { outline: none; }
+.b4k-map-marker:focus-visible > span { box-shadow: var(--focus-ring); }
+
 /* ─── Reduced motion ────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   html:focus-within { scroll-behavior: auto; }
