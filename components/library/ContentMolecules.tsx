@@ -173,6 +173,8 @@ export type PlanStopRowProps = {
   reorderLabel: string
   /** Figma State=Dragging. */
   dragging?: boolean
+  /** Tap the name: select the stop. */
+  onSelect?: () => void
   /** Marks the row for drag hit-testing (data-stop-id). */
   stopId?: string
   /** Pointer and key handlers for the grip (drag to reorder, arrow keys move). */
@@ -183,13 +185,17 @@ export type PlanStopRowProps = {
 }
 
 /** Plan stop row (UI-77): grip, Stop badge sm, optional thumbnail, name, Duration button, Remove. */
-export function PlanStopRow({ name, number, day, duration, durationLabel, onDuration, onRemove, removeLabel, reorderLabel, dragging, stopId, handleProps, thumbnail, className }: PlanStopRowProps) {
+export function PlanStopRow({ name, number, day, duration, durationLabel, onDuration, onRemove, removeLabel, reorderLabel, dragging, stopId, handleProps, onSelect, thumbnail, className }: PlanStopRowProps) {
   return (
     <li data-stop-id={stopId} className={cn('group flex h-[var(--control-height-md)] items-center gap-[var(--space-2)]', dragging && 'bg-ui-state-dragged', className)}>
       <DragHandle label={reorderLabel} {...handleProps} className={cn('touch-none md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100', dragging && 'md:opacity-100')} />
       <StopBadge number={number} day={day} />
       {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="40px" className="w-[var(--control-height-md)] shrink-0" /> : null}
-      <span className="min-w-0 flex-1 truncate type-body-base text-ui-fg">{name}</span>
+      {onSelect ? (
+        <button type="button" onClick={onSelect} className="min-w-0 flex-1 truncate text-left type-body-base text-ui-fg hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none">{name}</button>
+      ) : (
+        <span className="min-w-0 flex-1 truncate type-body-base text-ui-fg">{name}</span>
+      )}
       <button
         type="button"
         aria-label={durationLabel}

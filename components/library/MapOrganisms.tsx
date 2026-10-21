@@ -105,6 +105,8 @@ export type PlanCartProps = {
   dayTotal?: string
   onDuration: (id: string) => void
   onRemove: (id: string) => void
+  /** Tap a stop's name: select it (the map shows it). */
+  onSelect?: (id: string) => void
   /** Reorder within a day: put stop `id` in the slot of `toId` (drag the grip, or arrow keys on it). */
   onMove?: (id: string, toId: string) => void
   onSave: () => void
@@ -133,7 +135,7 @@ export type PlanCartProps = {
 }
 
 /** Plan cart (UI-77): the plan as a shopping cart at the bottom of the Left panel. */
-export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, onRemove, onMove, onSave, onDiscard, labels, className }: PlanCartProps) {
+export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, onRemove, onSelect, onMove, onSave, onDiscard, labels, className }: PlanCartProps) {
   const id = useId()
   const [dragId, setDragId] = useState<string | null>(null)
   // Grip handlers: arrow keys swap with the next stop of the same day; a pointer drag (mouse or
@@ -223,7 +225,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
             {shown.map((s, i) => (
               <li key={s.id} className="list-none">
                 <ul>
-                  <PlanStopRow name={s.name} thumbnail={s.imageSrc} number={stops.indexOf(s) + 1} day={s.day} duration={s.duration} durationLabel={s.durationLabel} onDuration={() => onDuration(s.id)} onRemove={() => onRemove(s.id)} removeLabel={labels.remove(s.name)} reorderLabel={labels.reorder(s.name)} stopId={s.id} handleProps={handleProps(s)} dragging={dragId === s.id} />
+                  <PlanStopRow name={s.name} thumbnail={s.imageSrc} number={stops.indexOf(s) + 1} day={s.day} duration={s.duration} durationLabel={s.durationLabel} onDuration={() => onDuration(s.id)} onRemove={() => onRemove(s.id)} removeLabel={labels.remove(s.name)} reorderLabel={labels.reorder(s.name)} stopId={s.id} handleProps={handleProps(s)} dragging={dragId === s.id} onSelect={onSelect ? () => onSelect(s.id) : undefined} />
                 </ul>
                 {s.leg && i < shown.length - 1 ? <div className="ml-[56px]"><TransportMode mode="estimate" modeLabel={labels.about} time={s.leg} /></div> : null}
               </li>
@@ -235,9 +237,11 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
               {dayTotal}
             </p>
           ) : null}
+          {/* No stops yet: the hint, Save off and no Discard (nothing to discard). */}
+          {stops.length ? null : <p className="type-body-base text-ui-fg-muted">{labels.emptyBody}</p>}
           <div className="flex flex-col gap-[var(--space-3)]">
-            <Button size="md" onClick={onSave} className="w-full">{labels.save}</Button>
-            <Button variant="ghost" size="md" onClick={onDiscard} className="w-full">{labels.discard}</Button>
+            <Button size="md" onClick={onSave} disabled={!stops.length} className="w-full">{labels.save}</Button>
+            {stops.length ? <Button variant="ghost" size="md" onClick={onDiscard} className="w-full">{labels.discard}</Button> : null}
           </div>
         </>
       ) : null}

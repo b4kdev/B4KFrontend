@@ -375,6 +375,11 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       onDuration={setDurationFor}
       onRemove={draft.remove}
       onMove={draft.move}
+      onSelect={(id) => {
+        setSelectedId(id)
+        const p = order.find((x) => x.poi_id === id)
+        if (p) mapRef.current?.panTo(p.coords_lat, p.coords_lng)
+      }}
       onSave={() => (user || editing ? openSaveSheet() : requireSignIn({ title: t('CD0025'), draftNotice: t('CD1489'), pending: { type: 'save_own_plan' }, run: openSaveSheet }))}
       onDiscard={() => (editing ? stopEditing() : setDiscardOpen(true))}
       labels={{
