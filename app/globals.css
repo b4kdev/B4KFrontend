@@ -28,3 +28,10 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Phones: anchors and focused fields stop below the 56 px top app bar (WCAG 2.4.11). */
+@media (max-width: 1023.98px) {
+  html {
+    scroll-padding-top: calc(var(--fab-size) + env(safe-area-inset-top));
+  }
+}

@@ -199,39 +199,43 @@ export type TopAppBarProps = {
   className?: string
 }
 
-/** Top app bar (CMP-038): below 1024, 48 high plus the safe area, no border. */
+/**
+ * Top app bar (CMP-038): below 1024, 56 high plus the safe area, no border. Home and Map float:
+ * no strip, a round Menu button and the Search pill over the content.
+ */
 export function TopAppBar({ type, labels, onMenu, onBack, title, action, search, className }: TopAppBarProps) {
   const round = 'rounded-full bg-ui-bg'
+  const floating = type === 'home' || type === 'map'
   return (
-    <div
-      className={cn(
-        'flex h-[var(--control-height-xl)] items-center pt-[env(safe-area-inset-top)]',
-        type === 'map'
-          ? 'gap-[var(--space-2)] px-[var(--space-3)]'
-          : type === 'page'
-            ? 'gap-[var(--space-1)] pl-[var(--space-1)] pr-[var(--space-2)]'
-            : 'gap-[var(--space-2)] pl-[var(--space-1)] pr-[var(--space-3)]',
-        type === 'map' ? 'bg-transparent' : 'bg-ui-bg',
-        className,
-      )}
-    >
-      {type === 'home' || type === 'map' ? (
-        <>
-          <IconButton label={labels.menu} icon={<Menu />} onClick={onMenu} className={type === 'map' ? round : undefined} />
-          <div className="min-w-0 flex-1">{search}</div>
-        </>
-      ) : type === 'search' ? (
-        <>
-          <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onBack} />
-          <div className="min-w-0 flex-1">{search}</div>
-        </>
-      ) : (
-        <>
-          <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onBack} />
-          <h1 className="min-w-0 flex-1 truncate type-title-card">{title}</h1>
-          {action}
-        </>
-      )}
+    <div className={cn('pt-[env(safe-area-inset-top)]', floating ? 'bg-transparent' : 'bg-ui-bg', className)}>
+      <div
+        className={cn(
+          'flex h-[var(--fab-size)] items-center',
+          floating
+            ? 'gap-[var(--space-2)] px-[var(--space-3)]'
+            : type === 'page'
+              ? 'gap-[var(--space-1)] pl-[var(--space-1)] pr-[var(--space-2)]'
+              : 'gap-[var(--space-2)] pl-[var(--space-1)] pr-[var(--space-3)]',
+        )}
+      >
+        {floating ? (
+          <>
+            <IconButton label={labels.menu} icon={<Menu />} onClick={onMenu} className={round} />
+            <div className="min-w-0 flex-1">{search}</div>
+          </>
+        ) : type === 'search' ? (
+          <>
+            <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onBack} />
+            <div className="min-w-0 flex-1">{search}</div>
+          </>
+        ) : (
+          <>
+            <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onBack} />
+            <h1 className="min-w-0 flex-1 truncate type-title-card">{title}</h1>
+            {action}
+          </>
+        )}
+      </div>
     </div>
   )
 }

@@ -28,10 +28,12 @@ export function V2Page({ bar = { type: 'home' }, bleed, noFooter, children, clas
   return (
     <>
       {bar.type === 'home' ? (
-        <TopAppBar type="home" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} className="sticky top-0 z-30 lg:hidden" />
+        <TopAppBar type="home" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} className="fixed inset-x-0 top-0 z-30 lg:hidden" />
       ) : bar.type === 'page' ? (
         <TopAppBar type="page" labels={labels} onBack={() => router.back()} title={bar.title} action={bar.action} className="sticky top-0 z-30 lg:hidden" />
       ) : null}
+      {/* The floating Home bar sits over the page: the first block starts below it on phones. */}
+      {bar.type === 'home' ? <div aria-hidden className="h-[calc(var(--fab-size)+env(safe-area-inset-top))] shrink-0 lg:hidden" /> : null}
       <main id="main" tabIndex={-1} className={cn('flex-1 outline-none', !bleed && 'mx-auto w-full max-w-[var(--container-xl)] px-[var(--grid-gutter-mobile)] py-[var(--space-6)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]', className)}>
         {children}
       </main>
