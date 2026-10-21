@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
 import useSWR from 'swr'
 import { Map as MapIcon } from 'lucide-react'
@@ -101,7 +101,25 @@ function ExploreFrame({ category, sections, active, children }: { category: stri
   )
 }
 
+const LAST_CATEGORY_KEY = 'b4k_last_explore_category'
+
+/** /explore: no hub, it opens the category the visitor used last on this device (K-Pop the first time). */
+export function ExploreEntryScreen() {
+  const router = useRouter()
+  const [category, setCategory] = useState<string | null>(null)
+  useEffect(() => {
+    let last: string | null = null
+    try { last = localStorage.getItem(LAST_CATEGORY_KEY) } catch {}
+    if (last && last !== 'k-pop' && CATEGORIES.some((c) => c.slug === last)) router.replace(`/explore/${last}`)
+    else setCategory('k-pop')
+  }, [router])
+  return category ? <CategoryScreen category={category} /> : null
+}
+
 export function CategoryScreen({ category }: { category: string }) {
+  useEffect(() => {
+    try { localStorage.setItem(LAST_CATEGORY_KEY, category) } catch {}
+  }, [category])
   const act = usePlaceActions({ resume: true })
   const GAP = useGap()
   const t = useCd()
