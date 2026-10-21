@@ -291,8 +291,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         onSave={() => toggleSave(detail)}
         onLike={() => toggleLike(detail.poi_id)}
         onShare={() => {
-          if (navigator.share) navigator.share({ title: detailName, url: location.href }).catch(() => {})
-          else navigator.clipboard?.writeText(location.href)
+          // The shared link is the place page, not the map address.
+          const url = `${location.origin}/${locale}/place/${detail.poi_id}`
+          if (navigator.share) navigator.share({ title: detailName, url }).catch(() => {})
+          else navigator.clipboard?.writeText(url).then(() => toast({ type: 'success', message: k('itinerary.copiedToast') }), () => {})
         }}
         labels={{ add: k('map.poiDetail.addToPlan'), save: k('map.poiDetail.save'), like: k('map.poiDetail.like'), share: k('map.poiDetail.share') }}
       />

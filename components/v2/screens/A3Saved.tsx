@@ -44,11 +44,13 @@ const poiName = (p: SavedPoi, locale: string) => (locale === 'ko' ? p.name_ko : 
 
 export function SignedOutPrompt({ title, text }: { title: string; text: string }) {
   const t = useCd()
+  const { requireSignIn } = useV2Shell()
+  // Sign in opens the gate; Google returns to this page, and the page fills in once signed in.
   return (
     <EmptyState
       container="bordered"
       title={title}
-      action={<IntlLink href="/login" className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0050')}</IntlLink>}
+      action={<Button size="lg" onClick={() => requireSignIn({ title, run: () => {} })}>{t('CD0050')}</Button>}
     >
       {text}
     </EmptyState>
