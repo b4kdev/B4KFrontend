@@ -2,6 +2,11 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { hreflangAlternates, localizedUrl } from '@/lib/site-url';
 import { fetchCollectionDetail } from '@/lib/collections';
+import { createTranslator } from 'next-intl';
+import { bffFetch } from '@/lib/bff';
+import { isNumericId, mapBffToDetail, type BffItinerary } from '@/lib/itinerary';
+import { mergeCd } from '@/components/v2/messages';
+import enV2 from '@/messages/v2/en.json';
 
 // Page metadata shared by the live pages and the v2 screens that serve the same addresses
 // (lib/v2-live.ts), so a page keeps its title, canonical and hreflang whichever screen renders it.
@@ -66,4 +71,31 @@ export async function collectionMetadata(slug: string, locale: string): Promise<
   const detail = await fetchCollectionDetail(slug, locale);
   if (!detail) return {};
   return { title: `${detail.title} | B4K` };
+}
+
+// Shared plan page: title, stop count and the first stop's photo as the share preview (Open Graph
+// and Twitter). Read without the visitor's session, so only a public plan gives its details; a
+// plan that is not public keeps the default preview and stays out of search results.
+export async function planMetadata(locale: string, id: string): Promise<Metadata> {
+  const path = `/plan/${id}`;
+  if (!isNumericId(id)) return {};
+  let detail: ReturnType<typeof mapBffToDetail>;
+  try {
+    detail = mapBffToDetail(await bffFetch<BffItinerary>(`/itineraries/public/${id}`, { token: null }));
+  } catch {
+    return { robots: { index: false, follow: true } };
+  }
+  const load = (name: string): Promise<{ cd?: Record<string, string> }> =>
+    import(`@/messages/v2/${name}.json`).then((m) => m.default).catch(() => ({}));
+  const [deck, supplement] = await Promise.all([load(locale), load(`supplement/${locale}`)]);
+  const t = createTranslator({ locale, messages: { cd: mergeCd(enV2.cd, deck.cd, supplement.cd) }, namespace: 'cd' });
+  const title = `${detail.title} | B4K`;
+  const description = t('CD0473', { n: detail.stops.length });
+  const image = detail.stops.find((s) => s.poi.primary_image_url)?.poi.primary_image_url ?? undefined;
+  const meta = pageMetadata(locale, path, title, description, 'article', detail.is_published ? undefined : { index: false, follow: true });
+  return {
+    ...meta,
+    openGraph: { ...meta.openGraph, ...(image ? { images: [{ url: image }] } : {}) },
+    twitter: { card: image ? 'summary_large_image' : 'summary', title, description, ...(image ? { images: [image] } : {}) },
+  };
 }
