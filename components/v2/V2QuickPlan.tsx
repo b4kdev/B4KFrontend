@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
@@ -9,7 +9,7 @@ import { usePhone } from '@/components/library/hooks'
 import { useAuth } from '@/contexts/AuthContext'
 import { useInterests } from '@/hooks/useInterests'
 import { apiFetch } from '@/lib/api'
-import { cityToApiRegion, labelOf, placeName, RESULT_LIMIT, saveCourseHandoff, saveDraftTags, toISODate, type QuickPlanCity, type QuickPlanPlace } from '@/lib/quickplan'
+import { cityToApiRegion, labelOf, placeName, readDraftTags, RESULT_LIMIT, saveCourseHandoff, saveDraftTags, toISODate, type QuickPlanCity, type QuickPlanPlace } from '@/lib/quickplan'
 import { buildCourse, courseDayCount } from '@/lib/quickplan-course'
 import { COURSE_HANDOFF_EVENT } from './map/usePlanDraft'
 import { useCd } from './cd'
@@ -28,6 +28,8 @@ const CITY_CD: Record<string, string> = {
 const WHO = [['solo', 'CD0798'], ['couple', 'CD0794'], ['friends', 'CD0796'], ['family', 'CD0795']] as const
 const MAX = 10
 
+const WHO_KEY = 'b4k_quickplan_who'
+
 export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose: () => void }) {
   const t = useCd()
   const router = useRouter()
@@ -43,6 +45,23 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
   const { user } = useAuth()
   const { toast } = useV2Shell()
   const { categories, isLoading, isError, retry } = useInterests(open)
+  // Prefill from the last answers: interests from the account (or this device for guests), and
+  // who with from this device. Who with is kept as an answer only; the course does not use it.
+  useEffect(() => {
+    if (!open) return
+    try {
+      const w = localStorage.getItem(WHO_KEY)
+      if (w && WHO.some(([id]) => id === w)) setWho((cur) => cur ?? w)
+    } catch {}
+    if (user) {
+      apiFetch<{ interest_tags?: string[] }>('/me/interests')
+        .then((r) => { if (r?.interest_tags?.length) setPicked((cur) => (cur.length ? cur : r.interest_tags!.slice(0, MAX))) })
+        .catch(() => {})
+    } else {
+      const tags = readDraftTags()
+      if (tags?.length) setPicked((cur) => (cur.length ? cur : tags.slice(0, MAX)))
+    }
+  }, [open, user])
   const close = () => {
     onClose()
     setStep(1)
@@ -152,6 +171,9 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
   const make = async () => {
     setBuilding(true)
     try {
+      try {
+        if (who) localStorage.setItem(WHO_KEY, who)
+      } catch {}
       if (user) await apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) }).catch(() => {})
       else saveDraftTags(picked)
       const params = new URLSearchParams({ limit: String(RESULT_LIMIT), region: cityToApiRegion(city as QuickPlanCity) })
