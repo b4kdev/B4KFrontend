@@ -29,12 +29,11 @@ export const privacyPolicySections: LegalSection[] = [
           <li>Email address (email+password sign-up)</li>
           <li>Password (stored hashed via Supabase Auth — we never see or store it in plain text)</li>
           <li>
-            If you sign in via Google, Apple, or Microsoft: your name, email, and profile picture as shared by that
-            provider
+            If you sign in with Google: your name, email, and profile picture as shared by Google
           </li>
           <li>Preferred language</li>
         </ul>
-        <p>We do not receive or store your Google/Apple/Microsoft password.</p>
+        <p>We do not receive or store your Google password.</p>
 
         <h3>2.2 Content You Create</h3>
         <ul>
@@ -79,13 +78,21 @@ export const privacyPolicySections: LegalSection[] = [
             <strong>Microsoft Clarity</strong> — heatmaps, session recordings, click patterns, scroll depth
           </li>
           <li>
+            <strong>Vercel Web Analytics</strong> — page views, referrer, country, browser and device type; no cookies
+            and no IP address stored
+          </li>
+          <li>
+            <strong>Vercel Speed Insights</strong> — page loading and responsiveness measurements; no cookies
+          </li>
+          <li>
             <strong>Sentry</strong> — error and crash reports, with IP address, email, and cookies stripped before
             storage (see Section 9)
           </li>
         </ul>
         <p>
-          Analytics and Clarity data collection only begins after you accept the cookie/analytics consent banner. See
-          our <a href="/legal/cookies">Cookie Policy</a>.
+          Google Analytics and Clarity load only after you accept the cookie/analytics consent banner. Vercel Web
+          Analytics, Vercel Speed Insights and Sentry set no cookies, collect no personal data and run on every visit
+          so we can keep the site working and fast. See our <a href="/legal/cookies">Cookie Policy</a>.
         </p>
       </>
     ),
@@ -211,7 +218,7 @@ export const privacyPolicySections: LegalSection[] = [
             </tr>
             <tr>
               <td>Microsoft</td>
-              <td>Behavior analytics (Clarity), OAuth sign-in</td>
+              <td>Behavior analytics (Clarity)</td>
             </tr>
             <tr>
               <td>Sentry</td>
@@ -226,12 +233,8 @@ export const privacyPolicySections: LegalSection[] = [
               <td>Map rendering</td>
             </tr>
             <tr>
-              <td>TMAP</td>
-              <td>Route/travel-time calculation for saved plans</td>
-            </tr>
-            <tr>
               <td>Vercel</td>
-              <td>Web hosting</td>
+              <td>Web hosting, page analytics and performance measurement without cookies (Web Analytics, Speed Insights)</td>
             </tr>
             <tr>
               <td>Upstash</td>

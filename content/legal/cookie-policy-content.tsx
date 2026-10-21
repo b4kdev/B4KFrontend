@@ -109,6 +109,30 @@ export const cookiePolicySections: LegalSection[] = [
     ),
   },
   {
+    id: 'without-cookies',
+    heading: '2.3 Measurement Without Cookies',
+    body: (
+      <>
+        <p>
+          These tools set no cookies and collect no personal data, so they run on every visit, before and after your
+          choice in the cookie banner:
+        </p>
+        <ul>
+          <li>
+            <strong>Vercel Web Analytics</strong> — counts page views, referrer, country, browser and device type; no
+            IP address is stored
+          </li>
+          <li>
+            <strong>Vercel Speed Insights</strong> — measures how fast pages load and respond
+          </li>
+          <li>
+            <strong>Sentry</strong> — records errors and crashes, with IP address, email and cookies stripped
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
     id: 'not-used-for',
     heading: '3. What We Do NOT Use Cookies For',
     body: (
