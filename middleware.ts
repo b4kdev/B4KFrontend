@@ -43,8 +43,8 @@ function withSecurityHeaders(res: NextResponse): NextResponse {
 }
 
 // ── Rate limiters ──────────────────────────────────────────────────────────────
-// Fail-open when env vars are missing (dev machines without Upstash creds).
-// In production Vercel will have the real values; missing = 429 risk, not safety risk.
+// Without the env vars (dev machines without Upstash creds) the global limit is off and auth and
+// AI generate use the in-memory fallback below. Production must have the real values.
 let rlGlobal: Ratelimit | null = null
 let rlAuth: Ratelimit | null = null
 let rlAiGenerate: Ratelimit | null = null
@@ -80,7 +80,23 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
   })
 } else {
   // eslint-disable-next-line no-console
-  console.warn('[B4K] Upstash env vars missing — rate limiting disabled (fail-open)')
+  console.warn('[B4K] Upstash env vars missing — global rate limit off, auth and AI on the in-memory limit')
+}
+
+// In-memory fallback for the sensitive limits (auth, AI generate) when Upstash is missing or
+// down: per server instance only, so looser than Upstash, but never unlimited.
+const memHits = new Map<string, number[]>()
+function memLimit(key: string, max: number, windowMs: number): { success: boolean; reset: number } {
+  const now = Date.now()
+  const hits = (memHits.get(key) ?? []).filter((t) => now - t < windowMs)
+  if (hits.length >= max) {
+    memHits.set(key, hits)
+    return { success: false, reset: hits[0] + windowMs }
+  }
+  hits.push(now)
+  if (memHits.size > 10_000) memHits.clear()
+  memHits.set(key, hits)
+  return { success: true, reset: now + windowMs }
 }
 
 // ── Intl middleware (non-api routes only) ──────────────────────────────────────
@@ -205,24 +221,32 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
   if (pathname.startsWith('/api/')) {
     const ip = getIp(req)
 
-    // Per-route limiters — most-specific first, then global.
-    // Only one limiter fires per request.
-    // Fail-open on a live Upstash error (not just a missing env var) — a
-    // rate-limiter outage should degrade rate limiting, not 500 every request.
-    try {
-      if (pathname === '/api/plans/generate' && rlAiGenerate) {
-        const { success, reset } = await rlAiGenerate.limit(ip)
-        if (!success) return withSecurityHeaders(tooManyRequests(reset))
-      } else if (pathname.startsWith('/api/auth/') && rlAuth) {
-        const { success, reset } = await rlAuth.limit(ip)
-        if (!success) return withSecurityHeaders(tooManyRequests(reset))
-      } else if (rlGlobal) {
+    // Per-route limiters — most-specific first, then global. Only one limiter fires per request.
+    // Auth and AI generate never run unlimited: without Upstash (missing env or a live error)
+    // they fall back to the in-memory limit. The global limit stays fail-open on an outage, so a
+    // rate-limiter outage degrades rate limiting instead of failing every request.
+    const sensitive =
+      pathname === '/api/plans/generate' ? { rl: rlAiGenerate, key: `ai:${ip}`, max: 5 } :
+      pathname.startsWith('/api/auth/') ? { rl: rlAuth, key: `auth:${ip}`, max: 10 } :
+      null
+    if (sensitive) {
+      let result: { success: boolean; reset: number }
+      try {
+        result = sensitive.rl ? await sensitive.rl.limit(ip) : memLimit(sensitive.key, sensitive.max, 60_000)
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('[B4K] Rate limiter check failed — using the in-memory limit', err)
+        result = memLimit(sensitive.key, sensitive.max, 60_000)
+      }
+      if (!result.success) return withSecurityHeaders(tooManyRequests(result.reset))
+    } else if (rlGlobal) {
+      try {
         const { success, reset } = await rlGlobal.limit(ip)
         if (!success) return withSecurityHeaders(tooManyRequests(reset))
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('[B4K] Rate limiter check failed — continuing without it', err)
       }
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('[B4K] Rate limiter check failed — continuing without it', err)
     }
 
     return withSecurityHeaders(NextResponse.next())
