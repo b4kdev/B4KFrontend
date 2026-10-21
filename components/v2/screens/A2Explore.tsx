@@ -22,6 +22,7 @@ import {
   TreeItem,
   TreeView,
 } from '@/components/library'
+import { usePathname } from 'next/navigation'
 import { usePhone } from '@/components/library/hooks'
 import type { ExploreData, ExplorePoi } from '@/app/api/explore/[category]/route'
 import type { CollectionCard } from '@/app/api/explore/[category]/collections/route'
@@ -46,6 +47,17 @@ const CAT_KEY: Record<string, string> = { 'k-pop': 'kpop', 'k-drama': 'kdrama', 
 const COLLECTION_TYPE: Record<string, string> = { ROUTE: 'CD1336', FAN_THEME: 'CD1337', STORY: 'CD1338', CHALLENGE: 'CD1339' }
 const poiName = (p: { name_ko: string; name_en?: string | null }, locale: string) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
 
+// Rows that open their special page instead of the generic See all list (as on the live site),
+// keyed by category then row id.
+const SPECIAL_HREF: Record<string, Record<string, string>> = {
+  'k-pop': { memberFootsteps: '/explore/k-pop/bts/footsteps' },
+  'k-drama': { filming: '/explore/k-drama/tangerines/filming-spots' },
+  'k-beauty': { brandFlagship: '/explore/k-beauty/perfume-flagships' },
+  'k-culture': { heritage: '/explore/k-culture/gyeongbuk/heritage' },
+  'k-food': { noodles: '/explore/k-food/michelin-noodles' },
+}
+const rowHref = (category: string, row: string) => SPECIAL_HREF[category]?.[row] ?? `/explore/${category}/${row}`
+
 function CategoryIndex({ category, sections, active }: { category: string; sections: string[]; active?: string }) {
   const t = useCd()
   const k = useCdKey()
@@ -63,7 +75,7 @@ function CategoryIndex({ category, sections, active }: { category: string; secti
         >
           {c.slug === category
             ? sections.map((s) => (
-                <TreeItem key={s} level={2} kind="leaf" label={k(`explore.sections.${s}`)} selected={active === s} onSelect={() => router.push(`/explore/${c.slug}/${s}`)} />
+                <TreeItem key={s} level={2} kind="leaf" label={k(`explore.sections.${s}`)} selected={active === s} onSelect={() => router.push(rowHref(c.slug, s))} />
               ))
             : null}
         </TreeItem>
@@ -167,7 +179,7 @@ export function CategoryScreen({ category }: { category: string }) {
             <div key={s.id} className="flex flex-col gap-[var(--space-12)]">
               <RowSection
                 title={k(`explore.sections.${s.id}`)}
-                seeAll={{ href: `/explore/${category}/${s.id}`, label: t('CD1309') }}
+                seeAll={{ href: rowHref(category, s.id), label: t('CD1309') }}
                 featured={featured ? <Card type="featured" href={`/map?poi=${featured.poi_id}`} title={poiName(featured, locale)} imageSrc={featured.primary_image_url} eyebrow={t('CD0423')} meta={featured.display_region} /> : undefined}
                 cards={s.items.filter((p) => p !== featured).map((p) => <PoiCard key={p.poi_id} p={p} act={act} />)}
               />
@@ -286,23 +298,45 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
 export function CollectionScreen({ slug }: { slug: string }) {
   const act = usePlaceActions({ resume: true })
   const t = useCd()
+  const k = useCdKey()
   const locale = useLocale()
-  const { data, error, isLoading } = useSWR<CollectionDetail>(`/api/explore/collections/${slug}?locale=${locale}`, jsonFetch)
-  return (
-    <V2Page bar={{ type: 'page', title: data?.title ?? '' }}>
-      <div className="flex flex-col gap-[var(--space-6)]">
-        <h1 className="type-display-h1">{data?.title}</h1>
-        {data ? <p className="type-body-caption text-ui-fg-muted">{t('CD1302', { count: data.totalCount })}</p> : null}
-        {isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div> : null}
-        {error ? <EmptyState type="error" container="bordered" title={t('CD1571')}>{t('CD1572')}</EmptyState> : null}
+  const router = useRouter()
+  const { data, error, isLoading, mutate } = useSWR<CollectionDetail>(`/api/explore/collections/${slug}?locale=${locale}`, jsonFetch)
+  const [shown, setShown] = useState(PAGE)
+  // The category comes from the collection's slug (slide-kculture-..., slide-kpop-...); a slug
+  // without one shows the page without the Index panel.
+  const category = CATEGORIES.find((c) => slug.includes(`-${c.slug.replace('-', '')}-`))?.slug
+  const explore = useSWR<ExploreData>(category ? `/api/explore/${category}` : null, jsonFetch)
+  const rows = explore.data?.sections.filter((x) => x.items.length).map((x) => x.id) ?? []
+  const items = data?.items ?? []
+  const body = (
+    <div className="flex flex-col gap-[var(--space-6)]">
+      <h1 className="type-display-h1">{data?.title}</h1>
+      {data?.siblings && data.siblings.length > 1 ? (
+        <div role="group" aria-label={t('CD0162')} className="flex flex-wrap gap-[var(--space-2)]">
+          {data.siblings.map((c) => <Chip key={c.slug} selected={c.slug === slug} onClick={() => router.push(`/explore/collections/${c.slug}`)}>{c.title}</Chip>)}
+        </div>
+      ) : null}
+      {data && items.length ? <p aria-live="polite" className="type-body-caption text-ui-fg-muted">{t('CD1302', { count: data.totalCount })}</p> : null}
+      {isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div> : null}
+      {error ? <EmptyState type="error" container="bordered" title={t('CD1571')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
+      {data?.children?.length ? (
+        <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">
+          {data.children.map((c) => <li key={c.slug}><Card type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta="" /></li>)}
+        </ul>
+      ) : null}
+      {items.length ? (
         <ol className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">
-          {data?.items.map((p) => (
+          {items.slice(0, shown).map((p) => (
             <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /></li>
           ))}
         </ol>
-      </div>
-    </V2Page>
+      ) : null}
+      {items.length > shown ? <Button variant="secondary" className="self-center" onClick={() => setShown((n) => n + PAGE)}>{k('explore.viewAll')}</Button> : null}
+    </div>
   )
+  if (!category) return <V2Page bar={{ type: 'page', title: data?.title ?? '' }}>{body}</V2Page>
+  return <ExploreFrame category={category} sections={rows}>{body}</ExploreFrame>
 }
 
 // ── Category special pages (SCR-015) ────────────────────────────────────────
@@ -314,10 +348,15 @@ export function SpecialScreen({ api, category }: { api: string; category: string
   const t = useCd()
   const locale = useLocale()
   const { data, error, isLoading } = useSWR<Record<string, unknown> & { items: SpecialItem[] }>(api, jsonFetch)
+  // The Index panel lists the category's rows and selects the row this special page belongs to.
+  const explore = useSWR<ExploreData>(`/api/explore/${category}`, jsonFetch)
+  const pathname = usePathname() ?? ''
+  const rows = explore.data?.sections.filter((x) => x.items.length).map((x) => x.id) ?? []
+  const activeRow = Object.entries(SPECIAL_HREF[category] ?? {}).find(([, href]) => pathname.endsWith(href))?.[0]
   const title =
     (data && ((locale === 'ko' ? data.workNameKo ?? data.teamNameKo ?? data.regionNameKo : data.workNameEn ?? data.teamNameEn ?? data.regionNameEn) ?? data.titleEn ?? data.title)) as string | undefined
   return (
-    <ExploreFrame category={category} sections={[]}>
+    <ExploreFrame category={category} sections={rows} active={activeRow}>
       <div className="flex flex-col gap-[var(--space-6)]">
         <section className="flex flex-col gap-[var(--space-4)] md:flex-row">
           <div className="flex flex-1 flex-col gap-[var(--space-3)]">
