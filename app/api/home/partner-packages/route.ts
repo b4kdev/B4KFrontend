@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { withSafePartnerUrls } from '@/lib/partner-url'
 
 export interface HomePartnerPackage {
   id: string
@@ -11,5 +12,5 @@ export interface HomePartnerPackage {
 const MOCK: HomePartnerPackage[] = []
 
 export async function GET() {
-  return NextResponse.json(MOCK)
+  return NextResponse.json(withSafePartnerUrls(MOCK))
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { bffFetch } from '@/lib/bff'
 import { withDbPoiIds } from '@/lib/db-poi-mapping'
+import { withSafePartnerUrls } from '@/lib/partner-url'
 
 export interface ExplorePoi {
   poi_id: string
@@ -715,7 +716,7 @@ export async function GET(
   const data: ExploreData = {
     category: base.category,
     hero: base.hero,
-    packages: base.packages,
+    packages: withSafePartnerUrls(base.packages ?? []),
     artists,
     // Seed rows carry content-sheet codes ('KD016-007'): swap in the DB place_id and drop the
     // ones with no DB row, which open nothing when tapped (lib/db-poi-mapping.ts).
