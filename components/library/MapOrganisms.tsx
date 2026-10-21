@@ -173,7 +173,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
   }
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
-    <section aria-labelledby={id} className={cn('flex flex-col rounded-t-3xl text-ui-fg', state === 'open' ? 'h-full gap-[var(--space-3)] bg-ui-bg p-[var(--space-4)]' : 'bg-ui-bg-sunken', className)}>
+    <section aria-labelledby={id} className={cn('flex flex-col rounded-t-3xl text-ui-fg', state === 'open' ? 'h-full gap-[var(--space-3)] bg-ui-bg-sunken p-[var(--space-4)]' : 'bg-ui-bg-sunken', className)}>
       {/* Open: the Left panel's color/bg, everything inside the root's 16 padding; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
       <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('flex w-full flex-col gap-[var(--space-3)] text-left hover:bg-ui-state-hover', state === 'collapsed' && 'p-[var(--space-4)]', FOCUS_RING_INSET)}>
         <span className="flex w-full items-center gap-[var(--space-2)]">

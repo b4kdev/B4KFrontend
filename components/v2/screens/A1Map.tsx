@@ -87,7 +87,6 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const [planName, setPlanName] = useState('')
   const [saving, setSaving] = useState(false)
   const [discardOpen, setDiscardOpen] = useState(false)
-  const [deleteDay, setDeleteDay] = useState<number | null>(null)
   const [durationFor, setDurationFor] = useState<string | null>(null)
   const [folderId, setFolderId] = useState<string | null>(params?.get('folder'))
   const [editing, setEditing] = useState<{ id: string; title: string } | null>(null)
@@ -224,13 +223,6 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   usePendingAction('save_poi', !!user, (id) => { if (id) setSave(id, false) })
   usePendingAction('like_poi', !!user, (id) => { if (id) setLike(id, false) })
   usePendingAction('save_own_plan', !!user, () => { setCart('open'); openSaveSheet() })
-  const removeDay = (d: number) => {
-    const left = draft.days - 1
-    draft.removeDay(d)
-    // Later days move up one: keep the selection on the same day, or on the day now in its place.
-    setActiveDay((a) => (a === 'all' ? 'all' : a > d ? ((a - 1) as 1) : a === d ? (Math.min(d, left) as 1) : a))
-    setDeleteDay(null)
-  }
   const totalMin = order.reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0)
   const dayTotal = typeof activeDay === 'number' ? order.filter((p) => draft.dayOf(p.poi_id) === activeDay).reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0) : null
 
@@ -365,7 +357,6 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       stops={order.map((p, i) => ({
         id: p.poi_id,
         name: nameOf(p, locale),
-        imageSrc: p.primary_image_url ?? null,
         day: Math.min(draft.dayOf(p.poi_id), 8) as 1,
         duration: formatMinutes(draft.plan.durations[p.poi_id] ?? 60, k),
         durationLabel: k('map.plan.durationAriaLabel', { name: nameOf(p, locale) }),
@@ -375,7 +366,6 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       activeDay={activeDay}
       onDayChange={(d) => setActiveDay(d)}
       onAddDay={draft.addDay}
-      onRemoveDay={(d) => (draft.countOn(d) ? setDeleteDay(d) : removeDay(d))}
       summary={editing ? GAP.editing(editing.title) : order.length ? `${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })} · ${formatMinutes(totalMin, k)}` : t('CD1359')}
       lastAdded={order.length ? nameOf(order[order.length - 1], locale) : undefined}
       lastAddedImage={order.length ? order[order.length - 1].primary_image_url ?? null : undefined}
@@ -393,7 +383,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       onDiscard={() => (editing ? stopEditing() : setDiscardOpen(true))}
       labels={{
         region: k('map.plan.title'), emptyTitle: t('CD1359'), emptyBody: t('CD1607'), all: k('map.plan.allDays'),
-        day: (n) => k('map.plan.dayTab', { n }), addDay: k('map.plan.addDay'), removeDay: GAP.deleteDay, previousDays: GAP.previousDays, nextDays: GAP.nextDays, save: editing ? t('CD0993') : k('map.plan.save'), discard: editing ? t('CD1528') : k('map.plan.discardDraft'),
+        day: (n) => k('map.plan.dayTab', { n }), addDay: k('map.plan.addDay'), save: editing ? t('CD0993') : k('map.plan.save'), discard: editing ? t('CD1528') : k('map.plan.discardDraft'),
         remove: (n) => `${k('saved.poi.removeLabel')} ${n}`, reorder: (n) => k('map.plan.dragHandle', { n }),
         open: k('map.plan.stripExpand'), close: k('map.plan.stripCollapse'), about: GAP.about,
       }}
@@ -446,14 +436,6 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         body={GAP.discardBody(order.length)}
         cancel={<Button variant="ghost" data-autofocus onClick={() => setDiscardOpen(false)}>{k('map.plan.discardCancel')}</Button>}
         confirm={<Button variant="danger" onClick={() => { draft.discard(); setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
-      />
-      <Dialog
-        open={deleteDay !== null}
-        onCancel={() => setDeleteDay(null)}
-        title={deleteDay !== null ? GAP.deleteDayTitle(deleteDay) : ''}
-        body={deleteDay !== null ? GAP.deleteDayBody(draft.countOn(deleteDay)) : ''}
-        cancel={<Button variant="ghost" data-autofocus onClick={() => setDeleteDay(null)}>{k('map.plan.discardCancel')}</Button>}
-        confirm={<Button variant="danger" onClick={() => deleteDay !== null && removeDay(deleteDay)}>{GAP.deleteDayConfirm}</Button>}
       />
       <Dialog
         open={!!pendingEdit}

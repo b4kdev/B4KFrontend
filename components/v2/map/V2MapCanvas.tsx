@@ -75,7 +75,7 @@ const clusterHtml = (n: number) => {
   return `<div style="${HIT};width:52px;height:52px"><span style="width:var(${size});height:var(${size});border-radius:9999px;background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${n}</span></div>`
 }
 const stopHtml = (p: MapPoi, order: number, day: number, selected: boolean) =>
-  `<div style="${HIT}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected)}><span style="width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:9999px;background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider);${selected ? 'outline:var(--border-width-2) solid var(--map-pin-selected);outline-offset:2px' : ''}">${order}</span></div>`
+  `<div style="${HIT}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected)}><span style="width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:9999px;background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${order}</span></div>`
 
 function boundsOf(map: any): MapBounds {
   const b = map.getBounds()
