@@ -39,6 +39,7 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
     setLiked((s) => { const n = new Set(s); if (on) n.delete(id); else n.add(id); return n })
     await send('/api/likes/poi', on ? 'DELETE' : 'POST', { poi_id: id }).catch(() => {
       setLiked((s) => { const n = new Set(s); if (on) n.add(id); else n.delete(id); return n })
+      toast({ type: 'critical', message: t('CD0061') })
     })
   }
   usePendingAction('save_poi', resume && !!user, (id) => { if (id) setSave(id, false) })

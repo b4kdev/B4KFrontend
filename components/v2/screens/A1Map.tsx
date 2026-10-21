@@ -207,9 +207,14 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: t('CD1426') }))
     saved.mutate()
   }
+  // Optimistic: the heart changes at once and goes back with a toast if the server refuses.
+  const flipLike = (id: string, on: boolean) => setLiked((s) => { const n = new Set(s); if (on) n.add(id); else n.delete(id); return n })
   const setLike = async (id: string, on: boolean) => {
-    await send('/api/likes/poi', on ? 'DELETE' : 'POST', { poi_id: id }).catch(() => {})
-    setLiked((s) => { const n = new Set(s); if (on) n.delete(id); else n.add(id); return n })
+    flipLike(id, !on)
+    await send('/api/likes/poi', on ? 'DELETE' : 'POST', { poi_id: id }).catch(() => {
+      flipLike(id, on)
+      toast({ type: 'critical', message: t('CD0061') })
+    })
   }
   const toggleSave = (poi: { poi_id: string }) =>
     user ? setSave(poi.poi_id, savedIds.has(poi.poi_id)) : requireSignIn({ title: t('CD0027'), pending: { type: 'save_poi', id: poi.poi_id }, run: () => setSave(poi.poi_id, false) })

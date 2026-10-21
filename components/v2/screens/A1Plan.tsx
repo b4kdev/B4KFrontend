@@ -92,14 +92,14 @@ export function PlanScreen({ id }: { id: string }) {
     const next = force ? true : !isLiked
     setLiked(next)
     toast({ type: 'success', message: next ? k('itinerary.actions.likedToast') : k('itinerary.actions.unlikedToast') })
-    send('/api/likes/plan', next ? 'POST' : 'DELETE', { plan_id: id }).then(() => mutate()).catch(() => setLiked(!next))
+    send('/api/likes/plan', next ? 'POST' : 'DELETE', { plan_id: id }).then(() => mutate()).catch(() => { setLiked(!next); toast({ type: 'critical', message: t('CD0061') }) })
   }
   const save = (force?: boolean) => {
     if (!user && !force) return requireSignIn({ title: t('CD1541'), pending: { type: 'save_plan', id }, run: () => save(true) })
     const next = force ? true : !isSaved
     setSaved(next)
     toast({ type: 'success', message: next ? k('itinerary.actions.savedToast') : k('itinerary.actions.unsavedToast') })
-    send('/api/saved/plan', next ? 'POST' : 'DELETE', { plan_id: id }).then(() => mutate()).catch(() => setSaved(!next))
+    send('/api/saved/plan', next ? 'POST' : 'DELETE', { plan_id: id }).then(() => mutate()).catch(() => { setSaved(!next); toast({ type: 'critical', message: t('CD0061') }) })
   }
   usePendingAction('like_plan', !!user, () => like(true))
   usePendingAction('save_plan', !!user, () => save(true))
