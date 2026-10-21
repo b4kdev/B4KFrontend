@@ -156,7 +156,7 @@ export function HomeScreen() {
         {trending.data?.length ? (
           <RowSection
             title={t('CD0313')}
-            seeAll={{ href: '/explore/all/trending', label: t('CD1309') }}
+            seeAll={{ href: '/explore/trending', label: t('CD1309') }}
             cards={trending.data.map((p) => (
               <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, name(p))} title={name(p)} imageSrc={p.primary_image_url} meta={p.display_region} />
             ))}
@@ -206,7 +206,7 @@ export function HomeScreen() {
         {plans.data?.length ? (
           <RowSection
             title={t('CD0477')}
-            seeAll={{ href: '/explore/all/popular-plans', label: t('CD1309') }}
+            seeAll={{ href: '/explore/popular-plans', label: t('CD1309') }}
             cards={plans.data.map((p) => (
               <Card key={p.id} type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD0473', { n: p.stop_count })} sponsored={p.is_partner ? t('CD0476') : undefined} />
             ))}
