@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
-import useSWR from 'swr'
+import useSWR, { mutate as mutateKey } from 'swr'
 import { Award, Bell, Bookmark, Calendar, Map as MapIcon, Pencil, Share2, Sparkles, Star, Trophy, Zap } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
@@ -39,7 +39,7 @@ import type { OtherUserTrip } from '@/app/api/profile/[id]/trips/route'
 import type { OtherUserBadge } from '@/app/api/profile/[id]/badges/route'
 import { useCd, useCdKey } from '../cd'
 import { V2Page } from '../V2Page'
-import { useV2Shell, useV2SignOut } from '../V2Shell'
+import { UNREAD_KEY, useV2Shell, useV2SignOut } from '../V2Shell'
 import { LANGUAGES } from '../V2Settings'
 import { jsonFetch } from './A2Home'
 import { SignedOutPrompt } from './A3Saved'
@@ -310,7 +310,7 @@ export function NotificationsScreen() {
     const today = new Date().toDateString()
     const y = new Date(Date.now() - 864e5).toDateString()
     const g: Record<'today' | 'yesterday' | 'earlier', Notification[]> = { today: [], yesterday: [], earlier: [] }
-    for (const n of (data?.notifications ?? []).filter((n) => GAMIFICATION || n.type !== 'badge_earned').slice(0, shown)) {
+    for (const n of (data?.notifications ?? []).filter((n) => GAMIFICATION || (n.type !== 'badge_earned' && n.type !== 'challenge_new')).slice(0, shown)) {
       const d = new Date(n.created_at).toDateString()
       g[d === today ? 'today' : d === y ? 'yesterday' : 'earlier'].push(n)
     }
@@ -323,7 +323,7 @@ export function NotificationsScreen() {
       <div className="mx-auto flex w-full max-w-[720px] flex-col gap-[var(--space-6)]">
         <div className="flex items-center justify-between">
           <h1 className="type-display-h1 max-lg:hidden">{k('notifications.title')}</h1>
-          {data?.unread_count ? <Button variant="ghost" size="md" onClick={async () => { await send('/api/notifications/mark-all-read', 'POST').catch(() => {}); mutate() }}>{k('notifications.markAllRead')}</Button> : null}
+          {data?.unread_count ? <Button variant="ghost" size="md" onClick={async () => { await send('/api/notifications/mark-all-read', 'POST').catch(() => {}); mutate(); mutateKey(UNREAD_KEY) }}>{k('notifications.markAllRead')}</Button> : null}
         </div>
         {isLoading ? <Skeleton className="h-[240px]" /> : null}
         {error ? <EmptyState type="error" container="bordered" title={k('notifications.error.title')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{k('notifications.error.retry')}</Button>} /> : null}

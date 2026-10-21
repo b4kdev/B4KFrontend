@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
+import useSWR from 'swr'
 import { useLocale } from 'next-intl'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from '@/i18n/navigation'
@@ -41,6 +42,9 @@ type ShellCtx = {
   /** Runs `run` now when signed in; a guest gets the sign-in gate and `run` after the sign-in. */
   requireSignIn: (r: GateRequest) => void
 }
+
+/** SWR key of the unread notification count (shared with the Notifications screen). */
+export const UNREAD_KEY = '/api/notifications/unread-count'
 
 const Ctx = createContext<ShellCtx | null>(null)
 export const useV2Shell = () => {
@@ -93,6 +97,9 @@ export default function V2Shell({ children }: { children: ReactNode }) {
     return () => clearTimeout(id)
   }, [toastMsg])
 
+  // Unread notifications for the rail bell and the Drawer; Notifications refreshes it after Mark all read.
+  const unread = useSWR<{ count: number }>(authUser ? UNREAD_KEY : null, (u: string) => fetch(u).then((r) => (r.ok ? r.json() : { count: 0 })))
+  const unreadCount = unread.data?.count ?? 0
   const labels: ShellLabels = useMemo(
     () => ({
       main: t('CD0814'), home: t('CD0807'), map: t('CD0815'), explore: t('CD0804'), saved: t('CD0822'),
@@ -100,11 +107,12 @@ export default function V2Shell({ children }: { children: ReactNode }) {
       search: t('CD1383'), language: t('CD0808'), help: t('CD0806'), menu: t('CD0817'), close: t('CD0816'),
       back: t('CD0121'), settings: t('CD0823'), legal: t('CD0809'), viewProfile: t('CD1447'), signOut: t('CD1015'),
       signInHint: t('CD1450'), quickPlanHint: t('CD1448'), homeLink: t('CD0813'),
+      notificationsUnread: `${t('CD0818')}, ${t('CD0840', { count: unreadCount })}`,
     }),
-    [t],
+    [t, unreadCount],
   )
   const meta = authUser?.user_metadata as { full_name?: string; name?: string; avatar_url?: string } | undefined
-  const user: ShellUser = authUser ? { name: meta?.full_name ?? meta?.name ?? authUser.email?.split('@')[0] ?? '', avatarSrc: meta?.avatar_url ?? null } : null
+  const user: ShellUser = authUser ? { name: meta?.full_name ?? meta?.name ?? authUser.email?.split('@')[0] ?? '', avatarSrc: meta?.avatar_url ?? null, unread: unreadCount } : null
   const active = activeFrom(pathname)
   const onMap = ['map', 'plan', 'place'].includes(v2Area(pathname))
   // The live consent (DEC-16): updates GA4 consent mode and lets Analytics load Clarity.
