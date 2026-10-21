@@ -23,6 +23,7 @@ const STATIC_PATHS: Array<{
   { path: '/explore/k-pop',      changeFrequency: 'daily',   priority: 0.8 },
   { path: '/explore/k-drama',    changeFrequency: 'daily',   priority: 0.8 },
   { path: '/explore/k-beauty',   changeFrequency: 'daily',   priority: 0.8 },
+  { path: '/explore/k-food',     changeFrequency: 'daily',   priority: 0.8 },
   { path: '/explore/k-culture',  changeFrequency: 'daily',   priority: 0.8 },
   ...(GAMIFICATION ? [
     { path: '/leaderboard',      changeFrequency: 'daily' as const,  priority: 0.5 },
