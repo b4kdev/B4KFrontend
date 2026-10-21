@@ -18,7 +18,7 @@ export const RESULT_LIMIT = 100
 
 /** 코스 생성 규칙 — 하루 방문 수 / 최대 일수(날짜 범위가 이보다 길어도 자른다). */
 export const STOPS_PER_DAY = 4
-export const MAX_COURSE_DAYS = 7
+export const MAX_COURSE_DAYS = 8
 /** 코스 후보 풀 크기 — /places 매칭 상위 N개 안에서만 고른다. */
 export const COURSE_POOL_SIZE = 40
 

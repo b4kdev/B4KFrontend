@@ -5,7 +5,7 @@
 
 // Old addresses without a v2 screen of their own that now land on one (307, query kept).
 export const V2_LIVE_ALIASES: Readonly<Record<string, string>> = {
-  '/plan': '/profile', // the empty "My plans" page; own plans are on the profile
+  '/plan': '/map?plan=new', // Start a plan: the map with a new Plan cart pulled up
   '/profile/trips': '/profile',
   '/profile/saved': '/saved',
   '/profile/badges': '/badges',

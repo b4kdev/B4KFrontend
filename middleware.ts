@@ -266,9 +266,11 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
   const v2Path = v2Route?.[3] ?? ''
   const v2Alias = v2Route && !v2Route[2] ? v2LiveAlias(v2Path) : null
   if (v2Route && ((v2Route[2] && isV2Live(v2Path)) || v2Alias)) {
-    const target = v2Alias ?? v2Path
+    const [targetPath, targetQuery] = (v2Alias ?? v2Path).split('?')
     const url = req.nextUrl.clone()
-    url.pathname = `/${v2Route[1]}${target === '/' ? '' : target}`
+    url.pathname = `/${v2Route[1]}${targetPath === '/' ? '' : targetPath}`
+    // An alias may carry its own query (/plan → /map?plan=new); the request's query is kept too.
+    new URLSearchParams(targetQuery ?? '').forEach((v, key) => url.searchParams.set(key, v))
     return withSecurityHeaders(NextResponse.redirect(url, 307))
   }
 
