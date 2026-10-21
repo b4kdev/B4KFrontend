@@ -498,24 +498,10 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
   },
 }
 
-// CT_KP_EXT (DEC-60) — 지금 뜨는 곳 (Trending Now) is reframed as the seasonal
-// auto-rotation row for k-pop specifically (see GET): whichever artist has a
-// birthday_month matching the current month supplies this row's content via
-// SEED_TRENDING_BY_ARTIST; if none does (true for every artist today — see
-// SEED_ARTISTS comment), SEED_TRENDING_UNATTRIBUTED is the fallback. These 5 café
-// names are the content plan's real "이번 달 생일카페" example, but the doc doesn't
-// name which member/month they belong to (no real BTS member has an August
-// birthday), so they ship unattributed (no artistIds) and verified:false — every
-// real user sees an empty Trending Now row until a real member+month pairing lands.
+// K-Pop's Trending Now can be the seasonal birthday row: an artist whose birthday_month matches
+// the current month supplies it through SEED_TRENDING_BY_ARTIST. No artist does today, so K-Pop
+// shows the regular Trending Now row of real places (see GET).
 const SEED_TRENDING_BY_ARTIST: Record<string, ExplorePoi[]> = {}
-
-const SEED_TRENDING_UNATTRIBUTED: ExplorePoi[] = [
-  { poi_id: 'KP-PLACEHOLDER-PIEDPIPER', name_ko: '피리부는사나이', name_en: 'PIED PIPER', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
-  { poi_id: 'KP-PLACEHOLDER-BLACKDRUM', name_ko: '블랙드럼', name_en: 'Black Drum', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
-  { poi_id: 'KP-PLACEHOLDER-KIDMOON', name_ko: '킷문카페', name_en: 'Kidmoon Cafe', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
-  { poi_id: 'KP-PLACEHOLDER-MARINECOFFEE', name_ko: '마린커피', name_en: 'Marine Coffee', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
-  { poi_id: 'KP-PLACEHOLDER-DELULU', name_ko: '델룰루', name_en: 'Delulu', primary_image_url: null, display_region: 'Seoul', quality_score: 0, is_trending: false, coords_lat: 0, coords_lng: 0, verified: false },
-]
 
 // next-intl locales (i18n/routing.ts) — translations JSONB keys must match this
 // exact casing (e.g. 'zh-CN' not 'zh_CN') or the lookup below silently misses.
@@ -695,10 +681,10 @@ export async function GET(
   if (params.category === 'k-pop') {
     const currentMonth = new Date().getMonth() + 1
     const birthdayArtist = (SEED_ARTISTS['k-pop'] ?? []).find(a => a.birthday_month === currentMonth)
-    const trendingItems = birthdayArtist
-      ? (SEED_TRENDING_BY_ARTIST[birthdayArtist.id] ?? SEED_TRENDING_UNATTRIBUTED)
-      : SEED_TRENDING_UNATTRIBUTED
-    trendingSection = { id: 'trending', items: trendingItems.filter(dropUnverified) }
+    // No birthday artist this month: keep the generic row above (real places from the backend)
+    // instead of the hand-picked placeholder set.
+    const trendingItems = birthdayArtist ? SEED_TRENDING_BY_ARTIST[birthdayArtist.id] : undefined
+    if (trendingItems?.length) trendingSection = { id: 'trending', items: trendingItems.filter(dropUnverified) }
   }
 
   // Apply each active chip filter only to sections whose items carry that facet (the
