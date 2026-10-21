@@ -64,6 +64,13 @@ export function useSignInFlow(next: string, onSignedIn: (user: User) => void, be
   const [error, setError] = useState<string | undefined>()
   const [email, setEmail] = useState('')
   const [kind, setKind] = useState<'signup' | 'reset'>('signup')
+  // Check email: Resend waits 60 s after each email sent.
+  const [resendLeft, setResendLeft] = useState(0)
+  useEffect(() => {
+    if (resendLeft <= 0) return
+    const id = setTimeout(() => setResendLeft((s) => s - 1), 1000)
+    return () => clearTimeout(id)
+  }, [resendLeft])
 
   const onSubmit = async (v: SignInView, values: Record<string, string>) => {
     setError(undefined)
@@ -80,12 +87,15 @@ export function useSignInFlow(next: string, onSignedIn: (user: User) => void, be
         if (res.ok) {
           setKind('signup')
           setView('check-email')
+          setResendLeft(60)
         } else setError(t('CD0036'))
       } else if (v === 'forgot') {
+        if (view === 'check-email' && resendLeft > 0) return
         const res = await post(kind === 'signup' && view === 'check-email' ? '/api/auth/signup/resend' : '/api/auth/forgot-password', { email: values.email ?? email })
         if (res.ok) {
           if (view !== 'check-email') setKind('reset')
           setView('check-email')
+          setResendLeft(60)
         } else setError(t('CD0035'))
       }
     } catch {
@@ -97,8 +107,16 @@ export function useSignInFlow(next: string, onSignedIn: (user: User) => void, be
 
   const onGoogle = async () => {
     setBusy(true)
+    setError(undefined)
     beforeRedirect?.()
-    await createSupabaseBrowserClient().auth.signInWithOAuth({ provider: 'google', options: { scopes: 'email profile', redirectTo: `${window.location.origin}/auth/callback?returnTo=${encodeURIComponent(next)}` } })
+    // A start that fails (network, provider off) leaves the page here: stop the spinner and say so.
+    const failed = await createSupabaseBrowserClient().auth
+      .signInWithOAuth({ provider: 'google', options: { scopes: 'email profile', redirectTo: `${window.location.origin}/auth/callback?returnTo=${encodeURIComponent(next)}` } })
+      .then(({ error: e }) => !!e, () => true)
+    if (failed) {
+      setBusy(false)
+      setError(t('CD0033'))
+    }
   }
 
   return {
@@ -114,7 +132,7 @@ export function useSignInFlow(next: string, onSignedIn: (user: User) => void, be
       password: t('CD0046'), newPassword: t('CD0066'), confirmPassword: t('CD0058'), passwordHint: t('CD1468'),
       forgot: t('CD0039'), sendLink: t('CD0040'), checkEmailTitle: t('CD0020'),
       checkEmailBody: (e: string) => (kind === 'signup' ? t('CD0019', { email: e }) : t('CD0018', { email: e })),
-      resend: t('CD0048'), savePassword: t('CD1503'), newPasswordBody: t('CD1501'), back: t('CD1493'), guest: t('CD0029'),
+      resend: resendLeft > 0 ? t('CD0049', { seconds: resendLeft }) : t('CD0048'), savePassword: t('CD1503'), newPasswordBody: t('CD1501'), back: t('CD1493'), guest: t('CD0029'),
       or: t('CD1376'), tabs: t('CD0054'),
     },
   }
