@@ -6,6 +6,8 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    // AVIF first, WebP as the fallback; next/image keeps its default quality of 75.
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       // Google OAuth avatar (accounts.google.com / *.googleusercontent.com)
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
