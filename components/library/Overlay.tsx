@@ -40,10 +40,12 @@ export type DropdownMenuProps = {
   children: ReactNode
   align?: 'start' | 'end'
   className?: string
+  /** Wrapper around trigger and menu, e.g. w-full for a list row trigger. */
+  rootClassName?: string
 }
 
 /** Dropdown menu (CMP-005): role menu of Menu items; arrow keys move, Enter selects. */
-export function DropdownMenu({ trigger, label, children, align = 'start', className }: DropdownMenuProps) {
+export function DropdownMenu({ trigger, label, children, align = 'start', className, rootClassName }: DropdownMenuProps) {
   const [open, setOpen] = useState(false)
   const root = useRef<HTMLDivElement>(null)
   const menu = useRef<HTMLDivElement>(null)
@@ -63,7 +65,7 @@ export function DropdownMenu({ trigger, label, children, align = 'start', classN
     e.preventDefault()
   }
   return (
-    <div ref={root} className="relative inline-flex">
+    <div ref={root} className={cn('relative inline-flex', rootClassName)}>
       {cloneElement(trigger, {
         'aria-haspopup': 'menu',
         'aria-expanded': open,

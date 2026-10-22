@@ -43,7 +43,7 @@ import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
 import { V2Page } from '../V2Page'
 import { UNREAD_KEY, useV2Shell, useV2SignOut } from '../V2Shell'
-import { LANGUAGES } from '../V2Settings'
+import { LANGUAGES, LanguageRowMenu } from '../V2Settings'
 import { jsonFetch } from './A2Home'
 import { SignedOutPrompt } from './A3Saved'
 
@@ -477,7 +477,7 @@ export function SettingsScreen() {
 
         <h2 className={heading}>{k('profile.settings.preferences.heading')}</h2>
         <ul>
-          <ListItem title={k('profile.settings.preferences.language')} trailing={<span lang={locale}>{langName}</span>} onClick={openLanguage} />
+          {phone ? <ListItem title={k('profile.settings.preferences.language')} trailing={<span lang={locale}>{langName}</span>} onClick={openLanguage} /> : <LanguageRowMenu title={k('profile.settings.preferences.language')} />}
           {phone ? (
             <ListItem title={t('CD1283')} trailing={themeOptions.find((o) => o.id === theme)?.label} onClick={() => setThemeSheet(true)} />
           ) : (
