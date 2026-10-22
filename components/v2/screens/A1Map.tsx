@@ -93,6 +93,13 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const [activeDay, setActiveDay] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>(1)
   const [snap, setSnap] = useState<SheetSnap>('mid')
   const [planSheet, setPlanSheet] = useState(!!params?.get('plan') && phone)
+  // /plan and ?plan= open the plan on phones too (the phone check settles after the first render).
+  const openedFromAddress = useRef(false)
+  useEffect(() => {
+    if (openedFromAddress.current || !phone || !params?.get('plan') || params.get('plan') === 'edit') return
+    openedFromAddress.current = true
+    setPlanSheet(true)
+  }, [phone, params])
   const [saveOpen, setSaveOpen] = useState(false)
   const [planName, setPlanName] = useState('')
   const [saving, setSaving] = useState(false)
@@ -234,6 +241,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   usePendingAction('like_poi', !!user, (id) => { if (id) setLike(id, false) })
   usePendingAction('save_own_plan', !!user, () => { setCart('open'); openSaveSheet() })
   const totalMin = order.reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0)
+  const dayStops = typeof activeDay === 'number' ? order.filter((p) => draft.dayOf(p.poi_id) === activeDay).length : 0
   const dayTotal = typeof activeDay === 'number' ? order.filter((p) => draft.dayOf(p.poi_id) === activeDay).reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0) : null
 
   const savePlan = async () => {
@@ -380,7 +388,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       lastAdded={order.length ? nameOf(order[order.length - 1], locale) : undefined}
       lastAddedImage={order.length ? order[order.length - 1].primary_image_url ?? null : undefined}
       lastAddedMeta={order.length ? GAP.lastAddedMore(order.length - 1) : undefined}
-      dayTotal={dayTotal !== null ? `${k('map.plan.dayTab', { n: activeDay })} · ${formatMinutes(dayTotal, k)}` : undefined}
+      dayTotal={dayTotal !== null ? [k('map.plan.dayTab', { n: activeDay }), dayTotal ? formatMinutes(dayTotal, k) : null, k('itinerary.stats.stops', { count: dayStops })].filter(Boolean).join(' · ') : undefined}
       onDuration={setDurationFor}
       onRemove={draft.remove}
       onMove={draft.move}

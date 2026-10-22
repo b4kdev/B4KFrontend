@@ -212,7 +212,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
                 })),
               ]}
               scrollLabels={labels.previousDays && labels.nextDays ? { previous: labels.previousDays, next: labels.nextDays } : undefined}
-              className="min-w-0 flex-1"
+              className="min-w-0"
             />
             {/* Figma "+ Day": a Tab-styled text button (44 high, px 16, body/base, fg-muted). */}
             {onAddDay && days < 8 ? (
@@ -222,6 +222,8 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
             ) : null}
           </div>
           <ol className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
+            {/* No stops yet: the hint under the tabs, Save off and no Discard (nothing to discard). */}
+            {stops.length ? null : <li className="list-none type-body-base text-ui-fg-muted">{labels.emptyBody}</li>}
             {shown.map((s, i) => (
               <li key={s.id} className="list-none">
                 <ul>
@@ -237,8 +239,6 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
               {dayTotal}
             </p>
           ) : null}
-          {/* No stops yet: the hint, Save off and no Discard (nothing to discard). */}
-          {stops.length ? null : <p className="type-body-base text-ui-fg-muted">{labels.emptyBody}</p>}
           <div className="flex flex-col gap-[var(--space-3)]">
             <Button size="md" onClick={onSave} disabled={!stops.length} className="w-full">{labels.save}</Button>
             {stops.length ? <Button variant="ghost" size="md" onClick={onDiscard} className="w-full">{labels.discard}</Button> : null}
