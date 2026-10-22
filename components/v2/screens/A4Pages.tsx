@@ -350,6 +350,24 @@ export function ErrorScreen({ reset }: { reset: () => void }) {
   )
 }
 
+// ── About B4K (footer link) ─────────────────────────────────────────────────
+
+/** About B4K: a 720 column with the title and contact; the about and company texts come with their Copy Deck rows. */
+export function AboutScreen() {
+  const t = useCd()
+  const email = termsContactEmail
+  return (
+    <V2Page bar={{ type: 'page', title: t('CD1173') }}>
+      <div className="mx-auto flex w-full max-w-[720px] flex-col gap-[var(--space-6)] lg:py-[var(--space-4)]">
+        <h1 className="type-title-card">{t('CD1173')}</h1>
+        <p className="type-body-base text-ui-fg-muted">
+          {t('CD0345')}: <a href={`mailto:${email}`} className="underline underline-offset-2 hover:text-ui-link-hover">{email}</a>
+        </p>
+      </div>
+    </V2Page>
+  )
+}
+
 // ── Offline page and Site map (pre-v2 addresses nothing links to, kept on the new design) ──
 
 export function OfflineScreen() {

@@ -52,6 +52,12 @@ export async function legalMetadata(doc: LegalDoc, locale: string): Promise<Meta
   return pageMetadata(locale, `/legal/${doc}`, `${t('title')} | B4K`, t('empty.desc'), 'article');
 }
 
+// About B4K stays out of search results until its about and company texts are written.
+export async function aboutMetadata(locale: string): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: 'routes.sitemap' });
+  return pageMetadata(locale, '/about', `${t('title')}`, t('title'), 'website', { index: false, follow: true });
+}
+
 export async function notificationsMetadata(locale: string): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: 'notifications' });
   return pageMetadata(locale, '/notifications', `${t('title')} | B4K`, t('empty.desc'));

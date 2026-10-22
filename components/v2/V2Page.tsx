@@ -43,7 +43,7 @@ export function V2Page({ bar = { type: 'home' }, bleed, noFooter, underBar, chil
   )
 }
 
-/** The page Footer (Help, Terms, Privacy Policy, Cookies). */
+/** The page Footer (About B4K, Help, Terms, Privacy Policy, Cookies). */
 export function V2Footer({ className }: { className?: string }) {
   const t = useCd()
   return (
@@ -52,6 +52,7 @@ export function V2Footer({ className }: { className?: string }) {
       navLabel={t('CD0809')}
       copyright={t('CD1462')}
       links={[
+        { label: t('CD1173'), href: '/about' },
         { label: t('CD0320'), href: '/help' },
         { label: t('CD1460'), href: '/legal/terms' },
         { label: t('CD0321'), href: '/legal/privacy', strong: true },

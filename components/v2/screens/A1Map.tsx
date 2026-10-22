@@ -517,6 +517,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         <div className="pointer-events-none absolute inset-x-0 top-0 p-[var(--space-4)] [&>*]:pointer-events-auto">{chips}</div>
         <p className="absolute bottom-[var(--space-3)] left-[var(--space-16)] flex flex-wrap items-center gap-x-[var(--space-3)] type-body-caption text-ui-fg-muted">
           <span>{t('CD1462')}</span>
+          <IntlLink href="/about" className="hover:text-ui-fg hover:underline">{t('CD1173')}</IntlLink>
           <IntlLink href="/legal/terms" className="hover:text-ui-fg hover:underline">{t('CD1460')}</IntlLink>
           <IntlLink href="/legal/privacy" className="font-semibold hover:text-ui-fg hover:underline">{t('CD0321')}</IntlLink>
         </p>
