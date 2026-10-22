@@ -3,7 +3,7 @@
 import { cloneElement, useEffect, useId, useState, type ReactElement } from 'react'
 import { cn } from '@/lib/cn'
 
-// Tooltip (UI-55; Figma Atoms › Tooltip): short help text for a control on hover and keyboard focus
+// Tooltip (Figma Atoms › Tooltip): short help text for a control on hover and keyboard focus
 // (role tooltip, aria-describedby), closed with Esc. Inverse, square, no arrow, no shadow; 8 below
 // the trigger by default; wraps at tooltip/max-width, body/caption. Never the only place for
 // essential information (no tooltips on touch).

@@ -12,12 +12,12 @@ const DAY_DOT = {
 
 export type TabProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
   selected?: boolean
-  /** Figma Show day dot: 8 dot in the plan day color (UI-78). */
+  /** Figma Show day dot: 8 dot in the plan day color. */
   day?: keyof typeof DAY_DOT
   children: ReactNode
 }
 
-/** Tab (part of Tabs, CMP-044): 44 high; selected = fg label with a 2px fg underline. */
+/** Tab (part of Tabs): 44 high; selected = fg label with a 2px fg underline. */
 export const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab({ selected = false, day, children, className, ...props }, ref) {
   return (
     <button
@@ -45,7 +45,7 @@ export const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab({ select
 
 export type SegmentProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & { selected?: boolean; children: ReactNode }
 
-/** Segment (part of Segmented control, CMP-006): pill; selected = bg-inverse, fg-inverse. */
+/** Segment (part of Segmented control): pill; selected = bg-inverse, fg-inverse. */
 export const Segment = forwardRef<HTMLButtonElement, SegmentProps>(function Segment({ selected = false, children, className, ...props }, ref) {
   return (
     <button
@@ -70,7 +70,7 @@ export const Segment = forwardRef<HTMLButtonElement, SegmentProps>(function Segm
 
 export type PageItemProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & { current?: boolean; children: ReactNode }
 
-/** Page item (part of Pagination, CMP-045): 40 round; current = bg-inverse, aria-current page. */
+/** Page item (part of Pagination): 40 round; current = bg-inverse, aria-current page. */
 export const PageItem = forwardRef<HTMLButtonElement, PageItemProps>(function PageItem({ current = false, children, className, ...props }, ref) {
   return (
     <button
@@ -103,7 +103,7 @@ export type NavItemProps = {
 }
 
 /**
- * Nav item (part of Navigation bar and rail, CMP-040, CMP-041): icon only (UI-70), 48 high; active =
+ * Nav item (part of Navigation bar and rail): icon only, 48 high; active =
  * fg icon with a 4 fg dot below, inactive fg-muted. Render it inside a link (next-intl Link) or a
  * button; this is the visual.
  */

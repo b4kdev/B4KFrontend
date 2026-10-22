@@ -38,10 +38,10 @@ import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 import { CATEGORIES, jsonFetch, RowState } from './A2Home'
 
-// Explore (A2): Category page (SCR-002), See all list (SCR-010), Collection page (SCR-014),
-// Category special pages (SCR-015). Live data from /api/explore/*. Desktop: Left panel Index (280)
+// Explore (A2): Category page, See all list, Collection page,
+// Category special pages. Live data from /api/explore/*. Desktop: Left panel Index (280)
 // with the category tree; phones: category Tabs on top. Card taps open the map with the place
-// (PD-20); the Planning cue sits after the first row (PD-36).
+//; the Planning cue sits after the first row.
 
 const CAT_KEY: Record<string, string> = { 'k-pop': 'kpop', 'k-drama': 'kdrama', 'k-beauty': 'kbeauty', 'k-culture': 'kculture', 'k-food': 'kfood' }
 // Collection types (lib/collections) → their Copy Deck chip labels (Explore collections).
@@ -257,7 +257,7 @@ function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceAct
   )
 }
 
-// ── See all list (SCR-010) ──────────────────────────────────────────────────
+// ── See all list ──────────────────────────────────────────────────
 
 const PAGE = 12
 
@@ -334,7 +334,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   return <ExploreFrame category={category} sections={sections} active={row} pageTitle={title}>{body}</ExploreFrame>
 }
 
-// ── Collection page (SCR-014) ───────────────────────────────────────────────
+// ── Collection page ───────────────────────────────────────────────
 
 export function CollectionScreen({ slug }: { slug: string }) {
   const act = usePlaceActions({ resume: true })
@@ -388,7 +388,7 @@ export function CollectionScreen({ slug }: { slug: string }) {
   return <ExploreFrame category={category} sections={rows} active="collections" pageTitle={data?.title ?? ''}>{body}</ExploreFrame>
 }
 
-// ── Category special pages (SCR-015) ────────────────────────────────────────
+// ── Category special pages ────────────────────────────────────────
 
 type SpecialItem = { poi_id: string; name_ko: string; name_en: string; primary_image_url: string | null; display_region: string; relationship_en?: string; relationship_ko?: string }
 

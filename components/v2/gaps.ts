@@ -37,10 +37,10 @@ export function useGap() {
       deleteDayConfirm: t('deleteDayConfirm'),
       previousDays: t('previousDays'),
       nextDays: t('nextDays'),
-      // Settings (SCR-022): the data and privacy group label and the Delete account row note.
+      // Settings: the data and privacy group label and the Delete account row note.
       settingsData: t('settingsData'),
       deleteAccountNote: t('deleteAccountNote'),
-      // Own profile (SCR-017): the Plans section subtitle and the link to Saved under the grid.
+      // Own profile: the Plans section subtitle and the link to Saved under the grid.
       profilePlansNote: t('profilePlansNote'),
       openSaved: t('openSaved'),
     }),

@@ -17,9 +17,9 @@ import { Tooltip } from './Tooltip'
 import { useFocusTrap } from './hooks'
 import { FOCUS_RING_INSET } from './styles'
 
-// App shell organisms (UI-70, UI-88, UI-92, UI-94, UI-98, UI-101; Figma Organisms): Navigation
+// App shell organisms (Figma Organisms): Navigation
 // rail, Navigation bar, Header, Top app bar, Drawer, Account menu, Universal search.
-// One color with no borders (UI-88). Texts come in through `labels` (from the messages).
+// One color with no borders. Texts come in through `labels` (from the messages).
 
 export type Destination = 'home' | 'map' | 'explore' | 'saved'
 
@@ -70,16 +70,16 @@ export type NavigationRailProps = {
   labels: ShellLabels
   user: ShellUser
   onQuickPlan: () => void
-  /** Figma Show logo (UI-101 shell without a top nav). */
+  /** Figma Show logo (shell without a top nav). */
   showLogo?: boolean
-  /** Account menu content (UI-101) for the avatar / user button; left out = profile link. */
+  /** Account menu content for the avatar / user button; left out = profile link. */
   accountMenu?: ReactNode
   notificationsHref?: string
   profileHref?: string
   className?: string
 }
 
-/** Navigation rail (CMP-041): desktop from 1024, 64 wide, icons with tooltips. */
+/** Navigation rail: desktop from 1024, 64 wide, icons with tooltips. */
 export function NavigationRail({ active = null, labels, user, onQuickPlan, showLogo, accountMenu, notificationsHref = '/v2/notifications', profileHref = '/v2/profile', className }: NavigationRailProps) {
   return (
     <nav aria-label={labels.main} className={cn('flex h-full w-[var(--layout-nav-rail)] shrink-0 flex-col items-center bg-ui-bg pb-[var(--space-3)]', showLogo && 'pt-[var(--space-2)]', className)}>
@@ -126,7 +126,7 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
 
 export type NavigationBarProps = { active?: Destination | null; labels: ShellLabels; onQuickPlan: () => void; className?: string }
 
-/** Navigation bar (CMP-040): below 1024, 56 high plus the safe area; Quick plan in the center. */
+/** Navigation bar: below 1024, 56 high plus the safe area; Quick plan in the center. */
 export function NavigationBar({ active = null, labels, onQuickPlan, className }: NavigationBarProps) {
   const item = ({ id, href, Icon }: (typeof DESTS)[number]) => (
     <li key={id} className="flex-1">
@@ -160,7 +160,7 @@ export type HeaderProps = {
   className?: string
 }
 
-/** Header (CMP-037): desktop original layout (kept until UI-101 is decided), 64 high. */
+/** Header: desktop original layout (kept until the shell layout is decided), 64 high. */
 export function Header({ labels, signedIn, search, onLanguage, languageMenu, helpHref = '/v2/help', className }: HeaderProps) {
   return (
     <header className={cn('flex h-[var(--layout-header-height)] items-center gap-[var(--space-6)] bg-ui-bg pr-[var(--space-6)]', className)}>
@@ -201,7 +201,7 @@ export type TopAppBarProps = {
 }
 
 /**
- * Top app bar (CMP-038): below 1024, 56 high plus the safe area, no border. Home and Map float:
+ * Top app bar: below 1024, 56 high plus the safe area, no border. Home and Map float:
  * no strip, a round Menu button and the Search pill over the content.
  */
 export function TopAppBar({ type, labels, onMenu, onBack, title, action, search, className }: TopAppBarProps) {
@@ -247,7 +247,7 @@ export type DrawerProps = {
   labels: ShellLabels
   user: ShellUser
   onQuickPlan: () => void
-  /** Figma Show language row (on in the original layout, off in the UI-101 shell). */
+  /** Figma Show language row (on in the original layout, off in the shell without a top nav). */
   language?: { current: string; onOpen: () => void }
   links?: { notifications?: string; settings?: string; help?: string; legal?: string; profile?: string; signIn?: string }
   /** Figma Legal open: the documents under Legal; given, Legal opens them in place instead of linking. */
@@ -259,7 +259,7 @@ export type DrawerProps = {
 /** Trailing chevron-right 16 (List item) on the account and Legal rows. */
 const CHEVRON = <ChevronRight aria-hidden className="size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted" />
 
-/** Drawer (CMP-042): phone menu, 300 wide from the left over a scrim; account first (UI-94). */
+/** Drawer: phone menu, 300 wide from the left over a scrim; account first. */
 export function Drawer({ open, onClose, labels, user, onQuickPlan, language, links = {}, legalLinks, unreadLabel }: DrawerProps) {
   const ref = useFocusTrap<HTMLDivElement>(open, onClose)
   const id = useId()
@@ -372,7 +372,7 @@ export function AccountMenu({ labels, user, onSignOut, links = {}, showHelp = fa
 
 export type UniversalSearchProps = { children: ReactNode; className?: string }
 
-/** Universal search (UI-101, Proposed): the one desktop search field, 560 wide, centered, 12 from the top, floating. */
+/** Universal search (Proposed): the one desktop search field, 560 wide, centered, 12 from the top, floating. */
 export function UniversalSearch({ children, className }: UniversalSearchProps) {
   return (
     <div role="search" className={cn('pointer-events-none fixed inset-x-0 top-[var(--space-3)] z-30 flex justify-center', className)}>

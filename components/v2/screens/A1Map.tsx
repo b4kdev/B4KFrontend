@@ -44,9 +44,9 @@ import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
 import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_STOPS, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
 import { CATEGORIES, jsonFetch } from './A2Home'
 
-// The map (A1; PD-20, PD-24 to PD-31, PD-45, PD-48; UI-74, UI-77, UI-89, UI-90): Map browse
-// (SCR-004), Place selected (SCR-003), Plan in progress / Plan editor (SCR-005, SCR-013), Save plan
-// (SCR-006), Quick plan and Plan from Saved results (SCR-009, SCR-035), Saved on the map (SCR-011).
+// The map (A1): Map browse
+//, Place selected, Plan in progress / Plan editor, Save plan
+//, Quick plan and Plan from Saved results, Saved on the map.
 // Desktop: Left panel Type=Map (Nearby / Saved switch, content, Plan cart) beside the map; phones:
 // Top app bar Map, chips, a map Bottom sheet and the Plan pill. Live POIs, place detail, saves.
 
@@ -146,8 +146,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     if (id) router.push(`/plan/${id}`)
   }
 
-  // Hand-offs: Quick plan (PD-45) and Plan from Saved (SCR-035) open the plan unsaved; ?plan=edit
-  // loads a published plan for editing (PD-28).
+  // Hand-offs: Quick plan and Plan from Saved open the plan unsaved; ?plan=edit
+  // loads a published plan for editing.
   const takeHandoff = () => {
     const stops = takeCourseHandoff()
     if (!stops) return
@@ -179,7 +179,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         !!getDraftPlan()?.stops.length ||
         (await fetch('/api/plans/draft').then((r) => (r.ok ? r.json() : null)).then((d: { stop_count?: number } | null) => (d?.stop_count ?? 0) > 0).catch(() => false))
       fetch(`/api/plans/${editId}`).then((r) => (r.ok ? r.json() : Promise.reject())).then(async (it: ItineraryDetail) => {
-        // SCR-008: a plan in progress is saved or discarded before the published plan loads.
+        // Plan from another plan: a plan in progress is saved or discarded before the published plan loads.
         if (await inProgress()) setPendingEdit(it)
         else loadForEdit(it)
       }).catch(() => toast({ type: 'critical', message: k('itinerary.error.title') }))
@@ -212,7 +212,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // it is open the map shows its stops only; a category chip folds it and goes back to browsing.
   const showPlanOnly = planVisible && order.length > 0
   // Plan only: no other places on the map, except the one opened from the list.
-  // Saved on the map (150:18785, PD-48): while Saved is on, the map shows the saved places only,
+  // Saved on the map: while Saved is on, the map shows the saved places only,
   // or the open list's places, and fits them.
   const savedPois = useMemo<MapPoi[] | null>(() => {
     if (mode !== 'saved' || !saved.data) return null
@@ -290,7 +290,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       draft.discard()
       setSaveOpen(false)
       toast({ type: 'success', message: t('CD1636') })
-      // SCR-008 Save plan: the plan in progress is saved, then the published plan opens for editing.
+      // Save plan: the plan in progress is saved, then the published plan opens for editing.
       if (pendingEdit) loadForEdit(pendingEdit)
       else if (id) router.push(`/plan/${id}`)
     } catch {
@@ -358,7 +358,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   ) : (
     <SavedHub
       view={!saved.data?.pois.length ? 'empty' : folderId ? 'folder' : 'places'}
-      // The lists the person made; All Saved is the map itself (150:18785 draws no All Saved row).
+      // The lists the person made; All Saved is the map itself (the design draws no All Saved row).
       folders={(saved.data?.folders ?? []).filter((f) => !f.is_default).map((f) => ({ id: f.id, name: f.name, count: k('saved.folder.poiCount', { count: f.pois.length }) }))}
       folder={(() => {
         const f = saved.data?.folders.find((x) => x.id === folderId)

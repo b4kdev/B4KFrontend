@@ -5,7 +5,7 @@ import { cn } from '@/lib/cn'
 import { FieldMessage, Label } from './Field'
 import { FIELD_FRAME } from './styles'
 
-// Textarea (UI-59; Figma Atoms › Textarea): same look and states as Text input. Starts at 3 rows
+// Textarea (Figma Atoms › Textarea): same look and states as Text input. Starts at 3 rows
 // (textarea/min-height), grows with the text to 8 rows, then scrolls; no resize handle.
 // Optional counter on the help row, announced politely.
 

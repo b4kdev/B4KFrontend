@@ -13,7 +13,7 @@ import { useFocusTrap, usePhone } from './hooks'
 import { Scrim } from './Content'
 import { Separator } from './Separator'
 
-// Sections (UI-81, UI-82, UI-97; Figma Sections): Explore section row, Explore collections,
+// Sections (Figma Sections): Explore section row, Explore collections,
 // Explore packages, Plan card row, Quick plan, Planning cue, Interests card. Built from cards and
 // molecules; data as props, texts as labels.
 
@@ -32,7 +32,7 @@ export type RowSectionProps = {
   className?: string
 }
 
-/** Explore section row (ADD-69) and Plan card row (ADD-72): header, optional featured card, a sideways row. */
+/** Explore section row and Plan card row: header, optional featured card, a sideways row. */
 export function RowSection({ title, subtitle, seeAll, featured, cards, arrowLabels, className }: RowSectionProps) {
   const id = useId()
   const track = useRef<HTMLUListElement>(null)
@@ -68,7 +68,7 @@ export type ExploreCollectionsProps = {
   cards: ReactNode[]
 }
 
-/** Explore collections (ADD-70): header, filter chips, grid of Card Collection (4 across, 2 on phones). */
+/** Explore collections: header, filter chips, grid of Card Collection (4 across, 2 on phones). */
 export function ExploreCollections({ title, filters, active, onFilter, cards }: ExploreCollectionsProps) {
   const id = useId()
   return (
@@ -82,7 +82,7 @@ export function ExploreCollections({ title, filters, active, onFilter, cards }: 
   )
 }
 
-/** Explore packages (ADD-71): header and up to 3 Card Package, 3 across from 768, stacked on phones. */
+/** Explore packages: header and up to 3 Card Package, 3 across from 768, stacked on phones. */
 export function ExplorePackages({ title, cards }: { title: string; cards: ReactNode[] }) {
   const id = useId()
   return (
@@ -94,7 +94,7 @@ export function ExplorePackages({ title, cards }: { title: string; cards: ReactN
 }
 
 export type PlanningCueProps = {
-  /** Figma State: Continue when a plan is in progress (PD-28). */
+  /** Figma State: Continue when a plan is in progress. */
   state: 'start' | 'continue'
   label: string
   tiles: {
@@ -105,7 +105,7 @@ export type PlanningCueProps = {
   }
 }
 
-/** Planning cue (PD-36, UI-97): three tiles between content rows; side by side on desktop, stacked on phones. */
+/** Planning cue: three tiles between content rows; side by side on desktop, stacked on phones. */
 export function PlanningCue({ state, label, tiles }: PlanningCueProps) {
   const tile = 'flex min-h-[var(--target-touch-min)] flex-1 items-center gap-[var(--space-4)] rounded-2xl bg-ui-bg-raised p-[var(--space-4)] md:py-[var(--space-6)] text-left text-ui-fg hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] focus-visible:shadow-focus-ring focus-visible:outline-none'
   const body = (icon: ReactNode, t: { title: string; text: string }) => (
@@ -139,7 +139,7 @@ export type InterestsCardProps = {
   labels: { save: string; dismiss: string }
 }
 
-/** Interests card (PD-40, SCR-036): optional, once per account; Selectable chips, Save, Dismiss. */
+/** Interests card: optional, once per account; Selectable chips, Save, Dismiss. */
 export function InterestsCard({ title, text, tags, selected, onToggle, onSave, onDismiss, labels }: InterestsCardProps) {
   const id = useId()
   return (
@@ -183,7 +183,7 @@ export type QuickPlanProps = {
 }
 
 /**
- * Quick plan (planning flow 4, PD-33, PD-45; Figma Quick plan): a 3-step dialog, Modal 864 on
+ * Quick plan (planning flow 4; Figma Quick plan): a 3-step dialog, Modal 864 on
  * desktop, sheet on phones. Top bar (progress, Close), separator, body (heading, subtitle, step
  * content), separator, footer (Back ghost, Next primary; right on desktop, Next fills on phones).
  */

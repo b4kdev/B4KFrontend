@@ -31,9 +31,9 @@ import { useV2Shell } from '../V2Shell'
 import { usePlaceActions } from '../usePlaceActions'
 import { useDDay } from '../useDDay'
 
-// Home (SCR-001, PD-19, PD-36, PD-40; UI-81, UI-97): hero, Explore by category, Trending now,
-// Planning cue (after Trending), Interests card (SCR-036), Upcoming events, Popular plans.
-// Live data from /api/home/*; a row with no content hides (PD-51); a row that fails shows an
+// Home: hero, Explore by category, Trending now,
+// Planning cue (after Trending), Interests card, Upcoming events, Popular plans.
+// Live data from /api/home/*; a row with no content hides; a row that fails shows an
 // Empty state Error with Try again.
 
 export const jsonFetch = <T,>(url: string) => fetch(url).then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(r.status)))
@@ -101,7 +101,7 @@ export function HomeScreen() {
     ? accountDraft.data?.stop_count ? { name: accountDraft.data.title || undefined, stops: accountDraft.data.stop_count } : deviceDraft
     : null
 
-  // Interests card (SCR-036): signed in, no interests saved yet, not dismissed on this device.
+  // Interests card: signed in, no interests saved yet, not dismissed on this device.
   const mine = useSWR(user ? '/me/interests' : null, (p: string) => apiFetch<{ interest_tags: string[] }>(p))
   const [dismissed, setDismissed] = useState(true)
   useEffect(() => {

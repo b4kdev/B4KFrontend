@@ -3,7 +3,7 @@ import { CircleAlert, CircleCheck, Info, SearchX, TriangleAlert, X } from 'lucid
 import { cn } from '@/lib/cn'
 import { FOCUS_RING, HIT_AREA } from './styles'
 
-// Feedback molecules (UI-68; Figma Molecules): Alert, Empty state. (Toast: Toast.tsx.)
+// Feedback molecules (Figma Molecules): Alert, Empty state. (Toast: Toast.tsx.)
 
 const ALERT_ICON = { info: Info, success: CircleCheck, warning: TriangleAlert, critical: CircleAlert } as const
 
@@ -22,8 +22,8 @@ export type AlertProps = {
 }
 
 /**
- * Alert (CMP-027): persistent inline message, square. Info, Success, Warning: bg-raised, 1px border,
- * told apart by icon (UI-10). Critical: danger-bg, danger-border, danger icon (UI-08), role alert.
+ * Alert: persistent inline message, square. Info, Success, Warning: bg-raised, 1px border,
+ * told apart by icon. Critical: danger-bg, danger-border, danger icon, role alert.
  */
 export function Alert({ type = 'info', title, children, action, onDismiss, dismissLabel, className }: AlertProps) {
   const Icon = ALERT_ICON[type]
@@ -79,7 +79,7 @@ export type EmptyStateProps = {
   className?: string
 }
 
-/** Empty state (CMP-035): icon, title/empty-state, one line, optional Button. Error uses role alert. */
+/** Empty state: icon, title/empty-state, one line, optional Button. Error uses role alert. */
 export function EmptyState({ type = 'empty', container = 'plain', icon, title, children, action, titleAs: Title = 'p', className }: EmptyStateProps) {
   const Icon = EMPTY_ICON[type]
   return (

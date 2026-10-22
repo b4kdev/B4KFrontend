@@ -10,7 +10,7 @@ import { IconButton } from './IconButton'
 import { Image } from './Image'
 import { Spinner } from './Spinner'
 
-// Content and planning molecules (UI-75, UI-76, UI-77; Figma Molecules): Section header, Save-like
+// Content and planning molecules (Figma Molecules): Section header, Save-like
 // overlay, Achievement badge, AI input, Plan stop row, Itinerary stop.
 
 export type SectionHeaderProps = {
@@ -90,7 +90,7 @@ export type AchievementBadgeProps = {
   className?: string
 }
 
-/** Achievement badge (UI-75): rarity by fill, no color; Legendary adds an outer ring; Locked = sunken with a lock. */
+/** Achievement badge: rarity by fill, no color; Legendary adds an outer ring; Locked = sunken with a lock. */
 export function AchievementBadge({ name, detail, icon, rarity = 'common', locked, lockedLabel, className }: AchievementBadgeProps) {
   return (
     <div className={cn('flex w-[96px] flex-col items-center gap-[var(--space-2)] text-center', className)}>
@@ -121,7 +121,7 @@ export type AiInputProps = {
   className?: string
 }
 
-/** AI input (UI-76): pill field bg-sunken 40 high, Ghost Send; Enter sends, Shift Enter adds a line. */
+/** AI input: pill field bg-sunken 40 high, Ghost Send; Enter sends, Shift Enter adds a line. */
 export function AiInput({ value, onValueChange, onSend, placeholder, sendLabel, loading, loadingLabel, disabled, className }: AiInputProps) {
   const ref = useRef<HTMLTextAreaElement>(null)
   useLayoutEffect(() => {
@@ -184,7 +184,7 @@ export type PlanStopRowProps = {
   className?: string
 }
 
-/** Plan stop row (UI-77): grip, Stop badge sm, optional thumbnail, name, Duration button, Remove. */
+/** Plan stop row: grip, Stop badge sm, optional thumbnail, name, Duration button, Remove. */
 export function PlanStopRow({ name, number, day, duration, durationLabel, onDuration, onRemove, removeLabel, reorderLabel, dragging, stopId, handleProps, onSelect, thumbnail, className }: PlanStopRowProps) {
   return (
     <li data-stop-id={stopId} className={cn('group flex h-[var(--control-height-md)] items-center gap-[var(--space-2)]', dragging && 'bg-ui-state-dragged', className)}>
@@ -226,7 +226,7 @@ export type ItineraryStopProps = {
   className?: string
 }
 
-/** Itinerary stop (UI-77): Stop badge md on the route rail, name, meta, optional note and 40 thumbnail. */
+/** Itinerary stop: Stop badge md on the route rail, name, meta, optional note and 40 thumbnail. */
 export function ItineraryStop({ name, number, day, meta, note, thumbnail, selected, onSelect, className }: ItineraryStopProps) {
   return (
     <li aria-current={selected || undefined} className={cn('flex min-h-[var(--space-20)] items-start gap-[var(--space-3)] p-[var(--space-2)]', selected && 'bg-ui-state-selected', onSelect && 'cursor-pointer hover:bg-ui-state-hover', className)} onClick={onSelect}>

@@ -6,7 +6,7 @@ import { cn } from '@/lib/cn'
 import { FieldMessage, Label } from './Field'
 import { FIELD_FRAME } from './styles'
 
-// Select (UI-59; Figma Atoms › Select): a styled native select (phones open their own picker),
+// Select (Figma Atoms › Select): a styled native select (phones open their own picker),
 // same look and states as Text input. Chevron at the end; the placeholder shows when nothing is chosen.
 
 export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size'> & {

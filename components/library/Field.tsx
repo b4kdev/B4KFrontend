@@ -1,7 +1,7 @@
 import { CircleAlert } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
-// Label (UI-59) and the help / error row shared by Text input, Select and Textarea (UI-51).
+// Label and the help / error row shared by Text input, Select and Textarea.
 
 export type LabelProps = {
   htmlFor?: string

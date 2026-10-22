@@ -4,8 +4,8 @@ import { forwardRef, useEffect, useId, useRef, type InputHTMLAttributes, type Re
 import { Check, Minus } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
-// Checkbox, Radio, Toggle (UI-52; Figma Atoms). Native inputs with their label; the whole row is
-// at least 44 high so the label is part of the target. Focus = ring around the box (UI-15).
+// Checkbox, Radio, Toggle (Figma Atoms). Native inputs with their label; the whole row is
+// at least 44 high so the label is part of the target. Focus = ring around the box.
 
 const ROW = 'group relative inline-flex min-h-[var(--target-touch-min)] cursor-pointer items-center gap-[var(--gap-sm)] type-body-base text-ui-fg has-[:disabled]:cursor-not-allowed has-[:disabled]:text-ui-fg-disabled'
 const BOX_FOCUS = 'peer-focus-visible:shadow-focus-ring'

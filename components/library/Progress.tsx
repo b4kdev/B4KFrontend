@@ -1,6 +1,6 @@
 import { cn } from '@/lib/cn'
 
-// Progress bar and Skeleton (UI-56; Figma Atoms).
+// Progress bar and Skeleton (Figma Atoms).
 
 export type ProgressBarProps = {
   /** 0 to 100. Left out = Figma Type=Indeterminate. */

@@ -19,7 +19,7 @@ import { Separator } from './Separator'
 import { TextInput } from './TextInput'
 import { FOCUS_RING_INSET } from './styles'
 
-// Account, consent and search organisms (UI-82, UI-99, PD-37 to PD-43; Figma Organisms).
+// Account, consent and search organisms (Figma Organisms).
 
 export type CookieBannerProps = {
   /** Figma Type. Banner: bottom bar on first visit. Preferences: card on the Cookie Policy page. */
@@ -37,7 +37,7 @@ export type CookieBannerProps = {
   className?: string
 }
 
-/** Cookie banner (UI-82, ADD-57): Decline and Accept with equal weight; no close X; nothing on until a choice. */
+/** Cookie banner: Decline and Accept with equal weight; no close X; nothing on until a choice. */
 export function CookieBanner({ type = 'banner', label, message, learnMore, acceptLabel, declineLabel, onAccept, onDecline, status, title, className }: CookieBannerProps) {
   const buttons = (
     <div className="flex gap-[var(--gap-sm)] max-md:[&>*]:flex-1">
@@ -133,7 +133,7 @@ export type SignInCardProps = {
   }
 }
 
-/** Sign-in card (UI-82, ADD-63): providers, sign in / sign up, forgot, check email, new password. */
+/** Sign-in card: providers, sign in / sign up, forgot, check email, new password. */
 export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGuest, draftNotice, onGoogle, onSubmit, busy, error, email = '', confirmError, labels }: SignInCardProps) {
   const id = useId()
   const [values, setValues] = useState<Record<string, string>>({ email })
@@ -244,7 +244,7 @@ export type ConsentStepProps = {
   labels: { agreeAll: string; required: string; optional: string; view: string; continue: string; cancel: string; back: string; legend: string }
 }
 
-/** Consent step (UI-82, ADD-74): agree to all, required and optional items; Continue waits for every required one. */
+/** Consent step: agree to all, required and optional items; Continue waits for every required one. */
 export function ConsentStep({ title, subtitle, footnote, items, checked, onCheckedChange, onView, onContinue, onCancel, labels }: ConsentStepProps) {
   const all = items.every((i) => checked[i.id])
   const some = items.some((i) => checked[i.id])
@@ -303,7 +303,7 @@ export type SearchFiltersProps = {
   onClose?: () => void
 }
 
-/** Search filters (UI-82, PD-42): chip groups; desktop applies as tapped, mobile has Show N results. */
+/** Search filters: chip groups; desktop applies as tapped, mobile has Show N results. */
 export function SearchFilters({ viewport, groups, value, onValueChange, sort, labels, onShowResults, onClose }: SearchFiltersProps) {
   const mobile = viewport === 'mobile'
   const toggle = (g: FilterGroup, id: string) => {
@@ -364,7 +364,7 @@ export type ProfileHeaderProps = {
   tabs?: ReactNode
 }
 
-/** Profile header (UI-82, ADD-67): avatar, name (the page h1), stats, pinned badges, action. */
+/** Profile header: avatar, name (the page h1), stats, pinned badges, action. */
 export function ProfileHeader({ viewport, name, avatarSrc, stats, badges, action, actionInRow, tabs }: ProfileHeaderProps) {
   const desktop = viewport === 'desktop'
   const inRow = desktop || actionInRow
@@ -400,7 +400,7 @@ export type LegalDocumentProps = {
   labels: { breadcrumb: string; contents: string; onThisPage: string }
 }
 
-/** Legal document (UI-82, ADD-73): title, updated, numbered sections; contents list (desktop) or a Select (phones). */
+/** Legal document: title, updated, numbered sections; contents list (desktop) or a Select (phones). */
 export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, sections, currentSection, intro, labels }: LegalDocumentProps) {
   const contentsId = useId()
   // Figma: 16 between every element of the document column; breadcrumbs and title sit in that column.
@@ -473,7 +473,7 @@ function bold(text: string, q: string) {
   return <>{text.slice(0, i)}<strong className="font-[var(--font-weight-bold)]">{text.slice(i, i + q.length)}</strong>{text.slice(i + q.length)}</>
 }
 
-/** Search suggestions (PD-43, UI-99): Typing = search for, places, plans, explore; Empty = recent, trending, browse. */
+/** Search suggestions: Typing = search for, places, plans, explore; Empty = recent, trending, browse. */
 export function SearchSuggestions({ viewport, state, query, places = [], plans = [], explore = [], recent = [], trending = [], categories = [], onSearch, onRemoveRecent, onClearRecent, labels }: SearchSuggestionsProps) {
   const row = cn('flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left hover:bg-ui-state-hover', FOCUS_RING_INSET)
   const heading = 'type-eyebrow-category text-ui-fg-muted'

@@ -1,6 +1,6 @@
 import { cn } from '@/lib/cn'
 
-// Skip link (UI-60, FOC-006; Figma B4K UI Components › Atoms › Skip link): the first focusable
+// Skip link (Figma B4K UI Components › Atoms › Skip link): the first focusable
 // element on every page. Hidden until focused, then shown top-left (space/4 from the edges) with
 // the focus ring; jumps to the main landmark (give <main> the matching id).
 

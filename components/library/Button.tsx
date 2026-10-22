@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
 import { Spinner } from './Spinner'
 
-// Button (UI-50, UI-85; Figma B4K UI Components › Atoms › Button).
+// Button (Figma B4K UI Components › Atoms › Button).
 // Variant: Primary (filled inverse), Secondary (outline), Ghost (text only), Danger (destructive).
 // Size: lg 44 (default), md 40, sm 32; md and sm keep a 44 tap area (target/touch-min).
 // Focus: keyboard only, focus/ring. One primary action per view.

@@ -17,8 +17,8 @@ import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 import { useSignInFlow } from '../V2SignInGate'
 
-// A4 auth screens (UI-82, PD-04, PD-12, PD-37): Sign in (SCR-023), Reset password (SCR-024),
-// Consent step (SCR-025). Same auth calls as the live AuthForm.
+// A4 auth screens: Sign in, Reset password,
+// Consent step. Same auth calls as the live AuthForm.
 
 const post = (url: string, body: unknown) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
 

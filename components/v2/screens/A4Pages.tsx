@@ -42,7 +42,7 @@ import { useV2Shell } from '../V2Shell'
 
 const jsonFetch = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
 
-// ── Search (SCR-027, PD-42, PD-43, PD-38) ───────────────────────────────────
+// ── Search ───────────────────────────────────
 
 type SearchResult = { places: SearchPoi[]; plans: SearchPlan[]; explore: SearchExplore[] }
 
@@ -230,7 +230,7 @@ export function SearchScreen() {
   )
 }
 
-// ── Help (SCR-030) ──────────────────────────────────────────────────────────
+// ── Help ──────────────────────────────────────────────────────────
 
 const HELP_SECTIONS = ['getting-started', 'planning', 'saved', 'account', 'technical'] as const
 
@@ -267,7 +267,7 @@ export function HelpScreen() {
   )
 }
 
-// ── Legal pages (SCR-029) and cookie preferences (SCR-026) ──────────────────
+// ── Legal pages and cookie preferences ──────────────────
 
 export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
   const GAP = useGap()
@@ -333,7 +333,7 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
   )
 }
 
-// ── Not found and error (SCR-031) ───────────────────────────────────────────
+// ── Not found and error ───────────────────────────────────────────
 
 export function NotFoundScreen() {
   const t = useCd()

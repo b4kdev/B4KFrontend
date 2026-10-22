@@ -9,8 +9,8 @@ import { DragHandle } from './Plan'
 import { IconButton } from './IconButton'
 import { useFocusTrap, useMounted, usePhone } from './hooks'
 
-// Surfaces (UI-71; Figma Organisms): Modal, Dialog, Bottom sheet. No shadows (UI-05), no lines
-// between header, body and footer (UI-95); the 1px outline stays. Modal and Dialog become a
+// Surfaces (Figma Organisms): Modal, Dialog, Bottom sheet. No shadows, no lines
+// between header, body and footer; the 1px outline stays. Modal and Dialog become a
 // Modal bottom sheet on phones (adaptive).
 
 const Portal = ({ children }: { children: ReactNode }) => (useMounted() ? createPortal(children, document.body) : null)
@@ -37,7 +37,7 @@ export type ModalProps = {
   /** Up to two actions; desktop puts the primary last (right), phones stack it first. */
   primaryAction?: ReactNode
   secondaryAction?: ReactNode
-  /** Blocking backdrop for gates (sign-in, terms; UI-16): no close on scrim click. */
+  /** Blocking backdrop for gates (sign-in, terms): no close on scrim click. */
   blocking?: boolean
   /** Hide the close button (gates without a way out). */
   hideClose?: boolean
@@ -101,7 +101,7 @@ export type DialogProps = {
   third?: ReactNode
 }
 
-/** Dialog (part of CMP-050): short decision, role alertdialog, focus on the safest action, Esc cancels. */
+/** Dialog (part of the Modal component): short decision, role alertdialog, focus on the safest action, Esc cancels. */
 export function Dialog({ open, onCancel, title, body, confirm, cancel, third }: DialogProps) {
   const phone = usePhone()
   const ref = useFocusTrap<HTMLDivElement>(open, onCancel)
@@ -166,7 +166,7 @@ export type BottomSheetProps = {
 const SNAP_VH: Record<SheetSnap, string> = { peek: '76px', mid: '50dvh', full: '85dvh' }
 const ORDER: SheetSnap[] = ['peek', 'mid', 'full']
 
-/** Bottom sheet (CMP-051): radius/3xl top, bg-raised, grabber 32 by 4; map sheets drag between snaps. */
+/** Bottom sheet: radius/3xl top, bg-raised, grabber 32 by 4; map sheets drag between snaps. */
 export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', heights, header, actions, children, className }: BottomSheetProps) {
   const modal = type === 'modal'
   const ref = useFocusTrap<HTMLDivElement>(open && modal, onClose)

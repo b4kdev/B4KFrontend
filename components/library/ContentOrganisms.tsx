@@ -12,7 +12,7 @@ import { IconButton } from './IconButton'
 import { Image } from './Image'
 import { Pagination } from './NavGroups'
 
-// Content organisms (UI-72, UI-75; Figma Organisms): Hero, Carousel, Footer, Form, Tree view,
+// Content organisms (Figma Organisms): Hero, Carousel, Footer, Form, Tree view,
 // Accordion, Now Seoul card.
 
 export type HeroProps = {
@@ -29,7 +29,7 @@ export type HeroProps = {
   className?: string
 }
 
-/** Hero (CMP-057): full-width photo with gradient/overlay-fade, text bottom left; always in the Dark color mode. */
+/** Hero: full-width photo with gradient/overlay-fade, text bottom left; always in the Dark color mode. */
 export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action, as: H = 'h1', className }: HeroProps) {
   return (
     <section data-theme="dark" className={cn('relative w-full overflow-hidden bg-ui-bg-media text-ui-fg', size === 'home' ? 'h-[var(--hero-height-home)]' : 'h-[var(--hero-height-section)]', className)}>
@@ -61,7 +61,7 @@ export type CarouselProps = {
   className?: string
 }
 
-/** Carousel (CMP-053): no autoplay; slides change only when the user acts; crossfade (none with reduced motion). */
+/** Carousel: no autoplay; slides change only when the user acts; crossfade (none with reduced motion). */
 export function Carousel({ type, label, children, seeAll, subtitle, previousLabel, nextLabel, slideLabel, className }: CarouselProps) {
   const items = Children.toArray(children)
   const [i, setI] = useState(0)
@@ -119,7 +119,7 @@ export type FooterProps = {
   className?: string
 }
 
-/** Footer (CMP-048): one row of legal links and the copyright; content pages only. */
+/** Footer: one row of legal links and the copyright; content pages only. */
 export function Footer({ links, copyright, navLabel, className }: FooterProps) {
   return (
     <footer className={cn('flex flex-wrap items-center gap-[var(--space-4)] border-t border-ui-border bg-ui-bg px-[var(--space-8)] py-[var(--space-6)] type-body-caption text-ui-fg-muted max-md:flex-col max-md:items-start max-md:gap-[var(--space-3)] max-md:px-[var(--space-4)]', className)}>
@@ -148,7 +148,7 @@ export type FormProps = {
   className?: string
 }
 
-/** Form (CMP-025): one column, visible labels, errors on submit with a summary at the top (GOV.UK). */
+/** Form: one column, visible labels, errors on submit with a summary at the top (GOV.UK). */
 export function Form({ onSubmit, errorSummary, children, actions, className }: FormProps) {
   const summary = useRef<HTMLDivElement>(null)
   const count = errorSummary?.items.length ?? 0
@@ -174,12 +174,12 @@ export function Form({ onSubmit, errorSummary, children, actions, className }: F
   )
 }
 
-/** Tree view (CMP-046): Tree items nested 16 per level; role tree. */
+/** Tree view: Tree items nested 16 per level; role tree. */
 export function TreeView({ label, children, className }: { label: string; children: ReactNode; className?: string }) {
   return <ul role="tree" aria-label={label} className={className}>{children}</ul>
 }
 
-/** Accordion (CMP-052): Accordion items under a 1px top border; several can be open. */
+/** Accordion: Accordion items under a 1px top border; several can be open. */
 export function Accordion({ children, className }: { children: ReactNode; className?: string }) {
   return <div className={cn('border-t border-ui-border', className)}>{children}</div>
 }
@@ -199,7 +199,7 @@ export type NowSeoulCardProps = {
   className?: string
 }
 
-/** Now Seoul card (UI-75): local time, weather, three forecast days, one live tip. */
+/** Now Seoul card: local time, weather, three forecast days, one live tip. */
 export function NowSeoulCard({ label, eyebrow, time, date, temperature, condition, weatherIcon, forecast, tip, className }: NowSeoulCardProps) {
   return (
     <section aria-label={label} className={cn('flex flex-col gap-[var(--space-4)] border border-ui-border bg-ui-bg-raised p-[var(--space-4)] text-ui-fg', className)}>

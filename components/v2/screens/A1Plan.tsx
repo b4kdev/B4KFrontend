@@ -34,7 +34,7 @@ import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
 import { formatMinutes } from '../map/usePlanDraft'
 
-// Published plan (A1 SCR-007; PD-28, PD-29; UI-77): the Itinerary panel beside the map (desktop)
+// Published plan (A1): the Itinerary panel beside the map (desktop)
 // or in the map Bottom sheet (phones). Owner: Edit plan, Share, Delete and leg modes; visitor:
 // Save, Like, Share. Same calls as the live ItineraryDetailView.
 

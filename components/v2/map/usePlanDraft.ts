@@ -6,11 +6,11 @@ import type { MapPoi } from '@/hooks/useMapPois'
 import { clearDraftPlan, getDraftPlan, saveDraftPlan, type DraftPlan } from '@/lib/draft-plan'
 import type { ItineraryDetail } from '@/lib/itinerary'
 
-// The plan in progress (PD-26, PD-28, PD-30), stored as on the live map (UF-1): guests in
+// The plan in progress, stored as on the live map (UF-1): guests in
 // localStorage (b4k_draft_plan), signed-in users in their account draft (/api/plans/draft,
 // autosaved 800 ms after each change, loaded back on the next visit), so "Continue your plan"
 // works on both and across devices. A published plan open for editing is not autosaved (it has
-// its own Save changes). Limits from PD-30 (update): 8 days, 6 stops a day, 48 stops.
+// its own Save changes). Plan limits: 8 days, 6 stops a day, 48 stops.
 
 export const MAX_DAYS = 8
 export const PER_DAY = 6
@@ -172,7 +172,7 @@ export function formatMinutes(min: number, f: (key: string, v: Record<string, nu
   return h && m ? f('itinerary.duration.hoursMinutes', { h, m }) : h ? f('itinerary.duration.hours', { h }) : f('itinerary.duration.minutes', { m })
 }
 
-/** Straight-line estimate between two stops (as live until the plan is saved, PD-26). */
+/** Straight-line estimate between two stops (as live until the plan is saved). */
 export function legMinutes(a: MapPoi, b: MapPoi) {
   const R = 6371e3
   const toR = (x: number) => (x * Math.PI) / 180

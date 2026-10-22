@@ -7,7 +7,7 @@ import { Avatar } from './Avatar'
 import { CountBadge } from './Badge'
 import { FOCUS_RING_INSET } from './styles'
 
-// List molecules (UI-69, UI-100; Figma Molecules): List item, Accordion item, Tree item,
+// List molecules (Figma Molecules): List item, Accordion item, Tree item,
 // Leaderboard row, Notification item.
 
 export type ListItemProps = {
@@ -32,7 +32,7 @@ export type ListItemProps = {
 
 const ROW = 'flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left'
 
-/** List item (CMP-062): one row with slots, 44 high minimum, 1px divider, hover layer, inset focus ring. */
+/** List item: one row with slots, 44 high minimum, 1px divider, hover layer, inset focus ring. */
 export function ListItem({ title, secondary, leading, trailing, chevron, divider = true, onClick, href, renderLink, disabled, className }: ListItemProps) {
   const body = (
     <>
@@ -67,7 +67,7 @@ export type AccordionItemProps = {
   headingLevel?: 2 | 3 | 4
 }
 
-/** Accordion item (part of Accordion, CMP-052): button in a heading, region below, 1px divider. */
+/** Accordion item (part of Accordion): button in a heading, region below, 1px divider. */
 export function AccordionItem({ title, children, defaultExpanded = false, headingLevel = 3 }: AccordionItemProps) {
   const [open, setOpen] = useState(defaultExpanded)
   const id = useId()
@@ -109,7 +109,7 @@ export type TreeItemProps = {
   children?: ReactNode
 }
 
-/** Tree item (part of Tree view, CMP-046): chevron turns when expanded; leaf keeps the space. */
+/** Tree item (part of Tree view): chevron turns when expanded; leaf keeps the space. */
 export function TreeItem({ label, kind, level = 1, selected, count, checkbox, onToggle, onSelect, children }: TreeItemProps) {
   return (
     <li role="treeitem" aria-expanded={kind === 'leaf' ? undefined : kind === 'expanded'} aria-selected={selected} aria-level={level}>
@@ -160,7 +160,7 @@ export type LeaderboardRowProps = {
   renderLink?: (props: { href: string; className: string; children: ReactNode }) => ReactNode
 }
 
-/** Leaderboard row (ADD-96): rank (trophy for top 3), avatar, name and detail, trend, score. */
+/** Leaderboard row: rank (trophy for top 3), avatar, name and detail, trend, score. */
 export function LeaderboardRow({ rank, name, detail, score, avatarSrc, trend, you, rankLabel, href, renderLink }: LeaderboardRowProps) {
   const TrendIcon = trend?.direction === 'down' ? TrendingDown : TrendingUp
   const body = (
@@ -198,7 +198,7 @@ export type NotificationItemProps = {
   renderLink: (props: { href: string; className: string; children: ReactNode }) => ReactNode
 }
 
-/** Notification item (ADD-97): icon by type, title, body, time; unread = Count badge dot. */
+/** Notification item: icon by type, title, body, time; unread = Count badge dot. */
 export function NotificationItem({ icon, title, body, time, read = false, unreadLabel, href, renderLink }: NotificationItemProps) {
   const children = (
     <>

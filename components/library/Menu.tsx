@@ -3,7 +3,7 @@ import { Check, Clock, MapPin, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { FOCUS_RING_INSET } from './styles'
 
-// Menu item (part of Dropdown menu, CMP-005) and Combobox option (part of Combobox, CMP-010).
+// Menu item (part of Dropdown menu) and Combobox option (part of Combobox).
 
 export type MenuItemProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
   /** Figma Variant=Danger: destructive action in the danger color. */

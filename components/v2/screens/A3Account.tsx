@@ -48,9 +48,8 @@ import { LANGUAGES, LanguageRowMenu } from '../V2Settings'
 import { jsonFetch } from './A2Home'
 import { SignedOutPrompt } from './A3Saved'
 
-// A3 account screens (PD-46, PD-47, PD-48, UI-100) and A5 language and theme (SCR-034, PD-03,
-// PD-06): Profile own (SCR-017) and visitor (SCR-018), Badges (SCR-019), Leaderboard (SCR-020),
-// Notifications (SCR-021), Settings (SCR-022). Live /api/profile, /api/badges, /api/leaderboard,
+// A3 account screens and A5 language and theme: Profile own and visitor, Badges, Leaderboard,
+// Notifications, Settings. Live /api/profile, /api/badges, /api/leaderboard,
 // /api/notifications, /api/account/*.
 
 const send = (url: string, method: string, body?: unknown) =>
@@ -64,7 +63,7 @@ const BADGE_ICON = (category: string) => {
   return <Icon />
 }
 
-// ── Profile (own, SCR-017) ───────────────────────────────────────────────────
+// ── Profile (own) ───────────────────────────────────────────────────
 
 // The Profile header carries its own 16 / 24 inset and is drawn edge to edge on phones: it bleeds
 // over the page gutter and the page top padding below desktop.
@@ -84,11 +83,11 @@ export function ProfileOwnScreen() {
     return <V2Page bar={{ type: 'page', title: k('profile.header.breadcrumb') }}><SignedOutPrompt title={k('auth.gate.context.profile_nav')} text={k('auth.gate.valueProp')} /></V2Page>
   }
   const p = profile.data
-  // Your profile is your public page (PD-48): only published plans; drafts and private plans live in Saved.
+  // Your profile is your public page: only published plans; drafts and private plans live in Saved.
   const plans = trips.data?.filter((tr) => tr.is_published)
   return (
     <V2Page bar={{ type: 'page', title: k('profile.header.breadcrumb') }}>
-      {/* Figma 461:59578: one 960 column; header, then the Plans section (subtitle, See all, three
+      {/* Figma: one 960 column; header, then the Plans section (subtitle, See all, three
           cards, Open Saved) on the 24 inset. */}
       <div className="mx-auto flex w-full max-w-[960px] flex-col gap-[var(--space-6)]">
         {p ? (
@@ -161,7 +160,7 @@ function BadgeTile({ b, onOpen }: { b: BadgeT; onOpen?: () => void }) {
   ) : tile
 }
 
-// ── Profile (visitor, SCR-018) ───────────────────────────────────────────────
+// ── Profile (visitor) ───────────────────────────────────────────────
 
 type OtherProfile = { id: number; name: string | null; avatar_url: string | null; trips_count: number; saves_count: number; badges_count: number; trips_public: boolean; badges_public: boolean }
 
@@ -180,7 +179,7 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
   if (profile.error) return <V2Page bar={{ type: 'page', title: '' }}><EmptyState title={k('profile.notFound')} /></V2Page>
   return (
     <V2Page bar={{ type: 'page', title: p?.name ?? '' }}>
-      {/* Figma 254:4011: the own profile layout; Share is a round icon button in the header row. */}
+      {/* Figma: the own profile layout; Share is a round icon button in the header row. */}
       <div className="mx-auto flex w-full max-w-[960px] flex-col gap-[var(--space-6)]">
         {p ? (
           <div className={HEADER_BLEED}><ProfileHeader
@@ -214,7 +213,7 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
   )
 }
 
-// ── Badges (SCR-019) ─────────────────────────────────────────────────────────
+// ── Badges ─────────────────────────────────────────────────────────
 
 export function BadgesScreen() {
   const badgeName = useBadgeName()
@@ -275,7 +274,7 @@ export function BadgesScreen() {
   )
 }
 
-// ── Leaderboard (SCR-020) ────────────────────────────────────────────────────
+// ── Leaderboard ────────────────────────────────────────────────────
 
 export function LeaderboardScreen() {
   const k = useCdKey()
@@ -318,7 +317,7 @@ export function LeaderboardScreen() {
   )
 }
 
-// ── Notifications (SCR-021) ──────────────────────────────────────────────────
+// ── Notifications ──────────────────────────────────────────────────
 
 const NOTIF_ICON: Record<string, React.ReactNode> = { badge_earned: <Award />, event_drop: <Calendar />, editorial_pick: <Sparkles />, deal_expiring: <Bell />, challenge_new: <Trophy />, promotion: <Bookmark /> }
 
@@ -348,8 +347,8 @@ export function NotificationsScreen() {
   if (!user) return <V2Page bar={{ type: 'page', title: k('notifications.title') }}><SignedOutPrompt title={k('notifications.title')} text={t('CD1596')} /></V2Page>
   return (
     <V2Page bar={{ type: 'page', title: k('notifications.title') }} className="flex flex-col">
-      {/* Figma 257:4860: 720 column, section-header title, Mark all read on its own row at the end,
-          caps day labels, Load more at the start; Nothing yet is a plain empty state (259:6704). */}
+      {/* Figma: 720 column, section-header title, Mark all read on its own row at the end,
+          caps day labels, Load more at the start; Nothing yet is a plain empty state. */}
       <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col gap-[var(--space-4)]">
         <h1 className="type-display-h3 max-lg:hidden">{k('notifications.title')}</h1>
         {data?.unread_count ? <Button variant="ghost" size="md" className="self-end" onClick={async () => { await send('/api/notifications/mark-all-read', 'POST').catch(() => {}); mutate(); mutateKey(UNREAD_KEY) }}>{k('notifications.markAllRead')}</Button> : null}
@@ -386,7 +385,7 @@ export function NotificationsScreen() {
   )
 }
 
-// ── Settings (SCR-022) with Language and theme (SCR-034) ─────────────────────
+// ── Settings with Language and theme ─────────────────────
 
 export function SettingsScreen() {
   const k = useCdKey()
@@ -457,7 +456,7 @@ export function SettingsScreen() {
     await send('/api/account/notification-prefs', 'PATCH', { notif_type: type, opt_out: !on }).catch(() => toast({ type: 'critical', message: k('profile.settings.notifications.error') }))
     prefs.mutate()
   }
-  // Figma 454:132475: caps group labels on the column edge, lists with row dividers, 16 between all parts.
+  // Figma: caps group labels on the column edge, lists with row dividers, 16 between all parts.
   const heading = 'type-eyebrow-category text-ui-fg-muted'
   const langName = LANGUAGES.find((l) => l.code === locale)?.name ?? locale
 
@@ -465,7 +464,7 @@ export function SettingsScreen() {
     <V2Page bar={{ type: 'page', title: k('nav.settings') }}>
       <div className="mx-auto flex w-full max-w-[720px] flex-col gap-[var(--space-4)]">
         <h1 className="type-display-h3 max-lg:hidden">{k('nav.settings')}</h1>
-        {/* Signed out (527:88483): every group stays; account rows and toggles are disabled (PD-49). */}
+        {/* Signed out: every group stays; account rows and toggles are disabled. */}
         <h2 className={heading}>{k('profile.settings.account.heading')}</h2>
         {user ? (
           <>
@@ -506,7 +505,7 @@ export function SettingsScreen() {
           ))}
         </ul>
 
-        {/* Privacy is per plan (PD-47): no per-tab public toggles here. */}
+        {/* Privacy is per plan: no per-tab public toggles here. */}
         <h2 className={heading}>{GAP.settingsData}</h2>
         <ul>
           <ListItem title={t('CD1603')} secondary={t('CD0137')} chevron onClick={() => router.push('/legal/cookies')} />

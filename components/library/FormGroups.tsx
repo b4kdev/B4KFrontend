@@ -8,7 +8,7 @@ import { FieldMessage } from './Field'
 import { IconButton } from './IconButton'
 import { ProgressBar } from './Progress'
 
-// Form molecules (UI-63; Figma Molecules): Fieldset, Stepper, File upload.
+// Form molecules (Figma Molecules): Fieldset, Stepper, File upload.
 
 export type FieldsetProps = {
   /** Legend (Label style). */
@@ -65,7 +65,7 @@ export type StepperProps = {
   className?: string
 }
 
-/** Stepper (CMP-015, Backpack Nudger): label and hint left, − value + right. */
+/** Stepper (Backpack Nudger): label and hint left, − value + right. */
 export function Stepper({ label, hint, value, min = 0, max = Infinity, onValueChange, decreaseLabel, increaseLabel, format, disabled, className }: StepperProps) {
   const id = useId()
   return (
@@ -98,7 +98,7 @@ export type FileUploadProps = {
   className?: string
 }
 
-/** File upload (CMP-020): a hidden file input opened by the button; the zone also takes drops. */
+/** File upload: a hidden file input opened by the button; the zone also takes drops. */
 export function FileUpload({ type = 'button', label, hint, error, accept, onFile, progress, progressLabel, className }: FileUploadProps) {
   const input = useRef<HTMLInputElement>(null)
   const id = useId()

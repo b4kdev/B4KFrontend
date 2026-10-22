@@ -3,7 +3,7 @@ import { Clapperboard, Landmark, MapPin as MapPinIcon, Music, Sparkles, Utensils
 import { cn } from '@/lib/cn'
 import { FOCUS_RING, HIT_AREA } from './styles'
 
-// Map atoms (UI-74, UI-39; Figma Atoms): Map pin, Cluster bubble, Map control.
+// Map atoms (Figma Atoms): Map pin, Cluster bubble, Map control.
 // These are the DOM versions (lists, legends, overlays). Markers inside the Naver map are drawn
 // by the SDK with the same sizes and the hex values in tokens/colors.ts.
 
@@ -19,7 +19,7 @@ const CATEGORY_ICON = {
 export type MapPinProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
   /** Figma Category. */
   category?: keyof typeof CATEGORY_ICON
-  /** Figma State=Selected: map/pin-selected and 1.25x (UI-39). */
+  /** Figma State=Selected: map/pin-selected and 1.25x. */
   selected?: boolean
   /** The place name, read by screen readers. */
   label: string

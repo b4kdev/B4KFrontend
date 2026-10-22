@@ -10,8 +10,8 @@ import { Separator } from './Separator'
 import { Spinner } from './Spinner'
 import { FOCUS_RING } from './styles'
 
-// Overlay molecules (UI-66; Figma Molecules): Dropdown menu, Popover, Combobox.
-// Elevated surface, radius/2xl, 1px color/border, no shadow (UI-05), 8 from the trigger.
+// Overlay molecules (Figma Molecules): Dropdown menu, Popover, Combobox.
+// Elevated surface, radius/2xl, 1px color/border, no shadow, 8 from the trigger.
 // Esc and an outside click close. Placement is CSS (below, start-aligned); a collision-aware
 // version can replace it without changing props.
 
@@ -36,7 +36,7 @@ export type DropdownMenuProps = {
   trigger: ReactElement
   /** Accessible name of the menu. */
   label: string
-  /** Menu items; groups are separated by space (UI-95), Danger last. */
+  /** Menu items; groups are separated by space, Danger last. */
   children: ReactNode
   align?: 'start' | 'end'
   className?: string
@@ -44,7 +44,7 @@ export type DropdownMenuProps = {
   rootClassName?: string
 }
 
-/** Dropdown menu (CMP-005): role menu of Menu items; arrow keys move, Enter selects. */
+/** Dropdown menu: role menu of Menu items; arrow keys move, Enter selects. */
 export function DropdownMenu({ trigger, label, children, align = 'start', className, rootClassName }: DropdownMenuProps) {
   const [open, setOpen] = useState(false)
   const root = useRef<HTMLDivElement>(null)
@@ -118,7 +118,7 @@ export type PopoverProps = {
   className?: string
 }
 
-/** Popover (CMP-030, build-ahead): rich content on a trigger; focus moves into it. */
+/** Popover (build-ahead): rich content on a trigger; focus moves into it. */
 export function Popover({ trigger, title, label, closeLabel, children, action, side = 'bottom', className }: PopoverProps) {
   const [open, setOpen] = useState(false)
   const root = useRef<HTMLDivElement>(null)
@@ -192,7 +192,7 @@ export type ComboboxProps = {
   className?: string
 }
 
-/** Combobox (CMP-010): WAI-ARIA combobox pattern; arrows move, Enter picks, Delete removes a recent, Esc closes. */
+/** Combobox: WAI-ARIA combobox pattern; arrows move, Enter picks, Delete removes a recent, Esc closes. */
 export function Combobox(props: ComboboxProps) {
   const { label, placeholder, value, onValueChange, state, items, recentLabel, resultsLabel, clearAllLabel, onClearAll, emptyTitle, emptyText, loadingLabel, clearLabel, onSubmit, className } = props
   const [open, setOpen] = useState(false)

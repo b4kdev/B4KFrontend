@@ -7,7 +7,7 @@ import { cn } from '@/lib/cn'
 import { IconButton } from './IconButton'
 import { PageItem, Segment, StepItem, Tab } from './Nav'
 
-// Navigation molecules (UI-67; Figma Molecules): Tabs, Segmented control, Breadcrumbs, Pagination,
+// Navigation molecules (Figma Molecules): Tabs, Segmented control, Breadcrumbs, Pagination,
 // Progress indicator, Step list.
 
 export type TabsProps = {
@@ -26,7 +26,7 @@ export type TabsProps = {
   className?: string
 }
 
-/** Tabs (CMP-044): switches views in a page or panel, never filters. Arrow keys move. */
+/** Tabs: switches views in a page or panel, never filters. Arrow keys move. */
 export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollLabels, baseline = true, className }: TabsProps) {
   const list = useRef<HTMLDivElement>(null)
   const [edges, setEdges] = useState({ start: false, end: false })
@@ -116,7 +116,7 @@ export type SegmentedControlProps = {
   className?: string
 }
 
-/** Segmented control (CMP-006): 2 to 4 equal segments on a pill track; one is always selected. */
+/** Segmented control: 2 to 4 equal segments on a pill track; one is always selected. */
 export function SegmentedControl({ label, options, value, onValueChange, className }: SegmentedControlProps) {
   const onKey = (e: KeyboardEvent) => {
     const i = options.findIndex((o) => o.id === value)
@@ -146,7 +146,7 @@ export type BreadcrumbsProps = {
   className?: string
 }
 
-/** Breadcrumbs (CMP-043): eyebrow/category; earlier levels are fg-muted links, current is fg. */
+/** Breadcrumbs: eyebrow/category; earlier levels are fg-muted links, current is fg. */
 export function Breadcrumbs({ label, items, collapseLabel, className }: BreadcrumbsProps) {
   const last = items.length - 1
   return (
@@ -195,7 +195,7 @@ const pagesAround = (page: number, count: number) => {
   return Array.from(set).sort((a, b) => a - b)
 }
 
-/** Pagination (CMP-045): numbered with previous/next, or dots for carousels. */
+/** Pagination: numbered with previous/next, or dots for carousels. */
 export function Pagination({ label, type = 'numbered', page, pageCount, onPageChange, previousLabel = '', nextLabel = '', statusText, className }: PaginationProps) {
   if (type === 'dots') {
     return (
@@ -231,7 +231,7 @@ export type ProgressIndicatorProps = {
   className?: string
 }
 
-/** Progress indicator (CMP-032; Quick plan): label above equal segments. */
+/** Progress indicator (Quick plan): label above equal segments. */
 export function ProgressIndicator({ step, steps, label, className }: ProgressIndicatorProps) {
   return (
     <div className={cn('flex flex-col gap-[var(--space-2)]', className)}>

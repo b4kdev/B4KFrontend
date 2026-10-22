@@ -9,10 +9,10 @@ import { IconButton } from './IconButton'
 import { Image } from './Image'
 import { SaveLikeOverlay } from './ContentMolecules'
 
-// Card (CMP-049, UI-81; Figma Organisms › Card). Filled and square, no shadow; the text panel on
+// Card (Figma Organisms › Card). Filled and square, no shadow; the text panel on
 // bg-raised; hover adds the state layer; keyboard focus rings the whole card. The card is one link
 // (a stretched link); Save, Like and Add to plan are separate buttons above it.
-// Text fit (UI-102): titles and meta two lines then an ellipsis; Place description one line.
+// Text fit: titles and meta two lines then an ellipsis; Place description one line.
 
 type Common = {
   href: string

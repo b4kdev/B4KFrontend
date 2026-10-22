@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
-// Table row (part of CMP-054, T-15; UI-14) and the Table organism (UI-72): rows separated by 1px
+// Table row (part of the Table component) and the Table organism: rows separated by 1px
 // lines, no stripes. Header: bg-raised, body/label fg-muted, sort icon; the sorted column is fg
 // with an arrow. Body rows table/row-height 48, border-subtle; hover state-hover, selected
 // state-selected. Numbers right-aligned with tabular figures.

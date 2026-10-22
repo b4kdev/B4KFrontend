@@ -4,7 +4,7 @@ import { forwardRef, type InputHTMLAttributes } from 'react'
 import { Search, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
-// Search input (CMP-016; Figma Atoms › Search input): pill with a leading search icon, a clear
+// Search input (Figma Atoms › Search input): pill with a leading search icon, a clear
 // button once there is text. Same states as Text input; focus = 2px border-focus. No visible label:
 // type search with an aria-label. Suggestions open in a Combobox.
 

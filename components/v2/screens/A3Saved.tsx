@@ -33,7 +33,7 @@ import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 import { jsonFetch } from './A2Home'
 
-// Saved (SCR-016, PD-48, PD-31) and Plan from saved places (SCR-035, PD-33, PD-30, PD-45).
+// Saved and Plan from saved places.
 // Live /api/saved, /api/folders, /api/plans, /api/profile/trips.
 
 const send = (url: string, method: string, body?: unknown) =>
@@ -61,7 +61,7 @@ export function SignedOutPrompt({ title, text, icon, plain, className }: { title
   )
 }
 
-/** Name sheet for New folder and Rename folder (one sheet like Save plan, PD-48 update). */
+/** Name sheet for New folder and Rename folder (one sheet like Save plan). */
 function FolderNameSheet({ open, mode, initial, onClose, onSave }: { open: boolean; mode: 'new' | 'rename'; initial?: string; onClose: () => void; onSave: (name: string) => Promise<void> }) {
   const t = useCd()
   const k = useCdKey()
@@ -116,7 +116,7 @@ export function SavedScreen() {
     { id: 'my-plans', label: k('saved.tabs.myPlans') },
     { id: 'saved-plans', label: k('saved.tabs.savedPlans') },
   ]
-  // Figma 247:445: Saved is a top-level destination (phone bar with Menu and search), title as a
+  // Figma: Saved is a top-level destination (phone bar with Menu and search), title as a
   // section header on every width, then Tabs, then the Places toolbar (New list, Plan from Saved).
   const head = <h1 className="type-display-h3">{k('saved.title')}</h1>
   const toolbar = (
@@ -131,7 +131,7 @@ export function SavedScreen() {
   if (!user) {
     return (
       <V2Page className="flex flex-col">
-        {/* Figma 248:2071: the tabs stay; a plain prompt with the bookmark icon fills the page. */}
+        {/* Figma: the tabs stay; a plain prompt with the bookmark icon fills the page. */}
         <div className="flex flex-1 flex-col gap-[var(--space-4)]">
           {head}
           <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={setTab} tabs={tabs} className="self-start" />
@@ -192,7 +192,7 @@ export function SavedScreen() {
         <ListItem
           key={p.id}
           title={p.title || k('profile.untitledPlan')}
-          // Figma 248:943: status in the second line ("5 stops · 2 days · Public", "Draft · 3 stops").
+          // Figma: status in the second line ("5 stops · 2 days · Public", "Draft · 3 stops").
           secondary={p.is_draft
             ? `${k('saved.myPlan.draft')} · ${k('saved.plan.stops', { count: p.stop_count })}`
             : `${k('saved.plan.stops', { count: p.stop_count })} · ${k('saved.plan.days', { count: p.duration_days })} · ${k('profile.settings.privacy.public')}`}
@@ -284,7 +284,7 @@ export function SavedScreen() {
   )
 }
 
-// ── Plan from saved places (SCR-035) ─────────────────────────────────────────
+// ── Plan from saved places ─────────────────────────────────────────
 
 const LIMIT = 48
 const PER_DAY = 6
@@ -326,7 +326,7 @@ export function PlanFromSavedScreen() {
     )
     router.push('/map?from=saved')
   }
-  // Figma 252:2116: a full-screen flow. Flow bar (logo, close), Pick places header, folder rows
+  // Figma: a full-screen flow. Flow bar (logo, close), Pick places header, folder rows
   // (folder icon, "2 of 3 selected", select all) and place rows (48 photo, area) with the checkbox
   // at the end; the whole row toggles. Action bar: Cancel and Make plan on the 640 column.
   const row = 'w-full flex-row-reverse gap-[var(--space-3)] border-b border-ui-border px-[var(--space-4)] py-[var(--space-3)] hover:bg-ui-state-hover [&>span:last-child]:flex [&>span:last-child]:min-w-0 [&>span:last-child]:flex-1 [&>span:last-child]:items-center [&>span:last-child]:gap-[var(--space-3)]'
@@ -366,7 +366,7 @@ export function PlanFromSavedScreen() {
   }
   return (
     <V2Page bar={{ type: 'page', title: t('CD1363') }} noFooter bleed>
-      {/* Phones use the Page top bar (252:2109); desktop the Flow bar. */}
+      {/* Phones use the Page top bar; desktop the Flow bar. */}
       <div className="sticky top-0 z-30 hidden h-[var(--layout-header-height)] items-center justify-between bg-ui-bg px-[var(--space-6)] lg:flex">
         <IntlLink href="/" className="inline-flex focus-visible:shadow-focus-ring focus-visible:outline-none"><Logo label="B4K" className="h-[var(--space-6)] w-auto" /></IntlLink>
         <IconButton label={k('saved.folder.cancel')} icon={<X />} onClick={() => router.back()} />

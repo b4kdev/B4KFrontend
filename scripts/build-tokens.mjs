@@ -132,9 +132,9 @@ writeFileSync(join(root, 'app/tokens.css'), css)
 
 // ── Tailwind preset ──────────────────────────────────────────────────────────
 // Semantic tokens only (primitives stay hidden, as in Figma). Font sizes, spacing and radius
-// already equal the Tailwind defaults (UI-12), so only the extra keys are added.
+// already equal the Tailwind defaults, so only the extra keys are added.
 // Colors sit under `ui-` while the old theme keys (bg, fg, danger …) still exist; the prefix is
-// dropped in the clean-up phase (DOC-211, phase 7).
+// dropped in the clean-up phase (phase 7).
 const v = (path) => `var(${byPath[path].css})`
 const group = (prefix) =>
   Object.fromEntries(
@@ -196,7 +196,7 @@ const b4kTokens: Partial<Config> = {
       backgroundImage: {
         'overlay-fade': 'var(--gradient-overlay-fade)',
       },
-      // Motion patterns from the Motion spec (UI-20, UI-56): skeleton pulse, indeterminate progress.
+      // Motion patterns from the Motion spec: skeleton pulse, indeterminate progress.
       keyframes: {
         'b4k-pulse': { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0.5' } },
         'b4k-indeterminate': { '0%': { left: '-40%' }, '100%': { left: '100%' } },

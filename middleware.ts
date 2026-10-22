@@ -102,7 +102,7 @@ function memLimit(key: string, max: number, windowMs: number): { success: boolea
 // ── Intl middleware (non-api routes only) ──────────────────────────────────────
 const intlMiddleware = createIntlMiddleware(routing)
 
-// /zh-CN/... and /th/... (PD-06 retired locales) → /en/... with a permanent
+// /zh-CN/... and /th/... (retired locales) → /en/... with a permanent
 // redirect, keeping the rest of the path and the query string.
 const RETIRED_LOCALE_RE = new RegExp(`^/(${RETIRED_LOCALES.join('|')})(?=/|$)`, 'i')
 

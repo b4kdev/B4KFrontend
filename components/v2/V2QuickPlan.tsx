@@ -15,11 +15,11 @@ import { COURSE_HANDOFF_EVENT } from './map/usePlanDraft'
 import { useCd } from './cd'
 import { useV2Shell } from './V2Shell'
 
-// Quick plan (planning flow 4, PD-33, PD-45; SCR-009): Where, who and when; Interests (up to 10);
+// Quick plan (planning flow 4): Where, who and when; Interests (up to 10);
 // Review. Make my plan builds the course the same way as live (/places + buildCourse) and opens
 // it in the Plan editor unsaved (/v2/map?from=quickplan).
 
-// Destinations as drawn (SCR-009, in its order). Gangneung, Sokcho and Yeosu are drawn too but
+// Destinations as drawn (in its order). Gangneung, Sokcho and Yeosu are drawn too but
 // have no text yet, so they are added once their texts exist. A city with no city-level data
 // searches its province, as Gyeongju does.
 const CITIES = ['Seoul', 'Busan', 'Jeju', 'Gyeongju', 'Incheon', 'Jeonju'] as const
@@ -77,7 +77,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
   const group = categories.find((g) => g.slug === activeGroup) ?? categories[0]
   const toggle = (slug: string) => setPicked((p) => (p.includes(slug) ? p.filter((x) => x !== slug) : p.length < MAX ? [...p, slug] : p))
 
-  // Figma A1 / Quick plan / Step 1 to 3 (SCR-009).
+  // Figma A1 / Quick plan / Step 1 to 3.
   const body =
     step === 1 ? (
       <div className={phone ? 'flex flex-col gap-[var(--space-6)]' : 'flex flex-col gap-[var(--space-5)]'}>

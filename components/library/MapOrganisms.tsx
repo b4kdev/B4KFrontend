@@ -17,7 +17,7 @@ import { Tabs } from './NavGroups'
 import { TransportMode } from './Plan'
 import { FOCUS_RING_INSET } from './styles'
 
-// Map and planning organisms (UI-76, UI-77, UI-78, UI-89; Figma Organisms): AI panel, Plan cart,
+// Map and planning organisms (Figma Organisms): AI panel, Plan cart,
 // Left panel, Saved hub, Itinerary panel, Place detail. Data comes in as props; texts as labels.
 
 type Day = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
@@ -38,7 +38,7 @@ export type AiPanelProps = {
   className?: string
 }
 
-/** AI panel (UI-76): greeting and suggestion chips when empty; chat bubbles in a log; AI input at the bottom. */
+/** AI panel: greeting and suggestion chips when empty; chat bubbles in a log; AI input at the bottom. */
 export function AiPanel({ viewport, title, greeting, suggestions, onSuggestion, messages, typing, input, labels, onMinimize, onClose, className }: AiPanelProps) {
   const id = useId()
   const desktop = viewport === 'desktop'
@@ -134,7 +134,7 @@ export type PlanCartProps = {
   className?: string
 }
 
-/** Plan cart (UI-77): the plan as a shopping cart at the bottom of the Left panel. */
+/** Plan cart: the plan as a shopping cart at the bottom of the Left panel. */
 export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, onRemove, onSelect, onMove, onSave, onDiscard, labels, className }: PlanCartProps) {
   const id = useId()
   const [dragId, setDragId] = useState<string | null>(null)
@@ -258,12 +258,12 @@ export type LeftPanelProps = {
   /** Map type: the Plan cart; Open covers the panel. */
   cart?: ReactNode
   cartOpen?: boolean
-  /** Top inset kept clear for the Universal search (UI-101 shell). */
+  /** Top inset kept clear for the Universal search (shell without a top nav). */
   topClear?: boolean
   className?: string
 }
 
-/** Left panel (UI-77, UI-87): desktop panel next to the rail; complementary landmark. */
+/** Left panel: desktop panel next to the rail; complementary landmark. */
 export function LeftPanel({ type, label, children, cart, cartOpen, topClear, className }: LeftPanelProps) {
   return (
     <aside aria-label={label} className={cn('relative flex h-full shrink-0 flex-col bg-ui-bg', type === 'index' ? 'w-[var(--layout-left-panel-index)]' : 'w-[var(--layout-left-panel)]', topClear && 'pt-[72px]', className)}>
@@ -285,7 +285,7 @@ export type SavedHubProps = {
   labels: { back: string; add: (name: string) => string; emptyTitle: string; emptyBody: string }
 }
 
-/** Saved hub (UI-77, PD-48): saved places inside the map, for adding them to a plan. */
+/** Saved hub: saved places inside the map, for adding them to a plan. */
 export function SavedHub({ view, folders = [], folder, onOpenFolder, onBack, onAdd, emptyAction, labels }: SavedHubProps) {
   // Figma Saved hub root: color/bg-raised, padding 16, gap 16 in every view.
   const root = 'flex flex-col gap-[var(--space-4)] bg-ui-bg-raised p-[var(--space-4)] text-ui-fg'
@@ -353,7 +353,7 @@ export type ItineraryPanelProps = {
   labels: { all: string; day: (n: number) => string; days: string; related: string }
 }
 
-/** Itinerary panel (UI-77, ADD-68): title is the page h1; day tabs; stops as an ordered list. */
+/** Itinerary panel: title is the page h1; day tabs; stops as an ordered list. */
 export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, privateLabel, stats, days, activeDay, onDayChange, stops, selectedStop, onSelectStop, onLeg, related, footer, labels }: ItineraryPanelProps) {
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
@@ -403,7 +403,7 @@ export type PlaceDetailProps = {
   imageSrc?: string | null
   imageAlt?: string
   description?: string
-  /** Figma Show sponsored (off at launch, PD-18). */
+  /** Figma Show sponsored (off at launch). */
   sponsored?: string
   details: { icon: 'hours' | 'address' | 'website'; title: string; href?: string }[]
   saved: boolean
@@ -415,7 +415,7 @@ export type PlaceDetailProps = {
   labels: { add: string; save: string; like: string; share: string }
 }
 
-/** Place detail (UI-89): photo, name (display/h2), meta, actions (Add to plan, Save, Like, Share), details. */
+/** Place detail: photo, name (display/h2), meta, actions (Add to plan, Save, Like, Share), details. */
 export function PlaceDetail({ viewport, name, meta, imageSrc, imageAlt, description, sponsored, details, saved, liked, onAdd, onSave, onLike, onShare, labels }: PlaceDetailProps) {
   const ICON = { hours: Clock, address: MapPin, website: Globe } as const
   return (

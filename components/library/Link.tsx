@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react'
 import { Link as IntlLink } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
 
-// Link (UI-60; Figma B4K UI Components › Atoms › Link). Always an anchor, never a button.
+// Link (Figma B4K UI Components › Atoms › Link). Always an anchor, never a button.
 // Inline: inside body text, always underlined (the underline is the cue, the color equals the
 //   text color, WCAG 1.4.1); color/link, hover color/link-hover. In code it inherits the size of
 //   the text around it (Figma draws it in body/link, the same as body/base).

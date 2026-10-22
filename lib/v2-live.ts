@@ -1,4 +1,4 @@
-// Every page is on the new design (components/v2, PD-53 update 2). middleware.ts rewrites
+// Every page is on the new design (components/v2). middleware.ts rewrites
 // /[locale]<path> to the v2 screen at /[locale]/v2<path> (the address stays the same; an unknown
 // path gets the v2 Page not found) and redirects the old preview address /[locale]/v2<path> to
 // /[locale]<path>. The pre-v2 screens and their styles are gone.

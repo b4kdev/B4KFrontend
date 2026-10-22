@@ -13,7 +13,7 @@ export type StatCounterProps = {
   separator?: boolean
 }
 
-/** Stat counter (UI-73): number then label on one line; read as one text ("12 Trips"). */
+/** Stat counter: number then label on one line; read as one text ("12 Trips"). */
 export function StatCounter({ number, label, separator }: StatCounterProps) {
   return (
     <span className="inline-flex items-baseline gap-[var(--space-2)]">
@@ -35,7 +35,7 @@ export type ImageActionProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'ty
   label: string
 }
 
-/** Image action (UI-75): round 32 button on a photo, scrim behind a 16 icon in fg-on-media. */
+/** Image action: round 32 button on a photo, scrim behind a 16 icon in fg-on-media. */
 export const ImageAction = forwardRef<HTMLButtonElement, ImageActionProps>(function ImageAction(
   { on = false, icon, label, className, ...props },
   ref,
@@ -72,7 +72,7 @@ export type ForecastDayProps = {
   label: string
 }
 
-/** Forecast day (UI-75): one day of the forecast in the Now Seoul card. */
+/** Forecast day: one day of the forecast in the Now Seoul card. */
 export function ForecastDay({ day, icon, range, label }: ForecastDayProps) {
   return (
     <div role="group" aria-label={label} className="flex flex-col items-center gap-[var(--space-1)]">
@@ -91,7 +91,7 @@ export type ChatBubbleProps = {
   typingLabel?: string
 }
 
-/** Chat bubble (UI-76): radius/2xl, body/base; user = inverse, right; assistant = sunken, left. */
+/** Chat bubble: radius/2xl, body/base; user = inverse, right; assistant = sunken, left. */
 export function ChatBubble({ role, children, typingLabel }: ChatBubbleProps) {
   return (
     <div className={cn('flex w-full', role === 'user' ? 'justify-end' : 'justify-start')}>
@@ -121,7 +121,7 @@ export function ChatBubble({ role, children, typingLabel }: ChatBubbleProps) {
   )
 }
 
-/** Scrim (UI-73): dimming layer behind Modal, Dialog and Bottom sheet. Blocking never closes on click. */
+/** Scrim: dimming layer behind Modal, Dialog and Bottom sheet. Blocking never closes on click. */
 export function Scrim({ kind = 'default', onClick, className }: { kind?: 'default' | 'blocking'; onClick?: () => void; className?: string }) {
   return (
     <div
@@ -142,7 +142,7 @@ export type CalendarDayProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'ty
   position?: 'start' | 'end' | 'in-range'
 }
 
-/** Calendar day (UI-84): 40 square; start and end = bg-inverse; in range = state-selected; today = ring. */
+/** Calendar day: 40 square; start and end = bg-inverse; in range = state-selected; today = ring. */
 export const CalendarDay = forwardRef<HTMLButtonElement, CalendarDayProps>(function CalendarDay(
   { day, label, today, position, className, ...props },
   ref,

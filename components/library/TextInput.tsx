@@ -6,7 +6,7 @@ import { cn } from '@/lib/cn'
 import { FieldMessage, Label } from './Field'
 import { FIELD_FRAME } from './styles'
 
-// Text input (UI-51, UI-58; Figma Atoms › Text input). Placeholder only by default; showLabel for
+// Text input (Figma Atoms › Text input). Placeholder only by default; showLabel for
 // longer forms (the label element is always there, sr-only when hidden). Sizes lg 44, md 40.
 // Square, border-strong; focus = 2px border-focus, no ring. Error = danger border, message below
 // (replaces help), aria-invalid. No success state.

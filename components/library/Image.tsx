@@ -6,7 +6,7 @@ import { ImageIcon } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Skeleton } from './Progress'
 
-// Image (UI-61; Figma Atoms › Image): a photo of a place, square corners, locked to one of four
+// Image (Figma Atoms › Image): a photo of a place, square corners, locked to one of four
 // ratios: 1:1 (thumbnails), 4:3 (cards), 16:9 (media), 12:5 (wide heroes). Loading = skeleton
 // pulse; Missing = state-selected with the image icon. object-cover, lazy.
 

@@ -7,7 +7,7 @@ import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/library/Button';
 import { EmptyState } from '@/components/library/Feedback';
 
-// Fallback outside the v2 shell (v2 pages have their own error screen, SCR-031).
+// Fallback outside the v2 shell (v2 pages have their own error screen).
 export default function ErrorBoundary({
   error,
   reset,

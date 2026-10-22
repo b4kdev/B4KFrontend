@@ -1,4 +1,4 @@
-// Generated from public/brand/B4K_BrandLogo_{Horizontal,Square}_Black.svg (DOC-146): path data only,
+// Generated from public/brand/B4K_BrandLogo_{Horizontal,Square}_Black.svg: path data only,
 // so the logo can be filled with currentColor and follow the theme.
 export const LOGO_PATHS = {
   "wordmark": {

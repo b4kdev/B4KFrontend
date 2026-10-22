@@ -8,7 +8,7 @@ import { mergeCd, mergeGap } from '@/components/v2/messages'
 import { keepKNamesDeep } from '@/components/v2/text'
 import { V2_LIVE_HEADER } from '@/lib/v2-live'
 
-// Preview of the new design (PD-53 update 2): every Figma screen under /[locale]/v2, built from
+// Preview of the new design: every Figma screen under /[locale]/v2, built from
 // components/library. Hidden: noindex, not linked from live pages. Texts come from the Copy Deck
 // (messages/v2, `cd` namespace) with the supplement for rows not translated yet and texts with no
 // row (`gap`); see components/v2/messages.ts.

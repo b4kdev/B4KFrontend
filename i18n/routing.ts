@@ -5,6 +5,6 @@ export const routing = defineRouting({
   defaultLocale: 'en',
 });
 
-// PD-06: zh-CN and th were dropped. Old links/bookmarks under these prefixes
+// zh-CN and th were dropped. Old links/bookmarks under these prefixes
 // are permanently redirected to en by middleware.ts.
 export const RETIRED_LOCALES = ['zh-CN', 'th'] as const;

@@ -4,7 +4,7 @@ import { cn } from '@/lib/cn'
 import { Spinner } from './Spinner'
 import { FOCUS_RING, HIT_AREA } from './styles'
 
-// Planning atoms (UI-73, UI-77, UI-78; Figma Atoms): Stop badge, Drag handle, Transport mode, Plan pill.
+// Planning atoms (Figma Atoms): Stop badge, Drag handle, Transport mode, Plan pill.
 
 const DAY_FILL = {
   0: 'bg-ui-bg-inverse text-ui-fg-inverse',
@@ -22,7 +22,7 @@ export type StopBadgeProps = {
   /** Figma Number, 1 to 99. */
   number: number
   size?: 'sm' | 'md'
-  /** Figma Day: 1 to 8 = plan day color (UI-78); 0 / left out = None (inverse). */
+  /** Figma Day: 1 to 8 = plan day color; 0 / left out = None (inverse). */
   day?: keyof typeof DAY_FILL
   /** Next to the stop name it is decorative; on the map pass a label ("Stop 2, Day 1"). */
   label?: string

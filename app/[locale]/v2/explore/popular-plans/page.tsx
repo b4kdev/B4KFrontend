@@ -3,7 +3,7 @@ import { seeAllMetadata } from '@/lib/see-all-metadata'
 
 export const metadata = seeAllMetadata
 
-// See all list (SCR-010) for the Home row.
+// See all list for the Home row.
 export default function Page() {
   return <SeeAllScreen category="all" row="popular-plans" />
 }

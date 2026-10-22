@@ -3,7 +3,7 @@
 import { useId } from 'react'
 import { cn } from '@/lib/cn'
 
-// Slider (UI-62, build-ahead; Figma Atoms › Slider): Single or Range. Track = progress pill
+// Slider (build-ahead; Figma Atoms › Slider): Single or Range. Track = progress pill
 // (progress/height, state-selected), fill color/fg, thumbs control/box-size circles with a 2px
 // color/bg outline; label and current value above. Native range inputs: arrow keys step, Page
 // keys jump; aria-valuetext states the value with units. 44 tap area.

@@ -7,7 +7,7 @@ import { cn } from '@/lib/cn'
 import { useCd } from './cd'
 import { useV2Shell } from './V2Shell'
 
-// Content page template (UI-86): phone Top app bar (Home type with Menu and search, or Page type
+// Content page template: phone Top app bar (Home type with Menu and search, or Page type
 // with Back and a title), the main landmark, centered content up to 1280, Footer.
 
 export type V2PageProps = {

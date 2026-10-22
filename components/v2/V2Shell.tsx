@@ -32,7 +32,7 @@ import { LanguageMenu, LanguageSheet } from './V2Settings'
 import { SignInGate, type GateRequest } from './V2SignInGate'
 import { V2HeaderSearch } from './V2Search'
 
-// Shell of the preview (original layout with the Header, UI-101 still open): desktop Header + rail,
+// Shell of the preview (original layout with the Header, the shell layout still open): desktop Header + rail,
 // phones Top app bar (per page) + Navigation bar + Drawer. Quick plan, Drawer and the language
 // sheet are opened from anywhere through useV2Shell().
 

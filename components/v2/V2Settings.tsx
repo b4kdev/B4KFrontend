@@ -8,7 +8,7 @@ import { cn } from '@/lib/cn'
 import { FOCUS_RING_INSET } from '@/components/library/styles'
 import { useCd } from './cd'
 
-// Language picker (SCR-034, PD-06): the five languages in their own script, each with its lang
+// Language picker: the five languages in their own script, each with its lang
 // attribute (WCAG 3.1.2); a choice applies on tap. Desktop Header: a Dropdown menu under the globe;
 // elsewhere a Modal (a sheet on phones).
 
@@ -62,7 +62,7 @@ function LanguageItems() {
   )
 }
 
-/** Desktop Settings Language row (299:457): the row opens the language menu under its value. */
+/** Desktop Settings Language row: the row opens the language menu under its value. */
 export function LanguageRowMenu({ title }: { title: string }) {
   const t = useCd()
   const locale = useLocale()

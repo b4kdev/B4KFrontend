@@ -2,8 +2,8 @@ import { forwardRef, type ButtonHTMLAttributes } from 'react'
 import { Sparkles } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
-// FAB (UI-62; Figma Atoms › FAB): the floating AI launcher on the map. Icon = 56 circle (fab/size),
-// bg-inverse, sparkles; Extended = same height with the label (Ask AI). No shadow (UI-05).
+// FAB (Figma Atoms › FAB): the floating AI launcher on the map. Icon = 56 circle (fab/size),
+// bg-inverse, sparkles; Extended = same height with the label (Ask AI). No shadow.
 // Open (AI panel open) = bg-raised with border-strong. One per screen.
 
 export type FabProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {

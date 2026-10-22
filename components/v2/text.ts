@@ -1,6 +1,6 @@
 import { cloneElement, isValidElement, type ReactElement } from 'react'
 
-// UI-102 (5): K-Pop, K-Drama, K-Beauty, K-Food, K-Culture (and their translations, e.g. K-팝) never
+// Text fit rule: K-Pop, K-Drama, K-Beauty, K-Food, K-Culture (and their translations, e.g. K-팝) never
 // split at the hyphen. Word joiners (U+2060) around the hyphen forbid a line break there without
 // changing how the text looks or reads.
 const K_NAME = /(^|[^A-Za-z0-9])K-(?=\S)/g

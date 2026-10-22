@@ -6,7 +6,7 @@ import { cn } from '@/lib/cn'
 import { IconButton } from './IconButton'
 import { MapControl } from './Map'
 
-// Button group, Rating (UI-69), Zoom control (UI-74), Route map preview (UI-74).
+// Button group, Rating, Zoom control, Route map preview.
 
 export type ButtonGroupProps = {
   /** Figma Type. Actions: primary last on the right. Stacked: full width, primary first (mobile). */
@@ -58,7 +58,7 @@ export type RatingProps =
   | { type?: 'display'; value: number; countText?: string; label: string; className?: string }
   | { type: 'input'; value: number; onValueChange: (v: number) => void; label: string; valueText?: string; starLabels: string[]; className?: string }
 
-/** Rating (CMP-022, build-ahead): monochrome stars. Display = text with sr-only label; Input = radiogroup. */
+/** Rating (build-ahead): monochrome stars. Display = text with sr-only label; Input = radiogroup. */
 export function Rating(props: RatingProps) {
   const id = useId()
   if (props.type === 'input') {
@@ -131,7 +131,7 @@ export function ZoomControl({ onZoomIn, onZoomOut, zoomInLabel, zoomOutLabel, at
 }
 
 export type RouteMapPreviewProps = {
-  /** Static map image in the B4K Naver style (UI-40); a neutral surface until it exists. */
+  /** Static map image in the B4K Naver style; a neutral surface until it exists. */
   src?: string
   /** Stop positions in percent of the box, in order; days color the badges. */
   stops: { x: number; y: number; day?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 }[]
