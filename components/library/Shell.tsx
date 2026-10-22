@@ -212,7 +212,10 @@ export function TopAppBar({ type, labels, onMenu, onBack, title, action, search,
       <div
         className={cn(
           'flex h-[var(--fab-size)] items-center',
-          floating
+          // Figma: Home pads 4 left and 12 right (the round Menu sits at 4); Map pads 12 on both sides.
+          type === 'home'
+            ? 'gap-[var(--space-2)] pl-[var(--space-1)] pr-[var(--space-3)]'
+            : type === 'map'
             ? 'gap-[var(--space-2)] px-[var(--space-3)]'
             : type === 'page'
               ? 'gap-[var(--space-1)] pl-[var(--space-1)] pr-[var(--space-2)]'

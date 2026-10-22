@@ -514,6 +514,7 @@
     "profilePlansNote": "其他人看到的公開行程。草稿與私人行程在已儲存中。",
     "openSaved": "開啟已儲存",
     "resetPassword": "重設密碼",
-    "linkExpired": "連結已過期"
+    "linkExpired": "連結已過期",
+    "interestsPicked": "已選 {count} 個 · 用於首頁和快速行程"
   }
 }

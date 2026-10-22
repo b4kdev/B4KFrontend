@@ -22,6 +22,7 @@ import {
   RowSection,
   SectionHeader,
   SegmentedControl,
+  MenuItem,
   Skeleton,
   Tabs,
   TextInput,
@@ -42,6 +43,7 @@ import type { OtherUserTrip } from '@/app/api/profile/[id]/trips/route'
 import type { OtherUserBadge } from '@/app/api/profile/[id]/badges/route'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
+import { apiFetch } from '@/lib/api'
 import { V2Page } from '../V2Page'
 import { UNREAD_KEY, useV2Shell, useV2SignOut } from '../V2Shell'
 import { LANGUAGES, LanguageRowMenu } from '../V2Settings'
@@ -397,6 +399,9 @@ export function SettingsScreen() {
   const { openLanguage, toast } = useV2Shell()
   const signOut = useV2SignOut()
   const GAP = useGap()
+  // Your interests row: how many are picked, as drawn ("6 picked · used for Home and Quick plan").
+  const interests = useSWR(user ? '/me/interests' : null, (p: string) => apiFetch<{ interest_tags?: string[] }>(p).catch(() => null))
+  const picked = interests.data?.interest_tags?.length ?? 0
   const prefs = useSWR<{ prefs: NotificationPref[] }>(user ? '/api/account/notification-prefs' : null, jsonFetch)
   const profile = useSWR<ProfileData>(user ? '/api/profile' : null, jsonFetch)
   const [theme, setThemeState] = useState<ThemeChoice>('system')
@@ -461,7 +466,8 @@ export function SettingsScreen() {
   const langName = LANGUAGES.find((l) => l.code === locale)?.name ?? locale
 
   return (
-    <V2Page bar={{ type: 'page', title: k('nav.settings') }}>
+    // Figma: 16 above the content on phones, 32 on desktop.
+    <V2Page bar={{ type: 'page', title: k('nav.settings') }} className="pt-[var(--space-4)] lg:pt-[var(--space-8)]">
       <div className="mx-auto flex w-full max-w-[720px] flex-col gap-[var(--space-4)]">
         <h1 className="type-display-h3 max-lg:hidden">{k('nav.settings')}</h1>
         {/* Signed out: every group stays; account rows and toggles are disabled. */}
@@ -495,7 +501,7 @@ export function SettingsScreen() {
           ) : (
             <ListItem title={t('CD1283')} trailing={<SegmentedControl label={t('CD1283')} options={themeOptions} value={theme} onValueChange={(v) => chooseTheme(v as ThemeChoice)} className="w-[360px]" />} />
           )}
-          <ListItem title={t('CD1599')} chevron disabled={!user} onClick={() => router.push('/?interests=1')} />
+          <ListItem title={t('CD1599')} secondary={picked ? GAP.interestsPicked(picked) : undefined} chevron disabled={!user} onClick={() => router.push('/?interests=1')} />
         </ul>
 
         <h2 className={heading}>{k('profile.settings.notifications.heading')}</h2>
@@ -521,7 +527,12 @@ export function SettingsScreen() {
       </div>
 
       <Modal open={themeSheet} onClose={() => setThemeSheet(false)} size="sm" title={t('CD1283')} closeLabel={k('badges.detail.close')}>
-        <SegmentedControl label={t('CD1283')} options={themeOptions} value={theme} onValueChange={(v) => { chooseTheme(v as ThemeChoice); setThemeSheet(false) }} className="mb-[var(--space-4)]" />
+        {/* Figma phone Theme sheet: a checked list like the Language sheet, 8 from the header and edges. */}
+        <div role="menu" aria-label={t('CD1283')} className="-mx-[var(--space-4)] -mt-[var(--space-4)] [&>*]:px-[var(--space-4)]">
+          {themeOptions.map((o) => (
+            <MenuItem key={o.id} checked={o.id === theme} onClick={() => { chooseTheme(o.id); setThemeSheet(false) }}>{o.label}</MenuItem>
+          ))}
+        </div>
       </Modal>
       <Modal open={nameSheet} onClose={() => setNameSheet(false)} size="sm" title={t('CD1597')} closeLabel={k('badges.detail.close')}
         secondaryAction={<Button variant="ghost" onClick={() => setNameSheet(false)}>{k('saved.folder.cancel')}</Button>}

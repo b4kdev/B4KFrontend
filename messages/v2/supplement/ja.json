@@ -514,6 +514,7 @@
     "profilePlansNote": "ほかの人に見える公開プランです。下書きと非公開のプランは保存済みにあります。",
     "openSaved": "保存済みを開く",
     "resetPassword": "パスワードの再設定",
-    "linkExpired": "リンクの有効期限切れ"
+    "linkExpired": "リンクの有効期限切れ",
+    "interestsPicked": "{count}件選択 · ホームとクイックプランに使用"
   }
 }

@@ -46,6 +46,8 @@ export function useGap() {
       // Reset password: the page bar title and the Link expired card title.
       resetPassword: t('resetPassword'),
       linkExpired: t('linkExpired'),
+      // Settings Your interests row: the count picked and what they are for.
+      interestsPicked: (count: number) => t('interestsPicked', { count }),
     }),
     [t],
   )

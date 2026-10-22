@@ -3,7 +3,7 @@
 import { useLocale } from 'next-intl'
 import { usePathname, useRouter } from '@/i18n/navigation'
 import { Globe } from 'lucide-react'
-import { DropdownMenu, IconButton, MenuGroup, MenuItem, Modal, Tooltip } from '@/components/library'
+import { DropdownMenu, IconButton, MenuGroup, MenuItem, Modal, ROW_DIVIDER, Tooltip } from '@/components/library'
 import { cn } from '@/lib/cn'
 import { FOCUS_RING_INSET } from '@/components/library/styles'
 import { useCd } from './cd'
@@ -27,7 +27,8 @@ export function LanguageSheet({ open, onClose }: { open: boolean; onClose: () =>
   const router = useRouter()
   return (
     <Modal open={open} onClose={onClose} title={t('CD0808')} closeLabel={t('CD0758')} size="sm">
-      <div role="menu" aria-label={t('CD0808')} className="-mx-[var(--space-6)] [&>*]:px-[var(--space-6)]">
+      {/* Figma: the list sits 8 from the header and the sheet edges, each item 16 inside (the body pads 24). */}
+      <div role="menu" aria-label={t('CD0808')} className="-mx-[var(--space-4)] -mt-[var(--space-4)] [&>*]:px-[var(--space-4)]">
         {LANGUAGES.map((l) => (
           <MenuItem
             key={l.code}
@@ -68,7 +69,7 @@ export function LanguageRowMenu({ title }: { title: string }) {
   const locale = useLocale()
   const name = LANGUAGES.find((l) => l.code === locale)?.name ?? locale
   return (
-    <li className="border-b border-ui-border">
+    <li className={ROW_DIVIDER}>
       <DropdownMenu label={t('CD0808')} align="end" rootClassName="flex w-full" trigger={
         <button type="button" className={cn('flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left hover:bg-ui-state-hover', FOCUS_RING_INSET)}>
           <span className="flex-1 truncate type-body-base text-ui-fg">{title}</span>

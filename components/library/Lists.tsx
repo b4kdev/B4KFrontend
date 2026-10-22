@@ -30,6 +30,9 @@ export type ListItemProps = {
   className?: string
 }
 
+// Figma draws the 1px divider inside the row (absolute at the bottom), so it adds no height.
+export const ROW_DIVIDER = "relative after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-ui-border after:content-['']"
+
 const ROW = 'flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left'
 
 /** List item: one row with slots, 44 high minimum, 1px divider, hover layer, inset focus ring. */
@@ -47,7 +50,7 @@ export function ListItem({ title, secondary, leading, trailing, chevron, divider
   )
   const interactive = cn(ROW, 'hover:bg-ui-state-hover disabled:cursor-not-allowed', FOCUS_RING_INSET)
   return (
-    <li className={cn(divider && 'border-b border-ui-border', className)}>
+    <li className={cn(divider && ROW_DIVIDER, className)}>
       {href && renderLink ? (
         renderLink({ href, className: interactive, children: body })
       ) : onClick ? (

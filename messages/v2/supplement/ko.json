@@ -433,6 +433,7 @@
     "profilePlansNote": "다른 사람에게 보이는 공개 여행 계획입니다. 임시 저장과 비공개 계획은 저장됨에 있습니다.",
     "openSaved": "저장됨 열기",
     "resetPassword": "비밀번호 재설정",
-    "linkExpired": "링크 만료"
+    "linkExpired": "링크 만료",
+    "interestsPicked": "{count}개 선택 · 홈과 빠른 일정에 사용"
   }
 }
