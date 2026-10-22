@@ -15,8 +15,8 @@ export type V2PageProps = {
   bar?: { type: 'home' } | { type: 'page'; title: string; action?: ReactNode } | { type: 'none' }
   /** Full width (no 1280 container), e.g. Home with its hero. */
   bleed?: boolean
-  /** Hide the footer (flows). */
-  noFooter?: boolean
+  /** Hide the footer (flows); 'phone' hides it on phones only (sign-in pages). */
+  noFooter?: boolean | 'phone'
   /** Phones: the first block starts under the floating Home bar (a full-width hero), no spacer. */
   underBar?: boolean
   children: ReactNode
@@ -39,8 +39,9 @@ export function V2Page({ bar = { type: 'home' }, bleed, noFooter, underBar, chil
       <main id="main" tabIndex={-1} className={cn('flex-1 outline-none', !bleed && 'mx-auto w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] px-[var(--grid-gutter-mobile)] py-[var(--space-6)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]', className)}>
         {children}
       </main>
-      {noFooter ? null : (
+      {noFooter === true ? null : (
         <Footer
+          className={noFooter === 'phone' ? 'max-lg:hidden' : undefined}
           navLabel={t('CD0809')}
           copyright={t('CD1462')}
           links={[

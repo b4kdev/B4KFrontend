@@ -219,8 +219,9 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     else toast({ type: 'success', message: GAP.addedToDay(day) })
   }
   // `on` = currently saved / liked; after a sign-in the action only ever turns it on.
-  const setSave = async (id: string, on: boolean) => {
-    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: t('CD1426') }))
+  // signedIn: the save a guest started, finished after the sign-in (its own toast).
+  const setSave = async (id: string, on: boolean, signedIn = false) => {
+    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: t('CD1426') }))
     saved.mutate()
   }
   // Optimistic: the heart changes at once and goes back with a toast if the server refuses.
@@ -233,11 +234,11 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     })
   }
   const toggleSave = (poi: { poi_id: string }) =>
-    user ? setSave(poi.poi_id, savedIds.has(poi.poi_id)) : requireSignIn({ title: t('CD0027'), pending: { type: 'save_poi', id: poi.poi_id }, run: () => setSave(poi.poi_id, false) })
+    user ? setSave(poi.poi_id, savedIds.has(poi.poi_id)) : requireSignIn({ title: t('CD0027'), pending: { type: 'save_poi', id: poi.poi_id }, run: () => setSave(poi.poi_id, false, true) })
   const toggleLike = (id: string) =>
     user ? setLike(id, liked.has(id)) : requireSignIn({ title: t('CD0054'), pending: { type: 'like_poi', id }, run: () => setLike(id, false) })
   const openSaveSheet = () => { setPlanName(draft.plan.name ?? ''); setSaveOpen(true) }
-  usePendingAction('save_poi', !!user, (id) => { if (id) setSave(id, false) })
+  usePendingAction('save_poi', !!user, (id) => { if (id) setSave(id, false, true) })
   usePendingAction('like_poi', !!user, (id) => { if (id) setLike(id, false) })
   usePendingAction('save_own_plan', !!user, () => { setCart('open'); openSaveSheet() })
   const totalMin = order.reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0)

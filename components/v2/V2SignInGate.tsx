@@ -128,12 +128,15 @@ export function useSignInFlow(next: string, onSignedIn: (user: User) => void, be
     error,
     email,
     labels: {
-      close: t('CD0021'), google: t('CD0043'), email: t('CD0031'), signIn: t('CD0051'), signUp: t('CD0053'),
+      close: t('CD0021'), google: t('CD0043'), email: t('CD0031'), signIn: t('CD0051'), signUp: t('CD0052'),
       password: t('CD0046'), newPassword: t('CD0066'), confirmPassword: t('CD0058'), passwordHint: t('CD1468'),
       forgot: t('CD0039'), sendLink: t('CD0040'), checkEmailTitle: t('CD0020'),
       checkEmailBody: (e: string) => (kind === 'signup' ? t('CD0019', { email: e }) : t('CD0018', { email: e })),
       resend: resendLeft > 0 ? t('CD0049', { seconds: resendLeft }) : t('CD0048'), savePassword: t('CD1503'), newPasswordBody: t('CD1501'), back: t('CD1493'), guest: t('CD0029'),
-      or: t('CD1376'), tabs: t('CD0054'),
+      or: t('CD1376'), tabs: t('CD0054'), backToSignIn: t('CD1498'),
+      signInTitle: t('CD1490'), signInBody: t('CD1491'), signUpTitle: t('CD1494'), signUpBody: t('CD1495'),
+      forgotTitle: t('CD0042'), forgotBody: t('CD1497'), emailField: t('CD0921'),
+      passwordPlaceholder: t('CD1492'), newPasswordPlaceholder: t('CD0978'), confirmPlaceholder: t('CD1502'),
     },
   }
 }

@@ -29,9 +29,10 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
   const savedIds = new Set((saved.data?.pois ?? []).map((p) => p.poi_id))
   const [liked, setLiked] = useState<Set<string>>(new Set())
 
-  const setSave = async (id: string, on: boolean) => {
+  // signedIn: the save a guest started, finished after the sign-in (its own toast).
+  const setSave = async (id: string, on: boolean, signedIn = false) => {
     await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id })
-      .then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : k('map.poiDetail.savedToast') }))
+      .then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') }))
       .catch(() => toast({ type: 'critical', message: t('CD1426') }))
     saved.mutate()
   }
@@ -42,7 +43,7 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
       toast({ type: 'critical', message: t('CD0061') })
     })
   }
-  usePendingAction('save_poi', resume && !!user, (id) => { if (id) setSave(id, false) })
+  usePendingAction('save_poi', resume && !!user, (id) => { if (id) setSave(id, false, true) })
   usePendingAction('like_poi', resume && !!user, (id) => { if (id) setLike(id, false) })
 
   return (id: string, name: string) => {
@@ -52,7 +53,7 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
       save: {
         saved: isSaved,
         label: isSaved ? k('explore.card.unsaveAria', { name }) : k('explore.card.saveAria', { name }),
-        onSave: () => (user ? setSave(id, isSaved) : requireSignIn({ title: t('CD0027'), pending: { type: 'save_poi', id }, run: () => setSave(id, false) })),
+        onSave: () => (user ? setSave(id, isSaved) : requireSignIn({ title: t('CD0027'), pending: { type: 'save_poi', id }, run: () => setSave(id, false, true) })),
       },
       like: {
         liked: isLiked,

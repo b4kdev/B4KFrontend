@@ -90,6 +90,8 @@ export type SignInCardProps = {
   error?: string
   /** Check email: the address. */
   email?: string
+  /** New password: the error under Confirm password (Passwords don't match). */
+  confirmError?: string
   labels: {
     close: string
     google: string
@@ -114,11 +116,24 @@ export type SignInCardProps = {
     guest: string
     or: string
     tabs: string
+    /** Figma per-view Title and Subtitle; left out, Sign in and Sign up use `title` and no subtitle. */
+    signInTitle?: string
+    signInBody?: string
+    signUpTitle?: string
+    signUpBody?: string
+    forgotTitle?: string
+    forgotBody?: string
+    /** The Email field label; left out, `email`. */
+    emailField?: string
+    /** Figma placeholders: Password on Sign in, Password on Sign up and New password, Confirm password. */
+    passwordPlaceholder?: string
+    newPasswordPlaceholder?: string
+    confirmPlaceholder?: string
   }
 }
 
 /** Sign-in card (UI-82, ADD-63): providers, sign in / sign up, forgot, check email, new password. */
-export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGuest, draftNotice, onGoogle, onSubmit, busy, error, email = '', labels }: SignInCardProps) {
+export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGuest, draftNotice, onGoogle, onSubmit, busy, error, email = '', confirmError, labels }: SignInCardProps) {
   const id = useId()
   const [values, setValues] = useState<Record<string, string>>({ email })
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => setValues((v) => ({ ...v, [k]: e.target.value }))
@@ -136,6 +151,21 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
           ? { label: labels.back, to: 'providers' }
           : null
   const guest = onGuest && view !== 'new-password'
+  // Figma Title and Subtitle per view; New password takes `title` with its body as the subtitle.
+  const heading =
+    view === 'check-email' ? labels.checkEmailTitle
+      : view === 'sign-in' ? labels.signInTitle ?? title
+        : view === 'sign-up' ? labels.signUpTitle ?? title
+          : view === 'forgot' ? labels.forgotTitle ?? title
+            : title
+  const sub =
+    view === 'providers' ? subtitle
+      : view === 'sign-in' ? labels.signInBody
+        : view === 'sign-up' ? labels.signUpBody
+          : view === 'forgot' ? labels.forgotBody
+            : view === 'new-password' ? labels.newPasswordBody
+              : undefined
+  const emailField = labels.emailField ?? labels.email
   return (
     <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg">
       {/* Figma Top row: Logo wordmark 24 + Close Ghost 40 (no Close on New password). */}
@@ -145,8 +175,8 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
       </div>
       {view === 'check-email' ? <Mail aria-hidden className="size-[var(--icon-size-2xl)]" /> : null}
       <div className="flex flex-col gap-[var(--space-2)]">
-        <h2 id={id} className="type-display-h4">{view === 'check-email' ? labels.checkEmailTitle : view === 'new-password' ? labels.newPassword : title}</h2>
-        {subtitle && (view === 'providers' || view === 'sign-in' || view === 'sign-up') ? <p className="type-body-base text-ui-fg-muted">{subtitle}</p> : null}
+        <h2 id={id} className="type-display-h4">{heading}</h2>
+        {sub ? <p className="type-body-base text-ui-fg-muted">{sub}</p> : null}
       </div>
       {draftNotice && view === 'providers' ? (
         <p className="flex items-start gap-[var(--space-2)] bg-ui-bg-sunken p-[var(--space-3)] type-body-caption text-ui-fg-muted">
@@ -163,14 +193,14 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
       ) : view === 'sign-in' || view === 'sign-up' ? (
         <form noValidate onSubmit={submit} aria-labelledby={id} className="flex flex-col gap-[var(--space-4)]">
           <Tabs label={labels.tabs} width="equal" baseline={false} value={view} onValueChange={(v) => onViewChange(v as SignInView)} tabs={[{ id: 'sign-in', label: labels.signIn }, { id: 'sign-up', label: labels.signUp }]} />
-          <TextInput label={labels.email} showLabel type="email" autoComplete="email" required value={values.email ?? ''} onChange={set('email')} />
-          <TextInput label={labels.password} showLabel type="password" autoComplete={view === 'sign-in' ? 'current-password' : 'new-password'} required value={values.password ?? ''} onChange={set('password')} help={view === 'sign-up' ? labels.passwordHint : undefined} />
+          <TextInput label={emailField} showLabel type="email" autoComplete="email" required value={values.email ?? ''} onChange={set('email')} />
+          <TextInput label={labels.password} showLabel type="password" autoComplete={view === 'sign-in' ? 'current-password' : 'new-password'} required placeholder={view === 'sign-in' ? labels.passwordPlaceholder : labels.newPasswordPlaceholder} value={values.password ?? ''} onChange={set('password')} help={view === 'sign-up' ? labels.passwordHint : undefined} />
           {view === 'sign-in' ? <button type="button" onClick={() => onViewChange('forgot')} className="self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover">{labels.forgot}</button> : null}
           <Button type="submit" loading={busy} className="w-full">{view === 'sign-in' ? labels.signIn : labels.signUp}</Button>
         </form>
       ) : view === 'forgot' ? (
         <form noValidate onSubmit={submit} className="flex flex-col gap-[var(--space-4)]">
-          <TextInput label={labels.email} showLabel type="email" autoComplete="email" required value={values.email ?? ''} onChange={set('email')} />
+          <TextInput label={emailField} showLabel type="email" autoComplete="email" required value={values.email ?? ''} onChange={set('email')} />
           <Button type="submit" loading={busy} className="w-full">{labels.sendLink}</Button>
         </form>
       ) : view === 'check-email' ? (
@@ -180,16 +210,15 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
         </div>
       ) : (
         <form noValidate onSubmit={submit} className="flex flex-col gap-[var(--space-4)]">
-          <p className="type-body-base text-ui-fg-muted">{labels.newPasswordBody}</p>
-          <TextInput label={labels.newPassword} showLabel type="password" autoComplete="new-password" required value={values.password ?? ''} onChange={set('password')} help={labels.passwordHint} />
-          <TextInput label={labels.confirmPassword} showLabel type="password" autoComplete="new-password" required value={values.confirm ?? ''} onChange={set('confirm')} />
+          <TextInput label={labels.newPassword} showLabel type="password" autoComplete="new-password" required placeholder={labels.newPasswordPlaceholder} value={values.password ?? ''} onChange={set('password')} />
+          <TextInput label={labels.confirmPassword} showLabel type="password" autoComplete="new-password" required placeholder={labels.confirmPlaceholder} value={values.confirm ?? ''} onChange={set('confirm')} error={confirmError} />
           <Button type="submit" loading={busy} className="w-full">{labels.savePassword}</Button>
         </form>
       )}
       {/* Figma Back and Guest: Ghost md 40, hugging; Guest in every view but New password. */}
       {back || guest ? (
         <div className="flex flex-col items-center gap-[var(--space-2)]">
-          {back ? <Button variant="ghost" size="md" leadingIcon={<ArrowLeft />} onClick={() => onViewChange(back.to)}>{back.label}</Button> : null}
+          {back ? <Button variant="ghost" size="md" leadingIcon={<ArrowLeft />} onClick={() => onViewChange(back.to)} className="self-start">{back.label}</Button> : null}
           {guest ? <Button variant="ghost" size="md" onClick={onGuest}>{labels.guest}</Button> : null}
         </div>
       ) : null}
