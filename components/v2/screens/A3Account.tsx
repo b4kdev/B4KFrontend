@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
 import useSWR, { mutate as mutateKey } from 'swr'
-import { Award, Bell, Bookmark, Calendar, Map as MapIcon, Pencil, Share2, Sparkles, Star, Trophy, Zap } from 'lucide-react'
+import { Award, Bell, Bookmark, Calendar, Map as MapIcon, Pencil, Share2, Sparkles, Star, Trophy, Zap, User } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
   AchievementBadge,
@@ -456,9 +456,10 @@ export function SettingsScreen() {
     <V2Page bar={{ type: 'page', title: k('nav.settings') }}>
       <div className="mx-auto flex w-full max-w-[720px] flex-col gap-[var(--space-4)]">
         <h1 className="type-display-h3 max-lg:hidden">{k('nav.settings')}</h1>
+        {/* Signed out (527:88483): every group stays; account rows and toggles are disabled (PD-49). */}
+        <h2 className={heading}>{k('profile.settings.account.heading')}</h2>
         {user ? (
           <>
-            <h2 className={heading}>{k('profile.settings.account.heading')}</h2>
             <ul>
               <ListItem
                 leading={<Avatar size="md" src={profile.data?.avatar_url} name={profile.data?.name} decorative />}
@@ -472,7 +473,10 @@ export function SettingsScreen() {
             </ul>
           </>
         ) : (
-          <ul><ListItem title={k('nav.signIn')} secondary={t('CD1450')} chevron onClick={() => router.push('/login')} /></ul>
+          <ul>
+            <ListItem leading={<User />} title={k('nav.signIn')} secondary={t('CD1450')} chevron onClick={() => router.push('/login')} />
+            <ListItem title={t('CD0046')} secondary={t('CD1598')} chevron disabled onClick={() => {}} />
+          </ul>
         )}
 
         <h2 className={heading}>{k('profile.settings.preferences.heading')}</h2>
@@ -483,19 +487,15 @@ export function SettingsScreen() {
           ) : (
             <ListItem title={t('CD1283')} trailing={<SegmentedControl label={t('CD1283')} options={themeOptions} value={theme} onValueChange={(v) => chooseTheme(v as ThemeChoice)} className="w-[360px]" />} />
           )}
-          {user ? <ListItem title={t('CD1599')} chevron onClick={() => router.push('/?interests=1')} /> : null}
+          <ListItem title={t('CD1599')} chevron disabled={!user} onClick={() => router.push('/?interests=1')} />
         </ul>
 
-        {user ? (
-          <>
-            <h2 className={heading}>{k('profile.settings.notifications.heading')}</h2>
-            <ul>
-              {([['badge_earned', 'CD1600'], ['event_drop', 'CD1602'], ['editorial_pick', 'CD0971']] as const).filter(([type]) => GAMIFICATION || type !== 'badge_earned').map(([type, cd]) => (
-                <ListItem key={type} title={t(cd)} trailing={<Toggle label={t(cd)} hideLabel checked={!optOut(type)} onCheckedChange={(on) => toggleNotif(type, on)} />} />
-              ))}
-            </ul>
-          </>
-        ) : null}
+        <h2 className={heading}>{k('profile.settings.notifications.heading')}</h2>
+        <ul>
+          {([['badge_earned', 'CD1600'], ['event_drop', 'CD1602'], ['editorial_pick', 'CD0971']] as const).filter(([type]) => GAMIFICATION || type !== 'badge_earned').map(([type, cd]) => (
+            <ListItem key={type} title={t(cd)} disabled={!user} trailing={<Toggle label={t(cd)} hideLabel disabled={!user} checked={!!user && !optOut(type)} onCheckedChange={(on) => toggleNotif(type, on)} />} />
+          ))}
+        </ul>
 
         {/* Privacy is per plan (PD-47): no per-tab public toggles here. */}
         <h2 className={heading}>{GAP.settingsData}</h2>
