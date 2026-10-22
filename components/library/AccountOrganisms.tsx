@@ -219,10 +219,10 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
           <Button type="submit" loading={busy} className="w-full">{labels.savePassword}</Button>
         </form>
       )}
-      {/* Figma Back and Guest: Ghost md 40, hugging; Guest in every view but New password. */}
+      {/* Figma Back and Guest: Ghost md 40, hugging at the start; Guest in every view but New password. */}
       {back || guest ? (
-        <div className="flex flex-col items-center gap-[var(--space-2)]">
-          {back ? <Button variant="ghost" size="md" leadingIcon={<ArrowLeft />} onClick={() => onViewChange(back.to)} className="self-start">{back.label}</Button> : null}
+        <div className="flex flex-col items-start gap-[var(--space-2)]">
+          {back ? <Button variant="ghost" size="md" leadingIcon={<ArrowLeft />} onClick={() => onViewChange(back.to)}>{back.label}</Button> : null}
           {guest ? <Button variant="ghost" size="md" onClick={onGuest}>{labels.guest}</Button> : null}
         </div>
       ) : null}
