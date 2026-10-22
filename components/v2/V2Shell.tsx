@@ -129,6 +129,8 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const onMap = ['map', 'plan', 'place'].includes(v2Area(pathname))
   // Sign-in, reset and consent are full-screen flows on phones: no Navigation bar.
   const inFlow = ['login', 'auth', 'consent'].includes(v2Area(pathname))
+  // Full-screen flows draw their own Flow bar (logo and close) instead of the Header and rails.
+  const fullFlow = /\/saved\/plan\/?$/.test(pathname)
   // The live consent (DEC-16): updates GA4 consent mode and lets Analytics load Clarity.
   const choose = (v: 'accepted' | 'declined') => {
     try {
@@ -152,7 +154,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
       <SkipLink>{t('CD1377')}</SkipLink>
       <div className="b4k-v2 flex min-h-dvh flex-col bg-ui-bg text-ui-fg type-body-base lg:h-dvh lg:overflow-hidden">
         <Header
-          className="max-lg:hidden"
+          className={cn('max-lg:hidden', fullFlow && 'lg:hidden')}
           labels={labels}
           signedIn={!!user}
           search={<Suspense fallback={<SearchPill label={labels.search} href="/search" />}><V2HeaderSearch label={labels.search} /></Suspense>}
@@ -162,7 +164,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
         />
         <div className="flex min-h-0 flex-1">
           <NavigationRail
-            className="max-lg:hidden"
+            className={cn('max-lg:hidden', fullFlow && 'lg:hidden')}
             active={active}
             labels={labels}
             user={user}
@@ -171,7 +173,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           />
           <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto">{children}</div>
         </div>
-        {inFlow ? null : <NavigationBar className={cn(onMap ? 'fixed inset-x-0 bottom-0 z-[45]' : 'sticky bottom-0 z-30', 'lg:hidden')} active={active} labels={labels} onQuickPlan={() => setQuick(true)} />}
+        {inFlow || fullFlow ? null : <NavigationBar className={cn(onMap ? 'fixed inset-x-0 bottom-0 z-[45]' : 'sticky bottom-0 z-30', 'lg:hidden')} active={active} labels={labels} onQuickPlan={() => setQuick(true)} />}
       </div>
       <Drawer
         open={drawer}

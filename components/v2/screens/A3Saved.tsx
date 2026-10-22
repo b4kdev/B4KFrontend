@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
-import { ArrowLeft, Bookmark, Ellipsis, Map as MapIcon, Pencil, Share2, Trash2, Lock } from 'lucide-react'
+import { ArrowLeft, Bookmark, Ellipsis, Folder, Map as MapIcon, Pencil, Share2, Trash2, Lock, X } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
   Button,
@@ -15,10 +15,12 @@ import {
   EmptyState,
   IconButton,
   Image,
+  Logo,
   ListItem,
   MenuGroup,
   MenuItem,
   Modal,
+  SectionHeader,
   Skeleton,
   Tabs,
   TextInput,
@@ -324,18 +326,38 @@ export function PlanFromSavedScreen() {
     )
     router.push('/map?from=saved')
   }
+  // Figma 252:2116: a full-screen flow. Flow bar (logo, close), Pick places header, folder rows
+  // (folder icon, "2 of 3 selected", select all) and place rows (48 photo, area) with the checkbox
+  // at the end; the whole row toggles. Action bar: Cancel and Make plan on the 640 column.
+  const row = 'w-full flex-row-reverse gap-[var(--space-3)] border-b border-ui-border px-[var(--space-4)] py-[var(--space-3)] hover:bg-ui-state-hover [&>span:last-child]:flex [&>span:last-child]:min-w-0 [&>span:last-child]:flex-1 [&>span:last-child]:items-center [&>span:last-child]:gap-[var(--space-3)]'
   const group = (title: string, pois: SavedPoi[]) => {
     const ids = pois.map((p) => p.poi_id)
     const n = ids.filter((id) => picked.includes(id)).length
     return (
       <section key={title} className="flex flex-col">
-        <div className="border-b border-ui-border px-[var(--space-4)]">
-          <Checkbox label={<span className="type-title-card">{title}</span>} checked={n === ids.length && n > 0} indeterminate={n > 0 && n < ids.length} onChange={() => toggleGroup(ids)} />
-        </div>
+        <Checkbox
+          className={row}
+          checked={n === ids.length && n > 0}
+          indeterminate={n > 0 && n < ids.length}
+          onChange={() => toggleGroup(ids)}
+          label={<>
+            <Folder aria-hidden className="size-[var(--icon-size-md)] shrink-0 text-ui-fg-muted" />
+            <span className="flex min-w-0 flex-col"><span className="truncate">{title}</span><span className="type-body-caption text-ui-fg-muted">{n === ids.length ? t('CD1587', { n }) : t('CD1586', { n, m: ids.length })}</span></span>
+          </>}
+        />
         <ul>
           {pois.map((p) => (
-            <li key={p.poi_id} className="border-b border-ui-border-subtle px-[var(--space-4)]">
-              <Checkbox label={<span className="flex flex-col"><span>{poiName(p, locale)}</span><span className="type-body-caption text-ui-fg-muted">{p.display_region}</span></span>} checked={picked.includes(p.poi_id)} disabled={!picked.includes(p.poi_id) && picked.length >= LIMIT} onChange={() => toggle(p.poi_id)} className="w-full" />
+            <li key={p.poi_id}>
+              <Checkbox
+                className={row}
+                checked={picked.includes(p.poi_id)}
+                disabled={!picked.includes(p.poi_id) && picked.length >= LIMIT}
+                onChange={() => toggle(p.poi_id)}
+                label={<>
+                  <Image ratio="1:1" src={p.primary_image_url} alt="" sizes="48px" className="size-[var(--space-12)] shrink-0" />
+                  <span className="flex min-w-0 flex-col"><span className="truncate">{poiName(p, locale)}</span><span className="type-body-caption text-ui-fg-muted">{p.display_region}</span></span>
+                </>}
+              />
             </li>
           ))}
         </ul>
@@ -343,29 +365,32 @@ export function PlanFromSavedScreen() {
     )
   }
   return (
-    <V2Page bar={{ type: 'page', title: t('CD1363') }} noFooter>
-      <div className="mx-auto flex w-full max-w-[640px] flex-col gap-[var(--space-6)] pb-[calc(var(--space-24))]">
-        <header className="flex flex-col gap-[var(--space-2)]">
-          <h1 className="type-display-h2">{t('CD1584')}</h1>
-          <p className="type-body-base text-ui-fg-muted">{t('CD1638')}</p>
-        </header>
+    <V2Page bar={{ type: 'page', title: t('CD1363') }} noFooter bleed>
+      {/* Phones use the Page top bar (252:2109); desktop the Flow bar. */}
+      <div className="sticky top-0 z-30 hidden h-[var(--layout-header-height)] items-center justify-between bg-ui-bg px-[var(--space-6)] lg:flex">
+        <IntlLink href="/" className="inline-flex focus-visible:shadow-focus-ring focus-visible:outline-none"><Logo label="B4K" className="h-[var(--space-6)] w-auto" /></IntlLink>
+        <IconButton label={k('saved.folder.cancel')} icon={<X />} onClick={() => router.back()} />
+      </div>
+      <div className="mx-auto flex w-full max-w-[calc(640px+var(--space-8))] flex-col gap-[var(--space-4)] px-[var(--space-4)] pb-[calc(var(--space-24))] pt-[var(--space-6)] lg:pt-[var(--space-8)]">
+        <SectionHeader title={t('CD1584')} subtitle={t('CD1638')} />
         {!user ? <SignedOutPrompt title={t('CD1577')} text={t('CD1578')} /> : null}
         {isLoading ? <Skeleton className="h-[240px]" /> : null}
-        {folders.map((f) => group(f.name, f.pois))}
-        {loose.length ? group(k('saved.tabs.places'), loose) : null}
+        <div>
+          {folders.map((f) => group(f.name, f.pois))}
+          {loose.length ? group(k('saved.tabs.places'), loose) : null}
+        </div>
       </div>
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-ui-border bg-ui-bg-raised pb-[env(safe-area-inset-bottom)] lg:left-[var(--layout-nav-rail)]">
-        <div className="mx-auto flex max-w-[640px] items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)]">
-          <span aria-live="polite" className="flex-1 type-body-label">{picked.length === all.length && all.length ? t('CD1587', { n: all.length }) : t('CD1586', { n: picked.length, m: Math.min(all.length, LIMIT) })}</span>
-          <Button variant="ghost" size="md" onClick={() => router.back()}>{k('saved.folder.cancel')}</Button>
-          <Button size="md" disabled={!picked.length} loading={busy} onClick={make}>{t('CD1588', { n: picked.length })}</Button>
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-ui-border bg-ui-bg pb-[env(safe-area-inset-bottom)]">
+        <div className="mx-auto flex max-w-[calc(640px+var(--space-8))] items-center justify-between gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-4)]">
+          <span aria-live="polite" className="sr-only">{picked.length === all.length && all.length ? t('CD1587', { n: all.length }) : t('CD1586', { n: picked.length, m: Math.min(all.length, LIMIT) })}</span>
+          <Button variant="secondary" className="max-lg:hidden" onClick={() => router.back()}>{k('saved.folder.cancel')}</Button>
+          <Button disabled={!picked.length} loading={busy} onClick={make} className="max-lg:w-full">{t('CD1588', { n: picked.length })}</Button>
         </div>
       </div>
     </V2Page>
   )
 }
 
-/** List card cover: 4 or more photos = 2 by 2 mosaic; 1 to 3 = the first photo full size; none = the list name as a typographic cover. */
 function ListCover({ name, photos }: { name: string; photos: string[] }) {
   return (
     <span aria-hidden className="relative block aspect-[4/3] w-full overflow-hidden bg-ui-state-selected">
