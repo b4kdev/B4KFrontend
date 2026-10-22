@@ -19,6 +19,7 @@ import {
   NotificationItem,
   ProfileHeader,
   RowSection,
+  SectionHeader,
   SegmentedControl,
   Skeleton,
   Tabs,
@@ -64,7 +65,12 @@ const BADGE_ICON = (category: string) => {
 
 // ── Profile (own, SCR-017) ───────────────────────────────────────────────────
 
+// The Profile header carries its own 16 / 24 inset and is drawn edge to edge on phones: it bleeds
+// over the page gutter and the page top padding below desktop.
+const HEADER_BLEED = 'max-md:-mx-[var(--grid-gutter-mobile)] md:max-lg:-mx-[var(--grid-gutter-tablet)] max-lg:-mt-[var(--space-6)]'
+
 export function ProfileOwnScreen() {
+  const GAP = useGap()
   const badgeName = useBadgeName()
   const k = useCdKey()
   const t = useCd()
@@ -79,9 +85,11 @@ export function ProfileOwnScreen() {
   const p = profile.data
   return (
     <V2Page bar={{ type: 'page', title: k('profile.header.breadcrumb') }}>
-      <div className="flex flex-col gap-[var(--space-10)]">
+      {/* Figma 461:59578: one 960 column; header, then the Plans section (subtitle, See all, three
+          cards, Open Saved) on the 24 inset. */}
+      <div className="mx-auto flex w-full max-w-[960px] flex-col gap-[var(--space-6)]">
         {p ? (
-          <ProfileHeader
+          <div className={HEADER_BLEED}><ProfileHeader
             viewport={phone ? 'mobile' : 'desktop'}
             name={p.name || k('profile.header.namePlaceholder')}
             avatarSrc={p.avatar_url}
@@ -94,18 +102,20 @@ export function ProfileOwnScreen() {
             ]}
             badges={GAMIFICATION && p.pinned_badges.length ? p.pinned_badges.map((b) => <AchievementBadge key={b.id} name={badgeName(b)} detail={k(`badges.rarity.${b.rarity}`)} icon={<Trophy />} rarity={b.rarity} />) : undefined}
             action={<IntlLink href="/settings" className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover"><Pencil aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1515')}</IntlLink>}
-          />
+          /></div>
         ) : profile.error ? (
           <EmptyState type="error" container="bordered" title={k('profile.header.errorTitle')} action={<Button size="md" variant="secondary" onClick={() => profile.mutate()}>{k('profile.header.errorRetry')}</Button>} />
         ) : (
           <Skeleton className="h-[120px]" />
         )}
         {trips.data?.length ? (
-          <RowSection
-            title={k('saved.tabs.myPlans')}
-            seeAll={{ href: '/saved?tab=my-plans', label: t('CD1309') }}
-            cards={trips.data.map((tr) => <Card key={tr.id} type="plan" href={`/plan/${tr.id}`} title={tr.title} imageSrc={tr.thumbnail_url} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} />)}
-          />
+          <section aria-labelledby="profile-plans" className="flex flex-col gap-[var(--space-6)] lg:px-[var(--space-6)]">
+            <SectionHeader id="profile-plans" title={t('CD1300')} subtitle={GAP.profilePlansNote} seeAll={{ href: '/saved?tab=my-plans', label: t('CD1309') }} />
+            <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">
+              {trips.data.slice(0, phone ? 2 : 3).map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} imageSrc={tr.thumbnail_url} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} /></li>)}
+            </ul>
+            <IntlLink href="/saved?tab=my-plans" className="inline-flex h-[var(--control-height-md)] items-center self-start px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover">{GAP.openSaved}</IntlLink>
+          </section>
         ) : trips.data ? (
           <EmptyState container="bordered" title={k('profile.trips.empty.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('profile.trips.empty.cta')}</IntlLink>}>{k('profile.trips.empty.desc')}</EmptyState>
         ) : null}
@@ -168,7 +178,7 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
     <V2Page bar={{ type: 'page', title: p?.name ?? '' }}>
       <div className="flex flex-col gap-[var(--space-10)]">
         {p ? (
-          <ProfileHeader
+          <div className={HEADER_BLEED}><ProfileHeader
             viewport={phone ? 'mobile' : 'desktop'}
             name={p.name || k('profile.anonymousUser')}
             avatarSrc={p.avatar_url}
@@ -180,7 +190,7 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
               ] : []),
             ]}
             action={<Button variant="secondary" size="md" leadingIcon={<Share2 />} onClick={() => { navigator.clipboard?.writeText(`${location.origin}/${locale}/profile/${id}`); toast({ type: 'success', message: k('profile.trips.card.shareCopiedToast') }) }}>{k('saved.myPlan.share')}</Button>}
-          />
+          /></div>
         ) : <Skeleton className="h-[120px]" />}
         {trips.data?.length ? (
           <RowSection title={k('search.results.plans')} cards={trips.data.map((tr) => <Card key={tr.id} type="plan" href={`/plan/${tr.id}`} title={tr.title} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} />)} />

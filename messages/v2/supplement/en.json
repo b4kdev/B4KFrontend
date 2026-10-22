@@ -23,6 +23,8 @@
     "previousDays": "Earlier days",
     "nextDays": "Later days",
     "settingsData": "Your data and privacy",
-    "deleteAccountNote": "Deleted after 30 days; sign in before then to restore"
+    "deleteAccountNote": "Deleted after 30 days; sign in before then to restore",
+    "profilePlansNote": "Public plans, as others see them. Drafts and private plans are in Saved.",
+    "openSaved": "Open Saved"
   }
 }

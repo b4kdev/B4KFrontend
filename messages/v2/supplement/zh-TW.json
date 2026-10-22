@@ -510,6 +510,8 @@
     "previousDays": "前幾天",
     "nextDays": "後幾天",
     "settingsData": "你的資料與隱私",
-    "deleteAccountNote": "30 天後刪除；在此之前登入即可復原"
+    "deleteAccountNote": "30 天後刪除；在此之前登入即可復原",
+    "profilePlansNote": "其他人看到的公開行程。草稿與私人行程在已儲存中。",
+    "openSaved": "開啟已儲存"
   }
 }
