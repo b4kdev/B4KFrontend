@@ -9,6 +9,7 @@ import { useRouter } from '@/i18n/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { getConsent, setConsent } from '@/lib/consent'
 import { v2Area } from '@/lib/v2-live'
+import { cn } from '@/lib/cn'
 import {
   AccountMenu,
   CookieBanner,
@@ -163,7 +164,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           />
           <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto">{children}</div>
         </div>
-        {onMap || inFlow ? null : <NavigationBar className="sticky bottom-0 z-30 lg:hidden" active={active} labels={labels} onQuickPlan={() => setQuick(true)} />}
+        {inFlow ? null : <NavigationBar className={cn(onMap ? 'fixed inset-x-0 bottom-0 z-[45]' : 'sticky bottom-0 z-30', 'lg:hidden')} active={active} labels={labels} onQuickPlan={() => setQuick(true)} />}
       </div>
       <Drawer
         open={drawer}

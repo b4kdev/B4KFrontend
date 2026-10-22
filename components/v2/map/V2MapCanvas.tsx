@@ -47,6 +47,8 @@ const MAP_TONE: 'light' | 'dark' = 'light'
 
 const HIT = 'width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer'
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+// Remote photos go through the Next image proxy: the page only loads images from its own origin.
+const pinSrc = (src: string) => (src.startsWith('/') && !src.startsWith('//') ? src : `/_next/image?url=${encodeURIComponent(src)}&w=128&q=75`)
 const poiLabel = (p: MapPoi) => esc(p.name_preferred ?? p.name_en ?? p.name_ko)
 // Pins and plan stops are buttons (Tab reaches them, Enter or Space selects); the focus ring is in
 // globals.css (.b4k-map-marker). Clusters stay pointer-only: zoom in with the Zoom control instead.
@@ -66,7 +68,7 @@ const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
   const size = `var(${PIN_SIZE[tier]})`
   const ring = selected ? 'var(--border-width-3) solid var(--map-pin-selected)' : 'var(--border-width-2) solid var(--map-pin-fill)'
   const tail = selected ? 'var(--map-pin-selected)' : 'var(--map-pin-fill)'
-  const photo = p.primary_image_url ? `background:var(--map-pin-stroke) url('${esc(p.primary_image_url)}') center/cover no-repeat` : 'background:var(--map-pin-fill)'
+  const photo = p.primary_image_url ? `background:var(--map-pin-stroke) url('${esc(pinSrc(p.primary_image_url))}') center/cover no-repeat` : 'background:var(--map-pin-fill)'
   const name = showName || selected ? `<span style="${LABEL}">${poiLabel(p)}</span>` : ''
   return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;min-width:44px" ${markerAttrs(p.poi_id, poiLabel(p), selected)}><span style="box-sizing:border-box;width:${size};height:${size};border-radius:var(--radius-full);border:${ring};${photo};transition:all var(--duration-short4) var(--easing-standard)"></span><span aria-hidden style="width:0;height:0;border-left:${TAIL_PX}px solid transparent;border-right:${TAIL_PX}px solid transparent;border-top:${TAIL_PX}px solid ${tail}"></span>${name}</div>`
 }

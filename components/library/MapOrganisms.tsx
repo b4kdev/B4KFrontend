@@ -425,7 +425,7 @@ export function PlaceDetail({ viewport, name, meta, imageSrc, imageAlt, descript
         <p className="type-body-base text-ui-fg-muted">{meta}</p>
       </div>
       <div className="flex items-center gap-[var(--space-2)] px-[var(--space-4)]">
-        <Button size="md" leadingIcon={<Plus />} onClick={onAdd} className="flex-1">{labels.add}</Button>
+        <Button size="md" onClick={onAdd} className="flex-1">{labels.add}</Button>
         <IconButton variant="secondary" label={labels.save} aria-pressed={saved} icon={<Bookmark className={saved ? 'fill-current' : undefined} />} onClick={onSave} />
         <IconButton variant="secondary" label={labels.like} aria-pressed={liked} icon={<Heart className={liked ? 'fill-current' : undefined} />} onClick={onLike} />
         <IconButton variant="secondary" label={labels.share} icon={<Share2 />} onClick={onShare} />

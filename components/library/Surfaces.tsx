@@ -153,6 +153,8 @@ export type BottomSheetProps = {
   snap?: SheetSnap
   onSnapChange?: (s: SheetSnap) => void
   resizeLabel?: string
+  /** Map sheets: a height per snap instead of the defaults (e.g. a shorter full state). */
+  heights?: Partial<Record<SheetSnap, string>>
   /** Header shown at peek (map sheets). */
   header?: ReactNode
   /** Modal: stacked actions under the content (Figma: primary, secondary, optional third Ghost). */
@@ -165,7 +167,7 @@ const SNAP_VH: Record<SheetSnap, string> = { peek: '76px', mid: '50dvh', full: '
 const ORDER: SheetSnap[] = ['peek', 'mid', 'full']
 
 /** Bottom sheet (CMP-051): radius/3xl top, bg-raised, grabber 32 by 4; map sheets drag between snaps. */
-export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', header, actions, children, className }: BottomSheetProps) {
+export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', heights, header, actions, children, className }: BottomSheetProps) {
   const modal = type === 'modal'
   const ref = useFocusTrap<HTMLDivElement>(open && modal, onClose)
   const [drag, setDrag] = useState<number | null>(null)
@@ -187,7 +189,7 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
         aria-label={label}
         tabIndex={-1}
         className={cn(SHEET, 'outline-none', !modal && 'z-40 transition-[height] duration-medium2 ease-emphasized-decelerate motion-reduce:transition-none', className)}
-        style={!modal ? { height: drag !== null ? `calc(${SNAP_VH[snap]} + ${drag}px)` : SNAP_VH[snap], maxHeight: '85dvh' } : undefined}
+        style={!modal ? { height: drag !== null ? `calc(${heights?.[snap] ?? SNAP_VH[snap]} + ${drag}px)` : heights?.[snap] ?? SNAP_VH[snap], maxHeight: '85dvh' } : undefined}
       >
         <div
           className="flex shrink-0 touch-none justify-center py-[var(--space-2)]"
@@ -215,7 +217,7 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
             }}
           />
         </div>
-        {header ? <div className="shrink-0 pb-[var(--space-2)] pl-[var(--space-4)] pr-[var(--space-1)]">{header}</div> : null}
+        {header ? <div className="shrink-0 px-[var(--space-4)] pb-[var(--space-2)]">{header}</div> : null}
         <div
           className={cn(
             'flex min-h-0 flex-1 flex-col overflow-y-auto',

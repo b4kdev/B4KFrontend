@@ -4,8 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
-import { ArrowLeft } from 'lucide-react'
-import { useRouter } from '@/i18n/navigation'
+import { Link as IntlLink, useRouter } from '@/i18n/navigation'
+import { cn } from '@/lib/cn'
 import {
   BottomSheet,
   Button,
@@ -79,8 +79,18 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const [filter, setFilter] = useState<string | null>(null)
   const [mode, setMode] = useState<'nearby' | 'saved'>(params?.get('saved') ? 'saved' : 'nearby')
   const [selectedId, setSelectedId] = useState<string | null>(poiId ?? params?.get('poi') ?? null)
+  // Escape goes back from a selected place to the list (no dialog open); a map tap does the same.
+  useEffect(() => {
+    if (!selectedId) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !document.querySelector('[role="dialog"]')) setSelectedId(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [selectedId])
   const [cart, setCart] = useState<'collapsed' | 'open'>(params?.get('plan') ? 'open' : 'collapsed')
-  const [activeDay, setActiveDay] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>('all')
+  // The open plan starts on Day 1, as drawn; All stays one tab away.
+  const [activeDay, setActiveDay] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>(1)
   const [snap, setSnap] = useState<SheetSnap>('mid')
   const [planSheet, setPlanSheet] = useState(!!params?.get('plan') && phone)
   const [saveOpen, setSaveOpen] = useState(false)
@@ -273,11 +283,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   // ── Panel content ──────────────────────────────────────────────────────────
   const switcher = (
-    <Tabs label={t('CD0815')} width="equal" value={mode} onValueChange={(v) => { setMode(v as 'nearby' | 'saved'); setSelectedId(null) }} tabs={[{ id: 'nearby', label: t('CD1576') }, { id: 'saved', label: k('saved.title') }]} />
+    <Tabs label={t('CD0815')} width="equal" className={phone ? undefined : 'px-[var(--space-4)]'} value={mode} onValueChange={(v) => { setMode(v as 'nearby' | 'saved'); setSelectedId(null) }} tabs={[{ id: 'nearby', label: t('CD1576') }, { id: 'saved', label: k('saved.title') }]} />
   )
   const placeView = detail ? (
-    <div className="flex flex-col gap-[var(--space-2)] pb-[var(--space-4)]">
-      <Button variant="ghost" size="sm" leadingIcon={<ArrowLeft />} className="self-start" onClick={() => setSelectedId(null)}>{k('map.aiOverlay.back')}</Button>
+    <div className={cn('flex flex-col gap-[var(--space-2)] pb-[var(--space-4)]', phone && '-mx-[var(--space-4)] -mt-[var(--space-2)]')}>
       <PlaceDetail
         viewport={phone ? 'mobile' : 'desktop'}
         name={detailName}
@@ -303,7 +312,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   ) : selectedId ? <Skeleton className="m-[var(--space-4)] h-[320px]" /> : null
 
   const nearbyList = (
-    <div className="flex flex-col gap-[var(--space-3)] p-[var(--space-4)]">
+    <div className={cn('flex flex-col gap-[var(--space-3)]', !phone && 'p-[var(--space-4)]')}>
       {(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-[80px]" />) : null}
       {!(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? <EmptyState title={k('map.empty.title')} action={<Button size="md" variant="secondary" onClick={() => mapRef.current?.zoomOut()}>{k('map.zoomOut')}</Button>}>{t('CD1531')}</EmptyState> : null}
       <ul className="flex flex-col gap-[var(--space-3)]">
@@ -318,6 +327,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
               description={p.description}
               addToPlan={{ onAdd: () => addToPlan(p), label: `${k('map.poiDetail.addToPlan')}: ${nameOf(p, locale)}` }}
               save={{ saved: savedIds.has(p.poi_id), onSave: () => toggleSave(p), label: `${k('map.poiDetail.save')} ${nameOf(p, locale)}` }}
+              like={{ liked: liked.has(p.poi_id), onLike: () => toggleLike(p.poi_id), label: liked.has(p.poi_id) ? k('explore.card.unlikeAria', { name: nameOf(p, locale) }) : k('explore.card.likeAria', { name: nameOf(p, locale) }) }}
             />
           </li>
         ))}
@@ -459,21 +469,30 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   if (phone) {
     return (
       <div className="relative h-[calc(100dvh)] w-full overflow-hidden">
-        <main id="main" className="absolute inset-0">{map}</main>
+        {/* The map ends at the navigation bar, so Naver's logo stays in view. */}
+        <main id="main" className="absolute inset-x-0 top-0 bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))]">{map}</main>
         <div className="absolute inset-x-0 top-0 z-20 flex flex-col gap-[var(--space-2)]">
           <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} />
-          <div className="px-[var(--space-2)]">{chips}</div>
+          <div className="px-[var(--space-4)]">{chips}</div>
         </div>
         {order.length ? (
-          <div className="absolute bottom-[calc(76px+var(--space-3))] left-[var(--space-3)] z-30">
+          <div className="absolute bottom-[calc(76px+var(--fab-size)+env(safe-area-inset-bottom)+var(--space-3))] left-[var(--space-4)] z-30">
             <PlanPill label={`${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })}`} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} />
           </div>
         ) : null}
-        <BottomSheet type="map" open label={k('map.plan.title')} snap={snap} onSnapChange={setSnap} onClose={() => setSnap('peek')} resizeLabel={k('itinerary.sheet.handle')} header={selectedId ? undefined : switcher}>
-          {content}
-        </BottomSheet>
-        <BottomSheet type="modal" open={planSheet} onClose={() => setPlanSheet(false)} label={k('map.plan.title')}>
-          <div className="-mx-[var(--space-6)] h-[70dvh]">{cartNode}</div>
+        <BottomSheet
+          type="map"
+          open
+          label={k('map.plan.title')}
+          snap={planSheet ? 'full' : snap}
+          onSnapChange={(s) => (planSheet ? s !== 'full' && setPlanSheet(false) : setSnap(s))}
+          onClose={() => (planSheet ? setPlanSheet(false) : setSnap('peek'))}
+          resizeLabel={k('itinerary.sheet.handle')}
+          heights={planSheet ? { full: '70dvh' } : undefined}
+          header={selectedId || planSheet ? undefined : switcher}
+          className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0"
+        >
+          {planSheet ? <div className="-mx-[var(--space-4)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div> : content}
         </BottomSheet>
         {dialogs}
       </div>
@@ -487,8 +506,13 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       </LeftPanel>
       <main id="main" className="relative min-w-0 flex-1">
         {map}
-        <div className="pointer-events-none absolute inset-x-0 top-0 p-[var(--space-3)] [&>*]:pointer-events-auto">{chips}</div>
-        <ZoomControl className="absolute bottom-[var(--space-6)] right-[var(--space-6)]" onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} atMax={zoom >= 18} atMin={zoom <= 6} />
+        <div className="pointer-events-none absolute inset-x-0 top-0 p-[var(--space-4)] [&>*]:pointer-events-auto">{chips}</div>
+        <p className="absolute bottom-[var(--space-3)] left-[var(--space-16)] flex flex-wrap items-center gap-x-[var(--space-3)] type-body-caption text-ui-fg-muted">
+          <span>{t('CD1462')}</span>
+          <IntlLink href="/legal/terms" className="hover:text-ui-fg hover:underline">{t('CD1460')}</IntlLink>
+          <IntlLink href="/legal/privacy" className="font-semibold hover:text-ui-fg hover:underline">{t('CD0321')}</IntlLink>
+        </p>
+        <ZoomControl className="absolute bottom-[var(--space-4)] right-[var(--space-4)]" onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} atMax={zoom >= 18} atMin={zoom <= 6} />
       </main>
       {dialogs}
     </div>
