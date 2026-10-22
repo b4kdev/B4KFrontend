@@ -13,6 +13,7 @@ import {
   Chip,
   Dialog,
   EmptyState,
+  IconButton,
   LeaderboardRow,
   ListItem,
   Modal,
@@ -167,6 +168,7 @@ type OtherProfile = { id: number; name: string | null; avatar_url: string | null
 export function ProfileVisitorScreen({ id }: { id: string }) {
   const badgeName = useBadgeName()
   const k = useCdKey()
+  const t = useCd()
   const phone = usePhone()
   const { toast } = useV2Shell()
   const locale = useLocale()
@@ -178,7 +180,8 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
   if (profile.error) return <V2Page bar={{ type: 'page', title: '' }}><EmptyState title={k('profile.notFound')} /></V2Page>
   return (
     <V2Page bar={{ type: 'page', title: p?.name ?? '' }}>
-      <div className="flex flex-col gap-[var(--space-10)]">
+      {/* Figma 254:4011: the own profile layout; Share is a round icon button in the header row. */}
+      <div className="mx-auto flex w-full max-w-[960px] flex-col gap-[var(--space-6)]">
         {p ? (
           <div className={HEADER_BLEED}><ProfileHeader
             viewport={phone ? 'mobile' : 'desktop'}
@@ -191,11 +194,17 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
                 { number: p.badges_count, label: k('profile.header.badgesLabel') },
               ] : []),
             ]}
-            action={<Button variant="secondary" size="md" leadingIcon={<Share2 />} onClick={() => { navigator.clipboard?.writeText(`${location.origin}/${locale}/profile/${id}`); toast({ type: 'success', message: k('profile.trips.card.shareCopiedToast') }) }}>{k('saved.myPlan.share')}</Button>}
+            actionInRow
+            action={<IconButton variant="secondary" label={k('saved.myPlan.share')} icon={<Share2 />} onClick={() => { navigator.clipboard?.writeText(`${location.origin}/${locale}/profile/${id}`); toast({ type: 'success', message: k('profile.trips.card.shareCopiedToast') }) }} />}
           /></div>
         ) : <Skeleton className="h-[120px]" />}
         {trips.data?.length ? (
-          <RowSection title={k('search.results.plans')} cards={trips.data.map((tr) => <Card key={tr.id} type="plan" href={`/plan/${tr.id}`} title={tr.title} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} />)} />
+          <section aria-labelledby="visitor-plans" className="flex flex-col gap-[var(--space-6)] lg:px-[var(--space-6)]">
+            <SectionHeader id="visitor-plans" title={t('CD1300')} />
+            <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">
+              {trips.data.map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} /></li>)}
+            </ul>
+          </section>
         ) : null}
         {badgeList.filter((b) => b.earned).length ? (
           <RowSection title={k('badges.title')} cards={badgeList.filter((b) => b.earned).map((b) => <AchievementBadge key={b.badge_id} name={badgeName(b)} detail={k(`badges.rarity.${b.rarity}`)} icon={<Trophy />} rarity={b.rarity} />)} />
