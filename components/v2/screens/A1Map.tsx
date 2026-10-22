@@ -447,7 +447,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       <Modal
         open={saveOpen}
         onClose={() => setSaveOpen(false)}
-        size="sm"
+        size="md"
         title={t('CD0642')}
         closeLabel={k('badges.detail.close')}
         secondaryAction={<Button variant="secondary" onClick={() => setSaveOpen(false)}>{k('map.plan.discardCancel')}</Button>}

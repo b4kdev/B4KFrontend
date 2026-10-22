@@ -188,7 +188,7 @@ export type PlanStopRowProps = {
 export function PlanStopRow({ name, number, day, duration, durationLabel, onDuration, onRemove, removeLabel, reorderLabel, dragging, stopId, handleProps, onSelect, thumbnail, className }: PlanStopRowProps) {
   return (
     <li data-stop-id={stopId} className={cn('group flex h-[var(--control-height-md)] items-center gap-[var(--space-2)]', dragging && 'bg-ui-state-dragged', className)}>
-      <DragHandle label={reorderLabel} {...handleProps} className={cn('touch-none md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100', dragging && 'md:opacity-100')} />
+      <DragHandle label={reorderLabel} {...handleProps} className="touch-none" />
       <StopBadge number={number} day={day} />
       {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="40px" className="w-[var(--control-height-md)] shrink-0" /> : null}
       {onSelect ? (
