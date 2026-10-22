@@ -508,6 +508,8 @@
     "deleteDayBody": "この日の{count}件のスポットがプランから削除されます。",
     "deleteDayConfirm": "削除",
     "previousDays": "前の日",
-    "nextDays": "次の日"
+    "nextDays": "次の日",
+    "settingsData": "データとプライバシー",
+    "deleteAccountNote": "30日後に削除されます。それまでにサインインすると復元できます"
   }
 }

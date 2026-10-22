@@ -37,6 +37,9 @@ export function useGap() {
       deleteDayConfirm: t('deleteDayConfirm'),
       previousDays: t('previousDays'),
       nextDays: t('nextDays'),
+      // Settings (SCR-022): the data and privacy group label and the Delete account row note.
+      settingsData: t('settingsData'),
+      deleteAccountNote: t('deleteAccountNote'),
     }),
     [t],
   )

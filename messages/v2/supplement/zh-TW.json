@@ -508,6 +508,8 @@
     "deleteDayBody": "這一天的{count}個地點將從你的行程中移除。",
     "deleteDayConfirm": "刪除",
     "previousDays": "前幾天",
-    "nextDays": "後幾天"
+    "nextDays": "後幾天",
+    "settingsData": "你的資料與隱私",
+    "deleteAccountNote": "30 天後刪除；在此之前登入即可復原"
   }
 }

@@ -7,6 +7,7 @@ import { Award, Bell, Bookmark, Calendar, Map as MapIcon, Pencil, Share2, Sparkl
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
   AchievementBadge,
+  Avatar,
   Button,
   Card,
   Chip,
@@ -38,6 +39,7 @@ import type { NotificationPref } from '@/app/api/account/notification-prefs/rout
 import type { OtherUserTrip } from '@/app/api/profile/[id]/trips/route'
 import type { OtherUserBadge } from '@/app/api/profile/[id]/badges/route'
 import { useCd, useCdKey } from '../cd'
+import { useGap } from '../gaps'
 import { V2Page } from '../V2Page'
 import { UNREAD_KEY, useV2Shell, useV2SignOut } from '../V2Shell'
 import { LANGUAGES } from '../V2Settings'
@@ -369,6 +371,7 @@ export function SettingsScreen() {
   const { user } = useAuth()
   const { openLanguage, toast } = useV2Shell()
   const signOut = useV2SignOut()
+  const GAP = useGap()
   const prefs = useSWR<{ prefs: NotificationPref[] }>(user ? '/api/account/notification-prefs' : null, jsonFetch)
   const profile = useSWR<ProfileData>(user ? '/api/profile' : null, jsonFetch)
   const [theme, setThemeState] = useState<ThemeChoice>('system')
@@ -428,32 +431,40 @@ export function SettingsScreen() {
     await send('/api/account/notification-prefs', 'PATCH', { notif_type: type, opt_out: !on }).catch(() => toast({ type: 'critical', message: k('profile.settings.notifications.error') }))
     prefs.mutate()
   }
-  const heading = 'px-[var(--space-4)] pb-[var(--space-2)] pt-[var(--space-6)] type-body-label text-ui-fg-muted'
+  // Figma 454:132475: caps group labels on the column edge, lists with row dividers, 16 between all parts.
+  const heading = 'type-eyebrow-category text-ui-fg-muted'
   const langName = LANGUAGES.find((l) => l.code === locale)?.name ?? locale
 
   return (
     <V2Page bar={{ type: 'page', title: k('nav.settings') }}>
-      <div className="mx-auto flex w-full max-w-[720px] flex-col">
-        <h1 className="mb-[var(--space-2)] type-display-h1 max-lg:hidden">{k('nav.settings')}</h1>
+      <div className="mx-auto flex w-full max-w-[720px] flex-col gap-[var(--space-4)]">
+        <h1 className="type-display-h3 max-lg:hidden">{k('nav.settings')}</h1>
         {user ? (
           <>
             <h2 className={heading}>{k('profile.settings.account.heading')}</h2>
-            <ul className="border-t border-ui-border">
-              <ListItem title={t('CD1597')} secondary={profile.data?.name} chevron onClick={() => { setName(profile.data?.name ?? ''); setNameSheet(true) }} />
-              <ListItem title={k('profile.settings.changePassword')} secondary={t('CD1598')} chevron onClick={() => setPwSheet(true)} />
+            <ul>
+              <ListItem
+                leading={<Avatar size="md" src={profile.data?.avatar_url} name={profile.data?.name} decorative />}
+                title={profile.data?.name ?? ''}
+                secondary={t('CD1597')}
+                chevron
+                onClick={() => { setName(profile.data?.name ?? ''); setNameSheet(true) }}
+              />
+              {/* Google-only accounts have no password to change. */}
+              {hasPassword ? <ListItem title={t('CD0046')} secondary={t('CD1598')} chevron onClick={() => setPwSheet(true)} /> : null}
             </ul>
           </>
         ) : (
-          <ul className="border-t border-ui-border"><ListItem title={k('nav.signIn')} secondary={t('CD1450')} chevron onClick={() => router.push('/login')} /></ul>
+          <ul><ListItem title={k('nav.signIn')} secondary={t('CD1450')} chevron onClick={() => router.push('/login')} /></ul>
         )}
 
         <h2 className={heading}>{k('profile.settings.preferences.heading')}</h2>
-        <ul className="border-t border-ui-border">
-          <ListItem title={k('profile.settings.preferences.language')} trailing={<span lang={locale}>{langName}</span>} chevron onClick={openLanguage} />
+        <ul>
+          <ListItem title={k('profile.settings.preferences.language')} trailing={<span lang={locale}>{langName}</span>} onClick={openLanguage} />
           {phone ? (
-            <ListItem title={k('profile.settings.preferences.appearance')} trailing={themeOptions.find((o) => o.id === theme)?.label} chevron onClick={() => setThemeSheet(true)} />
+            <ListItem title={t('CD1283')} trailing={themeOptions.find((o) => o.id === theme)?.label} onClick={() => setThemeSheet(true)} />
           ) : (
-            <ListItem title={k('profile.settings.preferences.appearance')} trailing={<SegmentedControl label={k('profile.settings.preferences.appearance')} options={themeOptions} value={theme} onValueChange={(v) => chooseTheme(v as ThemeChoice)} className="w-[360px]" />} />
+            <ListItem title={t('CD1283')} trailing={<SegmentedControl label={t('CD1283')} options={themeOptions} value={theme} onValueChange={(v) => chooseTheme(v as ThemeChoice)} className="w-[360px]" />} />
           )}
           {user ? <ListItem title={t('CD1599')} chevron onClick={() => router.push('/?interests=1')} /> : null}
         </ul>
@@ -461,7 +472,7 @@ export function SettingsScreen() {
         {user ? (
           <>
             <h2 className={heading}>{k('profile.settings.notifications.heading')}</h2>
-            <ul className="border-t border-ui-border">
+            <ul>
               {([['badge_earned', 'CD1600'], ['event_drop', 'CD1602'], ['editorial_pick', 'CD0971']] as const).filter(([type]) => GAMIFICATION || type !== 'badge_earned').map(([type, cd]) => (
                 <ListItem key={type} title={t(cd)} trailing={<Toggle label={t(cd)} hideLabel checked={!optOut(type)} onCheckedChange={(on) => toggleNotif(type, on)} />} />
               ))}
@@ -469,28 +480,23 @@ export function SettingsScreen() {
           </>
         ) : null}
 
-        <h2 className={heading}>{k('profile.settings.privacy.heading')}</h2>
-        <ul className="border-t border-ui-border">
-          <ListItem title={t('CD1603')} chevron onClick={() => router.push('/legal/cookies')} />
-          {user && profile.data ? (
-            <>
-              <ListItem title={k('profile.settings.privacy.trips')} secondary={k('profile.settings.privacy.tripsNote')} trailing={<Toggle label={k('profile.settings.privacy.trips')} hideLabel checked={profile.data.trips_public} onCheckedChange={async (v) => { await send('/api/account/profile', 'PATCH', { trips_public: v }).catch(() => {}); profile.mutate() }} />} />
-              <ListItem title={k('profile.settings.privacy.saved')} secondary={k('profile.settings.privacy.savedNote')} trailing={<Toggle label={k('profile.settings.privacy.saved')} hideLabel checked={profile.data.saved_public} onCheckedChange={async (v) => { await send('/api/account/profile', 'PATCH', { saved_public: v }).catch(() => {}); profile.mutate() }} />} />
-            </>
-          ) : null}
+        {/* Privacy is per plan (PD-47): no per-tab public toggles here. */}
+        <h2 className={heading}>{GAP.settingsData}</h2>
+        <ul>
+          <ListItem title={t('CD1603')} secondary={t('CD0137')} chevron onClick={() => router.push('/legal/cookies')} />
+          {user ? <ListItem title={<span className="text-ui-danger">{k('profile.settings.deleteAccount')}</span>} secondary={GAP.deleteAccountNote} onClick={startDelete} /> : null}
         </ul>
 
         {user ? (
-          <div className="flex flex-col items-start gap-[var(--space-2)] px-[var(--space-4)] py-[var(--space-8)]">
-            <Button variant="secondary" onClick={signOut}>{k('profile.settings.signOut')}</Button>
-            <Button variant="ghost" onClick={async () => { await send('/api/account/signout-all', 'POST').catch(() => toast({ type: 'critical', message: k('profile.settings.signOutAllError') })); signOut() }}>{t('CD1604')}</Button>
-            <Button variant="ghost" className="text-ui-danger" onClick={startDelete}>{k('profile.settings.deleteAccount')}</Button>
+          <div className="flex flex-wrap items-start gap-[var(--space-2)]">
+            <Button variant="secondary" size="md" onClick={signOut}>{k('profile.settings.signOut')}</Button>
+            <Button variant="ghost" size="md" onClick={async () => { await send('/api/account/signout-all', 'POST').catch(() => toast({ type: 'critical', message: k('profile.settings.signOutAllError') })); signOut() }}>{t('CD1604')}</Button>
           </div>
         ) : null}
       </div>
 
-      <Modal open={themeSheet} onClose={() => setThemeSheet(false)} size="sm" title={k('profile.settings.preferences.appearance')} closeLabel={k('badges.detail.close')}>
-        <SegmentedControl label={k('profile.settings.preferences.appearance')} options={themeOptions} value={theme} onValueChange={(v) => { chooseTheme(v as ThemeChoice); setThemeSheet(false) }} className="mb-[var(--space-4)]" />
+      <Modal open={themeSheet} onClose={() => setThemeSheet(false)} size="sm" title={t('CD1283')} closeLabel={k('badges.detail.close')}>
+        <SegmentedControl label={t('CD1283')} options={themeOptions} value={theme} onValueChange={(v) => { chooseTheme(v as ThemeChoice); setThemeSheet(false) }} className="mb-[var(--space-4)]" />
       </Modal>
       <Modal open={nameSheet} onClose={() => setNameSheet(false)} size="sm" title={t('CD1597')} closeLabel={k('badges.detail.close')}
         secondaryAction={<Button variant="ghost" onClick={() => setNameSheet(false)}>{k('saved.folder.cancel')}</Button>}

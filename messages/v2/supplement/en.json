@@ -21,6 +21,8 @@
     "deleteDayBody": "{count, plural, one {# place} other {# places}} on this day will be removed from your plan.",
     "deleteDayConfirm": "Delete",
     "previousDays": "Earlier days",
-    "nextDays": "Later days"
+    "nextDays": "Later days",
+    "settingsData": "Your data and privacy",
+    "deleteAccountNote": "Deleted after 30 days; sign in before then to restore"
   }
 }

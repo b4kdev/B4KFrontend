@@ -398,6 +398,8 @@
     "deleteDayBody": "{count, plural, one {# lugar} other {# lugares}} deste dia {count, plural, one {será removido} other {serão removidos}} do seu plano.",
     "deleteDayConfirm": "Excluir",
     "previousDays": "Dias anteriores",
-    "nextDays": "Próximos dias"
+    "nextDays": "Próximos dias",
+    "settingsData": "Seus dados e privacidade",
+    "deleteAccountNote": "Excluída após 30 dias; entre antes disso para restaurar"
   }
 }
