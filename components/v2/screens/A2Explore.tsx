@@ -178,6 +178,7 @@ export function CategoryScreen({ category }: { category: string }) {
           return (
             <div key={s.id} className="flex flex-col gap-[var(--space-12)]">
               <RowSection
+                arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
                 title={k(`explore.sections.${s.id}`)}
                 seeAll={{ href: rowHref(category, s.id), label: t('CD1309') }}
                 featured={featured ? <Card type="featured" href={`/map?poi=${featured.poi_id}`} title={poiName(featured, locale)} imageSrc={featured.primary_image_url} eyebrow={t('CD0423')} meta={featured.display_region} /> : undefined}

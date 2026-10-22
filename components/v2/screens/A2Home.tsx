@@ -122,12 +122,14 @@ export function HomeScreen() {
   const name = (p: HomeTrendingPoi) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
 
   return (
-    <V2Page bleed>
+    <V2Page bleed underBar>
       {slides.data?.length ? (
         <Carousel type="hero" label={t('CD0388')} previousLabel={t('CD0390')} nextLabel={t('CD0389')} slideLabel={(n) => t('CD0391', { n })}>
           {slides.data.map((s, i) => (
             <Hero
               key={s.id}
+              // Phones: the hero runs up under the floating top bar, so it grows by the bar's height.
+              className="max-lg:h-[calc(var(--hero-height-home)+var(--fab-size)+env(safe-area-inset-top))]"
               as={i === 0 ? 'h1' : 'h2'}
               imageSrc={s.image_url}
               eyebrow={s.badge}
@@ -141,7 +143,7 @@ export function HomeScreen() {
         <Skeleton className="h-[var(--hero-height-home)] w-full" />
       ) : null}
 
-      <div className="mx-auto flex w-full max-w-[var(--container-xl)] flex-col gap-[var(--space-12)] px-[var(--grid-gutter-mobile)] py-[var(--space-10)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
+      <div className="mx-auto flex w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] flex-col gap-[var(--space-12)] px-[var(--grid-gutter-mobile)] py-[var(--space-10)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
         <section aria-labelledby="explore-cats" className="flex flex-col gap-[var(--space-4)]">
           <SectionHeader id="explore-cats" title={t('CD0426')} />
           <ul className="-mx-[var(--grid-gutter-mobile)] flex gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
@@ -155,6 +157,7 @@ export function HomeScreen() {
 
         {trending.data?.length ? (
           <RowSection
+            arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
             title={t('CD0313')}
             seeAll={{ href: '/explore/trending', label: t('CD1309') }}
             cards={trending.data.map((p) => (
@@ -194,6 +197,7 @@ export function HomeScreen() {
 
         {events.data?.length ? (
           <RowSection
+            arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
             title={t('CD0425')}
             cards={events.data.map((e) => (
               <Card key={e.id} type="place" href={`/map?event=${e.id}`} title={e.title} imageSrc={e.image_url} meta={e.location} dDay={dDay(e.date_start)} />
@@ -205,6 +209,7 @@ export function HomeScreen() {
 
         {plans.data?.length ? (
           <RowSection
+            arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
             title={t('CD0477')}
             seeAll={{ href: '/explore/popular-plans', label: t('CD1309') }}
             cards={plans.data.map((p) => (

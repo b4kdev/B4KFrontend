@@ -37,7 +37,7 @@ export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action
       <div aria-hidden className="absolute inset-0 bg-overlay-fade" />
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-[var(--space-3)] p-[var(--space-11)] max-md:px-[var(--space-6)] max-md:pb-[var(--space-10)] max-md:pt-[var(--space-6)]">
         {eyebrow ? <Badge variant="on-image">{eyebrow}</Badge> : null}
-        <H className={cn(size === 'home' ? 'type-display-hero' : 'type-display-hub', 'max-w-[960px] break-words hyphens-auto [text-wrap:balance] [&:lang(ko)]:break-keep')}>{title}</H>
+        <H className={cn(size === 'home' ? 'type-display-hero' : 'type-display-hub', 'min-w-0 max-w-[min(960px,100%)] hyphens-auto [overflow-wrap:anywhere] [text-wrap:balance] [&:lang(ko)]:break-keep')}>{title}</H>
         {subtitle ? <p className="max-w-[400px] type-body-long text-ui-fg-muted max-md:hidden">{subtitle}</p> : null}
         {action ? <div className="pt-[var(--space-3)]">{action}</div> : null}
       </div>
@@ -112,8 +112,8 @@ export function Carousel({ type, label, children, seeAll, subtitle, previousLabe
 }
 
 export type FooterProps = {
-  /** Legal links: Help, Privacy, Terms, Cookies. */
-  links: { label: string; href: string }[]
+  /** Legal links in order: About B4K, Help, Terms, Privacy Policy (strong), Cookies. */
+  links: { label: string; href: string; strong?: boolean }[]
   copyright: string
   navLabel: string
   className?: string
@@ -127,7 +127,7 @@ export function Footer({ links, copyright, navLabel, className }: FooterProps) {
         <ul className="flex flex-wrap gap-x-[var(--space-4)] gap-y-[var(--space-2)]">
           {links.map((l) => (
             <li key={l.href}>
-              <IntlLink href={l.href} className="hover:text-ui-link-hover focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus">{l.label}</IntlLink>
+              <IntlLink href={l.href} className={cn(l.strong && 'type-body-label', 'hover:text-ui-link-hover focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus')}>{l.label}</IntlLink>
             </li>
           ))}
         </ul>

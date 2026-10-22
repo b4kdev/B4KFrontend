@@ -17,11 +17,13 @@ export type V2PageProps = {
   bleed?: boolean
   /** Hide the footer (flows). */
   noFooter?: boolean
+  /** Phones: the first block starts under the floating Home bar (a full-width hero), no spacer. */
+  underBar?: boolean
   children: ReactNode
   className?: string
 }
 
-export function V2Page({ bar = { type: 'home' }, bleed, noFooter, children, className }: V2PageProps) {
+export function V2Page({ bar = { type: 'home' }, bleed, noFooter, underBar, children, className }: V2PageProps) {
   const t = useCd()
   const router = useRouter()
   const { labels, openDrawer } = useV2Shell()
@@ -33,8 +35,8 @@ export function V2Page({ bar = { type: 'home' }, bleed, noFooter, children, clas
         <TopAppBar type="page" labels={labels} onBack={() => router.back()} title={bar.title} action={bar.action} className="sticky top-0 z-30 lg:hidden" />
       ) : null}
       {/* The floating Home bar sits over the page: the first block starts below it on phones. */}
-      {bar.type === 'home' ? <div aria-hidden className="h-[calc(var(--fab-size)+env(safe-area-inset-top))] shrink-0 lg:hidden" /> : null}
-      <main id="main" tabIndex={-1} className={cn('flex-1 outline-none', !bleed && 'mx-auto w-full max-w-[var(--container-xl)] px-[var(--grid-gutter-mobile)] py-[var(--space-6)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]', className)}>
+      {bar.type === 'home' && !underBar ? <div aria-hidden className="h-[calc(var(--fab-size)+env(safe-area-inset-top))] shrink-0 lg:hidden" /> : null}
+      <main id="main" tabIndex={-1} className={cn('flex-1 outline-none', !bleed && 'mx-auto w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] px-[var(--grid-gutter-mobile)] py-[var(--space-6)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]', className)}>
         {children}
       </main>
       {noFooter ? null : (
@@ -43,8 +45,8 @@ export function V2Page({ bar = { type: 'home' }, bleed, noFooter, children, clas
           copyright={t('CD1462')}
           links={[
             { label: t('CD0320'), href: '/help' },
-            { label: t('CD1000'), href: '/legal/privacy' },
             { label: t('CD1460'), href: '/legal/terms' },
+            { label: t('CD0321'), href: '/legal/privacy', strong: true },
             { label: t('CD1461'), href: '/legal/cookies' },
           ]}
         />
