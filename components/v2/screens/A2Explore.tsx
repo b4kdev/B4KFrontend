@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
 import useSWR from 'swr'
-import { Map as MapIcon } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
   Breadcrumbs,
@@ -14,6 +14,7 @@ import {
   ExploreCollections,
   ExplorePackages,
   Hero,
+  Image,
   LeftPanel,
   PlanningCue,
   RowSection,
@@ -399,27 +400,41 @@ export function SpecialScreen({ api, category }: { api: string; category: string
   // The Index panel lists the category's rows and selects the row this special page belongs to.
   const explore = useSWR<ExploreData>(`/api/explore/${category}`, jsonFetch)
   const pathname = usePathname() ?? ''
-  const rows = explore.data?.sections.filter((x) => x.items.length).map((x) => x.id) ?? []
   const activeRow = Object.entries(SPECIAL_HREF[category] ?? {}).find(([, href]) => pathname.endsWith(href))?.[0]
+  // The page's own row stays in the Index even when the row itself has no cards.
+  const rows = (explore.data?.sections ?? []).filter((x) => x.items.length || x.id === activeRow).map((x) => x.id)
+  const categoryLabel = t(CATEGORIES.find((c) => c.slug === category)?.label ?? 'CD0804')
   const title =
     (data && ((locale === 'ko' ? data.workNameKo ?? data.teamNameKo ?? data.regionNameKo : data.workNameEn ?? data.teamNameEn ?? data.regionNameEn) ?? data.titleEn ?? data.title)) as string | undefined
   return (
-    <ExploreFrame category={category} sections={rows} active={activeRow}>
-      <div className="flex flex-col gap-[var(--space-6)]">
-        <section className="flex flex-col gap-[var(--space-4)] md:flex-row">
-          <div className="flex flex-1 flex-col gap-[var(--space-3)]">
-            <span className="type-eyebrow-badge text-ui-fg-muted">{t(CATEGORIES.find((c) => c.slug === category)?.label ?? 'CD0804')}</span>
-            <h1 className="type-display-h1">{title}</h1>
-            <p className="max-w-[60ch] type-body-long text-ui-fg-muted">{t('CD1575')}</p>
+    <ExploreFrame category={category} sections={rows} active={activeRow} pageTitle={title ?? ''}>
+      <div className="flex flex-col gap-[var(--space-4)]">
+        {title ? (
+          <Breadcrumbs
+            label={title}
+            items={[{ label: t('CD0804'), href: '/explore' }, { label: categoryLabel, href: `/explore/${category}` }, { label: title }]}
+            className="max-lg:hidden"
+          />
+        ) : null}
+        <header className="flex flex-col gap-[var(--space-1)]">
+          {/* Phones show the title in the top bar only. */}
+          <h1 className="type-display-h3 max-lg:sr-only">{title}</h1>
+          {category === 'k-drama' ? <p className="type-body-base text-ui-fg-muted">{t('CD1575')}</p> : null}
+        </header>
+        {/* Media: a photo on the left, the facts and actions on the right. */}
+        <section className="flex flex-col gap-[var(--space-6)] md:flex-row">
+          <Image ratio="16:9" src={data?.items[0]?.primary_image_url} alt="" sizes="(min-width: 768px) 480px, 100vw" className="w-full shrink-0 md:w-[480px]" />
+          <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-3)]">
+            <span className="type-eyebrow-category text-ui-fg-muted">{[categoryLabel, typeof data?.broadcaster === 'string' ? data.broadcaster : null].filter(Boolean).join(' · ')}</span>
             <div className="flex flex-wrap gap-[var(--gap-sm)]">
-              <IntlLink href={`/map?collection=${encodeURIComponent(api)}`} className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse"><MapIcon aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1573')}</IntlLink>
+              <IntlLink href={`/map?collection=${encodeURIComponent(api)}`} className="inline-flex h-[var(--control-height-lg)] items-center justify-center gap-[var(--gap-sm)] max-md:w-full border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"><MapPin aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1573')}</IntlLink>
             </div>
           </div>
         </section>
-        {data ? <p className="type-body-caption text-ui-fg-muted">{t('CD1302', { count: data.items.length })}</p> : null}
+        {data ? <p aria-live="polite" className="type-body-caption text-ui-fg-muted lg:self-end">{t('CD0160', { count: data.items.length })}</p> : null}
         {isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div> : null}
         {error ? <EmptyState type="error" container="bordered" title={t('CD1571')}>{t('CD1572')}</EmptyState> : null}
-        <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-x-[var(--space-4)] gap-y-[var(--space-6)] lg:grid-cols-4">
           {data?.items.map((p) => (
             <li key={p.poi_id}>
               <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={(locale === 'ko' ? p.relationship_ko : p.relationship_en) ?? p.display_region} />
