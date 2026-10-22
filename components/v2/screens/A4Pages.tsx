@@ -97,6 +97,12 @@ export function SearchScreen() {
   )
   const placeName = (p: SearchPoi) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
   const morePlaces = show !== 'places' && (data?.places.length ?? 0) > (phone ? 4 : 3)
+  const noResults = !!data && !data.places.length && !data.plans.length && (show !== 'explore' || !data.explore.length)
+  const exploreChips = (data?.explore ?? []).map((e) => (
+    <IntlLink key={e.href} href={`${e.href}`} className="inline-flex h-[var(--control-height-sm)] items-center rounded-full border border-ui-border-strong px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+      {t(({ kpop: 'CD1247', kdrama: 'CD1246', kbeauty: 'CD1244', kculture: 'CD1245' } as Record<string, string>)[e.label_key] ?? 'CD1306')}
+    </IntlLink>
+  ))
 
   const results = (
     <div className="flex flex-col gap-[var(--space-10)]">
@@ -106,8 +112,22 @@ export function SearchScreen() {
       {isLoading ? (
         <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div>
       ) : null}
-      {data && !data.places.length && !data.plans.length && !data.explore.length ? (
-        <EmptyState type="no-results" title={t('CD1291', { query: q })} action={<Button size="md" variant="secondary" onClick={() => setFilters({ show: ['all'] })}>{t('CD1433')}</Button>}>{t('CD1292')}</EmptyState>
+      {/* Explore matches are the fixed category links, so no places and no plans is No results;
+          the categories become its suggestions (Figma No results: chips, then Clear filters). */}
+      {noResults ? (
+        <EmptyState
+          type="no-results"
+          titleAs="h2"
+          title={t('CD1291', { query: q })}
+          action={
+            <div className="flex flex-col items-center gap-[var(--space-6)]">
+              <div className="flex flex-wrap justify-center gap-[var(--space-2)]">{exploreChips}</div>
+              <Button variant="secondary" onClick={() => setFilters({ show: ['all'] })}>{t('CD1433')}</Button>
+            </div>
+          }
+        >
+          {t('CD1292')}
+        </EmptyState>
       ) : null}
       {data?.places.length ? (
         <section aria-label={t('CD1307')} className="flex flex-col gap-[var(--space-4)]">
@@ -156,16 +176,10 @@ export function SearchScreen() {
           />
         )
       ) : null}
-      {data?.explore.length ? (
+      {data?.explore.length && !noResults ? (
         <section className="flex flex-col gap-[var(--space-4)]">
           <SectionHeader title={`${t('CD1306')} · ${data.explore.length}`} />
-          <div className="flex flex-wrap gap-[var(--space-2)]">
-            {data.explore.map((e) => (
-              <IntlLink key={e.href} href={`${e.href}`} className="inline-flex h-[var(--control-height-sm)] items-center rounded-full border border-ui-border-strong px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover">
-                {t(({ kpop: 'CD1247', kdrama: 'CD1246', kbeauty: 'CD1244', kculture: 'CD1245' } as Record<string, string>)[e.label_key] ?? 'CD1306')}
-              </IntlLink>
-            ))}
-          </div>
+          <div className="flex flex-wrap gap-[var(--space-2)]">{exploreChips}</div>
         </section>
       ) : null}
     </div>
