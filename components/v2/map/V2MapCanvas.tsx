@@ -274,7 +274,8 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   }, [planStops, routeLegs, activeDay, ready])
 
   return (
-    <div className="relative size-full bg-ui-bg-sunken">
+    // isolate: the SDK gives its logo and controls a high z-index; keep them under sheets and dialogs.
+    <div className="relative isolate size-full bg-ui-bg-sunken">
       {clientId ? (
         <Script src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}`} strategy="afterInteractive" onReady={() => setReady(true)} onError={() => setFailed(true)} />
       ) : null}
