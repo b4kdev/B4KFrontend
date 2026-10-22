@@ -83,6 +83,8 @@ export function ProfileOwnScreen() {
     return <V2Page bar={{ type: 'page', title: k('profile.header.breadcrumb') }}><SignedOutPrompt title={k('auth.gate.context.profile_nav')} text={k('auth.gate.valueProp')} /></V2Page>
   }
   const p = profile.data
+  // Your profile is your public page (PD-48): only published plans; drafts and private plans live in Saved.
+  const plans = trips.data?.filter((tr) => tr.is_published)
   return (
     <V2Page bar={{ type: 'page', title: k('profile.header.breadcrumb') }}>
       {/* Figma 461:59578: one 960 column; header, then the Plans section (subtitle, See all, three
@@ -108,15 +110,15 @@ export function ProfileOwnScreen() {
         ) : (
           <Skeleton className="h-[120px]" />
         )}
-        {trips.data?.length ? (
+        {plans?.length ? (
           <section aria-labelledby="profile-plans" className="flex flex-col gap-[var(--space-6)] lg:px-[var(--space-6)]">
             <SectionHeader id="profile-plans" title={t('CD1300')} subtitle={GAP.profilePlansNote} seeAll={{ href: '/saved?tab=my-plans', label: t('CD1309') }} />
             <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">
-              {trips.data.slice(0, phone ? 2 : 3).map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} imageSrc={tr.thumbnail_url} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} /></li>)}
+              {plans.slice(0, phone ? 2 : 3).map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} imageSrc={tr.thumbnail_url} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} /></li>)}
             </ul>
             <IntlLink href="/saved?tab=my-plans" className="inline-flex h-[var(--control-height-md)] items-center self-start px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover">{GAP.openSaved}</IntlLink>
           </section>
-        ) : trips.data ? (
+        ) : plans ? (
           <EmptyState container="bordered" title={k('profile.trips.empty.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('profile.trips.empty.cta')}</IntlLink>}>{k('profile.trips.empty.desc')}</EmptyState>
         ) : null}
         {badges.data ? (
