@@ -24,7 +24,6 @@ export type V2PageProps = {
 }
 
 export function V2Page({ bar = { type: 'home' }, bleed, noFooter, underBar, children, className }: V2PageProps) {
-  const t = useCd()
   const router = useRouter()
   const { labels, openDrawer } = useV2Shell()
   return (
@@ -39,19 +38,25 @@ export function V2Page({ bar = { type: 'home' }, bleed, noFooter, underBar, chil
       <main id="main" tabIndex={-1} className={cn('flex-1 outline-none', !bleed && 'mx-auto w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] px-[var(--grid-gutter-mobile)] py-[var(--space-6)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]', className)}>
         {children}
       </main>
-      {noFooter === true ? null : (
-        <Footer
-          className={noFooter === 'phone' ? 'max-lg:hidden' : undefined}
-          navLabel={t('CD0809')}
-          copyright={t('CD1462')}
-          links={[
-            { label: t('CD0320'), href: '/help' },
-            { label: t('CD1460'), href: '/legal/terms' },
-            { label: t('CD0321'), href: '/legal/privacy', strong: true },
-            { label: t('CD1461'), href: '/legal/cookies' },
-          ]}
-        />
-      )}
+      {noFooter === true ? null : <V2Footer className={noFooter === 'phone' ? 'max-lg:hidden' : undefined} />}
     </>
+  )
+}
+
+/** The page Footer (Help, Terms, Privacy Policy, Cookies). */
+export function V2Footer({ className }: { className?: string }) {
+  const t = useCd()
+  return (
+    <Footer
+      className={className}
+      navLabel={t('CD0809')}
+      copyright={t('CD1462')}
+      links={[
+        { label: t('CD0320'), href: '/help' },
+        { label: t('CD1460'), href: '/legal/terms' },
+        { label: t('CD0321'), href: '/legal/privacy', strong: true },
+        { label: t('CD1461'), href: '/legal/cookies' },
+      ]}
+    />
   )
 }

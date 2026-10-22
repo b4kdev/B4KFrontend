@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, Suspense, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
 import { useLocale } from 'next-intl'
@@ -29,6 +29,7 @@ import { V2DraftMigration } from './V2Gates'
 import V2QuickPlan from './V2QuickPlan'
 import { LanguageSheet } from './V2Settings'
 import { SignInGate, type GateRequest } from './V2SignInGate'
+import { V2HeaderSearch } from './V2Search'
 
 // Shell of the preview (original layout with the Header, UI-101 still open): desktop Header + rail,
 // phones Top app bar (per page) + Navigation bar + Drawer. Quick plan, Drawer and the language
@@ -149,7 +150,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           className="max-lg:hidden"
           labels={labels}
           signedIn={!!user}
-          search={<SearchPill label={labels.search} href="/search" />}
+          search={<Suspense fallback={<SearchPill label={labels.search} href="/search" />}><V2HeaderSearch label={labels.search} /></Suspense>}
           onLanguage={() => setLanguage(true)}
           helpHref="/help"
         />

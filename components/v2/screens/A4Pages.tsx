@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import useSWR from 'swr'
-import { Copy, Map, SlidersHorizontal, WifiOff } from 'lucide-react'
+import { Copy, Map, WifiOff } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
   Accordion,
@@ -20,7 +20,7 @@ import {
   LegalDocument,
   SearchFilters,
   SearchInput,
-  SearchSuggestions,
+  RowSection,
   SectionHeader,
   Skeleton,
   TopAppBar,
@@ -35,36 +35,16 @@ import type { SearchExplore, SearchPlan, SearchPoi } from '@/app/api/search/rout
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
 import { keepKNamesDeep } from '../text'
-import { V2Page } from '../V2Page'
+import { V2Footer, V2Page } from '../V2Page'
+import { useSearchBox } from '../V2Search'
+import { usePlaceActions } from '../usePlaceActions'
 import { useV2Shell } from '../V2Shell'
 
 const jsonFetch = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-const RECENT_KEY = 'b4k-v2-recent-searches'
 
 // ── Search (SCR-027, PD-42, PD-43, PD-38) ───────────────────────────────────
 
 type SearchResult = { places: SearchPoi[]; plans: SearchPlan[]; explore: SearchExplore[] }
-
-function useRecent() {
-  const [recent, setRecent] = useState<string[]>([])
-  useEffect(() => {
-    try {
-      setRecent(JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]'))
-    } catch {}
-  }, [])
-  const save = (next: string[]) => {
-    setRecent(next)
-    try {
-      localStorage.setItem(RECENT_KEY, JSON.stringify(next))
-    } catch {}
-  }
-  return {
-    recent,
-    add: (q: string) => save([q, ...recent.filter((r) => r !== q)].slice(0, 8)),
-    remove: (q: string) => save(recent.filter((r) => r !== q)),
-    clear: () => save([]),
-  }
-}
 
 export function SearchScreen() {
   const t = useCd()
@@ -72,15 +52,17 @@ export function SearchScreen() {
   const router = useRouter()
   const phone = usePhone()
   const { labels } = useV2Shell()
+  const act = usePlaceActions({ resume: true })
   const params = useSearchParams()
   const q = params?.get('q') ?? ''
-  const [draft, setDraft] = useState(q)
-  const [focused, setFocused] = useState(!q)
-  const [filters, setFilters] = useState<Record<string, string[]>>({ show: ['all'] })
+  // Phones: the screen's own field; desktop searches from the Header field.
+  const box = useSearchBox({ viewport: 'mobile', initial: q, open: !q })
+  // See all on a section opens the search with that section shown (?show=plans).
+  const showParam = params?.get('show') ?? 'all'
+  const [filters, setFilters] = useState<Record<string, string[]>>({ show: [showParam] })
+  useEffect(() => setFilters((f) => ({ ...f, show: [showParam] })), [showParam])
   const [sort, setSort] = useState('relevance')
   const [sheet, setSheet] = useState(false)
-  const recents = useRecent()
-  useEffect(() => setDraft(q), [q])
 
   const show = filters.show?.[0] ?? 'all'
   const qs = new URLSearchParams({ q, sort })
@@ -89,14 +71,7 @@ export function SearchScreen() {
   if (filters.district?.[0]) qs.set('area_lv2', filters.district[0])
   if (filters.theme?.length) qs.set('tags', filters.theme.join(','))
   const { data, error, isLoading } = useSWR<SearchResult>(q.length >= 2 ? `/api/search?${qs}` : null, jsonFetch)
-  const { data: sugg } = useSWR<{ suggestions: string[] }>(focused && draft.trim().length >= 2 ? `/api/search/suggestions?q=${encodeURIComponent(draft)}&lang=${locale}` : null, jsonFetch)
 
-  const go = (text: string) => {
-    if (!text.trim()) return
-    recents.add(text.trim())
-    setFocused(false)
-    router.push(`/search?q=${encodeURIComponent(text.trim())}`)
-  }
   const groups: FilterGroup[] = [
     { id: 'show', label: t('CD1271'), options: [['all', 'CD1267'], ['places', 'CD1269'], ['plans', 'CD1270'], ['explore', 'CD1268']].map(([id, cd]) => ({ id, label: t(cd) })) },
     { id: 'region', label: t('CD1254'), options: [['Seoul', 'CD1266'], ['Busan', 'CD1264'], ['Jeju', 'CD1265']].map(([id, cd]) => ({ id, label: t(cd) })) },
@@ -104,39 +79,29 @@ export function SearchScreen() {
     { id: 'theme', label: t('CD1283'), multi: true, options: [['kpop', 'CD1279'], ['kdrama', 'CD1278'], ['kbeauty', 'CD1277'], ['food', 'CD1275'], ['history', 'CD1276'], ['nature', 'CD1280'], ['shopping', 'CD1282'], ['nightlife', 'CD1281']].map(([id, cd]) => ({ id, label: t(cd) })) },
   ]
   const sortCfg = { label: t('CD1272'), options: [{ id: 'relevance', label: t('CD1274') }, { id: 'popularity', label: t('CD1273') }], value: sort, onValueChange: setSort }
-  const suggestions = (
-    <SearchSuggestions
-      viewport={phone ? 'mobile' : 'desktop'}
-      state={draft.trim() ? 'typing' : 'empty'}
-      query={draft}
-      onSearch={go}
-      places={(sugg?.suggestions ?? []).slice(0, 3).map((s, i) => ({ id: `s${i}`, name: s, meta: '', href: `/search?q=${encodeURIComponent(s)}` }))}
-      recent={recents.recent.map((r) => ({ id: r, text: r }))}
-      onRemoveRecent={recents.remove}
-      onClearRecent={recents.clear}
-      trending={[['K-Pop', 'CD1247'], ['K-Drama', 'CD1246'], ['K-Beauty', 'CD1244']].map(([id, cd]) => ({ id, text: t(cd) }))}
-      categories={[['k-pop', 'CD1247'], ['k-drama', 'CD1246'], ['k-beauty', 'CD1244'], ['k-culture', 'CD1245']].map(([id, cd]) => ({ id, name: t(cd), href: `/explore/${id}` }))}
-      labels={{ searchFor: (x) => `${t('CD1317')}: “${x}”`, places: t('CD1316'), plans: t('CD1300'), explore: t('CD1299'), recent: t('CD1297'), clearAll: t('CD1248'), trending: t('CD0313'), browse: t('CD1299'), remove: (x) => t('CD1298', { query: x }) }}
-    />
-  )
+  // Filters set beyond the defaults (Show All), for the phone All filters chip.
+  const active = Object.entries(filters).reduce((n, [g, v]) => n + (g === 'show' ? (v[0] && v[0] !== 'all' ? 1 : 0) : v.length), 0)
   const field = (
     <SearchInput
       label={labels.search}
       placeholder={labels.search}
-      value={draft}
+      value={box.draft}
       autoFocus={!q}
-      onFocus={() => setFocused(true)}
-      onChange={(e) => setDraft(e.target.value)}
-      onKeyDown={(e) => e.key === 'Enter' && go(draft)}
-      onClear={() => setDraft('')}
+      onFocus={() => box.setOpen(true)}
+      onChange={(e) => box.setDraft(e.target.value)}
+      onKeyDown={(e) => e.key === 'Enter' && box.go(box.draft)}
+      onClear={() => box.setDraft('')}
       clearLabel={t('CD1248')}
       size="md"
     />
   )
+  const placeName = (p: SearchPoi) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
+  const morePlaces = show !== 'places' && (data?.places.length ?? 0) > (phone ? 4 : 3)
 
   const results = (
-    <div className="flex flex-col gap-[var(--space-8)]">
-      {q ? <p aria-live="polite" className="type-body-caption text-ui-fg-muted">{data ? t('CD1303', { query: q, places: data.places.length, plans: data.plans.length, explore: data.explore.length }) : isLoading ? t('CD1285') : ''}</p> : null}
+    <div className="flex flex-col gap-[var(--space-10)]">
+      {/* Screen readers hear the counts of every section once the results arrive. */}
+      {q ? <p aria-live="polite" className="sr-only">{data ? t('CD1303', { query: q, places: data.places.length, plans: data.plans.length, explore: data.explore.length }) : isLoading ? t('CD1285') : ''}</p> : null}
       {error ? <EmptyState type="error" title={t('CD1249')} action={<Button size="md" variant="secondary" onClick={() => router.refresh()}>{t('CD1304')}</Button>} /> : null}
       {isLoading ? (
         <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div>
@@ -145,33 +110,55 @@ export function SearchScreen() {
         <EmptyState type="no-results" title={t('CD1291', { query: q })} action={<Button size="md" variant="secondary" onClick={() => setFilters({ show: ['all'] })}>{t('CD1433')}</Button>}>{t('CD1292')}</EmptyState>
       ) : null}
       {data?.places.length ? (
-        <section className="flex flex-col gap-[var(--space-4)]">
-          <SectionHeader title={t('CD1307')} />
+        <section aria-label={t('CD1307')} className="flex flex-col gap-[var(--space-4)]">
+          {/* Figma: the places count, and on phones the sort, above the grid; no section title. */}
+          <div className="flex items-center justify-between gap-[var(--space-3)]">
+            <p className="type-body-caption text-ui-fg-muted">{t('CD0160', { count: data.places.length })}</p>
+            {phone ? (
+              <label className="relative">
+                <Chip type="dropdown" aria-hidden tabIndex={-1} className="pointer-events-none">{sortCfg.options.find((o) => o.id === sort)?.label}</Chip>
+                <select aria-label={t('CD1272')} value={sort} onChange={(e) => setSort(e.target.value)} className="absolute inset-0 cursor-pointer opacity-0">
+                  {sortCfg.options.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
+                </select>
+              </label>
+            ) : null}
+          </div>
           <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">
-            {(show === 'places' ? data.places : data.places.slice(0, 3)).map((p) => (
+            {(show === 'places' ? data.places : data.places.slice(0, phone ? 4 : 3)).map((p) => (
               <li key={p.poi_id}>
-                <Card type="place" href={`/map?poi=${p.poi_id}`} title={locale === 'ko' ? p.name_ko : p.name_en || p.name_ko} imageSrc={p.primary_image_url} meta={[p.display_region, p.display_domain].filter(Boolean).join(' · ')} />
+                <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, placeName(p))} title={placeName(p)} imageSrc={p.primary_image_url} meta={[p.display_region, p.display_domain].filter(Boolean).join(' · ')} />
               </li>
             ))}
           </ul>
-          {show !== 'places' && data.places.length > 3 ? <Button variant="secondary" size="md" className="self-start" onClick={() => setFilters({ ...filters, show: ['places'] })}>{t('CD1311', { count: data.places.length })}</Button> : null}
+          {morePlaces ? <Button variant="secondary" className="lg:self-center max-lg:self-start" onClick={() => setFilters({ ...filters, show: ['places'] })}>{t('CD1311', { count: data.places.length })}</Button> : null}
         </section>
       ) : null}
       {data?.plans.length ? (
-        <section className="flex flex-col gap-[var(--space-4)]">
-          <SectionHeader title={t('CD1308')} />
-          <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">
-            {data.plans.slice(0, show === 'plans' ? 60 : 3).map((p) => (
-              <li key={p.id}>
-                <Card type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD1315', { count: p.stop_count })} sponsored={p.is_partner ? t('CD1314') : undefined} />
-              </li>
+        show === 'plans' ? (
+          <section className="flex flex-col gap-[var(--space-4)]">
+            <SectionHeader title={`${t('CD1308')} · ${data.plans.length}`} />
+            <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">
+              {data.plans.map((p) => (
+                <li key={p.id}>
+                  <Card type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD1315', { count: p.stop_count })} sponsored={p.is_partner ? t('CD1314') : undefined} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : (
+          <RowSection
+            title={`${t('CD1308')} · ${data.plans.length}`}
+            arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
+            seeAll={{ href: `/search?q=${encodeURIComponent(q)}&show=plans`, label: t('CD1309') }}
+            cards={data.plans.map((p) => (
+              <Card key={p.id} type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD1315', { count: p.stop_count })} sponsored={p.is_partner ? t('CD1314') : undefined} />
             ))}
-          </ul>
-        </section>
+          />
+        )
       ) : null}
       {data?.explore.length ? (
         <section className="flex flex-col gap-[var(--space-4)]">
-          <SectionHeader title={t('CD1306')} />
+          <SectionHeader title={`${t('CD1306')} · ${data.explore.length}`} />
           <div className="flex flex-wrap gap-[var(--space-2)]">
             {data.explore.map((e) => (
               <IntlLink key={e.href} href={`${e.href}`} className="inline-flex h-[var(--control-height-sm)] items-center rounded-full border border-ui-border-strong px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover">
@@ -185,15 +172,22 @@ export function SearchScreen() {
   )
 
   if (phone) {
+    // Figma chips row: All filters (with the count of filters set) and one dropdown chip per group, all opening the filters sheet.
+    const groupLabel = (g: FilterGroup) => {
+      const v = filters[g.id] ?? []
+      const sel = g.options.filter((o) => v.includes(o.id) && o.id !== 'all')
+      return sel.length ? sel.map((o) => o.label).join(', ') : g.label
+    }
     return (
       <>
         <TopAppBar type="search" labels={labels} onBack={() => router.back()} search={field} className="sticky top-0 z-30" />
         <main id="main" className="flex-1 px-[var(--grid-gutter-mobile)] py-[var(--space-3)]">
-          {focused ? suggestions : (
+          <h1 className="sr-only">{t('CD1293')}</h1>
+          {box.open ? box.suggestions : (
             <>
               <div className="-mx-[var(--grid-gutter-mobile)] mb-[var(--space-4)] flex gap-[var(--space-2)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none]">
-                <Chip type="icon-only" leadingIcon={<SlidersHorizontal />} onClick={() => setSheet(true)}>{t('CD1284')}</Chip>
-                {groups[0].options.map((o) => <Chip key={o.id} selected={show === o.id} onClick={() => setFilters({ ...filters, show: [o.id] })}>{o.label}</Chip>)}
+                <Chip type="dropdown" selected count={active || undefined} onClick={() => setSheet(true)}>{t('CD1284')}</Chip>
+                {groups.map((g) => <Chip key={g.id} type="dropdown" onClick={() => setSheet(true)}>{groupLabel(g)}</Chip>)}
               </div>
               {results}
             </>
@@ -210,15 +204,14 @@ export function SearchScreen() {
       <LeftPanel type="filters" label={t('CD1284')}>
         <SearchFilters viewport="desktop" groups={groups} value={filters} onValueChange={setFilters} sort={sortCfg} labels={{ title: t('CD1284'), clearAll: t('CD1248') }} />
       </LeftPanel>
-      <main id="main" className="flex min-w-0 flex-1 flex-col gap-[var(--space-6)] overflow-y-auto px-[var(--space-8)] py-[var(--space-6)]">
-        <div className="relative max-w-[560px]">
-          {field}
-          {focused ? <div className="absolute inset-x-0 top-full z-40 mt-[var(--space-2)]">{suggestions}</div> : null}
-        </div>
-        <h1 className="sr-only">{t('CD1293')}</h1>
-        {results}
-        {q ? <IntlLink href="/map" className="inline-flex items-center gap-[var(--space-2)] self-start type-label-button text-ui-link hover:text-ui-link-hover"><Map aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1287')}</IntlLink> : null}
-      </main>
+      <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
+        <main id="main" tabIndex={-1} className="flex flex-1 flex-col gap-[var(--space-6)] px-[var(--space-8)] py-[var(--space-6)] outline-none">
+          <h1 className={q ? 'type-display-h3' : 'sr-only'}>{t('CD1293')}</h1>
+          {results}
+          {q ? <IntlLink href="/map" className="inline-flex items-center gap-[var(--space-2)] self-start type-label-button text-ui-link hover:text-ui-link-hover"><Map aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1287')}</IntlLink> : null}
+        </main>
+        <V2Footer />
+      </div>
     </div>
   )
 }

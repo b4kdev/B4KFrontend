@@ -1,7 +1,7 @@
 'use client'
 
 import { useId, useState, type FormEvent, type ReactNode } from 'react'
-import { ArrowLeft, ArrowRight, Check, Clock, Compass, Mail, MapPin, Route, Search, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Clock, Compass, Mail, Route, Search, X } from 'lucide-react'
 import { Link as IntlLink } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
 import { Avatar } from './Avatar'
@@ -553,12 +553,14 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
           {categories.length ? (
             <div className={group}>
               <p className={heading}>{labels.browse}</p>
-              {categories.map((c) => (
-                <IntlLink key={c.id} href={c.href} className={row}>
-                  <MapPin aria-hidden className={icon} />
-                  <span className="type-body-base">{c.name}</span>
-                </IntlLink>
-              ))}
+              {/* Figma Browse: category chips, like Trending now. */}
+              <div className="flex flex-wrap gap-[var(--space-2)] py-[var(--space-1)]">
+                {categories.map((c) => (
+                  <IntlLink key={c.id} href={c.href} className="inline-flex h-[var(--control-height-sm)] items-center rounded-full border border-ui-border-strong px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+                    {c.name}
+                  </IntlLink>
+                ))}
+              </div>
             </div>
           ) : null}
         </>
