@@ -25,6 +25,8 @@
     "settingsData": "Your data and privacy",
     "deleteAccountNote": "Deleted after 30 days; sign in before then to restore",
     "profilePlansNote": "Public plans, as others see them. Drafts and private plans are in Saved.",
-    "openSaved": "Open Saved"
+    "openSaved": "Open Saved",
+    "resetPassword": "Reset password",
+    "linkExpired": "Link expired"
   }
 }

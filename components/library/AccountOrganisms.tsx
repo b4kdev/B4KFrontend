@@ -70,7 +70,7 @@ export function CookieBanner({ type = 'banner', label, message, learnMore, accep
   )
 }
 
-export type SignInView = 'providers' | 'sign-in' | 'sign-up' | 'forgot' | 'check-email' | 'new-password'
+export type SignInView = 'providers' | 'sign-in' | 'sign-up' | 'forgot' | 'check-email' | 'new-password' | 'link-expired'
 
 export type SignInCardProps = {
   view: SignInView
@@ -146,12 +146,12 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
   const back: { label: string; to: SignInView } | null =
     view === 'sign-in' || view === 'sign-up'
       ? { label: labels.back, to: 'providers' }
-      : (view === 'forgot' || view === 'check-email') && labels.backToSignIn
+      : (view === 'forgot' || view === 'check-email' || view === 'link-expired') && labels.backToSignIn
         ? { label: labels.backToSignIn, to: 'sign-in' }
         : view === 'forgot'
           ? { label: labels.back, to: 'providers' }
           : null
-  const guest = onGuest && view !== 'new-password'
+  const guest = onGuest && view !== 'new-password' && view !== 'link-expired'
   // Figma Title and Subtitle per view; New password takes `title` with its body as the subtitle.
   const heading =
     view === 'check-email' ? labels.checkEmailTitle
@@ -160,7 +160,7 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
           : view === 'forgot' ? labels.forgotTitle ?? title
             : title
   const sub =
-    view === 'providers' ? subtitle
+    view === 'providers' || view === 'link-expired' ? subtitle
       : view === 'sign-in' ? labels.signInBody
         : view === 'sign-up' ? labels.signUpBody
           : view === 'forgot' ? labels.forgotBody
@@ -172,7 +172,7 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
       {/* Figma Top row: Logo wordmark 24 + Close Ghost 40 (no Close on New password). */}
       <div className="flex items-center justify-between gap-[var(--space-2)]">
         <Logo />
-        {onClose && view !== 'new-password' ? <IconButton label={labels.close} icon={<X />} onClick={onClose} /> : null}
+        {onClose && view !== 'new-password' && view !== 'link-expired' ? <IconButton label={labels.close} icon={<X />} onClick={onClose} /> : null}
       </div>
       {view === 'check-email' ? <Mail aria-hidden className="size-[var(--icon-size-2xl)]" /> : null}
       <div className="flex flex-col gap-[var(--space-2)]">
@@ -204,6 +204,9 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
           <TextInput label={emailField} showLabel type="email" autoComplete="email" required value={values.email ?? ''} onChange={set('email')} />
           <Button type="submit" loading={busy} className="w-full">{labels.sendLink}</Button>
         </form>
+      ) : view === 'link-expired' ? (
+        // Figma New password card with its fields hidden: the title and subtitle say why, one button asks again.
+        <Button onClick={() => onSubmit('link-expired', values)} loading={busy} className="w-full">{labels.sendLink}</Button>
       ) : view === 'check-email' ? (
         <div className="flex flex-col gap-[var(--space-4)]">
           <p className="type-body-base text-ui-fg-muted">{labels.checkEmailBody(email)}</p>

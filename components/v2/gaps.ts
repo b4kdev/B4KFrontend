@@ -43,6 +43,9 @@ export function useGap() {
       // Own profile: the Plans section subtitle and the link to Saved under the grid.
       profilePlansNote: t('profilePlansNote'),
       openSaved: t('openSaved'),
+      // Reset password: the page bar title and the Link expired card title.
+      resetPassword: t('resetPassword'),
+      linkExpired: t('linkExpired'),
     }),
     [t],
   )

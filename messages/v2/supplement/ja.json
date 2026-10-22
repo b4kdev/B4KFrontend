@@ -512,6 +512,8 @@
     "settingsData": "データとプライバシー",
     "deleteAccountNote": "30日後に削除されます。それまでにサインインすると復元できます",
     "profilePlansNote": "ほかの人に見える公開プランです。下書きと非公開のプランは保存済みにあります。",
-    "openSaved": "保存済みを開く"
+    "openSaved": "保存済みを開く",
+    "resetPassword": "パスワードの再設定",
+    "linkExpired": "リンクの有効期限切れ"
   }
 }

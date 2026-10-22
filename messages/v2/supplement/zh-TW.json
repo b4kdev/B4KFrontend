@@ -512,6 +512,8 @@
     "settingsData": "你的資料與隱私",
     "deleteAccountNote": "30 天後刪除；在此之前登入即可復原",
     "profilePlansNote": "其他人看到的公開行程。草稿與私人行程在已儲存中。",
-    "openSaved": "開啟已儲存"
+    "openSaved": "開啟已儲存",
+    "resetPassword": "重設密碼",
+    "linkExpired": "連結已過期"
   }
 }

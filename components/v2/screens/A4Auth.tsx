@@ -10,6 +10,7 @@ import { privacyPolicySections } from '@/content/legal/privacy-policy-content'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { afterSignIn } from '@/lib/terms-consent'
 import { safePath } from '@/lib/safe-path'
+import { useGap } from '../gaps'
 import { track } from '@/lib/analytics'
 import { GAMIFICATION } from '@/lib/features'
 import { useCd, useCdKey } from '../cd'
@@ -38,6 +39,7 @@ export function LoginScreen() {
 
 export function ResetPasswordScreen() {
   const t = useCd()
+  const gap = useGap()
   const router = useRouter()
   const { toast } = useV2Shell()
   // The reset link carries the page the person asked from (same site only).
@@ -74,13 +76,15 @@ export function ResetPasswordScreen() {
   }
   const toSignIn = () => router.push(next === '/' ? '/login' : `/login?next=${encodeURIComponent(next)}`)
   return (
-    <V2Page bar={{ type: 'page', title: t('CD1500') }} noFooter="phone" className="flex items-center justify-center">
+    <V2Page bar={{ type: 'page', title: gap.resetPassword }} noFooter="phone" className="flex items-center justify-center">
       {expired ? (
         <SignInCard
           {...flow}
-          view={flow.view === 'providers' ? 'forgot' : flow.view}
-          title={t('CD0042')}
-          error={flow.error ?? (flow.view === 'providers' ? t('CD0060') : undefined)}
+          view={flow.view === 'providers' ? 'link-expired' : flow.view}
+          title={flow.view === 'providers' ? gap.linkExpired : t('CD0042')}
+          subtitle={t('CD0060')}
+          // The link does not say whose it was: Send reset link asks for the email (Forgot view) and sends from there.
+          onSubmit={(v, values) => (v === 'link-expired' ? flow.onViewChange('forgot') : flow.onSubmit(v, values))}
           onViewChange={(v) => (v === 'sign-in' || v === 'providers' ? toSignIn() : flow.onViewChange(v))}
         />
       ) : token === undefined ? null : (
