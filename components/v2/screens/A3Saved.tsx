@@ -4,10 +4,9 @@ import { useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
-import { ArrowLeft, Ellipsis, Map as MapIcon, Pencil, Plus, Share2, Trash2, Lock, Globe } from 'lucide-react'
+import { ArrowLeft, Bookmark, Ellipsis, Map as MapIcon, Pencil, Share2, Trash2, Lock } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
-  Badge,
   Button,
   Card,
   Checkbox,
@@ -15,6 +14,7 @@ import {
   DropdownMenu,
   EmptyState,
   IconButton,
+  Image,
   ListItem,
   MenuGroup,
   MenuItem,
@@ -112,21 +112,22 @@ export function SavedScreen() {
     { id: 'my-plans', label: k('saved.tabs.myPlans') },
     { id: 'saved-plans', label: k('saved.tabs.savedPlans') },
   ]
-  const head = (
-    <div className="flex flex-wrap items-end justify-between gap-[var(--space-4)]">
-      <h1 className="type-display-h1 max-lg:hidden">{k('saved.title')}</h1>
-      {user ? (
-        <IntlLink href="/saved/plan" aria-disabled={!data?.pois.length} className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse aria-disabled:pointer-events-none aria-disabled:bg-ui-bg-disabled aria-disabled:text-ui-fg-disabled">
-          {t('CD1363')}
-        </IntlLink>
-      ) : null}
+  // Figma 247:445: Saved is a top-level destination (phone bar with Menu and search), title as a
+  // section header on every width, then Tabs, then the Places toolbar (New list, Plan from Saved).
+  const head = <h1 className="type-display-h3">{k('saved.title')}</h1>
+  const toolbar = (
+    <div className="flex items-center justify-between gap-[var(--space-4)]">
+      <Button variant="ghost" size="md" onClick={() => setSheet({ mode: 'new' })}>{t('CD1206')}</Button>
+      <IntlLink href="/saved/plan" aria-disabled={!data?.pois.length} className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse aria-disabled:pointer-events-none aria-disabled:bg-ui-bg-disabled aria-disabled:text-ui-fg-disabled">
+        {t('CD1363')}
+      </IntlLink>
     </div>
   )
 
   if (!user) {
     return (
-      <V2Page bar={{ type: 'page', title: k('saved.title') }}>
-        <div className="flex flex-col gap-[var(--space-6)]">{head}<SignedOutPrompt title={t('CD1577')} text={t('CD1581')} /></div>
+      <V2Page>
+        <div className="flex flex-col gap-[var(--space-4)]">{head}<SignedOutPrompt title={t('CD1577')} text={t('CD1581')} /></div>
       </V2Page>
     )
   }
@@ -155,10 +156,9 @@ export function SavedScreen() {
       </ul>
     </div>
   ) : data && !data.pois.length ? (
-    <EmptyState container="bordered" title={k('saved.empty.places.title')} action={<IntlLink href="/map" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('saved.empty.places.cta')}</IntlLink>}>{t('CD1429')}</EmptyState>
+    <EmptyState icon={<Bookmark />} title={k('saved.empty.places.title')} className="flex-1" action={<IntlLink href="/map" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('saved.empty.places.cta')}</IntlLink>}>{t('CD1429')}</EmptyState>
   ) : (
     <div className="flex flex-col gap-[var(--space-4)]">
-      <Button variant="secondary" size="md" leadingIcon={<Plus />} className="self-start" onClick={() => setSheet({ mode: 'new' })}>{t('CD1206')}</Button>
       <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">
         {data?.folders.map((f) => (
           <li key={f.id}>
@@ -178,13 +178,16 @@ export function SavedScreen() {
   )
 
   const myPlans = data?.myPlans.length ? (
-    <ul className="border-t border-ui-border">
+    <ul>
       {data.myPlans.map((p) => (
         <ListItem
           key={p.id}
           title={p.title || k('profile.untitledPlan')}
-          secondary={`${k('saved.plan.stops', { count: p.stop_count })} · ${k('saved.plan.days', { count: p.duration_days })}`}
-          leading={p.is_draft ? <Badge>{k('saved.myPlan.draft')}</Badge> : <Badge variant="outline" leadingIcon={<Globe />}>{k('profile.settings.privacy.public')}</Badge>}
+          // Figma 248:943: status in the second line ("5 stops · 2 days · Public", "Draft · 3 stops").
+          secondary={p.is_draft
+            ? `${k('saved.myPlan.draft')} · ${k('saved.plan.stops', { count: p.stop_count })}`
+            : `${k('saved.plan.stops', { count: p.stop_count })} · ${k('saved.plan.days', { count: p.duration_days })} · ${k('profile.settings.privacy.public')}`}
+          leading={<Image ratio="1:1" src={p.cover_image_url} alt="" sizes="48px" className="size-[var(--space-12)]" />}
           href={`/plan/${p.id}`}
           renderLink={({ href, className, children }) => (
             <div className="flex items-center">
@@ -221,10 +224,11 @@ export function SavedScreen() {
   )
 
   return (
-    <V2Page bar={{ type: 'page', title: k('saved.title') }}>
-      <div className="flex flex-col gap-[var(--space-6)]">
+    <V2Page className="flex flex-col">
+      <div className="flex flex-1 flex-col gap-[var(--space-4)]">
         {head}
-        <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={(v) => { setTab(v); setFolderId(null) }} tabs={tabs} />
+        <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={(v) => { setTab(v); setFolderId(null) }} tabs={tabs} className="self-start" />
+        {tab === 'places' && !folder ? toolbar : null}
         {isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div> : null}
         {error ? <EmptyState type="error" container="bordered" title={k('saved.error.title')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{k('saved.error.retry')}</Button>} /> : null}
         {data ? (tab === 'places' ? placesView : tab === 'my-plans' ? myPlans : savedPlans) : null}

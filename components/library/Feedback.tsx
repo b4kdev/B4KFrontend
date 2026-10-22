@@ -86,7 +86,7 @@ export function EmptyState({ type = 'empty', container = 'plain', icon, title, c
     <div
       role={type === 'error' ? 'alert' : undefined}
       className={cn(
-        'flex flex-col items-center gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-12)] text-center',
+        'flex flex-col items-center justify-center gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-12)] text-center',
         container === 'bordered' && 'border border-ui-border bg-ui-bg-raised',
         className,
       )}
