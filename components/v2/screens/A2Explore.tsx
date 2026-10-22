@@ -338,7 +338,6 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
 export function CollectionScreen({ slug }: { slug: string }) {
   const act = usePlaceActions({ resume: true })
   const t = useCd()
-  const k = useCdKey()
   const locale = useLocale()
   const router = useRouter()
   const { data, error, isLoading, mutate } = useSWR<CollectionDetail>(`/api/explore/collections/${slug}?locale=${locale}`, jsonFetch)
@@ -349,34 +348,43 @@ export function CollectionScreen({ slug }: { slug: string }) {
   const explore = useSWR<ExploreData>(category ? `/api/explore/${category}` : null, jsonFetch)
   const rows = explore.data?.sections.filter((x) => x.items.length).map((x) => x.id) ?? []
   const items = data?.items ?? []
+  const categoryLabel = category ? t(CATEGORIES.find((c) => c.slug === category)?.label ?? 'CD0804') : ''
   const body = (
-    <div className="flex flex-col gap-[var(--space-6)]">
-      <h1 className="type-display-h1">{data?.title}</h1>
+    <div className="flex flex-col gap-[var(--space-4)]">
+      {data?.title ? (
+        <Breadcrumbs
+          label={data.title}
+          items={[{ label: t('CD0804'), href: '/explore' }, ...(category ? [{ label: categoryLabel, href: `/explore/${category}` }] : []), { label: data.title }]}
+          className="max-lg:hidden"
+        />
+      ) : null}
+      {/* Phones show the title in the top bar only. */}
+      <h1 className="type-display-h3 max-lg:sr-only">{data?.title}</h1>
       {data?.siblings && data.siblings.length > 1 ? (
         <div role="group" aria-label={t('CD0162')} className="flex flex-wrap gap-[var(--space-2)]">
           {data.siblings.map((c) => <Chip key={c.slug} selected={c.slug === slug} onClick={() => router.push(`/explore/collections/${c.slug}`)}>{c.title}</Chip>)}
         </div>
       ) : null}
-      {data && items.length ? <p aria-live="polite" className="type-body-caption text-ui-fg-muted">{t('CD1302', { count: data.totalCount })}</p> : null}
+      {data && items.length ? <p aria-live="polite" className="type-body-caption text-ui-fg-muted lg:self-end">{t('CD0160', { count: data.totalCount })}</p> : null}
       {isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div> : null}
       {error ? <EmptyState type="error" container="bordered" title={t('CD1571')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
       {data?.children?.length ? (
-        <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-x-[var(--space-4)] gap-y-[var(--space-6)] lg:grid-cols-4">
           {data.children.map((c) => <li key={c.slug}><Card type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta="" /></li>)}
         </ul>
       ) : null}
       {items.length ? (
-        <ol className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">
+        <ol className="grid grid-cols-2 gap-x-[var(--space-4)] gap-y-[var(--space-6)] lg:grid-cols-4">
           {items.slice(0, shown).map((p) => (
             <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /></li>
           ))}
         </ol>
       ) : null}
-      {items.length > shown ? <Button variant="secondary" className="self-center" onClick={() => setShown((n) => n + PAGE)}>{k('explore.viewAll')}</Button> : null}
+      {items.length > shown ? <Button variant="secondary" className="self-center" onClick={() => setShown((n) => n + PAGE)}>{t('CD0836')}</Button> : null}
     </div>
   )
   if (!category) return <V2Page bar={{ type: 'page', title: data?.title ?? '' }}>{body}</V2Page>
-  return <ExploreFrame category={category} sections={rows} active="collections">{body}</ExploreFrame>
+  return <ExploreFrame category={category} sections={rows} active="collections" pageTitle={data?.title ?? ''}>{body}</ExploreFrame>
 }
 
 // ── Category special pages (SCR-015) ────────────────────────────────────────
