@@ -28,7 +28,7 @@ import {
 import { useCd } from './cd'
 import { V2DraftMigration } from './V2Gates'
 import V2QuickPlan from './V2QuickPlan'
-import { LanguageSheet } from './V2Settings'
+import { LanguageMenu, LanguageSheet } from './V2Settings'
 import { SignInGate, type GateRequest } from './V2SignInGate'
 import { V2HeaderSearch } from './V2Search'
 
@@ -145,7 +145,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
     toast: setToastMsg,
     requireSignIn: (r) => (authUser ? r.run() : setGate(r)),
   }
-  const LANG_NAMES: Record<string, string> = { en: 'English', ko: '한국어', ja: '日本語', 'zh-TW': '繁體中文', 'pt-BR': 'Português (Brasil)' }
+  const LANG_NAMES: Record<string, string> = { en: 'English', ko: '한국어', ja: '日本語', 'zh-TW': '繁體中文', 'pt-BR': 'Português (BR)' }
 
   return (
     <Ctx.Provider value={ctx}>
@@ -157,6 +157,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           signedIn={!!user}
           search={<Suspense fallback={<SearchPill label={labels.search} href="/search" />}><V2HeaderSearch label={labels.search} /></Suspense>}
           onLanguage={() => setLanguage(true)}
+          languageMenu={<LanguageMenu />}
           helpHref="/help"
         />
         <div className="flex min-h-0 flex-1">

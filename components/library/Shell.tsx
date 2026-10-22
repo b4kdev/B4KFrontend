@@ -154,12 +154,14 @@ export type HeaderProps = {
   /** The search field: usually a Combobox (opens suggestions). */
   search: ReactNode
   onLanguage: () => void
+  /** Figma Language menu: a Dropdown menu under the globe; given, it replaces the button that calls onLanguage. */
+  languageMenu?: ReactNode
   helpHref?: string
   className?: string
 }
 
 /** Header (CMP-037): desktop original layout (kept until UI-101 is decided), 64 high. */
-export function Header({ labels, signedIn, search, onLanguage, helpHref = '/v2/help', className }: HeaderProps) {
+export function Header({ labels, signedIn, search, onLanguage, languageMenu, helpHref = '/v2/help', className }: HeaderProps) {
   return (
     <header className={cn('flex h-[var(--layout-header-height)] items-center gap-[var(--space-6)] bg-ui-bg pr-[var(--space-6)]', className)}>
       <IntlLink href="/v2" aria-label={labels.homeLink} className={cn('flex h-full w-[var(--layout-nav-rail)] shrink-0 items-center justify-center', FOCUS_RING_INSET)}>
@@ -167,7 +169,7 @@ export function Header({ labels, signedIn, search, onLanguage, helpHref = '/v2/h
       </IntlLink>
       <div role="search" className="w-[480px] min-w-0">{search}</div>
       <div className="ml-auto flex items-center gap-[var(--space-1)]">
-        <Tooltip text={labels.language}><IconButton label={labels.language} icon={<Globe />} onClick={onLanguage} /></Tooltip>
+        {languageMenu ?? <Tooltip text={labels.language}><IconButton label={labels.language} icon={<Globe />} onClick={onLanguage} /></Tooltip>}
         <Tooltip text={labels.help}>
           <IntlLink href={helpHref} aria-label={labels.help} className="relative inline-flex size-[var(--control-height-md)] items-center justify-center rounded-full text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
             <CircleHelp aria-hidden className="size-[var(--icon-size-md)]" />
