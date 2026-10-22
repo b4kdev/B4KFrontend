@@ -212,7 +212,17 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // it is open the map shows its stops only; a category chip folds it and goes back to browsing.
   const showPlanOnly = planVisible && order.length > 0
   // Plan only: no other places on the map, except the one opened from the list.
-  const mapPois = showPlanOnly ? (detail && !order.some((p) => p.poi_id === detail.poi_id) ? [detail] : []) : listPois
+  // Saved on the map (150:18785, PD-48): while Saved is on, the map shows the saved places only,
+  // or the open list's places, and fits them.
+  const savedPois = useMemo<MapPoi[] | null>(() => {
+    if (mode !== 'saved' || !saved.data) return null
+    const src = folderId ? saved.data.folders.find((f) => f.id === folderId)?.pois ?? [] : saved.data.pois
+    return src.filter((p) => Number.isFinite(p.coords_lat) && Number.isFinite(p.coords_lng)).map((p) => ({ ...p, primary_image_url: p.primary_image_url ?? undefined }))
+  }, [mode, folderId, saved.data])
+  useEffect(() => {
+    if (savedPois?.length) mapRef.current?.fitTo(savedPois.map((p) => ({ lat: p.coords_lat, lng: p.coords_lng })))
+  }, [savedPois])
+  const mapPois = showPlanOnly ? (detail && !order.some((p) => p.poi_id === detail.poi_id) ? [detail] : []) : savedPois ?? listPois
   const addToPlan = (poi: MapPoi) => {
     const day = draft.add(poi, typeof activeDay === 'number' ? activeDay : undefined)
     if (day === null) toast({ type: 'warning', message: k('map.plan.maxStopsToast', { max: MAX_STOPS }) })
@@ -348,7 +358,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   ) : (
     <SavedHub
       view={!saved.data?.pois.length ? 'empty' : folderId ? 'folder' : 'places'}
-      folders={(saved.data?.folders ?? []).map((f) => ({ id: f.id, name: f.name, count: k('saved.folder.poiCount', { count: f.pois.length }) }))}
+      // The lists the person made; All Saved is the map itself (150:18785 draws no All Saved row).
+      folders={(saved.data?.folders ?? []).filter((f) => !f.is_default).map((f) => ({ id: f.id, name: f.name, count: k('saved.folder.poiCount', { count: f.pois.length }) }))}
       folder={(() => {
         const f = saved.data?.folders.find((x) => x.id === folderId)
         return f ? { name: f.name, places: f.pois.map((p) => ({ id: p.poi_id, name: nameOf(p, locale), meta: p.display_region, imageSrc: p.primary_image_url })) } : undefined
@@ -510,7 +521,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     <div className="flex min-h-0 flex-1">
       <LeftPanel type="map" label={k('map.plan.title')} cart={cartNode} cartOpen={cart === 'open'}>
         {selectedId ? null : <div className="sticky top-0 z-10 bg-ui-bg">{switcher}</div>}
-        {content}
+        {/* The Saved hub's raised background runs to the Plan cart, as drawn. */}
+        {!selectedId && mode === 'saved' && user ? <div className="flex-1 bg-ui-bg-raised">{content}</div> : content}
       </LeftPanel>
       <main id="main" className="relative min-w-0 flex-1">
         {map}

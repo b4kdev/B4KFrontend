@@ -267,7 +267,7 @@ export type LeftPanelProps = {
 export function LeftPanel({ type, label, children, cart, cartOpen, topClear, className }: LeftPanelProps) {
   return (
     <aside aria-label={label} className={cn('relative flex h-full shrink-0 flex-col bg-ui-bg', type === 'index' ? 'w-[var(--layout-left-panel-index)]' : 'w-[var(--layout-left-panel)]', topClear && 'pt-[72px]', className)}>
-      <div className={cn('min-h-0 flex-1 overflow-y-auto', cartOpen && 'invisible')}>{children}</div>
+      <div className={cn('flex min-h-0 flex-1 flex-col overflow-y-auto', cartOpen && 'invisible')}>{children}</div>
       {type === 'map' && cart ? <div className={cn(cartOpen ? 'absolute inset-0 z-10' : 'shrink-0')}>{cart}</div> : null}
     </aside>
   )
