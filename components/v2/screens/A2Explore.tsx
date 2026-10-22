@@ -6,6 +6,7 @@ import useSWR from 'swr'
 import { Map as MapIcon } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
+  Breadcrumbs,
   Button,
   Card,
   Chip,
@@ -16,7 +17,6 @@ import {
   LeftPanel,
   PlanningCue,
   RowSection,
-  Select,
   Skeleton,
   Tabs,
   TreeItem,
@@ -103,7 +103,7 @@ function CategoryIndex({ category, sections, active }: { category: string; secti
   )
 }
 
-function ExploreFrame({ category, sections, active, children }: { category: string; sections: string[]; active?: string; children: React.ReactNode }) {
+function ExploreFrame({ category, sections, active, pageTitle, children }: { category: string; sections: string[]; active?: string; pageTitle?: string; children: React.ReactNode }) {
   const t = useCd()
   const phone = usePhone()
   const router = useRouter()
@@ -115,8 +115,9 @@ function ExploreFrame({ category, sections, active, children }: { category: stri
         </LeftPanel>
       ) : null}
       <div className="flex min-w-0 flex-1 flex-col">
-        <V2Page bar={{ type: 'home' }}>
-          {phone ? (
+        {/* A list page inside a category (See all) gets a Page top bar with its title on phones, no tabs. */}
+        <V2Page bar={pageTitle ? { type: 'page', title: pageTitle } : { type: 'home' }}>
+          {phone && !pageTitle ? (
             <Tabs
               label={t('CD0804')}
               value={category}
@@ -264,7 +265,6 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const act = usePlaceActions({ resume: true })
   const GAP = useGap()
   const t = useCd()
-  const k = useCdKey()
   const locale = useLocale()
   const fromHome = category === 'all'
   const explore = useSWR<ExploreData>(fromHome ? null : `/api/explore/${category}`, jsonFetch)
@@ -286,36 +286,51 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const failed = explore.error || trending.error || plans.error
   const sections = explore.data?.sections.filter((s) => s.items.length).map((s) => s.id) ?? []
 
+  const isPlans = fromHome && row === 'popular-plans'
+  const categoryLabel = t(CATEGORIES.find((c) => c.slug === category)?.label ?? 'CD0804')
+  const sortLabel = sort === 'new' ? t('CD1405') : t('CD1565')
   const body = (
-    <div className="flex flex-col gap-[var(--space-6)]">
-      <header className="flex flex-col gap-[var(--space-2)]">
-        <h1 className="type-display-h1">{title}</h1>
+    <div className="flex flex-col gap-[var(--space-4)]">
+      <Breadcrumbs
+        label={title}
+        items={fromHome ? [{ label: t('CD0807'), href: '/' }, { label: title }] : [{ label: categoryLabel, href: `/explore/${category}` }, { label: title }]}
+        className="max-lg:hidden"
+      />
+      {/* Phones show the title in the top bar only. */}
+      <header className="flex flex-col gap-[var(--space-1)] max-lg:sr-only">
+        <h1 className="type-display-h3">{title}</h1>
         {subtitle ? <p className="type-body-base text-ui-fg-muted">{subtitle}</p> : null}
       </header>
-      {fromHome && row === 'trending' ? (
-        <div className="flex flex-wrap gap-[var(--space-2)]">
-          <Chip selected={chip === 'all'} onClick={() => setChip('all')}>{t('CD1267')}</Chip>
-          {CATEGORIES.map((c) => <Chip key={c.slug} selected={chip === c.slug} onClick={() => setChip(c.slug)}>{t(c.label)}</Chip>)}
+      {/* Chips on the left; the count and the sort (a dropdown chip over a native select) on the right. */}
+      <div className="flex flex-wrap items-center justify-between gap-[var(--space-3)]">
+        {fromHome && row === 'trending' ? (
+          <div className="flex gap-[var(--space-2)] max-lg:-mx-[var(--grid-gutter-mobile)] max-lg:w-[calc(100%+var(--grid-gutter-mobile)*2)] max-lg:overflow-x-auto max-lg:px-[var(--grid-gutter-mobile)] max-lg:[scrollbar-width:none] lg:flex-wrap">
+            <Chip selected={chip === 'all'} onClick={() => setChip('all')}>{t('CD1267')}</Chip>
+            {CATEGORIES.map((c) => <Chip key={c.slug} selected={chip === c.slug} onClick={() => setChip(c.slug)}>{t(c.label)}</Chip>)}
+          </div>
+        ) : <span className="max-lg:hidden" />}
+        <div className="flex items-center gap-[var(--space-3)] max-lg:w-full max-lg:justify-between">
+          <p aria-live="polite" className="type-body-caption text-ui-fg-muted">{isPlans ? t('CD1302', { count: filtered.length }) : t('CD0160', { count: filtered.length })}</p>
+          <label className="relative">
+            <Chip type="dropdown" aria-hidden tabIndex={-1} className="pointer-events-none">{sortLabel}</Chip>
+            <select aria-label={t('CD1272')} value={sort} onChange={(e) => setSort(e.target.value)} className="absolute inset-0 cursor-pointer opacity-0">
+              <option value="popular">{t('CD1565')}</option>
+              <option value="new">{t('CD1405')}</option>
+            </select>
+          </label>
         </div>
-      ) : null}
-      <div className="flex items-center justify-between gap-[var(--space-4)]">
-        <p aria-live="polite" className="type-body-caption text-ui-fg-muted">{t('CD1302', { count: filtered.length })}</p>
-        <Select label={t('CD1272')} size="md" value={sort} onChange={(e) => setSort(e.target.value)} className="w-[180px]">
-          <option value="popular">{t('CD1565')}</option>
-          <option value="new">{t('CD1405')}</option>
-        </Select>
       </div>
       {loading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div> : null}
       {failed ? <EmptyState type="error" container="bordered" title={t('CD1571')} action={<Button size="md" variant="secondary" onClick={() => location.reload()}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
       {!loading && !failed && !filtered.length ? (
         <EmptyState type="no-results" title={GAP.noCategoryTrending(chip === 'all' ? '' : t(CATEGORIES.find((c) => c.slug === chip)?.label ?? 'CD0251'))} action={<Button size="md" variant="secondary" onClick={() => setChip('all')}>{t('CD1433')}</Button>}>{t('CD1570')}</EmptyState>
       ) : null}
-      <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{filtered.slice(0, shown).map((p) => <li key={p.id}>{p.node}</li>)}</ul>
-      {filtered.length > shown ? <Button variant="secondary" className="self-center" onClick={() => setShown((s) => s + PAGE)}>{k('explore.viewAll')}</Button> : null}
+      <ul className="grid grid-cols-2 gap-x-[var(--space-4)] gap-y-[var(--space-6)] lg:grid-cols-4">{filtered.slice(0, shown).map((p) => <li key={p.id}>{p.node}</li>)}</ul>
+      {filtered.length > shown ? <Button variant="secondary" className="self-center" onClick={() => setShown((s) => s + PAGE)}>{t('CD0836')}</Button> : null}
     </div>
   )
   if (fromHome) return <V2Page bar={{ type: 'page', title }}>{body}</V2Page>
-  return <ExploreFrame category={category} sections={sections} active={row}>{body}</ExploreFrame>
+  return <ExploreFrame category={category} sections={sections} active={row} pageTitle={title}>{body}</ExploreFrame>
 }
 
 // ── Collection page (SCR-014) ───────────────────────────────────────────────

@@ -58,6 +58,8 @@ function activeFrom(path: string): Destination | null {
   const seg = v2Area(path)
   if (seg === '') return 'home'
   if (seg === 'map' || seg === 'plan' || seg === 'place') return 'map'
+  // Home's See all lists belong to Home.
+  if (/^\/[^/]+(\/v2)?\/explore\/(trending|popular-plans)(\/|$)/.test(path)) return 'home'
   if (seg === 'explore') return 'explore'
   if (seg === 'saved') return 'saved'
   return null
