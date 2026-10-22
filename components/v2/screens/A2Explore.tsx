@@ -58,29 +58,48 @@ const SPECIAL_HREF: Record<string, Record<string, string>> = {
 }
 const rowHref = (category: string, row: string) => SPECIAL_HREF[category]?.[row] ?? `/explore/${category}/${row}`
 
-function CategoryIndex({ category, sections, active }: { category: string; sections: string[]; active?: string }) {
+// Row labels drawn per category where the Copy Deck has them; the shared row label otherwise.
+const ROW_LABEL: Record<string, Record<string, string>> = {
+  'k-pop': { trending: 'CD1555', concerts: 'CD1556', merchandise: 'CD1557' },
+  'k-drama': { trending: 'CD1561' },
+}
+function useRowLabel() {
   const t = useCd()
   const k = useCdKey()
+  return (category: string, row: string) => (ROW_LABEL[category]?.[row] ? t(ROW_LABEL[category][row]) : k(`explore.sections.${row}`))
+}
+
+function CategoryIndex({ category, sections, active }: { category: string; sections: string[]; active?: string }) {
+  const t = useCd()
+  const rowLabel = useRowLabel()
   const router = useRouter()
+  // On the category page itself the first row (its top section) is the selected one.
+  const current = active ?? sections[0]
   return (
-    <TreeView label={t('CD0804')} className="py-[var(--space-3)]">
-      {CATEGORIES.map((c) => (
-        <TreeItem
-          key={c.slug}
-          label={t(c.label)}
-          kind={c.slug === category ? 'expanded' : 'collapsed'}
-          selected={c.slug === category && !active}
-          onToggle={() => router.push(`/explore/${c.slug}`)}
-          onSelect={() => router.push(`/explore/${c.slug}`)}
-        >
-          {c.slug === category
-            ? sections.map((s) => (
-                <TreeItem key={s} level={2} kind="leaf" label={k(`explore.sections.${s}`)} selected={active === s} onSelect={() => router.push(rowHref(c.slug, s))} />
-              ))
-            : null}
-        </TreeItem>
-      ))}
-    </TreeView>
+    <div className="flex flex-col gap-[var(--space-4)] pt-[var(--space-4)]">
+      <p aria-hidden className="px-[var(--space-4)] type-eyebrow-category text-ui-fg-muted">{t('CD0804')}</p>
+      <TreeView label={t('CD0804')}>
+        {CATEGORIES.map((c) => (
+          <TreeItem
+            key={c.slug}
+            label={t(c.label)}
+            kind={c.slug === category ? 'expanded' : 'collapsed'}
+            selected={false}
+            onToggle={() => router.push(`/explore/${c.slug}`)}
+            onSelect={() => router.push(`/explore/${c.slug}`)}
+          >
+            {c.slug === category
+              ? [
+                  ...sections.map((s) => (
+                    <TreeItem key={s} level={2} kind="leaf" label={rowLabel(c.slug, s)} selected={current === s} onSelect={() => router.push(rowHref(c.slug, s))} />
+                  )),
+                  <TreeItem key="collections" level={2} kind="leaf" label={t('CD0162')} selected={active === 'collections'} onSelect={() => router.push(`/explore/${c.slug}#collections`)} />,
+                ]
+              : null}
+          </TreeItem>
+        ))}
+      </TreeView>
+    </div>
   )
 }
 
@@ -103,7 +122,7 @@ function ExploreFrame({ category, sections, active, children }: { category: stri
               value={category}
               onValueChange={(v) => router.push(`/explore/${v}`)}
               tabs={CATEGORIES.map((c) => ({ id: c.slug, label: t(c.label) }))}
-              className="-mx-[var(--grid-gutter-mobile)] mb-[var(--space-6)] px-[var(--grid-gutter-mobile)]"
+              className="-mx-[var(--grid-gutter-mobile)] -mt-[var(--space-6)] mb-[var(--space-6)] px-[var(--grid-gutter-mobile)]"
             />
           ) : null}
           {children}
@@ -138,6 +157,7 @@ export function CategoryScreen({ category }: { category: string }) {
   const k = useCdKey()
   const locale = useLocale()
   const { openQuickPlan } = useV2Shell()
+  const rowLabel = useRowLabel()
   const { data, error, isLoading, mutate } = useSWR<ExploreData>(`/api/explore/${category}`, jsonFetch)
   const cols = useSWR<{ items: CollectionCard[] }>(`/api/explore/${category}/collections?locale=${locale}`, jsonFetch)
   const [colType, setColType] = useState('all')
@@ -168,7 +188,8 @@ export function CategoryScreen({ category }: { category: string }) {
             title={hero.title}
             subtitle={hero.subtitle}
             action={<IntlLink href={`${hero.cta_href}`} className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{hero.cta_label}</IntlLink>}
-            className="-mx-[var(--grid-gutter-mobile)] w-auto md:mx-0"
+            // Edge to edge in the content area: flush under the header on desktop, under the tabs on phones.
+            className="-mx-[var(--grid-gutter-mobile)] -mt-[var(--space-6)] w-auto md:-mx-[var(--grid-gutter-tablet)] lg:-mx-[var(--space-8)]"
           />
         ) : null}
         {isLoading ? <RowState title={k(`explore.${CAT_KEY[category]}.title`)} loading onRetry={() => mutate()} /> : null}
@@ -179,7 +200,7 @@ export function CategoryScreen({ category }: { category: string }) {
             <div key={s.id} className="flex flex-col gap-[var(--space-12)]">
               <RowSection
                 arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
-                title={k(`explore.sections.${s.id}`)}
+                title={rowLabel(category, s.id)}
                 seeAll={{ href: rowHref(category, s.id), label: t('CD1309') }}
                 featured={featured ? <Card type="featured" href={`/map?poi=${featured.poi_id}`} title={poiName(featured, locale)} imageSrc={featured.primary_image_url} eyebrow={t('CD0423')} meta={featured.display_region} /> : undefined}
                 cards={s.items.filter((p) => p !== featured).map((p) => <PoiCard key={p.poi_id} p={p} act={act} />)}
@@ -189,6 +210,7 @@ export function CategoryScreen({ category }: { category: string }) {
           )
         })}
         {cols.data?.items.length ? (
+          <div id="collections" className="scroll-mt-[var(--space-6)]">
           <ExploreCollections
             title={t('CD0162')}
             filters={[{ id: 'all', label: t('CD1267') }, ...colTypes.map((c) => ({ id: c, label: COLLECTION_TYPE[c] ? t(COLLECTION_TYPE[c]) : c }))]}
@@ -199,6 +221,7 @@ export function CategoryScreen({ category }: { category: string }) {
               .slice(0, 8)
               .map((c) => <Card key={c.slug} type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta={c.primaryType ?? ''} />)}
           />
+          </div>
         ) : null}
         {data?.packages?.length ? (
           <ExplorePackages
@@ -237,6 +260,7 @@ function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceAct
 const PAGE = 12
 
 export function SeeAllScreen({ category, row }: { category: string; row: string }) {
+  const rowLabel = useRowLabel()
   const act = usePlaceActions({ resume: true })
   const GAP = useGap()
   const t = useCd()
@@ -250,7 +274,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const [sort, setSort] = useState('popular')
   const [shown, setShown] = useState(PAGE)
 
-  const title = fromHome ? (row === 'trending' ? t('CD0313') : t('CD0477')) : k(`explore.sections.${row}`)
+  const title = fromHome ? (row === 'trending' ? t('CD0313') : t('CD0477')) : rowLabel(category, row)
   const subtitle = fromHome ? (row === 'trending' ? t('CD1566') : t('CD1568')) : undefined
   const places: { id: string; node: React.ReactNode; domain?: string }[] = fromHome
     ? row === 'trending'
@@ -337,7 +361,7 @@ export function CollectionScreen({ slug }: { slug: string }) {
     </div>
   )
   if (!category) return <V2Page bar={{ type: 'page', title: data?.title ?? '' }}>{body}</V2Page>
-  return <ExploreFrame category={category} sections={rows}>{body}</ExploreFrame>
+  return <ExploreFrame category={category} sections={rows} active="collections">{body}</ExploreFrame>
 }
 
 // ── Category special pages (SCR-015) ────────────────────────────────────────
