@@ -171,6 +171,8 @@ export function PlanScreen({ id }: { id: string }) {
       <ItineraryPanel
         title={it.title}
         owner={GAP.createdBy(author)}
+        ownerAvatarSrc={it.author.avatar_url ?? null}
+        ownerName={author}
         privateLabel={isOwner && !it.is_published ? t('CD1002') : undefined}
         stats={[k('itinerary.stats.stops', { count: stops.length }), GAP.days(days), formatMinutes(it.total_duration_min, k), ...(km ? [k('itinerary.stats.km', { km })] : [])]}
         days={days}
@@ -265,11 +267,12 @@ export function PlanScreen({ id }: { id: string }) {
   if (phone) {
     return (
       <div className="relative h-[calc(100dvh)] w-full overflow-hidden">
-        <main id="main" className="absolute inset-0">{map}</main>
+        {/* The map and the sheet end at the navigation bar. */}
+        <main id="main" className="absolute inset-x-0 top-0 bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))]">{map}</main>
         <div className="absolute inset-x-0 top-0 z-20">
           <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} />
         </div>
-        <BottomSheet type="map" open label={k('itinerary.sheet.ariaLabel')} snap={snap} onSnapChange={setSnap} onClose={() => setSnap('peek')} resizeLabel={k('itinerary.sheet.handle')}>
+        <BottomSheet type="map" open label={k('itinerary.sheet.ariaLabel')} snap={snap} onSnapChange={setSnap} onClose={() => setSnap('peek')} resizeLabel={k('itinerary.sheet.handle')} className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0">
           <div className="-mx-[var(--space-4)] h-[calc(100dvh-160px)]">{panel}</div>
         </BottomSheet>
         {dialogs}

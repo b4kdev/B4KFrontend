@@ -334,6 +334,8 @@ export type ItineraryPanelProps = {
   owner: string
   /** Figma Owner row › Avatar xs before the name: the owner's photo (null shows initials from `owner`); left out, no avatar. */
   ownerAvatarSrc?: string | null
+  /** The owner's name for the avatar initials (owner is the whole line, e.g. "Created by Minji"). */
+  ownerName?: string
   /** Owner only: lock and Private beside the owner name. */
   privateLabel?: string
   stats: string[]
@@ -352,14 +354,14 @@ export type ItineraryPanelProps = {
 }
 
 /** Itinerary panel (UI-77, ADD-68): title is the page h1; day tabs; stops as an ordered list. */
-export function ItineraryPanel({ title, owner, ownerAvatarSrc, privateLabel, stats, days, activeDay, onDayChange, stops, selectedStop, onSelectStop, onLeg, related, footer, labels }: ItineraryPanelProps) {
+export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, privateLabel, stats, days, activeDay, onDayChange, stops, selectedStop, onSelectStop, onLeg, related, footer, labels }: ItineraryPanelProps) {
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
     <div className="flex h-full flex-col gap-[var(--space-4)] bg-ui-bg-raised p-[var(--space-4)] text-ui-fg">
       <div className="flex flex-col gap-[var(--space-2)]">
         <h1 className="type-display-h3">{title}</h1>
         <p className="flex items-center gap-[var(--space-2)] type-body-caption text-ui-fg-muted">
-          {ownerAvatarSrc !== undefined ? <Avatar size="xs" src={ownerAvatarSrc} name={owner} decorative /> : null}
+          {ownerAvatarSrc !== undefined ? <Avatar size="xs" src={ownerAvatarSrc} name={ownerName ?? owner} decorative /> : null}
           {owner}
           {privateLabel ? <span className="inline-flex items-center gap-[var(--space-2)]"><Lock aria-hidden className="size-[var(--icon-size-xs)]" />{privateLabel}</span> : null}
         </p>
