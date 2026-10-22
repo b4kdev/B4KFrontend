@@ -34,10 +34,11 @@ export type CookieBannerProps = {
   /** Preferences: Figma Show status, e.g. "Accepted". */
   status?: string
   title?: string
+  className?: string
 }
 
 /** Cookie banner (UI-82, ADD-57): Decline and Accept with equal weight; no close X; nothing on until a choice. */
-export function CookieBanner({ type = 'banner', label, message, learnMore, acceptLabel, declineLabel, onAccept, onDecline, status, title }: CookieBannerProps) {
+export function CookieBanner({ type = 'banner', label, message, learnMore, acceptLabel, declineLabel, onAccept, onDecline, status, title, className }: CookieBannerProps) {
   const buttons = (
     <div className="flex gap-[var(--gap-sm)] max-md:[&>*]:flex-1">
       <Button variant="secondary" size="md" onClick={onDecline}>{declineLabel}</Button>
@@ -57,7 +58,7 @@ export function CookieBanner({ type = 'banner', label, message, learnMore, accep
     )
   }
   return (
-    <section role="region" aria-label={label} tabIndex={-1} className="fixed inset-x-0 bottom-0 z-40 border-t border-ui-border bg-ui-bg-raised px-[var(--space-4)] py-[var(--space-4)] pb-[calc(var(--space-4)+env(safe-area-inset-bottom))] text-ui-fg outline-none">
+    <section role="region" aria-label={label} tabIndex={-1} className={cn('fixed inset-x-0 bottom-0 z-40 border-t border-ui-border bg-ui-bg-raised px-[var(--space-4)] py-[var(--space-4)] pb-[calc(var(--space-4)+env(safe-area-inset-bottom))] text-ui-fg outline-none', className)}>
       <div className="mx-auto flex max-w-[960px] items-center gap-[var(--space-4)] max-md:flex-col max-md:items-stretch max-md:gap-[var(--space-3)]">
         <p className="flex-1 type-body-base">
           {message}{' '}
@@ -408,12 +409,11 @@ export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, 
         <h1 className="type-display-h1">{title}</h1>
         <p className="flex flex-wrap items-baseline gap-[var(--space-1-5)] type-body-caption text-ui-fg-muted">
           <span>{updated}</span>
-          {contact ? <span>{contact}</span> : null}
+          {contact ? <><span aria-hidden>·</span><span>{contact}</span></> : null}
         </p>
       </header>
       {viewport === 'mobile' ? (
-        <Select label={labels.onThisPage} showLabel size="md" defaultValue="" onChange={(e) => document.getElementById(e.target.value)?.scrollIntoView({ behavior: 'smooth' })}>
-          <option value="" disabled hidden>{labels.onThisPage}</option>
+        <Select label={labels.onThisPage} showLabel size="md" value={currentSection ?? sections[0]?.id ?? ''} onChange={(e) => document.getElementById(e.target.value)?.scrollIntoView({ behavior: 'smooth' })}>
           {sections.map((s, i) => <option key={s.id} value={s.id}>{i + 1}. {s.title}</option>)}
         </Select>
       ) : null}
@@ -429,13 +429,13 @@ export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, 
   if (viewport === 'mobile') return <article className="text-ui-fg">{doc}</article>
   return (
     <article className="flex gap-[var(--space-12)] text-ui-fg">
-      {/* Figma Contents: "ON THIS PAGE" eyebrow, items 12 apart; current in body/label fg. */}
+      {/* Figma Contents: "ON THIS PAGE" eyebrow, items 12 apart; current in body/label fg (the first until one is read). */}
       <nav aria-labelledby={contentsId} className="sticky top-[var(--space-6)] flex w-[240px] shrink-0 flex-col gap-[var(--space-3)] self-start">
         <p id={contentsId} className="type-eyebrow-category text-ui-fg-muted">{labels.contents}</p>
         <ol className="flex flex-col gap-[var(--space-3)]">
           {sections.map((s, i) => (
             <li key={s.id}>
-              <a href={`#${s.id}`} aria-current={currentSection === s.id ? 'location' : undefined} className={cn('hover:text-ui-fg', currentSection === s.id ? 'type-body-label text-ui-fg' : 'type-body-base text-ui-fg-muted')}>{i + 1}. {s.title}</a>
+              <a href={`#${s.id}`} aria-current={currentSection === s.id ? 'location' : undefined} className={cn('hover:text-ui-fg', (currentSection ?? sections[0]?.id) === s.id ? 'type-body-label text-ui-fg' : 'type-body-base text-ui-fg-muted')}>{i + 1}. {s.title}</a>
             </li>
           ))}
         </ol>

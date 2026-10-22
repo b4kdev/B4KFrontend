@@ -1,7 +1,7 @@
 'use client'
 
-import { useId, type ReactNode } from 'react'
-import { ArrowLeft, Bell, Bookmark, ChevronRight, CircleHelp, Compass, FileText, Globe, House, MapPin, Menu, Search, Settings, User, X, Zap } from 'lucide-react'
+import { useId, useState, type ReactNode } from 'react'
+import { ArrowLeft, Bell, Bookmark, ChevronDown, ChevronRight, CircleHelp, Compass, FileText, Globe, House, MapPin, Menu, Search, Settings, User, X, Zap } from 'lucide-react'
 import { Link as IntlLink } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
 import { Avatar } from './Avatar'
@@ -13,7 +13,6 @@ import { IconButton } from './IconButton'
 import { MenuItem } from './Menu'
 import { NAV_ITEM_TARGET, NavItem } from './Nav'
 import { DropdownMenu, MenuGroup } from './Overlay'
-import { Separator } from './Separator'
 import { Tooltip } from './Tooltip'
 import { useFocusTrap } from './hooks'
 import { FOCUS_RING_INSET } from './styles'
@@ -249,15 +248,21 @@ export type DrawerProps = {
   /** Figma Show language row (on in the original layout, off in the UI-101 shell). */
   language?: { current: string; onOpen: () => void }
   links?: { notifications?: string; settings?: string; help?: string; legal?: string; profile?: string; signIn?: string }
+  /** Figma Legal open: the documents under Legal; given, Legal opens them in place instead of linking. */
+  legalLinks?: { label: string; href: string }[]
+  /** The Notifications row's trailing count text ("3 new"); left out, the number. */
+  unreadLabel?: (count: number) => string
 }
 
 /** Trailing chevron-right 16 (List item) on the account and Legal rows. */
 const CHEVRON = <ChevronRight aria-hidden className="size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted" />
 
 /** Drawer (CMP-042): phone menu, 300 wide from the left over a scrim; account first (UI-94). */
-export function Drawer({ open, onClose, labels, user, onQuickPlan, language, links = {} }: DrawerProps) {
+export function Drawer({ open, onClose, labels, user, onQuickPlan, language, links = {}, legalLinks, unreadLabel }: DrawerProps) {
   const ref = useFocusTrap<HTMLDivElement>(open, onClose)
   const id = useId()
+  const legalId = useId()
+  const [legalOpen, setLegalOpen] = useState(false)
   if (!open) return null
   const L = { notifications: '/v2/notifications', settings: '/v2/settings', help: '/v2/help', legal: '/v2/legal', profile: '/v2/profile', signIn: '/v2/login', ...links }
   const row = cn('flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left type-body-base text-ui-fg hover:bg-ui-state-hover', FOCUS_RING_INSET)
@@ -279,7 +284,8 @@ export function Drawer({ open, onClose, labels, user, onQuickPlan, language, lin
             {CHEVRON}
           </IntlLink>
         </div>
-        <div className="py-[var(--space-2)]"><Separator /></div>
+        {/* Figma: 16 between the account row and the rest, no line. */}
+        <div aria-hidden className="h-[var(--space-4)]" />
         <button type="button" className={row} onClick={() => { onClose(); onQuickPlan() }}>
           <Zap aria-hidden className="size-[var(--icon-size-md)]" />
           <span className="flex flex-col"><span>{labels.quickPlan}</span><span className="type-body-caption text-ui-fg-muted">{labels.quickPlanHint}</span></span>
@@ -288,7 +294,7 @@ export function Drawer({ open, onClose, labels, user, onQuickPlan, language, lin
           <IntlLink href={L.notifications} onClick={onClose} className={row}>
             <Bell aria-hidden className="size-[var(--icon-size-md)]" />
             <span className="flex-1">{labels.notifications}</span>
-            {user.unread ? <span className="text-ui-fg-muted">{user.unread}</span> : null}
+            {user.unread ? <span className="text-ui-fg-muted">{unreadLabel ? unreadLabel(user.unread) : user.unread}</span> : null}
           </IntlLink>
         ) : null}
         {language ? (
@@ -300,7 +306,24 @@ export function Drawer({ open, onClose, labels, user, onQuickPlan, language, lin
         ) : null}
         <IntlLink href={L.settings} onClick={onClose} className={row}><Settings aria-hidden className="size-[var(--icon-size-md)]" />{labels.settings}</IntlLink>
         <IntlLink href={L.help} onClick={onClose} className={row}><CircleHelp aria-hidden className="size-[var(--icon-size-md)]" />{labels.help}</IntlLink>
-        <IntlLink href={L.legal} onClick={onClose} className={row}><FileText aria-hidden className="size-[var(--icon-size-md)]" /><span className="flex-1">{labels.legal}</span>{CHEVRON}</IntlLink>
+        {legalLinks ? (
+          <>
+            <button type="button" aria-expanded={legalOpen} aria-controls={legalId} onClick={() => setLegalOpen((o) => !o)} className={row}>
+              <FileText aria-hidden className="size-[var(--icon-size-md)]" />
+              <span className="flex-1">{labels.legal}</span>
+              {legalOpen ? <ChevronDown aria-hidden className="size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted" /> : CHEVRON}
+            </button>
+            {legalOpen ? (
+              <ul id={legalId}>
+                {legalLinks.map((l) => (
+                  <li key={l.href}><IntlLink href={l.href} onClick={onClose} className={cn(row, 'pl-[calc(var(--space-4)+var(--space-10))]')}>{l.label}</IntlLink></li>
+                ))}
+              </ul>
+            ) : null}
+          </>
+        ) : (
+          <IntlLink href={L.legal} onClick={onClose} className={row}><FileText aria-hidden className="size-[var(--icon-size-md)]" /><span className="flex-1">{labels.legal}</span>{CHEVRON}</IntlLink>
+        )}
       </div>
     </>
   )

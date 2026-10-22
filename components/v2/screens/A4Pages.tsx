@@ -262,6 +262,8 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
   const phone = usePhone()
   const [consent, setConsentState] = useState<'accepted' | 'declined' | null>(null)
   useEffect(() => setConsentState(getConsent()), [])
+  // The section being read: the last heading above the upper third of the window.
+  const [current, setCurrent] = useState<string | undefined>()
   const cfg = useMemo(
     () =>
       ({
@@ -271,8 +273,22 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
       })[doc],
     [doc, k],
   )
+  useEffect(() => {
+    const ids = cfg.sections.map((s) => s.id)
+    const io = new IntersectionObserver(
+      () => {
+        const top = window.innerHeight / 3
+        const passed = ids.filter((id) => (document.getElementById(id)?.getBoundingClientRect().top ?? Infinity) <= top)
+        setCurrent(passed[passed.length - 1] ?? ids[0])
+      },
+      { rootMargin: '0px 0px -66% 0px', threshold: [0, 1] },
+    )
+    ids.forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el) })
+    return () => io.disconnect()
+  }, [cfg.sections])
   return (
-    <V2Page bar={{ type: 'page', title: cfg.title }}>
+    // Figma legal pages: a 1200 wide content area (narrower than the 1344 list pages), 72 from the top.
+    <V2Page bar={{ type: 'page', title: cfg.title }} className="lg:max-w-[1200px] lg:pt-[calc(var(--space-10)+var(--space-8))]">
       <div className="flex flex-col gap-[var(--space-8)]">
         {doc === 'cookies' ? (
           <div className="max-w-[720px]">
@@ -292,11 +308,12 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
         ) : null}
         <LegalDocument
           viewport={phone ? 'mobile' : 'desktop'}
-          breadcrumbs={[{ label: t('CD0807'), href: '/' }, { label: t('CD0809') }, { label: cfg.title }]}
+          breadcrumbs={[{ label: t('CD0807'), href: '/' }, { label: cfg.title }]}
           title={cfg.title}
           updated={GAP.lastUpdated(cfg.updated)}
-          contact={<a href={`mailto:${cfg.email}`} className="underline underline-offset-2">{cfg.email}</a>}
+          contact={<>{t('CD0345')} <a href={`mailto:${cfg.email}`} className="underline underline-offset-2">{cfg.email}</a></>}
           sections={cfg.sections.map((s) => ({ id: s.id, title: s.heading.replace(/^\d+\.\s*/, ''), body: s.body }))}
+          currentSection={current}
           labels={{ breadcrumb: GAP.breadcrumb, contents: t('CD1519'), onThisPage: t('CD1520') }}
         />
       </div>
@@ -308,19 +325,14 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
 
 export function NotFoundScreen() {
   const t = useCd()
+  // Figma: the Empty state, then the actions 24 below it (not inside it).
   return (
-    <V2Page bar={{ type: 'home' }} className="flex items-center justify-center">
-      <EmptyState
-        title={<span className="type-display-h1">{t('CD0116')}</span>}
-        action={
-          <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
-            <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0114')}</IntlLink>
-            <IntlLink href="/map" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD1287')}</IntlLink>
-          </div>
-        }
-      >
-        {t('CD0115')}
-      </EmptyState>
+    <V2Page bar={{ type: 'home' }} className="flex flex-col items-center justify-center gap-[var(--space-6)]">
+      <EmptyState type="no-results" titleAs="h1" title={t('CD0116')}>{t('CD0115')}</EmptyState>
+      <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
+        <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0114')}</IntlLink>
+        <IntlLink href="/map" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0481')}</IntlLink>
+      </div>
     </V2Page>
   )
 }
@@ -328,19 +340,12 @@ export function NotFoundScreen() {
 export function ErrorScreen({ reset }: { reset: () => void }) {
   const t = useCd()
   return (
-    <V2Page bar={{ type: 'home' }} className="flex items-center justify-center">
-      <EmptyState
-        type="error"
-        title={t('CD0113')}
-        action={
-          <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
-            <Button onClick={reset}>{t('CD0110')}</Button>
-            <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover">{t('CD0112')}</IntlLink>
-          </div>
-        }
-      >
-        {t('CD0111')}
-      </EmptyState>
+    <V2Page bar={{ type: 'home' }} className="flex flex-col items-center justify-center gap-[var(--space-6)]">
+      <EmptyState type="error" titleAs="h1" title={t('CD0113')}>{t('CD0111')}</EmptyState>
+      <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
+        <Button onClick={reset}>{t('CD0110')}</Button>
+        <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0112')}</IntlLink>
+      </div>
     </V2Page>
   )
 }

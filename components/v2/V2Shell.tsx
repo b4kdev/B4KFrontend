@@ -10,6 +10,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { getConsent, setConsent } from '@/lib/consent'
 import { v2Area } from '@/lib/v2-live'
 import { cn } from '@/lib/cn'
+import { applyTheme, getStoredTheme } from '@/lib/theme'
 import {
   AccountMenu,
   CookieBanner,
@@ -82,6 +83,10 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const signOut = useV2SignOut()
   const [toastMsg, setToastMsg] = useState<{ type?: 'info' | 'success' | 'warning' | 'critical'; message: string } | null>(null)
 
+  // A Page not found render can replace the document after the boot script ran: set the theme again.
+  useEffect(() => {
+    if (!document.documentElement.getAttribute('data-theme')) applyTheme(getStoredTheme())
+  }, [])
   useEffect(() => {
     try {
       setCookie(getConsent())
@@ -175,6 +180,8 @@ export default function V2Shell({ children }: { children: ReactNode }) {
         onQuickPlan={() => setQuick(true)}
         language={{ current: LANG_NAMES[locale] ?? locale, onOpen: () => { setDrawer(false); setLanguage(true) } }}
         links={{ notifications: '/notifications', settings: '/settings', help: '/help', legal: '/legal/terms', profile: '/profile', signIn: '/login' }}
+        legalLinks={[{ label: t('CD0811'), href: '/legal/privacy' }, { label: t('CD0812'), href: '/legal/terms' }, { label: t('CD0810'), href: '/legal/cookies' }]}
+        unreadLabel={(n) => t('CD0840', { count: n })}
       />
       <V2QuickPlan open={quick} onClose={() => setQuick(false)} />
       <V2DraftMigration />
@@ -189,10 +196,15 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           declineLabel={t('CD0127')}
           onAccept={() => choose('accepted')}
           onDecline={() => choose('declined')}
+          // Figma: above the Navigation bar on phones, beside the Navigation rail on desktop.
+          className={cn('lg:left-[var(--layout-nav-rail)]', !inFlow && 'max-lg:bottom-[var(--fab-size)] max-lg:pb-[var(--space-4)]')}
         />
       ) : null}
-      <div aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-[calc(var(--fab-size)+var(--space-4))] z-50 flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-auto lg:right-[var(--space-6)] lg:top-[calc(var(--layout-header-height)+var(--space-4))] lg:items-end">
+      {/* Offline notice: bottom center on every screen (above the Navigation bar on phones), as drawn. */}
+      <div aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-[calc(var(--fab-size)+var(--space-4))] z-50 flex justify-center px-[var(--space-4)] lg:bottom-[var(--space-6)] lg:pl-[var(--layout-nav-rail)]">
         {!online ? <Toast type="warning" message={onMap ? t('CD0120') : t('CD0119')} className="pointer-events-auto" /> : null}
+      </div>
+      <div aria-live="polite" className={cn('pointer-events-none fixed inset-x-0 bottom-[calc(var(--fab-size)+var(--space-4))] z-50 flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-auto lg:right-[var(--space-6)] lg:top-[calc(var(--layout-header-height)+var(--space-4))] lg:items-end', !online && 'max-lg:bottom-[calc(var(--fab-size)+var(--space-20))]')}>
         {toastMsg ? <Toast type={toastMsg.type} message={toastMsg.message} onClose={() => setToastMsg(null)} closeLabel={labels.close} className="pointer-events-auto" /> : null}
       </div>
     </Ctx.Provider>

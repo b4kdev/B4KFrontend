@@ -74,11 +74,13 @@ export type EmptyStateProps = {
   children?: ReactNode
   /** Figma Show action: a Button. */
   action?: ReactNode
+  /** The title element: a heading when the state is the whole page (Page not found). */
+  titleAs?: 'p' | 'h1' | 'h2'
   className?: string
 }
 
 /** Empty state (CMP-035): icon, title/empty-state, one line, optional Button. Error uses role alert. */
-export function EmptyState({ type = 'empty', container = 'plain', icon, title, children, action, className }: EmptyStateProps) {
+export function EmptyState({ type = 'empty', container = 'plain', icon, title, children, action, titleAs: Title = 'p', className }: EmptyStateProps) {
   const Icon = EMPTY_ICON[type]
   return (
     <div
@@ -92,7 +94,7 @@ export function EmptyState({ type = 'empty', container = 'plain', icon, title, c
       <span aria-hidden className={cn('mb-[var(--space-4)] inline-flex size-[var(--icon-size-2xl)] [&>svg]:size-full', type === 'error' ? 'text-ui-danger' : 'text-ui-fg-muted')}>
         {icon ?? <Icon />}
       </span>
-      <p className="type-title-empty-state text-ui-fg">{title}</p>
+      <Title className="type-title-empty-state text-ui-fg">{title}</Title>
       {/* Figma body: 320 fixed, never wider than the container. */}
       {children ? <p className="w-[320px] max-w-full type-body-base text-ui-fg-muted">{children}</p> : null}
       {action ? <div className="mt-[var(--space-4)]">{action}</div> : null}
