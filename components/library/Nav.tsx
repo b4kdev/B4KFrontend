@@ -111,16 +111,23 @@ export function NavItem({ icon, label, active = false, badge, className }: NavIt
   return (
     <span
       className={cn(
-        'relative flex h-[var(--control-height-xl)] w-full flex-col items-center justify-center gap-[var(--space-1)]',
+        'relative flex h-[var(--control-height-xl)] w-full items-center justify-center',
         active ? 'text-ui-fg' : 'text-ui-fg-muted group-hover:text-ui-fg',
         className,
       )}
     >
+      {/* The icon stays centered in the item; the dot hangs 4 below it, out of the flow, as drawn. */}
       <span className="relative inline-flex size-[var(--icon-size-md)] [&>svg]:size-full">
         {icon}
         {badge ? <span className="absolute -right-[var(--space-0-5)] -top-[var(--space-0-5)]">{badge}</span> : null}
+        <span
+          aria-hidden
+          className={cn(
+            'absolute left-1/2 top-[calc(100%+var(--space-1))] size-[var(--space-1)] -translate-x-1/2 rounded-full',
+            active ? 'bg-ui-fg' : 'bg-transparent',
+          )}
+        />
       </span>
-      <span aria-hidden className={cn('size-[var(--space-1)] rounded-full', active ? 'bg-ui-fg' : 'bg-transparent')} />
       <span className="sr-only">{label}</span>
     </span>
   )
