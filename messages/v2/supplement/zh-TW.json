@@ -515,6 +515,7 @@
     "openSaved": "開啟已儲存",
     "resetPassword": "重設密碼",
     "linkExpired": "連結已過期",
-    "interestsPicked": "已選 {count} 個 · 用於首頁和快速行程"
+    "interestsPicked": "已選 {count} 個 · 用於首頁和快速行程",
+    "searchArea": "搜尋這個區域"
   }
 }

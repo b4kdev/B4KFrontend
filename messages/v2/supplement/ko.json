@@ -434,6 +434,7 @@
     "openSaved": "저장됨 열기",
     "resetPassword": "비밀번호 재설정",
     "linkExpired": "링크 만료",
-    "interestsPicked": "{count}개 선택 · 홈과 빠른 일정에 사용"
+    "interestsPicked": "{count}개 선택 · 홈과 빠른 일정에 사용",
+    "searchArea": "이 지역 검색"
   }
 }

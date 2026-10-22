@@ -405,6 +405,7 @@
     "openSaved": "Abrir Salvos",
     "resetPassword": "Redefinir senha",
     "linkExpired": "Link expirado",
-    "interestsPicked": "{count, plural, one {# escolhido} other {# escolhidos}} · usado no Início e no Plano rápido"
+    "interestsPicked": "{count, plural, one {# escolhido} other {# escolhidos}} · usado no Início e no Plano rápido",
+    "searchArea": "Buscar nesta área"
   }
 }

@@ -28,6 +28,7 @@
     "openSaved": "Open Saved",
     "resetPassword": "Reset password",
     "linkExpired": "Link expired",
-    "interestsPicked": "{count} picked · used for Home and Quick plan"
+    "interestsPicked": "{count} picked · used for Home and Quick plan",
+    "searchArea": "Search this area"
   }
 }

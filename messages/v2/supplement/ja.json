@@ -515,6 +515,7 @@
     "openSaved": "保存済みを開く",
     "resetPassword": "パスワードの再設定",
     "linkExpired": "リンクの有効期限切れ",
-    "interestsPicked": "{count}件選択 · ホームとクイックプランに使用"
+    "interestsPicked": "{count}件選択 · ホームとクイックプランに使用",
+    "searchArea": "このエリアを検索"
   }
 }

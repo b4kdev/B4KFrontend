@@ -48,6 +48,8 @@ export function useGap() {
       linkExpired: t('linkExpired'),
       // Settings Your interests row: the count picked and what they are for.
       interestsPicked: (count: number) => t('interestsPicked', { count }),
+      // Map: refetch the filter results for the area in view after a pan.
+      searchArea: t('searchArea'),
     }),
     [t],
   )

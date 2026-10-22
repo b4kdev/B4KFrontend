@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { Search } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
@@ -73,10 +74,16 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const draft = usePlanDraft()
 
   const [bounds, setBounds] = useState<MapBounds | null>(null)
+  // Filter results stay where they were fetched; after a pan the map offers Search this area.
+  const [areaBounds, setAreaBounds] = useState<MapBounds | null>(null)
+  const [areaMoved, setAreaMoved] = useState(false)
   // Places refresh 300 ms after the map stops, not on every idle in a row.
   const boundsTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [zoom, setZoom] = useState(13)
   const [filter, setFilter] = useState<string | null>(null)
+  // The map keeps the first onBounds it gets, so it reads the filter through a ref.
+  const filterOn = useRef(false)
+  filterOn.current = !!filter
   const [mode, setMode] = useState<'nearby' | 'saved'>(params?.get('saved') ? 'saved' : 'nearby')
   const [selectedId, setSelectedId] = useState<string | null>(poiId ?? params?.get('poi') ?? null)
   // Escape goes back from a selected place to the list (no dialog open); a map tap does the same.
@@ -109,7 +116,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const [editing, setEditing] = useState<{ id: string; title: string } | null>(null)
   const [pendingEdit, setPendingEdit] = useState<ItineraryDetail | null>(null)
 
-  const { pois, isLoading } = useMapPois(null, filter ? [filter] : [], bounds, zoom)
+  const { pois, isLoading } = useMapPois(null, filter ? [filter] : [], filter ? areaBounds ?? bounds : bounds, zoom)
   // View on map from a category special page (?collection=/api/explore/...): that page's places
   // only, on the map and in the list, until a category is picked.
   const collectionApi = params?.get('collection')
@@ -332,9 +339,21 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   const nearbyList = (
     <div className={cn('flex flex-col gap-[var(--space-3)]', !phone && 'p-[var(--space-4)]')}>
-      {(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-[80px]" />) : null}
-      {!(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? <EmptyState title={k('map.empty.title')} action={<Button size="md" variant="secondary" onClick={() => mapRef.current?.zoomOut()}>{k('map.zoomOut')}</Button>}>{t('CD1531')}</EmptyState> : null}
-      <ul className="flex flex-col gap-[var(--space-3)]">
+      {(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? (
+        // As drawn: the area name and count, then each card's photo (4:3) and title.
+        <div className="flex flex-col gap-[var(--space-4)]">
+          <Skeleton shape="line" className="h-[var(--space-3)] w-1/2" />
+          <Skeleton shape="line" className="h-[var(--space-3)] w-[30%]" />
+          {Array.from({ length: 2 }, (_, i) => (
+            <Fragment key={i}>
+              <Skeleton className="aspect-[4/3] w-full" />
+              <Skeleton shape="line" className="h-[var(--space-3)] w-[60%]" />
+            </Fragment>
+          ))}
+        </div>
+      ) : null}
+      {!(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? <EmptyState type="no-results" title={k('map.empty.title')} action={<Button size="md" variant="secondary" onClick={() => mapRef.current?.zoomOut()}>{k('map.zoomOut')}</Button>}>{t('CD1531')}</EmptyState> : null}
+      <ul className="flex flex-col gap-[var(--space-4)]">
         {listPois.slice(0, 40).map((p) => (
           <li key={p.poi_id}>
             <Card
@@ -423,10 +442,18 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const chips = (
     <div className="flex gap-[var(--space-2)] overflow-x-auto [scrollbar-width:none]">
       {CATEGORIES.map((c) => (
-        <Chip key={c.slug} type="map" selected={filter === c.slug} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setFilter((f) => (f === c.slug ? null : c.slug)) }}>{t(c.label)}</Chip>
+        <Chip key={c.slug} type="map" selected={filter === c.slug} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setAreaBounds(bounds); setAreaMoved(false); setFilter((f) => (f === c.slug ? null : c.slug)) }}>{t(c.label)}</Chip>
       ))}
     </div>
   )
+
+  const searchArea = filter && areaMoved && !selectedId ? (
+    <div className="flex justify-center">
+      <Chip type="map" selected aria-pressed={undefined} leadingIcon={<Search />} onClick={() => { setAreaBounds(bounds); setAreaMoved(false) }}>
+        {GAP.searchArea}
+      </Chip>
+    </div>
+  ) : null
 
   const map = (
     <V2MapCanvas
@@ -436,7 +463,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
       planStops={planVisible ? planStops : []}
       activeDay={activeDay}
-      onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => setBounds(b), 300) }}
+      onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => { setBounds(b); if (filterOn.current) setAreaMoved(true) }, 300) }}
       label={k('itinerary.mapAriaLabel')}
       errorText={GAP.mapError}
     />
@@ -490,9 +517,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       <div className="relative h-[calc(100dvh)] w-full overflow-hidden">
         {/* The map ends at the navigation bar, so Naver's logo stays in view. */}
         <main id="main" className="absolute inset-x-0 top-0 bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))]">{map}</main>
-        <div className="absolute inset-x-0 top-0 z-20 flex flex-col gap-[var(--space-2)]">
+        <div className="absolute inset-x-0 top-0 z-20 flex flex-col pt-[var(--space-2)]">
           <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} />
           <div className="px-[var(--space-4)]">{chips}</div>
+          {searchArea ? <div className="mt-[var(--space-4)]">{searchArea}</div> : null}
         </div>
         {order.length ? (
           <div className="absolute bottom-[calc(76px+var(--fab-size)+env(safe-area-inset-bottom)+var(--space-3))] left-[var(--space-4)] z-30">
@@ -508,7 +536,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           onClose={() => (planSheet ? setPlanSheet(false) : setSnap('peek'))}
           resizeLabel={k('itinerary.sheet.handle')}
           heights={planSheet ? { full: '70dvh' } : undefined}
-          header={selectedId || planSheet ? undefined : switcher}
+          header={selectedId || planSheet ? undefined : <div className="pt-[var(--space-4)]">{switcher}</div>}
           className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0"
         >
           {planSheet ? <div className="-mx-[var(--space-4)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div> : content}
@@ -520,18 +548,21 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   return (
     <div className="flex min-h-0 flex-1">
       <LeftPanel type="map" label={k('map.plan.title')} cart={cartNode} cartOpen={cart === 'open'}>
-        {selectedId ? null : <div className="sticky top-0 z-10 bg-ui-bg">{switcher}</div>}
+        {selectedId ? null : <div className="sticky top-0 z-10 bg-ui-bg pt-[var(--space-4)]">{switcher}</div>}
         {/* The Saved hub's raised background runs to the Plan cart, as drawn. */}
         {!selectedId && mode === 'saved' && user ? <div className="flex-1 bg-ui-bg-raised">{content}</div> : content}
       </LeftPanel>
       <main id="main" className="relative min-w-0 flex-1">
         {map}
-        <div className="pointer-events-none absolute inset-x-0 top-0 p-[var(--space-4)] [&>*]:pointer-events-auto">{chips}</div>
-        <p className="absolute bottom-[var(--space-3)] left-[var(--space-16)] flex flex-wrap items-center gap-x-[var(--space-3)] type-body-caption text-ui-fg-muted">
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-col gap-[var(--space-4)] p-[var(--space-4)] [&>*]:pointer-events-auto">
+          {chips}
+          {searchArea}
+        </div>
+        <p className="absolute bottom-[var(--space-4)] left-[var(--space-16)] flex flex-wrap items-center gap-x-[var(--space-3)] type-body-legal text-ui-fg-muted">
           <span>{t('CD1462')}</span>
-          <IntlLink href="/about" className="hover:text-ui-fg hover:underline">{t('CD1173')}</IntlLink>
           <IntlLink href="/legal/terms" className="hover:text-ui-fg hover:underline">{t('CD1460')}</IntlLink>
-          <IntlLink href="/legal/privacy" className="font-semibold hover:text-ui-fg hover:underline">{t('CD0321')}</IntlLink>
+          <IntlLink href="/legal/privacy" className="type-body-legal-strong hover:text-ui-fg hover:underline">{t('CD0321')}</IntlLink>
+          <IntlLink href="/about" className="hover:text-ui-fg hover:underline">{t('CD1173')}</IntlLink>
         </p>
         <ZoomControl className="absolute bottom-[var(--space-4)] right-[var(--space-4)]" onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} atMax={zoom >= 18} atMin={zoom <= 6} />
       </main>
