@@ -119,7 +119,7 @@ export function ConsentScreen() {
         onCheckedChange={setChecked}
         onView={(i) => setDoc(i.id === 'terms' ? 'terms' : 'privacy')}
         onContinue={async () => {
-          const res = await post('/api/account/consent', { age: !!checked.age, marketing: false }).catch(() => null)
+          const res = await post('/api/account/consent', { age: !!checked.age }).catch(() => null)
           if (!res?.ok) return toast({ type: 'critical', message: t('CD0061') })
           // Pick up the new consent record in the session before moving on.
           await createSupabaseBrowserClient().auth.refreshSession()

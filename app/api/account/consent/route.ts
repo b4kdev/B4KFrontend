@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { CONSENT_VERSION } from '@/lib/terms-consent'
 
-// POST /api/account/consent   body: { age: true, marketing: boolean }
+// POST /api/account/consent   body: { age: true }
 // Stores the Consent step on the account (user_metadata.consent): terms and privacy version,
-// 14+ confirmation, marketing opt-in and the server time of acceptance.
+// 14+ confirmation and the server time of acceptance. No marketing opt-in at launch: a body that
+// still sends one is accepted and the field ignored; older records keep theirs.
 export async function POST(req: NextRequest) {
   const supabase = createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -17,7 +18,6 @@ export async function POST(req: NextRequest) {
     terms_version: CONSENT_VERSION,
     privacy_version: CONSENT_VERSION,
     age_confirmed: true,
-    marketing: body.marketing === true,
     accepted_at: new Date().toISOString(),
   }
   const { error } = await supabase.auth.updateUser({ data: { consent } })
