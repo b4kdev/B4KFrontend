@@ -328,23 +328,28 @@ export function NotificationsScreen() {
     }
     return g
   }, [data, shown])
-  const time = (iso: string) => new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit' }).format(new Date(iso))
+  // Figma "2h ago", "1d ago": relative time in the reader's language, no Copy Deck text needed.
+  const time = (iso: string) => {
+    const rtf = new Intl.RelativeTimeFormat(locale, { style: 'narrow', numeric: 'always' })
+    const min = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 6e4))
+    return min < 60 ? rtf.format(-min, 'minute') : min < 1440 ? rtf.format(-Math.round(min / 60), 'hour') : rtf.format(-Math.round(min / 1440), 'day')
+  }
   if (!user) return <V2Page bar={{ type: 'page', title: k('notifications.title') }}><SignedOutPrompt title={k('notifications.title')} text={t('CD1596')} /></V2Page>
   return (
-    <V2Page bar={{ type: 'page', title: k('notifications.title') }}>
-      <div className="mx-auto flex w-full max-w-[720px] flex-col gap-[var(--space-6)]">
-        <div className="flex items-center justify-between">
-          <h1 className="type-display-h1 max-lg:hidden">{k('notifications.title')}</h1>
-          {data?.unread_count ? <Button variant="ghost" size="md" onClick={async () => { await send('/api/notifications/mark-all-read', 'POST').catch(() => {}); mutate(); mutateKey(UNREAD_KEY) }}>{k('notifications.markAllRead')}</Button> : null}
-        </div>
+    <V2Page bar={{ type: 'page', title: k('notifications.title') }} className="flex flex-col">
+      {/* Figma 257:4860: 720 column, section-header title, Mark all read on its own row at the end,
+          caps day labels, Load more at the start; Nothing yet is a plain empty state (259:6704). */}
+      <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col gap-[var(--space-4)]">
+        <h1 className="type-display-h3 max-lg:hidden">{k('notifications.title')}</h1>
+        {data?.unread_count ? <Button variant="ghost" size="md" className="self-end" onClick={async () => { await send('/api/notifications/mark-all-read', 'POST').catch(() => {}); mutate(); mutateKey(UNREAD_KEY) }}>{k('notifications.markAllRead')}</Button> : null}
         {isLoading ? <Skeleton className="h-[240px]" /> : null}
         {error ? <EmptyState type="error" container="bordered" title={k('notifications.error.title')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{k('notifications.error.retry')}</Button>} /> : null}
-        {data && !data.notifications.length ? <EmptyState container="bordered" title={t('CD1595')}>{t('CD1596')}</EmptyState> : null}
+        {data && !data.notifications.length ? <EmptyState icon={<Bell />} title={t('CD1595')} className="flex-1">{t('CD1596')}</EmptyState> : null}
         {(['today', 'yesterday', 'earlier'] as const).map((g) =>
           groups[g].length ? (
-            <section key={g} className="flex flex-col gap-[var(--space-2)]">
-              <h2 className="type-body-label text-ui-fg-muted">{k(`notifications.groups.${g}`)}</h2>
-              <ul className="border-t border-ui-border">
+            <section key={g} className="flex flex-col gap-[var(--space-4)]">
+              <h2 className="type-eyebrow-category text-ui-fg-muted">{k(`notifications.groups.${g}`)}</h2>
+              <ul>
                 {groups[g].map((n) => (
                   <NotificationItem
                     key={n.id}
@@ -364,7 +369,7 @@ export function NotificationsScreen() {
             </section>
           ) : null,
         )}
-        {data && data.notifications.length > shown ? <Button variant="secondary" className="self-center" onClick={() => setShown((s) => s + 20)}>{k('notifications.loadMore')}</Button> : null}
+        {data && data.notifications.length > shown ? <Button variant="secondary" size="md" className="self-start" onClick={() => setShown((s) => s + 20)}>{k('notifications.loadMore')}</Button> : null}
       </div>
     </V2Page>
   )
