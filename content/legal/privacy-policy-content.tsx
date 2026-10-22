@@ -101,7 +101,7 @@ export const privacyPolicySections: LegalSection[] = [
     id: 'how-and-why',
     heading: '3. How and Why We Use Your Information',
     body: (
-      <div className="overflow-x-auto">
+      <div tabIndex={0} className="overflow-x-auto focus-visible:shadow-focus-ring focus-visible:outline-none">
         <table>
           <thead>
             <tr>
@@ -199,7 +199,7 @@ export const privacyPolicySections: LegalSection[] = [
     id: 'third-parties',
     heading: '7. Third Parties We Share Data With',
     body: (
-      <div className="overflow-x-auto">
+      <div tabIndex={0} className="overflow-x-auto focus-visible:shadow-focus-ring focus-visible:outline-none">
         <p className="mb-sp-4">
           We disclose information to the following service providers so they can perform services on our behalf.
           None of them are permitted to sell or independently reuse your data.
@@ -308,7 +308,7 @@ export const privacyPolicySections: LegalSection[] = [
     id: 'retention',
     heading: '10. How Long We Keep Your Information',
     body: (
-      <div className="overflow-x-auto">
+      <div tabIndex={0} className="overflow-x-auto focus-visible:shadow-focus-ring focus-visible:outline-none">
         <table>
           <thead>
             <tr>

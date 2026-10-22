@@ -304,8 +304,15 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
     // Figma legal pages: a 1200 wide content area (narrower than the 1344 list pages), 72 from the top.
     <V2Page bar={{ type: 'page', title: cfg.title }} className="lg:max-w-[1200px] lg:pt-[calc(var(--space-10)+var(--space-8))]">
       <div className="flex flex-col gap-[var(--space-8)]">
-        {doc === 'cookies' ? (
-          <div className="max-w-[720px]">
+        <LegalDocument
+          viewport={phone ? 'mobile' : 'desktop'}
+          breadcrumbs={[{ label: t('CD0807'), href: '/' }, { label: cfg.title }]}
+          title={cfg.title}
+          updated={GAP.lastUpdated(cfg.updated)}
+          contact={<>{t('CD0345')} <a href={`mailto:${cfg.email}`} className="underline underline-offset-2">{cfg.email}</a></>}
+          sections={cfg.sections.map((s) => ({ id: s.id, title: s.heading.replace(/^\d+\.\s*/, ''), body: s.body }))}
+          currentSection={current}
+          intro={doc === 'cookies' ? (
             <CookieBanner
               type="preferences"
               title={t('CD0137')}
@@ -318,16 +325,7 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
               onAccept={() => { setConsent('accepted'); setConsentState('accepted') }}
               onDecline={() => { setConsent('declined'); setConsentState('declined') }}
             />
-          </div>
-        ) : null}
-        <LegalDocument
-          viewport={phone ? 'mobile' : 'desktop'}
-          breadcrumbs={[{ label: t('CD0807'), href: '/' }, { label: cfg.title }]}
-          title={cfg.title}
-          updated={GAP.lastUpdated(cfg.updated)}
-          contact={<>{t('CD0345')} <a href={`mailto:${cfg.email}`} className="underline underline-offset-2">{cfg.email}</a></>}
-          sections={cfg.sections.map((s) => ({ id: s.id, title: s.heading.replace(/^\d+\.\s*/, ''), body: s.body }))}
-          currentSection={current}
+          ) : undefined}
           labels={{ breadcrumb: GAP.breadcrumb, contents: t('CD1519'), onThisPage: t('CD1520') }}
         />
       </div>

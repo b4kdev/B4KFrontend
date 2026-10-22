@@ -395,11 +395,13 @@ export type LegalDocumentProps = {
   contact?: ReactNode
   sections: { id: string; title: string; body: ReactNode }[]
   currentSection?: string
+  /** A block under the title and updated line, before the sections (Cookie Policy: the preferences card). */
+  intro?: ReactNode
   labels: { breadcrumb: string; contents: string; onThisPage: string }
 }
 
 /** Legal document (UI-82, ADD-73): title, updated, numbered sections; contents list (desktop) or a Select (phones). */
-export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, sections, currentSection, labels }: LegalDocumentProps) {
+export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, sections, currentSection, intro, labels }: LegalDocumentProps) {
   const contentsId = useId()
   // Figma: 16 between every element of the document column; breadcrumbs and title sit in that column.
   const doc = (
@@ -412,6 +414,7 @@ export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, 
           {contact ? <><span aria-hidden>·</span><span>{contact}</span></> : null}
         </p>
       </header>
+      {intro}
       {viewport === 'mobile' ? (
         <Select label={labels.onThisPage} showLabel size="md" value={currentSection ?? sections[0]?.id ?? ''} onChange={(e) => document.getElementById(e.target.value)?.scrollIntoView({ behavior: 'smooth' })}>
           {sections.map((s, i) => <option key={s.id} value={s.id}>{i + 1}. {s.title}</option>)}

@@ -18,7 +18,7 @@ export const cookiePolicySections: LegalSection[] = [
     id: 'cookies-we-use',
     heading: '2. Cookies We Use',
     body: (
-      <div className="overflow-x-auto">
+      <div tabIndex={0} className="overflow-x-auto focus-visible:shadow-focus-ring focus-visible:outline-none">
         <h3>2.1 Strictly Necessary</h3>
         <p>These cookies are required for the platform to function. They cannot be disabled.</p>
         <table>
