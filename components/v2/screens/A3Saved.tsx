@@ -42,13 +42,15 @@ const send = (url: string, method: string, body?: unknown) =>
 
 const poiName = (p: SavedPoi, locale: string) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
 
-export function SignedOutPrompt({ title, text }: { title: string; text: string }) {
+export function SignedOutPrompt({ title, text, icon, plain, className }: { title: string; text: string; icon?: React.ReactNode; plain?: boolean; className?: string }) {
   const t = useCd()
   const { requireSignIn } = useV2Shell()
   // Sign in opens the gate; Google returns to this page, and the page fills in once signed in.
   return (
     <EmptyState
-      container="bordered"
+      container={plain ? 'plain' : 'bordered'}
+      icon={icon}
+      className={className}
       title={title}
       action={<Button size="lg" onClick={() => requireSignIn({ title, run: () => {} })}>{t('CD0050')}</Button>}
     >
@@ -126,8 +128,13 @@ export function SavedScreen() {
 
   if (!user) {
     return (
-      <V2Page>
-        <div className="flex flex-col gap-[var(--space-4)]">{head}<SignedOutPrompt title={t('CD1577')} text={t('CD1581')} /></div>
+      <V2Page className="flex flex-col">
+        {/* Figma 248:2071: the tabs stay; a plain prompt with the bookmark icon fills the page. */}
+        <div className="flex flex-1 flex-col gap-[var(--space-4)]">
+          {head}
+          <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={setTab} tabs={tabs} className="self-start" />
+          <SignedOutPrompt title={t('CD1577')} text={t('CD1581')} icon={<Bookmark />} plain className="flex-1" />
+        </div>
       </V2Page>
     )
   }
