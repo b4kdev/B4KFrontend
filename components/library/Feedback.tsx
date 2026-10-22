@@ -95,8 +95,8 @@ export function EmptyState({ type = 'empty', container = 'plain', icon, title, c
         {icon ?? <Icon />}
       </span>
       <Title className="type-title-empty-state text-ui-fg">{title}</Title>
-      {/* Figma body: 320 fixed, never wider than the container. */}
-      {children ? <p className="w-[320px] max-w-full type-body-base text-ui-fg-muted">{children}</p> : null}
+      {/* Figma body: fills the state's width inside its 24 side padding. */}
+      {children ? <p className="w-full type-body-base text-ui-fg-muted">{children}</p> : null}
       {action ? <div className="mt-[var(--space-4)]">{action}</div> : null}
     </div>
   )
