@@ -130,7 +130,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     [collection.data],
   )
   const listPois = collectionOn && collectionPois ? collectionPois : pois
-  const { detail } = usePlaceDetail(selectedId)
+  const { detail, isError: placeMissing } = usePlaceDetail(selectedId)
   const detailName = detail ? nameOf(detail, locale) : ''
   const saved = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
   const savedIds = useMemo(() => new Set((saved.data?.pois ?? []).map((p) => p.poi_id)), [saved.data])
@@ -335,7 +335,26 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         labels={{ add: k('map.poiDetail.addToPlan'), save: k('map.poiDetail.save'), like: k('map.poiDetail.like'), share: k('map.poiDetail.share') }}
       />
     </div>
-  ) : selectedId ? <Skeleton className="m-[var(--space-4)] h-[320px]" /> : null
+  ) : selectedId && placeMissing ? (
+    <EmptyState
+      type="no-results"
+      title={t('CD1529')}
+      action={<Button size="md" variant="secondary" onClick={() => setSelectedId(null)}>{t('CD0594')}</Button>}
+      className={phone ? '-mx-[var(--space-4)] mt-[var(--space-2)]' : undefined}
+    >
+      {t('CD1530')}
+    </EmptyState>
+  ) : selectedId ? (
+    // As drawn: the photo, name and meta lines, then three description lines.
+    <div className={cn('flex flex-col gap-[var(--space-4)]', phone ? 'mt-[var(--space-2)]' : 'p-[var(--space-4)]')}>
+      <Skeleton className={phone ? 'h-[225px]' : 'h-[252px]'} />
+      <Skeleton shape="line" className="h-[var(--space-3)] w-[70%]" />
+      <Skeleton shape="line" className="h-[var(--space-3)] w-[45%]" />
+      <Skeleton shape="line" className="h-[var(--space-3)] w-full" />
+      <Skeleton shape="line" className="h-[var(--space-3)] w-full" />
+      <Skeleton shape="line" className="h-[var(--space-3)] w-[80%]" />
+    </div>
+  ) : null
 
   const nearbyList = (
     <div className={cn('flex flex-col gap-[var(--space-3)]', !phone && 'p-[var(--space-4)]')}>

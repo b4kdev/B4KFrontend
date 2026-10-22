@@ -62,7 +62,7 @@ export function usePlaceDetail(poiId: string | null) {
   // Old seed links carry content-sheet codes ('KD016-007'); the BFF only knows the DB id.
   const id = poiId ? dbPoiId(poiId) ?? poiId : null
 
-  const { data, isLoading } = useSWR(
+  const { data, error, isLoading } = useSWR(
     id ? ['/places', id, locale] : null,
     () => apiFetch<RawPlaceDetail>(`/places/${id}`),
     { revalidateOnFocus: false }
@@ -71,5 +71,6 @@ export function usePlaceDetail(poiId: string | null) {
   return {
     detail: data ? mapDetail(data, locale) : null,
     isLoading,
+    isError: !!error,
   }
 }
