@@ -5,7 +5,7 @@ import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
 import { cn } from '@/lib/cn'
-import { ArrowLeft, Bookmark, Ellipsis, Folder, Pencil, Share2, Trash2, Lock, X } from 'lucide-react'
+import { ArrowLeft, Bookmark, Ellipsis, Folder, Globe, Pencil, Share2, Trash2, Lock, X } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
   Button,
@@ -206,7 +206,7 @@ export function SavedScreen() {
           // Figma: status in the second line ("5 stops · 2 days · Public", "Draft · 3 stops").
           secondary={p.is_draft
             ? `${k('saved.myPlan.draft')} · ${k('saved.plan.stops', { count: p.stop_count })}`
-            : `${k('saved.plan.stops', { count: p.stop_count })} · ${k('saved.plan.days', { count: p.duration_days })} · ${k('profile.settings.privacy.public')}`}
+            : `${k('saved.plan.stops', { count: p.stop_count })} · ${k('saved.plan.days', { count: p.duration_days })} · ${p.is_public ? k('profile.settings.privacy.public') : k('profile.settings.privacy.private')}`}
           leading={<Image ratio="1:1" src={p.cover_image_url} alt="" sizes="48px" className="size-[var(--space-12)]" />}
           href={`/plan/${p.id}`}
           renderLink={({ href, className, children }) => (
@@ -217,7 +217,16 @@ export function SavedScreen() {
                   <MenuItem icon={<Pencil />} onClick={() => router.push(`/map?plan=edit&id=${p.id}`)}>{t('CD1487')}</MenuItem>
                   <MenuItem icon={<Share2 />} onClick={() => { navigator.clipboard?.writeText(`${location.origin}/${locale}/plan/${p.id}`); toast({ type: 'success', message: k('profile.trips.card.shareCopiedToast') }) }}>{k('saved.myPlan.share')}</MenuItem>
                   {!p.is_draft ? (
-                    <MenuItem icon={<Lock />} onClick={async () => { await send(`/api/plans/${p.id}`, 'PATCH', { is_published: false }).catch(() => {}); mutate() }}>{t('CD0517')}</MenuItem>
+                    // A published plan switches between public and private; a failed switch says so.
+                    <MenuItem
+                      icon={p.is_public ? <Lock /> : <Globe />}
+                      onClick={async () => {
+                        await send(`/api/plans/${p.id}`, 'PATCH', { is_published: !p.is_public }).catch(() => toast({ type: 'critical', message: t('CD0061') }))
+                        mutate()
+                      }}
+                    >
+                      {p.is_public ? t('CD0517') : t('CD0518')}
+                    </MenuItem>
                   ) : null}
                 </MenuGroup>
                 <MenuGroup>
