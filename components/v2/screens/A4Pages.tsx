@@ -110,7 +110,7 @@ export function SearchScreen() {
       {q ? <p aria-live="polite" className="sr-only">{data ? t('CD1303', { query: q, places: data.places.length, plans: data.plans.length, explore: data.explore.length }) : isLoading ? t('CD1285') : ''}</p> : null}
       {error ? <EmptyState type="error" title={t('CD1249')} action={<Button size="md" variant="secondary" onClick={() => router.refresh()}>{t('CD1304')}</Button>} /> : null}
       {isLoading ? (
-        <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div>
+        <div aria-busy className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-4)] lg:grid-cols-3 lg:gap-x-[var(--space-4)]">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div>
       ) : null}
       {/* Explore matches are the fixed category links, so no places and no plans is No results;
           the categories become its suggestions (Figma No results: chips, then Clear filters). */}
@@ -143,7 +143,7 @@ export function SearchScreen() {
               </label>
             ) : null}
           </div>
-          <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">
+          <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-4)] lg:grid-cols-3 lg:gap-x-[var(--space-4)]">
             {(show === 'places' ? data.places : data.places.slice(0, phone ? 4 : 3)).map((p) => (
               <li key={p.poi_id}>
                 <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, placeName(p))} title={placeName(p)} imageSrc={p.primary_image_url} meta={[p.display_region, p.display_domain].filter(Boolean).join(' · ')} />
@@ -157,7 +157,7 @@ export function SearchScreen() {
         show === 'plans' ? (
           <section className="flex flex-col gap-[var(--space-4)]">
             <SectionHeader title={`${t('CD1308')} · ${data.plans.length}`} />
-            <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">
+            <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-4)] lg:grid-cols-3 lg:gap-x-[var(--space-4)]">
               {data.plans.map((p) => (
                 <li key={p.id}>
                   <Card type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD1315', { count: p.stop_count })} sponsored={p.is_partner ? t('CD1314') : undefined} />
@@ -215,7 +215,8 @@ export function SearchScreen() {
   }
   return (
     <div className="flex min-h-0 flex-1">
-      <LeftPanel type="filters" label={t('CD1284')}>
+      {/* Figma: the filters sit 16 inside the panel. */}
+      <LeftPanel type="filters" label={t('CD1284')} className="p-[var(--space-4)]">
         <SearchFilters viewport="desktop" groups={groups} value={filters} onValueChange={setFilters} sort={sortCfg} labels={{ title: t('CD1284'), clearAll: t('CD1248') }} />
       </LeftPanel>
       <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
@@ -301,15 +302,16 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
     return () => io.disconnect()
   }, [cfg.sections])
   return (
-    // Figma legal pages: a 1200 wide content area (narrower than the 1344 list pages), 72 from the top.
-    <V2Page bar={{ type: 'page', title: cfg.title }} className="lg:max-w-[1200px] lg:pt-[calc(var(--space-10)+var(--space-8))]">
+    // Figma legal pages: a 1200 wide content area (narrower than the 1344 list pages), 72 from the top;
+    // on phones the document adds 32 above and below the page's 24.
+    <V2Page bar={{ type: 'page', title: cfg.title }} className="max-lg:py-[calc(var(--space-6)+var(--space-8))] lg:max-w-[1200px] lg:pt-[calc(var(--space-10)+var(--space-8))]">
       <div className="flex flex-col gap-[var(--space-8)]">
         <LegalDocument
           viewport={phone ? 'mobile' : 'desktop'}
           breadcrumbs={[{ label: t('CD0807'), href: '/' }, { label: cfg.title }]}
           title={cfg.title}
           updated={GAP.lastUpdated(cfg.updated)}
-          contact={<>{t('CD0345')} <a href={`mailto:${cfg.email}`} className="underline underline-offset-2">{cfg.email}</a></>}
+          contact={<>{t('CD0345')} <a href={`mailto:${cfg.email}`} className="type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover">{cfg.email}</a></>}
           sections={cfg.sections.map((s) => ({ id: s.id, title: s.heading.replace(/^\d+\.\s*/, ''), body: s.body }))}
           currentSection={current}
           intro={doc === 'cookies' ? (
@@ -337,10 +339,11 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
 
 export function NotFoundScreen() {
   const t = useCd()
-  // Figma: the Empty state, then the actions 24 below it (not inside it).
+  // Figma: the Empty state (full width on phones, 400 on desktop), then the actions below it
+  // (not inside it): 16 on phones, 24 on desktop.
   return (
-    <V2Page bar={{ type: 'home' }} className="flex flex-col items-center justify-center gap-[var(--space-6)]">
-      <EmptyState type="no-results" titleAs="h1" title={t('CD0116')}>{t('CD0115')}</EmptyState>
+    <V2Page bar={{ type: 'home' }} className="flex flex-col items-center justify-center gap-[var(--space-4)] lg:gap-[var(--space-6)]">
+      <EmptyState type="no-results" titleAs="h1" title={t('CD0116')} className="w-full lg:w-[400px]">{t('CD0115')}</EmptyState>
       <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
         <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0114')}</IntlLink>
         <IntlLink href="/map" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0481')}</IntlLink>
@@ -351,9 +354,10 @@ export function NotFoundScreen() {
 
 export function ErrorScreen({ reset }: { reset: () => void }) {
   const t = useCd()
+  // Same layout as the not found page.
   return (
-    <V2Page bar={{ type: 'home' }} className="flex flex-col items-center justify-center gap-[var(--space-6)]">
-      <EmptyState type="error" titleAs="h1" title={t('CD0113')}>{t('CD0111')}</EmptyState>
+    <V2Page bar={{ type: 'home' }} className="flex flex-col items-center justify-center gap-[var(--space-4)] lg:gap-[var(--space-6)]">
+      <EmptyState type="error" titleAs="h1" title={t('CD0113')} className="w-full lg:w-[400px]">{t('CD0111')}</EmptyState>
       <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
         <Button onClick={reset}>{t('CD0110')}</Button>
         <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0112')}</IntlLink>
