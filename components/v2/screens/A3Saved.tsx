@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
@@ -112,6 +112,11 @@ export function SavedScreen() {
   const { toast } = useV2Shell()
   const params = useSearchParams()
   const [tab, setTab] = useState(params?.get('tab') ?? 'places')
+  // The /plan/auto shortcut lands here with select=1: open Plan from Saved.
+  const select = params?.get('select') === '1'
+  useEffect(() => {
+    if (select) router.replace('/saved/plan')
+  }, [select, router])
   const [folderId, setFolderId] = useState<string | null>(null)
   const [sheet, setSheet] = useState<{ mode: 'new' | 'rename'; id?: string; name?: string } | null>(null)
   const [del, setDel] = useState<{ kind: 'folder' | 'plan'; id: string; name: string; count?: number } | null>(null)
@@ -354,13 +359,34 @@ export function PlanFromSavedScreen() {
     if (next.length >= LIMIT) limitToast()
     setPicked(next.slice(0, LIMIT))
   }
+  // Offline: Make plan is disabled (the shell's offline notice says why).
+  const [online, setOnline] = useState(true)
+  useEffect(() => {
+    const on = () => setOnline(navigator.onLine)
+    // Back from the map out of the browser cache: Make plan is ready again.
+    const shown = () => setBusy(false)
+    on()
+    window.addEventListener('online', on)
+    window.addEventListener('offline', on)
+    window.addEventListener('pageshow', shown)
+    return () => {
+      window.removeEventListener('online', on)
+      window.removeEventListener('offline', on)
+      window.removeEventListener('pageshow', shown)
+    }
+  }, [])
   const make = () => {
     setBusy(true)
     const chosen = all.filter((p) => picked.includes(p.poi_id))
-    saveCourseHandoff(
-      chosen.map((p, i) => ({ poi_id: p.poi_id, name_ko: p.name_ko, name_preferred: poiName(p, locale), coords_lat: p.coords_lat, coords_lng: p.coords_lng, display_region: p.display_region, primary_image_url: p.primary_image_url ?? undefined, day: Math.floor(i / PER_DAY) + 1 })),
-    )
-    router.push('/map?from=saved')
+    try {
+      saveCourseHandoff(
+        chosen.map((p, i) => ({ poi_id: p.poi_id, name_ko: p.name_ko, name_preferred: poiName(p, locale), coords_lat: p.coords_lat, coords_lng: p.coords_lng, display_region: p.display_region, primary_image_url: p.primary_image_url ?? undefined, day: Math.floor(i / PER_DAY) + 1 })),
+      )
+      router.push('/map?from=saved')
+    } catch {
+      setBusy(false)
+      toast({ type: 'critical', message: t('CD1202') })
+    }
   }
   // Figma: a full-screen flow. Flow bar (logo, close), Pick places header, folder rows
   // (folder icon, "2 of 3 selected", select all) and place rows (48 photo, area) with the checkbox
@@ -421,7 +447,7 @@ export function PlanFromSavedScreen() {
         <div className="mx-auto flex max-w-[calc(640px+var(--space-8))] items-center justify-between gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-4)]">
           <span aria-live="polite" className="sr-only">{picked.length === all.length && all.length ? t('CD1587', { n: all.length }) : t('CD1586', { n: picked.length, m: Math.min(all.length, LIMIT) })}</span>
           <Button variant="secondary" className="max-lg:hidden" onClick={() => router.back()}>{k('saved.folder.cancel')}</Button>
-          <Button disabled={!picked.length} loading={busy} onClick={make} className="max-lg:w-full">{t('CD1588', { n: picked.length })}</Button>
+          <Button disabled={!picked.length || !online} loading={busy} onClick={make} className="max-lg:w-full">{t('CD1588', { n: picked.length })}</Button>
         </div>
       </div>
     </V2Page>
