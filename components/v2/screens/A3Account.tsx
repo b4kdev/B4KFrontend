@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
 import useSWR, { mutate as mutateKey } from 'swr'
+import useSWRInfinite from 'swr/infinite'
 import { Award, Bell, Bookmark, Calendar, Map as MapIcon, Pencil, Share2, Sparkles, Star, Trophy, Zap, User } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
@@ -461,23 +462,44 @@ export function LeaderboardScreen() {
 
 const NOTIF_ICON: Record<string, React.ReactNode> = { badge_earned: <Award />, event_drop: <Calendar />, editorial_pick: <Sparkles />, deal_expiring: <Bell />, challenge_new: <Trophy />, promotion: <Bookmark /> }
 
+const NOTIF_PAGE = 20
+
 export function NotificationsScreen() {
   const k = useCdKey()
   const t = useCd()
   const locale = useLocale()
   const { user } = useAuth()
-  const { data, error, isLoading, mutate } = useSWR<NotificationsData>(user ? '/api/notifications' : null, jsonFetch)
-  const [shown, setShown] = useState(20)
+  const { toast } = useV2Shell()
+  // Load more pages the server list, 20 at a time; the last page is the one with fewer than 20.
+  const pages = useSWRInfinite<NotificationsData>(
+    (i, prev: NotificationsData | null) => (!user || (prev && prev.notifications.length < NOTIF_PAGE) ? null : `/api/notifications?limit=${NOTIF_PAGE}&offset=${i * NOTIF_PAGE}`),
+    jsonFetch,
+  )
+  const { error, isLoading, mutate, setSize } = pages
+  const data = pages.data ? { notifications: pages.data.flatMap((p) => p.notifications), unread_count: pages.data[0]?.unread_count ?? 0 } : undefined
+  const more = !!pages.data && (pages.data[pages.data.length - 1]?.notifications.length ?? 0) >= NOTIF_PAGE
+  // Mark read and Mark all read show at once and roll back with an error toast if the server says no.
+  const markRead = async (id: string | null) => {
+    const before = pages.data
+    mutate(before?.map((p) => ({ unread_count: id ? Math.max(0, p.unread_count - 1) : 0, notifications: p.notifications.map((n) => (!id || n.id === id ? { ...n, is_read: true } : n)) })), { revalidate: false })
+    try {
+      await (id ? send(`/api/notifications/${id}`, 'PATCH', { is_read: true }) : send('/api/notifications/mark-all-read', 'POST'))
+    } catch {
+      mutate(before, { revalidate: false })
+      toast({ type: 'critical', message: t('CD0061') })
+    }
+    mutateKey(UNREAD_KEY)
+  }
   const groups = useMemo(() => {
     const today = new Date().toDateString()
     const y = new Date(Date.now() - 864e5).toDateString()
     const g: Record<'today' | 'yesterday' | 'earlier', Notification[]> = { today: [], yesterday: [], earlier: [] }
-    for (const n of (data?.notifications ?? []).filter((n) => GAMIFICATION || (n.type !== 'badge_earned' && n.type !== 'challenge_new')).slice(0, shown)) {
+    for (const n of (pages.data ?? []).flatMap((p) => p.notifications).filter((n) => GAMIFICATION || (n.type !== 'badge_earned' && n.type !== 'challenge_new'))) {
       const d = new Date(n.created_at).toDateString()
       g[d === today ? 'today' : d === y ? 'yesterday' : 'earlier'].push(n)
     }
     return g
-  }, [data, shown])
+  }, [pages.data])
   // Figma "2h ago", "1d ago": relative time in the reader's language, no Copy Deck text needed.
   const time = (iso: string) => {
     const rtf = new Intl.RelativeTimeFormat(locale, { style: 'narrow', numeric: 'always' })
@@ -491,7 +513,7 @@ export function NotificationsScreen() {
           caps day labels, Load more at the start; Nothing yet is a plain empty state. */}
       <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col gap-[var(--space-4)]">
         <h1 className="type-display-h3 max-lg:hidden">{k('notifications.title')}</h1>
-        {data?.unread_count ? <Button variant="ghost" size="md" className="self-end" onClick={async () => { await send('/api/notifications/mark-all-read', 'POST').catch(() => {}); mutate(); mutateKey(UNREAD_KEY) }}>{k('notifications.markAllRead')}</Button> : null}
+        {data?.unread_count ? <Button variant="ghost" size="md" className="self-end" onClick={() => markRead(null)}>{k('notifications.markAllRead')}</Button> : null}
         {isLoading ? <Skeleton className="h-[240px]" /> : null}
         {error ? <EmptyState type="error" container="bordered" title={k('notifications.error.title')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{k('notifications.error.retry')}</Button>} /> : null}
         {data && !data.notifications.length ? <EmptyState icon={<Bell />} title={t('CD1595')} className="flex-1">{t('CD1596')}</EmptyState> : null}
@@ -511,7 +533,7 @@ export function NotificationsScreen() {
                     unreadLabel={k('notifications.unread', { count: 1 })}
                     href={n.deep_link_url ? `${n.deep_link_url}` : '/notifications'}
                     renderLink={({ href, className, children }) => (
-                      <IntlLink href={href} className={className} onClick={() => !n.is_read && send(`/api/notifications/${n.id}`, 'PATCH', { is_read: true }).then(() => mutate()).catch(() => {})}>{children}</IntlLink>
+                      <IntlLink href={href} className={className} onClick={() => !n.is_read && markRead(n.id)}>{children}</IntlLink>
                     )}
                   />
                 ))}
@@ -519,7 +541,7 @@ export function NotificationsScreen() {
             </section>
           ) : null,
         )}
-        {data && data.notifications.length > shown ? <Button variant="secondary" size="md" className="self-start" onClick={() => setShown((s) => s + 20)}>{k('notifications.loadMore')}</Button> : null}
+        {more ? <Button variant="secondary" size="md" className="self-start" loading={pages.isValidating && pages.size > (pages.data?.length ?? 0)} onClick={() => setSize((n) => n + 1)}>{k('notifications.loadMore')}</Button> : null}
       </div>
     </V2Page>
   )
