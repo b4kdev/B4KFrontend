@@ -45,7 +45,8 @@ import { CATEGORIES, jsonFetch, RowState, SectionSkeletons } from './A2Home'
 
 const CAT_KEY: Record<string, string> = { 'k-pop': 'kpop', 'k-drama': 'kdrama', 'k-beauty': 'kbeauty', 'k-culture': 'kculture', 'k-food': 'kfood' }
 // Collection types (lib/collections) → their Copy Deck chip labels (Explore collections).
-const COLLECTION_TYPE: Record<string, string> = { ROUTE: 'CD1336', FAN_THEME: 'CD1337', STORY: 'CD1338', CHALLENGE: 'CD1339' }
+// Chips All, Route, Fandom, Story; a type with no text gets no chip (its collections stay under All).
+const COLLECTION_TYPE: Record<string, string> = { ROUTE: 'CD1336', FAN_THEME: 'CD1337', STORY: 'CD1338' }
 const poiName = (p: { name_ko: string; name_en?: string | null }, locale: string) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
 
 // Rows that open their special page instead of the generic See all list (as on the live site),
@@ -176,7 +177,7 @@ export function CategoryScreen({ category }: { category: string }) {
       }}
     />
   )
-  const colTypes = useMemo(() => Array.from(new Set((cols.data?.items ?? []).map((c) => c.primaryType).filter(Boolean))) as string[], [cols.data])
+  const colTypes = useMemo(() => Array.from(new Set((cols.data?.items ?? []).map((c) => c.primaryType).filter((c): c is string => !!c && c in COLLECTION_TYPE))), [cols.data])
   if (isLoading) {
     // As drawn: the hero block, then two loading sections (cards 260 wide on desktop).
     return (
@@ -226,13 +227,13 @@ export function CategoryScreen({ category }: { category: string }) {
           <div id="collections" className="scroll-mt-[var(--space-6)]">
           <ExploreCollections
             title={t('CD0162')}
-            filters={[{ id: 'all', label: t('CD1267') }, ...colTypes.map((c) => ({ id: c, label: COLLECTION_TYPE[c] ? t(COLLECTION_TYPE[c]) : c }))]}
+            filters={[{ id: 'all', label: t('CD1267') }, ...colTypes.map((c) => ({ id: c, label: t(COLLECTION_TYPE[c]) }))]}
             active={colType}
             onFilter={setColType}
             cards={cols.data.items
               .filter((c) => colType === 'all' || c.primaryType === colType)
               .slice(0, 8)
-              .map((c) => <Card key={c.slug} type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta={c.primaryType ?? ''} />)}
+              .map((c) => <Card key={c.slug} type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta={c.primaryType && COLLECTION_TYPE[c.primaryType] ? t(COLLECTION_TYPE[c.primaryType]) : ''} />)}
           />
           </div>
         ) : null}
