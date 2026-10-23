@@ -10,6 +10,7 @@ export interface ProfileTrip {
   save_count: number
   thumbnail_url: string | null
   stop_count: number
+  day_count: number
   created_at: string
 }
 
@@ -22,6 +23,7 @@ interface BffMyItinerary {
   save_count: number
   cover_image_url: string | null
   total_places: number
+  total_days: number
   created_at: string
 }
 
@@ -39,6 +41,7 @@ export async function GET() {
       save_count: i.save_count,
       thumbnail_url: i.cover_image_url,
       stop_count: i.total_places,
+      day_count: i.total_days,
       created_at: i.created_at,
     }))
     return NextResponse.json(trips)
