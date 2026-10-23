@@ -46,6 +46,8 @@ export interface MyPlan {
   duration_days: number
   cover_image_url: string | null
   is_draft: boolean
+  /** Published plan visible to others (the itinerary header's is_public). */
+  is_public: boolean
   likes_count: number
   saves_count: number
   updated_at: string
@@ -110,6 +112,7 @@ interface BffMyItinerary {
   itinerary_id: number
   title: string | null
   status: 'draft' | 'confirmed'
+  is_public?: boolean
   total_days: number
   total_places: number
   like_count: number
@@ -203,6 +206,7 @@ export async function GET() {
         duration_days:   p.total_days,
         cover_image_url: p.cover_image_url,
         is_draft:        p.status === 'draft',
+        is_public:       p.is_public ?? false,
         likes_count:     p.like_count,
         saves_count:     p.save_count,
         updated_at:      p.updated_at,
