@@ -209,7 +209,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
       </div>
       {/* Toasts as drawn: above the Navigation bar on phones; desktop 24 from the right edge and 24 under the
           Header. A timed toast has no close button in the design: it leaves on its own after 4 s. */}
-      <div aria-live="polite" className={cn('pointer-events-none fixed inset-x-0 bottom-[calc(var(--fab-size)+var(--space-4))] z-50 flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-auto lg:left-auto lg:right-[var(--space-6)] lg:top-[calc(var(--layout-header-height)+var(--space-6))] lg:items-end lg:px-0', !online && 'max-lg:bottom-[calc(var(--fab-size)+var(--space-20))]')}>
+      <div aria-live="polite" className={cn('pointer-events-none fixed inset-x-0 bottom-[calc(var(--fab-size)+var(--space-4))] z-[60] flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-auto lg:left-auto lg:right-[var(--space-6)] lg:top-[calc(var(--layout-header-height)+var(--space-6))] lg:items-end lg:px-0', !online && 'max-lg:bottom-[calc(var(--fab-size)+var(--space-20))]')}>
         {toastMsg ? (
           <Toast
             type={toastMsg.type}
