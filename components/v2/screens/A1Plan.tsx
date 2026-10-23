@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from 'react'
 import { useLocale } from 'next-intl'
-import { useSWRConfig } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 import { Bookmark, Heart, Share2, Trash2 } from 'lucide-react'
 import { useRouter } from '@/i18n/navigation'
 import {
@@ -25,8 +25,10 @@ import { usePhone } from '@/components/library/hooks'
 import { useAuth } from '@/contexts/AuthContext'
 import { useItinerary, useItineraryMeta } from '@/hooks/useItinerary'
 import type { MapPoi } from '@/hooks/useMapPois'
+import type { SavedData } from '@/app/api/saved/route'
 import type { ItineraryStop } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
+import { jsonFetch } from './A2Home'
 import { useGap } from '../gaps'
 import { MapLegalLine } from '../map/MapLegalLine'
 import { useV2Shell } from '../V2Shell'
@@ -71,7 +73,10 @@ export function PlanScreen({ id }: { id: string }) {
   const [deleting, setDeleting] = useState(false)
   const [liked, setLiked] = useState<boolean | null>(null)
   const [saved, setSaved] = useState<boolean | null>(null)
-  const [savedRelated, setSavedRelated] = useState<Set<string>>(new Set())
+  // Related plans: saved state from the person's saved plans, with taps applied on top.
+  const savedPlans = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
+  const [relatedTaps, setRelatedTaps] = useState<Map<string, boolean>>(new Map())
+  const isRelatedSaved = (rid: string) => relatedTaps.get(rid) ?? (savedPlans.data?.plans ?? []).some((p) => p.id === rid)
 
   const stops = useMemo(() => [...(it?.stops ?? [])].sort((a, b) => a.stop_order - b.stop_order), [it])
   const dayOf = (s: ItineraryStop) => Math.min(Math.max(s.day ?? 1, 1), 8) as Day
@@ -102,7 +107,7 @@ export function PlanScreen({ id }: { id: string }) {
     send('/api/saved/plan', next ? 'POST' : 'DELETE', { plan_id: id }).then(() => mutate()).catch(() => { setSaved(!next); toast({ type: 'critical', message: t('CD0061') }) })
   }
   usePendingAction('like_plan', !!user, () => like(true))
-  usePendingAction('save_plan', !!user, () => save(true))
+  usePendingAction('save_plan', !!user, (pid) => (pid && pid !== id ? saveRelated(pid, true) : save(true)))
   const share = async () => {
     const url = new URL(it?.share_url ?? window.location.href, window.location.origin)
     url.searchParams.set('ref', 'share')
@@ -155,13 +160,14 @@ export function PlanScreen({ id }: { id: string }) {
     return at
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [it])
-  const saveRelated = (rid: string) => {
-    if (!user) return requireSignIn({ title: t('CD1541'), run: () => {} })
-    const next = !savedRelated.has(rid)
-    setSavedRelated((x) => { const n = new Set(x); if (next) n.add(rid); else n.delete(rid); return n })
+  function saveRelated(rid: string, force?: boolean) {
+    if (!user && !force) return requireSignIn({ title: t('CD1541'), pending: { type: 'save_plan', id: rid }, run: () => saveRelated(rid, true) })
+    const next = force ? true : !isRelatedSaved(rid)
+    const tap = (on: boolean) => setRelatedTaps((x) => new Map(x).set(rid, on))
+    tap(next)
     toast({ type: 'success', message: next ? k('itinerary.actions.savedToast') : k('itinerary.actions.unsavedToast') })
-    send('/api/saved/plan', next ? 'POST' : 'DELETE', { plan_id: rid }).catch(() => {
-      setSavedRelated((x) => { const n = new Set(x); if (next) n.delete(rid); else n.add(rid); return n })
+    send('/api/saved/plan', next ? 'POST' : 'DELETE', { plan_id: rid }).then(() => savedPlans.mutate()).catch(() => {
+      tap(!next)
       toast({ type: 'critical', message: t('CD0061') })
     })
   }
@@ -232,7 +238,7 @@ export function PlanScreen({ id }: { id: string }) {
             <ul className="flex flex-col gap-[var(--space-3)]">
               {it.related.map((r) => (
                 <li key={r.id}>
-                  <Card type="compact" href={`/plan/${r.id}`} title={r.title} imageSrc={r.thumbnail_url} meta={`${k('itinerary.related.stops', { count: r.stop_count })} · ${k('itinerary.related.likes', { count: r.like_count })}`} save={{ saved: savedRelated.has(r.id), onSave: () => saveRelated(r.id), label: k('itinerary.actions.saveAria') }} />
+                  <Card type="compact" href={`/plan/${r.id}`} title={r.title} imageSrc={r.thumbnail_url} meta={`${k('itinerary.related.stops', { count: r.stop_count })} · ${k('itinerary.related.likes', { count: r.like_count })}`} save={{ saved: isRelatedSaved(r.id), onSave: () => saveRelated(r.id), label: k('itinerary.actions.saveAria') }} />
                 </li>
               ))}
             </ul>
