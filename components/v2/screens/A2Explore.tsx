@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
 import useSWR from 'swr'
-import { MapPin } from 'lucide-react'
+import { MapPin, RotateCw } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
   Breadcrumbs,
@@ -313,8 +313,9 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
         <h1 className="type-display-h3">{title}</h1>
         {subtitle ? <p className="type-body-base text-ui-fg-muted">{subtitle}</p> : null}
       </header>
-      {/* Chips on the left; the count and the sort (a dropdown chip over a native select) on the right. */}
-      <div className="flex flex-wrap items-center justify-between gap-[var(--space-3)]">
+      {/* Chips on the left; the count and the sort (a dropdown chip over a native select) on the right.
+          Phones: the first row sits 12 under the top bar. */}
+      <div className="flex flex-wrap items-center justify-between gap-x-[var(--space-3)] gap-y-[var(--space-4)] max-lg:-mt-[var(--space-3)]">
         {fromHome && row === 'trending' ? (
           <div className="flex gap-[var(--space-2)] max-lg:-mx-[var(--grid-gutter-mobile)] max-lg:w-[calc(100%+var(--grid-gutter-mobile)*2)] max-lg:overflow-x-auto max-lg:px-[var(--grid-gutter-mobile)] max-lg:[scrollbar-width:none] lg:flex-wrap">
             <Chip selected={chip === 'all'} onClick={() => setChip('all')}>{t('CD1267')}</Chip>
@@ -322,7 +323,15 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
           </div>
         ) : <span className="max-lg:hidden" />}
         <div className="flex items-center gap-[var(--space-3)] max-lg:w-full max-lg:justify-between">
-          <p aria-live="polite" className="type-body-caption text-ui-fg-muted">{isPlans ? t('CD1302', { count: filtered.length }) : t('CD0160', { count: filtered.length })}</p>
+          {loading ? (
+            <>
+              <Skeleton shape="line" className="h-[14px] w-[72px]" />
+              <Skeleton shape="line" className="h-[var(--control-height-sm)] w-[120px] lg:w-[140px]" />
+            </>
+          ) : (
+          <>
+          {/* No count while the list failed to load. */}
+          {failed ? null : <p aria-live="polite" className="type-body-caption text-ui-fg-muted">{isPlans ? t('CD1302', { count: filtered.length }) : t('CD0160', { count: filtered.length })}</p>}
           <label className="relative">
             <Chip type="dropdown" aria-hidden tabIndex={-1} className="pointer-events-none">{sortLabel}</Chip>
             <select aria-label={t('CD1272')} value={sort} onChange={(e) => setSort(e.target.value)} className="absolute inset-0 cursor-pointer opacity-0">
@@ -330,14 +339,27 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
               <option value="new">{t('CD1405')}</option>
             </select>
           </label>
+          </>
+          )}
         </div>
       </div>
-      {loading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div> : null}
-      {failed ? <EmptyState type="error" container="bordered" title={t('CD1571')} action={<Button size="md" variant="secondary" onClick={() => location.reload()}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
+      {/* Loading cards as drawn: a square photo and two lines. */}
+      {loading ? (
+        <div aria-busy className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">
+          {Array.from({ length: 8 }, (_, i) => (
+            <div key={i} className="flex flex-col gap-[var(--space-2)]">
+              <Skeleton className="aspect-square w-full" />
+              <Skeleton shape="line" className="h-[16px] w-4/5" />
+              <Skeleton shape="line" className="h-[14px] w-1/2" />
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {failed ? <EmptyState type="error" container="plain" title={t('CD1571')} action={<Button size="md" variant="secondary" leadingIcon={<RotateCw />} onClick={() => location.reload()}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
       {!loading && !failed && !filtered.length ? (
         <EmptyState type="no-results" title={GAP.noCategoryTrending(chip === 'all' ? '' : t(CATEGORIES.find((c) => c.slug === chip)?.label ?? 'CD0251'))} action={<Button size="md" variant="secondary" onClick={() => setChip('all')}>{t('CD1433')}</Button>}>{t('CD1570')}</EmptyState>
       ) : null}
-      <ul className="grid grid-cols-2 gap-x-[var(--space-4)] gap-y-[var(--space-6)] lg:grid-cols-4">{filtered.slice(0, shown).map((p) => <li key={p.id}>{p.node}</li>)}</ul>
+      <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">{filtered.slice(0, shown).map((p) => <li key={p.id}>{p.node}</li>)}</ul>
       {filtered.length > shown ? <Button variant="secondary" className="self-center" onClick={() => setShown((s) => s + PAGE)}>{t('CD0836')}</Button> : null}
     </div>
   )
@@ -388,12 +410,12 @@ export function CollectionScreen({ slug }: { slug: string }) {
       {isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div> : null}
       {error ? <EmptyState type="error" container="bordered" title={t('CD1571')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
       {data?.children?.length ? (
-        <ul className="grid grid-cols-2 gap-x-[var(--space-4)] gap-y-[var(--space-6)] lg:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">
           {data.children.map((c) => <li key={c.slug}><Card type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta="" /></li>)}
         </ul>
       ) : null}
       {items.length ? (
-        <ol className="grid grid-cols-2 gap-x-[var(--space-4)] gap-y-[var(--space-6)] lg:grid-cols-4">
+        <ol className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">
           {items.slice(0, shown).map((p) => (
             <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /></li>
           ))}
@@ -452,7 +474,7 @@ export function SpecialScreen({ api, category }: { api: string; category: string
         {data ? <p aria-live="polite" className="type-body-caption text-ui-fg-muted lg:self-end">{t('CD0160', { count: data.items.length })}</p> : null}
         {isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div> : null}
         {error ? <EmptyState type="error" container="bordered" title={t('CD1571')}>{t('CD1572')}</EmptyState> : null}
-        <ul className="grid grid-cols-2 gap-x-[var(--space-4)] gap-y-[var(--space-6)] lg:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">
           {data?.items.map((p) => (
             <li key={p.poi_id}>
               <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={(locale === 'ko' ? p.relationship_ko : p.relationship_en) ?? p.display_region} />
