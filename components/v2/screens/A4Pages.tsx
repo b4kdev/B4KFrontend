@@ -207,8 +207,9 @@ export function SearchScreen() {
             </>
           )}
         </main>
-        <BottomSheet open={sheet} onClose={() => setSheet(false)} label={t('CD1284')}>
-          <SearchFilters viewport="mobile" groups={groups} value={filters} onValueChange={setFilters} sort={sortCfg} labels={{ title: t('CD1284'), clearAll: t('CD1248'), showResults: t('CD1251') }} onShowResults={() => setSheet(false)} />
+        {/* Figma: Search filters is the whole sheet (bg elevated, its own padding) with a Close in its header. */}
+        <BottomSheet open={sheet} onClose={() => setSheet(false)} label={t('CD1284')} flush className="bg-ui-bg-elevated">
+          <SearchFilters viewport="mobile" groups={groups} value={filters} onValueChange={setFilters} sort={sortCfg} labels={{ title: t('CD1284'), clearAll: t('CD1248'), showResults: t('CD1251'), close: t('CD0082') }} onShowResults={() => setSheet(false)} onClose={() => setSheet(false)} />
         </BottomSheet>
       </>
     )
@@ -311,7 +312,7 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
           breadcrumbs={[{ label: t('CD0807'), href: '/' }, { label: cfg.title }]}
           title={cfg.title}
           updated={GAP.lastUpdated(cfg.updated)}
-          contact={<>{t('CD0345')} <a href={`mailto:${cfg.email}`} className="type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover">{cfg.email}</a></>}
+          contact={{ label: t('CD0345'), link: <a href={`mailto:${cfg.email}`} className="type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover">{cfg.email}</a> }}
           sections={cfg.sections.map((s) => ({ id: s.id, title: s.heading.replace(/^\d+\.\s*/, ''), body: s.body }))}
           currentSection={current}
           intro={doc === 'cookies' ? (

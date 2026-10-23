@@ -395,7 +395,8 @@ export type LegalDocumentProps = {
   breadcrumbs: { label: string; href?: string }[]
   title: string
   updated: string
-  contact?: ReactNode
+  /** Meta: the label after the updated date ("Contact") and the address link beside it. */
+  contact?: { label: string; link: ReactNode }
   sections: { id: string; title: string; body: ReactNode }[]
   currentSection?: string
   /** A block under the title and updated line, before the sections (Cookie Policy: the preferences card). */
@@ -412,10 +413,11 @@ export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, 
       <Breadcrumbs label={labels.breadcrumb} items={breadcrumbs} />
       <header className="flex flex-col gap-[var(--space-4)]">
         <h1 className="type-display-h1">{title}</h1>
-        <p className="flex flex-wrap items-baseline gap-[var(--space-1-5)] type-body-caption text-ui-fg-muted">
-          <span>{updated}</span>
-          {contact ? <><span aria-hidden>·</span><span>{contact}</span></> : null}
-        </p>
+        {/* Figma Meta: a wrap row of the caption ("Last updated … · Contact") and the address link, 6 apart. */}
+        <div className="flex flex-wrap items-start gap-x-[var(--space-1-5)]">
+          <p className="type-body-caption text-ui-fg-muted">{updated}{contact ? <> · {contact.label}</> : null}</p>
+          {contact?.link}
+        </div>
       </header>
       {intro}
       {viewport === 'mobile' ? (
@@ -441,7 +443,7 @@ export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, 
         <ol className="flex flex-col gap-[var(--space-3)]">
           {sections.map((s, i) => (
             <li key={s.id}>
-              <a href={`#${s.id}`} aria-current={currentSection === s.id ? 'location' : undefined} className={cn('hover:text-ui-fg', (currentSection ?? sections[0]?.id) === s.id ? 'type-body-label text-ui-fg' : 'type-body-base text-ui-fg-muted')}>{i + 1}. {s.title}</a>
+              <a href={`#${s.id}`} aria-current={currentSection === s.id ? 'location' : undefined} className={cn('block hover:text-ui-fg', (currentSection ?? sections[0]?.id) === s.id ? 'type-body-label text-ui-fg' : 'type-body-base text-ui-fg-muted')}>{i + 1}. {s.title}</a>
             </li>
           ))}
         </ol>
