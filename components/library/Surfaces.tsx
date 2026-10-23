@@ -157,6 +157,8 @@ export type BottomSheetProps = {
   heights?: Partial<Record<SheetSnap, string>>
   /** Header shown at peek (map sheets). */
   header?: ReactNode
+  /** Map sheets: a control 12 above the sheet's top edge, left aligned at 16; it follows the sheet as it moves (Plan pill). */
+  above?: ReactNode
   /** Modal: stacked actions under the content (Figma: primary, secondary, optional third Ghost). */
   actions?: ReactNode
   /** Modal: the content draws its own padding and gaps (Search filters is drawn as the whole sheet). */
@@ -169,7 +171,7 @@ const SNAP_VH: Record<SheetSnap, string> = { peek: '76px', mid: '50dvh', full: '
 const ORDER: SheetSnap[] = ['peek', 'mid', 'full']
 
 /** Bottom sheet: radius/3xl top, bg-raised, grabber 32 by 4; map sheets drag between snaps. */
-export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', heights, header, actions, flush, children, className }: BottomSheetProps) {
+export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', heights, header, above, actions, flush, children, className }: BottomSheetProps) {
   const modal = type === 'modal'
   const ref = useFocusTrap<HTMLDivElement>(open && modal, onClose)
   const [drag, setDrag] = useState<number | null>(null)
@@ -193,6 +195,7 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
         className={cn(SHEET, 'outline-none', !modal && 'z-40 transition-[height] duration-medium2 ease-emphasized-decelerate motion-reduce:transition-none', className)}
         style={!modal ? { height: drag !== null ? `calc(${heights?.[snap] ?? SNAP_VH[snap]} + ${drag}px)` : heights?.[snap] ?? SNAP_VH[snap], maxHeight: '85dvh' } : undefined}
       >
+        {!modal && above ? <div className="absolute bottom-[calc(100%+var(--space-3))] left-[var(--space-4)]">{above}</div> : null}
         <div
           className="flex shrink-0 touch-none justify-center py-[var(--space-2)]"
           onPointerDown={(e) => {

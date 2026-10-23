@@ -218,6 +218,17 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   }, [detail?.poi_id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const order = draft.plan.stops
+  // Phones: once the plan has stops the browse sheet drops to peek, the Plan pill 12 above it; dragging
+  // the sheet up brings the list back. A place open in the sheet stays until it is closed.
+  const hasStops = order.length > 0
+  const dropped = useRef(false)
+  useEffect(() => {
+    if (!hasStops) dropped.current = false
+    else if (phone && !selectedId && !dropped.current) {
+      dropped.current = true
+      setSnap('peek')
+    }
+  }, [hasStops, phone, selectedId])
   const planStops = order.map((poi) => ({ poi, day: draft.dayOf(poi.poi_id), order: order.filter((p) => draft.dayOf(p.poi_id) === draft.dayOf(poi.poi_id)).indexOf(poi) + 1 }))
   // The plan's stops and route show on the map only while the plan is open (desktop: the Plan
   // cart opened from the bottom of the Left panel; phones: the plan sheet).
@@ -557,11 +568,6 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           <div className="px-[var(--space-4)]">{chips}</div>
           {searchArea ? <div className="mt-[var(--space-4)]">{searchArea}</div> : null}
         </div>
-        {order.length ? (
-          <div className="absolute bottom-[calc(76px+var(--fab-size)+env(safe-area-inset-bottom)+var(--space-3))] left-[var(--space-4)] z-30">
-            <PlanPill label={`${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })}`} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} />
-          </div>
-        ) : null}
         {/* The open plan dims the map and the bar above it, as drawn; a tap there closes it. */}
         {planSheet ? <Scrim onClick={() => setPlanSheet(false)} className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] z-30" /> : null}
         <BottomSheet
@@ -574,6 +580,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           resizeLabel={k('itinerary.sheet.handle')}
           heights={planSheet ? { full: '70dvh' } : undefined}
           header={selectedId || planSheet ? undefined : <div className="pt-[var(--space-4)]">{switcher}</div>}
+          above={order.length && !planSheet ? <PlanPill label={`${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })}`} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /> : undefined}
           className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0"
         >
           {planSheet ? <div className="-mx-[var(--space-4)] -mb-[var(--space-6)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div> : content}
