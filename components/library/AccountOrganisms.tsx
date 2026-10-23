@@ -165,7 +165,8 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
         : view === 'sign-up' ? labels.signUpBody
           : view === 'forgot' ? labels.forgotBody
             : view === 'new-password' ? labels.newPasswordBody
-              : undefined
+              : view === 'check-email' ? labels.checkEmailBody(email)
+                : undefined
   const emailField = labels.emailField ?? labels.email
   return (
     <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg">
@@ -208,10 +209,7 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
         // Figma New password card with its fields hidden: the title and subtitle say why, one button asks again.
         <Button onClick={() => onSubmit('link-expired', values)} loading={busy} className="w-full">{labels.sendLink}</Button>
       ) : view === 'check-email' ? (
-        <div className="flex flex-col gap-[var(--space-4)]">
-          <p className="type-body-base text-ui-fg-muted">{labels.checkEmailBody(email)}</p>
-          <Button variant="secondary" onClick={() => onSubmit('forgot', values)} loading={busy} className="w-full">{labels.resend}</Button>
-        </div>
+        <Button variant="secondary" onClick={() => onSubmit('forgot', values)} loading={busy} className="w-full">{labels.resend}</Button>
       ) : (
         <form noValidate onSubmit={submit} className="flex flex-col gap-[var(--space-4)]">
           <TextInput label={labels.newPassword} showLabel type="password" autoComplete="new-password" required placeholder={labels.newPasswordPlaceholder} value={values.password ?? ''} onChange={set('password')} />
