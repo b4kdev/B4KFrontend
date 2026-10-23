@@ -6,6 +6,7 @@ import useSWR, { mutate as mutateKey } from 'swr'
 import { Award, Bell, Bookmark, Calendar, Map as MapIcon, Pencil, Share2, Sparkles, Star, Trophy, Zap, User } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
+  buttonVariants,
   AchievementBadge,
   Avatar,
   Button,
@@ -29,6 +30,7 @@ import {
   Toggle,
 } from '@/components/library'
 import { usePhone } from '@/components/library/hooks'
+import { cn } from '@/lib/cn'
 import { useAuth } from '@/contexts/AuthContext'
 import { getThemeChoice, setTheme, type ThemeChoice } from '@/lib/theme'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
@@ -103,7 +105,8 @@ export function ProfileOwnScreen() {
               ...(GAMIFICATION ? [{ number: p.badges_count, label: k('profile.header.badgesLabel') }] : []),
             ]}
             badges={GAMIFICATION && p.pinned_badges.length ? p.pinned_badges.map((b) => <AchievementBadge key={b.id} name={badgeName(b)} detail={k(`badges.rarity.${b.rarity}`)} icon={<Trophy />} rarity={b.rarity} />) : undefined}
-            action={<IntlLink href="/settings" className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover"><Pencil aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1515')}</IntlLink>}
+            // Figma: a small outlined button, full width on phones.
+            action={<IntlLink href="/settings" className={cn(buttonVariants({ variant: 'secondary', size: 'sm' }), 'max-lg:w-full')}><Pencil aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1515')}</IntlLink>}
           /></div>
         ) : profile.error ? (
           <EmptyState type="error" container="bordered" title={k('profile.header.errorTitle')} action={<Button size="md" variant="secondary" onClick={() => profile.mutate()}>{k('profile.header.errorRetry')}</Button>} />
@@ -113,7 +116,7 @@ export function ProfileOwnScreen() {
         {plans?.length ? (
           <section aria-labelledby="profile-plans" className="flex flex-col gap-[var(--space-6)] lg:px-[var(--space-6)]">
             <SectionHeader id="profile-plans" title={t('CD1300')} subtitle={GAP.profilePlansNote} seeAll={{ href: '/saved?tab=my-plans', label: t('CD1309') }} />
-            <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">
+            <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-3 lg:gap-[var(--space-4)]">
               {plans.slice(0, phone ? 2 : 3).map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} imageSrc={tr.thumbnail_url} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} /></li>)}
             </ul>
             <IntlLink href="/saved?tab=my-plans" className="inline-flex h-[var(--control-height-md)] items-center self-start px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover">{GAP.openSaved}</IntlLink>
@@ -124,7 +127,7 @@ export function ProfileOwnScreen() {
         {badges.data ? (
           <RowSection
             title={k('badges.title')}
-            subtitle={t('CD1590', { n: badges.data.earned_count })}
+            subtitle={t('CD1590', { earned: badges.data.earned_count, total: badges.data.total_count })}
             seeAll={{ href: '/badges', label: t('CD1309') }}
             cards={badges.data.badges.map((b) => <BadgeTile key={b.id} b={b} />)}
           />
@@ -198,8 +201,8 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
         {trips.data?.length ? (
           <section aria-labelledby="visitor-plans" className="flex flex-col gap-[var(--space-6)] lg:px-[var(--space-6)]">
             <SectionHeader id="visitor-plans" title={t('CD1300')} />
-            <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">
-              {trips.data.map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} /></li>)}
+            <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-3 lg:gap-[var(--space-4)]">
+              {trips.data.map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} author={p?.name ?? ''} saves={String(tr.save_count)} stops={`${k('saved.plan.stops', { count: tr.stop_count })} · ${k('saved.plan.days', { count: tr.day_count })}`} /></li>)}
             </ul>
           </section>
         ) : null}
@@ -230,7 +233,7 @@ export function BadgesScreen() {
       <div className="flex flex-col gap-[var(--space-6)]">
         <header className="flex flex-col gap-[var(--space-2)]">
           <h1 className="type-display-h1 max-lg:hidden">{k('badges.title')}</h1>
-          <p className="type-body-base text-ui-fg-muted">{user ? t('CD1590', { n: data?.earned_count ?? 0 }) : t('CD1591')}</p>
+          <p className="type-body-base text-ui-fg-muted">{user ? t('CD1590', { earned: data?.earned_count ?? 0, total: data?.total_count ?? 0 }) : t('CD1591')}</p>
         </header>
         <div role="group" aria-label={k('badges.filter.ariaLabel')} className="flex flex-wrap gap-[var(--space-2)]">
           {['all', 'common', 'rare', 'epic', 'legendary'].map((r) => <Chip key={r} selected={rarity === r} onClick={() => setRarity(r)}>{k(`badges.filter.${r}`)}</Chip>)}
@@ -344,7 +347,7 @@ export function NotificationsScreen() {
   }
   if (!user) return <V2Page bar={{ type: 'page', title: k('notifications.title') }}><SignedOutPrompt title={k('notifications.title')} text={t('CD1596')} /></V2Page>
   return (
-    <V2Page bar={{ type: 'page', title: k('notifications.title') }} className="flex flex-col">
+    <V2Page bar={{ type: 'page', title: k('notifications.title') }} className="flex flex-col max-lg:py-[var(--space-4)] lg:pb-[var(--space-8)]">
       {/* Figma: 720 column, section-header title, Mark all read on its own row at the end,
           caps day labels, Load more at the start; Nothing yet is a plain empty state. */}
       <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col gap-[var(--space-4)]">
