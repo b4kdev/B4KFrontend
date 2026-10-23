@@ -302,15 +302,16 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
     return () => io.disconnect()
   }, [cfg.sections])
   return (
-    // Figma legal pages: a 1200 wide content area (narrower than the 1344 list pages), 72 from the top.
-    <V2Page bar={{ type: 'page', title: cfg.title }} className="lg:max-w-[1200px] lg:pt-[calc(var(--space-10)+var(--space-8))]">
+    // Figma legal pages: a 1200 wide content area (narrower than the 1344 list pages), 72 from the top;
+    // on phones the document adds 32 above and below the page's 24.
+    <V2Page bar={{ type: 'page', title: cfg.title }} className="max-lg:py-[calc(var(--space-6)+var(--space-8))] lg:max-w-[1200px] lg:pt-[calc(var(--space-10)+var(--space-8))]">
       <div className="flex flex-col gap-[var(--space-8)]">
         <LegalDocument
           viewport={phone ? 'mobile' : 'desktop'}
           breadcrumbs={[{ label: t('CD0807'), href: '/' }, { label: cfg.title }]}
           title={cfg.title}
           updated={GAP.lastUpdated(cfg.updated)}
-          contact={<>{t('CD0345')} <a href={`mailto:${cfg.email}`} className="underline underline-offset-2">{cfg.email}</a></>}
+          contact={<>{t('CD0345')} <a href={`mailto:${cfg.email}`} className="type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover">{cfg.email}</a></>}
           sections={cfg.sections.map((s) => ({ id: s.id, title: s.heading.replace(/^\d+\.\s*/, ''), body: s.body }))}
           currentSection={current}
           intro={doc === 'cookies' ? (
