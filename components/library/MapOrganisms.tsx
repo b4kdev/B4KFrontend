@@ -420,7 +420,8 @@ export type PlaceDetailProps = {
   onSave: () => void
   onLike: () => void
   onShare: () => void
-  labels: { add: string; save: string; like: string; share: string }
+  /** noPhoto: the muted line a place without a photo shows under its meta (no photo area). */
+  labels: { add: string; save: string; like: string; share: string; noPhoto?: string }
 }
 
 /** Place detail: photo, name (display/h2), meta, actions (Add to plan, Save, Like, Share), details. */
@@ -428,11 +429,12 @@ export function PlaceDetail({ viewport, name, meta, imageSrc, imageAlt, descript
   const ICON = { hours: Clock, address: MapPin, website: Globe } as const
   return (
     <section aria-label={name} className="flex flex-col gap-[var(--space-4)] py-[var(--space-4)] text-ui-fg">
-      <Image ratio={viewport === 'desktop' ? '4:3' : '16:9'} src={imageSrc} alt={imageAlt ?? ''} sizes="420px" />
+      {imageSrc ? <Image ratio={viewport === 'desktop' ? '4:3' : '16:9'} src={imageSrc} alt={imageAlt ?? ''} sizes="420px" /> : null}
       <div className="flex flex-col gap-[var(--space-2)] px-[var(--space-4)]">
         {sponsored ? <Badge variant="normal" className="self-start">{sponsored}</Badge> : null}
         <h2 className="type-display-h2">{name}</h2>
         <p className="type-body-base text-ui-fg-muted">{meta}</p>
+        {!imageSrc && labels.noPhoto ? <p className="type-body-caption text-ui-fg-muted">{labels.noPhoto}</p> : null}
       </div>
       <div className="flex items-center gap-[var(--space-2)] px-[var(--space-4)]">
         <Button size="md" onClick={onAdd} className="flex-1">{labels.add}</Button>

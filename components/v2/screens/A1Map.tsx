@@ -351,7 +351,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           if (navigator.share) navigator.share({ title: detailName, url }).catch(() => {})
           else navigator.clipboard?.writeText(url).then(() => toast({ type: 'success', message: k('itinerary.copiedToast') }), () => {})
         }}
-        labels={{ add: k('map.poiDetail.addToPlan'), save: k('map.poiDetail.save'), like: k('map.poiDetail.like'), share: k('map.poiDetail.share') }}
+        labels={{ add: k('map.poiDetail.addToPlan'), save: k('map.poiDetail.save'), like: k('map.poiDetail.like'), share: k('map.poiDetail.share'), noPhoto: t('CD1678') }}
       />
     </div>
   ) : selectedId && placeMissing ? (
