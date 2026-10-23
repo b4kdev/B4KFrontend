@@ -302,9 +302,11 @@ export function SavedScreen() {
             variant="danger"
             onClick={async () => {
               if (!del) return
-              await (del.kind === 'folder' ? send(`/api/folders/${del.id}`, 'DELETE') : send(`/api/profile/trips?id=${del.id}`, 'DELETE')).catch(() => {})
+              // A failed delete says so and keeps the list or plan open; plans: CD-0508, lists: the general error.
+              const ok = await (del.kind === 'folder' ? send(`/api/folders/${del.id}`, 'DELETE') : send(`/api/profile/trips?id=${del.id}`, 'DELETE')).then(() => true, () => false)
+              if (!ok) toast({ type: 'critical', message: del.kind === 'folder' ? t('CD0061') : t('CD0508') })
               setDel(null)
-              setFolderId(null)
+              if (ok) setFolderId(null)
               mutate()
             }}
           >
