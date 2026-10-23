@@ -32,11 +32,13 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import { saveCourseHandoff } from '@/lib/quickplan'
 import type { SavedData, SavedPoi } from '@/app/api/saved/route'
+import { GAMIFICATION } from '@/lib/features'
 import { useCd, useCdKey } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 import { usePlaceActions } from '../usePlaceActions'
 import { jsonFetch } from './A2Home'
+import { LeaderboardTab } from './A3Account'
 
 // Saved and Plan from saved places.
 // Live /api/saved, /api/folders, /api/plans, /api/profile/trips.
@@ -121,7 +123,10 @@ export function SavedScreen() {
     { id: 'places', label: t('CD1238') },
     { id: 'my-plans', label: t('CD1237') },
     { id: 'saved-plans', label: t('CD1239') },
+    // Leaderboard: the fourth tab, behind the gamification switch.
+    ...(GAMIFICATION ? [{ id: 'leaderboard', label: t('CD1645') }] : []),
   ]
+  const board = GAMIFICATION && tab === 'leaderboard'
   // Figma: Saved is a top-level destination (phone bar with Menu and search), title as a
   // section header on every width, then Tabs, then the Places toolbar (New list, Plan from Saved).
   const head = <h1 className="type-display-h3">{k('saved.title')}</h1>
@@ -144,7 +149,7 @@ export function SavedScreen() {
         <div className="flex flex-1 flex-col gap-[var(--space-4)]">
           {head}
           <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={setTab} tabs={tabs} className="self-start" />
-          <SignedOutPrompt title={t('CD1577')} text={t('CD1581')} icon={<Bookmark />} plain className="flex-1" />
+          {board ? <LeaderboardTab /> : <SignedOutPrompt title={t('CD1577')} text={t('CD1581')} icon={<Bookmark />} plain className="flex-1" />}
         </div>
       </V2Page>
     )
@@ -264,9 +269,10 @@ export function SavedScreen() {
           </>
         )}
         {tab === 'places' && !folder ? toolbar : null}
-        {isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4 lg:gap-[var(--space-4)]">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-0 pb-[calc(75%+var(--space-16)+var(--space-1))]" />)}</div> : null}
-        {error ? <EmptyState type="error" container="bordered" title={k('saved.error.title')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{k('saved.error.retry')}</Button>} /> : null}
-        {data ? (tab === 'places' ? placesView : tab === 'my-plans' ? myPlans : savedPlans) : null}
+        {board ? <LeaderboardTab /> : null}
+        {board ? null : isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4 lg:gap-[var(--space-4)]">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-0 pb-[calc(75%+var(--space-16)+var(--space-1))]" />)}</div> : null}
+        {error && !board ? <EmptyState type="error" container="bordered" title={k('saved.error.title')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{k('saved.error.retry')}</Button>} /> : null}
+        {data && !board ? (tab === 'places' ? placesView : tab === 'my-plans' ? myPlans : savedPlans) : null}
       </div>
       <FolderNameSheet
         key={sheet ? `${sheet.mode}-${sheet.id ?? 'new'}` : 'closed'}
@@ -409,7 +415,7 @@ export function PlanFromSavedScreen() {
           {loose.length ? group(k('saved.tabs.places'), loose) : null}
         </div>
       </div>
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-ui-border bg-ui-bg-raised pb-[env(safe-area-inset-bottom)]">
+      <div data-toast-floor className="fixed inset-x-0 bottom-0 z-30 border-t border-ui-border bg-ui-bg-raised pb-[env(safe-area-inset-bottom)]">
         <div className="mx-auto flex max-w-[calc(640px+var(--space-8))] items-center justify-between gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-4)]">
           <span aria-live="polite" className="sr-only">{picked.length === all.length && all.length ? t('CD1587', { n: all.length }) : t('CD1586', { n: picked.length, m: Math.min(all.length, LIMIT) })}</span>
           <Button variant="secondary" className="max-lg:hidden" onClick={() => router.back()}>{k('saved.folder.cancel')}</Button>

@@ -11,7 +11,6 @@ import {
   Avatar,
   Button,
   Card,
-  Chip,
   Dialog,
   EmptyState,
   IconButton,
@@ -30,6 +29,7 @@ import {
   Toggle,
 } from '@/components/library'
 import { usePhone } from '@/components/library/hooks'
+import { FOCUS_RING } from '@/components/library/styles'
 import { cn } from '@/lib/cn'
 import { useAuth } from '@/contexts/AuthContext'
 import { getThemeChoice, setTheme, type ThemeChoice } from '@/lib/theme'
@@ -39,6 +39,8 @@ import type { ProfileData } from '@/app/api/profile/route'
 import type { ProfileTrip } from '@/app/api/profile/trips/route'
 import type { Badge as BadgeT, BadgesData } from '@/app/api/badges/route'
 import type { LeaderboardData, LeaderboardWindow } from '@/app/api/leaderboard/route'
+import type { HomePopularPlan } from '@/app/api/home/popular-plans/route'
+import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 import type { Notification, NotificationsData } from '@/app/api/notifications/route'
 import type { NotificationPref } from '@/app/api/account/notification-prefs/route'
 import type { OtherUserTrip } from '@/app/api/profile/[id]/trips/route'
@@ -49,6 +51,7 @@ import { apiFetch } from '@/lib/api'
 import { V2Page } from '../V2Page'
 import { UNREAD_KEY, useV2Shell, useV2SignOut } from '../V2Shell'
 import { LANGUAGES, LanguageRowMenu } from '../V2Settings'
+import { usePlaceActions } from '../usePlaceActions'
 import { jsonFetch } from './A2Home'
 import { SignedOutPrompt } from './A3Saved'
 
@@ -216,36 +219,73 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
 
 // ── Badges ─────────────────────────────────────────────────────────
 
+// Badges come in two drawn groups: places you save (Exploring Korea) and what others do with your
+// plans (Making plans). Locked badges say how to earn them; the server has no progress counts yet.
+const PLAN_BADGES = new Set(['creator', 'social'])
+// Category names and their Explore pages for the "Find … places" action.
+const BADGE_CATEGORY: Record<string, { cd: string; slug: string }> = {
+  kpop: { cd: 'CD0254', slug: 'k-pop' }, kdrama: { cd: 'CD0248', slug: 'k-drama' }, kbeauty: { cd: 'CD0242', slug: 'k-beauty' },
+  kculture: { cd: 'CD0245', slug: 'k-culture' }, food: { cd: 'CD0251', slug: 'k-food' },
+}
+// How to earn, from the Copy Deck where it has the badge; else the server's description.
+const BADGE_HOW_CD: Record<string, string> = { 'first-save': 'CD1658', 'map-maker': 'CD1659', 'k-pop-pilgrim': 'CD1660' }
+
 export function BadgesScreen() {
   const badgeName = useBadgeName()
   const k = useCdKey()
   const t = useCd()
   const locale = useLocale()
+  const router = useRouter()
+  const phone = usePhone()
   const { user } = useAuth()
   const { toast } = useV2Shell()
   const { data, error, isLoading, mutate } = useSWR<BadgesData>('/api/badges', jsonFetch)
-  const [rarity, setRarity] = useState('all')
   const [open, setOpen] = useState<BadgeT | null>(null)
-  const list = (data?.badges ?? []).filter((b) => rarity === 'all' || b.rarity === rarity)
-  const pinned = (data?.badges ?? []).filter((b) => b.is_pinned).length
+  const badges = data?.badges ?? []
+  const pinned = badges.filter((b) => b.is_pinned).length
+  const day = (iso: string) => new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(new Date(iso))
+  const how = (b: BadgeT) => (BADGE_HOW_CD[b.slug] ? t(BADGE_HOW_CD[b.slug]) : b.unlock_criteria.description)
+  const groups = [
+    { id: 'exploring', title: t('CD1663'), sub: 'CD1664', list: badges.filter((b) => !PLAN_BADGES.has(b.category)) },
+    { id: 'plans', title: t('CD1665'), sub: 'CD1666', list: badges.filter((b) => PLAN_BADGES.has(b.category)) },
+  ]
+  const category = (b: BadgeT) => (BADGE_CATEGORY[b.category] ? t(BADGE_CATEGORY[b.category].cd) : groups.find((g) => g.list.includes(b))?.title ?? '')
+  const find = open && !open.earned ? BADGE_CATEGORY[open.category] : undefined
   return (
-    <V2Page bar={{ type: 'page', title: k('badges.title') }}>
-      <div className="flex flex-col gap-[var(--space-6)]">
-        <header className="flex flex-col gap-[var(--space-2)]">
-          <h1 className="type-display-h1 max-lg:hidden">{k('badges.title')}</h1>
+    // Figma: 16 above and below on phones; 24 above and 32 below on desktop.
+    <V2Page bar={{ type: 'page', title: k('badges.title') }} className="max-lg:py-[var(--space-4)] lg:pb-[var(--space-8)]">
+      <div className="mx-auto flex w-full max-w-[960px] flex-col gap-[var(--space-6)]">
+        {/* Desktop only: phones carry the title in the top bar and draw no count line. */}
+        <header className="flex flex-col gap-[var(--space-1)] max-lg:hidden">
+          <h1 className="type-display-h3">{k('badges.title')}</h1>
           <p className="type-body-base text-ui-fg-muted">{user ? t('CD1590', { earned: data?.earned_count ?? 0, total: data?.total_count ?? 0 }) : t('CD1591')}</p>
         </header>
-        <div role="group" aria-label={k('badges.filter.ariaLabel')} className="flex flex-wrap gap-[var(--space-2)]">
-          {['all', 'common', 'rare', 'epic', 'legendary'].map((r) => <Chip key={r} selected={rarity === r} onClick={() => setRarity(r)}>{k(`badges.filter.${r}`)}</Chip>)}
-        </div>
         {isLoading ? <Skeleton className="h-[240px]" /> : null}
         {error ? <EmptyState type="error" container="bordered" title={k('badges.error.title')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{k('badges.error.retry')}</Button>} /> : null}
-        <ul className="grid grid-cols-3 gap-[var(--space-4)] sm:grid-cols-4 lg:grid-cols-6">
-          {list.map((b) => <li key={b.id} className="flex items-start justify-center"><BadgeTile b={b} onOpen={() => setOpen(b)} /></li>)}
-        </ul>
+        {groups.map((g) => g.list.length ? (
+          <section key={g.id} aria-labelledby={`badges-${g.id}`} className="flex flex-col gap-[var(--space-6)]">
+            <SectionHeader id={`badges-${g.id}`} title={g.title} subtitle={user ? t(g.sub, { earned: g.list.filter((b) => b.earned).length, total: g.list.length }) : undefined} />
+            <ul className="flex flex-wrap gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-6)]">
+              {g.list.map((b) => (
+                <li key={b.id}>
+                  <button type="button" onClick={() => setOpen(b)} className={cn('flex rounded-xl text-left', FOCUS_RING)}>
+                    <AchievementBadge name={badgeName(b)} detail={b.earned && b.earned_at ? k('badges.badge.earnedOn', { date: day(b.earned_at) }) : how(b)} icon={<Trophy />} rarity={b.rarity} locked={!b.earned} lockedLabel={k('badges.badge.locked')} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null)}
       </div>
-      <Modal open={!!open} onClose={() => setOpen(null)} size="sm" title={open ? badgeName(open) : ''} closeLabel={k('badges.detail.close')}
-        primaryAction={open?.earned ? (
+      <Dialog
+        open={!!open}
+        onCancel={() => setOpen(null)}
+        title={open ? badgeName(open) : ''}
+        body={open ? (open.earned && open.earned_at
+          ? t('CD1671', { category: category(open), rarity: k(`badges.rarity.${open.rarity}`), date: day(open.earned_at) })
+          : `${category(open)} · ${k(`badges.rarity.${open.rarity}`)} · ${k('badges.badge.locked')}. ${how(open)}`) : ''}
+        cancel={<Button variant="secondary" data-autofocus onClick={() => setOpen(null)}>{phone ? k('saved.folder.cancel') : k('badges.detail.close')}</Button>}
+        confirm={open?.earned ? (
           <Button
             onClick={async () => {
               if (!open) return
@@ -257,62 +297,161 @@ export function BadgesScreen() {
           >
             {open.is_pinned ? k('badges.detail.unpin') : k('badges.detail.pin')}
           </Button>
+        ) : find ? (
+          <Button onClick={() => router.push(`/explore/${find.slug}`)}>{t('CD1673', { category: t(find.cd) })}</Button>
         ) : undefined}
-      >
-        {open ? (
-          <div className="flex flex-col items-center gap-[var(--space-4)] pb-[var(--space-2)]">
-            <AchievementBadge name={badgeName(open)} detail={k(`badges.rarity.${open.rarity}`)} icon={BADGE_ICON(open.category)} rarity={open.rarity} locked={!open.earned} />
-            <dl className="grid w-full grid-cols-2 gap-[var(--space-2)] type-body-caption">
-              <dt className="text-ui-fg-muted">{k('badges.detail.category')}</dt><dd>{open.category}</dd>
-              <dt className="text-ui-fg-muted">{k('badges.detail.status')}</dt>
-              <dd>{open.earned && open.earned_at ? k('badges.detail.earnedOn', { date: new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(open.earned_at)) }) : k('badges.badge.locked')}</dd>
-              <dt className="text-ui-fg-muted">{k('badges.detail.unlockCriteria')}</dt><dd>{open.unlock_criteria.description}</dd>
-            </dl>
-          </div>
-        ) : null}
-      </Modal>
+      />
     </V2Page>
   )
 }
 
 // ── Leaderboard ────────────────────────────────────────────────────
 
+// Popular planners rows: position, avatar, name, saves and likes (no trophies, score or arrows).
+// The server does not send saves and likes per planner yet, so the line shows only when it does.
+type PlannerEntry = LeaderboardData['entries'][number] & { saves?: number; likes?: number }
+
+function PlannerRows({ data, limit }: { data: LeaderboardData; limit?: number }) {
+  const k = useCdKey()
+  const t = useCd()
+  const { user } = useAuth()
+  const profile = useSWR<ProfileData>(user ? '/api/profile' : null, jsonFetch)
+  const line = (e: { saves?: number; likes?: number }) => (e.saves != null && e.likes != null ? t('CD1652', { saves: e.saves, likes: e.likes }) : undefined)
+  const own = data.your_rank as (LeaderboardData['your_rank'] & { saves?: number; likes?: number }) | null
+  return (
+    <ol className="w-full lg:max-w-[720px]">
+      {(data.entries as PlannerEntry[]).slice(0, limit).map((e) => (
+        <LeaderboardRow
+          key={e.user.id}
+          rank={e.rank}
+          rankLabel={k('leaderboard.rank', { rank: e.rank })}
+          name={e.user.name}
+          avatarSrc={e.user.avatar_url}
+          detail={line(e)}
+          score=""
+          href={`/profile/${e.user.id}`}
+          renderLink={({ href, className, children }) => <IntlLink href={href} className={className}>{children}</IntlLink>}
+        />
+      ))}
+      {user && own ? <LeaderboardRow rank={own.rank} rankLabel={k('leaderboard.yourRank.ariaLabel', { rank: own.rank })} name={profile.data?.name ?? ''} avatarSrc={profile.data?.avatar_url} you={t('CD1592')} detail={line(own)} score="" /> : null}
+    </ol>
+  )
+}
+
+function PlannersEmpty({ className }: { className?: string }) {
+  const k = useCdKey()
+  const t = useCd()
+  return (
+    <EmptyState container="plain" icon={<Trophy />} className={className} title={k('leaderboard.empty.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{t('CD1594')}</IntlLink>}>{t('CD1593')}</EmptyState>
+  )
+}
+
+const PERIODS = ['weekly', 'rising', 'annual'] as const
+
+// The weekly board runs Monday to Sunday: "Oct 13 to 19", or "Oct 27 to Nov 2" across months.
+function weekRange(locale: string, now = new Date()) {
+  const start = new Date(now)
+  start.setDate(now.getDate() - ((now.getDay() + 6) % 7))
+  const end = new Date(start)
+  end.setDate(start.getDate() + 6)
+  const md = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' })
+  return { start: md.format(start), end: start.getMonth() === end.getMonth() ? new Intl.DateTimeFormat(locale, { day: 'numeric' }).format(end) : md.format(end) }
+}
+
+/** Saved, fourth tab (behind the gamification switch): period, trending plans and places, popular planners, your badges. */
+export function LeaderboardTab() {
+  const k = useCdKey()
+  const t = useCd()
+  const locale = useLocale()
+  const router = useRouter()
+  const badgeName = useBadgeName()
+  const { user } = useAuth()
+  const { requireSignIn } = useV2Shell()
+  const [win, setWin] = useState<LeaderboardWindow>('weekly')
+  const board = useSWR<LeaderboardData>(`/api/leaderboard?window=${win}`, jsonFetch)
+  const plans = useSWR<HomePopularPlan[]>('/api/home/popular-plans', jsonFetch)
+  const places = useSWR<HomeTrendingPoi[]>('/api/home/trending', jsonFetch)
+  const badges = useSWR<BadgesData>(user ? '/api/badges' : null, jsonFetch)
+  const act = usePlaceActions({ resume: true })
+  const placeName = (p: HomeTrendingPoi) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
+  const range = weekRange(locale)
+  const arrows = { previous: t('CD0390'), next: t('CD0389') }
+  const day = (iso: string) => new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(new Date(iso))
+  // Next up: earned badges first, then the locked ones to work on, six in all.
+  const next = [...(badges.data?.badges ?? [])].sort((a, b) => Number(b.earned) - Number(a.earned) || (b.earned_at ?? '').localeCompare(a.earned_at ?? '')).slice(0, 6)
+  // Figma: each section 24 above and below; 16 apart on desktop, end to end on phones.
+  const section = 'flex flex-col gap-[var(--space-4)] py-[var(--space-6)] max-lg:-mt-[var(--space-4)]'
+  return (
+    <>
+      <SegmentedControl label={k('leaderboard.windows.ariaLabel')} options={PERIODS.map((w) => ({ id: w, label: k(`leaderboard.windows.${w}`) }))} value={win} onValueChange={(v) => setWin(v as LeaderboardWindow)} className="w-full lg:w-[320px]" />
+      {win === 'weekly' ? <SectionHeader title={t('CD1646')} subtitle={t('CD1647', range)} /> : <SectionHeader title={k(`leaderboard.windows.${win}`)} />}
+      {plans.data?.length ? (
+        <RowSection
+          className={section}
+          arrowLabels={arrows}
+          title={t('CD1648')}
+          seeAll={{ href: '/explore/popular-plans', label: t('CD1309') }}
+          cards={plans.data.map((p) => <Card key={p.id} type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD0473', { n: p.stop_count })} />)}
+        />
+      ) : null}
+      {places.data?.length ? (
+        <RowSection
+          className={section}
+          arrowLabels={arrows}
+          title={t('CD1649')}
+          seeAll={{ href: '/explore/trending', label: t('CD1309') }}
+          cards={places.data.map((p) => <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, placeName(p))} title={placeName(p)} imageSrc={p.primary_image_url} meta={p.display_region} />)}
+        />
+      ) : null}
+      <section aria-labelledby="lb-planners" className={section}>
+        <SectionHeader id="lb-planners" title={t('CD1650')} subtitle={t('CD1651')} seeAll={board.data?.entries.length ? { href: '/leaderboard', label: t('CD1309') } : undefined} />
+        {board.isLoading ? <Skeleton className="h-[200px] lg:max-w-[720px]" /> : null}
+        {board.error ? <EmptyState type="error" container="bordered" title={k('leaderboard.error.title')} action={<Button size="md" variant="secondary" onClick={() => board.mutate()}>{k('leaderboard.error.retry')}</Button>} /> : null}
+        {board.data ? (board.data.entries.length ? <PlannerRows data={board.data} limit={3} /> : <PlannersEmpty />) : null}
+      </section>
+      <section aria-labelledby="lb-badges" className={section}>
+        <SectionHeader
+          id="lb-badges"
+          title={t('CD1653')}
+          subtitle={user ? t('CD1667', { earned: badges.data?.earned_count ?? 0, total: badges.data?.total_count ?? 0 }) : t('CD1654')}
+          seeAll={user ? { href: '/badges', label: t('CD1309') } : undefined}
+        />
+        {user ? (
+          <ul className="-mx-[var(--grid-gutter-mobile)] flex gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:gap-[var(--space-6)] lg:px-0">
+            {/* relative: keeps the locked tiles' screen-reader label inside the scrolling track. */}
+            {next.map((b) => (
+              <li key={b.id} className="relative shrink-0">
+                <button type="button" onClick={() => router.push('/badges')} className={cn('flex rounded-xl text-left', FOCUS_RING)}>
+                  <AchievementBadge name={badgeName(b)} detail={b.earned && b.earned_at ? k('badges.badge.earnedOn', { date: day(b.earned_at) }) : b.unlock_criteria.description} icon={<Trophy />} rarity={b.rarity} locked={!b.earned} lockedLabel={k('badges.badge.locked')} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <EmptyState container="plain" icon={<Bookmark />} title={t('CD1591')} action={<Button size="md" onClick={() => requireSignIn({ title: t('CD1591'), run: () => {} })}>{t('CD0050')}</Button>}>{t('CD1655')}</EmptyState>
+        )}
+      </section>
+    </>
+  )
+}
+
+/** Popular planners See all: the whole board for a period, with your own row. */
 export function LeaderboardScreen() {
   const k = useCdKey()
   const t = useCd()
+  const phone = usePhone()
   const [win, setWin] = useState<LeaderboardWindow>('weekly')
-  const { user } = useAuth()
   const { data, error, isLoading, mutate } = useSWR<LeaderboardData>(`/api/leaderboard?window=${win}`, jsonFetch)
-  const trend = (tr: string) => (tr === 'same' ? undefined : { direction: tr as 'up' | 'down', label: k(`leaderboard.trend.${tr}`) })
   return (
-    <V2Page bar={{ type: 'page', title: k('leaderboard.title') }}>
-      <div className="mx-auto flex w-full max-w-[720px] flex-col gap-[var(--space-6)]">
-        <h1 className="type-display-h1 max-lg:hidden">{k('leaderboard.title')}</h1>
-        <Tabs label={k('leaderboard.windows.ariaLabel')} width="equal" value={win} onValueChange={(v) => setWin(v as LeaderboardWindow)} tabs={(['weekly', 'rising', 'annual'] as const).map((w) => ({ id: w, label: k(`leaderboard.windows.${w}`) }))} />
+    // Figma: 16 above on phones; 24 above and 32 below on desktop.
+    // An empty board fills the page, the empty state centred in it.
+    <V2Page bar={{ type: 'page', title: t('CD1650') }} className="flex flex-col max-lg:py-[var(--space-4)] lg:pb-[var(--space-8)]">
+      <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col gap-[var(--space-4)]">
+        <SectionHeader title={t('CD1650')} subtitle={t('CD1651')} className="max-lg:hidden" />
+        <Tabs label={k('leaderboard.windows.ariaLabel')} width={phone ? 'equal' : 'hug'} value={win} onValueChange={(v) => setWin(v as LeaderboardWindow)} tabs={PERIODS.map((w) => ({ id: w, label: k(`leaderboard.windows.${w}`) }))} className="lg:max-w-[480px]" />
         {isLoading ? <Skeleton className="h-[320px]" /> : null}
         {error ? <EmptyState type="error" container="bordered" title={k('leaderboard.error.title')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{k('leaderboard.error.retry')}</Button>} /> : null}
-        {data && !data.entries.length ? (
-          <EmptyState container="bordered" title={k('leaderboard.empty.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{t('CD1594')}</IntlLink>}>{t('CD1593')}</EmptyState>
-        ) : null}
-        <ol className="border-t border-ui-border">
-          {data?.entries.map((e) => (
-            <LeaderboardRow
-              key={e.user.id}
-              rank={e.rank}
-              rankLabel={k('leaderboard.rank', { rank: e.rank })}
-              name={e.user.name}
-              avatarSrc={e.user.avatar_url}
-              detail={`${k('leaderboard.plans', { count: e.plans_count })} · ${k('profile.header.badgesCountAria', { count: e.badge_count })}`}
-              score={`${e.score.toLocaleString()} ${k('leaderboard.scoreUnit')}`}
-              trend={trend(e.trend)}
-              href={`/profile/${e.user.id}`}
-              renderLink={({ href, className, children }) => <IntlLink href={href} className={className}>{children}</IntlLink>}
-            />
-          ))}
-          {user && data?.your_rank ? (
-            <LeaderboardRow rank={data.your_rank.rank} rankLabel={k('leaderboard.yourRank.ariaLabel', { rank: data.your_rank.rank })} name="" you={t('CD1592')} score={`${data.your_rank.score.toLocaleString()} ${k('leaderboard.scoreUnit')}`} trend={trend(data.your_rank.trend)} />
-          ) : null}
-        </ol>
+        {data ? (data.entries.length ? <PlannerRows data={data} /> : <PlannersEmpty className="flex-1 justify-center" />) : null}
       </div>
     </V2Page>
   )
