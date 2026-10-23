@@ -42,11 +42,14 @@ export type DropdownMenuProps = {
   className?: string
   /** Wrapper around trigger and menu, e.g. w-full for a list row trigger. */
   rootClassName?: string
+  /** Placed against the viewport under the trigger, for a trigger inside a scrolling list (the list would clip it). */
+  fixed?: boolean
 }
 
 /** Dropdown menu: role menu of Menu items; arrow keys move, Enter selects. */
-export function DropdownMenu({ trigger, label, children, align = 'start', className, rootClassName }: DropdownMenuProps) {
+export function DropdownMenu({ trigger, label, children, align = 'start', className, rootClassName, fixed }: DropdownMenuProps) {
   const [open, setOpen] = useState(false)
+  const [at, setAt] = useState<{ top: number; left?: number; right?: number } | null>(null)
   const root = useRef<HTMLDivElement>(null)
   const menu = useRef<HTMLDivElement>(null)
   const id = useId()
@@ -70,7 +73,14 @@ export function DropdownMenu({ trigger, label, children, align = 'start', classN
         'aria-haspopup': 'menu',
         'aria-expanded': open,
         'aria-controls': open ? id : undefined,
-        onClick: () => setOpen((o) => !o),
+        onClick: (e: React.MouseEvent<HTMLElement>) => {
+          if (fixed) {
+            // Measured on the wrapper, so rootClassName can move the menu's edge off the trigger.
+            const r = (root.current ?? e.currentTarget).getBoundingClientRect()
+            setAt(align === 'end' ? { top: r.bottom, right: window.innerWidth - r.right } : { top: r.bottom, left: r.left })
+          }
+          setOpen((o) => !o)
+        },
       })}
       {open ? (
         <div
@@ -80,6 +90,7 @@ export function DropdownMenu({ trigger, label, children, align = 'start', classN
           aria-label={label}
           onKeyDown={onKey}
           onClick={(e) => (e.target as HTMLElement).closest('[role^=menuitem]') && setOpen(false)}
+          style={fixed && at ? { position: 'fixed', top: at.top, left: at.left, right: at.right } : undefined}
           className={cn(SURFACE, 'top-full min-w-[240px] py-[var(--space-1)]', align === 'end' ? 'right-0' : 'left-0', className)}
         >
           {children}

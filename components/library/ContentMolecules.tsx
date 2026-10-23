@@ -7,6 +7,7 @@ import { cn } from '@/lib/cn'
 import { ImageAction } from './Content'
 import { DragHandle, StopBadge, type DragHandleProps } from './Plan'
 import { IconButton } from './IconButton'
+import { DropdownMenu } from './Overlay'
 import { Image } from './Image'
 import { Spinner } from './Spinner'
 
@@ -167,7 +168,9 @@ export type PlanStopRowProps = {
   /** Time at the place, e.g. "1h". The button opens the duration menu. */
   duration: string
   durationLabel: string
-  onDuration: () => void
+  onDuration?: () => void
+  /** Figma Duration menu: the Menu items, shown in a dropdown under the button. */
+  durationMenu?: ReactNode
   onRemove: () => void
   removeLabel: string
   reorderLabel: string
@@ -185,7 +188,20 @@ export type PlanStopRowProps = {
 }
 
 /** Plan stop row: grip, Stop badge sm, optional thumbnail, name, Duration button, Remove. */
-export function PlanStopRow({ name, number, day, duration, durationLabel, onDuration, onRemove, removeLabel, reorderLabel, dragging, stopId, handleProps, onSelect, thumbnail, className }: PlanStopRowProps) {
+export function PlanStopRow({ name, number, day, duration, durationLabel, onDuration, durationMenu, onRemove, removeLabel, reorderLabel, dragging, stopId, handleProps, onSelect, thumbnail, className }: PlanStopRowProps) {
+  const durationButton = (
+    <button
+      type="button"
+      aria-label={durationLabel}
+      aria-haspopup="menu"
+      onClick={onDuration}
+      className="relative inline-flex h-[var(--control-height-sm)] items-center gap-[var(--space-1)] type-body-label text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"
+    >
+      <Clock aria-hidden className="size-[var(--icon-size-xs)] text-ui-fg-muted" />
+      {duration}
+      <ChevronDown aria-hidden className="size-[var(--icon-size-xs)] text-ui-fg-muted" />
+    </button>
+  )
   return (
     <li data-stop-id={stopId} className={cn('group flex h-[var(--control-height-md)] items-center gap-[var(--space-2)]', dragging && 'bg-ui-state-dragged', className)}>
       <DragHandle label={reorderLabel} {...handleProps} className="touch-none" />
@@ -196,17 +212,14 @@ export function PlanStopRow({ name, number, day, duration, durationLabel, onDura
       ) : (
         <span className="min-w-0 flex-1 truncate type-body-base text-ui-fg">{name}</span>
       )}
-      <button
-        type="button"
-        aria-label={durationLabel}
-        aria-haspopup="menu"
-        onClick={onDuration}
-        className="relative inline-flex h-[var(--control-height-sm)] items-center gap-[var(--space-1)] type-body-label text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"
-      >
-        <Clock aria-hidden className="size-[var(--icon-size-xs)] text-ui-fg-muted" />
-        {duration}
-        <ChevronDown aria-hidden className="size-[var(--icon-size-xs)] text-ui-fg-muted" />
-      </button>
+      {durationMenu ? (
+        // Figma: the menu ends where the Remove button starts (8 right of the duration button).
+        <DropdownMenu fixed align="end" label={durationLabel} trigger={durationButton} rootClassName="-mr-[var(--space-2)] pr-[var(--space-2)]">
+          {durationMenu}
+        </DropdownMenu>
+      ) : (
+        durationButton
+      )}
       <IconButton label={removeLabel} icon={<X />} onClick={onRemove} />
     </li>
   )

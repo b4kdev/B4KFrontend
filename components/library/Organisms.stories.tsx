@@ -146,7 +146,7 @@ export const SectionsAndSurfaces: Story = {
           <Button variant="secondary" onClick={() => setDialog(true)}>Open dialog</Button>
         </div>
         <Modal open={modal} onClose={() => setModal(false)} title="Save plan" closeLabel="Close" primaryAction={<Button onClick={() => setModal(false)}>Save</Button>} secondaryAction={<Button variant="ghost" onClick={() => setModal(false)}>Cancel</Button>}>Give your plan a name.</Modal>
-        <Dialog open={dialog} onCancel={() => setDialog(false)} title="Delete K-drama spots?" body="The folder and its 8 saved places leave Saved." confirm={<Button variant="danger" onClick={() => setDialog(false)}>Delete</Button>} cancel={<Button variant="ghost" data-autofocus onClick={() => setDialog(false)}>Cancel</Button>} />
+        <Dialog open={dialog} onCancel={() => setDialog(false)} title="Delete K-drama spots?" body="The folder and its 8 saved places leave Saved." confirm={<Button variant="danger" onClick={() => setDialog(false)}>Delete</Button>} cancel={<Button variant="secondary" data-autofocus onClick={() => setDialog(false)}>Cancel</Button>} />
       </div>
     )
   },

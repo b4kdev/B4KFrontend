@@ -103,7 +103,9 @@ export type PlanCartProps = {
   lastAddedMeta?: string
   /** Day total for the open day, e.g. "Day 1 · about 4 h". */
   dayTotal?: string
-  onDuration: (id: string) => void
+  onDuration?: (id: string) => void
+  /** The duration menu's items for a stop (a dropdown under its duration). */
+  durationMenu?: (id: string) => ReactNode
   onRemove: (id: string) => void
   /** Tap a stop's name: select it (the map shows it). */
   onSelect?: (id: string) => void
@@ -135,7 +137,7 @@ export type PlanCartProps = {
 }
 
 /** Plan cart: the plan as a shopping cart at the bottom of the Left panel. */
-export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, onRemove, onSelect, onMove, onSave, onDiscard, labels, className }: PlanCartProps) {
+export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, durationMenu, onRemove, onSelect, onMove, onSave, onDiscard, labels, className }: PlanCartProps) {
   const id = useId()
   const [dragId, setDragId] = useState<string | null>(null)
   // Grip handlers: arrow keys swap with the next stop of the same day; a pointer drag (mouse or
@@ -226,8 +228,10 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
             {stops.length ? null : <li className="list-none type-body-base text-ui-fg-muted">{labels.emptyBody}</li>}
             {shown.map((s, i) => (
               <li key={s.id} className="list-none">
+                {/* All days: each day's stops under its label, numbered from 1 in that day (Figma Day label). */}
+                {activeDay === 'all' && shown[i - 1]?.day !== s.day ? <p className="type-eyebrow-category uppercase text-ui-fg-muted">{labels.day(s.day)}</p> : null}
                 <ul>
-                  <PlanStopRow name={s.name} thumbnail={s.imageSrc} number={stops.indexOf(s) + 1} day={s.day} duration={s.duration} durationLabel={s.durationLabel} onDuration={() => onDuration(s.id)} onRemove={() => onRemove(s.id)} removeLabel={labels.remove(s.name)} reorderLabel={labels.reorder(s.name)} stopId={s.id} handleProps={handleProps(s)} dragging={dragId === s.id} onSelect={onSelect ? () => onSelect(s.id) : undefined} />
+                  <PlanStopRow name={s.name} thumbnail={s.imageSrc} number={stops.filter((x) => x.day === s.day).indexOf(s) + 1} day={s.day} duration={s.duration} durationLabel={s.durationLabel} onDuration={onDuration ? () => onDuration(s.id) : undefined} durationMenu={durationMenu?.(s.id)} onRemove={() => onRemove(s.id)} removeLabel={labels.remove(s.name)} reorderLabel={labels.reorder(s.name)} stopId={s.id} handleProps={handleProps(s)} dragging={dragId === s.id} onSelect={onSelect ? () => onSelect(s.id) : undefined} />
                 </ul>
                 {s.leg && i < shown.length - 1 ? <div className="ml-[56px]"><TransportMode mode="estimate" modeLabel={labels.about} time={s.leg} /></div> : null}
               </li>
