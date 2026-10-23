@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, Suspense, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, Suspense, useContext, useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
 import { useLocale } from 'next-intl'
@@ -68,6 +68,39 @@ function activeFrom(path: string): Destination | null {
   return null
 }
 
+/** Height covered at the bottom of the screen by the highest part marked data-toast-floor, or null. */
+function useToastFloor() {
+  const [floor, setFloor] = useState<number | null>(null)
+  useEffect(() => {
+    let frame = 0
+    const measure = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        const tops = Array.from(document.querySelectorAll('[data-toast-floor]')).map((e) => e.getBoundingClientRect().top)
+        setFloor(tops.length ? Math.max(0, Math.round(window.innerHeight - Math.min(...tops))) : null)
+      })
+    }
+    // Height changes (snaps, drags, the sheet's height transition) and parts coming and going.
+    const sizes = new ResizeObserver(measure)
+    const watch = () => {
+      sizes.disconnect()
+      document.querySelectorAll('[data-toast-floor]').forEach((e) => sizes.observe(e))
+      measure()
+    }
+    const parts = new MutationObserver(watch)
+    parts.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-toast-floor'] })
+    window.addEventListener('resize', measure)
+    watch()
+    return () => {
+      cancelAnimationFrame(frame)
+      sizes.disconnect()
+      parts.disconnect()
+      window.removeEventListener('resize', measure)
+    }
+  }, [])
+  return floor
+}
+
 export default function V2Shell({ children }: { children: ReactNode }) {
   const t = useCd()
   const locale = useLocale()
@@ -102,6 +135,11 @@ export default function V2Shell({ children }: { children: ReactNode }) {
       window.removeEventListener('offline', on)
     }
   }, [])
+  // Phones: a toast sits 12 above whatever is at the bottom. Parts marked data-toast-floor (the map
+  // sheet as it moves, a full-screen flow's action bar) report their top edge; without one it is the
+  // Navigation bar, or the screen's bottom edge in a flow without the bar.
+  const floor = useToastFloor()
+
   useEffect(() => {
     if (!toastMsg || toastMsg.type === 'critical') return
     const id = setTimeout(() => setToastMsg(null), 4000)
@@ -131,6 +169,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const inFlow = ['login', 'auth', 'consent'].includes(v2Area(pathname))
   // Full-screen flows draw their own Flow bar (logo and close) instead of the Header and rails.
   const fullFlow = /\/saved\/plan\/?$/.test(pathname)
+  const toastFloor = floor !== null ? `${floor}px` : inFlow || fullFlow ? 'env(safe-area-inset-bottom)' : 'calc(var(--fab-size) + env(safe-area-inset-bottom))'
   // The live consent (DEC-16): updates GA4 consent mode and lets Analytics load Clarity.
   const choose = (v: 'accepted' | 'declined') => {
     try {
@@ -205,12 +244,13 @@ export default function V2Shell({ children }: { children: ReactNode }) {
       ) : null}
       {/* Offline notice: bottom center on every screen (above the Navigation bar on phones), as drawn. Desktop:
           centred on the content beside the rail, and on the map beside the left panel. */}
-      <div aria-live="polite" className={cn('pointer-events-none fixed inset-x-0 bottom-[calc(var(--fab-size)+var(--space-4))] z-50 flex justify-center px-[var(--space-4)] lg:bottom-[var(--space-6)] lg:px-0', fullFlow ? null : onMap ? 'lg:pl-[calc(var(--layout-nav-rail)+var(--layout-left-panel))]' : 'lg:pl-[var(--layout-nav-rail)]')}>
+      <div aria-live="polite" style={{ '--toast-floor': toastFloor } as CSSProperties} className={cn('pointer-events-none fixed inset-x-0 bottom-[calc(var(--toast-floor)+var(--space-3))] z-50 flex justify-center px-[var(--space-4)] lg:bottom-[var(--space-6)] lg:px-0', fullFlow ? null : onMap ? 'lg:pl-[calc(var(--layout-nav-rail)+var(--layout-left-panel))]' : 'lg:pl-[var(--layout-nav-rail)]')}>
         {!online ? <Toast type="warning" message={onMap ? t('CD0120') : t('CD0119')} className="pointer-events-auto" /> : null}
       </div>
-      {/* Toasts as drawn: above the Navigation bar on phones; desktop 24 from the right edge and 24 under the
-          Header. A timed toast has no close button in the design: it leaves on its own after 4 s. */}
-      <div aria-live="polite" className={cn('pointer-events-none fixed inset-x-0 bottom-[calc(var(--fab-size)+var(--space-4))] z-[60] flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-auto lg:left-auto lg:right-[var(--space-6)] lg:top-[calc(var(--layout-header-height)+var(--space-6))] lg:items-end lg:px-0', !online && 'max-lg:bottom-[calc(var(--fab-size)+var(--space-20))]')}>
+      {/* Toasts: on phones 12 above whatever is at the bottom (above the offline notice while offline);
+          desktop 24 from the right edge and 24 under the Header. A timed toast has no close button in the
+          design: it leaves on its own after 4 s. */}
+      <div aria-live="polite" style={{ '--toast-floor': toastFloor } as CSSProperties} className={cn('pointer-events-none fixed inset-x-0 bottom-[calc(var(--toast-floor)+var(--space-3))] z-[60] flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-auto lg:left-auto lg:right-[var(--space-6)] lg:top-[calc(var(--layout-header-height)+var(--space-6))] lg:items-end lg:px-0', !online && 'max-lg:bottom-[calc(var(--toast-floor)+var(--space-3)+var(--space-16))]')}>
         {toastMsg ? (
           <Toast
             type={toastMsg.type}

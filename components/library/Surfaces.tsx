@@ -192,6 +192,8 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
         aria-modal={modal || undefined}
         aria-label={label}
         tabIndex={-1}
+        // Map sheets: toasts sit 12 above the sheet's top edge as it moves (V2Shell).
+        data-toast-floor={!modal || undefined}
         className={cn(SHEET, 'outline-none', !modal && 'z-40 transition-[height] duration-medium2 ease-emphasized-decelerate motion-reduce:transition-none', className)}
         style={!modal ? { height: drag !== null ? `calc(${heights?.[snap] ?? SNAP_VH[snap]} + ${drag}px)` : heights?.[snap] ?? SNAP_VH[snap], maxHeight: '85dvh' } : undefined}
       >
