@@ -465,8 +465,8 @@ export function SettingsScreen() {
   const langName = LANGUAGES.find((l) => l.code === locale)?.name ?? locale
 
   return (
-    // Figma: 16 above the content on phones, 32 on desktop.
-    <V2Page bar={{ type: 'page', title: k('nav.settings') }} className="pt-[var(--space-4)] lg:pt-[var(--space-8)]">
+    // Figma: 16 above the content on phones, 24 on desktop.
+    <V2Page bar={{ type: 'page', title: k('nav.settings') }} className="pt-[var(--space-4)] lg:pt-[var(--space-6)]">
       <div className="mx-auto flex w-full max-w-[720px] flex-col gap-[var(--space-4)]">
         <h1 className="type-display-h3 max-lg:hidden">{k('nav.settings')}</h1>
         {/* Signed out: every group stays; account rows and toggles are disabled. */}
@@ -498,7 +498,7 @@ export function SettingsScreen() {
           {phone ? (
             <ListItem title={t('CD1283')} trailing={themeOptions.find((o) => o.id === theme)?.label} onClick={() => setThemeSheet(true)} />
           ) : (
-            <ListItem title={t('CD1283')} trailing={<SegmentedControl label={t('CD1283')} options={themeOptions} value={theme} onValueChange={(v) => chooseTheme(v as ThemeChoice)} className="w-[360px]" />} />
+            <ListItem title={t('CD1283')} trailing={<SegmentedControl label={t('CD1283')} options={themeOptions} value={theme} onValueChange={(v) => chooseTheme(v as ThemeChoice)} className="w-[320px]" />} />
           )}
           <ListItem title={t('CD1599')} secondary={picked ? GAP.interestsPicked(picked) : undefined} chevron disabled={!user} onClick={() => router.push('/?interests=1')} />
         </ul>
