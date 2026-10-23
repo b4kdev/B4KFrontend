@@ -214,7 +214,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   }, [draft.plan.stops]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (detail) mapRef.current?.panTo(detail.coords_lat, detail.coords_lng)
+    // Phones: the place opens in the sheet at mid (half the screen), so centre it in the map above.
+    if (detail) mapRef.current?.focus(detail.coords_lat, detail.coords_lng, phone ? Math.round(window.innerHeight / 2) : 0)
   }, [detail?.poi_id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const order = draft.plan.stops

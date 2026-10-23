@@ -17,7 +17,14 @@ import { TOKEN_HEX } from '@/tokens/colors'
 // Zoom buttons are the library Zoom control (outside), so the SDK controls are off.
 
 export type PlanStopOnMap = { poi: MapPoi; day: number; order: number }
-export type V2MapHandle = { zoomIn: () => void; zoomOut: () => void; panTo: (lat: number, lng: number) => void; fitTo: (points: { lat: number; lng: number }[]) => void }
+export type V2MapHandle = {
+  zoomIn: () => void
+  zoomOut: () => void
+  panTo: (lat: number, lng: number) => void
+  /** A picked place: zoom 16 or closer, centred in the map left visible above `bottom` px (a phone sheet). */
+  focus: (lat: number, lng: number, bottom?: number) => void
+  fitTo: (points: { lat: number; lng: number }[]) => void
+}
 
 type Props = {
   pois: MapPoi[]
@@ -72,7 +79,8 @@ const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
   const tail = selected ? 'var(--map-pin-selected)' : 'var(--map-pin-fill)'
   const photo = p.primary_image_url ? `background:var(--map-pin-stroke) url('${esc(pinSrc(p.primary_image_url))}') center/cover no-repeat` : 'background:var(--map-pin-fill)'
   const name = showName || selected ? `<span style="${LABEL}">${poiLabel(p)}</span>` : ''
-  return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;min-width:44px" ${markerAttrs(p.poi_id, poiLabel(p), selected)}><span style="box-sizing:border-box;width:${size};height:${size};border-radius:var(--radius-full);border:${ring};${photo};transition:all var(--duration-short4) var(--easing-standard)"></span><span aria-hidden style="width:0;height:0;border-left:${TAIL_PX}px solid transparent;border-right:${TAIL_PX}px solid transparent;border-top:${TAIL_PX}px solid ${tail}"></span>${name}</div>`
+  // Fixed width so the anchor (half of it) stays on the place; a wider name overflows evenly on both sides.
+  return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;width:${Math.max(44, PIN_PX[tier])}px" ${markerAttrs(p.poi_id, poiLabel(p), selected)}><span style="box-sizing:border-box;width:${size};height:${size};border-radius:var(--radius-full);border:${ring};${photo};transition:all var(--duration-short4) var(--easing-standard)"></span><span aria-hidden style="width:0;height:0;border-left:${TAIL_PX}px solid transparent;border-right:${TAIL_PX}px solid transparent;border-top:${TAIL_PX}px solid ${tail}"></span>${name}</div>`
 }
 const clusterHtml = (n: number) => {
   const size = n < 10 ? '--map-cluster-size-sm' : n < 50 ? '--map-cluster-size-md' : '--map-cluster-size-lg'
@@ -126,6 +134,18 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     zoomIn: () => live()?.setZoom(map.current.getZoom() + 1, true),
     zoomOut: () => live()?.setZoom(map.current.getZoom() - 1, true),
     panTo: (lat, lng) => live()?.panTo(new window.naver.maps.LatLng(lat, lng)),
+    focus: (lat, lng, bottom = 0) => {
+      const m = live()
+      if (!m) return
+      const N = window.naver.maps
+      if (m.getZoom() < 16) m.setZoom(16, false)
+      const at = new N.LatLng(lat, lng)
+      const proj = mapReady ? m.getProjection() : null
+      if (!proj || !bottom) return m.panTo(at)
+      // The visible centre sits bottom/2 above the canvas centre: aim the canvas centre that far below the place.
+      const o = proj.fromCoordToOffset(at)
+      m.panTo(proj.fromOffsetToCoord(new N.Point(o.x, o.y + bottom / 2)))
+    },
     fitTo: (points) => {
       // Before the SDK is up (a hand-off on first load) the fit waits for the map.
       if (!live() || !mapReady) pendingFit.current = points
