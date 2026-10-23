@@ -5,6 +5,8 @@ import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
 import { cn } from '@/lib/cn'
+import { usePhone } from '@/components/library/hooks'
+import { ROW_DIVIDER } from '@/components/library/Lists'
 import { ArrowLeft, Bookmark, Ellipsis, Folder, Globe, Pencil, Share2, Trash2, Lock, X } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
@@ -321,6 +323,7 @@ export function PlanFromSavedScreen() {
   const { user } = useAuth()
   const { toast } = useV2Shell()
   const { data, isLoading } = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
+  const phone = usePhone()
   const [picked, setPicked] = useState<string[]>([])
   const [busy, setBusy] = useState(false)
   const folders = useMemo(() => (data?.folders ?? []).filter((f) => !f.is_default && f.pois.length), [data])
@@ -329,18 +332,19 @@ export function PlanFromSavedScreen() {
     return (data?.pois ?? []).filter((p) => !inFolders.has(p.poi_id))
   }, [data, folders])
   const all = data?.pois ?? []
-  const toggle = (id: string) =>
-    setPicked((p) => {
-      if (p.includes(id)) return p.filter((x) => x !== id)
-      if (p.length >= LIMIT) {
-        toast({ type: 'warning', message: t('CD1589') })
-        return p
-      }
-      return [...p, id]
-    })
+  // Figma Limit reached: the warning shows as the picks reach 48 (the rest then can't be checked).
+  const limitToast = () => toast({ type: 'warning', message: t('CD1589') })
+  const toggle = (id: string) => {
+    if (picked.includes(id)) return setPicked(picked.filter((x) => x !== id))
+    if (picked.length >= LIMIT) return limitToast()
+    if (picked.length + 1 === LIMIT) limitToast()
+    setPicked([...picked, id])
+  }
   const toggleGroup = (ids: string[]) => {
-    const every = ids.every((id) => picked.includes(id))
-    setPicked((p) => (every ? p.filter((x) => !ids.includes(x)) : Array.from(new Set([...p, ...ids])).slice(0, LIMIT)))
+    if (ids.every((id) => picked.includes(id))) return setPicked(picked.filter((x) => !ids.includes(x)))
+    const next = Array.from(new Set([...picked, ...ids]))
+    if (next.length >= LIMIT) limitToast()
+    setPicked(next.slice(0, LIMIT))
   }
   const make = () => {
     setBusy(true)
@@ -353,7 +357,7 @@ export function PlanFromSavedScreen() {
   // Figma: a full-screen flow. Flow bar (logo, close), Pick places header, folder rows
   // (folder icon, "2 of 3 selected", select all) and place rows (48 photo, area) with the checkbox
   // at the end; the whole row toggles. Action bar: Cancel and Make plan on the 640 column.
-  const row = 'w-full flex-row-reverse gap-[var(--space-3)] border-b border-ui-border px-[var(--space-4)] py-[var(--space-3)] hover:bg-ui-state-hover [&>span:last-child]:flex [&>span:last-child]:min-w-0 [&>span:last-child]:flex-1 [&>span:last-child]:items-center [&>span:last-child]:gap-[var(--space-3)]'
+  const row = cn(ROW_DIVIDER, 'w-full flex-row-reverse gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] hover:bg-ui-state-hover [&>span:last-child]:flex [&>span:last-child]:min-w-0 [&>span:last-child]:flex-1 [&>span:last-child]:min-h-[var(--target-touch-min)] [&>span:last-child]:items-center [&>span:last-child]:gap-[var(--space-3)]')
   const group = (title: string, pois: SavedPoi[]) => {
     const ids = pois.map((p) => p.poi_id)
     const n = ids.filter((id) => picked.includes(id)).length
@@ -366,7 +370,7 @@ export function PlanFromSavedScreen() {
           onChange={() => toggleGroup(ids)}
           label={<>
             <Folder aria-hidden className="size-[var(--icon-size-md)] shrink-0 text-ui-fg-muted" />
-            <span className="flex min-w-0 flex-col"><span className="truncate">{title}</span><span className="type-body-caption text-ui-fg-muted">{n === ids.length ? t('CD1587', { n }) : t('CD1586', { n, m: ids.length })}</span></span>
+            <span className="flex min-w-0 flex-col gap-[var(--space-0-5)]"><span className="truncate">{title}</span><span className="type-body-caption text-ui-fg-muted">{n === ids.length ? t('CD1587', { n }) : t('CD1586', { n, m: ids.length })}</span></span>
           </>}
         />
         <ul>
@@ -379,7 +383,7 @@ export function PlanFromSavedScreen() {
                 onChange={() => toggle(p.poi_id)}
                 label={<>
                   <Image ratio="1:1" src={p.primary_image_url} alt="" sizes="48px" className="size-[var(--space-12)] shrink-0" />
-                  <span className="flex min-w-0 flex-col"><span className="truncate">{poiName(p, locale)}</span><span className="type-body-caption text-ui-fg-muted">{p.display_region}</span></span>
+                  <span className="flex min-w-0 flex-col gap-[var(--space-0-5)]"><span className="truncate text-ui-fg">{poiName(p, locale)}</span><span className="type-body-caption text-ui-fg-muted">{p.display_region}</span></span>
                 </>}
               />
             </li>
@@ -391,12 +395,13 @@ export function PlanFromSavedScreen() {
   return (
     <V2Page bar={{ type: 'page', title: t('CD1363') }} noFooter bleed>
       {/* Phones use the Page top bar; desktop the Flow bar. */}
-      <div className="sticky top-0 z-30 hidden h-[var(--layout-header-height)] items-center justify-between bg-ui-bg px-[var(--space-6)] lg:flex">
+      <div className="sticky top-0 z-30 hidden h-[var(--layout-header-height)] items-center justify-between bg-ui-bg pl-[var(--space-6)] pr-[var(--space-3)] lg:flex">
         <IntlLink href="/" className="inline-flex focus-visible:shadow-focus-ring focus-visible:outline-none"><Logo label="B4K" className="h-[var(--space-6)] w-auto" /></IntlLink>
         <IconButton label={k('saved.folder.cancel')} icon={<X />} onClick={() => router.back()} />
       </div>
-      <div className="mx-auto flex w-full max-w-[calc(640px+var(--space-8))] flex-col gap-[var(--space-4)] px-[var(--space-4)] pb-[calc(var(--space-24))] pt-[var(--space-6)] lg:pt-[var(--space-8)]">
-        <SectionHeader title={t('CD1584')} subtitle={t('CD1638')} />
+      <div className="mx-auto flex w-full max-w-[calc(640px+var(--space-8))] flex-col gap-[var(--space-4)] px-[var(--space-4)] pb-[calc(var(--space-24))] pt-[var(--space-4)] lg:pt-[var(--space-8)]">
+        {/* Figma: a short subtitle on phones, the longer one on desktop. */}
+        <SectionHeader title={t('CD1584')} subtitle={phone ? t('CD1585') : t('CD1638')} />
         {!user ? <SignedOutPrompt title={t('CD1577')} text={t('CD1578')} /> : null}
         {isLoading ? <Skeleton className="h-[240px]" /> : null}
         <div>
@@ -404,7 +409,7 @@ export function PlanFromSavedScreen() {
           {loose.length ? group(k('saved.tabs.places'), loose) : null}
         </div>
       </div>
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-ui-border bg-ui-bg pb-[env(safe-area-inset-bottom)]">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-ui-border bg-ui-bg-raised pb-[env(safe-area-inset-bottom)]">
         <div className="mx-auto flex max-w-[calc(640px+var(--space-8))] items-center justify-between gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-4)]">
           <span aria-live="polite" className="sr-only">{picked.length === all.length && all.length ? t('CD1587', { n: all.length }) : t('CD1586', { n: picked.length, m: Math.min(all.length, LIMIT) })}</span>
           <Button variant="secondary" className="max-lg:hidden" onClick={() => router.back()}>{k('saved.folder.cancel')}</Button>
