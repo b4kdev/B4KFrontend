@@ -124,7 +124,7 @@ export function ProfileOwnScreen() {
         {badges.data ? (
           <RowSection
             title={k('badges.title')}
-            subtitle={t('CD1590', { n: badges.data.earned_count })}
+            subtitle={t('CD1590', { earned: badges.data.earned_count, total: badges.data.total_count })}
             seeAll={{ href: '/badges', label: t('CD1309') }}
             cards={badges.data.badges.map((b) => <BadgeTile key={b.id} b={b} />)}
           />
@@ -230,7 +230,7 @@ export function BadgesScreen() {
       <div className="flex flex-col gap-[var(--space-6)]">
         <header className="flex flex-col gap-[var(--space-2)]">
           <h1 className="type-display-h1 max-lg:hidden">{k('badges.title')}</h1>
-          <p className="type-body-base text-ui-fg-muted">{user ? t('CD1590', { n: data?.earned_count ?? 0 }) : t('CD1591')}</p>
+          <p className="type-body-base text-ui-fg-muted">{user ? t('CD1590', { earned: data?.earned_count ?? 0, total: data?.total_count ?? 0 }) : t('CD1591')}</p>
         </header>
         <div role="group" aria-label={k('badges.filter.ariaLabel')} className="flex flex-wrap gap-[var(--space-2)]">
           {['all', 'common', 'rare', 'epic', 'legendary'].map((r) => <Chip key={r} selected={rarity === r} onClick={() => setRarity(r)}>{k(`badges.filter.${r}`)}</Chip>)}
