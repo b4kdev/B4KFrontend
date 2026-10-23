@@ -93,7 +93,7 @@ export function RowState({ title, error, onRetry, loading }: { title: string; er
   return (
     <section className="flex flex-col gap-[var(--space-4)]">
       <SectionHeader title={title} />
-      <EmptyState type="error" container="bordered" title={t('CD1571')} action={<Button size="md" variant="secondary" leadingIcon={<RotateCw />} onClick={onRetry}>{t('CD0125')}</Button>}>
+      <EmptyState type="error" container="plain" title={t('CD1571')} action={<Button size="md" variant="secondary" leadingIcon={<RotateCw />} onClick={onRetry}>{t('CD0125')}</Button>}>
         {t('CD1560')}
       </EmptyState>
     </section>
