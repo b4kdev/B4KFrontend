@@ -301,8 +301,9 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const isPlans = fromHome && row === 'popular-plans'
   const categoryLabel = t(CATEGORIES.find((c) => c.slug === category)?.label ?? 'CD0804')
   const sortLabel = sort === 'new' ? t('CD1405') : t('CD1565')
+  // Desktop: an empty or failed list fills the page down to the footer, its state centred in it.
   const body = (
-    <div className="flex flex-col gap-[var(--space-4)]">
+    <div className="flex flex-col gap-[var(--space-4)] lg:flex-1 lg:pb-[var(--space-4)]">
       <Breadcrumbs
         label={title}
         items={fromHome ? [{ label: t('CD0807'), href: '/' }, { label: title }] : [{ label: categoryLabel, href: `/explore/${category}` }, { label: title }]}
@@ -355,15 +356,15 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
           ))}
         </div>
       ) : null}
-      {failed ? <EmptyState type="error" container="plain" title={t('CD1571')} action={<Button size="md" variant="secondary" leadingIcon={<RotateCw />} onClick={() => location.reload()}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
+      {failed ? <EmptyState type="error" container="plain" className="lg:flex-1" title={t('CD1571')} action={<Button size="md" variant="secondary" leadingIcon={<RotateCw />} onClick={() => location.reload()}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
       {!loading && !failed && !filtered.length ? (
-        <EmptyState type="no-results" title={GAP.noCategoryTrending(chip === 'all' ? '' : t(CATEGORIES.find((c) => c.slug === chip)?.label ?? 'CD0251'))} action={<Button size="md" variant="secondary" onClick={() => setChip('all')}>{t('CD1433')}</Button>}>{t('CD1570')}</EmptyState>
+        <EmptyState type="no-results" className="lg:flex-1" title={GAP.noCategoryTrending(chip === 'all' ? '' : t(CATEGORIES.find((c) => c.slug === chip)?.label ?? 'CD0251'))} action={<Button size="md" variant="secondary" onClick={() => setChip('all')}>{t('CD1433')}</Button>}>{t('CD1570')}</EmptyState>
       ) : null}
       <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">{filtered.slice(0, shown).map((p) => <li key={p.id}>{p.node}</li>)}</ul>
       {filtered.length > shown ? <Button variant="secondary" className="self-center" onClick={() => setShown((s) => s + PAGE)}>{t('CD0836')}</Button> : null}
     </div>
   )
-  if (fromHome) return <V2Page bar={{ type: 'page', title }}>{body}</V2Page>
+  if (fromHome) return <V2Page bar={{ type: 'page', title }} className="lg:flex lg:flex-col">{body}</V2Page>
   return <ExploreFrame category={category} sections={sections} active={row} pageTitle={title}>{body}</ExploreFrame>
 }
 
