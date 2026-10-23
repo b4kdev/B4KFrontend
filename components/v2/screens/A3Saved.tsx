@@ -5,10 +5,11 @@ import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
 import { cn } from '@/lib/cn'
-import { ArrowLeft, Bookmark, Ellipsis, Folder, Map as MapIcon, Pencil, Share2, Trash2, Lock, X } from 'lucide-react'
+import { ArrowLeft, Bookmark, Ellipsis, Folder, Globe, Pencil, Share2, Trash2, Lock, X } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
   Button,
+  buttonVariants,
   Card,
   Checkbox,
   Dialog,
@@ -32,6 +33,7 @@ import type { SavedData, SavedPoi } from '@/app/api/saved/route'
 import { useCd, useCdKey } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
+import { usePlaceActions } from '../usePlaceActions'
 import { jsonFetch } from './A2Home'
 
 // Saved and Plan from saved places.
@@ -72,10 +74,10 @@ function FolderNameSheet({ open, mode, initial, onClose, onSave }: { open: boole
     <Modal
       open={open}
       onClose={onClose}
-      size="sm"
-      title={mode === 'new' ? t('CD1206') : k('saved.folder.renameTitle')}
+      size="md"
+      title={mode === 'new' ? t('CD1206') : t('CD1212')}
       closeLabel={k('badges.detail.close')}
-      secondaryAction={<Button variant="ghost" onClick={onClose}>{k('saved.folder.cancel')}</Button>}
+      secondaryAction={<Button variant="secondary" onClick={onClose}>{k('saved.folder.cancel')}</Button>}
       primaryAction={
         <Button
           loading={busy}
@@ -89,9 +91,9 @@ function FolderNameSheet({ open, mode, initial, onClose, onSave }: { open: boole
         </Button>
       }
     >
-      <div className="flex flex-col gap-[var(--space-4)] pb-[var(--space-2)]">
+      <div className="flex flex-col gap-[var(--space-4)]">
         <p className="type-body-base text-ui-fg-muted">{mode === 'new' ? t('CD1611') : t('CD1614')}</p>
-        <TextInput label={k('saved.folder.newFolderPlaceholder')} showLabel placeholder={t('CD1612')} value={name} maxLength={40} onChange={(e) => setName(e.target.value)} data-autofocus />
+        <TextInput label={t('CD1207')} showLabel required help={`${name.length}/40`} placeholder={t('CD1612')} value={name} maxLength={40} onChange={(e) => setName(e.target.value)} data-autofocus />
       </div>
     </Modal>
   )
@@ -111,6 +113,7 @@ export function SavedScreen() {
   const [del, setDel] = useState<{ kind: 'folder' | 'plan'; id: string; name: string; count?: number } | null>(null)
   const { data, error, isLoading, mutate } = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
   const folder = data?.folders.find((f) => f.id === folderId)
+  const placeActions = usePlaceActions()
 
   const tabs = [
     { id: 'places', label: t('CD1238') },
@@ -145,12 +148,16 @@ export function SavedScreen() {
     )
   }
 
+  // Figma Folder open: back and the list name with its count, then View on map and the list menu.
   const placesView = folder ? (
     <div className="flex flex-col gap-[var(--space-4)]">
+      <h1 className="sr-only">{k('saved.title')}</h1>
       <div className="flex items-center gap-[var(--space-2)]">
         <IconButton label={k('saved.folder.back')} icon={<ArrowLeft />} onClick={() => setFolderId(null)} />
-        <h2 className="flex-1 type-display-h3">{folder.name}</h2>
-        <IntlLink href={`/map?saved=1&folder=${folder.id}`} className="inline-flex items-center gap-[var(--space-1-5)] type-label-button text-ui-link hover:text-ui-link-hover"><MapIcon aria-hidden className="size-[var(--icon-size-sm)]" />{k('saved.folder.viewOnMap')}</IntlLink>
+        <SectionHeader title={folder.name} subtitle={k('saved.folder.poiCount', { count: folder.pois.length })} className="min-w-0 flex-1" />
+      </div>
+      <div className="flex items-center justify-between gap-[var(--space-4)]">
+        <IntlLink href={`/map?saved=1&folder=${folder.id}`} className={buttonVariants({ variant: 'secondary', size: 'md' })}>{k('saved.folder.viewOnMap')}</IntlLink>
         {!folder.is_default ? (
           <DropdownMenu label={k('saved.folder.folderMenu', { name: folder.name })} align="end" trigger={<IconButton label={k('saved.folder.folderMenu', { name: folder.name })} icon={<Ellipsis />} />}>
             <MenuGroup>
@@ -164,7 +171,7 @@ export function SavedScreen() {
       </div>
       <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4 lg:gap-[var(--space-4)]">
         {folder.pois.map((p) => (
-          <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /></li>
+          <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} {...placeActions(p.poi_id, poiName(p, locale))} /></li>
         ))}
       </ul>
     </div>
@@ -199,7 +206,7 @@ export function SavedScreen() {
           // Figma: status in the second line ("5 stops · 2 days · Public", "Draft · 3 stops").
           secondary={p.is_draft
             ? `${k('saved.myPlan.draft')} · ${k('saved.plan.stops', { count: p.stop_count })}`
-            : `${k('saved.plan.stops', { count: p.stop_count })} · ${k('saved.plan.days', { count: p.duration_days })} · ${k('profile.settings.privacy.public')}`}
+            : `${k('saved.plan.stops', { count: p.stop_count })} · ${k('saved.plan.days', { count: p.duration_days })} · ${p.is_public ? k('profile.settings.privacy.public') : k('profile.settings.privacy.private')}`}
           leading={<Image ratio="1:1" src={p.cover_image_url} alt="" sizes="48px" className="size-[var(--space-12)]" />}
           href={`/plan/${p.id}`}
           renderLink={({ href, className, children }) => (
@@ -210,7 +217,16 @@ export function SavedScreen() {
                   <MenuItem icon={<Pencil />} onClick={() => router.push(`/map?plan=edit&id=${p.id}`)}>{t('CD1487')}</MenuItem>
                   <MenuItem icon={<Share2 />} onClick={() => { navigator.clipboard?.writeText(`${location.origin}/${locale}/plan/${p.id}`); toast({ type: 'success', message: k('profile.trips.card.shareCopiedToast') }) }}>{k('saved.myPlan.share')}</MenuItem>
                   {!p.is_draft ? (
-                    <MenuItem icon={<Lock />} onClick={async () => { await send(`/api/plans/${p.id}`, 'PATCH', { is_published: false }).catch(() => {}); mutate() }}>{t('CD0517')}</MenuItem>
+                    // A published plan switches between public and private; a failed switch says so.
+                    <MenuItem
+                      icon={p.is_public ? <Lock /> : <Globe />}
+                      onClick={async () => {
+                        await send(`/api/plans/${p.id}`, 'PATCH', { is_published: !p.is_public }).catch(() => toast({ type: 'critical', message: t('CD0061') }))
+                        mutate()
+                      }}
+                    >
+                      {p.is_public ? t('CD0517') : t('CD0518')}
+                    </MenuItem>
                   ) : null}
                 </MenuGroup>
                 <MenuGroup>
@@ -239,8 +255,12 @@ export function SavedScreen() {
   return (
     <V2Page className={page}>
       <div className="flex flex-1 flex-col gap-[var(--space-4)]">
-        {head}
-        <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={(v) => { setTab(v); setFolderId(null) }} tabs={tabs} className="self-start" />
+        {folder && tab === 'places' ? null : (
+          <>
+            {head}
+            <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={(v) => { setTab(v); setFolderId(null) }} tabs={tabs} className="self-start" />
+          </>
+        )}
         {tab === 'places' && !folder ? toolbar : null}
         {isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4 lg:gap-[var(--space-4)]">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-0 pb-[calc(75%+var(--space-16)+var(--space-1))]" />)}</div> : null}
         {error ? <EmptyState type="error" container="bordered" title={k('saved.error.title')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{k('saved.error.retry')}</Button>} /> : null}
@@ -280,7 +300,7 @@ export function SavedScreen() {
               mutate()
             }}
           >
-            {k('saved.confirmDelete.confirm')}
+            {del?.kind === 'folder' ? t('CD1580') : k('saved.confirmDelete.confirm')}
           </Button>
         }
       />
