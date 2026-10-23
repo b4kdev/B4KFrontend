@@ -110,7 +110,7 @@ export function SearchScreen() {
       {q ? <p aria-live="polite" className="sr-only">{data ? t('CD1303', { query: q, places: data.places.length, plans: data.plans.length, explore: data.explore.length }) : isLoading ? t('CD1285') : ''}</p> : null}
       {error ? <EmptyState type="error" title={t('CD1249')} action={<Button size="md" variant="secondary" onClick={() => router.refresh()}>{t('CD1304')}</Button>} /> : null}
       {isLoading ? (
-        <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div>
+        <div aria-busy className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-4)] lg:grid-cols-3 lg:gap-x-[var(--space-4)]">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div>
       ) : null}
       {/* Explore matches are the fixed category links, so no places and no plans is No results;
           the categories become its suggestions (Figma No results: chips, then Clear filters). */}
@@ -143,7 +143,7 @@ export function SearchScreen() {
               </label>
             ) : null}
           </div>
-          <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">
+          <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-4)] lg:grid-cols-3 lg:gap-x-[var(--space-4)]">
             {(show === 'places' ? data.places : data.places.slice(0, phone ? 4 : 3)).map((p) => (
               <li key={p.poi_id}>
                 <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, placeName(p))} title={placeName(p)} imageSrc={p.primary_image_url} meta={[p.display_region, p.display_domain].filter(Boolean).join(' · ')} />
@@ -157,7 +157,7 @@ export function SearchScreen() {
         show === 'plans' ? (
           <section className="flex flex-col gap-[var(--space-4)]">
             <SectionHeader title={`${t('CD1308')} · ${data.plans.length}`} />
-            <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-3">
+            <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-4)] lg:grid-cols-3 lg:gap-x-[var(--space-4)]">
               {data.plans.map((p) => (
                 <li key={p.id}>
                   <Card type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD1315', { count: p.stop_count })} sponsored={p.is_partner ? t('CD1314') : undefined} />
@@ -215,7 +215,8 @@ export function SearchScreen() {
   }
   return (
     <div className="flex min-h-0 flex-1">
-      <LeftPanel type="filters" label={t('CD1284')}>
+      {/* Figma: the filters sit 16 inside the panel. */}
+      <LeftPanel type="filters" label={t('CD1284')} className="p-[var(--space-4)]">
         <SearchFilters viewport="desktop" groups={groups} value={filters} onValueChange={setFilters} sort={sortCfg} labels={{ title: t('CD1284'), clearAll: t('CD1248') }} />
       </LeftPanel>
       <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
