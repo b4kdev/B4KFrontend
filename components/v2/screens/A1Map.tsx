@@ -399,7 +399,15 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     </div>
   )
   const savedView = !user ? (
-    <EmptyState title={t('CD1577')} action={<Button size="md" onClick={() => requireSignIn({ title: t('CD1577'), run: () => {} })}>{t('CD0050')}</Button>}>{t('CD1578')}</EmptyState>
+    // Signed out: the Saved hub's empty view (bordered, bookmark), as drawn.
+    <SavedHub
+      view="empty"
+      onOpenFolder={() => {}}
+      onBack={() => {}}
+      onAdd={() => {}}
+      emptyAction={<Button size="md" onClick={() => requireSignIn({ title: t('CD1577'), run: () => {} })}>{t('CD0050')}</Button>}
+      labels={{ back: k('saved.folder.back'), add: (n) => n, emptyTitle: t('CD1577'), emptyBody: t('CD1578') }}
+    />
   ) : (
     <SavedHub
       view={!saved.data?.pois.length ? 'empty' : folderId ? 'folder' : 'places'}
@@ -572,8 +580,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     <div className="flex min-h-0 flex-1">
       <LeftPanel type="map" label={k('map.plan.title')} cart={cartNode} cartOpen={cart === 'open'}>
         {selectedId ? null : <div className="sticky top-0 z-10 bg-ui-bg pt-[var(--space-4)]">{switcher}</div>}
-        {/* The Saved hub's raised background runs to the Plan cart, as drawn. */}
-        {!selectedId && mode === 'saved' && user ? <div className="flex-1 bg-ui-bg-raised">{content}</div> : content}
+        {/* The Saved hub's raised background sits 16 under the tabs and 16 above the Plan cart, as drawn. */}
+        {!selectedId && mode === 'saved' ? <div className="my-[var(--space-4)] flex-1 bg-ui-bg-raised">{content}</div> : content}
       </LeftPanel>
       <main id="main" className="relative min-w-0 flex-1">
         {map}
