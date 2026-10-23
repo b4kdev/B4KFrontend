@@ -205,7 +205,8 @@ export function CategoryScreen({ category }: { category: string }) {
             className="-mx-[var(--grid-gutter-mobile)] -mb-[var(--space-6)] -mt-[var(--space-6)] w-auto md:-mx-[var(--grid-gutter-tablet)] lg:-mx-[var(--space-8)]"
           />
         ) : null}
-        {error ? <RowState title={k(`explore.${CAT_KEY[category]}.title`)} error={error} onRetry={() => mutate()} /> : null}
+        {/* One request loads every row, so a failure is page-wide: the generic body, not 'the other rows still work'. */}
+        {error ? <RowState title={k(`explore.${CAT_KEY[category]}.title`)} errorBody="CD1572" error={error} onRetry={() => mutate()} /> : null}
         {sections.map((s, i) => {
           const featured = s.items.find((p) => p.is_featured)
           return (

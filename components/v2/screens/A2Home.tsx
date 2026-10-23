@@ -88,7 +88,7 @@ function HomeSkeleton({ heroClassName }: { heroClassName: string }) {
   )
 }
 
-export function RowState({ title, error, onRetry, loading }: { title: string; error?: unknown; onRetry: () => void; loading?: boolean }) {
+export function RowState({ title, error, onRetry, loading, errorTitle = 'CD1571', errorBody = 'CD1560' }: { title: string; error?: unknown; onRetry: () => void; loading?: boolean; errorTitle?: string; errorBody?: string }) {
   const t = useCd()
   if (loading) {
     return (
@@ -102,8 +102,8 @@ export function RowState({ title, error, onRetry, loading }: { title: string; er
   return (
     <section className="flex flex-col gap-[var(--space-4)]">
       <SectionHeader title={title} />
-      <EmptyState type="error" container="plain" title={t('CD1571')} action={<Button size="md" variant="secondary" leadingIcon={<RotateCw />} onClick={onRetry}>{t('CD0125')}</Button>}>
-        {t('CD1560')}
+      <EmptyState type="error" container="plain" title={t(errorTitle)} action={<Button size="md" variant="secondary" leadingIcon={<RotateCw />} onClick={onRetry}>{t('CD0125')}</Button>}>
+        {t(errorBody)}
       </EmptyState>
     </section>
   )
@@ -216,7 +216,7 @@ export function HomeScreen() {
             ))}
           />
         ) : (
-          <RowState title={t('CD0313')} loading={trending.isLoading} error={trending.error} onRetry={() => trending.mutate()} />
+          <RowState title={t('CD0313')} errorTitle="CD1559" loading={trending.isLoading} error={trending.error} onRetry={() => trending.mutate()} />
         )}
 
         <PlanningCue
