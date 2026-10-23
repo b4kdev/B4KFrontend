@@ -148,12 +148,19 @@ export function HomeScreen() {
   const events = useSWR<HomeEvent[]>('/api/home/events', jsonFetch)
   const draft = useContinueDraft()
 
-  // Interests card: signed in, no interests saved yet, not dismissed on this device.
+  // Interests card: on a following visit (a later browser session than the one in which this device
+  // first opened Home), signed in, no interests saved yet, not dismissed on this device.
   const mine = useSWR(user ? '/me/interests' : null, (p: string) => apiFetch<{ interest_tags: string[] }>(p))
   const [dismissed, setDismissed] = useState(true)
   useEffect(() => {
     try {
-      setDismissed(localStorage.getItem('b4k-v2-interests-card') === 'done')
+      let following = true
+      if (!localStorage.getItem('b4k-v2-first-visit')) {
+        localStorage.setItem('b4k-v2-first-visit', new Date().toISOString())
+        sessionStorage.setItem('b4k-v2-first-visit', 'this')
+        following = false
+      } else if (sessionStorage.getItem('b4k-v2-first-visit') === 'this') following = false
+      setDismissed(!following || localStorage.getItem('b4k-v2-interests-card') === 'done')
     } catch {}
   }, [])
   const showInterests = !!user && !dismissed && !!mine.data && mine.data.interest_tags.length === 0
