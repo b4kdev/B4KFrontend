@@ -98,8 +98,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     return () => window.removeEventListener('keydown', onKey)
   }, [selectedId])
   const [cart, setCart] = useState<'collapsed' | 'open'>(params?.get('plan') ? 'open' : 'collapsed')
-  // The open plan starts on Day 1, as drawn; All stays one tab away.
-  const [activeDay, setActiveDay] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>(1)
+  // The open plan starts on All days; each day is one tab away.
+  const [activeDay, setActiveDay] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>('all')
   const [snap, setSnap] = useState<SheetSnap>('mid')
   const [planSheet, setPlanSheet] = useState(!!params?.get('plan') && phone)
   // /plan and ?plan= open the plan on phones too (the phone check settles after the first render).
@@ -142,7 +142,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     const { stops, days: dayMap, durations } = itineraryToDraft(it)
     draft.replace(stops, dayMap, it.title, durations, { editing: true })
     setEditing({ id: it.id, title: it.title })
-    // A published plan opens on All days, as drawn (a new plan opens on Day 1).
+    // Every plan opens on All days; a place added there goes to the last day.
     setActiveDay('all')
     setPendingEdit(null)
     setCart('open')
