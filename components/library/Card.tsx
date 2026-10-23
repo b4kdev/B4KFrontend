@@ -127,7 +127,7 @@ export function Card(props: CardProps) {
           </div>
           <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
             <CardLink href={href} className={TITLE2}>{title}</CardLink>
-            <div className="type-body-caption text-ui-fg-muted">{props.meta}</div>
+            {props.meta ? <div className="type-body-caption text-ui-fg-muted">{props.meta}</div> : null}
           </div>
         </article>
       )
@@ -137,7 +137,7 @@ export function Card(props: CardProps) {
           <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="280px" />
           <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
             <CardLink href={href} className={TITLE2}>{title}</CardLink>
-            <div className="type-body-caption text-ui-fg-muted">{props.meta}</div>
+            {props.meta ? <div className="type-body-caption text-ui-fg-muted">{props.meta}</div> : null}
           </div>
         </article>
       )
