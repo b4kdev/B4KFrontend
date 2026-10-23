@@ -552,7 +552,7 @@ export function SettingsScreen() {
         onCancel={() => setDeleting(false)}
         title={t('CD1605')}
         body={t('CD1606')}
-        cancel={<Button variant="ghost" data-autofocus onClick={() => setDeleting(false)}>{k('profile.settings.deleteCancel')}</Button>}
+        cancel={<Button variant="secondary" data-autofocus onClick={() => setDeleting(false)}>{k('profile.settings.deleteCancel')}</Button>}
         confirm={<Button variant="danger" onClick={async () => {
           try { await send('/api/account/delete', 'DELETE'); signOut() } catch (e) {
             if ((e as Error).message === '403') { setDeleting(false); setReauthPw(''); setReauthError(''); setReauth(true) }

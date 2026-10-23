@@ -251,7 +251,7 @@ export function PlanScreen({ id }: { id: string }) {
         onCancel={() => setDeleteOpen(false)}
         title={GAP.deletePlanTitle(it.title)}
         body={t('CD1546')}
-        cancel={<Button variant="ghost" data-autofocus onClick={() => setDeleteOpen(false)}>{k('itinerary.actions.deleteCancel')}</Button>}
+        cancel={<Button variant="secondary" data-autofocus onClick={() => setDeleteOpen(false)}>{k('itinerary.actions.deleteCancel')}</Button>}
         confirm={<Button variant="danger" loading={deleting} onClick={remove}>{k('itinerary.actions.deleteConfirm')}</Button>}
       />
       <Modal open={legFor !== null} onClose={() => setLegFor(null)} size="sm" title={k('itinerary.transport.changeMode', { mode: modeLabel(it.legs.find((l) => l.from_stop_order === legFor)?.transport_mode ?? 'walk') })} closeLabel={k('badges.detail.close')}>

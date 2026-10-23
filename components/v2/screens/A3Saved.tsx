@@ -264,7 +264,7 @@ export function SavedScreen() {
         onCancel={() => setDel(null)}
         title={del?.kind === 'folder' ? t('CD1582', { folder: del.name }) : k('saved.confirmDelete.title')}
         body={del?.kind === 'folder' ? t('CD1583', { n: del.count ?? 0 }) : k('saved.confirmDelete.desc')}
-        cancel={<Button variant="ghost" data-autofocus onClick={() => setDel(null)}>{k('saved.confirmDelete.cancel')}</Button>}
+        cancel={<Button variant="secondary" data-autofocus onClick={() => setDel(null)}>{k('saved.confirmDelete.cancel')}</Button>}
         confirm={
           <Button
             variant="danger"
