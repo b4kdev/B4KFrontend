@@ -39,8 +39,9 @@ export type CookieBannerProps = {
 
 /** Cookie banner: Decline and Accept with equal weight; no close X; nothing on until a choice. */
 export function CookieBanner({ type = 'banner', label, message, learnMore, acceptLabel, declineLabel, onAccept, onDecline, status, title, className }: CookieBannerProps) {
+  // Phones: the bottom banner's buttons fill the row; the preferences card's buttons hug, as drawn.
   const buttons = (
-    <div className="flex gap-[var(--gap-sm)] max-md:[&>*]:flex-1">
+    <div className={cn('flex gap-[var(--gap-sm)]', type === 'banner' && 'max-md:[&>*]:flex-1')}>
       <Button variant="secondary" size="md" onClick={onDecline}>{declineLabel}</Button>
       <Button size="md" onClick={onAccept}>{acceptLabel}</Button>
     </div>
@@ -60,10 +61,11 @@ export function CookieBanner({ type = 'banner', label, message, learnMore, accep
   return (
     <section role="region" aria-label={label} tabIndex={-1} className={cn('fixed inset-x-0 bottom-0 z-40 border-t border-ui-border bg-ui-bg-raised px-[var(--space-4)] py-[var(--space-4)] pb-[calc(var(--space-4)+env(safe-area-inset-bottom))] text-ui-fg outline-none', className)}>
       <div className="mx-auto flex max-w-[960px] items-center gap-[var(--space-4)] max-md:flex-col max-md:items-stretch max-md:gap-[var(--space-3)]">
-        <p className="flex-1 type-body-base">
-          {message}{' '}
-          <IntlLink href={learnMore.href} className="underline underline-offset-2 hover:text-ui-link-hover">{learnMore.label}</IntlLink>
-        </p>
+        {/* Message: the body and the Learn more link wrap as two items, so the link never splits. */}
+        <div className="flex flex-1 flex-wrap items-center gap-x-[var(--space-1-5)] type-body-base">
+          <p>{message}</p>
+          <IntlLink href={learnMore.href} className="whitespace-nowrap underline underline-offset-2 hover:text-ui-link-hover">{learnMore.label}</IntlLink>
+        </div>
         {buttons}
       </div>
     </section>
