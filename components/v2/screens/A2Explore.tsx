@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocale } from 'next-intl'
 import useSWR from 'swr'
 import { MapPin, RotateCw } from 'lucide-react'
@@ -8,6 +8,7 @@ import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
   Breadcrumbs,
   Button,
+  buttonVariants,
   Card,
   Chip,
   EmptyState,
@@ -24,6 +25,7 @@ import {
   TreeView,
 } from '@/components/library'
 import { usePathname } from 'next/navigation'
+import { cn } from '@/lib/cn'
 import { usePhone } from '@/components/library/hooks'
 import type { ExploreData, ExplorePoi } from '@/app/api/explore/[category]/route'
 import type { CollectionCard } from '@/app/api/explore/[category]/collections/route'
@@ -291,6 +293,25 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const [chip, setChip] = useState('all')
   const [sort, setSort] = useState('popular')
   const [shown, setShown] = useState(PAGE)
+  // Load more is a real link to ?page=n: a page opened with ?page=n shows n pages; after a tap the
+  // first new card takes the focus and the URL follows.
+  const list = useRef<HTMLUListElement>(null)
+  const focusFrom = useRef<number | null>(null)
+  useEffect(() => {
+    const n = Number(new URLSearchParams(window.location.search).get('page'))
+    if (n > 1) setShown(PAGE * Math.floor(n))
+  }, [])
+  useEffect(() => {
+    if (focusFrom.current === null) return
+    list.current?.children[focusFrom.current]?.querySelector<HTMLElement>('a, button')?.focus()
+    focusFrom.current = null
+  }, [shown])
+  const loadMore = (e: React.MouseEvent) => {
+    e.preventDefault()
+    focusFrom.current = shown
+    setShown(shown + PAGE)
+    window.history.replaceState(window.history.state, '', `?page=${shown / PAGE + 1}`)
+  }
 
   const title = fromHome ? (row === 'trending' ? t('CD0313') : t('CD0477')) : rowLabel(category, row)
   const subtitle = fromHome ? (row === 'trending' ? t('CD1566') : t('CD1568')) : undefined
@@ -366,8 +387,12 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
       {!loading && !failed && !filtered.length ? (
         <EmptyState type="no-results" className="lg:flex-1" title={GAP.noCategoryTrending(chip === 'all' ? '' : t(CATEGORIES.find((c) => c.slug === chip)?.label ?? 'CD0251'))} action={<Button size="md" variant="secondary" onClick={() => setChip('all')}>{t('CD1433')}</Button>}>{t('CD1570')}</EmptyState>
       ) : null}
-      <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">{filtered.slice(0, shown).map((p) => <li key={p.id}>{p.node}</li>)}</ul>
-      {filtered.length > shown ? <Button variant="secondary" className="self-center" onClick={() => setShown((s) => s + PAGE)}>{t('CD0836')}</Button> : null}
+      <ul ref={list} className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">{filtered.slice(0, shown).map((p) => <li key={p.id}>{p.node}</li>)}</ul>
+      {filtered.length > shown ? (
+        <a href={`?page=${shown / PAGE + 1}`} onClick={loadMore} className={cn(buttonVariants({ variant: 'secondary' }), 'self-center hover:bg-ui-state-hover active:bg-ui-state-pressed')}>
+          {t('CD0836')}
+        </a>
+      ) : null}
     </div>
   )
   if (fromHome) return <V2Page bar={{ type: 'page', title }} className="lg:flex lg:flex-col">{body}</V2Page>
