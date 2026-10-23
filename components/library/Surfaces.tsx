@@ -159,6 +159,8 @@ export type BottomSheetProps = {
   header?: ReactNode
   /** Modal: stacked actions under the content (Figma: primary, secondary, optional third Ghost). */
   actions?: ReactNode
+  /** Modal: the content draws its own padding and gaps (Search filters is drawn as the whole sheet). */
+  flush?: boolean
   children: ReactNode
   className?: string
 }
@@ -167,7 +169,7 @@ const SNAP_VH: Record<SheetSnap, string> = { peek: '76px', mid: '50dvh', full: '
 const ORDER: SheetSnap[] = ['peek', 'mid', 'full']
 
 /** Bottom sheet: radius/3xl top, bg-raised, grabber 32 by 4; map sheets drag between snaps. */
-export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', heights, header, actions, children, className }: BottomSheetProps) {
+export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', heights, header, actions, flush, children, className }: BottomSheetProps) {
   const modal = type === 'modal'
   const ref = useFocusTrap<HTMLDivElement>(open && modal, onClose)
   const [drag, setDrag] = useState<number | null>(null)
@@ -221,7 +223,7 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
         <div
           className={cn(
             'flex min-h-0 flex-1 flex-col overflow-y-auto',
-            modal ? 'gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-2)]' : 'gap-[var(--space-4)] px-[var(--space-4)] pb-[var(--space-6)] pt-[var(--space-2)]',
+            flush ? null : modal ? 'gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-2)]' : 'gap-[var(--space-4)] px-[var(--space-4)] pb-[var(--space-6)] pt-[var(--space-2)]',
           )}
         >
           {children}

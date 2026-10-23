@@ -315,9 +315,9 @@ export function SearchFilters({ viewport, groups, value, onValueChange, sort, la
     onValueChange({ ...value, [g.id]: next })
   }
   const legend = 'mb-[var(--space-2)] type-eyebrow-category text-ui-fg-muted'
-  // Mobile sits in a Bottom sheet, which draws the surface, top radius and Grabber.
+  // Mobile sits in a flush Bottom sheet, which draws the surface, top radius and Grabber: 24 under the Grabber.
   return (
-    <div className={cn('flex flex-col gap-[var(--space-6)] text-ui-fg', mobile ? 'px-[var(--space-4)] pb-[var(--space-6)]' : 'p-[var(--space-6)]')}>
+    <div className={cn('flex flex-col gap-[var(--space-6)] text-ui-fg', mobile ? 'px-[var(--space-4)] pb-[var(--space-6)] pt-[var(--space-6)]' : 'p-[var(--space-6)]')}>
       <div className="flex items-center justify-between gap-[var(--space-2)]">
         <h2 className="type-display-h3">{labels.title}</h2>
         {!mobile ? (
