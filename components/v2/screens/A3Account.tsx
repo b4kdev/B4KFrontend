@@ -12,6 +12,7 @@ import {
   Avatar,
   Button,
   Card,
+  Chip,
   Dialog,
   EmptyState,
   IconButton,
@@ -25,6 +26,7 @@ import {
   SegmentedControl,
   MenuItem,
   Skeleton,
+  Spinner,
   Tabs,
   TextInput,
   Toggle,
@@ -49,6 +51,8 @@ import type { OtherUserBadge } from '@/app/api/profile/[id]/badges/route'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
 import { apiFetch } from '@/lib/api'
+import { useInterests } from '@/hooks/useInterests'
+import { labelOf, MAX_INTEREST_CHIPS } from '@/lib/quickplan'
 import { V2Page } from '../V2Page'
 import { UNREAD_KEY, useV2Shell, useV2SignOut } from '../V2Shell'
 import { LANGUAGES, LanguageRowMenu } from '../V2Settings'
@@ -549,6 +553,76 @@ export function NotificationsScreen() {
 
 // ── Settings with Language and theme ─────────────────────
 
+/** Your interests sheet: the picked chips, then the chips by category (as Quick plan step 2), with Clear and Save. */
+function InterestsSheet({ open, initial, onClose, onSaved }: { open: boolean; initial: string[]; onClose: () => void; onSaved: () => void }) {
+  const t = useCd()
+  const k = useCdKey()
+  const lang = useLocale()
+  const phone = usePhone()
+  const { toast } = useV2Shell()
+  const { categories, isLoading, isError, retry } = useInterests(open)
+  const [picked, setPicked] = useState(initial)
+  const [busy, setBusy] = useState(false)
+  const [activeGroup, setActiveGroup] = useState<string | null>(null)
+  const chipLabel = new Map(categories.flatMap((g) => g.chips.map((c) => [c.slug, labelOf(c, lang)] as const)))
+  const group = categories.find((g) => g.slug === activeGroup) ?? categories[0]
+  const toggle = (slug: string) => setPicked((p) => (p.includes(slug) ? p.filter((x) => x !== slug) : p.length < MAX_INTEREST_CHIPS ? [...p, slug] : p))
+  const lbl = 'type-eyebrow-category text-ui-fg-muted'
+  const save = async () => {
+    setBusy(true)
+    try {
+      await apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) })
+      toast({ type: 'success', message: t('CD0773') })
+      onSaved()
+    } catch {
+      toast({ type: 'critical', message: t('CD0772') })
+    } finally {
+      setBusy(false)
+    }
+  }
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      size="md"
+      title={t('CD1599')}
+      closeLabel={k('badges.detail.close')}
+      secondaryAction={<Button variant="secondary" disabled={!picked.length} onClick={() => setPicked([])}>{t('CD0789')}</Button>}
+      primaryAction={<Button loading={busy} onClick={save}>{t('CD1610')}</Button>}
+    >
+      <div className="flex flex-col gap-[var(--space-5)]">
+        <div className="flex flex-col gap-[var(--space-2)]">
+          <p aria-live="polite" className={lbl}>{t('CD0785')} · {picked.length} / {MAX_INTEREST_CHIPS}</p>
+          {picked.length ? (
+            <div className="flex flex-wrap gap-[var(--space-2)]">
+              {picked.map((slug) => <Chip key={slug} type="dismissible" dismissLabel={t('CD0783', { label: chipLabel.get(slug) ?? slug })} onClick={() => toggle(slug)}>{chipLabel.get(slug) ?? slug}</Chip>)}
+            </div>
+          ) : <p className="type-body-caption text-ui-fg-muted">{t('CD0779')}</p>}
+        </div>
+        {isLoading ? <Spinner label={t('CD0781')} /> : null}
+        {isError ? (
+          <p role="alert" className="type-body-base text-ui-danger">
+            {t('CD0780')} <button type="button" onClick={retry} className="underline underline-offset-2">{t('CD0784')}</button>
+          </p>
+        ) : null}
+        {group ? (
+          <div className="flex flex-col gap-[var(--space-4)]">
+            <div role="group" aria-label={t('CD0778')} className={cn('flex gap-[var(--space-2)]', phone ? 'overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : 'flex-wrap')}>
+              {categories.map((g) => <Chip key={g.slug} selected={g.slug === group.slug} onClick={() => setActiveGroup(g.slug)} className="shrink-0">{labelOf(g, lang)}</Chip>)}
+            </div>
+            <div className="flex flex-wrap gap-[var(--space-2)]">
+              {group.chips.map((c) => {
+                const on = picked.includes(c.slug)
+                return <Chip key={c.slug} selected={on} disabled={!on && picked.length >= MAX_INTEREST_CHIPS} onClick={() => toggle(c.slug)}>{labelOf(c, lang)}</Chip>
+              })}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </Modal>
+  )
+}
+
 export function SettingsScreen() {
   const k = useCdKey()
   const t = useCd()
@@ -567,6 +641,7 @@ export function SettingsScreen() {
   const [theme, setThemeState] = useState<ThemeChoice>('system')
   useEffect(() => setThemeState(getThemeChoice()), [])
   const [themeSheet, setThemeSheet] = useState(false)
+  const [interestsSheet, setInterestsSheet] = useState(false)
   const [nameSheet, setNameSheet] = useState(false)
   const [name, setName] = useState('')
   const [pwSheet, setPwSheet] = useState(false)
@@ -661,7 +736,7 @@ export function SettingsScreen() {
           ) : (
             <ListItem title={t('CD1283')} trailing={<SegmentedControl label={t('CD1283')} options={themeOptions} value={theme} onValueChange={(v) => chooseTheme(v as ThemeChoice)} className="w-[320px]" />} />
           )}
-          <ListItem title={t('CD1599')} secondary={picked ? GAP.interestsPicked(picked) : undefined} chevron disabled={!user} onClick={() => router.push('/?interests=1')} />
+          <ListItem title={t('CD1599')} secondary={picked ? GAP.interestsPicked(picked) : undefined} chevron disabled={!user} onClick={() => setInterestsSheet(true)} />
         </ul>
 
         <h2 className={heading}>{k('profile.settings.notifications.heading')}</h2>
@@ -694,6 +769,13 @@ export function SettingsScreen() {
           ))}
         </div>
       </Modal>
+      <InterestsSheet
+        key={interestsSheet ? 'open' : 'closed'}
+        open={interestsSheet}
+        initial={(interests.data?.interest_tags ?? []).slice(0, MAX_INTEREST_CHIPS)}
+        onClose={() => setInterestsSheet(false)}
+        onSaved={() => { setInterestsSheet(false); interests.mutate() }}
+      />
       <Modal open={nameSheet} onClose={() => setNameSheet(false)} size="sm" title={t('CD1597')} closeLabel={k('badges.detail.close')}
         secondaryAction={<Button variant="ghost" onClick={() => setNameSheet(false)}>{k('saved.folder.cancel')}</Button>}
         primaryAction={<Button disabled={!name.trim()} onClick={async () => { await send('/api/account/profile', 'PATCH', { display_name: name.trim() }).catch(() => toast({ type: 'critical', message: k('profile.settings.identity.error') })); setNameSheet(false); profile.mutate() }}>{k('profile.settings.identity.save')}</Button>}>
