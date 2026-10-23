@@ -215,5 +215,6 @@ export function NotificationItem({ icon, title, body, time, read = false, unread
       {!read ? <CountBadge className="shrink-0" /> : null}
     </>
   )
-  return <li className="border-b border-ui-border">{renderLink({ href, className: cn(ROW, 'hover:bg-ui-state-hover', FOCUS_RING_INSET), children })}</li>
+  // Divider drawn inside the row (as List item), so the row keeps its drawn height.
+  return <li className={ROW_DIVIDER}>{renderLink({ href, className: cn(ROW, 'hover:bg-ui-state-hover', FOCUS_RING_INSET), children })}</li>
 }
