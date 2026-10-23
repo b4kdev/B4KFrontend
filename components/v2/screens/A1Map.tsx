@@ -414,6 +414,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           </li>
         ))}
       </ul>
+      {phone && listPois.length ? <MapLegalLine placement="list" /> : null}
     </div>
   )
   const savedView = !user ? (
