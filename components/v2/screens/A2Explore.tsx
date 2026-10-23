@@ -36,7 +36,7 @@ import { useDDay } from '../useDDay'
 import { useGap } from '../gaps'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
-import { CATEGORIES, jsonFetch, RowState, SectionSkeletons } from './A2Home'
+import { CATEGORIES, jsonFetch, RowState, SectionSkeletons, useContinueDraft } from './A2Home'
 
 // Explore (A2): Category page, See all list, Collection page,
 // Category special pages. Live data from /api/explore/*. Desktop: Left panel Index (280)
@@ -166,12 +166,14 @@ export function CategoryScreen({ category }: { category: string }) {
   const [colType, setColType] = useState('all')
   const sections = data?.sections.filter((s) => s.items.length) ?? []
   const hero = data?.hero?.[0]
+  const draft = useContinueDraft()
   const cue = (
     <PlanningCue
-      state="start"
+      state={draft ? 'continue' : 'start'}
       label={t('CD1359')}
       tiles={{
         newPlan: { href: '/map?plan=new', title: t('CD1359'), text: t('CD1360') },
+        continue: draft ? { href: '/map?plan=open', title: t('CD0411'), text: `${draft.name ?? t('CD1359')} · ${t('CD0473', { n: draft.stops })}` } : undefined,
         quickPlan: { onOpen: openQuickPlan, title: t('CD1361'), text: t('CD1362') },
         fromSaved: { href: '/saved/plan', title: t('CD1363'), text: t('CD1364') },
       }}

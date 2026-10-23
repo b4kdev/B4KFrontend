@@ -120,6 +120,21 @@ function interestTags<T>(categories: { chips: T[] }[], count = 6): T[] {
   return out
 }
 
+/** The plan in progress for the Planning cue's Continue tile, when signed in: the account draft, or a
+ * device draft not yet moved to the account. Signed out the cue always reads Start, as drawn. */
+export function useContinueDraft() {
+  const { user } = useAuth()
+  const [deviceDraft, setDeviceDraft] = useState<{ name?: string; stops: number } | null>(null)
+  useEffect(() => {
+    const d = getDraftPlan()
+    if (d?.stops?.length) setDeviceDraft({ name: d.name, stops: d.stops.length })
+  }, [])
+  const accountDraft = useSWR<{ title?: string; stop_count: number } | null>(user ? '/api/plans/draft' : null, jsonFetch)
+  return user
+    ? accountDraft.data?.stop_count ? { name: accountDraft.data.title || undefined, stops: accountDraft.data.stop_count } : deviceDraft
+    : null
+}
+
 export function HomeScreen() {
   const act = usePlaceActions({ resume: true })
   const dDay = useDDay()
@@ -131,17 +146,7 @@ export function HomeScreen() {
   const trending = useSWR<HomeTrendingPoi[]>('/api/home/trending', jsonFetch)
   const plans = useSWR<HomePopularPlan[]>('/api/home/popular-plans', jsonFetch)
   const events = useSWR<HomeEvent[]>('/api/home/events', jsonFetch)
-  // Continue your plan when signed in (the account draft, or a device draft not yet moved to the
-  // account); signed out the cue always reads Start, as drawn.
-  const [deviceDraft, setDeviceDraft] = useState<{ name?: string; stops: number } | null>(null)
-  useEffect(() => {
-    const d = getDraftPlan()
-    if (d?.stops?.length) setDeviceDraft({ name: d.name, stops: d.stops.length })
-  }, [])
-  const accountDraft = useSWR<{ title?: string; stop_count: number } | null>(user ? '/api/plans/draft' : null, jsonFetch)
-  const draft = user
-    ? accountDraft.data?.stop_count ? { name: accountDraft.data.title || undefined, stops: accountDraft.data.stop_count } : deviceDraft
-    : null
+  const draft = useContinueDraft()
 
   // Interests card: signed in, no interests saved yet, not dismissed on this device.
   const mine = useSWR(user ? '/me/interests' : null, (p: string) => apiFetch<{ interest_tags: string[] }>(p))
