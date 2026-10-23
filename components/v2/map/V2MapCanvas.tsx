@@ -88,6 +88,11 @@ function boundsOf(map: any): MapBounds {
   return { minLat: sw.lat(), maxLat: ne.lat(), minLng: sw.lng(), maxLng: ne.lng() }
 }
 
+// The SDK tears itself down (window.naver.maps and its internals set to null) when its key check
+// fails, or when a second map is made while the first check is still open; any call on a map made
+// before that throws. Every map call goes through live().
+const sdkAlive = () => typeof window !== 'undefined' && !!window.naver?.maps
+
 export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   { pois, selectedId, onSelect, planStops = [], activeDay = 'all', routeLegs, onBounds, onZoom, center, fitStops, fitBottom = 0, label, errorText },
   ref,
@@ -106,9 +111,10 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   const select = useRef(onSelect)
   select.current = onSelect
   const pendingFit = useRef<{ lat: number; lng: number }[] | null>(null)
+  const live = () => (map.current && sdkAlive() ? map.current : null)
 
   const fitPoints = (points: { lat: number; lng: number }[]) => {
-    if (!map.current || !points.length) return
+    if (!live() || !points.length) return
     const N = window.naver.maps
     if (points.length === 1) return map.current.setCenter(new N.LatLng(points[0].lat, points[0].lng))
     const lats = points.map((p) => p.lat)
@@ -117,18 +123,21 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   }
 
   useImperativeHandle(ref, () => ({
-    zoomIn: () => map.current?.setZoom(map.current.getZoom() + 1, true),
-    zoomOut: () => map.current?.setZoom(map.current.getZoom() - 1, true),
-    panTo: (lat, lng) => map.current?.panTo(new window.naver.maps.LatLng(lat, lng)),
+    zoomIn: () => live()?.setZoom(map.current.getZoom() + 1, true),
+    zoomOut: () => live()?.setZoom(map.current.getZoom() - 1, true),
+    panTo: (lat, lng) => live()?.panTo(new window.naver.maps.LatLng(lat, lng)),
     fitTo: (points) => {
       // Before the SDK is up (a hand-off on first load) the fit waits for the map.
-      if (!map.current || !mapReady) pendingFit.current = points
+      if (!live() || !mapReady) pendingFit.current = points
       else fitPoints(points)
     },
   }))
 
   useEffect(() => {
-    window.navermap_authFailure = () => setFailed(true)
+    window.navermap_authFailure = () => {
+      map.current = null
+      setFailed(true)
+    }
   }, [])
 
   // A canvas that remounts while the SDK is still loading (phone/desktop switch) gets no onReady
@@ -143,7 +152,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
 
   // Create the map once the SDK is there.
   useEffect(() => {
-    if (!ready || !el.current || map.current) return
+    if (!ready || !el.current || map.current || !sdkAlive()) return
     const N = window.naver.maps
     const c = center ?? SEOUL
     map.current = new N.Map(el.current, {
@@ -189,12 +198,12 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
 
   // Pan to a new center (place from a card, plan load).
   useEffect(() => {
-    if (map.current && center) map.current.panTo(new window.naver.maps.LatLng(center.lat, center.lng))
+    if (live() && center) map.current.panTo(new window.naver.maps.LatLng(center.lat, center.lng))
   }, [center?.lat, center?.lng]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fit the plan's stops.
   useEffect(() => {
-    if (!map.current || !mapReady || !fitStops || planStops.length < 2) return
+    if (!live() || !mapReady || !fitStops || planStops.length < 2) return
     const N = window.naver.maps
     const lats = planStops.map((s) => s.poi.coords_lat)
     const lngs = planStops.map((s) => s.poi.coords_lng)
@@ -203,7 +212,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
 
   // Markers.
   useEffect(() => {
-    if (!map.current || !mapReady) return
+    if (!live() || !mapReady) return
     const N = window.naver.maps
     // Markers are rebuilt on every change; a pin that had the keyboard focus gets it back.
     const focusedId = (document.activeElement as HTMLElement | null)?.closest?.('[data-poi-id]')?.getAttribute('data-poi-id')
@@ -269,7 +278,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
 
   // Route lines in the day colors.
   useEffect(() => {
-    if (!map.current) return
+    if (!live()) return
     const N = window.naver.maps
     lines.current.forEach((l) => l.setMap(null))
     lines.current = []
