@@ -97,6 +97,9 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   const overlays = useRef<any[]>([])
   const lines = useRef<any[]>([])
   const [ready, setReady] = useState(typeof window !== 'undefined' && !!window.naver?.maps)
+  // The SDK can hand back a map before its projection exists (a second load in the same tab);
+  // pins and fits wait for the map's init (or first idle) event.
+  const [mapReady, setMapReady] = useState(false)
   const [zoom, setZoom] = useState(13)
   const [failed, setFailed] = useState(false)
   const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID
@@ -119,7 +122,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     panTo: (lat, lng) => map.current?.panTo(new window.naver.maps.LatLng(lat, lng)),
     fitTo: (points) => {
       // Before the SDK is up (a hand-off on first load) the fit waits for the map.
-      if (!map.current) pendingFit.current = points
+      if (!map.current || !mapReady) pendingFit.current = points
       else fitPoints(points)
     },
   }))
@@ -157,7 +160,11 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
       onZoom?.(z)
       onBounds?.(boundsOf(map.current), z)
     }
-    N.Event.addListener(map.current, 'idle', idle)
+    N.Event.addListener(map.current, 'idle', () => {
+      setMapReady(true)
+      idle()
+    })
+    N.Event.once(map.current, 'init', () => setMapReady(true))
     N.Event.addListener(map.current, 'click', () => select.current(null))
     // Keyboard on a focused pin or stop: Enter or Space selects it.
     el.current.addEventListener('keydown', (e) => {
@@ -168,13 +175,17 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
       e.stopPropagation()
       select.current(id)
     })
-    if (pendingFit.current) {
-      fitPoints(pendingFit.current)
-      pendingFit.current = null
-    }
     idle()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready])
+
+  // A fit asked for before the map was ready runs once it is.
+  useEffect(() => {
+    if (!mapReady || !pendingFit.current) return
+    fitPoints(pendingFit.current)
+    pendingFit.current = null
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady])
 
   // Pan to a new center (place from a card, plan load).
   useEffect(() => {
@@ -183,16 +194,16 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
 
   // Fit the plan's stops.
   useEffect(() => {
-    if (!map.current || !fitStops || planStops.length < 2) return
+    if (!map.current || !mapReady || !fitStops || planStops.length < 2) return
     const N = window.naver.maps
     const lats = planStops.map((s) => s.poi.coords_lat)
     const lngs = planStops.map((s) => s.poi.coords_lng)
     map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), { top: 80, right: 80, bottom: 80 + fitBottom, left: 80 })
-  }, [fitStops, planStops, ready, fitBottom])
+  }, [fitStops, planStops, mapReady, fitBottom])
 
   // Markers.
   useEffect(() => {
-    if (!map.current) return
+    if (!map.current || !mapReady) return
     const N = window.naver.maps
     // Markers are rebuilt on every change; a pin that had the keyboard focus gets it back.
     const focusedId = (document.activeElement as HTMLElement | null)?.closest?.('[data-poi-id]')?.getAttribute('data-poi-id')
@@ -254,7 +265,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
       add(s.poi.coords_lat, s.poi.coords_lng, stopHtml(s.poi, s.order, s.day, s.poi.poi_id === selectedId), { x: 22, y: 22 }, () => select.current(s.poi.poi_id), 40)
     }
     if (focusedId) requestAnimationFrame(() => el.current?.querySelector<HTMLElement>(`[data-poi-id="${CSS.escape(focusedId)}"]`)?.focus())
-  }, [pois, planStops, selectedId, zoom, activeDay, ready]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pois, planStops, selectedId, zoom, activeDay, mapReady]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Route lines in the day colors.
   useEffect(() => {
