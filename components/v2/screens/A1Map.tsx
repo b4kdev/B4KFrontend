@@ -142,11 +142,17 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     const { stops, days: dayMap, durations } = itineraryToDraft(it)
     draft.replace(stops, dayMap, it.title, durations, { editing: true })
     setEditing({ id: it.id, title: it.title })
+    // A published plan opens on All days, as drawn (a new plan opens on Day 1).
+    setActiveDay('all')
     setPendingEdit(null)
     setCart('open')
     if (phone) setPlanSheet(true)
     fitPlan(stops)
   }
+  // Editing a published plan opens it in the plan sheet on phones (the phone check settles after the first render).
+  useEffect(() => {
+    if (editing && phone) setPlanSheet(true)
+  }, [editing, phone])
   const stopEditing = () => {
     const id = editing?.id
     draft.discard()
