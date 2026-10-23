@@ -5,7 +5,7 @@ import { Search } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
-import { Link as IntlLink, useRouter } from '@/i18n/navigation'
+import { useRouter } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
 import {
   BottomSheet,
@@ -40,6 +40,7 @@ import type { SavedData } from '@/app/api/saved/route'
 import type { ItineraryDetail } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
+import { MapLegalLine } from '../map/MapLegalLine'
 import { useV2Shell } from '../V2Shell'
 import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
@@ -574,12 +575,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           {chips}
           {searchArea}
         </div>
-        <p className="absolute bottom-[var(--space-4)] left-[var(--space-16)] flex flex-wrap items-center gap-x-[var(--space-3)] type-body-legal text-ui-fg-muted">
-          <span>{t('CD1462')}</span>
-          <IntlLink href="/legal/terms" className="hover:text-ui-fg hover:underline">{t('CD1460')}</IntlLink>
-          <IntlLink href="/legal/privacy" className="type-body-legal-strong hover:text-ui-fg hover:underline">{t('CD0321')}</IntlLink>
-          <IntlLink href="/about" className="hover:text-ui-fg hover:underline">{t('CD1173')}</IntlLink>
-        </p>
+        <MapLegalLine />
         <ZoomControl className="absolute bottom-[var(--space-4)] right-[var(--space-4)]" onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} atMax={zoom >= 18} atMin={zoom <= 6} />
       </main>
       {dialogs}

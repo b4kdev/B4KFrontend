@@ -15,7 +15,6 @@ import {
   ItineraryPanel,
   LeftPanel,
   MenuItem,
-  Modal,
   SearchPill,
   Skeleton,
   TopAppBar,
@@ -29,6 +28,7 @@ import type { MapPoi } from '@/hooks/useMapPois'
 import type { ItineraryStop } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
+import { MapLegalLine } from '../map/MapLegalLine'
 import { useV2Shell } from '../V2Shell'
 import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
@@ -67,11 +67,11 @@ export function PlanScreen({ id }: { id: string }) {
   const [activeDay, setActiveDay] = useState<'all' | Day>('all')
   const [selected, setSelected] = useState<string | undefined>()
   const [snap, setSnap] = useState<SheetSnap>('mid')
-  const [legFor, setLegFor] = useState<number | null>(null)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [liked, setLiked] = useState<boolean | null>(null)
   const [saved, setSaved] = useState<boolean | null>(null)
+  const [savedRelated, setSavedRelated] = useState<Set<string>>(new Set())
 
   const stops = useMemo(() => [...(it?.stops ?? [])].sort((a, b) => a.stop_order - b.stop_order), [it])
   const dayOf = (s: ItineraryStop) => Math.min(Math.max(s.day ?? 1, 1), 8) as Day
@@ -118,7 +118,6 @@ export function PlanScreen({ id }: { id: string }) {
     toast({ type: 'success', message: k('itinerary.copiedToast') })
   }
   const setLegMode = async (from: number, mode: Mode) => {
-    setLegFor(null)
     try {
       await send(`/api/plans/${id}`, 'PATCH', { from_stop_order: from, transport_mode: mode })
       mutate()
@@ -142,21 +141,47 @@ export function PlanScreen({ id }: { id: string }) {
   // ── Panel ──────────────────────────────────────────────────────────────────
   const modeLabel = (m: Mode) => k(`itinerary.transport.${m}`)
   const legOf = (s: ItineraryStop) => it?.legs.find((l) => l.from_stop_order === s.stop_order)
+  // Start times as drawn: each day starts at 09:00 and every stop adds its time there and the leg after it.
+  const startTimes = useMemo(() => {
+    const at = new Map<number, string>()
+    const clock: Record<number, number> = {}
+    for (const s of stops) {
+      const d = dayOf(s)
+      const min = clock[d] ?? 9 * 60
+      at.set(s.stop_order, `${String(Math.floor(min / 60) % 24).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`)
+      const leg = legOf(s)
+      clock[d] = min + s.duration_min + (leg ? Math.max(1, Math.round(leg.estimated_duration_s / 60)) : 0)
+    }
+    return at
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [it])
+  const saveRelated = (rid: string) => {
+    if (!user) return requireSignIn({ title: t('CD1541'), run: () => {} })
+    const next = !savedRelated.has(rid)
+    setSavedRelated((x) => { const n = new Set(x); if (next) n.add(rid); else n.delete(rid); return n })
+    toast({ type: 'success', message: next ? k('itinerary.actions.savedToast') : k('itinerary.actions.unsavedToast') })
+    send('/api/saved/plan', next ? 'POST' : 'DELETE', { plan_id: rid }).catch(() => {
+      setSavedRelated((x) => { const n = new Set(x); if (next) n.delete(rid); else n.add(rid); return n })
+      toast({ type: 'critical', message: t('CD0061') })
+    })
+  }
   const author = it ? it.author.name_preferred ?? (locale === 'ko' ? it.author.name_ko : it.author.name_en) ?? it.author.name_ko ?? '' : ''
 
   let panel: React.ReactNode
   if (isLoading) {
     panel = (
-      <div aria-busy="true" aria-label={k('itinerary.loading')} className="flex flex-col gap-[var(--space-3)] p-[var(--space-4)]">
-        <Skeleton className="h-[40px] w-3/4" />
-        <Skeleton className="h-[20px] w-1/2" />
-        {Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-[64px]" />)}
+      // As drawn: title, owner and stats lines, then three stop blocks, 16 apart.
+      <div aria-busy="true" aria-label={k('itinerary.loading')} className="flex flex-col gap-[var(--space-4)] p-[var(--space-4)]">
+        <Skeleton shape="line" className="h-[var(--space-3)] w-4/5" />
+        <Skeleton shape="line" className="h-[var(--space-3)] w-2/5" />
+        <Skeleton shape="line" className="h-[var(--space-3)] w-full" />
+        {Array.from({ length: 3 }, (_, i) => <Skeleton key={i} className="h-[72px]" />)}
       </div>
     )
   } else if (isPrivate || isNotFound) {
     panel = (
       <div className="p-[var(--space-4)]">
-        <EmptyState title={t('CD1542')} action={<Button size="md" variant="secondary" onClick={() => router.push('/')}>{t('CD1544')}</Button>}>{t('CD1543')}</EmptyState>
+        <EmptyState type="no-results" title={t('CD1542')} action={<Button size="md" variant="secondary" onClick={() => router.push('/')}>{t('CD1544')}</Button>}>{t('CD1543')}</EmptyState>
       </div>
     )
   } else if (isError || !it) {
@@ -184,7 +209,7 @@ export function PlanScreen({ id }: { id: string }) {
             id: String(s.poi.poi_id),
             name: stopName(s, locale),
             day: dayOf(s),
-            meta: formatMinutes(s.duration_min, k),
+            meta: `${formatMinutes(s.duration_min, k)} · ${startTimes.get(s.stop_order)}`,
             note: s.notes ?? undefined,
             imageSrc: s.poi.primary_image_url,
             leg: leg ? { mode: leg.transport_mode, label: modeLabel(leg.transport_mode), time: k('itinerary.stats.min', { min: Math.max(1, Math.round(leg.estimated_duration_s / 60)) }) } : undefined,
@@ -196,13 +221,18 @@ export function PlanScreen({ id }: { id: string }) {
           const s = stops.find((x) => String(x.poi.poi_id) === sid)
           if (s) mapRef.current?.panTo(s.poi.coords_lat, s.poi.coords_lng)
         }}
-        onLeg={isOwner ? (sid) => setLegFor(stops.find((x) => String(x.poi.poi_id) === sid)?.stop_order ?? null) : undefined}
+        legMenu={isOwner ? (sid) => {
+          const order = stops.find((x) => String(x.poi.poi_id) === sid)?.stop_order
+          const current = it.legs.find((l) => l.from_stop_order === order)?.transport_mode
+          return MODES.map((m) => <MenuItem key={m} checked={current === m} onClick={() => order !== undefined && setLegMode(order, m)}>{modeLabel(m)}</MenuItem>)
+        } : undefined}
+        legMenuLabel={(sid) => k('itinerary.transport.changeMode', { mode: modeLabel(it.legs.find((l) => l.from_stop_order === stops.find((x) => String(x.poi.poi_id) === sid)?.stop_order)?.transport_mode ?? 'walk') })}
         related={
           it.related.length ? (
             <ul className="flex flex-col gap-[var(--space-3)]">
               {it.related.map((r) => (
                 <li key={r.id}>
-                  <Card type="compact" href={`/plan/${r.id}`} title={r.title} imageSrc={r.thumbnail_url} meta={`${k('itinerary.related.stops', { count: r.stop_count })} · ${k('itinerary.related.likes', { count: r.like_count })}`} />
+                  <Card type="compact" href={`/plan/${r.id}`} title={r.title} imageSrc={r.thumbnail_url} meta={`${k('itinerary.related.stops', { count: r.stop_count })} · ${k('itinerary.related.likes', { count: r.like_count })}`} save={{ saved: savedRelated.has(r.id), onSave: () => saveRelated(r.id), label: k('itinerary.actions.saveAria') }} />
                 </li>
               ))}
             </ul>
@@ -239,6 +269,8 @@ export function PlanScreen({ id }: { id: string }) {
       routeLegs={routeLegs}
       center={center}
       fitStops
+      // Phones: the sheet (half the screen at mid) covers the map's lower part; fit the route above it.
+      fitBottom={phone && snap !== 'peek' && typeof window !== 'undefined' ? Math.round(window.innerHeight / 2) : 0}
       label={k('itinerary.mapAriaLabel')}
       errorText={GAP.mapError}
     />
@@ -254,13 +286,6 @@ export function PlanScreen({ id }: { id: string }) {
         cancel={<Button variant="secondary" data-autofocus onClick={() => setDeleteOpen(false)}>{k('itinerary.actions.deleteCancel')}</Button>}
         confirm={<Button variant="danger" loading={deleting} onClick={remove}>{k('itinerary.actions.deleteConfirm')}</Button>}
       />
-      <Modal open={legFor !== null} onClose={() => setLegFor(null)} size="sm" title={k('itinerary.transport.changeMode', { mode: modeLabel(it.legs.find((l) => l.from_stop_order === legFor)?.transport_mode ?? 'walk') })} closeLabel={k('badges.detail.close')}>
-        <div role="menu" className="-mx-[var(--space-6)]">
-          {MODES.map((m) => (
-            <MenuItem key={m} checked={it.legs.find((l) => l.from_stop_order === legFor)?.transport_mode === m} onClick={() => legFor !== null && setLegMode(legFor, m)}>{modeLabel(m)}</MenuItem>
-          ))}
-        </div>
-      </Modal>
     </>
   ) : null
 
@@ -269,11 +294,11 @@ export function PlanScreen({ id }: { id: string }) {
       <div className="relative h-[calc(100dvh)] w-full overflow-hidden">
         {/* The map and the sheet end at the navigation bar. */}
         <main id="main" className="absolute inset-x-0 top-0 bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))]">{map}</main>
-        <div className="absolute inset-x-0 top-0 z-20">
+        <div className="absolute inset-x-0 top-0 z-20 pt-[var(--space-2)]">
           <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} />
         </div>
         <BottomSheet type="map" open label={k('itinerary.sheet.ariaLabel')} snap={snap} onSnapChange={setSnap} onClose={() => setSnap('peek')} resizeLabel={k('itinerary.sheet.handle')} className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0">
-          <div className="-mx-[var(--space-4)] h-[calc(100dvh-160px)]">{panel}</div>
+          <div className="-mx-[var(--space-4)] -mt-[var(--space-2)] h-[calc(100dvh-160px)]">{panel}</div>
         </BottomSheet>
         {dialogs}
       </div>
@@ -286,7 +311,8 @@ export function PlanScreen({ id }: { id: string }) {
       </LeftPanel>
       <main id="main" className="relative min-w-0 flex-1">
         {map}
-        <ZoomControl className="absolute bottom-[var(--space-6)] right-[var(--space-6)]" onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} />
+        <MapLegalLine />
+        <ZoomControl className="absolute bottom-[var(--space-4)] right-[var(--space-4)]" onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} />
       </main>
       {dialogs}
     </div>
