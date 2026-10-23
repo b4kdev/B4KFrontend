@@ -40,7 +40,7 @@ import type { SavedData } from '@/app/api/saved/route'
 import type { ItineraryDetail } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
-import { MapLegalLine } from '../map/MapLegalLine'
+import { ABOVE_LEGAL_LINE, MapLegalLine } from '../map/MapLegalLine'
 import { useV2Shell } from '../V2Shell'
 import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
@@ -596,7 +596,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           {searchArea}
         </div>
         <MapLegalLine />
-        <ZoomControl className="absolute bottom-[var(--space-4)] right-[var(--space-4)]" onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} atMax={zoom >= 18} atMin={zoom <= 6} />
+        <ZoomControl className={cn('absolute right-[var(--space-4)]', ABOVE_LEGAL_LINE)} onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} atMax={zoom >= 18} atMin={zoom <= 6} />
       </main>
       {dialogs}
     </div>

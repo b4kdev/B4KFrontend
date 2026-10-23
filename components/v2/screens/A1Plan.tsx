@@ -30,7 +30,7 @@ import type { ItineraryStop } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
 import { jsonFetch } from './A2Home'
 import { useGap } from '../gaps'
-import { MapLegalLine } from '../map/MapLegalLine'
+import { ABOVE_LEGAL_LINE, MapLegalLine } from '../map/MapLegalLine'
 import { useV2Shell } from '../V2Shell'
 import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
@@ -318,7 +318,7 @@ export function PlanScreen({ id }: { id: string }) {
       <main id="main" className="relative min-w-0 flex-1">
         {map}
         <MapLegalLine />
-        <ZoomControl className="absolute bottom-[var(--space-4)] right-[var(--space-4)]" onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} />
+        <ZoomControl className={`absolute right-[var(--space-4)] ${ABOVE_LEGAL_LINE}`} onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} />
       </main>
       {dialogs}
     </div>
