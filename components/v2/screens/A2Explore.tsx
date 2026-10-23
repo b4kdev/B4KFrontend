@@ -37,6 +37,7 @@ import { useGap } from '../gaps'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 import { CATEGORIES, jsonFetch, RowState, SectionSkeletons, useContinueDraft } from './A2Home'
+import { NotFoundScreen } from './A4Pages'
 
 // Explore (A2): Category page, See all list, Collection page,
 // Category special pages. Live data from /api/explore/*. Desktop: Left panel Index (280)
@@ -361,7 +362,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
           ))}
         </div>
       ) : null}
-      {failed ? <EmptyState type="error" container="plain" className="lg:flex-1" title={t('CD1571')} action={<Button size="md" variant="secondary" leadingIcon={<RotateCw />} onClick={() => location.reload()}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
+      {failed ? <EmptyState type="error" container="plain" className="lg:flex-1" title={t('CD1571')} action={<Button size="md" variant="secondary" leadingIcon={<RotateCw />} onClick={() => { explore.mutate(); trending.mutate(); plans.mutate() }}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
       {!loading && !failed && !filtered.length ? (
         <EmptyState type="no-results" className="lg:flex-1" title={GAP.noCategoryTrending(chip === 'all' ? '' : t(CATEGORIES.find((c) => c.slug === chip)?.label ?? 'CD0251'))} action={<Button size="md" variant="secondary" onClick={() => setChip('all')}>{t('CD1433')}</Button>}>{t('CD1570')}</EmptyState>
       ) : null}
@@ -393,6 +394,8 @@ export function CollectionScreen({ slug }: { slug: string }) {
   const cut = data?.title?.indexOf(' — ') ?? -1
   const title = cut > 0 ? data!.title.slice(0, cut) : data?.title
   const subtitle = cut > 0 ? data!.title.slice(cut + 3) : undefined
+  // A collection that does not exist is the site's Page not found, not a load error.
+  if (error === 404) return <NotFoundScreen />
   const body = (
     <div className="flex flex-col gap-[var(--space-4)]">
       {title ? (
