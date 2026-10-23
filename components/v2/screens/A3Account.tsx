@@ -11,7 +11,6 @@ import {
   Avatar,
   Button,
   Card,
-  Chip,
   Dialog,
   EmptyState,
   IconButton,
@@ -30,6 +29,7 @@ import {
   Toggle,
 } from '@/components/library'
 import { usePhone } from '@/components/library/hooks'
+import { FOCUS_RING } from '@/components/library/styles'
 import { cn } from '@/lib/cn'
 import { useAuth } from '@/contexts/AuthContext'
 import { getThemeChoice, setTheme, type ThemeChoice } from '@/lib/theme'
@@ -216,36 +216,73 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
 
 // ── Badges ─────────────────────────────────────────────────────────
 
+// Badges come in two drawn groups: places you save (Exploring Korea) and what others do with your
+// plans (Making plans). Locked badges say how to earn them; the server has no progress counts yet.
+const PLAN_BADGES = new Set(['creator', 'social'])
+// Category names and their Explore pages for the "Find … places" action.
+const BADGE_CATEGORY: Record<string, { cd: string; slug: string }> = {
+  kpop: { cd: 'CD0254', slug: 'k-pop' }, kdrama: { cd: 'CD0248', slug: 'k-drama' }, kbeauty: { cd: 'CD0242', slug: 'k-beauty' },
+  kculture: { cd: 'CD0245', slug: 'k-culture' }, food: { cd: 'CD0251', slug: 'k-food' },
+}
+// How to earn, from the Copy Deck where it has the badge; else the server's description.
+const BADGE_HOW_CD: Record<string, string> = { 'first-save': 'CD1658', 'map-maker': 'CD1659', 'k-pop-pilgrim': 'CD1660' }
+
 export function BadgesScreen() {
   const badgeName = useBadgeName()
   const k = useCdKey()
   const t = useCd()
   const locale = useLocale()
+  const router = useRouter()
+  const phone = usePhone()
   const { user } = useAuth()
   const { toast } = useV2Shell()
   const { data, error, isLoading, mutate } = useSWR<BadgesData>('/api/badges', jsonFetch)
-  const [rarity, setRarity] = useState('all')
   const [open, setOpen] = useState<BadgeT | null>(null)
-  const list = (data?.badges ?? []).filter((b) => rarity === 'all' || b.rarity === rarity)
-  const pinned = (data?.badges ?? []).filter((b) => b.is_pinned).length
+  const badges = data?.badges ?? []
+  const pinned = badges.filter((b) => b.is_pinned).length
+  const day = (iso: string) => new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(new Date(iso))
+  const how = (b: BadgeT) => (BADGE_HOW_CD[b.slug] ? t(BADGE_HOW_CD[b.slug]) : b.unlock_criteria.description)
+  const groups = [
+    { id: 'exploring', title: t('CD1663'), sub: 'CD1664', list: badges.filter((b) => !PLAN_BADGES.has(b.category)) },
+    { id: 'plans', title: t('CD1665'), sub: 'CD1666', list: badges.filter((b) => PLAN_BADGES.has(b.category)) },
+  ]
+  const category = (b: BadgeT) => (BADGE_CATEGORY[b.category] ? t(BADGE_CATEGORY[b.category].cd) : groups.find((g) => g.list.includes(b))?.title ?? '')
+  const find = open && !open.earned ? BADGE_CATEGORY[open.category] : undefined
   return (
-    <V2Page bar={{ type: 'page', title: k('badges.title') }}>
-      <div className="flex flex-col gap-[var(--space-6)]">
-        <header className="flex flex-col gap-[var(--space-2)]">
-          <h1 className="type-display-h1 max-lg:hidden">{k('badges.title')}</h1>
+    // Figma: 16 above and below on phones; 24 above and 32 below on desktop.
+    <V2Page bar={{ type: 'page', title: k('badges.title') }} className="max-lg:py-[var(--space-4)] lg:pb-[var(--space-8)]">
+      <div className="mx-auto flex w-full max-w-[960px] flex-col gap-[var(--space-6)]">
+        {/* Desktop only: phones carry the title in the top bar and draw no count line. */}
+        <header className="flex flex-col gap-[var(--space-1)] max-lg:hidden">
+          <h1 className="type-display-h3">{k('badges.title')}</h1>
           <p className="type-body-base text-ui-fg-muted">{user ? t('CD1590', { earned: data?.earned_count ?? 0, total: data?.total_count ?? 0 }) : t('CD1591')}</p>
         </header>
-        <div role="group" aria-label={k('badges.filter.ariaLabel')} className="flex flex-wrap gap-[var(--space-2)]">
-          {['all', 'common', 'rare', 'epic', 'legendary'].map((r) => <Chip key={r} selected={rarity === r} onClick={() => setRarity(r)}>{k(`badges.filter.${r}`)}</Chip>)}
-        </div>
         {isLoading ? <Skeleton className="h-[240px]" /> : null}
         {error ? <EmptyState type="error" container="bordered" title={k('badges.error.title')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{k('badges.error.retry')}</Button>} /> : null}
-        <ul className="grid grid-cols-3 gap-[var(--space-4)] sm:grid-cols-4 lg:grid-cols-6">
-          {list.map((b) => <li key={b.id} className="flex items-start justify-center"><BadgeTile b={b} onOpen={() => setOpen(b)} /></li>)}
-        </ul>
+        {groups.map((g) => g.list.length ? (
+          <section key={g.id} aria-labelledby={`badges-${g.id}`} className="flex flex-col gap-[var(--space-6)]">
+            <SectionHeader id={`badges-${g.id}`} title={g.title} subtitle={user ? t(g.sub, { earned: g.list.filter((b) => b.earned).length, total: g.list.length }) : undefined} />
+            <ul className="flex flex-wrap gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-6)]">
+              {g.list.map((b) => (
+                <li key={b.id}>
+                  <button type="button" onClick={() => setOpen(b)} className={cn('flex rounded-xl text-left', FOCUS_RING)}>
+                    <AchievementBadge name={badgeName(b)} detail={b.earned && b.earned_at ? k('badges.badge.earnedOn', { date: day(b.earned_at) }) : how(b)} icon={<Trophy />} rarity={b.rarity} locked={!b.earned} lockedLabel={k('badges.badge.locked')} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null)}
       </div>
-      <Modal open={!!open} onClose={() => setOpen(null)} size="sm" title={open ? badgeName(open) : ''} closeLabel={k('badges.detail.close')}
-        primaryAction={open?.earned ? (
+      <Dialog
+        open={!!open}
+        onCancel={() => setOpen(null)}
+        title={open ? badgeName(open) : ''}
+        body={open ? (open.earned && open.earned_at
+          ? t('CD1671', { category: category(open), rarity: k(`badges.rarity.${open.rarity}`), date: day(open.earned_at) })
+          : `${category(open)} · ${k(`badges.rarity.${open.rarity}`)} · ${k('badges.badge.locked')}. ${how(open)}`) : ''}
+        cancel={<Button variant="secondary" data-autofocus onClick={() => setOpen(null)}>{phone ? k('saved.folder.cancel') : k('badges.detail.close')}</Button>}
+        confirm={open?.earned ? (
           <Button
             onClick={async () => {
               if (!open) return
@@ -257,20 +294,10 @@ export function BadgesScreen() {
           >
             {open.is_pinned ? k('badges.detail.unpin') : k('badges.detail.pin')}
           </Button>
+        ) : find ? (
+          <Button onClick={() => router.push(`/explore/${find.slug}`)}>{t('CD1673', { category: t(find.cd) })}</Button>
         ) : undefined}
-      >
-        {open ? (
-          <div className="flex flex-col items-center gap-[var(--space-4)] pb-[var(--space-2)]">
-            <AchievementBadge name={badgeName(open)} detail={k(`badges.rarity.${open.rarity}`)} icon={BADGE_ICON(open.category)} rarity={open.rarity} locked={!open.earned} />
-            <dl className="grid w-full grid-cols-2 gap-[var(--space-2)] type-body-caption">
-              <dt className="text-ui-fg-muted">{k('badges.detail.category')}</dt><dd>{open.category}</dd>
-              <dt className="text-ui-fg-muted">{k('badges.detail.status')}</dt>
-              <dd>{open.earned && open.earned_at ? k('badges.detail.earnedOn', { date: new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(open.earned_at)) }) : k('badges.badge.locked')}</dd>
-              <dt className="text-ui-fg-muted">{k('badges.detail.unlockCriteria')}</dt><dd>{open.unlock_criteria.description}</dd>
-            </dl>
-          </div>
-        ) : null}
-      </Modal>
+      />
     </V2Page>
   )
 }
