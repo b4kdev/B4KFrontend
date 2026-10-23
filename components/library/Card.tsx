@@ -81,7 +81,8 @@ export function Card(props: CardProps) {
       return (
         <article className={cn(SHELL, 'flex-col', className)}>
           <div className="relative">
-            <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="(min-width: 1024px) 280px, 50vw" />
+            {/* A place photo is named after the place unless the caller gives its own description. */}
+            <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? title} sizes="(min-width: 1024px) 280px, 50vw" />
             <div className="absolute left-[var(--space-2)] top-[var(--space-2)] z-10 flex gap-[var(--gap-xs)]">
               {props.dDay ? <Badge variant="strong">{props.dDay}</Badge> : null}
               {props.sponsored ? <Badge variant="on-image">{props.sponsored}</Badge> : null}
