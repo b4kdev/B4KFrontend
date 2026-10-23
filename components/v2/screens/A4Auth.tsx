@@ -111,7 +111,7 @@ export function ConsentScreen() {
     <V2Page bar={{ type: 'none' }} noFooter className="flex items-center justify-center">
       {/* The step sits over the screen: centered over the scrim on desktop, a sheet from the bottom on phones. */}
       <Scrim kind="blocking" className="z-40" />
-      <div className={phone ? 'fixed inset-x-0 bottom-0 z-40 max-h-[90dvh] overflow-y-auto rounded-t-3xl bg-ui-bg-elevated pb-[env(safe-area-inset-bottom)]' : 'fixed left-1/2 top-1/2 z-40 max-h-[90dvh] w-[calc(100%-var(--space-8))] max-w-[480px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto'}>
+      <div className={phone ? 'fixed inset-x-0 bottom-0 z-40 max-h-[90dvh] overflow-y-auto rounded-t-3xl bg-ui-bg-elevated pb-[env(safe-area-inset-bottom)]' : 'fixed left-1/2 top-1/2 z-40 max-h-[90dvh] w-[calc(100%-var(--space-8))] max-w-[420px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto'}>
       <ConsentStep
         title={t('CD1504')}
         items={[
