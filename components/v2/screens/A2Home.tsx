@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useLocale } from 'next-intl'
 import useSWR from 'swr'
+import { RotateCw } from 'lucide-react'
 import { Link as IntlLink } from '@/i18n/navigation'
 import {
   Button,
@@ -46,13 +47,45 @@ export const CATEGORIES = [
   { slug: 'k-food', label: 'CD0251', sub: 'CD1554', image: '/mock-images/kbbq.png' },
 ] as const
 
+/** Loading cards as drawn: a 4:3 photo and two lines, 240 wide on phones and 296 on desktop. */
+function CardSkeletons() {
+  return (
+    <div className="flex gap-[var(--space-3)] overflow-hidden">
+      {Array.from({ length: 4 }, (_, i) => (
+        <div key={i} className="flex w-[240px] shrink-0 flex-col gap-[var(--space-2)] lg:w-[296px]">
+          <Skeleton className="aspect-[4/3] w-full" />
+          <Skeleton shape="line" className="h-[14px] w-4/5" />
+          <Skeleton shape="line" className="h-[14px] w-1/2" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/** Home while its rows load, as drawn: the hero block, then two sections of a title line and cards. */
+function HomeSkeleton({ heroClassName }: { heroClassName: string }) {
+  return (
+    <div aria-busy className="pb-[var(--space-8)]">
+      <Skeleton className={`h-[var(--hero-height-home)] w-full ${heroClassName}`} />
+      <div className="mx-auto w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] px-[var(--grid-gutter-mobile)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
+        {[0, 1].map((i) => (
+          <div key={i} className="flex flex-col gap-[var(--space-4)] py-[var(--space-6)]">
+            <Skeleton shape="line" className="h-[20px] w-[180px]" />
+            <CardSkeletons />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function RowState({ title, error, onRetry, loading }: { title: string; error?: unknown; onRetry: () => void; loading?: boolean }) {
   const t = useCd()
   if (loading) {
     return (
       <section aria-busy className="flex flex-col gap-[var(--space-4)]">
         <SectionHeader title={title} />
-        <div className="flex gap-[var(--space-4)] overflow-hidden">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="aspect-[4/3] w-[280px] shrink-0" />)}</div>
+        <CardSkeletons />
       </section>
     )
   }
@@ -60,7 +93,7 @@ export function RowState({ title, error, onRetry, loading }: { title: string; er
   return (
     <section className="flex flex-col gap-[var(--space-4)]">
       <SectionHeader title={title} />
-      <EmptyState type="error" container="bordered" title={t('CD1571')} action={<Button size="md" variant="secondary" onClick={onRetry}>{t('CD0125')}</Button>}>
+      <EmptyState type="error" container="bordered" title={t('CD1571')} action={<Button size="md" variant="secondary" leadingIcon={<RotateCw />} onClick={onRetry}>{t('CD0125')}</Button>}>
         {t('CD1560')}
       </EmptyState>
     </section>
@@ -121,6 +154,16 @@ export function HomeScreen() {
 
   const name = (p: HomeTrendingPoi) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
 
+  // Phones: the hero runs up under the floating top bar, so it grows by the bar's height.
+  const heroPhone = 'max-lg:h-[calc(var(--hero-height-home)+var(--fab-size)+env(safe-area-inset-top))]'
+  if (slides.isLoading && trending.isLoading) {
+    return (
+      <V2Page bleed underBar>
+        <HomeSkeleton heroClassName={heroPhone} />
+      </V2Page>
+    )
+  }
+
   return (
     <V2Page bleed underBar>
       {slides.data?.length ? (
@@ -128,8 +171,7 @@ export function HomeScreen() {
           {slides.data.map((s, i) => (
             <Hero
               key={s.id}
-              // Phones: the hero runs up under the floating top bar, so it grows by the bar's height.
-              className="max-lg:h-[calc(var(--hero-height-home)+var(--fab-size)+env(safe-area-inset-top))]"
+              className={heroPhone}
               as={i === 0 ? 'h1' : 'h2'}
               imageSrc={s.image_url}
               eyebrow={s.badge}
@@ -140,10 +182,10 @@ export function HomeScreen() {
           ))}
         </Carousel>
       ) : slides.isLoading ? (
-        <Skeleton className="h-[var(--hero-height-home)] w-full" />
+        <Skeleton className={`h-[var(--hero-height-home)] w-full ${heroPhone}`} />
       ) : null}
 
-      <div className="mx-auto flex w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] flex-col gap-[var(--space-12)] px-[var(--grid-gutter-mobile)] py-[var(--space-10)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
+      <div className="mx-auto flex w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] flex-col gap-[var(--space-12)] px-[var(--grid-gutter-mobile)] pb-[calc(var(--space-6)+var(--space-8))] pt-[var(--space-6)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
         <section aria-labelledby="explore-cats" className="flex flex-col gap-[var(--space-4)]">
           <SectionHeader id="explore-cats" title={t('CD0426')} />
           <ul className="-mx-[var(--grid-gutter-mobile)] flex gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
