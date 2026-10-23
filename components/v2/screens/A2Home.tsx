@@ -140,7 +140,7 @@ export function HomeScreen() {
   const dDay = useDDay()
   const t = useCd()
   const locale = useLocale()
-  const { openQuickPlan } = useV2Shell()
+  const { openQuickPlan, toast } = useV2Shell()
   const { user } = useAuth()
   const slides = useSWR<HomeCarouselSlide[]>('/api/home/carousel', jsonFetch)
   const trending = useSWR<HomeTrendingPoi[]>('/api/home/trending', jsonFetch)
@@ -242,10 +242,12 @@ export function HomeScreen() {
             tags={interestTags(categories).map((c) => ({ id: c.slug, label: labelOf(c, locale) }))}
             selected={picked}
             onToggle={(id) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : p.length < 10 ? [...p, id] : p))}
-            onSave={async () => {
-              await apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) }).catch(() => {})
-              doneInterests()
-            }}
+            // A failed save keeps the card and its picks, with the error toast.
+            onSave={() =>
+              apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) })
+                .then(doneInterests)
+                .catch(() => toast({ type: 'critical', message: t('CD0061') }))
+            }
             onDismiss={doneInterests}
             labels={{ save: t('CD1610'), dismiss: t('CD0128') }}
           />
