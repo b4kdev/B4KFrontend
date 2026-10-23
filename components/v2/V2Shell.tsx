@@ -42,7 +42,8 @@ type ShellCtx = {
   openLanguage: () => void
   user: ShellUser
   labels: ShellLabels
-  toast: (t: { type?: 'info' | 'success' | 'warning' | 'critical'; message: string }) => void
+  /** action: one text button (Undo); the toast then stays 8 s instead of 4. */
+  toast: (t: { type?: 'info' | 'success' | 'warning' | 'critical'; message: string; action?: { label: string; onClick: () => void } }) => void
   /** Runs `run` now when signed in; a guest gets the sign-in gate and `run` after the sign-in. */
   requireSignIn: (r: GateRequest) => void
 }
@@ -114,7 +115,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const [gate, setGate] = useState<GateRequest | null>(null)
   const router = useRouter()
   const signOut = useV2SignOut()
-  const [toastMsg, setToastMsg] = useState<{ type?: 'info' | 'success' | 'warning' | 'critical'; message: string } | null>(null)
+  const [toastMsg, setToastMsg] = useState<{ type?: 'info' | 'success' | 'warning' | 'critical'; message: string; action?: { label: string; onClick: () => void } } | null>(null)
 
   // A Page not found render can replace the document after the boot script ran: set the theme again.
   useEffect(() => {
@@ -142,7 +143,8 @@ export default function V2Shell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!toastMsg || toastMsg.type === 'critical') return
-    const id = setTimeout(() => setToastMsg(null), 4000)
+    // A toast with an action stays longer, so the action can be reached in time.
+    const id = setTimeout(() => setToastMsg(null), toastMsg.action ? 8000 : 4000)
     return () => clearTimeout(id)
   }, [toastMsg])
 
@@ -255,6 +257,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           <Toast
             type={toastMsg.type}
             message={toastMsg.message}
+            action={toastMsg.action ? { label: toastMsg.action.label, onClick: () => { toastMsg.action?.onClick(); setToastMsg(null) } } : undefined}
             // A Critical toast stays until closed, so it keeps its close button.
             {...(toastMsg.type === 'critical' ? { onClose: () => setToastMsg(null), closeLabel: t('CD0082') } : {})}
             className="pointer-events-auto w-[360px] max-w-full"

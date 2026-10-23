@@ -74,6 +74,9 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const { labels, openDrawer, toast, requireSignIn } = useV2Shell()
   const mapRef = useRef<V2MapHandle>(null)
   const draft = usePlanDraft()
+  // Toast actions run later (Undo): they call the draft as it is then, not as it was.
+  const latestDraft = useRef(draft)
+  latestDraft.current = draft
 
   const [bounds, setBounds] = useState<MapBounds | null>(null)
   // Filter results stay where they were fetched; after a pan the map offers Search this area.
@@ -252,7 +255,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const addToPlan = (poi: MapPoi) => {
     const day = draft.add(poi, typeof activeDay === 'number' ? activeDay : undefined)
     if (day === null) toast({ type: 'warning', message: k('map.plan.maxStopsToast', { max: MAX_STOPS }) })
-    else toast({ type: 'success', message: GAP.addedToDay(day) })
+    else toast({ type: 'success', message: GAP.addedToDay(day), action: { label: t('CD1428'), onClick: () => latestDraft.current.remove(poi.poi_id) } })
   }
   // `on` = currently saved / liked; after a sign-in the action only ever turns it on.
   // signedIn: the save a guest started, finished after the sign-in (its own toast).
