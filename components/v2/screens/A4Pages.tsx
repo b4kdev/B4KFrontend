@@ -339,10 +339,11 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
 
 export function NotFoundScreen() {
   const t = useCd()
-  // Figma: the Empty state, then the actions 24 below it (not inside it).
+  // Figma: the Empty state (full width on phones, 400 on desktop), then the actions below it
+  // (not inside it): 16 on phones, 24 on desktop.
   return (
-    <V2Page bar={{ type: 'home' }} className="flex flex-col items-center justify-center gap-[var(--space-6)]">
-      <EmptyState type="no-results" titleAs="h1" title={t('CD0116')}>{t('CD0115')}</EmptyState>
+    <V2Page bar={{ type: 'home' }} className="flex flex-col items-center justify-center gap-[var(--space-4)] lg:gap-[var(--space-6)]">
+      <EmptyState type="no-results" titleAs="h1" title={t('CD0116')} className="w-full lg:w-[400px]">{t('CD0115')}</EmptyState>
       <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
         <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0114')}</IntlLink>
         <IntlLink href="/map" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0481')}</IntlLink>
@@ -353,9 +354,10 @@ export function NotFoundScreen() {
 
 export function ErrorScreen({ reset }: { reset: () => void }) {
   const t = useCd()
+  // Same layout as the not found page.
   return (
-    <V2Page bar={{ type: 'home' }} className="flex flex-col items-center justify-center gap-[var(--space-6)]">
-      <EmptyState type="error" titleAs="h1" title={t('CD0113')}>{t('CD0111')}</EmptyState>
+    <V2Page bar={{ type: 'home' }} className="flex flex-col items-center justify-center gap-[var(--space-4)] lg:gap-[var(--space-6)]">
+      <EmptyState type="error" titleAs="h1" title={t('CD0113')} className="w-full lg:w-[400px]">{t('CD0111')}</EmptyState>
       <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
         <Button onClick={reset}>{t('CD0110')}</Button>
         <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0112')}</IntlLink>
