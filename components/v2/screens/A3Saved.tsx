@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
+import { cn } from '@/lib/cn'
 import { ArrowLeft, Bookmark, Ellipsis, Folder, Map as MapIcon, Pencil, Share2, Trash2, Lock, X } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
@@ -54,7 +55,7 @@ export function SignedOutPrompt({ title, text, icon, plain, className }: { title
       icon={icon}
       className={className}
       title={title}
-      action={<Button size="lg" onClick={() => requireSignIn({ title, run: () => {} })}>{t('CD0050')}</Button>}
+      action={<Button size="md" onClick={() => requireSignIn({ title, run: () => {} })}>{t('CD0050')}</Button>}
     >
       {text}
     </EmptyState>
@@ -112,9 +113,9 @@ export function SavedScreen() {
   const folder = data?.folders.find((f) => f.id === folderId)
 
   const tabs = [
-    { id: 'places', label: k('saved.tabs.places') },
-    { id: 'my-plans', label: k('saved.tabs.myPlans') },
-    { id: 'saved-plans', label: k('saved.tabs.savedPlans') },
+    { id: 'places', label: t('CD1238') },
+    { id: 'my-plans', label: t('CD1237') },
+    { id: 'saved-plans', label: t('CD1239') },
   ]
   // Figma: Saved is a top-level destination (phone bar with Menu and search), title as a
   // section header on every width, then Tabs, then the Places toolbar (New list, Plan from Saved).
@@ -122,15 +123,18 @@ export function SavedScreen() {
   const toolbar = (
     <div className="flex items-center justify-between gap-[var(--space-4)]">
       <Button variant="ghost" size="md" onClick={() => setSheet({ mode: 'new' })}>{t('CD1206')}</Button>
-      <IntlLink href="/saved/plan" aria-disabled={!data?.pois.length} className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse aria-disabled:pointer-events-none aria-disabled:bg-ui-bg-disabled aria-disabled:text-ui-fg-disabled">
+      <IntlLink href="/saved/plan" aria-disabled={!!data && !data.pois.length} className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse aria-disabled:pointer-events-none aria-disabled:bg-ui-bg-disabled aria-disabled:text-ui-fg-disabled">
         {t('CD1363')}
       </IntlLink>
     </div>
   )
 
+  // Figma: content 16 from the bar and the footer on phones, 24 under the Header and 32 above the footer on desktop.
+  const page = 'flex flex-col max-lg:py-[var(--space-4)] lg:pb-[var(--space-8)]'
+
   if (!user) {
     return (
-      <V2Page className="flex flex-col">
+      <V2Page className={page}>
         {/* Figma: the tabs stay; a plain prompt with the bookmark icon fills the page. */}
         <div className="flex flex-1 flex-col gap-[var(--space-4)]">
           {head}
@@ -158,23 +162,23 @@ export function SavedScreen() {
           </DropdownMenu>
         ) : null}
       </div>
-      <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">
+      <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4 lg:gap-[var(--space-4)]">
         {folder.pois.map((p) => (
           <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /></li>
         ))}
       </ul>
     </div>
   ) : data && !data.pois.length ? (
-    <EmptyState icon={<Bookmark />} title={k('saved.empty.places.title')} className="flex-1" action={<IntlLink href="/map" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('saved.empty.places.cta')}</IntlLink>}>{t('CD1429')}</EmptyState>
+    <EmptyState icon={<Bookmark />} title={k('saved.empty.places.title')} className="flex-1" action={<IntlLink href="/map" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{t('CD1430')}</IntlLink>}>{t('CD1429')}</EmptyState>
   ) : (
     <div className="flex flex-col gap-[var(--space-4)]">
-      <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">
+      <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4 lg:gap-[var(--space-4)]">
         {data?.folders.map((f) => (
           <li key={f.id}>
             <button type="button" onClick={() => setFolderId(f.id)} aria-label={k('saved.folder.openAriaLabel', { name: f.name })} className="block w-full text-left focus-visible:shadow-focus-ring focus-visible:outline-none">
               <span className="flex flex-col bg-ui-bg-raised hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]">
                 <ListCover name={f.name} photos={f.pois.map((p) => p.primary_image_url).filter((u): u is string => !!u)} />
-                <span className="flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
+                <span className="flex flex-col gap-[var(--space-1)] bg-ui-bg-raised p-[var(--space-3)]">
                   <span className="type-title-card text-ui-fg">{f.name}</span>
                   <span className="type-body-caption text-ui-fg-muted">{k('saved.folder.poiCount', { count: f.pois.length })}</span>
                 </span>
@@ -201,16 +205,16 @@ export function SavedScreen() {
           renderLink={({ href, className, children }) => (
             <div className="flex items-center">
               <IntlLink href={href} className={`${className} flex-1`}>{children}</IntlLink>
-              <DropdownMenu label={p.title} align="end" trigger={<IconButton label={k('saved.myPlan.ariaLabel', { title: p.title })} icon={<Ellipsis />} className="mr-[var(--space-2)]" />}>
+              <DropdownMenu label={p.title} align="end" trigger={<IconButton label={k('saved.myPlan.ariaLabel', { title: p.title })} icon={<Ellipsis />} className="mr-[var(--space-4)]" />}>
                 <MenuGroup>
-                  <MenuItem icon={<Pencil />} onClick={() => router.push(`/map?plan=edit&id=${p.id}`)}>{k('saved.myPlan.edit')}</MenuItem>
+                  <MenuItem icon={<Pencil />} onClick={() => router.push(`/map?plan=edit&id=${p.id}`)}>{t('CD1487')}</MenuItem>
                   <MenuItem icon={<Share2 />} onClick={() => { navigator.clipboard?.writeText(`${location.origin}/${locale}/plan/${p.id}`); toast({ type: 'success', message: k('profile.trips.card.shareCopiedToast') }) }}>{k('saved.myPlan.share')}</MenuItem>
                   {!p.is_draft ? (
-                    <MenuItem icon={<Lock />} onClick={async () => { await send(`/api/plans/${p.id}`, 'PATCH', { is_published: false }).catch(() => {}); mutate() }}>{k('profile.settings.privacy.private')}</MenuItem>
+                    <MenuItem icon={<Lock />} onClick={async () => { await send(`/api/plans/${p.id}`, 'PATCH', { is_published: false }).catch(() => {}); mutate() }}>{t('CD0517')}</MenuItem>
                   ) : null}
                 </MenuGroup>
                 <MenuGroup>
-                  <MenuItem icon={<Trash2 />} variant="danger" onClick={() => setDel({ kind: 'plan', id: p.id, name: p.title })}>{k('saved.myPlan.delete')}</MenuItem>
+                  <MenuItem icon={<Trash2 />} variant="danger" onClick={() => setDel({ kind: 'plan', id: p.id, name: p.title })}>{t('CD1454')}</MenuItem>
                 </MenuGroup>
               </DropdownMenu>
             </div>
@@ -223,9 +227,9 @@ export function SavedScreen() {
   )
 
   const savedPlans = data?.plans.length ? (
-    <ul className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">
+    <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4 lg:gap-[var(--space-4)]">
       {data.plans.map((p) => (
-        <li key={p.id}><Card type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.saves_count)} stops={k('saved.plan.stops', { count: p.stop_count })} /></li>
+        <li key={p.id}><Card type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.saves_count)} stops={`${k('saved.plan.stops', { count: p.stop_count })} · ${k('saved.plan.days', { count: p.duration_days })}`} /></li>
       ))}
     </ul>
   ) : (
@@ -233,12 +237,12 @@ export function SavedScreen() {
   )
 
   return (
-    <V2Page className="flex flex-col">
+    <V2Page className={page}>
       <div className="flex flex-1 flex-col gap-[var(--space-4)]">
         {head}
         <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={(v) => { setTab(v); setFolderId(null) }} tabs={tabs} className="self-start" />
         {tab === 'places' && !folder ? toolbar : null}
-        {isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div> : null}
+        {isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4 lg:gap-[var(--space-4)]">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-0 pb-[calc(75%+var(--space-16)+var(--space-1))]" />)}</div> : null}
         {error ? <EmptyState type="error" container="bordered" title={k('saved.error.title')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{k('saved.error.retry')}</Button>} /> : null}
         {data ? (tab === 'places' ? placesView : tab === 'my-plans' ? myPlans : savedPlans) : null}
       </div>
@@ -393,7 +397,7 @@ export function PlanFromSavedScreen() {
 
 function ListCover({ name, photos }: { name: string; photos: string[] }) {
   return (
-    <span aria-hidden className="relative block aspect-[4/3] w-full overflow-hidden bg-ui-state-selected">
+    <span aria-hidden className={cn('relative block w-full overflow-hidden bg-ui-state-selected', photos.length >= 4 ? 'aspect-[2/1]' : 'aspect-[4/3]')}>
       {photos.length >= 4 ? (
         <span className="grid size-full grid-cols-2 grid-rows-2 gap-[var(--space-0-5)] bg-ui-bg">
           {photos.slice(0, 4).map((src) => (
