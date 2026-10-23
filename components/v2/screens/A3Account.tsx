@@ -99,10 +99,8 @@ export function ProfileOwnScreen() {
             avatarSrc={p.avatar_url}
             stats={[
               { number: p.trips_count, label: k('profile.header.tripsLabel') },
-              ...(GAMIFICATION ? [
-                { number: p.saves_count, label: k('profile.header.savesLabel') },
-                { number: p.badges_count, label: k('profile.header.badgesLabel') },
-              ] : []),
+              { number: p.saves_count, label: k('profile.header.savesLabel') },
+              ...(GAMIFICATION ? [{ number: p.badges_count, label: k('profile.header.badgesLabel') }] : []),
             ]}
             badges={GAMIFICATION && p.pinned_badges.length ? p.pinned_badges.map((b) => <AchievementBadge key={b.id} name={badgeName(b)} detail={k(`badges.rarity.${b.rarity}`)} icon={<Trophy />} rarity={b.rarity} />) : undefined}
             action={<IntlLink href="/settings" className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover"><Pencil aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1515')}</IntlLink>}
@@ -190,10 +188,8 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
             avatarSrc={p.avatar_url}
             stats={[
               { number: p.trips_count, label: k('profile.header.tripsLabel') },
-              ...(GAMIFICATION ? [
-                { number: p.saves_count, label: k('profile.header.savesLabel') },
-                { number: p.badges_count, label: k('profile.header.badgesLabel') },
-              ] : []),
+              { number: p.saves_count, label: k('profile.header.savesLabel') },
+              ...(GAMIFICATION ? [{ number: p.badges_count, label: k('profile.header.badgesLabel') }] : []),
             ]}
             actionInRow
             action={<IconButton variant="secondary" label={k('saved.myPlan.share')} icon={<Share2 />} onClick={() => { navigator.clipboard?.writeText(`${location.origin}/${locale}/profile/${id}`); toast({ type: 'success', message: k('profile.trips.card.shareCopiedToast') }) }} />}
