@@ -516,6 +516,8 @@
     "resetPassword": "パスワードの再設定",
     "linkExpired": "リンクの有効期限切れ",
     "interestsPicked": "{count}件選択 · ホームとクイックプランに使用",
-    "searchArea": "このエリアを検索"
+    "searchArea": "このエリアを検索",
+    "dayTotal": "{n}日目 · {time} · {max}か所中{count}か所",
+    "allDaysTotal": "全日程 · {time} · {count}か所"
   }
 }

@@ -50,6 +50,8 @@ export function useGap() {
       interestsPicked: (count: number) => t('interestsPicked', { count }),
       // Map: refetch the filter results for the area in view after a pan.
       searchArea: t('searchArea'),
+      dayTotal: (n: number, time: string, count: number, max: number) => t('dayTotal', { n, time, count, max }), // CD-1481 "Day 1 · 3h 15m · 3 of 6 stops"
+      allDaysTotal: (time: string, count: number) => t('allDaysTotal', { time, count }), // CD-1549 "All days · 5h 45m · 5 stops"
     }),
     [t],
   )

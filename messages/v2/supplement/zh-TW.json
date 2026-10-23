@@ -516,6 +516,8 @@
     "resetPassword": "重設密碼",
     "linkExpired": "連結已過期",
     "interestsPicked": "已選 {count} 個 · 用於首頁和快速行程",
-    "searchArea": "搜尋這個區域"
+    "searchArea": "搜尋這個區域",
+    "dayTotal": "第{n}天 · {time} · {count}/{max} 個地點",
+    "allDaysTotal": "所有天數 · {time} · {count} 個地點"
   }
 }

@@ -406,6 +406,8 @@
     "resetPassword": "Redefinir senha",
     "linkExpired": "Link expirado",
     "interestsPicked": "{count, plural, one {# escolhido} other {# escolhidos}} · usado no Início e no Plano rápido",
-    "searchArea": "Buscar nesta área"
+    "searchArea": "Buscar nesta área",
+    "dayTotal": "Dia {n} · {time} · {count} de {max} paradas",
+    "allDaysTotal": "Todos os dias · {time} · {count, plural, one {# parada} other {# paradas}}"
   }
 }

@@ -9,6 +9,7 @@ import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
 import {
   BottomSheet,
+  Scrim,
   Button,
   Card,
   Chip,
@@ -42,7 +43,7 @@ import { useGap } from '../gaps'
 import { useV2Shell } from '../V2Shell'
 import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
-import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_STOPS, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
+import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_STOPS, PER_DAY, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
 import { CATEGORIES, jsonFetch } from './A2Home'
 
 // The map (A1): Map browse
@@ -111,7 +112,6 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const [planName, setPlanName] = useState('')
   const [saving, setSaving] = useState(false)
   const [discardOpen, setDiscardOpen] = useState(false)
-  const [durationFor, setDurationFor] = useState<string | null>(null)
   const [folderId, setFolderId] = useState<string | null>(params?.get('folder'))
   const [editing, setEditing] = useState<{ id: string; title: string } | null>(null)
   const [pendingEdit, setPendingEdit] = useState<ItineraryDetail | null>(null)
@@ -211,7 +211,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   }, [detail?.poi_id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const order = draft.plan.stops
-  const planStops = order.map((poi, i) => ({ poi, day: draft.dayOf(poi.poi_id), order: i + 1 }))
+  const planStops = order.map((poi) => ({ poi, day: draft.dayOf(poi.poi_id), order: order.filter((p) => draft.dayOf(p.poi_id) === draft.dayOf(poi.poi_id)).indexOf(poi) + 1 }))
   // The plan's stops and route show on the map only while the plan is open (desktop: the Plan
   // cart opened from the bottom of the Left panel; phones: the plan sheet).
   const planVisible = phone ? planSheet : cart === 'open'
@@ -438,8 +438,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       lastAdded={order.length ? nameOf(order[order.length - 1], locale) : undefined}
       lastAddedImage={order.length ? order[order.length - 1].primary_image_url ?? null : undefined}
       lastAddedMeta={order.length ? GAP.lastAddedMore(order.length - 1) : undefined}
-      dayTotal={dayTotal !== null ? [k('map.plan.dayTab', { n: activeDay }), dayTotal ? formatMinutes(dayTotal, k) : null, k('itinerary.stats.stops', { count: dayStops })].filter(Boolean).join(' · ') : undefined}
-      onDuration={setDurationFor}
+      dayTotal={dayTotal !== null ? (dayStops && typeof activeDay === 'number' ? GAP.dayTotal(activeDay, formatMinutes(dayTotal, k), dayStops, PER_DAY) : [k('map.plan.dayTab', { n: activeDay }), k('itinerary.stats.stops', { count: dayStops })].join(' · ')) : order.length ? GAP.allDaysTotal(formatMinutes(totalMin, k), order.length) : undefined}
+      durationMenu={(id) => DURATIONS.map((m) => (
+        <MenuItem key={m} checked={draft.plan.durations[id] === m} onClick={() => draft.setDuration(id, m)}>{formatMinutes(m, k)}</MenuItem>
+      ))}
       onRemove={draft.remove}
       onMove={draft.move}
       onSelect={(id) => {
@@ -509,7 +511,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         onCancel={() => setDiscardOpen(false)}
         title={t('CD1536')}
         body={GAP.discardBody(order.length)}
-        cancel={<Button variant="ghost" data-autofocus onClick={() => setDiscardOpen(false)}>{k('map.plan.discardCancel')}</Button>}
+        cancel={<Button variant="secondary" data-autofocus onClick={() => setDiscardOpen(false)}>{k('map.plan.discardCancel')}</Button>}
         confirm={<Button variant="danger" onClick={() => { draft.discard(); setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
       />
       <Dialog
@@ -517,17 +519,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         onCancel={() => { setPendingEdit(null); if (pendingEdit) router.push(`/plan/${pendingEdit.id}`) }}
         title={t('CD1525')}
         body={pendingEdit ? GAP.editDraftBody(order.length, pendingEdit.title) : ''}
-        cancel={<Button variant="ghost" data-autofocus onClick={() => { const id = pendingEdit?.id; setPendingEdit(null); if (id) router.push(`/plan/${id}`) }}>{k('map.plan.discardCancel')}</Button>}
+        cancel={<Button variant="secondary" data-autofocus onClick={() => { const id = pendingEdit?.id; setPendingEdit(null); if (id) router.push(`/plan/${id}`) }}>{k('map.plan.discardCancel')}</Button>}
         third={<Button variant="ghost" onClick={() => { if (pendingEdit) { draft.discard(); loadForEdit(pendingEdit) } }}>{t('CD1527')}</Button>}
         confirm={<Button onClick={() => { setPlanName(draft.plan.name ?? ''); setSaveOpen(true) }}>{k('map.plan.save')}</Button>}
       />
-      <Modal open={!!durationFor} onClose={() => setDurationFor(null)} size="sm" title={k('map.plan.durationAriaLabel', { name: order.find((p) => p.poi_id === durationFor) ? nameOf(order.find((p) => p.poi_id === durationFor)!, locale) : '' })} closeLabel={k('badges.detail.close')}>
-        <div role="menu" className="-mx-[var(--space-6)]">
-          {DURATIONS.map((m) => (
-            <MenuItem key={m} checked={durationFor ? draft.plan.durations[durationFor] === m : false} onClick={() => { if (durationFor) draft.setDuration(durationFor, m); setDurationFor(null) }}>{formatMinutes(m, k)}</MenuItem>
-          ))}
-        </div>
-      </Modal>
     </>
   )
 
@@ -546,6 +541,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
             <PlanPill label={`${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })}`} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} />
           </div>
         ) : null}
+        {/* The open plan dims the map and the bar above it, as drawn; a tap there closes it. */}
+        {planSheet ? <Scrim onClick={() => setPlanSheet(false)} className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] z-30" /> : null}
         <BottomSheet
           type="map"
           open
@@ -558,7 +555,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           header={selectedId || planSheet ? undefined : <div className="pt-[var(--space-4)]">{switcher}</div>}
           className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0"
         >
-          {planSheet ? <div className="-mx-[var(--space-4)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div> : content}
+          {planSheet ? <div className="-mx-[var(--space-4)] -mb-[var(--space-6)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div> : content}
         </BottomSheet>
         {dialogs}
       </div>

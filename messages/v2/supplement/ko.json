@@ -435,6 +435,8 @@
     "resetPassword": "비밀번호 재설정",
     "linkExpired": "링크 만료",
     "interestsPicked": "{count}개 선택 · 홈과 빠른 일정에 사용",
-    "searchArea": "이 지역 검색"
+    "searchArea": "이 지역 검색",
+    "dayTotal": "{n}일차 · {time} · {max}곳 중 {count}곳",
+    "allDaysTotal": "전체 일정 · {time} · {count}곳"
   }
 }
