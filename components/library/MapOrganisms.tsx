@@ -351,6 +351,9 @@ export type ItineraryPanelProps = {
   onSelectStop?: (id: string) => void
   /** Owner can change transport modes. */
   onLeg?: (id: string) => void
+  /** Owner: the mode menu's items for the leg after stop `id`, and its accessible name. */
+  legMenu?: (id: string) => ReactNode
+  legMenuLabel?: (id: string) => string
   related?: ReactNode
   /** Footer buttons: Owner = Edit plan, Share, Delete; Visitor = Save, Like, Share. */
   footer: ReactNode
@@ -358,7 +361,7 @@ export type ItineraryPanelProps = {
 }
 
 /** Itinerary panel: title is the page h1; day tabs; stops as an ordered list. */
-export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, privateLabel, stats, days, activeDay, onDayChange, stops, selectedStop, onSelectStop, onLeg, related, footer, labels }: ItineraryPanelProps) {
+export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, privateLabel, stats, days, activeDay, onDayChange, stops, selectedStop, onSelectStop, onLeg, legMenu, legMenuLabel, related, footer, labels }: ItineraryPanelProps) {
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
     <div className="flex h-full flex-col gap-[var(--space-4)] bg-ui-bg-raised p-[var(--space-4)] text-ui-fg">
@@ -369,10 +372,11 @@ export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, privat
           {owner}
           {privateLabel ? <span className="inline-flex items-center gap-[var(--space-2)]"><Lock aria-hidden className="size-[var(--icon-size-xs)]" />{privateLabel}</span> : null}
         </p>
-        <p className="bg-ui-bg-sunken p-[var(--space-3)] type-body-caption text-ui-fg">{stats.join(' · ')}</p>
       </div>
+      {/* Figma Itinerary panel: Header, Stats, Day filter, Timeline and Related plans 16 apart. */}
+      <p className="bg-ui-bg-sunken p-[var(--space-3)] type-body-caption text-ui-fg">{stats.join(' · ')}</p>
       <Tabs baseline={false} label={labels.days} value={String(activeDay)} onValueChange={(v) => onDayChange(v === 'all' ? 'all' : (Number(v) as Day))} tabs={[{ id: 'all', label: labels.all }, ...Array.from({ length: days }, (_, i) => ({ id: String(i + 1), label: labels.day(i + 1), day: (i + 1) as Day }))]} />
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col gap-[var(--space-4)] overflow-y-auto">
         <ol>
           {shown.map((s, i) => (
             <li key={s.id} className="list-none">
@@ -382,7 +386,7 @@ export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, privat
                 <ItineraryStop name={s.name} number={stops.indexOf(s) + 1} day={s.day} meta={s.meta} note={s.note} thumbnail={s.imageSrc} selected={selectedStop === s.id} onSelect={onSelectStop ? () => onSelectStop(s.id) : undefined} />
               </ul>
               {s.leg && i < shown.length - 1 ? (
-                <div className="pl-[var(--space-5)]"><TransportMode mode={s.leg.mode} modeLabel={s.leg.label} time={s.leg.time} onChange={onLeg ? () => onLeg(s.id) : undefined} /></div>
+                <div className="pl-[var(--space-5)]"><TransportMode mode={s.leg.mode} modeLabel={s.leg.label} time={s.leg.time} onChange={onLeg ? () => onLeg(s.id) : undefined} menu={legMenu?.(s.id)} menuLabel={legMenuLabel?.(s.id)} /></div>
               ) : null}
             </li>
           ))}

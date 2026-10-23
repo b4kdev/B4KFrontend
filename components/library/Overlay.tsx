@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactElement, type ReactNode } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactElement, type ReactNode } from 'react'
 import { cloneElement } from 'react'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -49,7 +49,7 @@ export type DropdownMenuProps = {
 /** Dropdown menu: role menu of Menu items; arrow keys move, Enter selects. */
 export function DropdownMenu({ trigger, label, children, align = 'start', className, rootClassName, fixed }: DropdownMenuProps) {
   const [open, setOpen] = useState(false)
-  const [at, setAt] = useState<{ top: number; left?: number; right?: number } | null>(null)
+  const [at, setAt] = useState<{ top: number; above: number; left?: number; right?: number } | null>(null)
   const root = useRef<HTMLDivElement>(null)
   const menu = useRef<HTMLDivElement>(null)
   const id = useId()
@@ -57,6 +57,15 @@ export function DropdownMenu({ trigger, label, children, align = 'start', classN
   useEffect(() => {
     if (open) menu.current?.querySelector<HTMLElement>('[role^=menuitem]:not([disabled])')?.focus()
   }, [open])
+  // Fixed menus open upward when the space below the trigger (above a phone's Navigation bar) is too short, as drawn.
+  useLayoutEffect(() => {
+    if (!open || !fixed || !at || !menu.current) return
+    const h = menu.current.offsetHeight
+    const room = window.innerHeight - (window.innerWidth < 1024 ? 56 : 0)
+    if (at.top + 8 + h <= room || at.above - 8 - h < 0) return
+    menu.current.style.top = `${at.above - 8 - h}px`
+    menu.current.style.marginTop = '0'
+  }, [open, fixed, at])
   const onKey = (e: KeyboardEvent) => {
     const items = Array.from(menu.current?.querySelectorAll<HTMLElement>('[role^=menuitem]:not([disabled])') ?? [])
     const i = items.indexOf(document.activeElement as HTMLElement)
@@ -77,7 +86,7 @@ export function DropdownMenu({ trigger, label, children, align = 'start', classN
           if (fixed) {
             // Measured on the wrapper, so rootClassName can move the menu's edge off the trigger.
             const r = (root.current ?? e.currentTarget).getBoundingClientRect()
-            setAt(align === 'end' ? { top: r.bottom, right: window.innerWidth - r.right } : { top: r.bottom, left: r.left })
+            setAt(align === 'end' ? { top: r.bottom, above: r.top, right: window.innerWidth - r.right } : { top: r.bottom, above: r.top, left: r.left })
           }
           setOpen((o) => !o)
         },

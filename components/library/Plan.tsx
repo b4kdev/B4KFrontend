@@ -1,6 +1,7 @@
-import { forwardRef, type ButtonHTMLAttributes } from 'react'
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { Car, Clock, Footprints, GripVertical, Route, TrainFront } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { DropdownMenu } from './Overlay'
 import { Spinner } from './Spinner'
 import { FOCUS_RING, HIT_AREA } from './styles'
 
@@ -94,13 +95,17 @@ export type TransportModeProps = {
   time: string
   /** Owner can change the mode: a button that opens the mode choice. */
   onChange?: () => void
+  /** Figma Mode menu: the Menu items, in a dropdown under the leg (owner). */
+  menu?: ReactNode
+  /** Accessible name of the mode menu. */
+  menuLabel?: string
   /** Figma State=Loading. */
   loading?: boolean
   className?: string
 }
 
 /** Transport mode: the leg between two stops, on a 1px rail under the stop badge center. */
-export function TransportMode({ mode, modeLabel, time, onChange, loading, className }: TransportModeProps) {
+export function TransportMode({ mode, modeLabel, time, onChange, menu, menuLabel, loading, className }: TransportModeProps) {
   const Icon = MODE_ICON[mode]
   const content = (
     <>
@@ -109,17 +114,27 @@ export function TransportMode({ mode, modeLabel, time, onChange, loading, classN
       <span>· {time}</span>
     </>
   )
+  const button = (
+    <button
+      type="button"
+      onClick={onChange}
+      aria-busy={loading || undefined}
+      className={cn('relative inline-flex items-center gap-[var(--space-1-5)] type-body-caption text-ui-fg-muted hover:text-ui-fg', FOCUS_RING, HIT_AREA)}
+    >
+      {content}
+    </button>
+  )
   return (
     <div className={cn('flex items-center py-[var(--space-1-5)]', mode !== 'estimate' && 'border-l border-ui-border-strong pl-[var(--space-3)]', className)}>
-      {onChange && mode !== 'estimate' ? (
-        <button
-          type="button"
-          onClick={onChange}
-          aria-busy={loading || undefined}
-          className={cn('relative inline-flex items-center gap-[var(--space-1-5)] type-body-caption text-ui-fg-muted hover:text-ui-fg', FOCUS_RING, HIT_AREA)}
-        >
-          {content}
-        </button>
+      {(onChange || menu) && mode !== 'estimate' ? (
+        menu ? (
+          // Figma: the menu starts at the rail, 12 left of the mode.
+          <DropdownMenu fixed label={menuLabel ?? modeLabel} trigger={button} rootClassName="-ml-[var(--space-3)] pl-[var(--space-3)]">
+            {menu}
+          </DropdownMenu>
+        ) : (
+          button
+        )
       ) : (
         <span className="inline-flex items-center gap-[var(--space-1-5)] type-body-caption text-ui-fg-muted">{content}</span>
       )}
