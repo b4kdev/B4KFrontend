@@ -47,12 +47,12 @@ export const CATEGORIES = [
   { slug: 'k-food', label: 'CD0251', sub: 'CD1554', image: '/mock-images/kbbq.png' },
 ] as const
 
-/** Loading cards as drawn: a 4:3 photo and two lines, 240 wide on phones and 296 on desktop. */
-function CardSkeletons() {
+/** Loading cards as drawn: a 4:3 photo and two lines; 240 wide on phones, desktop width per page. */
+function CardSkeletons({ cardClassName = 'lg:w-[296px]' }: { cardClassName?: string }) {
   return (
     <div className="flex gap-[var(--space-3)] overflow-hidden">
       {Array.from({ length: 4 }, (_, i) => (
-        <div key={i} className="flex w-[240px] shrink-0 flex-col gap-[var(--space-2)] lg:w-[296px]">
+        <div key={i} className={`flex w-[240px] shrink-0 flex-col gap-[var(--space-2)] ${cardClassName}`}>
           <Skeleton className="aspect-[4/3] w-full" />
           <Skeleton shape="line" className="h-[14px] w-4/5" />
           <Skeleton shape="line" className="h-[14px] w-1/2" />
@@ -62,18 +62,27 @@ function CardSkeletons() {
   )
 }
 
+/** Two loading sections as drawn: a title line and cards, 24 above and below each. */
+export function SectionSkeletons({ cardClassName }: { cardClassName?: string }) {
+  return (
+    <>
+      {[0, 1].map((i) => (
+        <div key={i} className="flex flex-col gap-[var(--space-4)] py-[var(--space-6)]">
+          <Skeleton shape="line" className="h-[20px] w-[180px]" />
+          <CardSkeletons cardClassName={cardClassName} />
+        </div>
+      ))}
+    </>
+  )
+}
+
 /** Home while its rows load, as drawn: the hero block, then two sections of a title line and cards. */
 function HomeSkeleton({ heroClassName }: { heroClassName: string }) {
   return (
     <div aria-busy className="pb-[var(--space-8)]">
       <Skeleton className={`h-[var(--hero-height-home)] w-full ${heroClassName}`} />
       <div className="mx-auto w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] px-[var(--grid-gutter-mobile)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
-        {[0, 1].map((i) => (
-          <div key={i} className="flex flex-col gap-[var(--space-4)] py-[var(--space-6)]">
-            <Skeleton shape="line" className="h-[20px] w-[180px]" />
-            <CardSkeletons />
-          </div>
-        ))}
+        <SectionSkeletons />
       </div>
     </div>
   )

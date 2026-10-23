@@ -36,7 +36,7 @@ import { useDDay } from '../useDDay'
 import { useGap } from '../gaps'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
-import { CATEGORIES, jsonFetch, RowState } from './A2Home'
+import { CATEGORIES, jsonFetch, RowState, SectionSkeletons } from './A2Home'
 
 // Explore (A2): Category page, See all list, Collection page,
 // Category special pages. Live data from /api/explore/*. Desktop: Left panel Index (280)
@@ -177,6 +177,17 @@ export function CategoryScreen({ category }: { category: string }) {
     />
   )
   const colTypes = useMemo(() => Array.from(new Set((cols.data?.items ?? []).map((c) => c.primaryType).filter(Boolean))) as string[], [cols.data])
+  if (isLoading) {
+    // As drawn: the hero block, then two loading sections (cards 260 wide on desktop).
+    return (
+      <ExploreFrame category={category} sections={[]}>
+        <div aria-busy className="flex flex-col">
+          <Skeleton className="-mx-[var(--grid-gutter-mobile)] -mt-[var(--space-6)] h-[var(--hero-height-section)] w-auto md:-mx-[var(--grid-gutter-tablet)] lg:-mx-[var(--space-8)]" />
+          <SectionSkeletons cardClassName="lg:w-[260px]" />
+        </div>
+      </ExploreFrame>
+    )
+  }
   return (
     <ExploreFrame category={category} sections={sections.map((s) => s.id)}>
       <div className="flex flex-col gap-[var(--space-12)]">
@@ -190,11 +201,10 @@ export function CategoryScreen({ category }: { category: string }) {
             title={hero.title}
             subtitle={hero.subtitle}
             action={<IntlLink href={`${hero.cta_href}`} className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{hero.cta_label}</IntlLink>}
-            // Edge to edge in the content area: flush under the header on desktop, under the tabs on phones.
-            className="-mx-[var(--grid-gutter-mobile)] -mt-[var(--space-6)] w-auto md:-mx-[var(--grid-gutter-tablet)] lg:-mx-[var(--space-8)]"
+            // Edge to edge in the content area: flush under the header on desktop, under the tabs on phones; 24 to the first row.
+            className="-mx-[var(--grid-gutter-mobile)] -mb-[var(--space-6)] -mt-[var(--space-6)] w-auto md:-mx-[var(--grid-gutter-tablet)] lg:-mx-[var(--space-8)]"
           />
         ) : null}
-        {isLoading ? <RowState title={k(`explore.${CAT_KEY[category]}.title`)} loading onRetry={() => mutate()} /> : null}
         {error ? <RowState title={k(`explore.${CAT_KEY[category]}.title`)} error={error} onRetry={() => mutate()} /> : null}
         {sections.map((s, i) => {
           const featured = s.items.find((p) => p.is_featured)
@@ -350,17 +360,24 @@ export function CollectionScreen({ slug }: { slug: string }) {
   const rows = explore.data?.sections.filter((x) => x.items.length).map((x) => x.id) ?? []
   const items = data?.items ?? []
   const categoryLabel = category ? t(CATEGORIES.find((c) => c.slug === category)?.label ?? 'CD0804') : ''
+  // Collection titles come as "Title — subtitle"; the page shows them as its title and subtitle.
+  const cut = data?.title?.indexOf(' — ') ?? -1
+  const title = cut > 0 ? data!.title.slice(0, cut) : data?.title
+  const subtitle = cut > 0 ? data!.title.slice(cut + 3) : undefined
   const body = (
     <div className="flex flex-col gap-[var(--space-4)]">
-      {data?.title ? (
+      {title ? (
         <Breadcrumbs
-          label={data.title}
-          items={[{ label: t('CD0804'), href: '/explore' }, ...(category ? [{ label: categoryLabel, href: `/explore/${category}` }] : []), { label: data.title }]}
+          label={title}
+          items={[{ label: t('CD0804'), href: '/explore' }, ...(category ? [{ label: categoryLabel, href: `/explore/${category}` }] : []), { label: title }]}
           className="max-lg:hidden"
         />
       ) : null}
-      {/* Phones show the title in the top bar only. */}
-      <h1 className="type-display-h3 max-lg:sr-only">{data?.title}</h1>
+      {/* Phones show the title in the top bar only; the subtitle sits 12 under the bar. */}
+      <header className={`flex flex-col gap-[var(--space-1)] ${subtitle ? 'max-lg:-mt-[var(--space-3)]' : ''}`}>
+        <h1 className="type-display-h3 max-lg:sr-only">{title}</h1>
+        {subtitle ? <p className="type-body-caption text-ui-fg-muted lg:type-body-base">{subtitle}</p> : null}
+      </header>
       {data?.siblings && data.siblings.length > 1 ? (
         <div role="group" aria-label={t('CD0162')} className="flex flex-wrap gap-[var(--space-2)]">
           {data.siblings.map((c) => <Chip key={c.slug} selected={c.slug === slug} onClick={() => router.push(`/explore/collections/${c.slug}`)}>{c.title}</Chip>)}
@@ -384,8 +401,8 @@ export function CollectionScreen({ slug }: { slug: string }) {
       {items.length > shown ? <Button variant="secondary" className="self-center" onClick={() => setShown((n) => n + PAGE)}>{t('CD0836')}</Button> : null}
     </div>
   )
-  if (!category) return <V2Page bar={{ type: 'page', title: data?.title ?? '' }}>{body}</V2Page>
-  return <ExploreFrame category={category} sections={rows} active="collections" pageTitle={data?.title ?? ''}>{body}</ExploreFrame>
+  if (!category) return <V2Page bar={{ type: 'page', title: title ?? '' }}>{body}</V2Page>
+  return <ExploreFrame category={category} sections={rows} active="collections" pageTitle={title ?? ''}>{body}</ExploreFrame>
 }
 
 // ── Category special pages ────────────────────────────────────────
@@ -416,10 +433,10 @@ export function SpecialScreen({ api, category }: { api: string; category: string
             className="max-lg:hidden"
           />
         ) : null}
-        <header className="flex flex-col gap-[var(--space-1)]">
-          {/* Phones show the title in the top bar only. */}
+        {/* Phones show the title in the top bar only; the subtitle sits 12 under the bar. */}
+        <header className={`flex flex-col gap-[var(--space-1)] ${category === 'k-drama' ? 'max-lg:-mt-[var(--space-3)]' : ''}`}>
           <h1 className="type-display-h3 max-lg:sr-only">{title}</h1>
-          {category === 'k-drama' ? <p className="type-body-base text-ui-fg-muted">{t('CD1575')}</p> : null}
+          {category === 'k-drama' ? <p className="type-body-caption text-ui-fg-muted lg:type-body-base">{t('CD1575')}</p> : null}
         </header>
         {/* Media: a photo on the left, the facts and actions on the right. */}
         <section className="flex flex-col gap-[var(--space-6)] md:flex-row">
