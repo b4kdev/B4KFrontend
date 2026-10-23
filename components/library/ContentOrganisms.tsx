@@ -90,8 +90,8 @@ export function Carousel({ type, label, children, seeAll, subtitle, previousLabe
     )
   }
   const onKey = (e: KeyboardEvent) => {
-    if (e.key === 'ArrowRight') setI((x) => Math.min(items.length - 1, x + 1))
-    else if (e.key === 'ArrowLeft') setI((x) => Math.max(0, x - 1))
+    if (e.key === 'ArrowRight') setI((x) => (x + 1) % items.length)
+    else if (e.key === 'ArrowLeft') setI((x) => (x - 1 + items.length) % items.length)
   }
   return (
     <section aria-roledescription="carousel" aria-label={label} onKeyDown={onKey} className={cn('relative', className)}>
@@ -104,8 +104,8 @@ export function Carousel({ type, label, children, seeAll, subtitle, previousLabe
         <Pagination type="dots" label={label} page={i + 1} pageCount={items.length} statusText={slideLabel(i + 1, items.length)} />
       </div>
       <div className="absolute bottom-[var(--space-5)] right-[var(--space-6)] flex gap-[var(--space-2)] max-lg:hidden" data-theme="dark">
-        <IconButton variant="secondary" label={previousLabel} icon={<ChevronLeft />} disabled={i === 0} onClick={() => setI(i - 1)} />
-        <IconButton variant="secondary" label={nextLabel} icon={<ChevronRight />} disabled={i === items.length - 1} onClick={() => setI(i + 1)} />
+        <IconButton variant="secondary" label={previousLabel} icon={<ChevronLeft />} onClick={() => setI((i - 1 + items.length) % items.length)} />
+        <IconButton variant="secondary" label={nextLabel} icon={<ChevronRight />} onClick={() => setI((i + 1) % items.length)} />
       </div>
     </section>
   )

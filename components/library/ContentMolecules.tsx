@@ -28,7 +28,7 @@ export type SectionHeaderProps = {
 
 export function SectionHeader({ title, subtitle, seeAll, arrows, id, className }: SectionHeaderProps) {
   return (
-    <div className={cn('flex min-h-[var(--control-height-md)] items-end gap-[var(--space-2)] max-md:pr-[var(--space-4)]', className)}>
+    <div className={cn('flex items-end gap-[var(--space-2)] max-md:min-h-[var(--control-height-md)] max-md:pr-[var(--space-4)]', className)}>
       <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
         <h2 id={id} className="type-display-h3 text-ui-fg">{title}</h2>
         {subtitle ? <p className="type-body-base text-ui-fg-muted">{subtitle}</p> : null}

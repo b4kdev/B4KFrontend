@@ -348,7 +348,8 @@ export function AccountMenu({ labels, user, onSignOut, links = {}, showHelp = fa
           {user ? <Avatar size="sm" src={user.avatarSrc} name={user.name} decorative /> : <User aria-hidden className="size-[var(--icon-size-md)] text-ui-fg-muted" />}
         </button>
       }
-      className="bottom-0 left-full top-auto ml-[var(--space-2)] mt-0 w-[280px]"
+      // 8 from the rail's edge: the trigger cell sits 4 inside the 64 rail.
+      className="bottom-0 left-full top-auto ml-[var(--space-3)] mt-0 w-[280px]"
     >
       {user ? (
         <MenuGroup>
