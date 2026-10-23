@@ -184,6 +184,8 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
       logoControlOptions: { position: N.Position.BOTTOM_LEFT },
     })
     const idle = () => {
+      // The SDK can still fire events on a map it has torn down.
+      if (!live()) return
       const z = map.current.getZoom()
       setZoom(z)
       onZoom?.(z)
@@ -282,7 +284,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
         const lng = members.reduce((sum, p) => sum + p.coords_lng, 0) / members.length
         add(lat, lng, clusterHtml(members.length), { x: 26, y: 26 }, () => {
           fitPoints(members.map((p) => ({ lat: p.coords_lat, lng: p.coords_lng })))
-          if (map.current.getZoom() > 17) map.current.setZoom(17, true)
+          if (live() && map.current.getZoom() > 17) map.current.setZoom(17, true)
         }, 5)
       })
     } else {
