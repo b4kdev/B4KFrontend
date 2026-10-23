@@ -43,6 +43,7 @@ export async function GET(req: NextRequest, { params }: { params: { category: st
       }))
     return NextResponse.json({ items })
   } catch {
-    return NextResponse.json({ items: [] })
+    // A failed read is an error, not an empty row: the page shows the row error with Try again.
+    return NextResponse.json({ items: [] }, { status: 502 })
   }
 }

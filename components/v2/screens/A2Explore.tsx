@@ -238,6 +238,8 @@ export function CategoryScreen({ category }: { category: string }) {
               .map((c) => <Card key={c.slug} type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta={c.primaryType && COLLECTION_TYPE[c.primaryType] ? t(COLLECTION_TYPE[c.primaryType]) : ''} />)}
           />
           </div>
+        ) : cols.error ? (
+          <RowState title={t('CD0162')} error={cols.error} onRetry={() => cols.mutate()} />
         ) : null}
         {data?.packages?.length ? (
           <ExplorePackages
