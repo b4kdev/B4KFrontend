@@ -44,7 +44,7 @@ import { ABOVE_LEGAL_LINE, MapLegalLine } from '../map/MapLegalLine'
 import { useV2Shell } from '../V2Shell'
 import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
-import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_STOPS, PER_DAY, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
+import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_DAYS, MAX_STOPS, PER_DAY, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
 import { CATEGORIES, jsonFetch } from './A2Home'
 
 // The map (A1): Map browse
@@ -253,8 +253,22 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     if (savedPois?.length) mapRef.current?.fitTo(savedPois.map((p) => ({ lat: p.coords_lat, lng: p.coords_lng })))
   }, [savedPois])
   const mapPois = showPlanOnly ? (detail && !order.some((p) => p.poi_id === detail.poi_id) ? [detail] : []) : savedPois ?? listPois
-  const addToPlan = (poi: MapPoi) => {
-    const day = draft.add(poi, typeof activeDay === 'number' ? activeDay : undefined)
+  const addToPlan = (poi: MapPoi, toDay?: number) => {
+    // Read through the ref: the toast's action runs later, on the plan as it is then.
+    const draft = latestDraft.current
+    // The open day, or the last day on All days. A full day is not skipped silently: the toast
+    // offers the next day with room.
+    const target = toDay ?? (typeof activeDay === 'number' ? activeDay : draft.days)
+    const inPlan = draft.plan.stops.some((s) => s.poi_id === poi.poi_id)
+    if (!inPlan && draft.plan.stops.length < MAX_STOPS && draft.countOn(target) >= PER_DAY) {
+      let next = target + 1
+      while (next <= MAX_DAYS && draft.countOn(next) >= PER_DAY) next++
+      if (next <= MAX_DAYS) {
+        toast({ type: 'warning', message: t('CD1533', { day: target }), action: { label: t('CD1534', { next }), onClick: () => addToPlan(poi, next) } })
+        return
+      }
+    }
+    const day = draft.add(poi, target)
     if (day === null) toast({ type: 'warning', message: k('map.plan.maxStopsToast', { max: MAX_STOPS }) })
     else toast({ type: 'success', message: GAP.addedToDay(day), action: { label: t('CD1428'), onClick: () => latestDraft.current.remove(poi.poi_id) } })
   }

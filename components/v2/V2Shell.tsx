@@ -257,7 +257,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           <Toast
             type={toastMsg.type}
             message={toastMsg.message}
-            action={toastMsg.action ? { label: toastMsg.action.label, onClick: () => { toastMsg.action?.onClick(); setToastMsg(null) } } : undefined}
+            action={toastMsg.action ? { label: toastMsg.action.label, onClick: () => { const run = toastMsg.action?.onClick; setToastMsg(null); run?.() } } : undefined}
             // A Critical toast stays until closed, so it keeps its close button.
             {...(toastMsg.type === 'critical' ? { onClose: () => setToastMsg(null), closeLabel: t('CD0082') } : {})}
             className="pointer-events-auto w-[360px] max-w-full"
