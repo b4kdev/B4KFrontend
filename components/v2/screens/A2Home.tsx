@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useLocale } from 'next-intl'
 import useSWR from 'swr'
 import { RotateCw } from 'lucide-react'
@@ -26,6 +26,7 @@ import type { HomeCarouselSlide } from '@/app/api/home/carousel/data'
 import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 import type { HomePopularPlan } from '@/app/api/home/popular-plans/route'
 import type { HomeEvent } from '@/app/api/home/events/route'
+import { HOME_SECTION_ORDER, type HomeSectionOrder } from '@/app/api/home/section-order/order'
 import { useCd } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
@@ -135,6 +136,16 @@ export function useContinueDraft() {
     : null
 }
 
+/** The served order, cleaned: known keys only, then any default key it left out, in its default place. */
+function sectionOrder(served?: string[]) {
+  const known = (served ?? []).filter((k, i, all) => HOME_SECTION_ORDER.includes(k) && all.indexOf(k) === i)
+  const out = [...known]
+  HOME_SECTION_ORDER.forEach((k, i) => {
+    if (!out.includes(k)) out.splice(Math.min(i, out.length), 0, k)
+  })
+  return out
+}
+
 export function HomeScreen() {
   const act = usePlaceActions({ resume: true })
   const dDay = useDDay()
@@ -146,6 +157,7 @@ export function HomeScreen() {
   const trending = useSWR<HomeTrendingPoi[]>('/api/home/trending', jsonFetch)
   const plans = useSWR<HomePopularPlan[]>('/api/home/popular-plans', jsonFetch)
   const events = useSWR<HomeEvent[]>('/api/home/events', jsonFetch)
+  const order = useSWR<HomeSectionOrder>('/api/home/section-order', jsonFetch, { revalidateOnFocus: false })
   const draft = useContinueDraft()
 
   // Interests card: on a following visit (a later browser session than the one in which this device
@@ -185,6 +197,83 @@ export function HomeScreen() {
     )
   }
 
+  // Home's content sections by key, in the order /api/home/section-order gives (the drawn order by
+  // default; later the account's own). Unknown keys are ignored; a missing key keeps its default place.
+  const blocks: Record<string, React.ReactNode> = {
+    exploreHub: <section aria-labelledby="explore-cats" className="flex flex-col gap-[var(--space-4)]">
+              <SectionHeader id="explore-cats" title={t('CD0426')} />
+              <ul className="-mx-[var(--grid-gutter-mobile)] flex gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
+                {CATEGORIES.map((c) => (
+                  <li key={c.slug} className="w-[160px] shrink-0 lg:w-auto">
+                    <Card type="collection-photo" href={`/explore/${c.slug}`} title={t(c.label)} imageSrc={c.image} meta={t(c.sub)} />
+                  </li>
+                ))}
+              </ul>
+            </section>,
+    trending: (trending.data?.length ? (
+              <RowSection
+                arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
+                title={t('CD0313')}
+                seeAll={{ href: '/explore/trending', label: t('CD1309') }}
+                cards={trending.data.map((p) => (
+                  <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, name(p))} title={name(p)} imageSrc={p.primary_image_url} meta={p.display_region} />
+                ))}
+              />
+            ) : (
+              <RowState title={t('CD0313')} errorTitle="CD1559" loading={trending.isLoading} error={trending.error} onRetry={() => trending.mutate()} />
+            )),
+    planningCue: <PlanningCue
+              state={draft ? 'continue' : 'start'}
+              label={t('CD1359')}
+              tiles={{
+                newPlan: { href: '/map?plan=new', title: t('CD1359'), text: t('CD1360') },
+                continue: draft ? { href: '/map?plan=open', title: t('CD0411'), text: `${draft.name ?? t('CD1359')} · ${t('CD0473', { n: draft.stops })}` } : undefined,
+                quickPlan: { onOpen: openQuickPlan, title: t('CD1361'), text: t('CD1362') },
+                fromSaved: { href: '/saved/plan', title: t('CD1363'), text: t('CD1364') },
+              }}
+            />,
+    interests: (showInterests ? (
+              <InterestsCard
+                title={t('CD1609')}
+                text={t('CD1347')}
+                tags={interestTags(categories).map((c) => ({ id: c.slug, label: labelOf(c, locale) }))}
+                selected={picked}
+                onToggle={(id) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : p.length < 10 ? [...p, id] : p))}
+                // A failed save keeps the card and its picks, with the error toast.
+                onSave={() =>
+                  apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) })
+                    .then(doneInterests)
+                    .catch(() => toast({ type: 'critical', message: t('CD0061') }))
+                }
+                onDismiss={doneInterests}
+                labels={{ save: t('CD1610'), dismiss: t('CD0128') }}
+              />
+            ) : null),
+    events: (events.data?.length ? (
+              <RowSection
+                arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
+                title={t('CD0425')}
+                cards={events.data.map((e) => (
+                  <Card key={e.id} type="place" href={`/map?event=${e.id}`} title={e.title} imageSrc={e.image_url} meta={e.location} dDay={dDay(e.date_start)} />
+                ))}
+              />
+            ) : (
+              <RowState title={t('CD0425')} error={events.error} onRetry={() => events.mutate()} />
+            )),
+    popularPlans: (plans.data?.length ? (
+              <RowSection
+                arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
+                title={t('CD0477')}
+                seeAll={{ href: '/explore/popular-plans', label: t('CD1309') }}
+                cards={plans.data.map((p) => (
+                  <Card key={p.id} type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={t('CD0473', { n: p.stop_count })} sponsored={p.is_partner ? t('CD0476') : undefined} />
+                ))}
+              />
+            ) : (
+              <RowState title={t('CD0477')} loading={plans.isLoading} error={plans.error} onRetry={() => plans.mutate()} />
+            )),
+  }
+
   return (
     <V2Page bleed underBar>
       {slides.data?.length ? (
@@ -207,83 +296,9 @@ export function HomeScreen() {
       ) : null}
 
       <div className="mx-auto flex w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] flex-col gap-[var(--space-12)] px-[var(--grid-gutter-mobile)] pb-[calc(var(--space-6)+var(--space-8))] pt-[var(--space-6)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
-        <section aria-labelledby="explore-cats" className="flex flex-col gap-[var(--space-4)]">
-          <SectionHeader id="explore-cats" title={t('CD0426')} />
-          <ul className="-mx-[var(--grid-gutter-mobile)] flex gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
-            {CATEGORIES.map((c) => (
-              <li key={c.slug} className="w-[160px] shrink-0 lg:w-auto">
-                <Card type="collection-photo" href={`/explore/${c.slug}`} title={t(c.label)} imageSrc={c.image} meta={t(c.sub)} />
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {trending.data?.length ? (
-          <RowSection
-            arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
-            title={t('CD0313')}
-            seeAll={{ href: '/explore/trending', label: t('CD1309') }}
-            cards={trending.data.map((p) => (
-              <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, name(p))} title={name(p)} imageSrc={p.primary_image_url} meta={p.display_region} />
-            ))}
-          />
-        ) : (
-          <RowState title={t('CD0313')} errorTitle="CD1559" loading={trending.isLoading} error={trending.error} onRetry={() => trending.mutate()} />
-        )}
-
-        <PlanningCue
-          state={draft ? 'continue' : 'start'}
-          label={t('CD1359')}
-          tiles={{
-            newPlan: { href: '/map?plan=new', title: t('CD1359'), text: t('CD1360') },
-            continue: draft ? { href: '/map?plan=open', title: t('CD0411'), text: `${draft.name ?? t('CD1359')} · ${t('CD0473', { n: draft.stops })}` } : undefined,
-            quickPlan: { onOpen: openQuickPlan, title: t('CD1361'), text: t('CD1362') },
-            fromSaved: { href: '/saved/plan', title: t('CD1363'), text: t('CD1364') },
-          }}
-        />
-
-        {showInterests ? (
-          <InterestsCard
-            title={t('CD1609')}
-            text={t('CD1347')}
-            tags={interestTags(categories).map((c) => ({ id: c.slug, label: labelOf(c, locale) }))}
-            selected={picked}
-            onToggle={(id) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : p.length < 10 ? [...p, id] : p))}
-            // A failed save keeps the card and its picks, with the error toast.
-            onSave={() =>
-              apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) })
-                .then(doneInterests)
-                .catch(() => toast({ type: 'critical', message: t('CD0061') }))
-            }
-            onDismiss={doneInterests}
-            labels={{ save: t('CD1610'), dismiss: t('CD0128') }}
-          />
-        ) : null}
-
-        {events.data?.length ? (
-          <RowSection
-            arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
-            title={t('CD0425')}
-            cards={events.data.map((e) => (
-              <Card key={e.id} type="place" href={`/map?event=${e.id}`} title={e.title} imageSrc={e.image_url} meta={e.location} dDay={dDay(e.date_start)} />
-            ))}
-          />
-        ) : (
-          <RowState title={t('CD0425')} error={events.error} onRetry={() => events.mutate()} />
-        )}
-
-        {plans.data?.length ? (
-          <RowSection
-            arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
-            title={t('CD0477')}
-            seeAll={{ href: '/explore/popular-plans', label: t('CD1309') }}
-            cards={plans.data.map((p) => (
-              <Card key={p.id} type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={t('CD0473', { n: p.stop_count })} sponsored={p.is_partner ? t('CD0476') : undefined} />
-            ))}
-          />
-        ) : (
-          <RowState title={t('CD0477')} loading={plans.isLoading} error={plans.error} onRetry={() => plans.mutate()} />
-        )}
+        {sectionOrder(order.data?.order).map((key) => (
+          <Fragment key={key}>{blocks[key]}</Fragment>
+        ))}
       </div>
     </V2Page>
   )
