@@ -80,6 +80,8 @@ export function SearchScreen() {
   const sortCfg = { label: t('CD1272'), options: [{ id: 'relevance', label: t('CD1274') }, { id: 'popularity', label: t('CD1273') }], value: sort, onValueChange: setSort }
   // Filters set beyond the defaults (Show All), for the phone All filters chip.
   const active = Object.entries(filters).reduce((n, [g, v]) => n + (g === 'show' ? (v[0] && v[0] !== 'all' ? 1 : 0) : v.length), 0)
+  // The filters title carries the count once a filter is set: "Filters (3)".
+  const filtersTitle = active ? t('CD1513', { count: active }) : t('CD1284')
   const field = (
     <SearchInput
       label={labels.search}
@@ -208,7 +210,7 @@ export function SearchScreen() {
         </main>
         {/* Figma: Search filters is the whole sheet (bg elevated, its own padding) with a Close in its header. */}
         <BottomSheet open={sheet} onClose={() => setSheet(false)} label={t('CD1284')} flush className="bg-ui-bg-elevated">
-          <SearchFilters viewport="mobile" groups={groups} value={filters} onValueChange={setFilters} sort={sortCfg} labels={{ title: t('CD1284'), clearAll: t('CD1248'), showResults: t('CD1251'), close: t('CD0082') }} onShowResults={() => setSheet(false)} onClose={() => setSheet(false)} />
+          <SearchFilters viewport="mobile" groups={groups} value={filters} onValueChange={setFilters} sort={sortCfg} labels={{ title: filtersTitle, clearAll: t('CD1248'), showResults: t('CD1251'), close: t('CD0082') }} onShowResults={() => setSheet(false)} onClose={() => setSheet(false)} />
         </BottomSheet>
       </>
     )
@@ -217,7 +219,7 @@ export function SearchScreen() {
     <div className="flex min-h-0 flex-1">
       {/* Figma: the filters sit 16 inside the panel. */}
       <LeftPanel type="filters" label={t('CD1284')} className="p-[var(--space-4)]">
-        <SearchFilters viewport="desktop" groups={groups} value={filters} onValueChange={setFilters} sort={sortCfg} labels={{ title: t('CD1284'), clearAll: t('CD1248') }} />
+        <SearchFilters viewport="desktop" groups={groups} value={filters} onValueChange={setFilters} sort={sortCfg} labels={{ title: filtersTitle, clearAll: t('CD1248') }} />
       </LeftPanel>
       <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
         <main id="main" tabIndex={-1} className="flex flex-1 flex-col gap-[var(--space-6)] px-[var(--space-8)] py-[var(--space-6)] outline-none">
