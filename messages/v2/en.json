@@ -1491,7 +1491,7 @@
     "CD1510": "Cancel",
     "CD1511": "Under 14? A parent or guardian has to agree for you. Contact support@b4korea.com.",
     "CD1512": "Show 128 results",
-    "CD1513": "Filters (3)",
+    "CD1513": "Filters ({count})",
     "CD1514": "Show 128",
     "CD1515": "Edit profile",
     "CD1517": "Night owl",
@@ -1510,8 +1510,8 @@
     "CD1530": "It may have closed or moved. Search for it, or look around the map.",
     "CD1531": "Zoom out or move the map to see places nearby.",
     "CD1532": "Custom",
-    "CD1533": "Day 1 is full (6 stops).",
-    "CD1534": "Add to Day 2",
+    "CD1533": "Day {day} is full.",
+    "CD1534": "Add to Day {next}",
     "CD1535": "Plan · 3 stops",
     "CD1536": "Discard this plan?",
     "CD1537": "{count, plural, one {The # stop in your plan in progress will be removed.} other {The # stops in your plan in progress will be removed.}} This cannot be undone.",
@@ -1765,6 +1765,13 @@
     "CD1794": "Sources: {links}. Verified as of {date}",
     "CD1795": "Partner",
     "CD1796": "Sponsored · {partner} paid B4K to show this plan.",
-    "CD1797": "Visit {partner} website"
+    "CD1797": "Visit {partner} website",
+    "CD1798": "Enter a name for your list.",
+    "CD1799": "Enter a name for your plan.",
+    "CD1800": "Plan deleted.",
+    "CD1801": "Couldn't delete the list. Try again.",
+    "CD1802": "Your own progress",
+    "CD1803": "Earned when others save and like your plans",
+    "CD1804": "{total} badges · sign in to start earning"
   }
 }

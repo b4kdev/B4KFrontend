@@ -1491,7 +1491,7 @@
     "CD1510": "Cancelar",
     "CD1511": "Tem menos de 14 anos? Um dos pais ou responsável precisa autorizar. Fale com support@b4korea.com.",
     "CD1512": "Mostrar 128 resultados",
-    "CD1513": "Filtros (3)",
+    "CD1513": "Filtros ({count})",
     "CD1514": "Mostrar 128",
     "CD1515": "Editar perfil",
     "CD1517": "Notívago",
@@ -1510,8 +1510,8 @@
     "CD1530": "Ele pode ter fechado ou mudado de endereço. Busque por ele ou explore o mapa.",
     "CD1531": "Diminua o zoom ou mova o mapa para ver lugares próximos.",
     "CD1532": "Personalizado",
-    "CD1533": "O dia 1 está cheio (6 lugares).",
-    "CD1534": "Adicionar ao dia 2",
+    "CD1533": "O dia {day} está cheio.",
+    "CD1534": "Adicionar ao dia {next}",
     "CD1535": "Roteiro · 3 lugares",
     "CD1536": "Descartar este roteiro?",
     "CD1537": "{count, plural, one {O # lugar do seu roteiro em andamento será removido.} other {Os # lugares do seu roteiro em andamento serão removidos.}} Esta ação não pode ser desfeita.",
@@ -1709,6 +1709,10 @@
     "CD1794": "Fontes: {links}. Verificado em {date}",
     "CD1795": "Parceiro",
     "CD1796": "Patrocinado · {partner} pagou ao B4K para mostrar este roteiro.",
-    "CD1797": "Visitar o site de {partner}"
+    "CD1797": "Visitar o site de {partner}",
+    "CD1798": "Digite um nome para sua lista.",
+    "CD1799": "Digite um nome para seu roteiro.",
+    "CD1800": "Roteiro excluído.",
+    "CD1801": "Não foi possível excluir a lista. Tente novamente."
   }
 }
