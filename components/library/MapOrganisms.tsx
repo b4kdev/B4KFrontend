@@ -6,7 +6,7 @@ import { cn } from '@/lib/cn'
 import { Avatar } from './Avatar'
 import { Badge } from './Badge'
 import { Button } from './Button'
-import { ChatBubble } from './Content'
+import { ChatBubble, CreditLine } from './Content'
 import { AiInput, ItineraryStop, PlanStopRow } from './ContentMolecules'
 import { Chip } from './Chip'
 import { EmptyState } from './Feedback'
@@ -413,6 +413,8 @@ export type PlaceDetailProps = {
   meta: string
   imageSrc?: string | null
   imageAlt?: string
+  /** Photo credit (Credit line); none yet, so the line stays hidden. */
+  credit?: string
   description?: string
   /** Figma Show sponsored (off at launch). */
   sponsored?: string
@@ -428,11 +430,13 @@ export type PlaceDetailProps = {
 }
 
 /** Place detail: photo, name (display/h2), meta, actions (Add to plan, Save, Like, Share), details. */
-export function PlaceDetail({ viewport, name, meta, imageSrc, imageAlt, description, sponsored, details, saved, liked, onAdd, onSave, onLike, onShare, labels }: PlaceDetailProps) {
+export function PlaceDetail({ viewport, name, meta, imageSrc, imageAlt, credit, description, sponsored, details, saved, liked, onAdd, onSave, onLike, onShare, labels }: PlaceDetailProps) {
   const ICON = { hours: Clock, address: MapPin, website: Globe } as const
   return (
     <section aria-label={name} className="flex flex-col gap-[var(--space-4)] py-[var(--space-4)] text-ui-fg">
       {imageSrc ? <Image ratio={viewport === 'desktop' ? '4:3' : '16:9'} src={imageSrc} alt={imageAlt ?? ''} sizes="420px" /> : null}
+      {/* Shown only once a photo has its credit text (photo rights check). */}
+      {imageSrc && credit ? <CreditLine className="px-[var(--space-4)]">{credit}</CreditLine> : null}
       <div className="flex flex-col gap-[var(--space-2)] px-[var(--space-4)]">
         {sponsored ? <Badge variant="normal" className="self-start">{sponsored}</Badge> : null}
         <h2 className="type-display-h2">{name}</h2>

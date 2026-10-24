@@ -1,8 +1,9 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { Info } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { FOCUS_RING, HIT_AREA } from './styles'
 
-// Content atoms (Figma Atoms): Stat counter, Image action, Forecast day, Chat bubble, Scrim, Calendar day.
+// Content atoms (Figma Atoms): Stat counter, Credit line, Image action, Forecast day, Chat bubble, Scrim, Calendar day.
 
 export type StatCounterProps = {
   /** Figma Number. */
@@ -23,6 +24,16 @@ export function StatCounter({ number, label, separator }: StatCounterProps) {
         <span className="type-body-base text-ui-fg-muted">{label}</span>
       </span>
     </span>
+  )
+}
+
+/** Credit line: photo credit under a place photo, info icon and caption, muted. */
+export function CreditLine({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <p className={cn('flex items-center gap-[var(--space-1)] type-body-caption text-ui-fg-muted', className)}>
+      <Info aria-hidden className="size-[var(--icon-size-xs)] shrink-0" />
+      <span>{children}</span>
+    </p>
   )
 }
 
