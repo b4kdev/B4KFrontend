@@ -32,6 +32,8 @@ type Props = {
   onSelect: (id: string | null) => void
   planStops?: PlanStopOnMap[]
   activeDay?: number | 'all'
+  /** Places the viewer saved: their pins sit above other places. */
+  savedIds?: Set<string>
   /** Saved plans: real road paths per leg; otherwise straight lines per day. */
   routeLegs?: { day: number; path: { lat: number; lng: number }[] }[]
   onBounds?: (b: MapBounds, zoom: number) => void
@@ -48,6 +50,10 @@ type Props = {
 const SEOUL = { lat: 37.5665, lng: 126.978 }
 const CLUSTER_BELOW = 15
 const CLUSTER_GRID_PX = 60
+// Overlap order, top first: selected, plan stops, saved, clusters, other places. Within a layer,
+// more saves sit higher, then the pin lower on screen.
+const Z_LAYER = 100000
+const Z = { other: 1, cluster: 2, saved: 3, stop: 4, selected: 5 }
 // The Naver tiles are light in both themes until the dark map style exists, so the pins use the
 // light-map colors (dark pins). Set to 'dark' with the dark map style.
 const MAP_TONE: 'light' | 'dark' = 'light'
@@ -102,7 +108,7 @@ function boundsOf(map: any): MapBounds {
 const sdkAlive = () => typeof window !== 'undefined' && !!window.naver?.maps
 
 export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
-  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', routeLegs, onBounds, onZoom, center, fitStops, fitBottom = 0, label, errorText },
+  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', savedIds, routeLegs, onBounds, onZoom, center, fitStops, fitBottom = 0, label, errorText },
   ref,
 ) {
   const el = useRef<HTMLDivElement>(null)
@@ -262,11 +268,18 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
       taken.push({ x: o.x, y: o.y })
       return true
     }
+    const rank = new Map(
+      free
+        .map((p) => ({ id: p.poi_id, saves: p.save_count ?? 0, y: px(p).y }))
+        .sort((a, b) => a.saves - b.saves || a.y - b.y)
+        .map((p, i) => [p.id, i + 1]),
+    )
     const addPin = (p: MapPoi) => {
       const selected = p.poi_id === selectedId
       const tier = tierFor(zoom, selected)
       const showName = tier === 'large' && nameFits(p)
-      add(p.coords_lat, p.coords_lng, pinHtml(p, tier, showName), anchorFor(tier), () => select.current(p.poi_id), selected ? 50 : 1)
+      const layer = selected ? Z.selected : savedIds?.has(p.poi_id) ? Z.saved : Z.other
+      add(p.coords_lat, p.coords_lng, pinHtml(p, tier, showName), anchorFor(tier), () => select.current(p.poi_id), layer * Z_LAYER + (rank.get(p.poi_id) ?? 0))
     }
     const sel = free.find((p) => p.poi_id === selectedId)
     if (sel && zoom >= 17) taken.push({ x: px(sel).x, y: px(sel).y })
@@ -285,7 +298,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
         add(lat, lng, clusterHtml(members.length), { x: 26, y: 26 }, () => {
           fitPoints(members.map((p) => ({ lat: p.coords_lat, lng: p.coords_lng })))
           if (live() && map.current.getZoom() > 17) map.current.setZoom(17, true)
-        }, 5)
+        }, Z.cluster * Z_LAYER)
       })
     } else {
       for (const p of rest) addPin(p)
@@ -293,10 +306,10 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     if (sel) addPin(sel)
     for (const s of planStops) {
       if (activeDay !== 'all' && s.day !== activeDay) continue
-      add(s.poi.coords_lat, s.poi.coords_lng, stopHtml(s.poi, s.order, s.day, s.poi.poi_id === selectedId), { x: 22, y: 22 }, () => select.current(s.poi.poi_id), 40)
+      add(s.poi.coords_lat, s.poi.coords_lng, stopHtml(s.poi, s.order, s.day, s.poi.poi_id === selectedId), { x: 22, y: 22 }, () => select.current(s.poi.poi_id), (s.poi.poi_id === selectedId ? Z.selected : Z.stop) * Z_LAYER)
     }
     if (focusedId) requestAnimationFrame(() => el.current?.querySelector<HTMLElement>(`[data-poi-id="${CSS.escape(focusedId)}"]`)?.focus())
-  }, [pois, planStops, selectedId, zoom, activeDay, mapReady]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pois, planStops, selectedId, zoom, activeDay, mapReady, savedIds]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Route lines in the day colors.
   useEffect(() => {

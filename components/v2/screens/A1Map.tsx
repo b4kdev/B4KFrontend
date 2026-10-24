@@ -521,6 +521,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
       planStops={planVisible ? planStops : []}
       activeDay={activeDay}
+      savedIds={savedIds}
       onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => { setBounds(b); if (filterOn.current) setAreaMoved(true) }, 300) }}
       label={k('itinerary.mapAriaLabel')}
       errorText={GAP.mapError}
