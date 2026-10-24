@@ -114,6 +114,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   }, [phone, params])
   const [saveOpen, setSaveOpen] = useState(false)
   const [planName, setPlanName] = useState('')
+  const [nameError, setNameError] = useState(false)
   const [saving, setSaving] = useState(false)
   const [discardOpen, setDiscardOpen] = useState(false)
   const [folderId, setFolderId] = useState<string | null>(params?.get('folder'))
@@ -291,7 +292,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     user ? setSave(poi.poi_id, savedIds.has(poi.poi_id)) : requireSignIn({ title: t('CD0027'), pending: { type: 'save_poi', id: poi.poi_id }, run: () => setSave(poi.poi_id, false, true) })
   const toggleLike = (id: string) =>
     user ? setLike(id, liked.has(id)) : requireSignIn({ title: t('CD0054'), pending: { type: 'like_poi', id }, run: () => setLike(id, false) })
-  const openSaveSheet = () => { setPlanName(draft.plan.name ?? ''); setSaveOpen(true) }
+  const openSaveSheet = () => { setPlanName(draft.plan.name ?? ''); setNameError(false); setSaveOpen(true) }
   usePendingAction('save_poi', !!user, (id) => { if (id) setSave(id, false, true) })
   usePendingAction('like_poi', !!user, (id) => { if (id) setLike(id, false) })
   usePendingAction('save_own_plan', !!user, () => { setCart('open'); openSaveSheet() })
@@ -303,6 +304,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     if (!user) return requireSignIn({ title: t('CD0025'), draftNotice: t('CD1489'), pending: { type: 'save_own_plan' }, run: openSaveSheet })
     // Offline: the plan stays on the device; say so instead of a failed save.
     if (typeof navigator !== 'undefined' && !navigator.onLine) return toast({ type: 'warning', message: t('CD1208') })
+    // Save stays enabled; an empty name is said on the field (an edit keeps its old name).
+    if (!editing && !planName.trim()) return setNameError(true)
     setSaving(true)
     const stops = order.map((p, i) => ({ poi_id: p.poi_id, stop_order: i + 1, duration_min: draft.plan.durations[p.poi_id] ?? 60, day: draft.dayOf(p.poi_id) }))
     // Save changes on a plan opened for editing updates that plan in place (same link).
@@ -552,11 +555,11 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         title={t('CD0642')}
         closeLabel={k('badges.detail.close')}
         secondaryAction={<Button variant="secondary" onClick={() => setSaveOpen(false)}>{k('map.plan.discardCancel')}</Button>}
-        primaryAction={<Button loading={saving} disabled={!planName.trim()} onClick={savePlan}>{k('map.plan.save')}</Button>}
+        primaryAction={<Button loading={saving} onClick={savePlan}>{k('map.plan.save')}</Button>}
       >
         <div className="flex flex-col gap-[var(--space-4)]">
           <p className="type-body-base text-ui-fg-muted">{t('CD1458')}</p>
-          <TextInput label={t('CD1459')} showLabel required placeholder={t('CD0645')} value={planName} maxLength={80} onChange={(e) => setPlanName(e.target.value)} help={`${planName.length}/80`} data-autofocus />
+          <TextInput label={t('CD1459')} showLabel required placeholder={t('CD0645')} value={planName} maxLength={80} onChange={(e) => { setPlanName(e.target.value); setNameError(false) }} help={`${planName.length}/80`} error={nameError ? t('CD1799') : undefined} data-autofocus />
         </div>
       </Modal>
       <Dialog
@@ -574,7 +577,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         body={pendingEdit ? GAP.editDraftBody(order.length, pendingEdit.title) : ''}
         cancel={<Button variant="secondary" data-autofocus onClick={() => { const id = pendingEdit?.id; setPendingEdit(null); if (id) router.push(`/plan/${id}`) }}>{k('map.plan.discardCancel')}</Button>}
         third={<Button variant="ghost" onClick={() => { if (pendingEdit) { draft.discard(); loadForEdit(pendingEdit) } }}>{t('CD1527')}</Button>}
-        confirm={<Button onClick={() => { setPlanName(draft.plan.name ?? ''); setSaveOpen(true) }}>{k('map.plan.save')}</Button>}
+        confirm={<Button onClick={openSaveSheet}>{k('map.plan.save')}</Button>}
       />
     </>
   )
