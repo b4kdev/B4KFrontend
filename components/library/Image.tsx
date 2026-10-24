@@ -3,14 +3,15 @@
 import NextImage from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import * as Sentry from '@sentry/nextjs'
-import { ImageIcon } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Skeleton } from './Progress'
 
 // Image (Figma Atoms › Image): a photo of a place, square corners, locked to one of four
 // ratios: 1:1 (thumbnails), 4:3 (cards), 16:9 (media), 12:5 (wide heroes). Loading = skeleton
-// pulse; Missing = state-selected with the image icon. object-cover, lazy. A photo that fails
-// is tried once more after a second, keeps its box, and leaves its URL for the data team.
+// pulse; Missing = state-selected with the place type icon (Place, until places carry their type).
+// object-cover, lazy. A photo that fails is tried once more after a second, keeps its box, and
+// leaves its URL for the data team.
 
 const RATIO = { '1:1': 'aspect-square', '4:3': 'aspect-[4/3]', '16:9': 'aspect-video', '12:5': 'aspect-[12/5]' } as const
 
@@ -63,7 +64,7 @@ export function Image({ ratio = '1:1', src, alt, sizes = '100vw', priority, clas
       {state === 'loading' ? <Skeleton className="absolute inset-0" /> : null}
       {state === 'missing' ? (
         <span className="absolute inset-0 flex items-center justify-center text-ui-fg-muted">
-          <ImageIcon aria-hidden className="size-[var(--icon-size-xl)]" />
+          <MapPin aria-hidden className="size-[var(--icon-size-xl)]" />
         </span>
       ) : null}
     </span>
