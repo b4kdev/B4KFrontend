@@ -13,26 +13,42 @@ import { useCd } from './cd'
 
 const jsonFetch = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
 const RECENT_KEY = 'b4k-v2-recent-searches'
+// The last 5 searches, each kept for 30 days.
+const RECENT_MAX = 5
+const RECENT_DAYS = 30
+
+type RecentEntry = { q: string; at: number }
+
+function readRecent(): RecentEntry[] {
+  try {
+    const raw: unknown = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]')
+    if (!Array.isArray(raw)) return []
+    const since = Date.now() - RECENT_DAYS * 86_400_000
+    // Older lists hold plain strings: they count as saved now.
+    return raw
+      .map((r) => (typeof r === 'string' ? { q: r, at: Date.now() } : r))
+      .filter((r): r is RecentEntry => typeof r?.q === 'string' && typeof r?.at === 'number' && r.at >= since)
+      .slice(0, RECENT_MAX)
+  } catch {
+    return []
+  }
+}
 
 export function useRecent() {
-  const [recent, setRecent] = useState<string[]>([])
-  const load = () => {
-    try {
-      setRecent(JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]'))
-    } catch {}
-  }
+  const [entries, setEntries] = useState<RecentEntry[]>([])
+  const load = () => setEntries(readRecent())
   useEffect(load, [])
-  const save = (next: string[]) => {
-    setRecent(next)
+  const save = (next: RecentEntry[]) => {
+    setEntries(next)
     try {
       localStorage.setItem(RECENT_KEY, JSON.stringify(next))
     } catch {}
   }
   return {
-    recent,
+    recent: entries.map((e) => e.q),
     load,
-    add: (q: string) => save([q, ...recent.filter((r) => r !== q)].slice(0, 8)),
-    remove: (q: string) => save(recent.filter((r) => r !== q)),
+    add: (q: string) => save([{ q, at: Date.now() }, ...entries.filter((e) => e.q !== q)].slice(0, RECENT_MAX)),
+    remove: (q: string) => save(entries.filter((e) => e.q !== q)),
     clear: () => save([]),
   }
 }
@@ -76,7 +92,7 @@ export function useSearchBox({ viewport, initial = '', open: startOpen = false }
       onClearRecent={recents.clear}
       trending={[['K-Pop', 'CD1247'], ['K-Drama', 'CD1246'], ['K-Beauty', 'CD1244']].map(([id, cd]) => ({ id, text: t(cd) }))}
       categories={CATEGORIES.map(([id, cd]) => ({ id, name: t(cd), href: `/explore/${id}` }))}
-      labels={{ searchFor: (x) => `${t('CD1317')}: “${x}”`, places: t('CD1316'), plans: t('CD1300'), explore: t('CD1299'), recent: t('CD1297'), clearAll: t('CD1248'), trending: t('CD0313'), browse: t('CD1299'), remove: (x) => t('CD1298', { query: x }) }}
+      labels={{ searchFor: (x) => `${t('CD1317')}: “${x}”`, places: t('CD1316'), plans: t('CD1300'), explore: t('CD1299'), recent: t('CD1408'), clearAll: t('CD1248'), trending: t('CD0313'), browse: t('CD1299'), remove: (x) => t('CD1298', { query: x }) }}
     />
   )
   return { draft, setDraft, open, setOpen, go, suggestions }
