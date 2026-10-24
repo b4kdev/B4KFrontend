@@ -30,7 +30,6 @@ const STATIC_PATHS: Array<{
     { path: '/badges',           changeFrequency: 'weekly' as const, priority: 0.4 },
   ] : []),
   { path: '/help',                changeFrequency: 'monthly', priority: 0.3 },
-  { path: '/sitemap',            changeFrequency: 'monthly', priority: 0.2 },
   { path: '/legal/terms',        changeFrequency: 'yearly',  priority: 0.2 },
   { path: '/legal/privacy',      changeFrequency: 'yearly',  priority: 0.2 },
   { path: '/legal/cookies',      changeFrequency: 'yearly',  priority: 0.2 },

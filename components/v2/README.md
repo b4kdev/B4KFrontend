@@ -32,8 +32,8 @@ found with a 404) and redirects the old `/[locale]/v2<path>` address there (307)
 without a screen of their own move to one (`V2_LIVE_ALIASES`: `/plan` and the old `/profile/*`
 tabs); `/plan/ai`, `/plan/auto` and `/plan/manual` only redirect. The pre-v2 screens, their
 components and `app/legacy.css` were removed on 2026-10-21 (going back means reverting that
-commit). `/offline`, `/sitemap` and `/auth/callback` are v2 pages built from the component library's Empty
-state; Figma has no frame for them.
+commit). `/auth/callback` is a v2 page built from the component library's Empty state; Figma has no
+frame for it. There is no `/offline` page (no service worker) and no HTML site map (sitemap.xml stays).
 
 ## Areas
 
