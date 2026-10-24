@@ -32,6 +32,8 @@ export interface SavedPlan {
   duration_days: number
   cover_image_url: string | null
   author_name: string
+  /** The author's user id, for the link to their profile; null when the BFF sends none. */
+  author_id: string | null
   author_avatar_url: string | null
   likes_count: number
   saves_count: number
@@ -194,6 +196,7 @@ export async function GET() {
         duration_days:     p.total_days,
         cover_image_url:   p.cover_image_url,
         author_name:       p.author?.name ?? '',
+        author_id:         p.author?.user_id != null ? String(p.author.user_id) : null,
         author_avatar_url: p.author?.avatar_url ?? null,
         likes_count:       p.like_count,
         saves_count:       p.save_count,

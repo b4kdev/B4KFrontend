@@ -204,6 +204,7 @@ export function PlanScreen({ id }: { id: string }) {
         owner={GAP.createdBy(author)}
         ownerAvatarSrc={it.author.avatar_url ?? null}
         ownerName={author}
+        ownerHref={it.author.id ? `/profile/${it.author.id}` : undefined}
         privateLabel={isOwner && !it.is_published ? t('CD1002') : undefined}
         stats={[k('itinerary.stats.stops', { count: stops.length }), GAP.days(days), formatMinutes(it.total_duration_min, k), ...(km ? [k('itinerary.stats.km', { km })] : [])]}
         days={days}

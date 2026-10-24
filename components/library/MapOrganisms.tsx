@@ -16,6 +16,7 @@ import { ListItem } from './Lists'
 import { Tabs } from './NavGroups'
 import { TransportMode } from './Plan'
 import { FOCUS_RING_INSET } from './styles'
+import { Link as IntlLink } from '@/i18n/navigation'
 
 // Map and planning organisms (Figma Organisms): AI panel, Plan cart,
 // Left panel, Saved hub, Itinerary panel, Place detail. Data comes in as props; texts as labels.
@@ -340,6 +341,8 @@ export type ItineraryPanelProps = {
   ownerAvatarSrc?: string | null
   /** The owner's name for the avatar initials (owner is the whole line, e.g. "Created by Minji"). */
   ownerName?: string
+  /** The owner's profile: the owner line links there. */
+  ownerHref?: string
   /** Owner only: lock and Private beside the owner name. */
   privateLabel?: string
   stats: string[]
@@ -361,7 +364,7 @@ export type ItineraryPanelProps = {
 }
 
 /** Itinerary panel: title is the page h1; day tabs; stops as an ordered list. */
-export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, privateLabel, stats, days, activeDay, onDayChange, stops, selectedStop, onSelectStop, onLeg, legMenu, legMenuLabel, related, footer, labels }: ItineraryPanelProps) {
+export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, ownerHref, privateLabel, stats, days, activeDay, onDayChange, stops, selectedStop, onSelectStop, onLeg, legMenu, legMenuLabel, related, footer, labels }: ItineraryPanelProps) {
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
     <div className="flex h-full flex-col gap-[var(--space-4)] bg-ui-bg-raised p-[var(--space-4)] text-ui-fg">
@@ -369,7 +372,7 @@ export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, privat
         <h1 className="type-display-h3">{title}</h1>
         <p className="flex items-center gap-[var(--space-2)] type-body-caption text-ui-fg-muted">
           {ownerAvatarSrc !== undefined ? <Avatar size="xs" src={ownerAvatarSrc} name={ownerName ?? owner} decorative /> : null}
-          {owner}
+          {ownerHref ? <IntlLink href={ownerHref} className="hover:text-ui-fg hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none">{owner}</IntlLink> : owner}
           {privateLabel ? <span className="inline-flex items-center gap-[var(--space-2)]"><Lock aria-hidden className="size-[var(--icon-size-xs)]" />{privateLabel}</span> : null}
         </p>
       </div>
