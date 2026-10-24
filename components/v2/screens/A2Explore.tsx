@@ -74,12 +74,43 @@ function useRowLabel() {
   return (category: string, row: string) => (ROW_LABEL[category]?.[row] ? t(ROW_LABEL[category][row]) : k(`explore.sections.${row}`))
 }
 
-function CategoryIndex({ category, sections, active }: { category: string; sections: string[]; active?: string }) {
+function CategoryIndex({ category, sections, active, rowsKey }: { category: string; sections: string[]; active?: string; rowsKey?: string }) {
   const t = useCd()
   const rowLabel = useRowLabel()
   const router = useRouter()
-  // On the category page itself the first row (its top section) is the selected one.
-  const current = active ?? sections[0]
+  // On the category page a leaf scrolls to its row and the row in view is the selected one; on a
+  // list page (See all, a collection) its row stays selected and a leaf opens the category page there.
+  const onPage = active === undefined
+  const [inView, setInView] = useState<string | undefined>(undefined)
+  useEffect(() => {
+    if (!onPage) return
+    const rows = Array.from(document.querySelectorAll<HTMLElement>('[data-explore-row]'))
+    if (!rows.length) return
+    // The selected row is the last one whose top has passed 40% of the screen (the first row before that).
+    let frame = 0
+    const pick = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        const line = window.innerHeight * 0.4
+        let row = rows[0]
+        for (const el of rows) if (el.getBoundingClientRect().top <= line) row = el
+        setInView(row.dataset.exploreRow)
+      })
+    }
+    document.addEventListener('scroll', pick, { capture: true, passive: true })
+    pick()
+    return () => {
+      cancelAnimationFrame(frame)
+      document.removeEventListener('scroll', pick, { capture: true })
+    }
+  }, [onPage, rowsKey])
+  const current = active ?? inView ?? sections[0]
+  const go = (slug: string, row: string) => {
+    const el = onPage && slug === category ? document.querySelector<HTMLElement>(`[data-explore-row="${row}"]`) : null
+    if (!el) return router.push(`/explore/${slug}#row-${row}`)
+    el.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })
+    setInView(row)
+  }
   return (
     <div className="flex flex-col gap-[var(--space-4)] pt-[var(--space-4)]">
       <p aria-hidden className="px-[var(--space-4)] type-eyebrow-category text-ui-fg-muted">{t('CD0804')}</p>
@@ -96,9 +127,9 @@ function CategoryIndex({ category, sections, active }: { category: string; secti
             {c.slug === category
               ? [
                   ...sections.map((s) => (
-                    <TreeItem key={s} level={2} kind="leaf" label={rowLabel(c.slug, s)} selected={current === s} onSelect={() => router.push(rowHref(c.slug, s))} />
+                    <TreeItem key={s} level={2} kind="leaf" label={rowLabel(c.slug, s)} selected={current === s} onSelect={() => go(c.slug, s)} />
                   )),
-                  <TreeItem key="collections" level={2} kind="leaf" label={t('CD0162')} selected={active === 'collections'} onSelect={() => router.push(`/explore/${c.slug}#collections`)} />,
+                  <TreeItem key="collections" level={2} kind="leaf" label={t('CD0162')} selected={current === 'collections'} onSelect={() => go(c.slug, 'collections')} />,
                 ]
               : null}
           </TreeItem>
@@ -108,7 +139,7 @@ function CategoryIndex({ category, sections, active }: { category: string; secti
   )
 }
 
-function ExploreFrame({ category, sections, active, pageTitle, children }: { category: string; sections: string[]; active?: string; pageTitle?: string; children: React.ReactNode }) {
+function ExploreFrame({ category, sections, active, pageTitle, rowsKey, children }: { category: string; sections: string[]; active?: string; pageTitle?: string; rowsKey?: string; children: React.ReactNode }) {
   const t = useCd()
   const phone = usePhone()
   const router = useRouter()
@@ -116,7 +147,7 @@ function ExploreFrame({ category, sections, active, pageTitle, children }: { cat
     <div className="flex min-h-0 flex-1">
       {!phone ? (
         <LeftPanel type="index" label={t('CD0804')}>
-          <CategoryIndex category={category} sections={sections} active={active} />
+          <CategoryIndex category={category} sections={sections} active={active} rowsKey={rowsKey} />
         </LeftPanel>
       ) : null}
       <div className="flex min-w-0 flex-1 flex-col">
@@ -169,6 +200,11 @@ export function CategoryScreen({ category }: { category: string }) {
   const [colType, setColType] = useState('all')
   const sections = data?.sections.filter((s) => s.items.length) ?? []
   const hero = data?.hero?.[0]
+  // A link to a row (#row-<id>, from a list page's Index) scrolls there once the rows exist.
+  useEffect(() => {
+    const id = window.location.hash.slice(1)
+    if (id.startsWith('row-')) document.getElementById(id)?.scrollIntoView({ block: 'start' })
+  }, [data, cols.data])
   const draft = useContinueDraft()
   const cue = (
     <PlanningCue
@@ -195,7 +231,7 @@ export function CategoryScreen({ category }: { category: string }) {
     )
   }
   return (
-    <ExploreFrame category={category} sections={sections.map((s) => s.id)}>
+    <ExploreFrame category={category} sections={sections.map((s) => s.id)} rowsKey={`${sections.map((s) => s.id).join()}|${cols.data?.items.length ? 'collections' : ''}`}>
       <div className="flex flex-col gap-[var(--space-12)]">
         <h1 className="sr-only">{k(`explore.${CAT_KEY[category]}.title`)}</h1>
         {hero ? (
@@ -216,7 +252,7 @@ export function CategoryScreen({ category }: { category: string }) {
         {sections.map((s, i) => {
           const featured = s.items.find((p) => p.is_featured)
           return (
-            <div key={s.id} className="flex flex-col gap-[var(--space-12)]">
+            <div key={s.id} id={`row-${s.id}`} data-explore-row={s.id} className="flex scroll-mt-[var(--space-6)] flex-col gap-[var(--space-12)]">
               <RowSection
                 arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
                 title={rowLabel(category, s.id)}
@@ -229,7 +265,7 @@ export function CategoryScreen({ category }: { category: string }) {
           )
         })}
         {cols.data?.items.length ? (
-          <div id="collections" className="scroll-mt-[var(--space-6)]">
+          <div id="row-collections" data-explore-row="collections" className="scroll-mt-[var(--space-6)]">
           <ExploreCollections
             title={t('CD0162')}
             filters={[{ id: 'all', label: t('CD1267') }, ...colTypes.map((c) => ({ id: c, label: t(COLLECTION_TYPE[c]) }))]}
