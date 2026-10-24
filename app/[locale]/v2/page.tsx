@@ -8,10 +8,10 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   return homeMetadata(params.locale)
 }
 
-export default function Page() {
+export default function Page({ params }: { params: { locale: string } }) {
   return (
     <>
-      <JsonLd data={buildWebsiteJsonLd()} />
+      <JsonLd data={buildWebsiteJsonLd(params.locale)} />
       <HomeScreen />
     </>
   )

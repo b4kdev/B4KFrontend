@@ -72,6 +72,22 @@ export async function buildPlaceMetadata(place: PlaceDetail, locale: string): Pr
   }
 }
 
+// Breadcrumb for a place page: Home, the place's Explore category (when it has one), the place.
+export async function buildPlaceBreadcrumbJsonLd(place: PlaceDetail, locale: string) {
+  const categoryKey = place.display_domain ? DOMAIN_TO_EXPLORE_KEY[place.display_domain] : null
+  const category = categoryKey ? await getTranslations({ locale, namespace: 'explore' }).then((te) => te(`${categoryKey}.title`)) : null
+  const items = [
+    { name: 'B4K', url: localizedUrl(locale) },
+    ...(category ? [{ name: category, url: localizedUrl(locale, `/explore/${place.display_domain}`) }] : []),
+    { name: place.name, url: localizedUrl(locale, `/place/${place.poi_id}`) },
+  ]
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, item: it.url })),
+  }
+}
+
 // S-QRKYQH — TouristAttraction, fields limited strictly to what /places/:id
 // actually returns. No openingHours/telephone/priceRange — not in the schema,
 // don't fabricate them.
