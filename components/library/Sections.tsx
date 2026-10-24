@@ -206,7 +206,7 @@ export function QuickPlan({ open, onClose, step, stepTitle, stepSubtitle, progre
         aria-label={title}
         className={cn(
           'fixed z-50 flex flex-col overflow-hidden bg-ui-bg-elevated text-ui-fg',
-          phone ? 'inset-x-0 bottom-0 max-h-[min(768px,92dvh)] rounded-t-3xl border border-ui-border motion-safe:animate-b4k-sheet-in' : 'left-1/2 top-1/2 max-h-[90dvh] w-[min(864px,calc(100%-var(--space-8)))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ui-border',
+          phone ? 'inset-x-0 bottom-0 max-h-[min(768px,calc(100dvh-44px))] rounded-t-3xl border border-ui-border motion-safe:animate-b4k-sheet-in' : 'left-1/2 top-1/2 max-h-[90dvh] w-[min(864px,calc(100%-var(--space-8)))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ui-border',
         )}
       >
         {phone ? <div className="flex justify-center py-[var(--space-2)]"><span aria-hidden className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" /></div> : null}
