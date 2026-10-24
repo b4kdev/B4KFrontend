@@ -166,11 +166,12 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // Hand-offs: Quick plan and Plan from Saved open the plan unsaved; ?plan=edit
   // loads a published plan for editing.
   const takeHandoff = () => {
-    const stops = takeCourseHandoff()
-    if (!stops) return
+    const handoff = takeCourseHandoff()
+    if (!handoff) return
+    const { stops, name } = handoff
     const had = draft.plan.stops.length > 0
     const asPois: MapPoi[] = stops.map((s) => ({ poi_id: s.poi_id, name_ko: s.name_ko, name_preferred: s.name_preferred, coords_lat: s.coords_lat, coords_lng: s.coords_lng, display_region: s.display_region ?? null, primary_image_url: s.primary_image_url }))
-    draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])))
+    draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])), name)
     setActiveDay('all')
     setSelectedId(null)
     setCollectionOn(false)

@@ -192,7 +192,8 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
         toast({ type: 'warning', message: t('CD0770') })
         return
       }
-      saveCourseHandoff(stops)
+      // Named from the city and day count, e.g. "Seoul in 3 days".
+      saveCourseHandoff(stops, t('CD1637', { Region: t(CITY_CD[city]), n: course.length }))
       // Already on the map: it does not remount on the same address, so it listens for this.
       window.dispatchEvent(new Event(COURSE_HANDOFF_EVENT))
       close()
