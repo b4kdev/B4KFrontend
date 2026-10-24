@@ -32,6 +32,8 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import { saveCourseHandoff } from '@/lib/quickplan'
 import type { SavedData, SavedPoi } from '@/app/api/saved/route'
+import type { GeneratedPlan } from '@/app/api/plans/generate/route'
+import type { ItineraryDetail } from '@/lib/itinerary'
 import { GAMIFICATION } from '@/lib/features'
 import { useCd, useCdKey } from '../cd'
 import { V2Page } from '../V2Page'
@@ -326,7 +328,6 @@ export function SavedScreen() {
 // ── Plan from saved places ─────────────────────────────────────────
 
 const LIMIT = 48
-const PER_DAY = 6
 
 export function PlanFromSavedScreen() {
   const t = useCd()
@@ -375,12 +376,28 @@ export function PlanFromSavedScreen() {
       window.removeEventListener('pageshow', shown)
     }
   }, [])
-  const make = () => {
+  // Make plan: the server's planner orders the picks and splits them into days (and keeps the result as
+  // the account's draft); the editor then opens that order unsaved, through the plan hand-off.
+  const make = async () => {
     setBusy(true)
-    const chosen = all.filter((p) => picked.includes(p.poi_id))
     try {
+      const gen = await send('/api/plans/generate', 'POST', { poi_ids: picked }) as GeneratedPlan
+      const plan = await jsonFetch<ItineraryDetail>(`/api/plans/${gen.id}`)
+      const byId = new Map(all.map((p) => [p.poi_id, p]))
       saveCourseHandoff(
-        chosen.map((p, i) => ({ poi_id: p.poi_id, name_ko: p.name_ko, name_preferred: poiName(p, locale), coords_lat: p.coords_lat, coords_lng: p.coords_lng, display_region: p.display_region, primary_image_url: p.primary_image_url ?? undefined, day: Math.floor(i / PER_DAY) + 1 })),
+        [...plan.stops].sort((a, b) => a.stop_order - b.stop_order).map((s) => {
+          const p = byId.get(s.poi.poi_id)
+          return {
+            poi_id: s.poi.poi_id,
+            name_ko: p?.name_ko ?? s.poi.name_ko,
+            name_preferred: p ? poiName(p, locale) : (s.poi.name_preferred ?? s.poi.name_en),
+            coords_lat: s.poi.coords_lat,
+            coords_lng: s.poi.coords_lng,
+            display_region: p?.display_region ?? null,
+            primary_image_url: (p?.primary_image_url ?? s.poi.primary_image_url) ?? undefined,
+            day: s.day ?? 1,
+          }
+        }),
       )
       router.push('/map?from=saved')
     } catch {
