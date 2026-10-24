@@ -76,6 +76,7 @@ function FolderNameSheet({ open, mode, initial, onClose, onSave }: { open: boole
   const k = useCdKey()
   const [name, setName] = useState(initial ?? '')
   const [busy, setBusy] = useState(false)
+  const [empty, setEmpty] = useState(false)
   return (
     <Modal
       open={open}
@@ -87,8 +88,9 @@ function FolderNameSheet({ open, mode, initial, onClose, onSave }: { open: boole
       primaryAction={
         <Button
           loading={busy}
-          disabled={!name.trim()}
           onClick={async () => {
+            // Save stays enabled; an empty name is said on the field.
+            if (!name.trim()) return setEmpty(true)
             setBusy(true)
             await onSave(name.trim()).finally(() => setBusy(false))
           }}
@@ -99,7 +101,7 @@ function FolderNameSheet({ open, mode, initial, onClose, onSave }: { open: boole
     >
       <div className="flex flex-col gap-[var(--space-4)]">
         <p className="type-body-base text-ui-fg-muted">{mode === 'new' ? t('CD1611') : t('CD1614')}</p>
-        <TextInput label={t('CD1207')} showLabel required help={`${name.length}/40`} placeholder={t('CD1612')} value={name} maxLength={40} onChange={(e) => setName(e.target.value)} data-autofocus />
+        <TextInput label={t('CD1207')} showLabel required help={`${name.length}/40`} placeholder={t('CD1612')} value={name} maxLength={40} onChange={(e) => { setName(e.target.value); setEmpty(false) }} error={empty ? t('CD1798') : undefined} data-autofocus />
       </div>
     </Modal>
   )
@@ -309,9 +311,10 @@ export function SavedScreen() {
             variant="danger"
             onClick={async () => {
               if (!del) return
-              // A failed delete says so and keeps the list or plan open; plans: CD-0508, lists: the general error.
+              // A failed delete says so and keeps the list or plan open; a deleted plan says so.
               const ok = await (del.kind === 'folder' ? send(`/api/folders/${del.id}`, 'DELETE') : send(`/api/profile/trips?id=${del.id}`, 'DELETE')).then(() => true, () => false)
-              if (!ok) toast({ type: 'critical', message: del.kind === 'folder' ? t('CD0061') : t('CD0508') })
+              if (!ok) toast({ type: 'critical', message: del.kind === 'folder' ? t('CD1801') : t('CD0508') })
+              else if (del.kind !== 'folder') toast({ type: 'success', message: t('CD1800') })
               setDel(null)
               if (ok) setFolderId(null)
               mutate()
