@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
 import useSWR, { mutate as mutateKey } from 'swr'
+import useSWRInfinite from 'swr/infinite'
 import { Award, Bell, Bookmark, Calendar, Map as MapIcon, Pencil, Share2, Sparkles, Star, Trophy, Zap, User } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
@@ -11,6 +12,7 @@ import {
   Avatar,
   Button,
   Card,
+  Chip,
   Dialog,
   EmptyState,
   IconButton,
@@ -24,6 +26,7 @@ import {
   SegmentedControl,
   MenuItem,
   Skeleton,
+  Spinner,
   Tabs,
   TextInput,
   Toggle,
@@ -48,6 +51,8 @@ import type { OtherUserBadge } from '@/app/api/profile/[id]/badges/route'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
 import { apiFetch } from '@/lib/api'
+import { useInterests } from '@/hooks/useInterests'
+import { labelOf, MAX_INTEREST_CHIPS } from '@/lib/quickplan'
 import { V2Page } from '../V2Page'
 import { UNREAD_KEY, useV2Shell, useV2SignOut } from '../V2Shell'
 import { LANGUAGES, LanguageRowMenu } from '../V2Settings'
@@ -461,23 +466,44 @@ export function LeaderboardScreen() {
 
 const NOTIF_ICON: Record<string, React.ReactNode> = { badge_earned: <Award />, event_drop: <Calendar />, editorial_pick: <Sparkles />, deal_expiring: <Bell />, challenge_new: <Trophy />, promotion: <Bookmark /> }
 
+const NOTIF_PAGE = 20
+
 export function NotificationsScreen() {
   const k = useCdKey()
   const t = useCd()
   const locale = useLocale()
   const { user } = useAuth()
-  const { data, error, isLoading, mutate } = useSWR<NotificationsData>(user ? '/api/notifications' : null, jsonFetch)
-  const [shown, setShown] = useState(20)
+  const { toast } = useV2Shell()
+  // Load more pages the server list, 20 at a time; the last page is the one with fewer than 20.
+  const pages = useSWRInfinite<NotificationsData>(
+    (i, prev: NotificationsData | null) => (!user || (prev && prev.notifications.length < NOTIF_PAGE) ? null : `/api/notifications?limit=${NOTIF_PAGE}&offset=${i * NOTIF_PAGE}`),
+    jsonFetch,
+  )
+  const { error, isLoading, mutate, setSize } = pages
+  const data = pages.data ? { notifications: pages.data.flatMap((p) => p.notifications), unread_count: pages.data[0]?.unread_count ?? 0 } : undefined
+  const more = !!pages.data && (pages.data[pages.data.length - 1]?.notifications.length ?? 0) >= NOTIF_PAGE
+  // Mark read and Mark all read show at once and roll back with an error toast if the server says no.
+  const markRead = async (id: string | null) => {
+    const before = pages.data
+    mutate(before?.map((p) => ({ unread_count: id ? Math.max(0, p.unread_count - 1) : 0, notifications: p.notifications.map((n) => (!id || n.id === id ? { ...n, is_read: true } : n)) })), { revalidate: false })
+    try {
+      await (id ? send(`/api/notifications/${id}`, 'PATCH', { is_read: true }) : send('/api/notifications/mark-all-read', 'POST'))
+    } catch {
+      mutate(before, { revalidate: false })
+      toast({ type: 'critical', message: t('CD0061') })
+    }
+    mutateKey(UNREAD_KEY)
+  }
   const groups = useMemo(() => {
     const today = new Date().toDateString()
     const y = new Date(Date.now() - 864e5).toDateString()
     const g: Record<'today' | 'yesterday' | 'earlier', Notification[]> = { today: [], yesterday: [], earlier: [] }
-    for (const n of (data?.notifications ?? []).filter((n) => GAMIFICATION || (n.type !== 'badge_earned' && n.type !== 'challenge_new')).slice(0, shown)) {
+    for (const n of (pages.data ?? []).flatMap((p) => p.notifications).filter((n) => GAMIFICATION || (n.type !== 'badge_earned' && n.type !== 'challenge_new'))) {
       const d = new Date(n.created_at).toDateString()
       g[d === today ? 'today' : d === y ? 'yesterday' : 'earlier'].push(n)
     }
     return g
-  }, [data, shown])
+  }, [pages.data])
   // Figma "2h ago", "1d ago": relative time in the reader's language, no Copy Deck text needed.
   const time = (iso: string) => {
     const rtf = new Intl.RelativeTimeFormat(locale, { style: 'narrow', numeric: 'always' })
@@ -491,7 +517,7 @@ export function NotificationsScreen() {
           caps day labels, Load more at the start; Nothing yet is a plain empty state. */}
       <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col gap-[var(--space-4)]">
         <h1 className="type-display-h3 max-lg:hidden">{k('notifications.title')}</h1>
-        {data?.unread_count ? <Button variant="ghost" size="md" className="self-end" onClick={async () => { await send('/api/notifications/mark-all-read', 'POST').catch(() => {}); mutate(); mutateKey(UNREAD_KEY) }}>{k('notifications.markAllRead')}</Button> : null}
+        {data?.unread_count ? <Button variant="ghost" size="md" className="self-end" onClick={() => markRead(null)}>{k('notifications.markAllRead')}</Button> : null}
         {isLoading ? <Skeleton className="h-[240px]" /> : null}
         {error ? <EmptyState type="error" container="bordered" title={k('notifications.error.title')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{k('notifications.error.retry')}</Button>} /> : null}
         {data && !data.notifications.length ? <EmptyState icon={<Bell />} title={t('CD1595')} className="flex-1">{t('CD1596')}</EmptyState> : null}
@@ -511,7 +537,7 @@ export function NotificationsScreen() {
                     unreadLabel={k('notifications.unread', { count: 1 })}
                     href={n.deep_link_url ? `${n.deep_link_url}` : '/notifications'}
                     renderLink={({ href, className, children }) => (
-                      <IntlLink href={href} className={className} onClick={() => !n.is_read && send(`/api/notifications/${n.id}`, 'PATCH', { is_read: true }).then(() => mutate()).catch(() => {})}>{children}</IntlLink>
+                      <IntlLink href={href} className={className} onClick={() => !n.is_read && markRead(n.id)}>{children}</IntlLink>
                     )}
                   />
                 ))}
@@ -519,13 +545,83 @@ export function NotificationsScreen() {
             </section>
           ) : null,
         )}
-        {data && data.notifications.length > shown ? <Button variant="secondary" size="md" className="self-start" onClick={() => setShown((s) => s + 20)}>{k('notifications.loadMore')}</Button> : null}
+        {more ? <Button variant="secondary" size="md" className="self-start" loading={pages.isValidating && pages.size > (pages.data?.length ?? 0)} onClick={() => setSize((n) => n + 1)}>{k('notifications.loadMore')}</Button> : null}
       </div>
     </V2Page>
   )
 }
 
 // ── Settings with Language and theme ─────────────────────
+
+/** Your interests sheet: the picked chips, then the chips by category (as Quick plan step 2), with Clear and Save. */
+function InterestsSheet({ open, initial, onClose, onSaved }: { open: boolean; initial: string[]; onClose: () => void; onSaved: () => void }) {
+  const t = useCd()
+  const k = useCdKey()
+  const lang = useLocale()
+  const phone = usePhone()
+  const { toast } = useV2Shell()
+  const { categories, isLoading, isError, retry } = useInterests(open)
+  const [picked, setPicked] = useState(initial)
+  const [busy, setBusy] = useState(false)
+  const [activeGroup, setActiveGroup] = useState<string | null>(null)
+  const chipLabel = new Map(categories.flatMap((g) => g.chips.map((c) => [c.slug, labelOf(c, lang)] as const)))
+  const group = categories.find((g) => g.slug === activeGroup) ?? categories[0]
+  const toggle = (slug: string) => setPicked((p) => (p.includes(slug) ? p.filter((x) => x !== slug) : p.length < MAX_INTEREST_CHIPS ? [...p, slug] : p))
+  const lbl = 'type-eyebrow-category text-ui-fg-muted'
+  const save = async () => {
+    setBusy(true)
+    try {
+      await apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) })
+      toast({ type: 'success', message: t('CD0773') })
+      onSaved()
+    } catch {
+      toast({ type: 'critical', message: t('CD0772') })
+    } finally {
+      setBusy(false)
+    }
+  }
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      size="md"
+      title={t('CD1599')}
+      closeLabel={k('badges.detail.close')}
+      secondaryAction={<Button variant="secondary" disabled={!picked.length} onClick={() => setPicked([])}>{t('CD0789')}</Button>}
+      primaryAction={<Button loading={busy} onClick={save}>{t('CD1610')}</Button>}
+    >
+      <div className="flex flex-col gap-[var(--space-5)]">
+        <div className="flex flex-col gap-[var(--space-2)]">
+          <p aria-live="polite" className={lbl}>{t('CD0785')} · {picked.length} / {MAX_INTEREST_CHIPS}</p>
+          {picked.length ? (
+            <div className="flex flex-wrap gap-[var(--space-2)]">
+              {picked.map((slug) => <Chip key={slug} type="dismissible" dismissLabel={t('CD0783', { label: chipLabel.get(slug) ?? slug })} onClick={() => toggle(slug)}>{chipLabel.get(slug) ?? slug}</Chip>)}
+            </div>
+          ) : <p className="type-body-caption text-ui-fg-muted">{t('CD0779')}</p>}
+        </div>
+        {isLoading ? <Spinner label={t('CD0781')} /> : null}
+        {isError ? (
+          <p role="alert" className="type-body-base text-ui-danger">
+            {t('CD0780')} <button type="button" onClick={retry} className="underline underline-offset-2">{t('CD0784')}</button>
+          </p>
+        ) : null}
+        {group ? (
+          <div className="flex flex-col gap-[var(--space-4)]">
+            <div role="group" aria-label={t('CD0778')} className={cn('flex gap-[var(--space-2)]', phone ? 'overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : 'flex-wrap')}>
+              {categories.map((g) => <Chip key={g.slug} selected={g.slug === group.slug} onClick={() => setActiveGroup(g.slug)} className="shrink-0">{labelOf(g, lang)}</Chip>)}
+            </div>
+            <div className="flex flex-wrap gap-[var(--space-2)]">
+              {group.chips.map((c) => {
+                const on = picked.includes(c.slug)
+                return <Chip key={c.slug} selected={on} disabled={!on && picked.length >= MAX_INTEREST_CHIPS} onClick={() => toggle(c.slug)}>{labelOf(c, lang)}</Chip>
+              })}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </Modal>
+  )
+}
 
 export function SettingsScreen() {
   const k = useCdKey()
@@ -545,6 +641,7 @@ export function SettingsScreen() {
   const [theme, setThemeState] = useState<ThemeChoice>('system')
   useEffect(() => setThemeState(getThemeChoice()), [])
   const [themeSheet, setThemeSheet] = useState(false)
+  const [interestsSheet, setInterestsSheet] = useState(false)
   const [nameSheet, setNameSheet] = useState(false)
   const [name, setName] = useState('')
   const [pwSheet, setPwSheet] = useState(false)
@@ -639,7 +736,7 @@ export function SettingsScreen() {
           ) : (
             <ListItem title={t('CD1283')} trailing={<SegmentedControl label={t('CD1283')} options={themeOptions} value={theme} onValueChange={(v) => chooseTheme(v as ThemeChoice)} className="w-[320px]" />} />
           )}
-          <ListItem title={t('CD1599')} secondary={picked ? GAP.interestsPicked(picked) : undefined} chevron disabled={!user} onClick={() => router.push('/?interests=1')} />
+          <ListItem title={t('CD1599')} secondary={picked ? GAP.interestsPicked(picked) : undefined} chevron disabled={!user} onClick={() => setInterestsSheet(true)} />
         </ul>
 
         <h2 className={heading}>{k('profile.settings.notifications.heading')}</h2>
@@ -672,6 +769,13 @@ export function SettingsScreen() {
           ))}
         </div>
       </Modal>
+      <InterestsSheet
+        key={interestsSheet ? 'open' : 'closed'}
+        open={interestsSheet}
+        initial={(interests.data?.interest_tags ?? []).slice(0, MAX_INTEREST_CHIPS)}
+        onClose={() => setInterestsSheet(false)}
+        onSaved={() => { setInterestsSheet(false); interests.mutate() }}
+      />
       <Modal open={nameSheet} onClose={() => setNameSheet(false)} size="sm" title={t('CD1597')} closeLabel={k('badges.detail.close')}
         secondaryAction={<Button variant="ghost" onClick={() => setNameSheet(false)}>{k('saved.folder.cancel')}</Button>}
         primaryAction={<Button disabled={!name.trim()} onClick={async () => { await send('/api/account/profile', 'PATCH', { display_name: name.trim() }).catch(() => toast({ type: 'critical', message: k('profile.settings.identity.error') })); setNameSheet(false); profile.mutate() }}>{k('profile.settings.identity.save')}</Button>}>
