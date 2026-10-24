@@ -187,7 +187,7 @@ export function PlanScreen({ id }: { id: string }) {
   } else if (isPrivate || isNotFound) {
     panel = (
       <div className="p-[var(--space-4)]">
-        <EmptyState type="no-results" title={t('CD1542')} action={<Button size="md" variant="secondary" onClick={() => router.push('/')}>{t('CD1544')}</Button>}>{t('CD1543')}</EmptyState>
+        <EmptyState type="no-results" title={t('CD1542')} action={<Button size="md" variant="secondary" onClick={() => router.push('/explore/popular-plans')}>{t('CD1544')}</Button>}>{t('CD1543')}</EmptyState>
       </div>
     )
   } else if (isError || !it) {
