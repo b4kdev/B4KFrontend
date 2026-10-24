@@ -124,6 +124,21 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID
   const select = useRef(onSelect)
   select.current = onSelect
+  // The pin that last had the keyboard focus. A redraw can drop it for a moment (focus falls to the
+  // page body), so it is kept until the focus moves somewhere else, and given back when the pin returns.
+  const focusedPin = useRef<string | null>(null)
+  useEffect(() => {
+    const onFocus = (e: Event) => {
+      focusedPin.current = (e.target as HTMLElement | null)?.closest?.('[data-poi-id]')?.getAttribute('data-poi-id') ?? null
+    }
+    // A click anywhere also ends it, so a pointer user's later redraw never pulls the focus back.
+    document.addEventListener('focusin', onFocus)
+    document.addEventListener('pointerdown', onFocus)
+    return () => {
+      document.removeEventListener('focusin', onFocus)
+      document.removeEventListener('pointerdown', onFocus)
+    }
+  }, [])
   const pendingFit = useRef<{ lat: number; lng: number }[] | null>(null)
   const live = () => (map.current && sdkAlive() ? map.current : null)
 
@@ -243,7 +258,8 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     if (!live() || !mapReady) return
     const N = window.naver.maps
     // Markers are rebuilt on every change; a pin that had the keyboard focus gets it back.
-    const focusedId = (document.activeElement as HTMLElement | null)?.closest?.('[data-poi-id]')?.getAttribute('data-poi-id')
+    const active = document.activeElement
+    const focusedId = !active || active === document.body ? focusedPin.current : active.closest?.('[data-poi-id]')?.getAttribute('data-poi-id')
     overlays.current.forEach((m) => m.setMap(null))
     overlays.current = []
     const inPlan = new Set(planStops.map((s) => s.poi.poi_id))
