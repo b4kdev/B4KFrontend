@@ -51,7 +51,13 @@ export function useSearchBox({ viewport, initial = '', open: startOpen = false }
   // Another tab or field may have added a search since: read the list again on open.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (open) recents.load() }, [open])
-  const { data: sugg } = useSWR<{ suggestions: string[] }>(open && draft.trim().length >= 2 ? `/api/search/suggestions?q=${encodeURIComponent(draft)}&lang=${locale}` : null, jsonFetch)
+  // Suggestions ask once typing pauses (about 300 ms), not on every key.
+  const [typed, setTyped] = useState(draft)
+  useEffect(() => {
+    const id = window.setTimeout(() => setTyped(draft), 300)
+    return () => window.clearTimeout(id)
+  }, [draft])
+  const { data: sugg } = useSWR<{ suggestions: string[] }>(open && typed.trim().length >= 2 ? `/api/search/suggestions?q=${encodeURIComponent(typed)}&lang=${locale}` : null, jsonFetch)
   const go = (text: string) => {
     if (!text.trim()) return
     recents.add(text.trim())
