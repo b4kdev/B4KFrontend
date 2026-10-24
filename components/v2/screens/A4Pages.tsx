@@ -4,13 +4,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import useSWR from 'swr'
-import { Copy, Map, WifiOff } from 'lucide-react'
+import { Copy, Map } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
   Accordion,
   AccordionItem,
   BottomSheet,
-  Breadcrumbs,
   Button,
   Card,
   Chip,
@@ -70,7 +69,7 @@ export function SearchScreen() {
   if (filters.region?.[0]) qs.set('area_lv1', filters.region[0])
   if (filters.district?.[0]) qs.set('area_lv2', filters.district[0])
   if (filters.theme?.length) qs.set('tags', filters.theme.join(','))
-  const { data, error, isLoading } = useSWR<SearchResult>(q.length >= 2 ? `/api/search?${qs}` : null, jsonFetch)
+  const { data, error, isLoading, mutate } = useSWR<SearchResult>(q.length >= 2 ? `/api/search?${qs}` : null, jsonFetch)
 
   const groups: FilterGroup[] = [
     { id: 'show', label: t('CD1271'), options: [['all', 'CD1267'], ['places', 'CD1269'], ['plans', 'CD1270'], ['explore', 'CD1268']].map(([id, cd]) => ({ id, label: t(cd) })) },
@@ -108,7 +107,7 @@ export function SearchScreen() {
     <div className="flex flex-col gap-[var(--space-10)]">
       {/* Screen readers hear the counts of every section once the results arrive. */}
       {q ? <p aria-live="polite" className="sr-only">{data ? t('CD1303', { query: q, places: data.places.length, plans: data.plans.length, explore: data.explore.length }) : isLoading ? t('CD1285') : ''}</p> : null}
-      {error ? <EmptyState type="error" title={t('CD1249')} action={<Button size="md" variant="secondary" onClick={() => router.refresh()}>{t('CD1304')}</Button>} /> : null}
+      {error ? <EmptyState type="error" title={t('CD1249')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{t('CD1304')}</Button>} /> : null}
       {isLoading ? (
         <div aria-busy className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-4)] lg:grid-cols-3 lg:gap-x-[var(--space-4)]">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div>
       ) : null}
@@ -385,34 +384,3 @@ export function AboutScreen() {
   )
 }
 
-// ── Offline page and Site map (pre-v2 addresses nothing links to, kept on the new design) ──
-
-export function OfflineScreen() {
-  const k = useCdKey()
-  return (
-    <V2Page bar={{ type: 'home' }} className="flex items-center justify-center">
-      <EmptyState
-        icon={<WifiOff />}
-        title={k('boundary.offline.title')}
-        action={<Button variant="secondary" onClick={() => window.location.reload()}>{k('boundary.offline.retry')}</Button>}
-      >
-        {k('boundary.offline.desc')}
-      </EmptyState>
-    </V2Page>
-  )
-}
-
-export function SiteMapScreen() {
-  const t = useCd()
-  const k = useCdKey()
-  const GAP = useGap()
-  return (
-    <V2Page bar={{ type: 'page', title: k('routes.sitemap.title') }}>
-      <div className="flex flex-col gap-[var(--space-6)]">
-        <Breadcrumbs label={GAP.breadcrumb} items={[{ label: t('CD0807'), href: '/' }, { label: k('routes.sitemap.breadcrumb') }]} />
-        <h1 className="type-display-h1 text-ui-fg">{k('routes.sitemap.title')}</h1>
-        <EmptyState title={k('routes.sitemap.empty.title')}>{k('routes.sitemap.empty.desc')}</EmptyState>
-      </div>
-    </V2Page>
-  )
-}
