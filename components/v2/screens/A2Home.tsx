@@ -278,7 +278,7 @@ export function HomeScreen() {
             title={t('CD0477')}
             seeAll={{ href: '/explore/popular-plans', label: t('CD1309') }}
             cards={plans.data.map((p) => (
-              <Card key={p.id} type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD0473', { n: p.stop_count })} sponsored={p.is_partner ? t('CD0476') : undefined} />
+              <Card key={p.id} type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={t('CD0473', { n: p.stop_count })} sponsored={p.is_partner ? t('CD0476') : undefined} />
             ))}
           />
         ) : (

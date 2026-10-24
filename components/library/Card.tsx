@@ -40,7 +40,7 @@ export type CardProps = Common &
     | (Media & { type: 'compact'; meta: ReactNode; save?: { saved: boolean; onSave: () => void; label: string }; addToPlan?: { onAdd: () => void; label: string } })
     | { type: 'collection'; images: (string | null)[]; meta: ReactNode }
     | (Media & { type: 'collection-photo'; meta: ReactNode })
-    | (Media & { type: 'plan'; author: string; saves?: string; stops: string; sponsored?: string })
+    | (Media & { type: 'plan'; author: string; /** The author's profile; the name links there above the card link. */ authorHref?: string; saves?: string; stops: string; sponsored?: string })
     | (Media & { type: 'package'; partner: string; cta: string; sponsored: string })
     | (Media & { type: 'featured' | 'featured-stacked'; eyebrow: string; meta: string; sponsored?: string; trending?: string })
   )
@@ -152,7 +152,11 @@ export function Card(props: CardProps) {
           <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
             <CardLink href={href} className={TITLE2}>{title}</CardLink>
             <div className="flex items-center justify-between gap-[var(--space-1)] type-body-caption text-ui-fg-muted">
-              <span className="truncate">{props.author}</span>
+              {props.authorHref ? (
+                <IntlLink href={props.authorHref} className="relative z-10 truncate hover:text-ui-fg hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none">{props.author}</IntlLink>
+              ) : (
+                <span className="truncate">{props.author}</span>
+              )}
               {props.saves ? <span className="inline-flex shrink-0 items-center gap-[var(--gap-xs)]"><Bookmark aria-hidden className="size-[var(--icon-size-xs)]" />{props.saves}</span> : null}
             </div>
             <div className="flex items-center gap-[var(--gap-xs)] type-body-caption text-ui-fg-muted"><Route aria-hidden className="size-[var(--icon-size-xs)]" />{props.stops}</div>

@@ -5,6 +5,8 @@ export interface HomePopularPlan {
   id: string
   title: string
   author_name: string
+  /** The author's user id, for the link to their profile; null when the BFF sends none. */
+  author_id: string | null
   stop_count: number
   save_count: number
   cover_image_url: string | null
@@ -33,6 +35,7 @@ export async function GET() {
       id: String(p.itinerary_id),
       title: p.title,
       author_name: p.author?.name ?? '',
+      author_id: p.author?.user_id != null ? String(p.author.user_id) : null,
       stop_count: p.total_places ?? 0,
       save_count: p.save_count ?? 0,
       cover_image_url: p.cover_image_url,
