@@ -160,11 +160,15 @@ function maintenanceResponse(): NextResponse {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>B4K — Under Maintenance</title>
 <style>
+  /* Values copied from app/tokens.css (this page is served before any app CSS):
+     neutral-100 bg, neutral-950 fg, neutral-550 muted in light; neutral-950, neutral-50, neutral-450 in dark. */
+  :root{color-scheme:light dark;--bg:#f5f5f3;--fg:#0a0a0a;--muted:#636362}
+  @media (prefers-color-scheme:dark){:root{--bg:#0a0a0a;--fg:#f7f6f3;--muted:#8f8e8c}}
   html,body{height:100%;margin:0}
-  body{background:#0a0a0a;color:#ffffff;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
-  .card{max-width:420px}
-  h1{font-size:20px;font-weight:600;margin:0 0 12px;color:#C4A8E0}
-  p{font-size:14px;line-height:1.7;color:rgba(255,255,255,0.55);margin:0 0 8px}
+  body{background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px}
+  .card{max-width:400px}
+  h1{font-size:20px;line-height:1.25;font-weight:600;margin:0 0 8px}
+  p{font-size:14px;line-height:1.5;color:var(--muted);margin:0 0 4px}
 </style>
 </head>
 <body>
