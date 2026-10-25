@@ -1,22 +1,12 @@
 import type { Metadata } from 'next'
-import { hreflangAlternates, localizedUrl } from '@/lib/site-url'
-import { routing } from '@/i18n/routing'
+import { localizedUrl } from '@/lib/site-url'
+import { namedPageMeta, seoText } from '@/lib/seo'
 import type { FilmingSpotsDetail } from '@/lib/kdrama-filming-spots'
 
-export function buildFilmingSpotsMetadata(detail: FilmingSpotsDetail, locale: string): Metadata {
-  const title = `${detail.workNameEn} Filming Spots | B4K`
-  const description = `${detail.totalCount} real filming locations from ${detail.workNameEn}, curated by B4K.`
-  const path = `/explore/k-drama/${detail.workId}/filming-spots`
-  const url = localizedUrl(locale, path)
-  const otherLocales = routing.locales.filter(l => l !== locale)
-
-  return {
-    title,
-    description,
-    alternates: { canonical: url, languages: hreflangAlternates(path) },
-    openGraph: { title, description, url, siteName: 'B4K', locale, alternateLocale: otherLocales, type: 'website' },
-    twitter: { card: 'summary_large_image', title, description },
-  }
+// The page heading as on the screen, "{page} | B4K"; the place count as the description.
+export async function buildFilmingSpotsMetadata(detail: FilmingSpotsDetail, locale: string): Promise<Metadata> {
+  const { t } = await seoText(locale)
+  return namedPageMeta(locale, `/explore/k-drama/${detail.workId}/filming-spots`, locale === 'ko' ? detail.workNameKo : detail.workNameEn, { description: t('CD1835', { count: detail.totalCount }) })
 }
 
 export function buildFilmingSpotsJsonLd(detail: FilmingSpotsDetail, locale: string) {

@@ -1,23 +1,14 @@
 import type { Metadata } from 'next'
-import { hreflangAlternates, localizedUrl } from '@/lib/site-url'
-import { routing } from '@/i18n/routing'
+import { localizedUrl } from '@/lib/site-url'
+import { namedPageMeta, seoText } from '@/lib/seo'
 import { SEED_MICHELIN_NOODLES, MICHELIN_NOODLES_TOTAL } from '@/lib/kfood-michelin-noodles'
 
 const PATH = '/explore/k-food/michelin-noodles'
 
-export function buildMichelinNoodlesMetadata(locale: string): Metadata {
-  const title = 'Michelin-Picked Noodles | B4K'
-  const description = `${MICHELIN_NOODLES_TOTAL} Michelin-recognized noodle restaurants across Korea, curated by B4K.`
-  const url = localizedUrl(locale, PATH)
-  const otherLocales = routing.locales.filter(l => l !== locale)
-
-  return {
-    title,
-    description,
-    alternates: { canonical: url, languages: hreflangAlternates(PATH) },
-    openGraph: { title, description, url, siteName: 'B4K', locale, alternateLocale: otherLocales, type: 'website' },
-    twitter: { card: 'summary_large_image', title, description },
-  }
+// The page heading as on the screen, "{page} | B4K"; the place count as the description.
+export async function buildMichelinNoodlesMetadata(locale: string): Promise<Metadata> {
+  const { t } = await seoText(locale)
+  return namedPageMeta(locale, PATH, t('CD0267'), { description: t('CD1835', { count: MICHELIN_NOODLES_TOTAL }) })
 }
 
 export function buildMichelinNoodlesJsonLd(locale: string) {

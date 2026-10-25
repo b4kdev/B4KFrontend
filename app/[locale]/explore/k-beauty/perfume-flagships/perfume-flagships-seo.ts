@@ -1,23 +1,14 @@
 import type { Metadata } from 'next'
-import { hreflangAlternates, localizedUrl } from '@/lib/site-url'
-import { routing } from '@/i18n/routing'
+import { localizedUrl } from '@/lib/site-url'
+import { namedPageMeta, seoText } from '@/lib/seo'
 import { SEED_PERFUME_FLAGSHIPS, PERFUME_FLAGSHIPS_TOTAL } from '@/lib/kbeauty-perfume-flagships'
 
 const PATH = '/explore/k-beauty/perfume-flagships'
 
-export function buildPerfumeFlagshipsMetadata(locale: string): Metadata {
-  const title = 'K-Beauty Flagship Tour | B4K'
-  const description = `${PERFUME_FLAGSHIPS_TOTAL} real K-Beauty flagship stores across Seoul, curated by B4K.`
-  const url = localizedUrl(locale, PATH)
-  const otherLocales = routing.locales.filter(l => l !== locale)
-
-  return {
-    title,
-    description,
-    alternates: { canonical: url, languages: hreflangAlternates(PATH) },
-    openGraph: { title, description, url, siteName: 'B4K', locale, alternateLocale: otherLocales, type: 'website' },
-    twitter: { card: 'summary_large_image', title, description },
-  }
+// The page heading as on the screen, "{page} | B4K"; the place count as the description.
+export async function buildPerfumeFlagshipsMetadata(locale: string): Promise<Metadata> {
+  const { t } = await seoText(locale)
+  return namedPageMeta(locale, PATH, t('CD0272'), { description: t('CD1835', { count: PERFUME_FLAGSHIPS_TOTAL }) })
 }
 
 export function buildPerfumeFlagshipsJsonLd(locale: string) {

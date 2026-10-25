@@ -1,37 +1,12 @@
 import type { Metadata } from 'next'
-import { hreflangAlternates, localizedUrl } from '@/lib/site-url'
-import { routing } from '@/i18n/routing'
+import { localizedUrl } from '@/lib/site-url'
+import { namedPageMeta, seoText } from '@/lib/seo'
 import type { FootstepsDetail } from '@/lib/kpop-footsteps'
 
-export function buildFootstepsMetadata(detail: FootstepsDetail, locale: string): Metadata {
-  const title = `${detail.memberName} Footsteps — ${detail.teamNameEn} | B4K`
-  const description = `${detail.totalCount} places connected to ${detail.memberName} of ${detail.teamNameEn}, curated by B4K.`
-  const path = `/explore/k-pop/${detail.teamId}/footsteps`
-  const url = localizedUrl(locale, path)
-  const otherLocales = routing.locales.filter(l => l !== locale)
-
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: url,
-      languages: hreflangAlternates(path),
-    },
-    openGraph: {
-      title,
-      description,
-      url,
-      siteName: 'B4K',
-      locale,
-      alternateLocale: otherLocales,
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-    },
-  }
+// The page heading as on the screen, "{page} | B4K"; the place count as the description.
+export async function buildFootstepsMetadata(detail: FootstepsDetail, locale: string): Promise<Metadata> {
+  const { t } = await seoText(locale)
+  return namedPageMeta(locale, `/explore/k-pop/${detail.teamId}/footsteps`, locale === 'ko' ? detail.teamNameKo : detail.teamNameEn, { description: t('CD1835', { count: detail.totalCount }) })
 }
 
 export function buildFootstepsJsonLd(detail: FootstepsDetail, locale: string) {

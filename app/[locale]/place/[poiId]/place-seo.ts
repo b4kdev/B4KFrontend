@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
-import { hreflangAlternates, localizedUrl } from '@/lib/site-url'
-import { routing } from '@/i18n/routing'
+import { localizedUrl } from '@/lib/site-url'
+import { fitDescription, fitTitle, pageMeta, regionName, seoText } from '@/lib/seo'
+import { CATEGORIES } from '@/components/v2/categories'
 import type { PlaceDetail } from '@/lib/place-detail'
 
 // display_domain slug -> explore.<key> namespace, reusing the same translated
@@ -14,62 +15,26 @@ const DOMAIN_TO_EXPLORE_KEY: Record<string, string> = {
   'k-culture': 'kculture',
 }
 
-const MAX_TITLE_LEN = 60
-const MAX_DESC_LEN  = 140
-
-// Spec (shared/legal-seo.md, S-DHKYQN): "{POI name} — {category} in {region} | B4K",
-// truncation rule (H-B 2026-07-08): if >60 chars, drop "in {region}" first, then {category}.
-function buildTitle(name: string, category: string | null, region: string | null): string {
-  const full = category && region ? `${name} — ${category} in ${region} | B4K`
-             : category            ? `${name} — ${category} | B4K`
-             :                        `${name} | B4K`
-  if (full.length <= MAX_TITLE_LEN) return full
-
-  const withoutRegion = category ? `${name} — ${category} | B4K` : `${name} | B4K`
-  if (withoutRegion.length <= MAX_TITLE_LEN) return withoutRegion
-
-  return `${name} | B4K`
-}
-
-function truncateDesc(desc: string): string {
-  if (desc.length <= MAX_DESC_LEN) return desc
-  return desc.slice(0, MAX_DESC_LEN - 1).trimEnd() + '…'
-}
-
+// "{name} — {kind} in {area} | B4K", then without the area, then the name only (the first that fits
+// 60 characters). Other languages than Korean show the Korean name too: "{name} ({nameKo})". The
+// kind is the place's Explore category until places have a type. Description: the place's own
+// sentence, else "{name}, {kind} in {area}. …".
 export async function buildPlaceMetadata(place: PlaceDetail, locale: string): Promise<Metadata> {
-  const t = await getTranslations({ locale, namespace: 'place' })
-  const categoryKey = place.display_domain ? DOMAIN_TO_EXPLORE_KEY[place.display_domain] : null
-  const category = categoryKey ? await getTranslations({ locale, namespace: 'explore' }).then(te => te(`${categoryKey}.title`)) : null
-
-  const title = buildTitle(place.name, category, place.display_region)
-  const description = truncateDesc(place.description ?? t('fallbackDescription', { name: place.name }))
-  const path = `/place/${place.poi_id}`
-  const url = localizedUrl(locale, path)
-  const otherLocales = routing.locales.filter(l => l !== locale)
-
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: url,
-      languages: hreflangAlternates(path),
-    },
-    openGraph: {
-      title,
-      description,
-      url,
-      siteName: 'B4K',
-      locale,
-      alternateLocale: otherLocales,
-      type: 'website',
-      ...(place.primary_image_url ? { images: [{ url: place.primary_image_url, width: 1200, height: 630 }] } : {}),
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-    },
-  }
+  const { t } = await seoText(locale)
+  const label = CATEGORIES.find((c) => c.slug === place.display_domain)?.label
+  const kind = label ? t(label) : null
+  const area = regionName(place.display_region, locale)
+  const name = locale !== 'ko' && place.name_ko && place.name_ko !== place.name ? t('CD1831', { name: place.name, nameKo: place.name_ko }) : place.name
+  const title = fitTitle(
+    kind && area ? t('CD1829', { name, kind, area }) : null,
+    kind ? t('CD1830', { name, kind }) : null,
+    t('CD1832', { page: name }),
+    kind && area ? t('CD1829', { name: place.name, kind, area }) : null,
+    kind ? t('CD1830', { name: place.name, kind }) : null,
+    t('CD1832', { page: place.name }),
+  )
+  const description = fitDescription(place.description || (kind && area ? t('CD0864', { name: place.name, kind, area }) : null))
+  return pageMeta({ locale, path: `/place/${place.poi_id}`, title, description, image: place.primary_image_url })
 }
 
 // Breadcrumb for a place page: Home, the place's Explore category (when it has one), the place.
