@@ -40,7 +40,17 @@ export type CardProps = Common &
     | (Media & { type: 'compact'; meta: ReactNode; save?: { saved: boolean; onSave: () => void; label: string }; addToPlan?: { onAdd: () => void; label: string } })
     | { type: 'collection'; images: (string | null)[]; meta: ReactNode }
     | (Media & { type: 'collection-photo'; meta: ReactNode })
-    | (Media & { type: 'plan'; author: string; /** The author's profile; the name links there above the card link. */ authorHref?: string; saves?: string; stops: string; sponsored?: string })
+    | (Media & {
+        type: 'plan'
+        author: string
+        /** The author's profile; the name links there above the card link. */
+        authorHref?: string
+        saves?: string
+        stops: string
+        sponsored?: string
+        /** Save on the cover (no Like); saved = the Unsave state on Saved plans. */
+        save?: { saved: boolean; onSave: () => void; label: string }
+      })
     | (Media & { type: 'package'; partner: string; cta: string; sponsored: string })
     | (Media & { type: 'featured' | 'featured-stacked'; eyebrow: string; meta: string; sponsored?: string; trending?: string })
   )
@@ -148,6 +158,7 @@ export function Card(props: CardProps) {
           <div className="relative">
             <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="280px" />
             {props.sponsored ? <Badge variant="on-image" className="absolute left-[var(--space-2)] top-[var(--space-2)]">{props.sponsored}</Badge> : null}
+            {props.save ? <SaveLikeOverlay className="z-10" saved={props.save.saved} onSave={props.save.onSave} saveLabel={props.save.label} /> : null}
           </div>
           <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
             <CardLink href={href} className={TITLE2}>{title}</CardLink>

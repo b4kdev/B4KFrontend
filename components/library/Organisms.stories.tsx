@@ -42,7 +42,7 @@ export const Cards: Story = {
   render: () => (
     <div className="grid max-w-[900px] grid-cols-3 gap-[var(--space-4)]">
       <Card type="place" href="#" title="Gwangjang Market" imageSrc={IMG} meta="Jongno-gu · Market" description="Bindaetteok and mayak gimbap since 1905" trending="Trending" save={{ saved: false, onSave: () => {}, label: 'Save Gwangjang Market' }} like={{ liked: false, onLike: () => {}, label: 'Like Gwangjang Market' }} />
-      <Card type="plan" href="#" title="Seoul in 3 days for K-drama fans" imageSrc={IMG} author="Mina K." saves="1.2k" stops="5 stops · 1 day" />
+      <Card type="plan" href="#" title="Seoul in 3 days for K-drama fans" imageSrc={IMG} author="Mina K." saves="1.2k" stops="5 stops · 1 day" save={{ saved: false, onSave: () => {}, label: 'Save Seoul in 3 days for K-drama fans' }} />
       <Card type="package" href="https://www.example.com" external={{ newTabLabel: '(opens in a new tab)' }} title="DMZ half-day tour" imageSrc={IMG} partner="Klook" cta="View on Klook" sponsored="Sponsored" />
       <Card type="collection" href="#" title="Seoul food" images={[IMG, null, IMG, null]} meta="12 places" />
       <div className="col-span-2"><Card type="featured" href="#" title="Bukchon Hanok Village" imageSrc={IMG} eyebrow="Featured" meta="Jongno-gu · Neighborhood" /></div>
