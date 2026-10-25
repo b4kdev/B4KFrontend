@@ -7,6 +7,7 @@ import type { SavedData } from '@/app/api/saved/route'
 import { useCd, useCdKey } from './cd'
 import { useV2Shell } from './V2Shell'
 import { usePendingAction } from './V2SignInGate'
+import { useBadgeUnlock } from './badges'
 
 const jsonFetch = <T,>(url: string) => fetch(url).then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(r.status)))
 const send = (url: string, method: string, body: unknown) =>
@@ -26,19 +27,23 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
   const { user } = useAuth()
   const { toast, requireSignIn } = useV2Shell()
   const saved = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
+  const unlock = useBadgeUnlock()
   const savedIds = new Set((saved.data?.pois ?? []).map((p) => p.poi_id))
   const [liked, setLiked] = useState<Set<string>>(new Set())
 
   // signedIn: the save a guest started, finished after the sign-in (its own toast).
   const setSave = async (id: string, on: boolean, signedIn = false) => {
     await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id })
-      .then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') }))
+      .then(() => {
+        toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })
+        if (!on) unlock()
+      })
       .catch(() => toast({ type: 'critical', message: t('CD1426') }))
     saved.mutate()
   }
   const setLike = async (id: string, on: boolean) => {
     setLiked((s) => { const n = new Set(s); if (on) n.delete(id); else n.add(id); return n })
-    await send('/api/likes/poi', on ? 'DELETE' : 'POST', { poi_id: id }).catch(() => {
+    await send('/api/likes/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => { if (!on) unlock() }).catch(() => {
       setLiked((s) => { const n = new Set(s); if (on) n.add(id); else n.delete(id); return n })
       toast({ type: 'critical', message: t('CD0061') })
     })
@@ -76,6 +81,7 @@ export function usePlanActions({ resume = false }: { resume?: boolean } = {}) {
   const { toast, requireSignIn } = useV2Shell()
   const saved = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
   const [taps, setTaps] = useState<Map<string, boolean>>(new Map())
+  const unlock = useBadgeUnlock()
   const isSaved = (id: string) => taps.get(id) ?? (saved.data?.plans ?? []).some((p) => p.id === id)
 
   const setSave = (id: string, next: boolean, signedIn = false) => {
@@ -85,6 +91,7 @@ export function usePlanActions({ resume = false }: { resume?: boolean } = {}) {
       .then(() => {
         toast({ type: 'success', message: next ? (signedIn ? t('CD1608') : k('itinerary.actions.savedToast')) : k('itinerary.actions.unsavedToast') })
         saved.mutate()
+        if (next) unlock()
       })
       .catch(() => {
         tap(!next)

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import useSWR, { mutate as mutateKey } from 'swr'
 import useSWRInfinite from 'swr/infinite'
@@ -49,6 +50,7 @@ import type { Notification, NotificationsData } from '@/app/api/notifications/ro
 import type { NotificationPref } from '@/app/api/account/notification-prefs/route'
 import type { OtherUserTrip } from '@/app/api/profile/[id]/trips/route'
 import type { OtherUserBadge } from '@/app/api/profile/[id]/badges/route'
+import { useBadgeName } from '../badges'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
 import { apiFetch } from '@/lib/api'
@@ -146,18 +148,6 @@ export function ProfileOwnScreen() {
   )
 }
 
-// Badge names from the Copy Deck by slug, so they show in the reader's
-// language; a badge the deck does not have keeps the name the server sends (English).
-const BADGE_NAME_CD: Record<string, string> = {
-  'first-save': 'CD1615', 'map-maker': 'CD1616', 'k-pop-pilgrim': 'CD1617', 'social-butterfly': 'CD1618',
-  'drama-chaser': 'CD1619', 'beauty-hunter': 'CD1620', 'culture-keeper': 'CD1621', 'jeju-explorer': 'CD1622',
-  'seoul-insider': 'CD1623', 'taste-seeker': 'CD1624', 'leaderboard-top': 'CD1625', 'legendary-guide': 'CD1626',
-}
-
-function useBadgeName() {
-  const t = useCd()
-  return (b: { slug: string; name: string }) => (BADGE_NAME_CD[b.slug] ? t(BADGE_NAME_CD[b.slug]) : b.name)
-}
 
 function BadgeTile({ b, onOpen }: { b: BadgeT; onOpen?: () => void }) {
   const badgeName = useBadgeName()
@@ -249,6 +239,12 @@ export function BadgesScreen() {
   const { data, error, isLoading, mutate } = useSWR<BadgesData>('/api/badges', jsonFetch)
   const [open, setOpen] = useState<BadgeT | null>(null)
   const badges = data?.badges ?? []
+  // /badges?badge={slug} (View badge on the unlock toast) opens that badge once the list is in.
+  const asked = useSearchParams()?.get('badge')
+  useEffect(() => {
+    const b = asked ? data?.badges.find((x) => x.slug === asked) : undefined
+    if (b) setOpen(b)
+  }, [asked, data])
   const pinned = badges.filter((b) => b.is_pinned).length
   const day = (iso: string) => new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(new Date(iso))
   const how = (b: BadgeT) => (BADGE_HOW_CD[b.slug] ? t(BADGE_HOW_CD[b.slug]) : b.unlock_criteria.description)

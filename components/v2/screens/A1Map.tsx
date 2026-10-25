@@ -42,6 +42,7 @@ import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
 import { ABOVE_LEGAL_LINE, MapLegalLine } from '../map/MapLegalLine'
 import { useLocateMe } from '../map/LocateMe'
+import { useBadgeUnlock } from '../badges'
 import { useV2Shell } from '../V2Shell'
 import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
@@ -75,6 +76,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const { labels, openDrawer, toast, requireSignIn } = useV2Shell()
   const mapRef = useRef<V2MapHandle>(null)
   const locate = useLocateMe(mapRef, { phone })
+  const unlock = useBadgeUnlock()
   const draft = usePlanDraft()
   // Toast actions run later (Undo): they call the draft as it is then, not as it was.
   const latestDraft = useRef(draft)
@@ -341,6 +343,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       draft.discard()
       setSaveOpen(false)
       toast({ type: 'success', message: t('CD1636') })
+      unlock()
       // Save plan: the plan in progress is saved, then the published plan opens for editing.
       if (pendingEdit) loadForEdit(pendingEdit)
       else if (id) router.push(`/plan/${id}`)
