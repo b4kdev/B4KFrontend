@@ -22,8 +22,9 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     icons: {
       icon: '/icon.svg',
-      apple: '/brand/B4K_BrandLogo_Square_White.svg',
+      apple: '/apple-touch-icon.png',
     },
+    manifest: `/${locale}/manifest.webmanifest`,
     openGraph: { title, description, siteName: 'B4K', locale, type: 'website' },
     twitter: { card: 'summary_large_image', title, description },
   };
