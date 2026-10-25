@@ -291,7 +291,8 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
     url.pathname = `/${v2Route[1]}${targetPath === '/' ? '' : targetPath}`
     // An alias may carry its own query (/plan → /map?plan=new); the request's query is kept too.
     new URLSearchParams(targetQuery ?? '').forEach((v, key) => url.searchParams.set(key, v))
-    return withSecurityHeaders(NextResponse.redirect(url, 307))
+    // The old preview address moved for good (308); the v2 layout keeps noindex while it still answers.
+    return withSecurityHeaders(NextResponse.redirect(url, v2Alias ? 307 : 308))
   }
 
   // ── Non-API routes: Supabase session refresh + intl routing ──────────────
