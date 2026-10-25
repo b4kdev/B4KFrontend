@@ -300,6 +300,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   usePendingAction('save_own_plan', !!user, () => { setCart('open'); openSaveSheet() })
   const totalMin = order.reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0)
   const dayStops = typeof activeDay === 'number' ? order.filter((p) => draft.dayOf(p.poi_id) === activeDay).length : 0
+  // A published plan open for editing: the day line ends with "keeps the same link".
+  const withEditNote = (line?: string) => (line && editing ? `${line} · ${t('CD1808')}` : line)
   const dayTotal = typeof activeDay === 'number' ? order.filter((p) => draft.dayOf(p.poi_id) === activeDay).reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0) : null
 
   const savePlan = async () => {
@@ -495,7 +497,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       lastAdded={order.length ? nameOf(order[order.length - 1], locale) : undefined}
       lastAddedImage={order.length ? order[order.length - 1].primary_image_url ?? null : undefined}
       lastAddedMeta={order.length ? GAP.lastAddedMore(order.length - 1) : undefined}
-      dayTotal={dayTotal !== null ? (dayStops && typeof activeDay === 'number' ? GAP.dayTotal(activeDay, formatMinutes(dayTotal, k), dayStops, PER_DAY) : [k('map.plan.dayTab', { n: activeDay }), k('itinerary.stats.stops', { count: dayStops })].join(' · ')) : order.length ? GAP.allDaysTotal(formatMinutes(totalMin, k), order.length) : undefined}
+      dayTotal={withEditNote(dayTotal !== null ? (dayStops && typeof activeDay === 'number' ? GAP.dayTotal(activeDay, formatMinutes(dayTotal, k), dayStops, PER_DAY) : [k('map.plan.dayTab', { n: activeDay }), k('itinerary.stats.stops', { count: dayStops })].join(' · ')) : order.length ? GAP.allDaysTotal(formatMinutes(totalMin, k), order.length) : undefined)}
       durationMenu={(id) => DURATIONS.map((m) => (
         <MenuItem key={m} checked={draft.plan.durations[id] === m} onClick={() => draft.setDuration(id, m)}>{formatMinutes(m, k)}</MenuItem>
       ))}
