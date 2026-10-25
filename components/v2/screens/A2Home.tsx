@@ -22,7 +22,6 @@ import { useInterests } from '@/hooks/useInterests'
 import { apiFetch } from '@/lib/api'
 import { getDraftPlan } from '@/lib/draft-plan'
 import { labelOf } from '@/lib/quickplan'
-import type { HomeCarouselSlide } from '@/app/api/home/carousel/data'
 import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 import type { HomePopularPlan } from '@/app/api/home/popular-plans/route'
 import type { HomeEvent } from '@/app/api/home/events/route'
@@ -37,6 +36,10 @@ import { useDDay } from '../useDDay'
 // Planning cue (after Trending), Interests card, Upcoming events, Popular plans.
 // Live data from /api/home/*; a row with no content hides; a row that fails shows an
 // Empty state Error with Try again.
+
+// The K-Drama work the second hero slide opens; the hero's action button look.
+const HERO_DRAMA = 'tangerines'
+const HERO_ACTION = 'inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none'
 
 export const jsonFetch = <T,>(url: string) => fetch(url).then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(r.status)))
 
@@ -154,7 +157,10 @@ export function HomeScreen() {
   const locale = useLocale()
   const { openQuickPlan, toast } = useV2Shell()
   const { user } = useAuth()
-  const slides = useSWR<HomeCarouselSlide[]>('/api/home/carousel', jsonFetch)
+  // Hero slides 2 and 3 show the photo their Theme page shows (its first place's photo), read from
+  // the same data as that page so the two stay in step.
+  const dramaTheme = useSWR<{ items: { primary_image_url: string | null }[] }>(`/api/explore/k-drama/filming-spots/${HERO_DRAMA}`, jsonFetch)
+  const foodTheme = useSWR<{ items: { primary_image_url: string | null }[] }>('/api/explore/k-food/michelin-noodles', jsonFetch)
   const trending = useSWR<HomeTrendingPoi[]>('/api/home/trending', jsonFetch)
   const plans = useSWR<HomePopularPlan[]>('/api/home/popular-plans', jsonFetch)
   const events = useSWR<HomeEvent[]>('/api/home/events', jsonFetch)
@@ -190,7 +196,7 @@ export function HomeScreen() {
 
   // Phones: the hero runs up under the floating top bar, so it grows by the bar's height.
   const heroPhone = 'max-lg:h-[calc(var(--hero-height-home)+var(--fab-size)+env(safe-area-inset-top))]'
-  if (slides.isLoading && trending.isLoading) {
+  if (trending.isLoading && !trending.data) {
     return (
       <V2Page bleed underBar>
         <HomeSkeleton heroClassName={heroPhone} />
@@ -277,24 +283,17 @@ export function HomeScreen() {
 
   return (
     <V2Page bleed underBar>
-      {slides.data?.length ? (
-        <Carousel type="hero" label={t('CD0388')} previousLabel={t('CD0390')} nextLabel={t('CD0389')} slideLabel={(n) => t('CD0391', { n })}>
-          {slides.data.map((s, i) => (
-            <Hero
-              key={s.id}
-              className={heroPhone}
-              as={i === 0 ? 'h1' : 'h2'}
-              imageSrc={s.image_url}
-              eyebrow={s.badge}
-              title={s.title}
-              subtitle={s.subtitle}
-              action={<IntlLink href={`${s.cta_href.startsWith('/') ? s.cta_href : `/${s.cta_href}`}`} className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{s.cta_label}</IntlLink>}
-            />
-          ))}
-        </Carousel>
-      ) : slides.isLoading ? (
-        <Skeleton className={`h-[var(--hero-height-home)] w-full ${heroPhone}`} />
-      ) : null}
+      {/* Three slides as drawn: no autoplay, the arrows wrap around. Slide 1 is the brand slide (no
+          photo, the media surface with the fade); its action opens Quick plan. */}
+      <Carousel type="hero" label={t('CD0388')} previousLabel={t('CD0390')} nextLabel={t('CD0389')} slideLabel={(n) => t('CD0391', { n })}>
+        {[
+          { id: 'plan', eyebrow: t('CD0463'), title: t('CD1781'), subtitle: t('CD1782'), image: null, action: <button type="button" onClick={openQuickPlan} className={HERO_ACTION}>{t('CD0738')}</button> },
+          { id: 'drama', eyebrow: t('CD0419'), title: t('CD1783'), subtitle: t('CD1784'), image: dramaTheme.data?.items[0]?.primary_image_url ?? null, action: <IntlLink href={`/explore/k-drama/${HERO_DRAMA}/filming-spots`} className={HERO_ACTION}>{t('CD1785')}</IntlLink> },
+          { id: 'food', eyebrow: t('CD0251'), title: t('CD1786'), subtitle: t('CD1787'), image: foodTheme.data?.items[0]?.primary_image_url ?? null, action: <IntlLink href="/explore/k-food/michelin-noodles" className={HERO_ACTION}>{t('CD1785')}</IntlLink> },
+        ].map((s, i) => (
+          <Hero key={s.id} className={heroPhone} as={i === 0 ? 'h1' : 'h2'} imageSrc={s.image} eyebrow={s.eyebrow} title={s.title} subtitle={s.subtitle} action={s.action} />
+        ))}
+      </Carousel>
 
       <div className="mx-auto flex w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] flex-col gap-[var(--space-12)] px-[var(--grid-gutter-mobile)] pb-[calc(var(--space-6)+var(--space-8))] pt-[var(--space-6)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
         {sectionOrder(order.data?.order).map((key) => (
