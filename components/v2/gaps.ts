@@ -5,8 +5,8 @@ import { useTranslations } from 'next-intl'
 import { useCd } from './cd'
 
 // Texts with parameters or shared by several screens, read from the Copy Deck rows (cd namespace);
-// screens may call t('CDxxxx') directly instead. resetPassword, areaName and placesInArea still have no
-// deck row: they live in the gap namespace of messages/v2/supplement/{locale}.json until the deck has them.
+// screens may call t('CDxxxx') directly instead. areaName and placesInArea still have no deck row:
+// they live in the gap namespace of messages/v2/supplement/{locale}.json until the deck has them.
 export function useGap() {
   const t = useCd()
   const g = useTranslations('gap')
@@ -39,7 +39,7 @@ export function useGap() {
       profilePlansNote: t('CD1676'),
       openSaved: t('CD1677'),
       // Reset password: the page bar title and the Link expired card title.
-      resetPassword: g('resetPassword'),
+      resetPassword: t('CD1823'),
       linkExpired: t('CD1690'),
       // Settings Your interests row: the count picked and what they are for.
       interestsPicked: (count: number) => t('CD1817', { count }),

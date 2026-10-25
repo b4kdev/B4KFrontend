@@ -402,7 +402,6 @@
     "deleteAccountNote": "Excluída após 30 dias; entre antes disso para restaurar",
     "profilePlansNote": "Planos públicos, como os outros os veem. Rascunhos e planos privados ficam em Salvos.",
     "openSaved": "Abrir Salvos",
-    "resetPassword": "Redefinir senha",
     "linkExpired": "Link expirado",
     "interestsPicked": "{count, plural, one {# escolhido} other {# escolhidos}} · usado no Início e no Plano rápido",
     "searchArea": "Buscar nesta área",
