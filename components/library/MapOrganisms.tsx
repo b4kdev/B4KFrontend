@@ -130,6 +130,8 @@ export type PlanCartProps = {
     discard: string
     remove: (name: string) => string
     reorder: (name: string) => string
+    /** Read out after a stop moves, e.g. "Gwangjang Market moved to position 2 of 4." (stops in that day). */
+    moved?: (name: string, position: number, total: number) => string
     open: string
     close: string
     about: string
@@ -141,6 +143,9 @@ export type PlanCartProps = {
 export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, durationMenu, onRemove, onSelect, onMove, onSave, onDiscard, labels, className }: PlanCartProps) {
   const id = useId()
   const [dragId, setDragId] = useState<string | null>(null)
+  // Screen readers hear where a moved stop landed (keyboard move, or the end of a drag).
+  const [announce, setAnnounce] = useState('')
+  const say = (s: PlanStop, sameDay: PlanStop[], position: number) => labels.moved && setAnnounce(labels.moved(s.name, position, sameDay.length))
   // Grip handlers: arrow keys swap with the next stop of the same day; a pointer drag (mouse or
   // touch) moves the stop into the slot of the same-day row under the pointer as it passes.
   const handleProps = (s: PlanStop) =>
@@ -151,7 +156,9 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
             e.preventDefault()
             const sameDay = stops.filter((x) => x.day === s.day)
             const next = sameDay[sameDay.indexOf(s) + (e.key === 'ArrowUp' ? -1 : 1)]
-            if (next) onMove(s.id, next.id)
+            if (!next) return
+            onMove(s.id, next.id)
+            say(s, sameDay, sameDay.indexOf(next) + 1)
           },
           onPointerDown: (e: PointerEvent<HTMLButtonElement>) => {
             e.currentTarget.setPointerCapture(e.pointerId)
@@ -162,7 +169,13 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
             const over = document.elementFromPoint(e.clientX, e.clientY)?.closest('[data-stop-id]')?.getAttribute('data-stop-id')
             if (over && over !== s.id && stops.find((x) => x.id === over)?.day === s.day) onMove(s.id, over)
           },
-          onPointerUp: () => setDragId(null),
+          onPointerUp: () => {
+            if (dragId === s.id) {
+              const sameDay = stops.filter((x) => x.day === s.day)
+              say(s, sameDay, sameDay.findIndex((x) => x.id === s.id) + 1)
+            }
+            setDragId(null)
+          },
           onPointerCancel: () => setDragId(null),
         }
       : undefined
@@ -177,6 +190,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
     <section aria-labelledby={id} className={cn('flex flex-col rounded-t-3xl text-ui-fg', state === 'open' ? 'h-full gap-[var(--space-3)] bg-ui-bg-sunken p-[var(--space-4)]' : 'bg-ui-bg-sunken', className)}>
+      <p aria-live="polite" className="sr-only">{announce}</p>
       {/* Open: the Left panel's color/bg, everything inside the root's 16 padding; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
       <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('flex w-full flex-col gap-[var(--space-3)] text-left hover:bg-ui-state-hover', state === 'collapsed' && 'p-[var(--space-4)]', FOCUS_RING_INSET)}>
         <span className="flex w-full items-center gap-[var(--space-2)]">
