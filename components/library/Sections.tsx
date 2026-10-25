@@ -17,7 +17,7 @@ import { Separator } from './Separator'
 // Explore packages, Plan card row, Quick plan, Planning cue, Interests card. Built from cards and
 // molecules; data as props, texts as labels.
 
-const RAIL = '-mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory scroll-px-[var(--grid-gutter-mobile)] gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:scroll-px-0 lg:px-0'
+const RAIL = '-mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory scroll-px-[var(--grid-gutter-mobile)] gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] -mb-[var(--space-1)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:scroll-px-0 lg:px-0'
 
 export type RowSectionProps = {
   title: string
