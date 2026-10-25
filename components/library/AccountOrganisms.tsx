@@ -17,7 +17,7 @@ import { Breadcrumbs, Tabs } from './NavGroups'
 import { Select } from './Select'
 import { Separator } from './Separator'
 import { TextInput } from './TextInput'
-import { FOCUS_RING_INSET } from './styles'
+import { FOCUS_RING_INSET, HIT_AREA } from './styles'
 
 // Account, consent and search organisms (Figma Organisms).
 
@@ -64,7 +64,7 @@ export function CookieBanner({ type = 'banner', label, message, learnMore, accep
         {/* Message: the body and the Learn more link wrap as two items, so the link never splits. */}
         <div className="flex flex-1 flex-wrap items-center gap-x-[var(--space-1-5)] type-body-base">
           <p>{message}</p>
-          <IntlLink href={learnMore.href} className="whitespace-nowrap underline underline-offset-2 hover:text-ui-link-hover">{learnMore.label}</IntlLink>
+          <IntlLink href={learnMore.href} className={cn('relative whitespace-nowrap underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{learnMore.label}</IntlLink>
         </div>
         {buttons}
       </div>

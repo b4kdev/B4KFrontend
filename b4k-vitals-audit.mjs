@@ -35,14 +35,22 @@ const OBSERVE = () => {
 // components/library parts draw it) is under the minimum and whose 24 px circle touches another target.
 const SMALL_TARGETS = (min) => {
   const sel = 'a[href], button, input:not([type=hidden]), select, textarea, [role=button], [role=link], [role=checkbox], [role=switch], [role=tab], [role=option]';
+  // The tap area: the element's box, or a larger absolutely placed ::before / ::after (the 44 px hit
+  // area of components/library parts, the stretched link that makes a whole card one link).
   const hitBox = (el) => {
-    const r = el.getBoundingClientRect();
-    const b = getComputedStyle(el, '::before');
-    if (b.content === 'none' || b.position !== 'absolute') return r;
-    const px = (v) => (v.endsWith('px') ? parseFloat(v) : 0);
-    const left = r.left + px(b.left), top = r.top + px(b.top);
-    const w = Math.max(r.width, r.width - px(b.left) - px(b.right)), h = Math.max(r.height, r.height - px(b.top) - px(b.bottom));
-    return { left, top, width: w, height: h, right: left + w, bottom: top + h };
+    let box = el.getBoundingClientRect();
+    for (const which of ['::before', '::after']) {
+      const p = getComputedStyle(el, which);
+      if (p.content === 'none' || p.position !== 'absolute') continue;
+      const cb = (getComputedStyle(el).position !== 'static' ? el : el.offsetParent || el).getBoundingClientRect();
+      const w = parseFloat(p.width), h = parseFloat(p.height);
+      if (!(w > 0 && h > 0)) continue;
+      const m = /matrix\(([^)]+)\)/.exec(p.transform);
+      const [tx, ty] = m ? m[1].split(',').slice(4).map(Number) : [0, 0];
+      const left = cb.left + (parseFloat(p.left) || 0) + tx, top = cb.top + (parseFloat(p.top) || 0) + ty;
+      if (w * h > box.width * box.height) box = { left, top, width: w, height: h, right: left + w, bottom: top + h };
+    }
+    return box;
   };
   const els = [...document.querySelectorAll(sel)].filter((el) => {
     const r = el.getBoundingClientRect();
