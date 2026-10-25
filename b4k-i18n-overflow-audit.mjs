@@ -2,10 +2,10 @@ import { chromium } from 'playwright';
 import { writeFileSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { BASE, ROUTES } from './qa-routes.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const BASE = 'http://localhost:3001';
 const REPORT_DATE = new Date().toISOString().split('T')[0];
 const OUT_DIR = join(__dirname, 'reports/i18n-overflow');
 const OUT_REPORT = join(OUT_DIR, `${REPORT_DATE}-i18n-overflow-audit.md`);
@@ -15,30 +15,6 @@ const OUT_REPORT = join(OUT_DIR, `${REPORT_DATE}-i18n-overflow-audit.md`);
 // script catches actual rendered overflow, not just token config.
 const LOCALES = ['ko', 'en', 'ja', 'zh-TW', 'pt-BR'];
 
-const ROUTES = [
-  { id: '01-home',               path: '',                       label: 'HM_01 Home' },
-  { id: '02-map',                path: '/map',                   label: 'MP_01-08 Map default' },
-  { id: '09-itinerary',          path: '/plan/1',                label: 'IT_01 Itinerary detail' },
-  { id: '10-explore-kpop',       path: '/explore/k-pop',         label: 'CT_KP Explore K-Pop' },
-  { id: '11-explore-kdrama',     path: '/explore/k-drama',       label: 'CT_KD Explore K-Drama' },
-  { id: '12-explore-kbeauty',    path: '/explore/k-beauty',      label: 'CT_KB Explore K-Beauty' },
-  { id: '13-explore-kculture',   path: '/explore/k-culture',     label: 'CT_KC Explore K-Culture' },
-  { id: '14-profile',            path: '/profile',               label: 'PR_01-08 Profile header' },
-  { id: '15-profile-trips',      path: '/profile/trips',         label: 'PR_10-16 Profile trips' },
-  { id: '16-profile-saved',      path: '/profile/saved',         label: 'PR_20-22 Profile saved' },
-  { id: '17-profile-badges',     path: '/profile/badges',        label: 'PR_30-32 Profile badges' },
-  { id: '18-profile-settings',   path: '/profile/settings',      label: 'PR_50-53 Profile settings' },
-  { id: '19-badges',             path: '/badges',                label: 'BD_01-12 Badges catalog' },
-  { id: '20-leaderboard',        path: '/leaderboard',           label: 'LB_01-04 Leaderboard' },
-  { id: '21-saved',              path: '/saved',                 label: 'SV_01 Saved (POI + Plans)' },
-  { id: '22-search',             path: '/search',                label: 'SR_01 Search results' },
-  { id: '23-notifications',      path: '/notifications',         label: 'NTF_01-06 Notifications' },
-  { id: '24-help',               path: '/help',                  label: 'HLP_01-05 Help' },
-  { id: '25-legal-privacy',      path: '/legal/privacy',         label: 'LGL Privacy policy' },
-  { id: '26-legal-terms',        path: '/legal/terms',           label: 'LGL Terms' },
-  { id: '27-legal-cookies',      path: '/legal/cookies',         label: 'LGL_05 Cookie preferences' },
-  { id: '28-offline',            path: '/offline',               label: 'OFF_01-04 Offline state' },
-];
 
 const VIEWPORTS = [
   { name: 'mobile',  width: 375,  height: 812 },
@@ -120,7 +96,7 @@ async function run() {
 
   let md = `# i18n Text-Overflow Audit — B4KFrontend\n\n`;
   md += `> **Audit Date:** ${REPORT_DATE}\n`;
-  md += `> **Coverage:** 7 locales × 2 viewports × ${ROUTES.length} routes = ${LOCALES.length * VIEWPORTS.length * ROUTES.length} combos\n`;
+  md += `> **Coverage:** ${LOCALES.length} locales × 2 viewports × ${ROUTES.length} routes = ${LOCALES.length * VIEWPORTS.length * ROUTES.length} combos\n`;
   md += `> **Method:** \`document.documentElement.scrollWidth > innerWidth\` (page-level) + leaf text-element \`scrollWidth > clientWidth\` (element-level), excluding elements with intentional \`overflow-x: auto/scroll\`.\n\n`;
 
   md += `## Executive Summary\n\n`;
