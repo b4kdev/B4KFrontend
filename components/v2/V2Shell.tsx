@@ -175,7 +175,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   // Full-screen flows draw their own Flow bar (logo and close) instead of the Header and rails.
   const fullFlow = /\/saved\/plan\/?$/.test(pathname)
   const toastFloor = floor !== null ? `${floor}px` : inFlow || fullFlow ? 'env(safe-area-inset-bottom)' : 'calc(var(--fab-size) + env(safe-area-inset-bottom))'
-  // The live consent (DEC-16): updates GA4 consent mode and lets Analytics load Clarity.
+  // The live consent: updates GA4 consent mode and lets Analytics load Clarity.
   const choose = (v: 'accepted' | 'declined') => {
     try {
       setConsent(v)

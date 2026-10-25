@@ -4,7 +4,7 @@ import { flattenBffDays, type BffItinerary } from '@/lib/itinerary'
 
 export interface GenerateRequest {
   poi_ids: string[]
-  // M5 — FL2 folder-level select (DEC-24). Client sends the selected folder ids
+  // M5 — FL2 folder-level select. Client sends the selected folder ids
   // plus the resolved POI union; the BFF plans from the resolved poi_ids.
   folder_ids?: string[]
 }
@@ -21,7 +21,7 @@ export interface GeneratedPlan {
   transport: 'car' | 'public'
 }
 
-const MAX_PLACES = 40 // FRD DEC-27 — mirrored by the BFF/DB
+const MAX_PLACES = 40 // mirrored by the BFF/DB
 
 // POST /api/plans/generate — BFF POST /itineraries/plan: clusters the places
 // into days and persists a real draft itinerary. The returned id resolves on

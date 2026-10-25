@@ -1,10 +1,10 @@
-// DEC-61 — 미슐랭이 뽑은 면 요리 20곳 (Michelin-picked noodle dishes). The content
+// 미슐랭이 뽑은 면 요리 20곳 (Michelin-picked noodle dishes). The content
 // plan flags this as its own "오늘 발행 가능한 유일한 컬렉션" (today's only fully
 // publishable K-Food collection) — that claim is about the deck's own internal
 // data (real English names + coordinates on ITS side), not something confirmed
 // in this codebase's core.poi table. Only 9 of 20 are named in the source deck;
 // none have a confirmed core.poi row here, so all 9 ship verified:false pending
-// BLK-37, same as every other placeholder in this pass. Fixed slug, badge-scoped
+// Same as every other placeholder in this pass. Fixed slug, badge-scoped
 // like K-Beauty's perfume-flagships.
 import 'server-only'
 import { bffFetch } from './bff'

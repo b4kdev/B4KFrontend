@@ -6,7 +6,7 @@ import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/
 //            (BFF rejects renaming the Default "All Saved" folder)
 //   DELETE → BFF DELETE /me/bookmark-folders/:id
 //            ⚠ BFF semantics: bookmarks inside the folder are deleted with it
-//            (not moved back to "All Saved" as DEC-24 describes — backend gap).
+// (not moved back to "All Saved" as planned — backend gap).
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const auth = await getSessionAuth()

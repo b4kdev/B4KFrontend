@@ -11,7 +11,7 @@ import localFont from 'next/font/local';
 
 
 // Display face (--font-family-display). next/font/local generates the ascent/descent/
-// size-adjust fallback override (BLK-30: CLS on the hero heading).
+// size-adjust fallback override (CLS on the hero heading).
 const moderniz = localFont({
   src: '../public/fonts/moderniz.woff2',
   weight: '900',

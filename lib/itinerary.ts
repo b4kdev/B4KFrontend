@@ -147,7 +147,7 @@ export const isNumericId = (id: string) => /^\d+$/.test(id)
 
 // list_my_itineraries item (GET /me/itineraries?status=draft) — the account's
 // single working draft, if any. Shared by app/api/plans/draft (autosave) and
-// app/api/plans (Save Plan confirm, BLK-08) so both check the same row before
+// app/api/plans (Save Plan confirm) so both check the same row before
 // deciding create-vs-reuse.
 export interface DbDraftSummary {
   itinerary_id: number

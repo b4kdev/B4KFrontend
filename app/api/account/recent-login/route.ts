@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase-server'
 const RECENT_WINDOW_MS = 10 * 60 * 1000
 
 // GET /api/account/recent-login → { recent: boolean }
-// recent = signed in within the last 10 minutes (SPEC-09 §Account deletion).
+// recent = signed in within the last 10 minutes (the account deletion rule).
 export async function GET() {
   const supabase = createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()

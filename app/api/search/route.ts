@@ -64,7 +64,7 @@ const EXPLORE_CATEGORIES: SearchExplore[] = [
   { category: 'k-culture', label_key: 'kculture',href: '/explore/k-culture' },
 ]
 
-// UF-9 (G9.5): map a query to an Explore hub chip facet so a tapped explore
+// Map a query to an Explore hub chip facet so a tapped explore
 // result lands on the hub with the relevant chip pre-selected.
 // Source of truth for these value lists: CATEGORIES[].filter in
 // app/[locale]/explore/_components/ExplorePage.tsx — keep in sync.

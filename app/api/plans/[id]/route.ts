@@ -33,10 +33,10 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 }
 
 // PATCH /api/plans/:id — two consumer shapes:
-//  · { from_stop_order, transport_mode } (IT_01 LegRow, DEC-13): the BFF has no
+// · { from_stop_order, transport_mode } (IT_01 LegRow): the BFF has no
 //    per-stop endpoint, so read the itinerary, update that stop's travel_mode
 //    and write the whole structure back (status preserved).
-//  · { is_published } (MapView DEC-29 publish step) → BFF POST /itineraries/:id/publish.
+// · { is_published } (MapView publish step) → BFF POST /itineraries/:id/publish.
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params
   const auth = await getSessionAuth()

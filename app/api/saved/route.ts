@@ -10,7 +10,7 @@ export interface SavedPoi {
   primary_image_url: string | null
   quality_score: number
   saved_at: string
-  // SC-31 — pin sync needs coords; poi_id reuses the same BFF `places` universe
+  // pin sync needs coords; poi_id reuses the same BFF `places` universe
   // the map draws from (a save is a join row against that POI table, never a separate list).
   coords_lat: number
   coords_lng: number
@@ -21,7 +21,7 @@ export interface SavedFolder {
   name: string
   pois: SavedPoi[]
   created_at: string
-  is_default?: boolean // "All Saved" — not renamable/deletable (DEC-24)
+  is_default?: boolean // "All Saved" — not renamable/deletable
 }
 
 /** Plans saved from other users — social.plan_saves */
@@ -62,7 +62,7 @@ export interface SavedData {
   myPlans:  MyPlan[]
 }
 
-// Signed-out shape — "All Saved" (folder-000) always exists per DEC-24, even with
+// Signed-out shape — "All Saved" (folder-000) always exists, even with
 // zero saves. The signed-in shape is built from the BFF (real Default folder UUID).
 const EMPTY: SavedData = {
   pois: [],
@@ -183,7 +183,7 @@ export async function GET() {
       folders: folders.map(f => ({
         id:         f.folder_id,
         // BFF names the default folder "Default" — keep the frontend's fixed
-        // "All Saved" label (DEC-24).
+        // "All Saved" label.
         name:       f.is_default ? 'All Saved' : f.name,
         pois:       poisByFolder.get(f.folder_id) ?? [],
         created_at: f.created_at,

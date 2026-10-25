@@ -6,7 +6,7 @@ import type { MapPoi } from '@/hooks/useMapPois'
 import { clearDraftPlan, getDraftPlan, saveDraftPlan, type DraftPlan } from '@/lib/draft-plan'
 import type { ItineraryDetail } from '@/lib/itinerary'
 
-// The plan in progress, stored as on the live map (UF-1): guests in
+// The plan in progress, stored as on the live map: guests in
 // localStorage (b4k_draft_plan), signed-in users in their account draft (/api/plans/draft,
 // autosaved 800 ms after each change, loaded back on the next visit), so "Continue your plan"
 // works on both and across devices. A published plan open for editing is not autosaved (it has

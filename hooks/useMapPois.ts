@@ -101,7 +101,7 @@ export const REGION_API_NAME: Record<string, string> = {
   Gyeongnam: '경남',
 }
 
-// BLK-39 — region-chip camera jump. Real administrative bounding boxes
+// region-chip camera jump. Real administrative bounding boxes
 // (OpenStreetMap/Nominatim, minLat/maxLat/minLng/maxLng = south/north/west/
 // east), not eyeballed — a static per-region target sidesteps both the
 // region-switch fetch deadlock (MapView's old cameraFocusPois path required
@@ -184,7 +184,7 @@ export function useMapPois(
   const rows = useMemo(() => {
     const extraFilters = activeFilters.slice(1)
     return (data ?? []).filter(row =>
-      // BLK-40 — a live row can have null coords_lat/coords_lng despite the
+      // a live row can have null coords_lat/coords_lng despite the
       // RawPlace/MapPoi type saying number (schema.md's three-divergent-
       // coordinate-tables callout — some source never backfilled). Every
       // downstream consumer (clustering, markers, bounds, panTo) assumes a

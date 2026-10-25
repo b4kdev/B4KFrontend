@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
 
-// SC-6 — full 12-slot badge list for the profile badges tab (SPEC-09 §Badges
-// tab / SPEC-10 BD_01: all slots shown, unearned = locked placeholder). Was
+// full 12-slot badge list for the profile badges tab (Badges
+// tab / BD_01: all slots shown, unearned = locked placeholder). Was
 // filtered to earned-only — fixed 2026-07-20 spec-vs-code audit, mirrors the
 // standalone /api/badges pattern which already did this correctly.
 export interface ProfileBadge {

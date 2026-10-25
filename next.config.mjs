@@ -11,7 +11,7 @@ const nextConfig = {
     remotePatterns: [
       // Google OAuth avatar (accounts.google.com / *.googleusercontent.com)
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
-      // Supabase Storage — wildcard covers both Production and Staging projects (DEC-57).
+      // Supabase Storage — wildcard covers both Production and Staging projects.
       // Path covers plain object URLs (/object/public/**) and on-the-fly transform URLs (/render/image/public/**).
       { protocol: 'https', hostname: '*.supabase.co', pathname: '/storage/v1/**' },
     ],

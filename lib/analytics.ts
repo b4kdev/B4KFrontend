@@ -3,7 +3,7 @@
 // loads gtag only after Accept), so track() needs no consent check of its own.
 
 // Supabase provider id, passed through as-is (email/google/apple/azure) — not narrowed to
-// the taxonomy doc's literal names since Apple/Microsoft OAuth is still broken (BLK-18).
+// the taxonomy doc's literal names since Apple/Microsoft OAuth is still broken.
 type PlanMethod = 'manual' | 'ai'
 type ExploreDomain = 'kpop' | 'kdrama' | 'kbeauty' | 'kfood' | 'kculture'
 

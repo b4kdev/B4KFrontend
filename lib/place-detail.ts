@@ -1,5 +1,5 @@
 // lib/place-detail.ts — server-side POI detail fetch for the canonical POI
-// page (BLK-11, app/[locale]/place/[poiId]). Mirrors hooks/usePlaceDetail.ts's
+// page (app/[locale]/place/[poiId]). Mirrors hooks/usePlaceDetail.ts's
 // mapping but calls the BFF directly server-side (bffFetch) instead of the
 // client-only apiFetch, since this route must be SSR per shared/legal-seo.md
 // ("POI detail pages must be SSR (not client-rendered) for Naver indexing").

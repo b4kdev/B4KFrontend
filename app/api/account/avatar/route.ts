@@ -3,7 +3,7 @@ import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 // POST /api/account/avatar — multipart/form-data with `file` field.
 // Real impl: validate file (type: image/jpeg|png|webp, max 2MB)
-//   → upload via server-side signed upload to whichever image host DEC-55 lands on
+// → upload via server-side signed upload to whichever image host lands on
 //   → UPDATE accounts.users SET avatar_url = <uploaded url> WHERE id = user.id
 export async function POST(req: NextRequest) {
   const supabase = createSupabaseServerClient()

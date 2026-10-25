@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 // Resend the sign-up verification email. Client also enforces a 60s cooldown
-// (S-JNCTDV); TODO server-side rate limiting (Upstash) — not wired yet.
+// TODO server-side rate limiting (Upstash) — not wired yet.
 export async function POST(req: Request) {
   const { email } = await req.json().catch(() => ({}))
 

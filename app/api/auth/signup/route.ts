@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { safePath } from '@/lib/safe-path'
 
-// Supabase Auth sign-up with email verification (S-JNCTDV Flow 1).
+// Supabase Auth sign-up with email verification (flow 1).
 // Verification link → user confirms → auto-sign-in → interrupted action resumes.
 // Response is intentionally generic on both new and already-registered emails
 // (Supabase itself withholds the "already exists" signal for a confirmed

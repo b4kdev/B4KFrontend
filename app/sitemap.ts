@@ -4,14 +4,14 @@ import { SITE_URL, hreflangAlternates } from '@/lib/site-url'
 import { MOCK_PLANS } from '@/lib/mock/plans-list'
 import { PUBLIC_PAGES as STATIC_PATHS } from '@/lib/public-pages'
 
-// SC-28 (F-DGWQGW) — Home, Explore hubs, static public pages, and published
+// Home, Explore hubs, static public pages, and published
 // plans. Excludes /profile/*, /notifications, drafts, /plan/preview (never
 // built — see CLAUDE.md §9), and anything requiring auth.
 //
 // NOTE: individual POI pages are NOT listed here yet. The canonical detail
-// route (/place/[poiId], BLK-11) exists and is indexable, but listing every
+// route (/place/[poiId]) exists and is indexable, but listing every
 // POI needs a "list all is_publishable=TRUE POIs" BFF capability that isn't
-// confirmed to exist yet — flagged to dev friend, not guessed at. See BLK-11.
+// confirmed to exist yet — flagged to dev friend, not guessed at.
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date()

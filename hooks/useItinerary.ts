@@ -21,7 +21,7 @@ export function useItinerary(id: string) {
   return { itinerary, isLoading, isError, isPrivate, isNotFound, mutate }
 }
 
-// SC-35 (S-DEGJDE) — ownership is never read off the main itinerary payload
+// ownership is never read off the main itinerary payload
 // (that response is identical for every viewer). Separate authenticated call.
 export function useItineraryMeta(id: string | null) {
   const { data, isLoading } = useSWR<PlanMeta>(

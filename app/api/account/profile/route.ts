@@ -7,7 +7,7 @@ import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/
 // `bio` has NO backing column/RPC param on the backend yet (api.update_profile only
 // accepts name/preferred_lang/avatar_url) — accepted and validated here but not
 // persisted. Needs a backend schema decision before this can round-trip for real.
-// Badges tab visibility is NOT settable — always public per SPEC-09.
+// Badges tab visibility is NOT settable — always public.
 export async function PATCH(req: NextRequest) {
   const auth = await getSessionAuth()
   if (!auth) return unauthorized()

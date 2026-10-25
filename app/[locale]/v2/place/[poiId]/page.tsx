@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: { locale: string; p
   return buildPlaceMetadata(place, params.locale)
 }
 
-// Place page (BLK-11) in the new design: the live SSR shell (metadata, JSON-LD, 404 for an unknown
+// Place page in the new design: the live SSR shell (metadata, JSON-LD, 404 for an unknown
 // place) over the map with the place selected.
 export default async function Page({ params }: { params: { locale: string; poiId: string } }) {
   const place = await fetchPlaceDetail(params.poiId, params.locale)

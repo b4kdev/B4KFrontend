@@ -1,4 +1,4 @@
-// DEC-61 — 촬영지 (filming spots) detail page data, "Tangerines" (폭싹 속았수다) example.
+// 촬영지 (filming spots) detail page data, "Tangerines" (폭싹 속았수다) example.
 // Self-contained, mirrors lib/kpop-footsteps.ts's pattern (own seed, own gate, no
 // cross-import from app/api/explore/[category]/route.ts).
 import 'server-only'

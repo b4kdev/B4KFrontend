@@ -346,7 +346,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         is_published: false,
       })
       const id: string | undefined = res?.plan?.id
-      // Saving publishes it, as on the live map (DEC-29).
+      // Saving publishes it, as on the live map.
       if (id) await send(`/api/plans/${id}`, 'PATCH', { is_published: true })
       draft.discard()
       setSaveOpen(false)

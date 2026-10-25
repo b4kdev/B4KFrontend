@@ -69,14 +69,14 @@ export async function GET(req: Request) {
   }
 }
 
-// POST /api/plans — create a plan from the map builder (MapView DEC-29 body:
+// POST /api/plans — create a plan from the map builder (MapView body:
 // { title, stops: [{ poi_id, stop_order, duration_min, day }], is_published }).
 // Maps to BFF POST /itineraries — stops are grouped by their day tab (missing
 // day → day 1) via groupPlacesIntoDays.
 // status 'confirmed': this is an explicit user save, and only confirmed plans
 // can be published by the follow-up PATCH { is_published: true }.
 //
-// BLK-08: the autosave path (POST /api/plans/draft) already has a status:'draft'
+// the autosave path (POST /api/plans/draft) already has a status:'draft'
 // row for this account by the time the user hits "Save Plan" — check for it
 // first and PUT-convert that same row to status:'confirmed' instead of always
 // POSTing a fresh one, or every confirmed save orphans its own draft row.

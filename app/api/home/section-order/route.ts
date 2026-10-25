@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server'
 import { HOME_SECTION_ORDER, type HomeSectionOrder } from './order'
 
 /**
- * Home content-section ordering (UF-8 · DEC-32 G2.2).
+ * Home content-section ordering.
  *
  * MOCK STUB. Real impl weights this order by the user's behavioral signals —
  * category/tag weights derived from search history (raw queries never stored,
- * DEC-32 Model A), saves, and interests — to rank the personalizable Home
+ * Model A), saves, and interests — to rank the personalizable Home
  * sections. Guests (no signals) receive HOME_SECTION_ORDER unchanged.
  *
  * Only the CONTENT sections are ordered here. Fixed sections (hero carousel,

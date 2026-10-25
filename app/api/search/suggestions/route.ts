@@ -24,7 +24,7 @@ interface BffPublicItinerary {
   title: string
 }
 
-// Suggestions balanced across entity types (SPEC-14): place names + plan
+// Suggestions balanced across entity types: place names + plan
 // titles matching the query, capped at 8 total. Was places-only.
 // Contract: { suggestions: string[] } — see components/layout/TopNav.tsx SWR.
 export async function GET(request: Request) {

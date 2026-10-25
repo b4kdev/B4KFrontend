@@ -53,7 +53,7 @@ export async function buildPlaceBreadcrumbJsonLd(place: PlaceDetail, locale: str
   }
 }
 
-// S-QRKYQH — TouristAttraction, fields limited strictly to what /places/:id
+// TouristAttraction, fields limited strictly to what /places/:id
 // actually returns. No openingHours/telephone/priceRange — not in the schema,
 // don't fabricate them.
 export function buildPlaceJsonLd(place: PlaceDetail, locale: string) {

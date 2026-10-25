@@ -22,7 +22,7 @@ export async function GET() {
     return NextResponse.json({
       folders: folders.map(f => ({
         id:         f.folder_id,
-        name:       f.is_default ? 'All Saved' : f.name, // DEC-24 fixed label
+        name:       f.is_default ? 'All Saved' : f.name, // fixed label
         is_default: f.is_default,
         count:      f.count,
         created_at: f.created_at,

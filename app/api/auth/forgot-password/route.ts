@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { safePath } from '@/lib/safe-path'
 
-// Supabase Auth password reset (S-JNCTDV Flow 6). resetPasswordForEmail()
+// Supabase Auth password reset (flow 6). resetPasswordForEmail()
 // itself never errors for a non-existent account (Supabase's own enumeration
 // guard) — the only errors that surface here are operational (rate limit,
 // service outage), never "account doesn't exist". The emailed link lands on
