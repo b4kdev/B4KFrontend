@@ -600,7 +600,7 @@ function InterestsSheet({ open, initial, onClose, onSaved }: { open: boolean; in
     >
       <div className="flex flex-col gap-[var(--space-5)]">
         <div className="flex flex-col gap-[var(--space-2)]">
-          <p aria-live="polite" className={lbl}>{t('CD0785')} · {picked.length} / {MAX_INTEREST_CHIPS}</p>
+          <p aria-live="polite" className={lbl}>{t('CD1348', { count: picked.length, max: MAX_INTEREST_CHIPS })}</p>
           {picked.length ? (
             <div className="flex flex-wrap gap-[var(--space-2)]">
               {picked.map((slug) => <Chip key={slug} type="dismissible" dismissLabel={t('CD0783', { label: chipLabel.get(slug) ?? slug })} onClick={() => toggle(slug)}>{chipLabel.get(slug) ?? slug}</Chip>)}
