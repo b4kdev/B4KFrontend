@@ -72,7 +72,7 @@ export function CookieBanner({ type = 'banner', label, message, learnMore, accep
   )
 }
 
-export type SignInView = 'providers' | 'sign-in' | 'sign-up' | 'forgot' | 'check-email' | 'new-password' | 'link-expired'
+export type SignInView = 'providers' | 'sign-in' | 'sign-up' | 'forgot' | 'check-email' | 'new-password' | 'link-expired' | 'pending-deletion'
 
 export type SignInCardProps = {
   view: SignInView
@@ -132,6 +132,11 @@ export type SignInCardProps = {
     passwordPlaceholder?: string
     newPasswordPlaceholder?: string
     confirmPlaceholder?: string
+    /** Pending deletion (an account set to be deleted signs in): title, body with the date, Keep, Continue. */
+    pendingTitle?: string
+    pendingBody?: string
+    keepAccount?: string
+    continueDeletion?: string
   }
 }
 
@@ -153,10 +158,11 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
         : view === 'forgot'
           ? { label: labels.back, to: 'providers' }
           : null
-  const guest = onGuest && view !== 'new-password' && view !== 'link-expired'
+  const guest = onGuest && view !== 'new-password' && view !== 'link-expired' && view !== 'pending-deletion'
   // Figma Title and Subtitle per view; New password takes `title` with its body as the subtitle.
   const heading =
     view === 'check-email' ? labels.checkEmailTitle
+      : view === 'pending-deletion' ? labels.pendingTitle ?? title
       : view === 'sign-in' ? labels.signInTitle ?? title
         : view === 'sign-up' ? labels.signUpTitle ?? title
           : view === 'forgot' ? labels.forgotTitle ?? title
@@ -168,6 +174,7 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
           : view === 'forgot' ? labels.forgotBody
             : view === 'new-password' ? labels.newPasswordBody
               : view === 'check-email' ? labels.checkEmailBody(email)
+                : view === 'pending-deletion' ? labels.pendingBody
                 : undefined
   const emailField = labels.emailField ?? labels.email
   return (
@@ -175,9 +182,10 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
       {/* Figma Top row: Logo wordmark 24 + Close Ghost 40 (no Close on New password). */}
       <div className="flex items-center justify-between gap-[var(--space-2)]">
         <Logo />
-        {onClose && view !== 'new-password' && view !== 'link-expired' ? <IconButton label={labels.close} icon={<X />} onClick={onClose} /> : null}
+        {onClose && view !== 'new-password' && view !== 'link-expired' && view !== 'pending-deletion' ? <IconButton label={labels.close} icon={<X />} onClick={onClose} /> : null}
       </div>
       {view === 'check-email' ? <Mail aria-hidden className="size-[var(--icon-size-2xl)]" /> : null}
+      {view === 'pending-deletion' ? <Clock aria-hidden className="size-[var(--icon-size-2xl)]" /> : null}
       <div className="flex flex-col gap-[var(--space-2)]">
         <h2 id={id} className="type-display-h4">{heading}</h2>
         {sub ? <p className="type-body-base text-ui-fg-muted">{sub}</p> : null}
@@ -212,6 +220,12 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
         <Button onClick={() => onSubmit('link-expired', values)} loading={busy} className="w-full">{labels.sendLink}</Button>
       ) : view === 'check-email' ? (
         <Button variant="secondary" onClick={() => onSubmit('forgot', values)} loading={busy} className="w-full">{labels.resend}</Button>
+      ) : view === 'pending-deletion' ? (
+        // Keep cancels the deletion; Continue keeps it and signs out.
+        <div className="flex flex-col items-start gap-[var(--space-4)]">
+          <Button onClick={() => onSubmit('pending-deletion', { action: 'keep' })} loading={busy} className="w-full">{labels.keepAccount}</Button>
+          <Button variant="ghost" size="md" onClick={() => onSubmit('pending-deletion', { action: 'continue' })}>{labels.continueDeletion}</Button>
+        </div>
       ) : (
         <form noValidate onSubmit={submit} className="flex flex-col gap-[var(--space-4)]">
           <TextInput label={labels.newPassword} showLabel type="password" autoComplete="new-password" required placeholder={labels.newPasswordPlaceholder} value={values.password ?? ''} onChange={set('password')} />

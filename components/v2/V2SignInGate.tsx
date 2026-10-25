@@ -5,7 +5,9 @@ import type { User } from '@supabase/supabase-js'
 import { Scrim, SignInCard, useFocusTrap, usePhone, type SignInView } from '@/components/library'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { needsConsent as needsConsentFor } from '@/lib/terms-consent'
+import { useLocale } from 'next-intl'
 import { useCd } from './cd'
+import { useV2Shell } from './V2Shell'
 
 // Sign-in gate: the Sign-in card over the screen when a guest taps
 // an action that needs an account, and the action finished after the sign-in. Email sign-in runs
@@ -64,6 +66,18 @@ export function useSignInFlow(next: string, onSignedIn: (user: User) => void, be
   const [error, setError] = useState<string | undefined>()
   const [email, setEmail] = useState('')
   const [kind, setKind] = useState<'signup' | 'reset'>('signup')
+  // An account set to be deleted that signs in: the date it goes, and the user to continue with.
+  const [pending, setPending] = useState<{ user: User; date: string } | null>(null)
+  const locale = useLocale()
+  const { toast } = useV2Shell()
+  // After a sign-in: an account set to be deleted gets the Pending deletion view first.
+  const signedIn = async (user: User) => {
+    const d = await fetch('/api/account/deletion').then((r) => (r.ok ? r.json() : null)).catch(() => null) as { deleted_at: string | null } | null
+    if (!d?.deleted_at) return onSignedIn(user)
+    const goes = new Date(new Date(d.deleted_at).getTime() + 30 * 24 * 3600 * 1000)
+    setPending({ user, date: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' }).format(goes) })
+    setView('pending-deletion')
+  }
   // Check email: Resend waits 60 s after each email sent.
   const [resendLeft, setResendLeft] = useState(0)
   useEffect(() => {
@@ -80,7 +94,18 @@ export function useSignInFlow(next: string, onSignedIn: (user: User) => void, be
       if (v === 'sign-in') {
         const { data, error: e } = await createSupabaseBrowserClient().auth.signInWithPassword({ email: values.email ?? '', password: values.password ?? '' })
         if (e) setError(t('CD0034'))
-        else onSignedIn(data.user)
+        else await signedIn(data.user)
+      } else if (v === 'pending-deletion' && pending) {
+        if (values.action === 'keep') {
+          const res = await fetch('/api/account/restore', { method: 'POST' })
+          if (!res.ok) return setError(t('CD0061'))
+          toast({ type: 'success', message: t('CD1780') })
+          setPending(null)
+          onSignedIn(pending.user)
+        } else {
+          await createSupabaseBrowserClient().auth.signOut()
+          window.location.assign('/')
+        }
       } else if (v === 'sign-up') {
         if ((values.password ?? '').length < 8) return setError(t('CD0037'))
         const res = await post('/api/auth/signup', { email: values.email, password: values.password, next })
@@ -120,6 +145,8 @@ export function useSignInFlow(next: string, onSignedIn: (user: User) => void, be
   }
 
   return {
+    /** Runs the after-sign-in check for a user already signed in (back from Google). */
+    check: signedIn,
     view,
     onViewChange: (v: SignInView) => { setError(undefined); setView(v) },
     onGoogle,
@@ -137,6 +164,8 @@ export function useSignInFlow(next: string, onSignedIn: (user: User) => void, be
       signInTitle: t('CD1490'), signInBody: t('CD1491'), signUpTitle: t('CD1494'), signUpBody: t('CD1495'),
       forgotTitle: t('CD0042'), forgotBody: t('CD1497'), emailField: t('CD0921'),
       passwordPlaceholder: t('CD1492'), newPasswordPlaceholder: t('CD0978'), confirmPlaceholder: t('CD1502'),
+      pendingTitle: t('CD1776'), pendingBody: pending ? t('CD1777', { date: pending.date }) : undefined,
+      keepAccount: t('CD1778'), continueDeletion: t('CD1779'),
     },
   }
 }
