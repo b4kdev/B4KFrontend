@@ -380,6 +380,7 @@ export function LeaderboardTab() {
   const places = useSWR<HomeTrendingPoi[]>('/api/home/trending', jsonFetch)
   const badges = useSWR<BadgesData>(user ? '/api/badges' : null, jsonFetch)
   const act = usePlaceActions({ resume: true })
+  const planAct = usePlanActions({ resume: true })
   const placeName = (p: HomeTrendingPoi) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
   const range = weekRange(locale)
   const arrows = { previous: t('CD0390'), next: t('CD0389') }
@@ -398,7 +399,7 @@ export function LeaderboardTab() {
           arrowLabels={arrows}
           title={t('CD1648')}
           seeAll={{ href: '/explore/popular-plans', label: t('CD1309') }}
-          cards={plans.data.map((p) => <Card key={p.id} type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={t('CD0473', { n: p.stop_count })} />)}
+          cards={plans.data.map((p) => <Card key={p.id} type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={t('CD0473', { n: p.stop_count })} save={planAct(String(p.id), p.title)} />)}
         />
       ) : null}
       {places.data?.length ? (
@@ -556,7 +557,7 @@ export function NotificationsScreen() {
 // ── Settings with Language and theme ─────────────────────
 
 /**
- * Your interests sheet (Figma SCR-022 Your interests): the Quick plan dialog without its step
+ * Your interests sheet (Figma SCR-022 Your interests): the Quick plan dialog without a step
  * indicator, laid out like step 2: the picked chips, then the categories (a list on desktop, a row
  * of chips on phones) and that category's chips; footer Clear and Save interests.
  */
@@ -592,16 +593,14 @@ function InterestsSheet({ open, initial, onClose, onSaved }: { open: boolean; in
       onClose={onClose}
       step={2}
       stepTitle={t('CD1599')}
-      progressLabel={t('CD1599')}
-      stepList={[]}
       title={t('CD1599')}
       closeLabel={k('badges.detail.close')}
       back={{ label: t('CD0789'), onClick: () => setPicked([]) }}
-      next={{ label: t('CD1610'), onClick: save, disabled: busy }}
+      next={{ label: t('CD1610'), onClick: save, loading: busy }}
     >
       <div className="flex flex-col gap-[var(--space-5)]">
         <div className="flex flex-col gap-[var(--space-2)]">
-          <p aria-live="polite" className={lbl}>{t('CD0785')} · {picked.length} / {MAX_INTEREST_CHIPS}</p>
+          <p aria-live="polite" className={lbl}>{t('CD1348', { count: picked.length, max: MAX_INTEREST_CHIPS })}</p>
           {picked.length ? (
             <div className="flex flex-wrap gap-[var(--space-2)]">
               {picked.map((slug) => <Chip key={slug} type="dismissible" dismissLabel={t('CD0783', { label: chipLabel.get(slug) ?? slug })} onClick={() => toggle(slug)}>{chipLabel.get(slug) ?? slug}</Chip>)}
