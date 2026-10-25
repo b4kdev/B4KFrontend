@@ -158,7 +158,7 @@ function maintenanceResponse(): NextResponse {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>B4K — Under Maintenance</title>
+<title>B4K is under maintenance</title>
 <style>
   /* Values copied from app/tokens.css (this page is served before any app CSS):
      neutral-100 bg, neutral-950 fg, neutral-550 muted in light; neutral-950, neutral-50, neutral-450 in dark. */
@@ -173,9 +173,12 @@ function maintenanceResponse(): NextResponse {
 </head>
 <body>
   <div class="card">
-    <h1>B4K is getting ready</h1>
-    <p>We&rsquo;re putting the finishing touches on things. Check back shortly.</p>
-    <p lang="ko">잠시 점검 중입니다. 곧 돌아오겠습니다.</p>
+    <h1>We&rsquo;ll be back soon</h1>
+    <p>B4K is being updated. Check back in a little while.</p>
+    <p lang="ko">곧 돌아올게요. B4K를 업데이트하고 있어요. 잠시 후 다시 확인해 주세요.</p>
+    <p lang="ja">まもなく再開します。B4Kは現在更新中です。しばらくしてからもう一度アクセスしてください。</p>
+    <p lang="zh-TW">我們很快回來。B4K 正在更新，請稍後再回來看看。</p>
+    <p lang="pt-BR">Voltamos em breve. O B4K está sendo atualizado. Volte daqui a pouco.</p>
   </div>
 </body>
 </html>`

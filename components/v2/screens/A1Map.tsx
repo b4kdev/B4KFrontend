@@ -278,7 +278,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     addedHere.current = true
     const day = draft.add(poi, target)
     if (day === null) toast({ type: 'warning', message: k('map.plan.maxStopsToast', { max: MAX_STOPS }) })
-    else toast({ type: 'success', message: GAP.addedToDay(day), action: { label: t('CD1428'), onClick: () => latestDraft.current.remove(poi.poi_id) } })
+    else toast({ type: 'success', message: t('CD0689'), action: { label: t('CD1428'), onClick: () => latestDraft.current.remove(poi.poi_id) } })
   }
   // `on` = currently saved / liked; after a sign-in the action only ever turns it on.
   // signedIn: the save a guest started, finished after the sign-in (its own toast).

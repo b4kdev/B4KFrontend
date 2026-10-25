@@ -12,9 +12,8 @@ import { fontVariables } from './fonts';
 import './tokens.css';
 import './globals.css';
 
-// SC-4 — root layout can throw before locale routing resolves, so
-// next-intl has no context here. Static English copy is the correct
-// fallback for this specific boundary, not a hardcoded-string violation.
+// The root layout can throw before locale routing resolves, so next-intl has no context here.
+// Static English copy (the Copy Deck's English rows) is the fallback for this boundary.
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
     Sentry.captureException(error);
@@ -24,7 +23,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
     <html lang="en" className={fontVariables}>
       <body className="m-0 flex min-h-dvh items-center justify-center bg-ui-bg px-[var(--grid-gutter-mobile)] text-ui-fg type-body-base">
         <EmptyState type="error" title="Something went wrong" action={<Button onClick={reset}>Try again</Button>}>
-          Something on our end broke. Try again, or come back later.
+          Something went wrong on our end. Try again, or come back later.
         </EmptyState>
       </body>
     </html>

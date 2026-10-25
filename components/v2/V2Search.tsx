@@ -92,7 +92,7 @@ export function useSearchBox({ viewport, initial = '', open: startOpen = false }
       onClearRecent={recents.clear}
       trending={[['K-Pop', 'CD1247'], ['K-Drama', 'CD1246'], ['K-Beauty', 'CD1244']].map(([id, cd]) => ({ id, text: t(cd) }))}
       categories={CATEGORIES.map(([id, cd]) => ({ id, name: t(cd), href: `/explore/${id}` }))}
-      labels={{ searchFor: (x) => `${t('CD1317')}: “${x}”`, places: t('CD1316'), plans: t('CD1300'), explore: t('CD1299'), recent: t('CD1408'), clearAll: t('CD1248'), trending: t('CD0313'), browse: t('CD1299'), remove: (x) => t('CD1298', { query: x }) }}
+      labels={{ searchFor: (x) => t('CD1822', { query: x }), places: t('CD1316'), plans: t('CD1300'), explore: t('CD1299'), recent: t('CD1408'), clearAll: t('CD1248'), trending: t('CD0313'), browse: t('CD1299'), remove: (x) => t('CD1298', { query: x }) }}
     />
   )
   return { draft, setDraft, open, setOpen, go, suggestions }
