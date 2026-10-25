@@ -96,15 +96,15 @@ export function AchievementBadge({ name, detail, icon, rarity = 'common', locked
   return (
     <div className={cn('flex w-[96px] flex-col items-center gap-[var(--space-2)] text-center', className)}>
       <span aria-hidden className={cn('inline-flex rounded-full border', rarity === 'legendary' && !locked ? 'border-ui-fg p-[var(--space-1)]' : 'border-transparent p-[calc(var(--space-1)-1px)]')}>
-        <span className={cn('inline-flex size-[var(--achievement-size)] items-center justify-center rounded-full [&>svg]:size-[var(--icon-size-xl)]', locked ? MEDAL.common : MEDAL[rarity], locked && 'text-ui-fg-disabled')}>
+        <span className={cn('inline-flex size-[var(--achievement-size)] items-center justify-center rounded-full [&>svg]:size-[var(--icon-size-xl)]', locked ? MEDAL.common : MEDAL[rarity], locked && 'border border-ui-border-subtle text-ui-fg-disabled')}>
           {locked ? <Lock /> : icon}
         </span>
       </span>
-      <span className={cn('line-clamp-2 type-body-label', locked ? 'text-ui-fg-muted' : 'text-ui-fg')}>
+      <span className={cn('line-clamp-2 w-full type-body-label', locked ? 'text-ui-fg-muted' : 'text-ui-fg')}>
         {name}
         {locked && lockedLabel ? <span className="sr-only">, {lockedLabel}</span> : null}
       </span>
-      <span className="line-clamp-2 type-body-caption text-ui-fg-muted">{detail}</span>
+      <span className="line-clamp-2 w-full type-body-caption text-ui-fg-muted">{detail}</span>
     </div>
   )
 }
