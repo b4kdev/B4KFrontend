@@ -21,6 +21,7 @@ import {
   Modal,
   NotificationItem,
   ProfileHeader,
+  QuickPlan,
   RowSection,
   SectionHeader,
   SegmentedControl,
@@ -553,7 +554,11 @@ export function NotificationsScreen() {
 
 // ── Settings with Language and theme ─────────────────────
 
-/** Your interests sheet: the picked chips, then the chips by category (as Quick plan step 2), with Clear and Save. */
+/**
+ * Your interests sheet (Figma SCR-022 Your interests): the Quick plan dialog without its step
+ * indicator, laid out like step 2: the picked chips, then the categories (a list on desktop, a row
+ * of chips on phones) and that category's chips; footer Clear and Save interests.
+ */
 function InterestsSheet({ open, initial, onClose, onSaved }: { open: boolean; initial: string[]; onClose: () => void; onSaved: () => void }) {
   const t = useCd()
   const k = useCdKey()
@@ -581,14 +586,17 @@ function InterestsSheet({ open, initial, onClose, onSaved }: { open: boolean; in
     }
   }
   return (
-    <Modal
+    <QuickPlan
       open={open}
       onClose={onClose}
-      size="md"
+      step={2}
+      stepTitle={t('CD1599')}
+      progressLabel={t('CD1599')}
+      stepList={[]}
       title={t('CD1599')}
       closeLabel={k('badges.detail.close')}
-      secondaryAction={<Button variant="secondary" disabled={!picked.length} onClick={() => setPicked([])}>{t('CD0789')}</Button>}
-      primaryAction={<Button loading={busy} onClick={save}>{t('CD1610')}</Button>}
+      back={{ label: t('CD0789'), onClick: () => setPicked([]) }}
+      next={{ label: t('CD1610'), onClick: save, disabled: busy }}
     >
       <div className="flex flex-col gap-[var(--space-5)]">
         <div className="flex flex-col gap-[var(--space-2)]">
@@ -606,11 +614,25 @@ function InterestsSheet({ open, initial, onClose, onSaved }: { open: boolean; in
           </p>
         ) : null}
         {group ? (
-          <div className="flex flex-col gap-[var(--space-4)]">
-            <div role="group" aria-label={t('CD0778')} className={cn('flex gap-[var(--space-2)]', phone ? 'overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : 'flex-wrap')}>
-              {categories.map((g) => <Chip key={g.slug} selected={g.slug === group.slug} onClick={() => setActiveGroup(g.slug)} className="shrink-0">{labelOf(g, lang)}</Chip>)}
+          <div className={phone ? 'flex flex-col gap-[var(--space-6)]' : 'flex gap-[var(--space-6)]'}>
+            <div role="group" aria-label={t('CD0778')} className={phone ? 'flex gap-[var(--space-2)] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : 'flex w-[136px] shrink-0 flex-col items-start gap-[var(--space-3)]'}>
+              {categories.map((g) =>
+                phone ? (
+                  <Chip key={g.slug} selected={g.slug === group.slug} onClick={() => setActiveGroup(g.slug)} className="shrink-0">{labelOf(g, lang)}</Chip>
+                ) : (
+                  <button
+                    key={g.slug}
+                    type="button"
+                    aria-pressed={g.slug === group.slug}
+                    onClick={() => setActiveGroup(g.slug)}
+                    className={cn('text-left focus-visible:shadow-focus-ring focus-visible:outline-none', g.slug === group.slug ? 'type-body-label text-ui-fg' : 'type-body-base text-ui-fg-muted hover:text-ui-fg')}
+                  >
+                    {labelOf(g, lang)}
+                  </button>
+                ),
+              )}
             </div>
-            <div className="flex flex-wrap gap-[var(--space-2)]">
+            <div className="flex min-w-0 flex-1 flex-wrap content-start gap-[var(--space-2)]">
               {group.chips.map((c) => {
                 const on = picked.includes(c.slug)
                 return <Chip key={c.slug} selected={on} disabled={!on && picked.length >= MAX_INTEREST_CHIPS} onClick={() => toggle(c.slug)}>{labelOf(c, lang)}</Chip>
@@ -619,7 +641,7 @@ function InterestsSheet({ open, initial, onClose, onSaved }: { open: boolean; in
           </div>
         ) : null}
       </div>
-    </Modal>
+    </QuickPlan>
   )
 }
 
