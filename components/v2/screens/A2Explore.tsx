@@ -38,7 +38,8 @@ import { useDDay } from '../useDDay'
 import { useGap } from '../gaps'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
-import { CATEGORIES, jsonFetch, RowState, SectionSkeletons, useContinueDraft } from './A2Home'
+import { jsonFetch, RowState, SectionSkeletons, useContinueDraft } from './A2Home'
+import { CATEGORIES, rowName } from '../categories'
 import { NotFoundScreen } from './A4Pages'
 
 // Explore (A2): Category page, See all list, Collection page,
@@ -64,18 +65,11 @@ const SPECIAL_HREF: Record<string, Record<string, string>> = {
 const rowHref = (category: string, row: string) => SPECIAL_HREF[category]?.[row] ?? `/explore/${category}/${row}`
 
 // Row labels drawn per category where the Copy Deck has them; the shared row label otherwise.
-const ROW_LABEL: Record<string, Record<string, string>> = {
-  'k-pop': { concerts: 'CD1556', merchandise: 'CD1557' },
-}
+
 function useRowLabel() {
   const t = useCd()
   const k = useCdKey()
-  return (category: string, row: string) => {
-    // Trending is one template for every category: "Trending in K-Drama".
-    const name = CATEGORIES.find((c) => c.slug === category)?.label
-    if (row === 'trending' && name) return t('CD1555', { category: t(name) })
-    return ROW_LABEL[category]?.[row] ? t(ROW_LABEL[category][row]) : k(`explore.sections.${row}`)
-  }
+  return (category: string, row: string) => rowName(category, row, t, k)
 }
 
 function CategoryIndex({ category, sections, active, rowsKey }: { category: string; sections: string[]; active?: string; rowsKey?: string }) {

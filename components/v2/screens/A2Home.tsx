@@ -30,6 +30,7 @@ import { useCd } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 import { usePlaceActions, usePlanActions } from '../usePlaceActions'
+import { CATEGORIES } from '../categories'
 import { useDDay } from '../useDDay'
 
 // Home: hero, Explore by category, Trending now,
@@ -43,13 +44,7 @@ const HERO_ACTION = 'inline-flex h-[var(--control-height-lg)] items-center bg-ui
 
 export const jsonFetch = <T,>(url: string) => fetch(url).then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(r.status)))
 
-export const CATEGORIES = [
-  { slug: 'k-pop', label: 'CD0433', sub: 'CD1550', image: '/images/home/editorial/KP-008_world-kpop-center-hybe-insight.webp' },
-  { slug: 'k-drama', label: 'CD0431', sub: 'CD1551', image: '/images/home/new/KD010-009_hakrim-dabang.webp' },
-  { slug: 'k-beauty', label: 'CD0427', sub: 'CD1552', image: '/images/home/editorial/KB-NEW-065_olive-young-myeongdong.webp' },
-  { slug: 'k-culture', label: 'CD0429', sub: 'CD1553', image: '/images/home/editorial/KD016-014_gyeongbokgung-palace.webp' },
-  { slug: 'k-food', label: 'CD0251', sub: 'CD1554', image: '/mock-images/kbbq.png' },
-] as const
+export { CATEGORIES } from '../categories'
 
 /** Loading cards as drawn: a 4:3 photo and two lines; 240 wide on phones, desktop width per page. */
 function CardSkeletons({ cardClassName = 'lg:w-[296px]' }: { cardClassName?: string }) {
