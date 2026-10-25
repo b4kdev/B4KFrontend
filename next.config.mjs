@@ -41,6 +41,8 @@ const nextConfig = {
         source,
         headers: [{ key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=600' }],
       })),
+      // Share images (title cards) change only with the title in their address: a day, a week at the CDN.
+      { source: '/api/og', headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, s-maxage=604800' }] },
     ];
   },
   images: {

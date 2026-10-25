@@ -74,6 +74,8 @@ export function pageMeta({
   image?: string | null
 }): Metadata {
   const url = localizedUrl(locale, path)
+  // Pages without a photo of their own share the title card (app/api/og).
+  const shareImage = image ?? `/api/og?locale=${encodeURIComponent(locale)}&title=${encodeURIComponent(title.replace(/\s*\|\s*B4K$/, ''))}`
   return {
     title,
     ...(description ? { description } : {}),
@@ -87,9 +89,9 @@ export function pageMeta({
       locale,
       alternateLocale: routing.locales.filter((l) => l !== locale),
       type,
-      ...(image ? { images: [{ url: image }] } : {}),
+      images: [{ url: shareImage, ...(image ? {} : { width: 1200, height: 630 }) }],
     },
-    twitter: { card: image ? 'summary_large_image' : 'summary', title, ...(description ? { description } : {}), ...(image ? { images: [image] } : {}) },
+    twitter: { card: 'summary_large_image', title, ...(description ? { description } : {}), images: [shareImage] },
   }
 }
 
