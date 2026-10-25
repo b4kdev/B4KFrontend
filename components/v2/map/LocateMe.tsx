@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, type RefObject } from 'react'
+import useSWR from 'swr'
 import { Locate, LocateFixed } from 'lucide-react'
 import { MapControl, Spinner, Tooltip } from '@/components/library'
 import { useCd } from '../cd'
@@ -13,13 +14,17 @@ export type LatLng = { lat: number; lng: number }
  * Locate me (Google Maps pattern): the browser asks for the location on the first tap; while it
  * answers the control shows a spinner; then the map centers on the visitor with the location dot
  * and the control shows the filled locate icon. Denied: an info toast says how to turn it on.
- * Returns the control and the location for the map's dot.
+ * Shown only to visitors whose network location is in Korea (the host's IP country); where no
+ * host reports a country (local runs) it shows. Returns the control (null when hidden) and the
+ * location for the map's dot.
  */
 export function useLocateMe(map: RefObject<V2MapHandle | null>, { phone = false }: { phone?: boolean } = {}) {
   const t = useCd()
   const { toast, toastHeight } = useV2Shell()
   const [state, setState] = useState<'idle' | 'locating' | 'on'>('idle')
   const [location, setLocation] = useState<LatLng | null>(null)
+  const geo = useSWR<{ country: string | null }>('/api/geo', (u: string) => fetch(u).then((r) => r.json()), { revalidateOnFocus: false })
+  const inKorea = !!geo.data && (geo.data.country === null || geo.data.country === 'KR')
 
   const locate = () => {
     if (state === 'locating') return
@@ -45,5 +50,6 @@ export function useLocateMe(map: RefObject<V2MapHandle | null>, { phone = false 
   const control = <MapControl icon={icon} label={t('CD1805')} aria-busy={state === 'locating' || undefined} onClick={locate} />
   // Phones: an open toast shares the control's line above the sheet; the control moves 8 above it.
   const lifted = toastHeight ? <div style={{ transform: `translateY(calc(-${toastHeight}px - var(--space-2)))` }} className="transition-transform motion-reduce:transition-none">{control}</div> : control
+  if (!inKorea) return { control: null, location: null }
   return { control: !phone ? <Tooltip text={t('CD1805')} side="top">{control}</Tooltip> : lifted, location }
 }
