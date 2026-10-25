@@ -57,7 +57,7 @@ import { labelOf, MAX_INTEREST_CHIPS } from '@/lib/quickplan'
 import { V2Page } from '../V2Page'
 import { UNREAD_KEY, useV2Shell, useV2SignOut } from '../V2Shell'
 import { LANGUAGES, LanguageRowMenu } from '../V2Settings'
-import { usePlaceActions } from '../usePlaceActions'
+import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { jsonFetch } from './A2Home'
 import { SignedOutPrompt } from './A3Saved'
 
@@ -185,6 +185,7 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
   const locale = useLocale()
   const profile = useSWR<OtherProfile>(`/api/profile/${id}`, jsonFetch)
   const trips = useSWR<OtherUserTrip[]>(`/api/profile/${id}/trips`, jsonFetch)
+  const planActions = usePlanActions({ resume: true })
   const badges = useSWR<OtherUserBadge[] | { badges: OtherUserBadge[] }>(GAMIFICATION ? `/api/profile/${id}/badges` : null, jsonFetch)
   const badgeList = Array.isArray(badges.data) ? badges.data : badges.data?.badges ?? []
   const p = profile.data
@@ -211,7 +212,7 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
           <section aria-labelledby="visitor-plans" className="flex flex-col gap-[var(--space-6)] lg:px-[var(--space-6)]">
             <SectionHeader id="visitor-plans" title={t('CD1300')} />
             <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-3 lg:gap-[var(--space-4)]">
-              {trips.data.map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} author={p?.name ?? ''} saves={String(tr.save_count)} stops={`${k('saved.plan.stops', { count: tr.stop_count })} · ${k('saved.plan.days', { count: tr.day_count })}`} /></li>)}
+              {trips.data.map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} author={p?.name ?? ''} saves={String(tr.save_count)} stops={`${k('saved.plan.stops', { count: tr.stop_count })} · ${k('saved.plan.days', { count: tr.day_count })}`} save={planActions(String(tr.id), tr.title)} /></li>)}
             </ul>
           </section>
         ) : null}
