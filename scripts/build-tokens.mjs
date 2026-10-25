@@ -12,7 +12,7 @@
 //   Color, Component   Light = :root and [data-theme="light"], Dark = [data-theme="dark"]
 //   Typography         en = :root, other locales = :root:lang(<locale>)
 //   Responsive         Mobile = :root, Tablet = min-width 768px, Desktop = min-width 1024px
-//   everything else    one value on :root
+//   everything else    one value on :root (Code: code-only tokens with no Figma variable, UI-113)
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -154,6 +154,9 @@ const easings = Object.fromEntries(
   tokens.filter((t) => t.type === 'cubicBezier').map((t) => [t.path.slice('easing.'.length), v(t.path)]),
 )
 
+// Code-only stacking order (UI-113): z-dropdown, z-modal, z-toast … next to the Tailwind numbers.
+const zIndex = group('z')
+
 const LEADING = { 1: 'none', 1.1: 'display', 1.25: 'tight', 1.375: 'snug', 1.5: 'normal' }
 const textStyles = Object.fromEntries(
   ext.textStyles.map((s) => {
@@ -213,6 +216,7 @@ const b4kTokens: Partial<Config> = {
       },
       transitionDuration: ${JSON.stringify(durations, null, 2).replace(/\n/g, '\n      ')},
       transitionTimingFunction: ${JSON.stringify(easings, null, 2).replace(/\n/g, '\n      ')},
+      zIndex: ${JSON.stringify(zIndex, null, 2).replace(/\n/g, '\n      ')},
     },
   },
   plugins: [

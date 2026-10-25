@@ -46,3 +46,26 @@ The Figma Variables REST API needs an Enterprise plan, so the export goes throug
 instead of a CI job. A Figma plugin that writes the same JSON (for example Tokens Studio or
 Variables to JSON) could replace step 1 later. `app/globals.css` holds only the base styles
 (Tailwind layers, theme color scheme, reduced motion); every value comes from `app/tokens.css`.
+
+## Code-only tokens
+
+Some rules have no Figma variable, so they live only in `tokens.json` (collection `Code`) and are
+edited there, then built like the rest:
+
+- **Stacking order** `z/*`: `base` 0, `map-controls` 10, `dropdown` 1000, `sticky` 1020, `fixed` 1030,
+  `drawer-backdrop` 1040, `drawer` 1045, `modal-backdrop` 1050, `modal` 1055, `popover` 1070,
+  `tooltip` 1080, `toast` 1090 (toasts above everything; the Naver map keeps its own layers inside its
+  box). Tailwind: `z-dropdown`, `z-modal`, `z-toast` …; CSS: `var(--z-toast)`. Components still on the
+  Tailwind numbers (`z-30`, `z-50`) move to these keys one at a time, checked against the drawn frames.
+- **Safe areas** `layout/safe-area-*`: `var(--layout-safe-area-top)` … = `env(safe-area-inset-*, 0px)`.
+  A bar fixed to a screen edge adds the matching one to its own padding.
+- **Icons**: Lucide icons take `currentColor`. A decorative icon is hidden from screen readers (Lucide
+  adds `aria-hidden="true"` unless the icon gets an accessible name); an icon-only control has an
+  accessible name (`aria-label` from a Copy Deck text). The axe runs of the QA kit check the names.
+
+## Version
+
+`$extensions.b4k.version` in `tokens.json` follows semver: major = a token renamed or removed, minor =
+a new token, patch = a value fixed. It becomes `1.0.0` when B4K UI Foundations is published and frozen
+as library v1; until then it is `1.0.0-rc.N`. A retired token is listed with its replacement, never
+silently deleted.

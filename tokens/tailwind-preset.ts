@@ -119,6 +119,20 @@ const b4kTokens: Partial<Config> = {
         "emphasized-accelerate": "var(--easing-emphasized-accelerate)",
         "emphasized-decelerate": "var(--easing-emphasized-decelerate)"
       },
+      zIndex: {
+        "base": "var(--z-base)",
+        "map-controls": "var(--z-map-controls)",
+        "dropdown": "var(--z-dropdown)",
+        "sticky": "var(--z-sticky)",
+        "fixed": "var(--z-fixed)",
+        "drawer-backdrop": "var(--z-drawer-backdrop)",
+        "drawer": "var(--z-drawer)",
+        "modal-backdrop": "var(--z-modal-backdrop)",
+        "modal": "var(--z-modal)",
+        "popover": "var(--z-popover)",
+        "tooltip": "var(--z-tooltip)",
+        "toast": "var(--z-toast)"
+      },
     },
   },
   plugins: [
