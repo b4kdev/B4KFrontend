@@ -1530,7 +1530,7 @@
     "CD1552": "Lojas, clínicas, salões",
     "CD1553": "Palácios, templos, museus",
     "CD1554": "Macarrão, sopas, mercados",
-    "CD1555": "Em alta em K-Pop",
+    "CD1555": "Em alta em {category}",
     "CD1556": "Shows e eventos",
     "CD1557": "Produtos oficiais e pop-ups",
     "CD1558": "Shows, sedes de agências, tours e produtos oficiais por toda a Coreia",
@@ -1538,7 +1538,7 @@
     "CD1560": "Verifique sua conexão e tente novamente. O resto do Início continua funcionando.",
     "CD1561": "Em alta em K-Drama",
     "CD1562": "Locações de filmagem, trilhas de doramas e cenários icônicos",
-    "CD1563": "Não foi possível carregar “Em alta em K-Pop”",
+    "CD1563": "Não foi possível carregar “{title}”",
     "CD1564": "Verifique sua conexão e tente novamente. As outras seções continuam funcionando.",
     "CD1565": "Mais populares",
     "CD1566": "Lugares que os fãs estão salvando e curtindo nesta semana",
@@ -1722,6 +1722,7 @@
     "CD1808": "o link continua o mesmo",
     "CD1809": "Gangneung",
     "CD1810": "Sokcho",
-    "CD1811": "Yeosu"
+    "CD1811": "Yeosu",
+    "CD1812": "Nenhum lugar em alta ainda"
   }
 }
