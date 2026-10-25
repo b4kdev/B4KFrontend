@@ -110,10 +110,10 @@
     "CD0108": "{earned} / {total} earned",
     "CD0109": "Badges",
     "CD0110": "Try again",
-    "CD0111": "Try again. If the problem persists, contact support.",
-    "CD0112": "Go home",
+    "CD0111": "Try again, or go back to Home.",
+    "CD0112": "Back to Home",
     "CD0113": "Something went wrong",
-    "CD0114": "Back to home",
+    "CD0114": "Back to Home",
     "CD0115": "The page you're looking for doesn't exist or has moved.",
     "CD0116": "Page not found",
     "CD0117": "Reconnect to keep planning. Your plans are kept on this device.",
@@ -1326,7 +1326,7 @@
     "CD1345": "Pick a city, your dates, and who you're traveling with.",
     "CD1346": "Step 2 of 3",
     "CD1347": "The more you pick, the better the picks. Up to 10.",
-    "CD1348": "Selected · 3 of 10",
+    "CD1348": "Selected · {count} of {max}",
     "CD1349": "K-Drama locations",
     "CD1350": "Street food",
     "CD1351": "Filming cafés",
@@ -1335,7 +1335,6 @@
     "CD1354": "Studio tours",
     "CD1355": "Drama OST bars",
     "CD1356": "Step 3 of 3",
-    "CD1357": "Tap any row to change it.",
     "CD1358": "Interests · 3",
     "CD1359": "New plan",
     "CD1360": "Build it yourself on the map, stop by stop",
@@ -1774,6 +1773,11 @@
     "CD1803": "Earned when others save and like your plans",
     "CD1804": "{total} badges · sign in to start earning",
     "CD1805": "Locate me",
-    "CD1806": "Location is off. Allow it in your browser settings."
+    "CD1806": "Location is off. Allow it in your browser settings.",
+    "CD1807": "{name} moved to position {position} of {total}.",
+    "CD1808": "keeps the same link",
+    "CD1809": "Gangneung",
+    "CD1810": "Sokcho",
+    "CD1811": "Yeosu"
   }
 }

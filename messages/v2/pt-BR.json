@@ -110,10 +110,10 @@
     "CD0108": "{earned} / {total} conquistados",
     "CD0109": "Emblemas",
     "CD0110": "Tentar novamente",
-    "CD0111": "Tente novamente. Se o problema persistir, entre em contato com o suporte.",
-    "CD0112": "Ir para o início",
+    "CD0111": "Tente novamente ou volte para o Início.",
+    "CD0112": "Voltar ao Início",
     "CD0113": "Algo deu errado",
-    "CD0114": "Voltar ao início",
+    "CD0114": "Voltar ao Início",
     "CD0115": "A página que você procura não existe ou foi movida.",
     "CD0116": "Página não encontrada",
     "CD0117": "Reconecte-se para continuar planejando. Seus roteiros ficam guardados neste dispositivo.",
@@ -1326,7 +1326,7 @@
     "CD1345": "Escolha uma cidade, suas datas e com quem você vai viajar.",
     "CD1346": "Etapa 2 de 3",
     "CD1347": "Quanto mais você escolher, melhores serão as sugestões. Até 10.",
-    "CD1348": "Selecionados · 3 de 10",
+    "CD1348": "Selecionados · {count} de {max}",
     "CD1349": "Locações de K-Drama",
     "CD1350": "Comida de rua",
     "CD1351": "Cafés de filmagem",
@@ -1335,7 +1335,6 @@
     "CD1354": "Tours por estúdios",
     "CD1355": "Bares de OST de doramas",
     "CD1356": "Etapa 3 de 3",
-    "CD1357": "Toque em uma linha para alterá-la.",
     "CD1358": "Interesses · 3",
     "CD1359": "Novo roteiro",
     "CD1360": "Monte do seu jeito no mapa, lugar por lugar",
@@ -1718,6 +1717,11 @@
     "CD1803": "Ganhos quando outras pessoas salvam e curtem seus roteiros",
     "CD1804": "{total} emblemas · entre para começar a ganhar",
     "CD1805": "Mostrar sua localização",
-    "CD1806": "A localização está desativada. Permita nas configurações do navegador."
+    "CD1806": "A localização está desativada. Permita nas configurações do navegador.",
+    "CD1807": "{name} agora está na posição {position} de {total}.",
+    "CD1808": "o link continua o mesmo",
+    "CD1809": "Gangneung",
+    "CD1810": "Sokcho",
+    "CD1811": "Yeosu"
   }
 }
