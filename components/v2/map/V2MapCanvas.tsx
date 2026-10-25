@@ -43,6 +43,8 @@ type Props = {
   fitStops?: boolean
   /** Extra space kept clear when fitting stops, e.g. the phone sheet over the map's lower part (px). */
   fitBottom?: number
+  /** The visitor's location from Locate me: the location dot (not a button). */
+  userLocation?: { lat: number; lng: number } | null
   label: string
   errorText: string
 }
@@ -108,7 +110,7 @@ function boundsOf(map: any): MapBounds {
 const sdkAlive = () => typeof window !== 'undefined' && !!window.naver?.maps
 
 export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
-  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', savedIds, routeLegs, onBounds, onZoom, center, fitStops, fitBottom = 0, label, errorText },
+  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', savedIds, routeLegs, onBounds, onZoom, center, fitStops, fitBottom = 0, userLocation, label, errorText },
   ref,
 ) {
   const el = useRef<HTMLDivElement>(null)
@@ -252,6 +254,16 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     const lngs = planStops.map((s) => s.poi.coords_lng)
     map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), { top: 80, right: 80, bottom: 80 + fitBottom, left: 80 })
   }, [fitStops, planStops, mapReady, fitBottom])
+
+  // Location dot: 16 dot with a 2 px ring on a 40 accuracy halo, above the place pins (below a
+  // selected one); taps go through it to the pins. Colors follow MAP_TONE like the pins.
+  useEffect(() => {
+    if (!live() || !mapReady || !userLocation) return
+    const N = window.naver.maps
+    const html = `<div aria-hidden style="pointer-events:none;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:9999px;background:color-mix(in srgb, var(--map-pin-fill) 16%, transparent)"><span style="box-sizing:border-box;width:16px;height:16px;border-radius:9999px;background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke)"></span></div>`
+    const dot = new N.Marker({ map: map.current, position: new N.LatLng(userLocation.lat, userLocation.lng), icon: { content: html, anchor: new N.Point(20, 20) }, clickable: false, zIndex: Z_LAYER * Z.selected - 1 })
+    return () => dot.setMap(null)
+  }, [mapReady, userLocation?.lat, userLocation?.lng]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Markers.
   useEffect(() => {

@@ -41,6 +41,7 @@ import type { ItineraryDetail } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
 import { ABOVE_LEGAL_LINE, MapLegalLine } from '../map/MapLegalLine'
+import { useLocateMe } from '../map/LocateMe'
 import { useV2Shell } from '../V2Shell'
 import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
@@ -73,6 +74,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const { user } = useAuth()
   const { labels, openDrawer, toast, requireSignIn } = useV2Shell()
   const mapRef = useRef<V2MapHandle>(null)
+  const locate = useLocateMe(mapRef, { phone })
   const draft = usePlanDraft()
   // Toast actions run later (Undo): they call the draft as it is then, not as it was.
   const latestDraft = useRef(draft)
@@ -541,6 +543,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       activeDay={activeDay}
       savedIds={savedIds}
       onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => { setBounds(b); if (filterOn.current) setAreaMoved(true) }, 300) }}
+      userLocation={locate.location}
       label={k('itinerary.mapAriaLabel')}
       errorText={GAP.mapError}
     />
@@ -604,6 +607,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           resizeLabel={k('itinerary.sheet.handle')}
           heights={planSheet ? { full: '70dvh' } : undefined}
           header={selectedId || planSheet ? undefined : <div className="pt-[var(--space-4)]">{switcher}</div>}
+          aboveEnd={planSheet ? undefined : locate.control}
           above={order.length && !planSheet ? <PlanPill label={`${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })}`} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /> : undefined}
           className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0"
         >
@@ -627,7 +631,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           {searchArea}
         </div>
         <MapLegalLine />
-        <ZoomControl className={cn('absolute right-[var(--space-4)]', ABOVE_LEGAL_LINE)} onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} atMax={zoom >= 18} atMin={zoom <= 6} />
+        <div className={cn('absolute right-[var(--space-4)] flex flex-col gap-[var(--space-2)]', ABOVE_LEGAL_LINE)}>
+          {locate.control}
+          <ZoomControl onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} atMax={zoom >= 18} atMin={zoom <= 6} />
+        </div>
       </main>
       {dialogs}
     </div>

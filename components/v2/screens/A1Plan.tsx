@@ -31,6 +31,7 @@ import { useCd, useCdKey } from '../cd'
 import { jsonFetch } from './A2Home'
 import { useGap } from '../gaps'
 import { ABOVE_LEGAL_LINE, MapLegalLine } from '../map/MapLegalLine'
+import { useLocateMe } from '../map/LocateMe'
 import { useV2Shell } from '../V2Shell'
 import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
@@ -63,6 +64,7 @@ export function PlanScreen({ id }: { id: string }) {
   const { labels, openDrawer, toast, requireSignIn } = useV2Shell()
   const { mutate: globalMutate } = useSWRConfig()
   const mapRef = useRef<V2MapHandle>(null)
+  const locate = useLocateMe(mapRef, { phone })
   const { itinerary: it, isLoading, isError, isPrivate, isNotFound, mutate } = useItinerary(id)
   const { isOwner } = useItineraryMeta(user ? id : null)
 
@@ -278,6 +280,7 @@ export function PlanScreen({ id }: { id: string }) {
       fitStops
       // Phones: the sheet (half the screen at mid) covers the map's lower part; fit the route above it.
       fitBottom={phone && snap !== 'peek' && typeof window !== 'undefined' ? Math.round(window.innerHeight / 2) : 0}
+      userLocation={locate.location}
       label={k('itinerary.mapAriaLabel')}
       errorText={GAP.mapError}
     />
@@ -304,7 +307,7 @@ export function PlanScreen({ id }: { id: string }) {
         <div className="absolute inset-x-0 top-0 z-20 pt-[var(--space-2)]">
           <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} />
         </div>
-        <BottomSheet type="map" open label={k('itinerary.sheet.ariaLabel')} snap={snap} onSnapChange={setSnap} onClose={() => setSnap('peek')} resizeLabel={k('itinerary.sheet.handle')} className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0">
+        <BottomSheet type="map" open label={k('itinerary.sheet.ariaLabel')} aboveEnd={locate.control} snap={snap} onSnapChange={setSnap} onClose={() => setSnap('peek')} resizeLabel={k('itinerary.sheet.handle')} className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0">
           <div className="-mx-[var(--space-4)] -mt-[var(--space-2)] h-[calc(100dvh-160px)]">{panel}</div>
         </BottomSheet>
         {dialogs}
@@ -319,7 +322,10 @@ export function PlanScreen({ id }: { id: string }) {
       <main id="main" className="relative min-w-0 flex-1">
         {map}
         <MapLegalLine />
-        <ZoomControl className={`absolute right-[var(--space-4)] ${ABOVE_LEGAL_LINE}`} onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} />
+        <div className={`absolute right-[var(--space-4)] flex flex-col gap-[var(--space-2)] ${ABOVE_LEGAL_LINE}`}>
+          {locate.control}
+          <ZoomControl onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} />
+        </div>
       </main>
       {dialogs}
     </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, Suspense, useContext, useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react'
+import { createContext, Suspense, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
 import { useLocale } from 'next-intl'
@@ -46,6 +46,8 @@ type ShellCtx = {
   toast: (t: { type?: 'info' | 'success' | 'warning' | 'critical'; message: string; action?: { label: string; onClick: () => void } }) => void
   /** Runs `run` now when signed in; a guest gets the sign-in gate and `run` after the sign-in. */
   requireSignIn: (r: GateRequest) => void
+  /** Phones: height of the open toast (0 when none), so map controls on its line move above it. */
+  toastHeight: number
 }
 
 /** SWR key of the unread notification count (shared with the Notifications screen). */
@@ -179,6 +181,15 @@ export default function V2Shell({ children }: { children: ReactNode }) {
     } catch {}
     setCookie(v)
   }
+  const toastBox = useRef<HTMLDivElement>(null)
+  const [toastHeight, setToastHeight] = useState(0)
+  useEffect(() => {
+    const el = toastBox.current
+    if (!el) return
+    const sizes = new ResizeObserver(() => setToastHeight(window.matchMedia('(min-width: 1024px)').matches ? 0 : el.offsetHeight))
+    sizes.observe(el)
+    return () => sizes.disconnect()
+  }, [])
   const ctx: ShellCtx = {
     openDrawer: () => setDrawer(true),
     openQuickPlan: () => setQuick(true),
@@ -187,6 +198,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
     labels,
     toast: setToastMsg,
     requireSignIn: (r) => (authUser ? r.run() : setGate(r)),
+    toastHeight,
   }
   const LANG_NAMES: Record<string, string> = { en: 'English', ko: '한국어', ja: '日本語', 'zh-TW': '繁體中文', 'pt-BR': 'Português (BR)' }
 
@@ -250,9 +262,10 @@ export default function V2Shell({ children }: { children: ReactNode }) {
         {!online ? <Toast type="warning" message={onMap ? t('CD0120') : t('CD0119')} className="pointer-events-auto" /> : null}
       </div>
       {/* Toasts: on phones 12 above whatever is at the bottom (above the offline notice while offline);
-          desktop 24 from the right edge and 24 under the Header. A timed toast has no close button in the
+          desktop 24 from the right edge and 24 under the Header (64 on map pages, under the map chips). A timed toast has no close button in the
           design: it leaves on its own after 4 s. */}
-      <div aria-live="polite" style={{ '--toast-floor': toastFloor } as CSSProperties} className={cn('pointer-events-none fixed inset-x-0 bottom-[calc(var(--toast-floor)+var(--space-3))] z-[60] flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-auto lg:left-auto lg:right-[var(--space-6)] lg:top-[calc(var(--layout-header-height)+var(--space-6))] lg:items-end lg:px-0', !online && 'max-lg:bottom-[calc(var(--toast-floor)+var(--space-3)+var(--space-16))]')}>
+      <div aria-live="polite" style={{ '--toast-floor': toastFloor } as CSSProperties} className={cn('pointer-events-none fixed inset-x-0 bottom-[calc(var(--toast-floor)+var(--space-3))] z-[60] flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-auto lg:left-auto lg:right-[var(--space-6)] lg:items-end lg:px-0', onMap ? 'lg:top-[calc(var(--layout-header-height)+var(--space-16))]' : 'lg:top-[calc(var(--layout-header-height)+var(--space-6))]', !online && 'max-lg:bottom-[calc(var(--toast-floor)+var(--space-3)+var(--space-16))]')}>
+        <div ref={toastBox} className="flex w-full flex-col items-center lg:items-end">
         {toastMsg ? (
           <Toast
             type={toastMsg.type}
@@ -263,6 +276,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
             className="pointer-events-auto w-[360px] max-w-full"
           />
         ) : null}
+        </div>
       </div>
     </Ctx.Provider>
   )
