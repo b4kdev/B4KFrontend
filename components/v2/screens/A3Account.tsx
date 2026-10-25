@@ -145,7 +145,7 @@ export function ProfileOwnScreen() {
   )
 }
 
-// Badge names from the Copy Deck by slug (CD-1615 to CD-1626), so they show in the reader's
+// Badge names from the Copy Deck by slug, so they show in the reader's
 // language; a badge the deck does not have keeps the name the server sends (English).
 const BADGE_NAME_CD: Record<string, string> = {
   'first-save': 'CD1615', 'map-maker': 'CD1616', 'k-pop-pilgrim': 'CD1617', 'social-butterfly': 'CD1618',
