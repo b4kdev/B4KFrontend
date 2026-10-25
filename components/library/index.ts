@@ -8,7 +8,7 @@ export { Logo, ProviderLogo, type LogoProps } from './Brand'
 export { Button, buttonVariants, type ButtonProps } from './Button'
 export { Checkbox, Radio, Toggle, type CheckboxProps, type RadioProps, type ToggleProps } from './Choice'
 export { Chip, type ChipProps } from './Chip'
-export { CalendarDay, ChatBubble, CreditLine, ForecastDay, ImageAction, Scrim, StatCounter, type CalendarDayProps, type ChatBubbleProps, type ForecastDayProps, type ImageActionProps, type StatCounterProps } from './Content'
+export { CalendarDay, ChatBubble, CreditLine, ForecastDay, ImageAction, LegalLine, PlaceTypeIcon, Scrim, StatCounter, type CalendarDayProps, type LegalLineProps, type ChatBubbleProps, type ForecastDayProps, type ImageActionProps, type StatCounterProps } from './Content'
 export { Fab, type FabProps } from './Fab'
 export { FieldMessage, Label, type FieldMessageProps, type LabelProps } from './Field'
 export { IconButton, iconButtonVariants, type IconButtonProps } from './IconButton'
@@ -50,6 +50,8 @@ export { AiPanel, ItineraryPanel, LeftPanel, PlaceDetail, PlanCart, SavedHub, ty
 export { ConsentStep, CookieBanner, LegalDocument, ProfileHeader, SearchFilters, SearchSuggestions, SignInCard, type ConsentItem, type ConsentStepProps, type CookieBannerProps, type FilterGroup, type LegalDocumentProps, type ProfileHeaderProps, type SearchFiltersProps, type SearchSuggestionsProps, type SignInCardProps, type SignInView } from './AccountOrganisms'
 
 // Sections
+// Figma's Explore section row and Plan card row are RowSection with place or plan cards.
+export { RowSection as ExploreSectionRow, RowSection as PlanCardRow } from './Sections'
 export { ExploreCollections, ExplorePackages, InterestsCard, PlanningCue, QuickPlan, RowSection, type ExploreCollectionsProps, type InterestsCardProps, type PlanningCueProps, type QuickPlanProps, type RowSectionProps } from './Sections'
 
 // Hooks

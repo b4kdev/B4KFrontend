@@ -1,5 +1,5 @@
-import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
-import { Info } from 'lucide-react'
+import { forwardRef, type ButtonHTMLAttributes, type ElementType, type ReactNode } from 'react'
+import { Info, MapPin } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { FOCUS_RING, HIT_AREA } from './styles'
 
@@ -33,6 +33,35 @@ export function CreditLine({ children, className }: { children: ReactNode; class
     <p className={cn('flex items-center gap-[var(--space-1)] type-body-caption text-ui-fg-muted', className)}>
       <Info aria-hidden className="size-[var(--icon-size-xs)] shrink-0" />
       <span>{children}</span>
+    </p>
+  )
+}
+
+/** Place type icon (Figma atom): the icon for a place's type, at the size the parent sets. Only
+ * Type=Place exists in code until the API sends each place's type. Decorative. */
+export function PlaceTypeIcon({ type = 'place', className }: { type?: 'place'; className?: string }) {
+  void type
+  return <MapPin aria-hidden className={className} />
+}
+
+export type LegalLineProps = {
+  /** Leading text, e.g. the copyright line. */
+  lead?: ReactNode
+  /** The links in order; strong = type-body-legal-strong (Privacy Policy, as drawn). */
+  links: { href: string; label: string; strong?: boolean }[]
+  /** Link component of the app (locale-aware); a plain anchor by default. */
+  linkAs?: ElementType
+  className?: string
+}
+
+/** Legal line (Figma): legal type, muted, items 12 apart, wraps. */
+export function LegalLine({ lead, links, linkAs: LinkTag = 'a', className }: LegalLineProps) {
+  return (
+    <p className={cn('flex flex-wrap items-center gap-x-[var(--space-3)] type-body-legal text-ui-fg-muted', className)}>
+      {lead ? <span>{lead}</span> : null}
+      {links.map((l) => (
+        <LinkTag key={l.href} href={l.href} className={cn('hover:text-ui-fg hover:underline', l.strong && 'type-body-legal-strong')}>{l.label}</LinkTag>
+      ))}
     </p>
   )
 }

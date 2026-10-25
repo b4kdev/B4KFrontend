@@ -3,9 +3,9 @@
 import NextImage from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import * as Sentry from '@sentry/nextjs'
-import { MapPin } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Skeleton } from './Progress'
+import { PlaceTypeIcon } from './Content'
 
 // Image (Figma Atoms › Image): a photo of a place, square corners, locked to one of four
 // ratios: 1:1 (thumbnails), 4:3 (cards), 16:9 (media), 12:5 (wide heroes). Loading = skeleton
@@ -64,7 +64,7 @@ export function Image({ ratio = '1:1', src, alt, sizes = '100vw', priority, clas
       {state === 'loading' ? <Skeleton className="absolute inset-0" /> : null}
       {state === 'missing' ? (
         <span className="absolute inset-0 flex items-center justify-center text-ui-fg-muted">
-          <MapPin aria-hidden className="size-[var(--icon-size-xl)]" />
+          <PlaceTypeIcon className="size-[var(--icon-size-xl)]" />
         </span>
       ) : null}
     </span>
