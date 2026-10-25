@@ -19,14 +19,14 @@ import { useV2Shell } from './V2Shell'
 // Review. Make my plan builds the course the same way as live (/places + buildCourse) and opens
 // it in the Plan editor unsaved (/v2/map?from=quickplan).
 
-// Destinations as drawn (in its order). Gangneung, Sokcho and Yeosu are drawn too but
-// have no text yet, so they are added once their texts exist. A city with no city-level data
-// searches its province, as Gyeongju does.
-const CITIES = ['Seoul', 'Busan', 'Jeju', 'Gyeongju', 'Incheon', 'Jeonju'] as const
+// Destinations as drawn (in its order). A city with no city-level data searches its province,
+// as Gyeongju does.
+const CITIES = ['Seoul', 'Busan', 'Jeju', 'Gyeongju', 'Incheon', 'Jeonju', 'Gangneung', 'Sokcho', 'Yeosu'] as const
 const CITY_CD: Record<string, string> = {
   Seoul: 'CD0756', Busan: 'CD0741', Jeju: 'CD0752', Gyeongju: 'CD0749', Incheon: 'CD0751', Jeonju: 'CD0211',
+  Gangneung: 'CD1809', Sokcho: 'CD1810', Yeosu: 'CD1811',
 }
-const CITY_REGION: Record<string, string> = { Jeonju: 'Jeonbuk' }
+const CITY_REGION: Record<string, string> = { Jeonju: 'Jeonbuk', Gangneung: 'Gangwon', Sokcho: 'Gangwon', Yeosu: 'Jeonnam' }
 const WHO = [['solo', 'CD0798'], ['couple', 'CD0794'], ['friends', 'CD0796'], ['family', 'CD0795']] as const
 const MAX = 10
 
