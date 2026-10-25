@@ -150,7 +150,7 @@ export type LeaderboardRowProps = {
   name: string
   /** Figma Detail, e.g. "12 plans · 4 badges". */
   detail?: string
-  /** Figma Score, formatted; left out on Popular planners (no score, PD-56 Q5). */
+  /** Figma Score, formatted; left out on Popular planners (no score there). */
   score?: string
   avatarSrc?: string | null
   /** Figma Show trend: up / down with labels; left out when flat. */
@@ -163,7 +163,7 @@ export type LeaderboardRowProps = {
   renderLink?: (props: { href: string; className: string; children: ReactNode }) => ReactNode
 }
 
-/** Leaderboard row: rank as a plain muted number (no trophies, PD-56 Q5), avatar, name and detail,
+/** Leaderboard row: rank as a plain muted number (no trophies), avatar, name and detail,
  * optional trend and score; 1px divider inside the row like List item. */
 export function LeaderboardRow({ rank, name, detail, score, avatarSrc, trend, you, rankLabel, href, renderLink }: LeaderboardRowProps) {
   const TrendIcon = trend?.direction === 'down' ? TrendingDown : TrendingUp
