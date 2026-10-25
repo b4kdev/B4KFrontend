@@ -1455,10 +1455,10 @@
     "CD1475": "Night markets",
     "CD1476": "Empty. Tap + on any place or map pin to add it.",
     "CD1477": "Your plan · 3 stops · 3h 15m",
-    "CD1478": "Last added · 2 more",
+    "CD1478": "Last added · {count} more",
     "CD1479": "Day 1",
     "CD1480": "+ Day",
-    "CD1481": "Day 1 · 3h 15m · 3 of 6 stops",
+    "CD1481": "Day {n} · {time} · {count} of {max} stops",
     "CD1482": "12 places",
     "CD1483": "Created by {name}",
     "CD1484": "{stops, plural, one {# stop} other {# stops}} · {days, plural, one {# day} other {# days}} · {duration} · {distance}",
@@ -1524,7 +1524,7 @@
     "CD1545": "Delete {title}?",
     "CD1546": "The plan and its link will be removed for everyone. This cannot be undone.",
     "CD1548": "Your plan is ready. Edit it, then save it.",
-    "CD1549": "All days · 5h 45m · 5 stops",
+    "CD1549": "All days · {time} · {count, plural, one {# stop} other {# stops}}",
     "CD1550": "Concerts, agencies, merch",
     "CD1551": "Filming spots, OST cafés",
     "CD1552": "Shops, clinics, salons",
@@ -1782,6 +1782,13 @@
     "CD1812": "No places are trending yet",
     "CD1813": "Itaewon",
     "CD1814": "All filters",
-    "CD1815": "All filters · {count}"
+    "CD1815": "All filters · {count}",
+    "CD1816": "Last added",
+    "CD1817": "{count} picked · used for Home and Quick plan",
+    "CD1818": "Something went wrong on our end. Try again, or come back later.",
+    "CD1819": "B4K is under maintenance",
+    "CD1820": "We’ll be back soon",
+    "CD1821": "B4K is being updated. Check back in a little while.",
+    "CD1822": "Search for “{query}”"
   }
 }

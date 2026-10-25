@@ -1455,10 +1455,10 @@
     "CD1475": "Mercados noturnos",
     "CD1476": "Vazio. Toque em + em um lugar ou marcador do mapa para adicioná-lo.",
     "CD1477": "Seu roteiro · 3 lugares · 3h 15min",
-    "CD1478": "Último adicionado · mais 2",
+    "CD1478": "Último adicionado · mais {count}",
     "CD1479": "Dia 1",
     "CD1480": "+ Dia",
-    "CD1481": "Dia 1 · 3h 15min · 3 de 6 lugares",
+    "CD1481": "Dia {n} · {time} · {count} de {max} lugares",
     "CD1482": "12 lugares",
     "CD1483": "Criado por {name}",
     "CD1484": "{stops, plural, one {# lugar} other {# lugares}} · {days, plural, one {# dia} other {# dias}} · {duration} · {distance}",
@@ -1524,7 +1524,7 @@
     "CD1545": "Excluir {title}?",
     "CD1546": "O roteiro e o link dele serão removidos para todos. Esta ação não pode ser desfeita.",
     "CD1548": "Seu roteiro está pronto. Edite e depois salve.",
-    "CD1549": "Todos os dias · 5h 45min · 5 lugares",
+    "CD1549": "Todos os dias · {time} · {count, plural, one {# lugar} other {# lugares}}",
     "CD1550": "Shows, agências, produtos oficiais",
     "CD1551": "Locações de filmagem, cafés de OST",
     "CD1552": "Lojas, clínicas, salões",
@@ -1726,6 +1726,13 @@
     "CD1812": "Nenhum lugar em alta ainda",
     "CD1813": "Itaewon",
     "CD1814": "Todos os filtros",
-    "CD1815": "Todos os filtros · {count}"
+    "CD1815": "Todos os filtros · {count}",
+    "CD1816": "Último adicionado",
+    "CD1817": "Escolhidos: {count} · usados no Início e no Roteiro rápido",
+    "CD1818": "Algo deu errado do nosso lado. Tente novamente ou volte mais tarde.",
+    "CD1819": "O B4K está em manutenção",
+    "CD1820": "Voltamos em breve",
+    "CD1821": "O B4K está sendo atualizado. Volte daqui a pouco.",
+    "CD1822": "Buscar “{query}”"
   }
 }
