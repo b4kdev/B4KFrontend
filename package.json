@@ -10,6 +10,7 @@
     "a11y:check": "node b4k-a11y-audit.mjs",
     "a11y:interactive": "node b4k-a11y-interactive-audit.mjs",
     "i18n:overflow": "node b4k-i18n-overflow-audit.mjs",
+    "qa:vitals": "node b4k-vitals-audit.mjs",
     "tokens:build": "node scripts/build-tokens.mjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
