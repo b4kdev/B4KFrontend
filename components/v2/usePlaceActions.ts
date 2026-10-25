@@ -19,7 +19,8 @@ const send = (url: string, method: string, body: unknown) =>
  * Save and Like for place cards (Home, Explore): the Card `save` and `like` props for a place.
  * A guest gets the sign-in gate and the save or like is done after the sign-in. Pass
  * `resume` once per screen so an action kept across Google or the Consent step is finished there.
- * Liked state is local: the backend has no "liked by me" read for places yet.
+ * Save is set optimistically (as plans). Liked state is local: the backend has no "liked by me"
+ * read for places yet.
  */
 export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
   const t = useCd()
@@ -28,17 +29,24 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
   const { toast, requireSignIn } = useV2Shell()
   const saved = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
   const unlock = useBadgeUnlock()
-  const savedIds = new Set((saved.data?.pois ?? []).map((p) => p.poi_id))
+  // The tapped state shows at once; the old one comes back when the request fails.
+  const [taps, setTaps] = useState<Map<string, boolean>>(new Map())
+  const isSaved = (id: string) => taps.get(id) ?? (saved.data?.pois ?? []).some((p) => p.poi_id === id)
   const [liked, setLiked] = useState<Set<string>>(new Set())
 
-  // signedIn: the save a guest started, finished after the sign-in (its own toast).
+  // on: saved before the tap. signedIn: the save a guest started, finished after the sign-in (its own toast).
   const setSave = async (id: string, on: boolean, signedIn = false) => {
+    const tap = (next: boolean) => setTaps((m) => new Map(m).set(id, next))
+    tap(!on)
     await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id })
       .then(() => {
         toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })
         if (!on) unlock()
       })
-      .catch(() => toast({ type: 'critical', message: t('CD1426') }))
+      .catch(() => {
+        tap(on)
+        toast({ type: 'critical', message: t('CD1426') })
+      })
     saved.mutate()
   }
   const setLike = async (id: string, on: boolean) => {
@@ -52,13 +60,13 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
   usePendingAction('like_poi', resume && !!user, (id) => { if (id) setLike(id, false) })
 
   return (id: string, name: string) => {
-    const isSaved = savedIds.has(id)
+    const on = isSaved(id)
     const isLiked = liked.has(id)
     return {
       save: {
-        saved: isSaved,
-        label: isSaved ? k('explore.card.unsaveAria', { name }) : k('explore.card.saveAria', { name }),
-        onSave: () => (user ? setSave(id, isSaved) : requireSignIn({ title: t('CD0027'), pending: { type: 'save_poi', id }, run: () => setSave(id, false, true) })),
+        saved: on,
+        label: on ? k('explore.card.unsaveAria', { name }) : k('explore.card.saveAria', { name }),
+        onSave: () => (user ? setSave(id, on) : requireSignIn({ title: t('CD0027'), pending: { type: 'save_poi', id }, run: () => setSave(id, false, true) })),
       },
       like: {
         liked: isLiked,
