@@ -206,7 +206,7 @@ export function PlanStopRow({ name, number, day, duration, durationLabel, onDura
     <li data-stop-id={stopId} className={cn('group flex h-[var(--control-height-md)] items-center gap-[var(--space-2)]', dragging && 'bg-ui-state-dragged', className)}>
       <DragHandle label={reorderLabel} {...handleProps} className="touch-none" />
       <StopBadge number={number} day={day} />
-      {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="40px" className="w-[var(--control-height-md)] shrink-0" /> : null}
+      {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="80px" className="w-[var(--control-height-md)] shrink-0" /> : null}
       {onSelect ? (
         <button type="button" onClick={onSelect} className="min-w-0 flex-1 truncate text-left type-body-base text-ui-fg hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none">{name}</button>
       ) : (
@@ -249,7 +249,7 @@ export function ItineraryStop({ name, number, day, meta, note, thumbnail, select
         <span className="type-body-caption text-ui-fg-muted">{meta}</span>
         {note ? <span className="type-body-caption text-ui-fg">{note}</span> : null}
       </div>
-      {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="40px" className="w-[var(--control-height-md)] shrink-0" /> : null}
+      {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="80px" className="w-[var(--control-height-md)] shrink-0" /> : null}
     </li>
   )
 }

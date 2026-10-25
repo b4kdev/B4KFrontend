@@ -516,7 +516,7 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
               <p className={heading}>{labels.places}</p>
               {places.slice(0, 3).map((p) => (
                 <IntlLink key={p.id} href={p.href} className={row}>
-                  <Image ratio="1:1" src={p.imageSrc} alt="" sizes="48px" className={thumb} />
+                  <Image ratio="1:1" src={p.imageSrc} alt="" sizes="80px" className={thumb} />
                   {twoLine(p.name, p.meta)}
                 </IntlLink>
               ))}
@@ -527,7 +527,7 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
               <p className={heading}>{labels.plans}</p>
               {plans.map((p) => (
                 <IntlLink key={p.id} href={p.href} className={row}>
-                  {p.imageSrc !== undefined ? <Image ratio="1:1" src={p.imageSrc} alt="" sizes="48px" className={thumb} /> : <Route aria-hidden className={icon} />}
+                  {p.imageSrc !== undefined ? <Image ratio="1:1" src={p.imageSrc} alt="" sizes="80px" className={thumb} /> : <Route aria-hidden className={icon} />}
                   {twoLine(p.name, p.meta)}
                 </IntlLink>
               ))}

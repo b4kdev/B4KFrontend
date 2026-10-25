@@ -26,14 +26,16 @@ export type HeroProps = {
   action?: ReactNode
   /** Home: the page h1. */
   as?: 'h1' | 'h2'
+  /** Load the photo early (the first hero on a page; later carousel slides load lazily). */
+  priority?: boolean
   className?: string
 }
 
 /** Hero: full-width photo with gradient/overlay-fade, text bottom left; always in the Dark color mode. */
-export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action, as: H = 'h1', className }: HeroProps) {
+export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action, as: H = 'h1', priority = true, className }: HeroProps) {
   return (
     <section data-theme="dark" className={cn('relative w-full overflow-hidden bg-ui-bg-media text-ui-fg', size === 'home' ? 'h-[var(--hero-height-home)]' : 'h-[var(--hero-height-section)]', className)}>
-      <Image ratio="16:9" src={imageSrc} alt="" priority sizes="100vw" className="!absolute inset-0 h-full !aspect-auto" />
+      <Image ratio="16:9" src={imageSrc} alt="" priority={priority} sizes="100vw" className="!absolute inset-0 h-full !aspect-auto" />
       <div aria-hidden className="absolute inset-0 bg-overlay-fade" />
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-[var(--space-3)] p-[var(--space-11)] max-md:px-[var(--space-6)] max-md:pb-[var(--space-10)] max-md:pt-[var(--space-6)]">
         {eyebrow ? <Badge variant="on-image">{eyebrow}</Badge> : null}

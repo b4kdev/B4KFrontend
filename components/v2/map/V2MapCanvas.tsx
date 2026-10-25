@@ -65,7 +65,8 @@ const MAP_TONE: 'light' | 'dark' = 'light'
 const HIT = 'width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer'
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 // Remote photos go through the Next image proxy: the page only loads images from its own origin.
-const pinSrc = (src: string) => (src.startsWith('/') && !src.startsWith('//') ? src : `/_next/image?url=${encodeURIComponent(src)}&w=128&q=75`)
+// Pin photos through the image optimizer at the pin's file size (56 selected at 2x).
+const pinSrc = (src: string) => `/_next/image?url=${encodeURIComponent(src)}&w=112&q=75`
 const poiLabel = (p: MapPoi) => esc(p.name_preferred ?? p.name_en ?? p.name_ko)
 // Pins and plan stops are buttons (Tab reaches them, Enter or Space selects); the focus ring is in
 // globals.css (.b4k-map-marker). Clusters stay pointer-only: zoom in with the Zoom control instead.

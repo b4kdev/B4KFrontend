@@ -201,7 +201,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
         {/* Figma Plan cart Collapsed › Last added: photo, place, "Last added · 2 more". */}
         {state === 'collapsed' && lastAdded ? (
           <span className="flex min-w-0 items-center gap-[var(--space-3)]">
-            {lastAddedImage !== undefined ? <Image ratio="1:1" src={lastAddedImage} alt="" sizes="48px" className="w-[var(--space-12)] shrink-0" /> : null}
+            {lastAddedImage !== undefined ? <Image ratio="1:1" src={lastAddedImage} alt="" sizes="80px" className="w-[var(--space-12)] shrink-0" /> : null}
             <span className="flex min-w-0 flex-col gap-[var(--space-0-5)]">
               <span className="truncate type-body-base text-ui-fg">{lastAdded}</span>
               {lastAddedMeta ? <span className="truncate type-body-caption text-ui-fg-muted">{lastAddedMeta}</span> : null}
@@ -339,7 +339,7 @@ export function SavedHub({ view, folders = [], folder, onOpenFolder, onBack, onA
             key={p.id}
             title={p.name}
             secondary={p.meta}
-            leading={<Image ratio="1:1" src={p.imageSrc} alt="" sizes="48px" className="w-[48px]" />}
+            leading={<Image ratio="1:1" src={p.imageSrc} alt="" sizes="80px" className="w-[48px]" />}
             trailing={<IconButton label={labels.add(p.name)} icon={<Plus />} onClick={() => onAdd(p.id)} />}
           />
         ))}

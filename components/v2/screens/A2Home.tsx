@@ -286,7 +286,7 @@ export function HomeScreen() {
           { id: 'drama', eyebrow: t('CD0419'), title: t('CD1783'), subtitle: t('CD1784'), image: dramaTheme.data?.items[0]?.primary_image_url ?? null, action: <IntlLink href={`/explore/k-drama/${HERO_DRAMA}/filming-spots`} className={HERO_ACTION}>{t('CD1785')}</IntlLink> },
           { id: 'food', eyebrow: t('CD0251'), title: t('CD1786'), subtitle: t('CD1787'), image: foodTheme.data?.items[0]?.primary_image_url ?? null, action: <IntlLink href="/explore/k-food/michelin-noodles" className={HERO_ACTION}>{t('CD1785')}</IntlLink> },
         ].map((s, i) => (
-          <Hero key={s.id} className={heroPhone} as={i === 0 ? 'h1' : 'h2'} imageSrc={s.image} eyebrow={s.eyebrow} title={s.title} subtitle={s.subtitle} action={s.action} />
+          <Hero key={s.id} className={heroPhone} as={i === 0 ? 'h1' : 'h2'} priority={i === 0} imageSrc={s.image} eyebrow={s.eyebrow} title={s.title} subtitle={s.subtitle} action={s.action} />
         ))}
       </Carousel>
 

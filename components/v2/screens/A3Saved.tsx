@@ -224,7 +224,7 @@ export function SavedScreen() {
           secondary={p.is_draft
             ? `${k('saved.myPlan.draft')} · ${k('saved.plan.stops', { count: p.stop_count })}`
             : `${k('saved.plan.stops', { count: p.stop_count })} · ${k('saved.plan.days', { count: p.duration_days })} · ${p.is_public ? k('profile.settings.privacy.public') : k('profile.settings.privacy.private')}`}
-          leading={<Image ratio="1:1" src={p.cover_image_url} alt="" sizes="48px" className="size-[var(--space-12)]" />}
+          leading={<Image ratio="1:1" src={p.cover_image_url} alt="" sizes="80px" className="size-[var(--space-12)]" />}
           href={`/plan/${p.id}`}
           renderLink={({ href, className, children }) => (
             <div className="flex items-center">
@@ -437,7 +437,7 @@ export function PlanFromSavedScreen() {
                 disabled={!picked.includes(p.poi_id) && picked.length >= LIMIT}
                 onChange={() => toggle(p.poi_id)}
                 label={<>
-                  <Image ratio="1:1" src={p.primary_image_url} alt="" sizes="48px" className="size-[var(--space-12)] shrink-0" />
+                  <Image ratio="1:1" src={p.primary_image_url} alt="" sizes="80px" className="size-[var(--space-12)] shrink-0" />
                   <span className="flex min-w-0 flex-col gap-[var(--space-0-5)]"><span className="truncate text-ui-fg">{poiName(p, locale)}</span><span className="type-body-caption text-ui-fg-muted">{p.display_region}</span></span>
                 </>}
               />

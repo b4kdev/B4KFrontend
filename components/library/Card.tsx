@@ -93,7 +93,7 @@ export function Card(props: CardProps) {
         <article className={cn(SHELL, 'flex-col', className)}>
           <div className="relative">
             {/* A place photo is named after the place unless the caller gives its own description. */}
-            <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? title} sizes="(min-width: 1024px) 280px, 50vw" missingLabel={missingLabel} />
+            <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? title} sizes="280px" missingLabel={missingLabel} />
             <div className="absolute left-[var(--space-2)] top-[var(--space-2)] z-10 flex gap-[var(--gap-xs)]">
               {props.dDay ? <Badge variant="strong">{props.dDay}</Badge> : null}
               {props.sponsored ? <Badge variant="on-image">{props.sponsored}</Badge> : null}
@@ -134,7 +134,7 @@ export function Card(props: CardProps) {
         <article className={cn(SHELL, 'flex-col', className)}>
           <div className="grid aspect-[2/1] grid-cols-2 grid-rows-2 gap-[var(--space-0-5)] bg-ui-bg">
             {[0, 1, 2, 3].map((i) => (
-              <Image key={i} ratio="1:1" src={props.images[i] ?? null} alt="" sizes="140px" className="h-full !aspect-auto" />
+              <Image key={i} ratio="1:1" src={props.images[i] ?? null} alt="" sizes="280px" className="h-full !aspect-auto" />
             ))}
           </div>
           <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
