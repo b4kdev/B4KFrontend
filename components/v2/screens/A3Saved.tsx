@@ -38,7 +38,7 @@ import { GAMIFICATION } from '@/lib/features'
 import { useCd, useCdKey } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
-import { usePlaceActions } from '../usePlaceActions'
+import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { jsonFetch } from './A2Home'
 import { LeaderboardTab } from './A3Account'
 
@@ -127,6 +127,7 @@ export function SavedScreen() {
   const { data, error, isLoading, mutate } = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
   const folder = data?.folders.find((f) => f.id === folderId)
   const placeActions = usePlaceActions()
+  const planActions = usePlanActions()
 
   const tabs = [
     { id: 'places', label: t('CD1238') },
@@ -261,7 +262,7 @@ export function SavedScreen() {
   const savedPlans = data?.plans.length ? (
     <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4 lg:gap-[var(--space-4)]">
       {data.plans.map((p) => (
-        <li key={p.id}><Card type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.saves_count)} stops={`${k('saved.plan.stops', { count: p.stop_count })} · ${k('saved.plan.days', { count: p.duration_days })}`} /></li>
+        <li key={p.id}><Card type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.saves_count)} stops={`${k('saved.plan.stops', { count: p.stop_count })} · ${k('saved.plan.days', { count: p.duration_days })}`} save={planActions(p.id, p.title)} /></li>
       ))}
     </ul>
   ) : (
