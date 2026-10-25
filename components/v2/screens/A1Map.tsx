@@ -415,11 +415,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           ))}
         </div>
       ) : null}
-      {/* No places, as drawn: the area header's count line reads No places in this area, then the empty state. */}
+      {/* No places: the empty state titled No places in this area, Zoom out under it. */}
       {!(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? (
         <div className="flex flex-col gap-[var(--space-4)]">
-          <p className="type-body-caption text-ui-fg-muted">{t('CD0626')}</p>
-          <EmptyState type="no-results" title={t('CD0122')} action={<Button size="md" variant="secondary" onClick={() => mapRef.current?.zoomOut()}>{k('map.zoomOut')}</Button>}>{t('CD1531')}</EmptyState>
+          <EmptyState type="no-results" title={t('CD0626')} action={<Button size="md" variant="secondary" onClick={() => mapRef.current?.zoomOut()}>{t('CD0737')}</Button>}>{t('CD1531')}</EmptyState>
         </div>
       ) : null}
       <ul className="flex flex-col gap-[var(--space-4)]">

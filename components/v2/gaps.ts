@@ -20,8 +20,6 @@ export function useGap() {
       // Parameterized versions of design rows that carry sample values in the deck:
       addedToDay: (day: number) => t('addedToDay', { day }), // "Added to Day 1"
       discardBody: (count: number) => t('discardBody', { count }),
-      viewOnPartner: (partner: string) => t('viewOnPartner', { partner }), // "View on Klook"
-      noCategoryTrending: (category: string) => (category ? t('noCategoryTrending', { category }) : t('noTrending')),
       editing: (title: string) => t('editing', { title }), // edit-mode panel title (no Copy Deck row yet)
       editDraftBody: (count: number, title: string) => t('editDraftBody', { count, title }),
       createdBy: (name: string) => t('createdBy', { name }), // "Created by Minji"

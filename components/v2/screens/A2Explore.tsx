@@ -65,13 +65,17 @@ const rowHref = (category: string, row: string) => SPECIAL_HREF[category]?.[row]
 
 // Row labels drawn per category where the Copy Deck has them; the shared row label otherwise.
 const ROW_LABEL: Record<string, Record<string, string>> = {
-  'k-pop': { trending: 'CD1555', concerts: 'CD1556', merchandise: 'CD1557' },
-  'k-drama': { trending: 'CD1561' },
+  'k-pop': { concerts: 'CD1556', merchandise: 'CD1557' },
 }
 function useRowLabel() {
   const t = useCd()
   const k = useCdKey()
-  return (category: string, row: string) => (ROW_LABEL[category]?.[row] ? t(ROW_LABEL[category][row]) : k(`explore.sections.${row}`))
+  return (category: string, row: string) => {
+    // Trending is one template for every category: "Trending in K-Drama".
+    const name = CATEGORIES.find((c) => c.slug === category)?.label
+    if (row === 'trending' && name) return t('CD1555', { category: t(name) })
+    return ROW_LABEL[category]?.[row] ? t(ROW_LABEL[category][row]) : k(`explore.sections.${row}`)
+  }
 }
 
 function CategoryIndex({ category, sections, active, rowsKey }: { category: string; sections: string[]; active?: string; rowsKey?: string }) {
@@ -278,13 +282,13 @@ export function CategoryScreen({ category }: { category: string }) {
           />
           </div>
         ) : cols.error ? (
-          <RowState title={t('CD0162')} error={cols.error} onRetry={() => cols.mutate()} />
+          <RowState title={t('CD0162')} errorBody="CD1564" error={cols.error} onRetry={() => cols.mutate()} />
         ) : null}
         {data?.packages?.length ? (
           <ExplorePackages
             title={t('CD1341')}
             cards={data.packages.map((p) => (
-              <Card key={p.id} type="package" href={p.partner_url} external={{ newTabLabel: GAP.newTab }} title={p.title} imageSrc={p.cover_image_url} partner={p.partner_name} cta={GAP.viewOnPartner(p.partner_name)} sponsored={t('CD0476')} />
+              <Card key={p.id} type="package" href={p.partner_url} external={{ newTabLabel: GAP.newTab }} title={p.title} imageSrc={p.cover_image_url} partner={p.partner_name} cta={t('CD1342', { partner: p.partner_name })} sponsored={t('CD0476')} />
             ))}
           />
         ) : null}
@@ -422,7 +426,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
       ) : null}
       {failed ? <EmptyState type="error" container="plain" className="lg:flex-1" title={t('CD1571')} action={<Button size="md" variant="secondary" leadingIcon={<RotateCw />} onClick={() => { explore.mutate(); trending.mutate(); plans.mutate() }}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
       {!loading && !failed && !filtered.length ? (
-        <EmptyState type="no-results" className="lg:flex-1" title={GAP.noCategoryTrending(chip === 'all' ? '' : t(CATEGORIES.find((c) => c.slug === chip)?.label ?? 'CD0251'))} action={<Button size="md" variant="secondary" onClick={() => setChip('all')}>{t('CD1433')}</Button>}>{t('CD1570')}</EmptyState>
+        <EmptyState type="no-results" className="lg:flex-1" title={chip === 'all' ? t('CD1812') : t('CD1569', { category: t(CATEGORIES.find((c) => c.slug === chip)?.label ?? 'CD0251') })} action={<Button size="md" variant="secondary" onClick={() => setChip('all')}>{t('CD1433')}</Button>}>{t('CD1570')}</EmptyState>
       ) : null}
       <ul ref={list} className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">{filtered.slice(0, shown).map((p) => <li key={p.id}>{p.node}</li>)}</ul>
       {filtered.length > shown ? (
