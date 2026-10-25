@@ -557,7 +557,7 @@ export function NotificationsScreen() {
 // ── Settings with Language and theme ─────────────────────
 
 /**
- * Your interests sheet (Figma SCR-022 Your interests): the Quick plan dialog without its step
+ * Your interests sheet (Figma SCR-022 Your interests): the Quick plan dialog without a step
  * indicator, laid out like step 2: the picked chips, then the categories (a list on desktop, a row
  * of chips on phones) and that category's chips; footer Clear and Save interests.
  */
@@ -593,12 +593,10 @@ function InterestsSheet({ open, initial, onClose, onSaved }: { open: boolean; in
       onClose={onClose}
       step={2}
       stepTitle={t('CD1599')}
-      progressLabel={t('CD1599')}
-      stepList={[]}
       title={t('CD1599')}
       closeLabel={k('badges.detail.close')}
       back={{ label: t('CD0789'), onClick: () => setPicked([]) }}
-      next={{ label: t('CD1610'), onClick: save, disabled: busy }}
+      next={{ label: t('CD1610'), onClick: save, loading: busy }}
     >
       <div className="flex flex-col gap-[var(--space-5)]">
         <div className="flex flex-col gap-[var(--space-2)]">
