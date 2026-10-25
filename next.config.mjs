@@ -5,6 +5,21 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Files the middleware does not see (_next, public files) get the same baseline headers; pages and
+  // API routes also get the CSP from middleware.ts.
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+        ],
+      },
+    ];
+  },
   images: {
     // AVIF first, WebP as the fallback; next/image keeps its default quality of 75. Widths are the
     // file sizes per part (2x): thumbnail 160, map photo pin 112, card 560, place detail 840, heroes

@@ -19,25 +19,38 @@ const isDev = process.env.NODE_ENV === 'development'
 const devNaverHttp = isDev
   ? ' http://oapi.map.naver.com http://*.map.naver.com http://*.map.naver.net http://static.naver.net'
   : ''
+// Vercel Analytics and Speed Insights load their debug scripts from va.vercel-scripts.com in dev;
+// in production they are served from the site's own /_vercel path.
+const devVercel = isDev ? ' https://va.vercel-scripts.com' : ''
+// GA4 sends from regional hosts (region1.google-analytics.com) and www.google.com/g/collect, Clarity syncs through c.bing.com,
+// Sentry ingests on *.ingest.sentry.io; place photos may be plain Supabase Storage URLs.
 const CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://*.clarity.ms https://oapi.map.naver.com https://*.pstatic.net${devNaverHttp}`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://*.clarity.ms https://oapi.map.naver.com https://*.pstatic.net${devNaverHttp}${devVercel}`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob: https://lh3.googleusercontent.com https://*.pstatic.net https://*.map.naver.com https://*.clarity.ms${devNaverHttp}`,
+  `img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com https://www.googletagmanager.com https://*.google-analytics.com https://*.pstatic.net https://*.map.naver.com https://*.clarity.ms https://c.bing.com${devNaverHttp}`,
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.b4korea.com https://www.google-analytics.com https://analytics.google.com https://*.clarity.ms https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://maps.apigw.ntruss.com https://*.nelo.navercorp.com",
+  `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.b4korea.com https://www.googletagmanager.com https://www.google.com https://*.google-analytics.com https://*.analytics.google.com https://*.clarity.ms https://c.bing.com https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://maps.apigw.ntruss.com https://*.nelo.navercorp.com${devVercel}`,
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  "frame-src 'none'",
   "frame-ancestors 'none'",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
+  ...(isDev ? [] : ['upgrade-insecure-requests']),
 ].join('; ')
+
+// Location for Locate me only; everything else the site never asks for.
+const PERMISSIONS = 'geolocation=(self), camera=(), microphone=(), payment=(), usb=(), serial=(), bluetooth=(), hid=(), midi=(), browsing-topics=()'
 
 function withSecurityHeaders(res: NextResponse): NextResponse {
   res.headers.set('Content-Security-Policy', CSP)
   res.headers.set('X-Content-Type-Options', 'nosniff')
   res.headers.set('X-Frame-Options', 'DENY')
   res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  res.headers.set('Permissions-Policy', 'geolocation=(self), camera=(), microphone=()')
+  res.headers.set('Permissions-Policy', PERMISSIONS)
+  res.headers.set('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
   res.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
   return res
 }
