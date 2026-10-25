@@ -311,7 +311,9 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     }
     const sel = free.find((p) => p.poi_id === selectedId)
     if (sel && zoom >= 17) taken.push({ x: px(sel).x, y: px(sel).y })
-    const rest = free.filter((p) => p !== sel)
+    // Names go to saved places first, then to the most saved: they claim their spot before the rest.
+    const isSaved = (p: MapPoi) => (savedIds?.has(p.poi_id) ? 1 : 0)
+    const rest = free.filter((p) => p !== sel).sort((a, b) => isSaved(b) - isSaved(a) || (b.save_count ?? 0) - (a.save_count ?? 0))
     if (zoom < CLUSTER_BELOW) {
       const buckets = new Map<string, MapPoi[]>()
       for (const p of rest) {
