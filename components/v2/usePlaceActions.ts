@@ -45,7 +45,8 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
       })
       .catch(() => {
         tap(on)
-        toast({ type: 'critical', message: t('CD1426') })
+        // Offline: the kept-on-this-device toast; a refused request: the general error (as Like).
+        toast({ type: 'critical', message: navigator.onLine === false ? t('CD1426') : t('CD0061') })
       })
     saved.mutate()
   }

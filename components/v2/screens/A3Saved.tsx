@@ -297,7 +297,7 @@ export function SavedScreen() {
             setSheet(null)
             mutate()
           } catch {
-            toast({ type: 'critical', message: t('CD1426') })
+            toast({ type: 'critical', message: navigator.onLine === false ? t('CD1426') : t('CD0061') })
           }
         }}
       />

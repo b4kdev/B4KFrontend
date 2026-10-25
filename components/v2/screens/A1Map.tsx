@@ -288,7 +288,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // `on` = currently saved / liked; after a sign-in the action only ever turns it on.
   // signedIn: the save a guest started, finished after the sign-in (its own toast).
   const setSave = async (id: string, on: boolean, signedIn = false) => {
-    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: t('CD1426') }))
+    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: navigator.onLine === false ? t('CD1426') : t('CD0061') }))
     saved.mutate()
   }
   // Optimistic: the heart changes at once and goes back with a toast if the server refuses.
