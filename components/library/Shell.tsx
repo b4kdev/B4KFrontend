@@ -59,10 +59,10 @@ export type ShellUser = { name: string; avatarSrc?: string | null; unread?: numb
 const RAIL_CELL = 'w-[56px]'
 
 const DESTS: { id: Destination; href: string; Icon: typeof House }[] = [
-  { id: 'home', href: '/v2', Icon: House },
-  { id: 'map', href: '/v2/map', Icon: MapPin },
-  { id: 'explore', href: '/v2/explore', Icon: Compass },
-  { id: 'saved', href: '/v2/saved', Icon: Bookmark },
+  { id: 'home', href: '/', Icon: House },
+  { id: 'map', href: '/map', Icon: MapPin },
+  { id: 'explore', href: '/explore', Icon: Compass },
+  { id: 'saved', href: '/saved', Icon: Bookmark },
 ]
 
 export type NavigationRailProps = {
@@ -80,11 +80,11 @@ export type NavigationRailProps = {
 }
 
 /** Navigation rail: desktop from 1024, 64 wide, icons with tooltips. */
-export function NavigationRail({ active = null, labels, user, onQuickPlan, showLogo, accountMenu, notificationsHref = '/v2/notifications', profileHref = '/v2/profile', className }: NavigationRailProps) {
+export function NavigationRail({ active = null, labels, user, onQuickPlan, showLogo, accountMenu, notificationsHref = '/notifications', profileHref = '/profile', className }: NavigationRailProps) {
   return (
     <nav aria-label={labels.main} className={cn('flex h-full w-[var(--layout-nav-rail)] shrink-0 flex-col items-center bg-ui-bg pb-[var(--space-3)]', showLogo && 'pt-[var(--space-2)]', className)}>
       {showLogo ? (
-        <IntlLink href="/v2" aria-label={labels.homeLink} className={cn('flex size-[var(--layout-nav-rail)] items-center justify-center', FOCUS_RING_INSET)}>
+        <IntlLink href="/" aria-label={labels.homeLink} className={cn('flex size-[var(--layout-nav-rail)] items-center justify-center', FOCUS_RING_INSET)}>
           <Logo type="mark" className="h-9" />
         </IntlLink>
       ) : null}
@@ -115,7 +115,7 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
           </Tooltip>
         ) : null}
         {accountMenu ?? (
-          <IntlLink href={user ? profileHref : '/v2/login'} aria-label={user ? labels.account : labels.signIn} className={cn('flex h-[var(--control-height-xl)] items-center justify-center hover:bg-ui-state-hover', RAIL_CELL, FOCUS_RING_INSET)}>
+          <IntlLink href={user ? profileHref : '/login'} aria-label={user ? labels.account : labels.signIn} className={cn('flex h-[var(--control-height-xl)] items-center justify-center hover:bg-ui-state-hover', RAIL_CELL, FOCUS_RING_INSET)}>
             {user ? <Avatar size="sm" src={user.avatarSrc} name={user.name} decorative /> : <User aria-hidden className="size-[var(--icon-size-md)] text-ui-fg-muted" />}
           </IntlLink>
         )}
@@ -161,10 +161,10 @@ export type HeaderProps = {
 }
 
 /** Header: desktop original layout (kept until the shell layout is decided), 64 high. */
-export function Header({ labels, signedIn, search, onLanguage, languageMenu, helpHref = '/v2/help', className }: HeaderProps) {
+export function Header({ labels, signedIn, search, onLanguage, languageMenu, helpHref = '/help', className }: HeaderProps) {
   return (
     <header className={cn('flex h-[var(--layout-header-height)] items-center gap-[var(--space-6)] bg-ui-bg pr-[var(--space-6)]', className)}>
-      <IntlLink href="/v2" aria-label={labels.homeLink} className={cn('flex h-full w-[var(--layout-nav-rail)] shrink-0 items-center justify-center', FOCUS_RING_INSET)}>
+      <IntlLink href="/" aria-label={labels.homeLink} className={cn('flex h-full w-[var(--layout-nav-rail)] shrink-0 items-center justify-center', FOCUS_RING_INSET)}>
         <Logo type="mark" className="h-9" />
       </IntlLink>
       <div role="search" className="w-[480px] min-w-0">{search}</div>
@@ -176,7 +176,7 @@ export function Header({ labels, signedIn, search, onLanguage, languageMenu, hel
           </IntlLink>
         </Tooltip>
         {signedIn ? null : (
-          <IntlLink href="/v2/login" className={cn(buttonVariants({ variant: 'secondary', size: 'sm' }), 'hover:bg-ui-state-hover active:bg-ui-state-pressed')}>
+          <IntlLink href="/login" className={cn(buttonVariants({ variant: 'secondary', size: 'sm' }), 'hover:bg-ui-state-hover active:bg-ui-state-pressed')}>
             {labels.signIn}
           </IntlLink>
         )}
@@ -269,7 +269,7 @@ export function Drawer({ open, onClose, labels, user, onQuickPlan, language, lin
   const legalId = useId()
   const [legalOpen, setLegalOpen] = useState(false)
   if (!open) return null
-  const L = { notifications: '/v2/notifications', settings: '/v2/settings', help: '/v2/help', legal: '/v2/legal', profile: '/v2/profile', signIn: '/v2/login', ...links }
+  const L = { notifications: '/notifications', settings: '/settings', help: '/help', legal: '/legal', profile: '/profile', signIn: '/login', ...links }
   const row = cn('flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left type-body-base text-ui-fg hover:bg-ui-state-hover', FOCUS_RING_INSET)
   return (
     <>
@@ -338,7 +338,7 @@ export type AccountMenuProps = { labels: ShellLabels; user: ShellUser; onSignOut
 
 /** Account menu: menu button on the rail avatar; signed in (profile, Settings, Sign out) or signed out (Sign in, Settings). */
 export function AccountMenu({ labels, user, onSignOut, links = {}, showHelp = false }: AccountMenuProps) {
-  const L = { profile: '/v2/profile', settings: '/v2/settings', help: '/v2/help', signIn: '/v2/login', ...links }
+  const L = { profile: '/profile', settings: '/settings', help: '/help', signIn: '/login', ...links }
   const go = (href: string) => () => window.location.assign(href)
   return (
     <DropdownMenu
@@ -386,7 +386,7 @@ export function UniversalSearch({ children, className }: UniversalSearchProps) {
 }
 
 /** A search pill that opens the full search (Top app bar Home and Map). */
-export function SearchPill({ label, href = '/v2/search', className }: { label: string; href?: string; className?: string }) {
+export function SearchPill({ label, href = '/search', className }: { label: string; href?: string; className?: string }) {
   return (
     <IntlLink href={href} className={cn('flex h-[var(--control-height-md)] items-center gap-[var(--space-2)] rounded-full border border-ui-border-strong bg-ui-bg-raised px-[var(--space-4)] type-body-base text-ui-fg-placeholder focus-visible:shadow-focus-ring focus-visible:outline-none', className)}>
       <Search aria-hidden className="size-[var(--icon-size-sm)] shrink-0" />
