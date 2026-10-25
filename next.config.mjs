@@ -3,6 +3,17 @@ import { withSentryConfig } from '@sentry/nextjs';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
+// API routes whose answer is the same for every visitor (no session, no cookie); later entries win.
+const PUBLIC_API = [
+  '/api/home/:path+',
+  '/api/explore/collections/:slug',
+  '/api/explore/k-beauty/perfume-flagships',
+  '/api/explore/k-culture/heritage/:region',
+  '/api/explore/k-drama/filming-spots/:workId',
+  '/api/explore/k-food/michelin-noodles',
+  '/api/explore/k-pop/footsteps/:teamId',
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Files the middleware does not see (_next, public files) get the same baseline headers; pages and
@@ -18,6 +29,18 @@ const nextConfig = {
           { key: 'X-Frame-Options', value: 'DENY' },
         ],
       },
+      // Static files in public/ have no hash in their name: a day in caches, refreshed in the background.
+      ...['/images/:path*', '/mock-images/:path*', '/brand/:path*'].map((source) => ({
+        source,
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' }],
+      })),
+      // API: never cached by default (account, saved, plans, notifications, anything with a session).
+      { source: '/api/:path*', headers: [{ key: 'Cache-Control', value: 'private, no-store' }] },
+      // Public data that reads no session or cookie: 5 minutes at the CDN, then refreshed in the background.
+      ...PUBLIC_API.map((source) => ({
+        source,
+        headers: [{ key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=600' }],
+      })),
     ];
   },
   images: {
