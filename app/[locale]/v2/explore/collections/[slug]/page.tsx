@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import { fetchCollectionDetail } from '@/lib/collections'
 import { CollectionScreen } from '@/components/v2/screens/A2Explore'
 import { collectionMetadata } from '@/app/[locale]/_seo/page-metadata'
 
@@ -8,6 +10,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return collectionMetadata(params.slug, params.locale)
 }
 
-export default function Page({ params }: Props) {
+export default async function Page({ params }: Props) {
+  if (!(await fetchCollectionDetail(params.slug, params.locale))) notFound()
   return <CollectionScreen slug={params.slug} />
 }

@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { bffFetch } from '@/lib/bff'
 import { withDbPoiIds } from '@/lib/db-poi-mapping'
 import { withSafePartnerUrls } from '@/lib/partner-url'
+import { SECTIONS_BY_CATEGORY } from '@/lib/explore-sections'
 
 export interface ExplorePoi {
   poi_id: string
@@ -134,24 +135,6 @@ interface BffPlace {
 // Section ids per category kept in sync with app/[locale]/explore/_components/ExplorePage.tsx
 // CATEGORIES[].sections so headers/labels render correctly once items exist.
 // Category slugs coincide with BFF domain values (k-pop | k-drama | k-beauty | k-culture).
-const SECTIONS_BY_CATEGORY: Record<string, string[]> = {
-  // 'agencies' renamed 'agencyHq' + 'memberFootsteps' added — CT_KP_EXT (DEC-60).
-  // birthdayCafe intentionally excluded: it's conditionally rendered (see GET), not
-  // a static per-category section like the rest.
-  'k-pop': ['concerts', 'tours', 'agencyHq', 'merchandise', 'memberFootsteps'],
-  'k-drama': ['filming', 'tours', 'historical', 'ostCafes'],
-  // DEC-61 — restructured from skincare/makeup/spa/salon to the content plan's
-  // real 4 rows (쇼핑·편집샵/브랜드플래그십/헤어·살롱/약국·더마). Existing real seed
-  // items redistributed into whichever new row fits (see SEED_SECTIONS comment).
-  'k-beauty': ['shopping', 'brandFlagship', 'salon', 'derma'],
-  // DEC-61 — new 5th section. "기타" (509곳) explicitly skipped: the content plan
-  // itself flags it as "로우로 못 쓰인다" (not usable as a row), not a screen gap.
-  'k-food': ['noodles', 'soups', 'hanjeongsik'],
-  // DEC-61 — restructured from traditional/food/festivals/crafts to the content
-  // plan's real 4 rows (역사·유적/자연·경관/사찰·종교/박물관·미술관). Real items
-  // redistributed, none dropped — see SEED_SECTIONS comment.
-  'k-culture': ['heritage', 'nature', 'temple', 'museum'],
-}
 
 /**
  * Facet config per category — the query param(s) hub chips drive. Most sections have

@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation'
+import { isNumericId } from '@/lib/itinerary'
 import { PlanScreen } from '@/components/v2/screens/A1Plan'
 import { JsonLd } from '@/components/v2/JsonLd'
 import { planMetadata } from '@/app/[locale]/_seo/page-metadata'
@@ -8,6 +10,8 @@ export function generateMetadata({ params }: { params: { locale: string; id: str
 }
 
 export default async function Page({ params }: { params: { locale: string; id: string } }) {
+  // Plan addresses are numbers; anything else is Page not found (a private plan still opens for its owner).
+  if (!isNumericId(params.id)) notFound()
   const plan = await fetchPublicPlan(params.id)
   return (
     <>
