@@ -612,7 +612,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           heights={planSheet ? { full: '70dvh' } : undefined}
           header={selectedId || planSheet ? undefined : <div className="pt-[var(--space-4)]">{switcher}</div>}
           aboveEnd={planSheet ? undefined : locate.control}
-          above={order.length && !planSheet ? <PlanPill label={`${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })}`} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /> : undefined}
+          above={order.length && !planSheet ? <PlanPill label={t('CD0686', { count: order.length })} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /> : undefined}
           className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0"
         >
           {planSheet ? <div className="-mx-[var(--space-4)] -mb-[var(--space-6)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div> : content}
