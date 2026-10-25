@@ -1489,9 +1489,9 @@
     "CD1509": "Opcional",
     "CD1510": "Cancelar",
     "CD1511": "Tem menos de 14 anos? Um dos pais ou responsável precisa autorizar. Fale com support@b4korea.com.",
-    "CD1512": "Mostrar 128 resultados",
+    "CD1512": "{count, plural, one {Mostrar # resultado} other {Mostrar # resultados}}",
     "CD1513": "Filtros ({count})",
-    "CD1514": "Mostrar 128",
+    "CD1514": "Mostrar {count}",
     "CD1515": "Editar perfil",
     "CD1517": "Notívago",
     "CD1518": "Fã de K-Drama",
@@ -1723,6 +1723,9 @@
     "CD1809": "Gangneung",
     "CD1810": "Sokcho",
     "CD1811": "Yeosu",
-    "CD1812": "Nenhum lugar em alta ainda"
+    "CD1812": "Nenhum lugar em alta ainda",
+    "CD1813": "Itaewon",
+    "CD1814": "Todos os filtros",
+    "CD1815": "Todos os filtros · {count}"
   }
 }
