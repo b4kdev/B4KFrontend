@@ -46,7 +46,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
           type="button"
           onClick={onClear}
           aria-label={clearLabel}
-          className="relative inline-flex size-[var(--icon-size-sm)] shrink-0 items-center justify-center text-ui-fg-muted hover:text-ui-fg before:absolute before:-inset-[14px] before:content-['']"
+          className="relative inline-flex size-[var(--icon-size-sm)] shrink-0 items-center justify-center text-ui-fg-muted hover:text-ui-fg before:absolute before:-inset-[var(--space-3-5)] before:content-['']"
         >
           <X aria-hidden className="size-full" />
         </button>

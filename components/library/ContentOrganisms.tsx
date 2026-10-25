@@ -223,7 +223,7 @@ export function NowSeoulCard({ label, eyebrow, time, date, temperature, conditio
       {tip ? (
         <div className="flex flex-col gap-[var(--space-4)]">
           <span aria-hidden className="h-px bg-ui-border-subtle" />
-          <p className="flex gap-[var(--space-2)] type-body-base"><Sparkles aria-hidden className="mt-[2px] size-[var(--icon-size-sm)] shrink-0" />{tip}</p>
+          <p className="flex gap-[var(--space-2)] type-body-base"><Sparkles aria-hidden className="mt-[var(--space-0-5)] size-[var(--icon-size-sm)] shrink-0" />{tip}</p>
         </div>
       ) : null}
     </section>

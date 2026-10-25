@@ -106,7 +106,7 @@ export function ComboboxOption({ id, type, title, match, secondary, icon, active
           title={removeLabel}
           onMouseDown={(e) => e.preventDefault()}
           onClick={onRemove}
-          className="relative ml-[var(--space-3)] inline-flex size-[var(--icon-size-sm)] shrink-0 cursor-pointer items-center justify-center text-ui-fg-muted hover:text-ui-fg before:absolute before:-inset-[14px] before:content-['']"
+          className="relative ml-[var(--space-3)] inline-flex size-[var(--icon-size-sm)] shrink-0 cursor-pointer items-center justify-center text-ui-fg-muted hover:text-ui-fg before:absolute before:-inset-[var(--space-3-5)] before:content-['']"
         >
           <X className="size-full" />
         </span>

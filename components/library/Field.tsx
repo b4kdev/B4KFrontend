@@ -63,7 +63,7 @@ export function FieldMessage({ id, help, error, disabled, stacked }: FieldMessag
   if (error) {
     return (
       <p id={id} className="flex items-start gap-[var(--space-1-5)] type-body-caption text-ui-danger">
-        <CircleAlert aria-hidden className="mt-[2px] size-[var(--icon-size-xs)] shrink-0" />
+        <CircleAlert aria-hidden className="mt-[var(--space-0-5)] size-[var(--icon-size-xs)] shrink-0" />
         {error}
       </p>
     )

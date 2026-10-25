@@ -234,7 +234,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
                 <ul>
                   <PlanStopRow name={s.name} thumbnail={s.imageSrc} number={stops.filter((x) => x.day === s.day).indexOf(s) + 1} day={s.day} duration={s.duration} durationLabel={s.durationLabel} onDuration={onDuration ? () => onDuration(s.id) : undefined} durationMenu={durationMenu?.(s.id)} onRemove={() => onRemove(s.id)} removeLabel={labels.remove(s.name)} reorderLabel={labels.reorder(s.name)} stopId={s.id} handleProps={handleProps(s)} dragging={dragId === s.id} onSelect={onSelect ? () => onSelect(s.id) : undefined} />
                 </ul>
-                {s.leg && i < shown.length - 1 ? <div className="ml-[56px]"><TransportMode mode="estimate" modeLabel={labels.about} time={s.leg} /></div> : null}
+                {s.leg && i < shown.length - 1 ? <div className="ml-[calc(var(--space-12)+var(--space-2))]"><TransportMode mode="estimate" modeLabel={labels.about} time={s.leg} /></div> : null}
               </li>
             ))}
           </ol>
@@ -271,7 +271,7 @@ export type LeftPanelProps = {
 /** Left panel: desktop panel next to the rail; complementary landmark. */
 export function LeftPanel({ type, label, children, cart, cartOpen, topClear, className }: LeftPanelProps) {
   return (
-    <aside aria-label={label} className={cn('relative flex h-full shrink-0 flex-col bg-ui-bg', type === 'index' ? 'w-[var(--layout-left-panel-index)]' : 'w-[var(--layout-left-panel)]', topClear && 'pt-[72px]', className)}>
+    <aside aria-label={label} className={cn('relative flex h-full shrink-0 flex-col bg-ui-bg', type === 'index' ? 'w-[var(--layout-left-panel-index)]' : 'w-[var(--layout-left-panel)]', topClear && 'pt-[calc(var(--space-3)+var(--control-height-xl)+var(--space-3))]', className)}>
       <div className={cn('flex min-h-0 flex-1 flex-col overflow-y-auto', cartOpen && 'invisible')}>{children}</div>
       {type === 'map' && cart ? <div className={cn(cartOpen ? 'absolute inset-0 z-10' : 'shrink-0')}>{cart}</div> : null}
     </aside>
