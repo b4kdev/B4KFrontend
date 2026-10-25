@@ -4,6 +4,7 @@ import { bffFetch } from '@/lib/bff'
 import { withDbPoiIds } from '@/lib/db-poi-mapping'
 import { withSafePartnerUrls } from '@/lib/partner-url'
 import { SECTIONS_BY_CATEGORY } from '@/lib/explore-sections'
+import { resolveMichelinNoodles, type MichelinNoodlePoi } from '@/lib/kfood-michelin-noodles'
 
 export interface ExplorePoi {
   poi_id: string
@@ -634,6 +635,19 @@ export async function GET(
       items: (SEED_SECTIONS[params.category]?.[id] ?? []).filter(dropUnverified),
     })),
     packages: [],
+  }
+
+  // K-Food Noodles opens the Michelin noodles page: when its seed places are not verified yet, the
+  // row shows that page's places (same source), so the category links its special page.
+  if (params.category === 'k-food') {
+    const noodles = base.sections.find(s => s.id === 'noodles')
+    if (noodles && !noodles.items.length) {
+      const { items: picks } = await resolveMichelinNoodles(includeUnverified).catch(() => ({ items: [] as MichelinNoodlePoi[] }))
+      noodles.items = picks.filter(dropUnverified).slice(0, 10).map(p => ({
+        poi_id: p.poi_id, name_ko: p.name_ko, name_en: p.name_en, primary_image_url: p.primary_image_url,
+        display_region: p.display_region, quality_score: 0, is_trending: false, coords_lat: p.coords_lat, coords_lng: p.coords_lng,
+      }))
+    }
   }
 
   const facets = FACETS_BY_CATEGORY[params.category] ?? []
