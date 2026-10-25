@@ -228,13 +228,15 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   }, [detail?.poi_id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const order = draft.plan.stops
-  // Phones: once the plan has stops the browse sheet drops to peek, the Plan pill 12 above it; dragging
-  // the sheet up brings the list back. A place open in the sheet stays until it is closed.
+  // Phones: when the map opens with a plan draft, the browse sheet starts at peek with the Plan pill
+  // 12 above it; dragging it up or tapping Saved brings the list back. Stops added here keep the sheet
+  // where it is (adding from the Saved hub keeps it open). A place open in the sheet stays until closed.
   const hasStops = order.length > 0
   const dropped = useRef(false)
+  const addedHere = useRef(false)
   useEffect(() => {
     if (!hasStops) dropped.current = false
-    else if (phone && !selectedId && !dropped.current) {
+    else if (phone && !selectedId && !dropped.current && !addedHere.current) {
       dropped.current = true
       setSnap('peek')
     }
@@ -273,6 +275,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         return
       }
     }
+    addedHere.current = true
     const day = draft.add(poi, target)
     if (day === null) toast({ type: 'warning', message: k('map.plan.maxStopsToast', { max: MAX_STOPS }) })
     else toast({ type: 'success', message: GAP.addedToDay(day), action: { label: t('CD1428'), onClick: () => latestDraft.current.remove(poi.poi_id) } })
@@ -356,7 +359,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   // ── Panel content ──────────────────────────────────────────────────────────
   const switcher = (
-    <Tabs label={t('CD0815')} width="equal" className={phone ? undefined : 'px-[var(--space-4)]'} value={mode} onValueChange={(v) => { setMode(v as 'nearby' | 'saved'); setSelectedId(null) }} tabs={[{ id: 'nearby', label: t('CD1576') }, { id: 'saved', label: k('saved.title') }]} />
+    <Tabs label={t('CD0815')} width="equal" className={phone ? undefined : 'px-[var(--space-4)]'} value={mode} onValueChange={(v) => { setMode(v as 'nearby' | 'saved'); setSelectedId(null); if (v === 'saved' && phone && snap === 'peek') setSnap('mid') }} tabs={[{ id: 'nearby', label: t('CD1576') }, { id: 'saved', label: k('saved.title') }]} />
   )
   const placeView = detail ? (
     <div className={cn('flex flex-col gap-[var(--space-2)] pb-[var(--space-4)]', phone && '-mx-[var(--space-4)] -mt-[var(--space-2)]')}>

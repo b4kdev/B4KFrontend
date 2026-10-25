@@ -199,7 +199,8 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
         className={cn(SHEET, 'outline-none', !modal && 'z-40 transition-[height] duration-medium2 ease-emphasized-decelerate motion-reduce:transition-none', className)}
         style={!modal ? { height: drag !== null ? `calc(${heights?.[snap] ?? SNAP_VH[snap]} + ${drag}px)` : heights?.[snap] ?? SNAP_VH[snap], maxHeight: '85dvh' } : undefined}
       >
-        {!modal && above ? <div className="absolute bottom-[calc(100%+var(--space-3))] left-[var(--space-4)]">{above}</div> : null}
+        {/* The control above the sheet (Plan pill) is the toast floor while it shows: toasts sit 12 above it. */}
+        {!modal && above ? <div data-toast-floor className="absolute bottom-[calc(100%+var(--space-3))] left-[var(--space-4)]">{above}</div> : null}
         {!modal && aboveEnd ? <div className="absolute bottom-[calc(100%+var(--space-3))] right-[var(--space-4)]">{aboveEnd}</div> : null}
         <div
           className="flex shrink-0 touch-none justify-center py-[var(--space-2)]"
