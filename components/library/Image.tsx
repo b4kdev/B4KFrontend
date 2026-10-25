@@ -1,7 +1,7 @@
 'use client'
 
 import NextImage from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import { createContext, useEffect, useRef, useState } from 'react'
 import * as Sentry from '@sentry/nextjs'
 import { cn } from '@/lib/cn'
 import { Skeleton } from './Progress'
@@ -15,6 +15,10 @@ import { PlaceTypeIcon } from './Content'
 
 const RATIO = { '1:1': 'aspect-square', '4:3': 'aspect-[4/3]', '16:9': 'aspect-video', '12:5': 'aspect-[12/5]' } as const
 
+/** The type label under the icon of a missing photo (Show label), given once by the app shell:
+ * the Place label until places carry their type. */
+export const ImageMissingLabel = createContext('')
+
 export type ImageProps = {
   /** Figma Ratio. */
   ratio?: keyof typeof RATIO
@@ -24,10 +28,12 @@ export type ImageProps = {
   /** next/image sizes hint, e.g. "(min-width: 1024px) 33vw, 100vw". */
   sizes?: string
   priority?: boolean
+  /** Figma Show label: the type label under the icon when the photo is missing (cards, large tiles). */
+  missingLabel?: string
   className?: string
 }
 
-export function Image({ ratio = '1:1', src, alt, sizes = '100vw', priority, className }: ImageProps) {
+export function Image({ ratio = '1:1', src, alt, sizes = '100vw', priority, missingLabel, className }: ImageProps) {
   const [state, setState] = useState<'loading' | 'loaded' | 'missing'>(src ? 'loading' : 'missing')
   const [attempt, setAttempt] = useState(0)
   // A new photo starts over (not on mount: a cached photo can load before this runs).
@@ -63,8 +69,9 @@ export function Image({ ratio = '1:1', src, alt, sizes = '100vw', priority, clas
       ) : null}
       {state === 'loading' ? <Skeleton className="absolute inset-0" /> : null}
       {state === 'missing' ? (
-        <span className="absolute inset-0 flex items-center justify-center text-ui-fg-muted">
+        <span className="absolute inset-0 flex flex-col items-center justify-center gap-[var(--space-2)] text-ui-fg-muted">
           <PlaceTypeIcon className="size-[var(--icon-size-xl)]" />
+          {missingLabel ? <span aria-hidden className="type-eyebrow-category uppercase">{missingLabel}</span> : null}
         </span>
       ) : null}
     </span>

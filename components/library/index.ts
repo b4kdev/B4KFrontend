@@ -12,7 +12,7 @@ export { CalendarDay, ChatBubble, CreditLine, ForecastDay, ImageAction, LegalLin
 export { Fab, type FabProps } from './Fab'
 export { FieldMessage, Label, type FieldMessageProps, type LabelProps } from './Field'
 export { IconButton, iconButtonVariants, type IconButtonProps } from './IconButton'
-export { Image, type ImageProps } from './Image'
+export { Image, ImageMissingLabel, type ImageProps } from './Image'
 export { Link, type LinkProps } from './Link'
 export { ClusterBubble, MapControl, MapPin, type ClusterBubbleProps, type MapControlProps, type MapPinProps } from './Map'
 export { ComboboxOption, MenuItem, type ComboboxOptionProps, type MenuItemProps } from './Menu'

@@ -19,6 +19,7 @@ import {
   NavigationBar,
   NavigationRail,
   SearchPill,
+  ImageMissingLabel,
   SkipLink,
   Toast,
   type Destination,
@@ -204,6 +205,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
 
   return (
     <Ctx.Provider value={ctx}>
+      <ImageMissingLabel.Provider value={t('CD1680')}>
       <SkipLink>{t('CD1377')}</SkipLink>
       <div className="b4k-v2 flex min-h-dvh flex-col bg-ui-bg text-ui-fg type-body-base lg:h-dvh lg:overflow-hidden">
         <Header
@@ -278,6 +280,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
         ) : null}
         </div>
       </div>
+      </ImageMissingLabel.Provider>
     </Ctx.Provider>
   )
 }

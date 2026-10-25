@@ -1,12 +1,12 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { useContext, type ReactNode } from 'react'
 import { Bookmark, ExternalLink, MapPin, Plus, Route, TrendingUp } from 'lucide-react'
 import { Link as IntlLink } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
 import { Badge } from './Badge'
 import { IconButton } from './IconButton'
-import { Image } from './Image'
+import { Image, ImageMissingLabel } from './Image'
 import { SaveLikeOverlay } from './ContentMolecules'
 
 // Card (Figma Organisms › Card). Filled and square, no shadow; the text panel on
@@ -86,13 +86,14 @@ function MetaRow({ meta, trending, external, className }: { meta: ReactNode; tre
 
 export function Card(props: CardProps) {
   const { href, title, external, className } = props
+  const missingLabel = useContext(ImageMissingLabel)
   switch (props.type) {
     case 'place':
       return (
         <article className={cn(SHELL, 'flex-col', className)}>
           <div className="relative">
             {/* A place photo is named after the place unless the caller gives its own description. */}
-            <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? title} sizes="(min-width: 1024px) 280px, 50vw" />
+            <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? title} sizes="(min-width: 1024px) 280px, 50vw" missingLabel={missingLabel} />
             <div className="absolute left-[var(--space-2)] top-[var(--space-2)] z-10 flex gap-[var(--gap-xs)]">
               {props.dDay ? <Badge variant="strong">{props.dDay}</Badge> : null}
               {props.sponsored ? <Badge variant="on-image">{props.sponsored}</Badge> : null}
