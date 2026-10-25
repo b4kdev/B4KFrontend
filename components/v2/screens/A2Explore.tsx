@@ -324,7 +324,6 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const rowLabel = useRowLabel()
   const act = usePlaceActions({ resume: true })
   const planAct = usePlanActions({ resume: true })
-  const GAP = useGap()
   const t = useCd()
   const locale = useLocale()
   const fromHome = category === 'all'
