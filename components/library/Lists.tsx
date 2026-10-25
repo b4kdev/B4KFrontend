@@ -1,7 +1,7 @@
 'use client'
 
 import { useId, useState, type ReactNode } from 'react'
-import { ChevronDown, ChevronRight, Trophy, TrendingDown, TrendingUp } from 'lucide-react'
+import { ChevronDown, ChevronRight, TrendingDown, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Avatar } from './Avatar'
 import { CountBadge } from './Badge'
@@ -150,26 +150,27 @@ export type LeaderboardRowProps = {
   name: string
   /** Figma Detail, e.g. "12 plans · 4 badges". */
   detail?: string
-  /** Figma Score, formatted. */
-  score: string
+  /** Figma Score, formatted; left out on Popular planners (no score, PD-56 Q5). */
+  score?: string
   avatarSrc?: string | null
   /** Figma Show trend: up / down with labels; left out when flat. */
   trend?: { direction: 'up' | 'down'; label: string }
   /** Figma Viewer=You: the person's own row, title "You" from the messages. */
   you?: string
-  /** Trophy label for the top 3, e.g. "Rank 1". */
+  /** Accessible name of the rank, e.g. "Rank 1". */
   rankLabel: string
   href?: string
   renderLink?: (props: { href: string; className: string; children: ReactNode }) => ReactNode
 }
 
-/** Leaderboard row: rank (trophy for top 3), avatar, name and detail, trend, score. */
+/** Leaderboard row: rank as a plain muted number (no trophies, PD-56 Q5), avatar, name and detail,
+ * optional trend and score; 1px divider inside the row like List item. */
 export function LeaderboardRow({ rank, name, detail, score, avatarSrc, trend, you, rankLabel, href, renderLink }: LeaderboardRowProps) {
   const TrendIcon = trend?.direction === 'down' ? TrendingDown : TrendingUp
   const body = (
     <>
       <span className="inline-flex w-[var(--space-6)] shrink-0 justify-center text-ui-fg">
-        {rank <= 3 ? <Trophy role="img" aria-label={rankLabel} className="size-[var(--icon-size-lg)]" /> : <span aria-label={rankLabel} className="type-body-base text-ui-fg-muted">{rank}</span>}
+        <span aria-label={rankLabel} className="type-body-base text-ui-fg-muted">{rank}</span>
       </span>
       <Avatar size="md" src={avatarSrc} name={name} decorative />
       <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-0-5)]">
@@ -177,13 +178,13 @@ export function LeaderboardRow({ rank, name, detail, score, avatarSrc, trend, yo
         {detail ? <span className="truncate type-body-caption text-ui-fg-muted">{detail}</span> : null}
       </span>
       {trend ? <TrendIcon role="img" aria-label={trend.label} className="size-[var(--icon-size-lg)] shrink-0 text-ui-fg-muted" /> : null}
-      <span className="shrink-0 type-body-base tabular-nums text-ui-fg">{score}</span>
+      {score ? <span className="shrink-0 type-body-base tabular-nums text-ui-fg">{score}</span> : null}
     </>
   )
   // 64 high: Avatar md 40 + py 12.
   const cls = cn(ROW, href && 'hover:bg-ui-state-hover', href && FOCUS_RING_INSET)
   return (
-    <li className={cn('border-b border-ui-border', you && 'bg-ui-bg-raised')}>
+    <li className={cn(ROW_DIVIDER, you && 'bg-ui-bg-raised')}>
       {href && renderLink ? renderLink({ href, className: cls, children: body }) : <div className={cls}>{body}</div>}
     </li>
   )

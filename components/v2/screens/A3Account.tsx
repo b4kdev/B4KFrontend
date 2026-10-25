@@ -335,12 +335,12 @@ function PlannerRows({ data, limit }: { data: LeaderboardData; limit?: number })
           name={e.user.name}
           avatarSrc={e.user.avatar_url}
           detail={line(e)}
-          score=""
+         
           href={`/profile/${e.user.id}`}
           renderLink={({ href, className, children }) => <IntlLink href={href} className={className}>{children}</IntlLink>}
         />
       ))}
-      {user && own ? <LeaderboardRow rank={own.rank} rankLabel={k('leaderboard.yourRank.ariaLabel', { rank: own.rank })} name={profile.data?.name ?? ''} avatarSrc={profile.data?.avatar_url} you={t('CD1592')} detail={line(own)} score="" /> : null}
+      {user && own ? <LeaderboardRow rank={own.rank} rankLabel={k('leaderboard.yourRank.ariaLabel', { rank: own.rank })} name={profile.data?.name ?? ''} avatarSrc={profile.data?.avatar_url} you={t('CD1592')} detail={line(own)} /> : null}
     </ol>
   )
 }
