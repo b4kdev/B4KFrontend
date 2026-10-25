@@ -380,6 +380,7 @@ export function LeaderboardTab() {
   const places = useSWR<HomeTrendingPoi[]>('/api/home/trending', jsonFetch)
   const badges = useSWR<BadgesData>(user ? '/api/badges' : null, jsonFetch)
   const act = usePlaceActions({ resume: true })
+  const planAct = usePlanActions({ resume: true })
   const placeName = (p: HomeTrendingPoi) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
   const range = weekRange(locale)
   const arrows = { previous: t('CD0390'), next: t('CD0389') }
@@ -398,7 +399,7 @@ export function LeaderboardTab() {
           arrowLabels={arrows}
           title={t('CD1648')}
           seeAll={{ href: '/explore/popular-plans', label: t('CD1309') }}
-          cards={plans.data.map((p) => <Card key={p.id} type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={t('CD0473', { n: p.stop_count })} />)}
+          cards={plans.data.map((p) => <Card key={p.id} type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={t('CD0473', { n: p.stop_count })} save={planAct(String(p.id), p.title)} />)}
         />
       ) : null}
       {places.data?.length ? (
