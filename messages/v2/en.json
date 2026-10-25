@@ -1772,6 +1772,8 @@
     "CD1801": "Couldn't delete the list. Try again.",
     "CD1802": "Your own progress",
     "CD1803": "Earned when others save and like your plans",
-    "CD1804": "{total} badges · sign in to start earning"
+    "CD1804": "{total} badges · sign in to start earning",
+    "CD1805": "Locate me",
+    "CD1806": "Location is off. Allow it in your browser settings."
   }
 }
