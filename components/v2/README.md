@@ -56,7 +56,7 @@ Addresses below are the live ones, after `/[locale]`.
 ### A2 Explore and Home
 | SCR | Screen | Address | Data |
 |---|---|---|---|
-| 001, 036 | Home (+ Interests card) | `/` | `/api/home/carousel`, `/api/home/trending`, `/api/home/events` |
+| 001, 036 | Home (+ Interests card) | `/` | `/api/home/trending`, `/api/home/events`; hero texts from the deck, slide photos from the theme pages' data |
 | 002 | Category page | `/explore/[category]` (k-pop, k-drama, k-beauty, k-culture, k-food) | `/api/explore/[category]`, collections |
 | 010 | See all | `/explore/[category]/[row]` | same |
 | 014 | Collection | `/explore/collections/[slug]` | `/api/explore/collections/[slug]` |
