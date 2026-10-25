@@ -4,6 +4,7 @@ import { useState, type RefObject } from 'react'
 import useSWR from 'swr'
 import { Locate, LocateFixed } from 'lucide-react'
 import { MapControl, Spinner, Tooltip } from '@/components/library'
+import { LOCATE_ME } from '@/lib/features'
 import { useCd } from '../cd'
 import { useV2Shell } from '../V2Shell'
 import type { V2MapHandle } from './V2MapCanvas'
@@ -14,8 +15,8 @@ export type LatLng = { lat: number; lng: number }
  * Locate me (Google Maps pattern): the browser asks for the location on the first tap; while it
  * answers the control shows a spinner; then the map centers on the visitor with the location dot
  * and the control shows the filled locate icon. Denied: an info toast says how to turn it on.
- * Shown only to visitors whose network location is in Korea (the host's IP country); where no
- * host reports a country (local runs) it shows. Returns the control (null when hidden) and the
+ * Shown only with the Locate me switch on, and then only to visitors whose network location is in
+ * Korea (the host's IP country); where no host reports a country (local runs) it shows. Returns the control (null when hidden) and the
  * location for the map's dot.
  */
 export function useLocateMe(map: RefObject<V2MapHandle | null>, { phone = false }: { phone?: boolean } = {}) {
@@ -23,7 +24,7 @@ export function useLocateMe(map: RefObject<V2MapHandle | null>, { phone = false 
   const { toast, toastHeight } = useV2Shell()
   const [state, setState] = useState<'idle' | 'locating' | 'on'>('idle')
   const [location, setLocation] = useState<LatLng | null>(null)
-  const geo = useSWR<{ country: string | null }>('/api/geo', (u: string) => fetch(u).then((r) => r.json()), { revalidateOnFocus: false })
+  const geo = useSWR<{ country: string | null }>(LOCATE_ME ? '/api/geo' : null, (u: string) => fetch(u).then((r) => r.json()), { revalidateOnFocus: false })
   const inKorea = !!geo.data && (geo.data.country === null || geo.data.country === 'KR')
 
   const locate = () => {
