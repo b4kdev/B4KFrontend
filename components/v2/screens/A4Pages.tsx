@@ -45,6 +45,13 @@ const jsonFetch = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : Pro
 
 type SearchResult = { places: SearchPoi[]; plans: SearchPlan[]; explore: SearchExplore[] }
 
+// Search districts by region: [district, region, text].
+const DISTRICTS = [
+  ['Gangnam', 'Seoul', 'CD1257'], ['Hongdae', 'Seoul', 'CD1259'], ['Myeongdong', 'Seoul', 'CD1261'],
+  ['Haeundae', 'Busan', 'CD1258'], ['Seomyeon', 'Busan', 'CD1263'],
+  ['Jeju City', 'Jeju', 'CD1260'], ['Seogwipo', 'Jeju', 'CD1262'],
+] as const
+
 export function SearchScreen() {
   const t = useCd()
   const locale = useLocale()
@@ -75,9 +82,15 @@ export function SearchScreen() {
   const groups: FilterGroup[] = [
     { id: 'show', label: t('CD1271'), options: [['all', 'CD1267'], ['places', 'CD1269'], ['plans', 'CD1270'], ['explore', 'CD1268']].map(([id, cd]) => ({ id, label: t(cd) })) },
     { id: 'region', label: t('CD1254'), options: [['Seoul', 'CD1266'], ['Busan', 'CD1264'], ['Jeju', 'CD1265']].map(([id, cd]) => ({ id, label: t(cd) })) },
-    { id: 'district', label: t('CD1255'), options: [['Gangnam', 'CD1257'], ['Hongdae', 'CD1259'], ['Myeongdong', 'CD1261'], ['Haeundae', 'CD1258'], ['Seomyeon', 'CD1263'], ['Jeju City', 'CD1260'], ['Seogwipo', 'CD1262']].map(([id, cd]) => ({ id, label: t(cd) })) },
-    { id: 'theme', label: t('CD1283'), multi: true, options: [['kpop', 'CD1279'], ['kdrama', 'CD1278'], ['kbeauty', 'CD1277'], ['food', 'CD1275'], ['history', 'CD1276'], ['nature', 'CD1280'], ['shopping', 'CD1282'], ['nightlife', 'CD1281']].map(([id, cd]) => ({ id, label: t(cd) })) },
+    // Districts of the picked region only, as drawn; every district while no region is picked.
+    { id: 'district', label: t('CD1255'), options: DISTRICTS.filter(([, region]) => !filters.region?.[0] || region === filters.region[0]).map(([id, , cd]) => ({ id, label: t(cd) })) },
+    { id: 'theme', label: t('CD1283'), multi: true, options: [['kpop', 'CD1279'], ['kdrama', 'CD1278'], ['kbeauty', 'CD1277'], ['food', 'CD1275'], ['nature', 'CD1280'], ['shopping', 'CD1282'], ['history', 'CD1276'], ['nightlife', 'CD1281']].map(([id, cd]) => ({ id, label: t(cd) })) },
   ]
+  // A picked district leaves when its region is no longer picked.
+  const pickFilters = (v: Record<string, string[]>) => {
+    const region = v.region?.[0]
+    setFilters({ ...v, district: (v.district ?? []).filter((d) => !region || DISTRICTS.some(([id, r]) => id === d && r === region)) })
+  }
   const sortCfg = { label: t('CD1272'), options: [{ id: 'relevance', label: t('CD1274') }, { id: 'popularity', label: t('CD1273') }], value: sort, onValueChange: setSort }
   // Filters set beyond the defaults (Show All), for the phone All filters chip.
   const active = Object.entries(filters).reduce((n, [g, v]) => n + (g === 'show' ? (v[0] && v[0] !== 'all' ? 1 : 0) : v.length), 0)
@@ -211,7 +224,7 @@ export function SearchScreen() {
         </main>
         {/* Figma: Search filters is the whole sheet (bg elevated, its own padding) with a Close in its header. */}
         <BottomSheet open={sheet} onClose={() => setSheet(false)} label={t('CD1284')} flush className="bg-ui-bg-elevated">
-          <SearchFilters viewport="mobile" groups={groups} value={filters} onValueChange={setFilters} sort={sortCfg} labels={{ title: filtersTitle, clearAll: t('CD1248'), showResults: t('CD1251'), close: t('CD0082') }} onShowResults={() => setSheet(false)} onClose={() => setSheet(false)} />
+          <SearchFilters viewport="mobile" groups={groups} value={filters} onValueChange={pickFilters} sort={sortCfg} labels={{ title: filtersTitle, clearAll: t('CD1248'), showResults: t('CD1251'), close: t('CD0082') }} onShowResults={() => setSheet(false)} onClose={() => setSheet(false)} />
         </BottomSheet>
       </>
     )
@@ -220,7 +233,7 @@ export function SearchScreen() {
     <div className="flex min-h-0 flex-1">
       {/* Figma: the filters sit 16 inside the panel. */}
       <LeftPanel type="filters" label={t('CD1284')} className="p-[var(--space-4)]">
-        <SearchFilters viewport="desktop" groups={groups} value={filters} onValueChange={setFilters} sort={sortCfg} labels={{ title: filtersTitle, clearAll: t('CD1248') }} />
+        <SearchFilters viewport="desktop" groups={groups} value={filters} onValueChange={pickFilters} sort={sortCfg} labels={{ title: filtersTitle, clearAll: t('CD1248') }} />
       </LeftPanel>
       <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
         <main id="main" tabIndex={-1} className="flex flex-1 flex-col gap-[var(--space-6)] px-[var(--space-8)] py-[var(--space-6)] outline-none">
