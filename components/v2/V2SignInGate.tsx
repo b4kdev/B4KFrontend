@@ -12,7 +12,8 @@ import { useV2Shell } from './V2Shell'
 // Sign-in gate: the Sign-in card over the screen when a guest taps
 // an action that needs an account, and the action finished after the sign-in. Email sign-in runs
 // the action in place; Google and the Consent step leave the page, so the action is kept as a
-// pending action (sessionStorage, 10 minutes) and the screen finishes it when the visitor is back.
+// pending action (localStorage, 10 minutes, so a sign-up confirmed from the email in another tab
+// finds it too) and the screen finishes it when the visitor is back; the first tab to read it takes it.
 
 const post = (url: string, body: unknown) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
 
@@ -26,17 +27,19 @@ const here = () => (window.location.pathname.replace(/^\/[^/]+/, '') || '/') + w
 
 export function savePendingAction(a: PendingAction) {
   try {
-    sessionStorage.setItem(PENDING_KEY, JSON.stringify({ ...a, path: window.location.pathname, ts: Date.now() }))
+    localStorage.setItem(PENDING_KEY, JSON.stringify({ ...a, path: window.location.pathname, ts: Date.now() }))
   } catch {}
 }
 
 /** The pending action of this type for this page, removed once read; null when none or too old. */
 export function takePendingAction(type: PendingAction['type']): PendingAction | null {
   try {
-    const raw = sessionStorage.getItem(PENDING_KEY)
+    // Older pages kept it per tab (sessionStorage); read either.
+    const raw = localStorage.getItem(PENDING_KEY) ?? sessionStorage.getItem(PENDING_KEY)
     if (!raw) return null
     const p = JSON.parse(raw) as PendingAction & { path: string; ts: number }
     if (p.type !== type || p.path !== window.location.pathname) return null
+    localStorage.removeItem(PENDING_KEY)
     sessionStorage.removeItem(PENDING_KEY)
     return Date.now() - p.ts < PENDING_TTL_MS ? { type: p.type, id: p.id } : null
   } catch {
