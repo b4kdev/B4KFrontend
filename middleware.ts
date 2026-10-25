@@ -30,7 +30,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com https://www.googletagmanager.com https://*.google-analytics.com https://*.pstatic.net https://*.map.naver.com https://*.clarity.ms https://c.bing.com${devNaverHttp}`,
   "font-src 'self' data:",
-  `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.b4korea.com https://www.googletagmanager.com https://www.google.com https://*.google-analytics.com https://*.analytics.google.com https://*.clarity.ms https://c.bing.com https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://maps.apigw.ntruss.com https://*.nelo.navercorp.com${devVercel}`,
+  `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googletagmanager.com https://www.google.com https://*.google-analytics.com https://*.analytics.google.com https://*.clarity.ms https://c.bing.com https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://maps.apigw.ntruss.com https://*.nelo.navercorp.com${devVercel}`,
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "frame-src 'none'",
