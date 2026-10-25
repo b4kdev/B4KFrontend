@@ -387,7 +387,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
         <div className="flex items-center gap-[var(--space-3)] max-lg:w-full max-lg:justify-between">
           {loading ? (
             <>
-              <Skeleton shape="line" className="h-[14px] w-[72px]" />
+              <Skeleton shape="line" className="h-[var(--space-3-5)] w-[72px]" />
               <Skeleton shape="line" className="h-[var(--control-height-sm)] w-[120px] lg:w-[140px]" />
             </>
           ) : (
@@ -411,8 +411,8 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
           {Array.from({ length: 8 }, (_, i) => (
             <div key={i} className="flex flex-col gap-[var(--space-2)]">
               <Skeleton className="aspect-square w-full" />
-              <Skeleton shape="line" className="h-[16px] w-4/5" />
-              <Skeleton shape="line" className="h-[14px] w-1/2" />
+              <Skeleton shape="line" className="h-[var(--space-4)] w-4/5" />
+              <Skeleton shape="line" className="h-[var(--space-3-5)] w-1/2" />
             </div>
           ))}
         </div>

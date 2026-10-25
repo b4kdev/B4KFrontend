@@ -53,8 +53,8 @@ function CardSkeletons({ cardClassName = 'lg:w-[296px]' }: { cardClassName?: str
       {Array.from({ length: 4 }, (_, i) => (
         <div key={i} className={`flex w-[240px] shrink-0 flex-col gap-[var(--space-2)] ${cardClassName}`}>
           <Skeleton className="aspect-[4/3] w-full" />
-          <Skeleton shape="line" className="h-[14px] w-4/5" />
-          <Skeleton shape="line" className="h-[14px] w-1/2" />
+          <Skeleton shape="line" className="h-[var(--space-3-5)] w-4/5" />
+          <Skeleton shape="line" className="h-[var(--space-3-5)] w-1/2" />
         </div>
       ))}
     </div>
@@ -67,7 +67,7 @@ export function SectionSkeletons({ cardClassName }: { cardClassName?: string }) 
     <>
       {[0, 1].map((i) => (
         <div key={i} className="flex flex-col gap-[var(--space-4)] py-[var(--space-6)]">
-          <Skeleton shape="line" className="h-[20px] w-[180px]" />
+          <Skeleton shape="line" className="h-[var(--space-5)] w-[180px]" />
           <CardSkeletons cardClassName={cardClassName} />
         </div>
       ))}

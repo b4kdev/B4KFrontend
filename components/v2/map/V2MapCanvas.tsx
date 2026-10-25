@@ -62,7 +62,7 @@ const MAP_TONE: 'light' | 'dark' = 'light'
 
 // window.naver and window.navermap_authFailure are declared in components/map/NaverMapCanvas.tsx.
 
-const HIT = 'width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer'
+const HIT = 'width:var(--target-touch-min);height:var(--target-touch-min);display:flex;align-items:center;justify-content:center;cursor:pointer'
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 // Remote photos go through the Next image proxy: the page only loads images from its own origin.
 // Pin photos through the image optimizer at the pin's file size (56 selected at 2x).
@@ -93,10 +93,10 @@ const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
 }
 const clusterHtml = (n: number) => {
   const size = n < 10 ? '--map-cluster-size-sm' : n < 50 ? '--map-cluster-size-md' : '--map-cluster-size-lg'
-  return `<div style="${HIT};width:52px;height:52px"><span style="width:var(${size});height:var(${size});border-radius:9999px;background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${n}</span></div>`
+  return `<div style="${HIT};width:52px;height:52px"><span style="width:var(${size});height:var(${size});border-radius:var(--radius-full);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${n}</span></div>`
 }
 const stopHtml = (p: MapPoi, order: number, day: number, selected: boolean) =>
-  `<div style="${HIT}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected)}><span style="width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:9999px;background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${order}</span></div>`
+  `<div style="${HIT}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected)}><span style="width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:var(--radius-full);background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${order}</span></div>`
 
 function boundsOf(map: any): MapBounds {
   const b = map.getBounds()
@@ -261,7 +261,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   useEffect(() => {
     if (!live() || !mapReady || !userLocation) return
     const N = window.naver.maps
-    const html = `<div aria-hidden style="pointer-events:none;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:9999px;background:color-mix(in srgb, var(--map-pin-fill) 16%, transparent)"><span style="box-sizing:border-box;width:16px;height:16px;border-radius:9999px;background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke)"></span></div>`
+    const html = `<div aria-hidden style="pointer-events:none;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-full);background:color-mix(in srgb, var(--map-pin-fill) 16%, transparent)"><span style="box-sizing:border-box;width:16px;height:16px;border-radius:var(--radius-full);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke)"></span></div>`
     const dot = new N.Marker({ map: map.current, position: new N.LatLng(userLocation.lat, userLocation.lng), icon: { content: html, anchor: new N.Point(20, 20) }, clickable: false, zIndex: Z_LAYER * Z.selected - 1 })
     return () => dot.setMap(null)
   }, [mapReady, userLocation?.lat, userLocation?.lng]) // eslint-disable-line react-hooks/exhaustive-deps
