@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 import { routing } from '@/i18n/routing'
 import { SITE_URL, hreflangAlternates } from '@/lib/site-url'
 import { MOCK_PLANS } from '@/lib/mock/plans-list'
-import { GAMIFICATION } from '@/lib/features'
+import { PUBLIC_PAGES as STATIC_PATHS } from '@/lib/public-pages'
 
 // SC-28 (F-DGWQGW) — Home, Explore hubs, static public pages, and published
 // plans. Excludes /profile/*, /notifications, drafts, /plan/preview (never
@@ -12,28 +12,6 @@ import { GAMIFICATION } from '@/lib/features'
 // route (/place/[poiId], BLK-11) exists and is indexable, but listing every
 // POI needs a "list all is_publishable=TRUE POIs" BFF capability that isn't
 // confirmed to exist yet — flagged to dev friend, not guessed at. See BLK-11.
-const STATIC_PATHS: Array<{
-  path: string
-  changeFrequency: NonNullable<MetadataRoute.Sitemap[number]['changeFrequency']>
-  priority: number
-}> = [
-  { path: '',                    changeFrequency: 'daily',   priority: 1.0 },
-  { path: '/map',                changeFrequency: 'daily',   priority: 0.9 },
-  { path: '/explore',            changeFrequency: 'daily',   priority: 0.9 },
-  { path: '/explore/k-pop',      changeFrequency: 'daily',   priority: 0.8 },
-  { path: '/explore/k-drama',    changeFrequency: 'daily',   priority: 0.8 },
-  { path: '/explore/k-beauty',   changeFrequency: 'daily',   priority: 0.8 },
-  { path: '/explore/k-food',     changeFrequency: 'daily',   priority: 0.8 },
-  { path: '/explore/k-culture',  changeFrequency: 'daily',   priority: 0.8 },
-  ...(GAMIFICATION ? [
-    { path: '/leaderboard',      changeFrequency: 'daily' as const,  priority: 0.5 },
-    { path: '/badges',           changeFrequency: 'weekly' as const, priority: 0.4 },
-  ] : []),
-  { path: '/help',                changeFrequency: 'monthly', priority: 0.3 },
-  { path: '/legal/terms',        changeFrequency: 'yearly',  priority: 0.2 },
-  { path: '/legal/privacy',      changeFrequency: 'yearly',  priority: 0.2 },
-  { path: '/legal/cookies',      changeFrequency: 'yearly',  priority: 0.2 },
-]
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date()
