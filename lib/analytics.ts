@@ -22,6 +22,17 @@ type AnalyticsEventMap = {
   search: { query_raw: string; ui_language: string; result_count: number }
   outbound_click: { poi_id: string; type: 'poi' | 'package' }
   share_click: { section: string; method: string }
+  // Quick plan answers, once per Make my plan: no exact dates and no ids.
+  quick_plan_submit: {
+    destination: string
+    trip_days: number
+    days_until_trip?: number
+    trip_month?: string
+    who_with?: string
+    interests: string
+    interest_count: number
+    is_guest: boolean
+  }
 }
 
 type BaseParams = { locale: string; screen_id: string }

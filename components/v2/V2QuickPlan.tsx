@@ -9,6 +9,7 @@ import { usePhone } from '@/components/library/hooks'
 import { useAuth } from '@/contexts/AuthContext'
 import { useInterests } from '@/hooks/useInterests'
 import { apiFetch } from '@/lib/api'
+import { track } from '@/lib/analytics'
 import { cityToApiRegion, labelOf, placeName, readDraftTags, RESULT_LIMIT, saveCourseHandoff, saveDraftTags, toISODate, type QuickPlanCity, type QuickPlanPlace } from '@/lib/quickplan'
 import { buildCourse, courseDayCount } from '@/lib/quickplan-course'
 import { COURSE_HANDOFF_EVENT } from './map/usePlanDraft'
@@ -176,6 +177,22 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
       try {
         if (who) localStorage.setItem(WHO_KEY, who)
       } catch {}
+      // The answers, once per submit: city slug, day count, days to the start and its month (with
+      // dates only), who with, the picked interests (slugs, up to 10).
+      const start = range.start ? toISODate(range.start) : null
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      track('quick_plan_submit', {
+        destination: city.toLowerCase(),
+        trip_days: courseDayCount(start, range.end ? toISODate(range.end) : null),
+        ...(range.start ? { days_until_trip: Math.max(0, Math.round((range.start.getTime() - today.getTime()) / 86400000)), trip_month: start!.slice(0, 7) } : {}),
+        ...(who ? { who_with: who } : {}),
+        interests: picked.slice(0, MAX).join(','),
+        interest_count: picked.length,
+        is_guest: !user,
+        locale: lang,
+        screen_id: 'quick_plan',
+      })
       if (user) await apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) }).catch(() => {})
       else saveDraftTags(picked)
       const params = new URLSearchParams({ limit: String(RESULT_LIMIT), region: cityToApiRegion((CITY_REGION[city] ?? city) as QuickPlanCity) })
