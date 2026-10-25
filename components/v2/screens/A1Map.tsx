@@ -40,6 +40,7 @@ import type { SavedData } from '@/app/api/saved/route'
 import type { ItineraryDetail } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
+import { useAreaName } from '../map/areaName'
 import { ABOVE_LEGAL_LINE, MapLegalLine } from '../map/MapLegalLine'
 import { useLocateMe } from '../map/LocateMe'
 import { useBadgeUnlock } from '../badges'
@@ -139,6 +140,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     [collection.data],
   )
   const listPois = collectionOn && collectionPois ? collectionPois : pois
+  // List header: the district and city at the center of the map in view (on phones the part above
+  // the sheet; none for a category page's places).
+  const area = useAreaName(collectionOn ? null : bounds, zoom, locale, phone ? (snap === 'peek' ? 0.45 : 0.25) : 0.5)
+  const areaLine = area ? (area.district ? GAP.areaName(area.district, area.city) : area.city) : null
   const { detail, isError: placeMissing } = usePlaceDetail(selectedId)
   const detailName = detail ? nameOf(detail, locale) : ''
   const saved = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
@@ -419,6 +424,13 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
               <Skeleton shape="line" className="h-[var(--space-3)] w-[60%]" />
             </Fragment>
           ))}
+        </div>
+      ) : null}
+      {/* The area name and the place count, 16 above the cards; with no places the name only. */}
+      {!(collectionOn ? collection.isLoading : isLoading) && (areaLine || (listPois.length && !collectionOn)) ? (
+        <div className="mb-[var(--space-1)] flex flex-col">
+          {areaLine ? <h2 className="type-title-card text-ui-fg">{areaLine}</h2> : null}
+          {listPois.length && !collectionOn ? <p className="type-body-caption text-ui-fg-muted">{GAP.placesInArea(listPois.length)}</p> : null}
         </div>
       ) : null}
       {/* No places: the empty state titled No places in this area, Zoom out under it. */}

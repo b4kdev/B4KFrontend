@@ -5,8 +5,8 @@ import { useTranslations } from 'next-intl'
 import { useCd } from './cd'
 
 // Texts with parameters or shared by several screens, read from the Copy Deck rows (cd namespace);
-// screens may call t('CDxxxx') directly instead. resetPassword still has no deck row: it lives in the
-// gap namespace of messages/v2/supplement/{locale}.json until the deck has it.
+// screens may call t('CDxxxx') directly instead. resetPassword, areaName and placesInArea still have no
+// deck row: they live in the gap namespace of messages/v2/supplement/{locale}.json until the deck has them.
 export function useGap() {
   const t = useCd()
   const g = useTranslations('gap')
@@ -45,6 +45,9 @@ export function useGap() {
       interestsPicked: (count: number) => t('CD1817', { count }),
       // Map: refetch the filter results for the area in view after a pan.
       searchArea: t('CD1686'),
+      // Map list header: the area at the map center and how many places the list holds.
+      areaName: (district: string, city: string) => g('areaName', { district, city }),
+      placesInArea: (count: number) => (count ? g('placesInArea', { count }) : t('CD0626')),
       dayTotal: (n: number, time: string, count: number, max: number) => t('CD1481', { n, time, count, max }),
       allDaysTotal: (time: string, count: number) => t('CD1549', { time, count }),
     }),

@@ -436,6 +436,8 @@
     "interestsPicked": "{count}개 선택 · 홈과 빠른 일정에 사용",
     "searchArea": "이 지역 검색",
     "dayTotal": "{n}일차 · {time} · {max}곳 중 {count}곳",
-    "allDaysTotal": "전체 일정 · {time} · {count}곳"
+    "allDaysTotal": "전체 일정 · {time} · {count}곳",
+    "areaName": "{city} {district}",
+    "placesInArea": "이 지역 장소 {count}곳"
   }
 }

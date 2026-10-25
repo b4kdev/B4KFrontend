@@ -25,7 +25,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: https://lh3.googleusercontent.com https://*.pstatic.net https://*.map.naver.com https://*.clarity.ms${devNaverHttp}`,
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.b4korea.com https://www.google-analytics.com https://analytics.google.com https://*.clarity.ms https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://*.nelo.navercorp.com",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.b4korea.com https://www.google-analytics.com https://analytics.google.com https://*.clarity.ms https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://maps.apigw.ntruss.com https://*.nelo.navercorp.com",
   "frame-ancestors 'none'",
   "object-src 'none'",
   "base-uri 'self'",
