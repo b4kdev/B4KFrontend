@@ -47,7 +47,7 @@ type SearchResult = { places: SearchPoi[]; plans: SearchPlan[]; explore: SearchE
 
 // Search districts by region: [district, region, text].
 const DISTRICTS = [
-  ['Gangnam', 'Seoul', 'CD1257'], ['Hongdae', 'Seoul', 'CD1259'], ['Myeongdong', 'Seoul', 'CD1261'],
+  ['Gangnam', 'Seoul', 'CD1257'], ['Hongdae', 'Seoul', 'CD1259'], ['Myeongdong', 'Seoul', 'CD1261'], ['Seongsu', 'Seoul', 'CD0200'], ['Itaewon', 'Seoul', 'CD1813'],
   ['Haeundae', 'Busan', 'CD1258'], ['Seomyeon', 'Busan', 'CD1263'],
   ['Jeju City', 'Jeju', 'CD1260'], ['Seogwipo', 'Jeju', 'CD1262'],
 ] as const
@@ -215,7 +215,7 @@ export function SearchScreen() {
           {box.open ? box.suggestions : (
             <>
               <div className="-mx-[var(--grid-gutter-mobile)] mb-[var(--space-4)] flex gap-[var(--space-2)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none]">
-                <Chip type="dropdown" selected count={active || undefined} onClick={() => setSheet(true)}>{t('CD1284')}</Chip>
+                <Chip type="dropdown" selected onClick={() => setSheet(true)}>{active ? t('CD1815', { count: active }) : t('CD1814')}</Chip>
                 {groups.map((g) => <Chip key={g.id} type="dropdown" onClick={() => setSheet(true)}>{groupLabel(g)}</Chip>)}
               </div>
               {results}
@@ -224,7 +224,7 @@ export function SearchScreen() {
         </main>
         {/* Figma: Search filters is the whole sheet (bg elevated, its own padding) with a Close in its header. */}
         <BottomSheet open={sheet} onClose={() => setSheet(false)} label={t('CD1284')} flush className="bg-ui-bg-elevated">
-          <SearchFilters viewport="mobile" groups={groups} value={filters} onValueChange={pickFilters} sort={sortCfg} labels={{ title: filtersTitle, clearAll: t('CD1248'), showResults: t('CD1251'), close: t('CD0082') }} onShowResults={() => setSheet(false)} onClose={() => setSheet(false)} />
+          <SearchFilters viewport="mobile" groups={groups} value={filters} onValueChange={pickFilters} sort={sortCfg} labels={{ title: filtersTitle, clearAll: t('CD1248'), showResults: data ? t('CD1514', { count: data.places.length + data.plans.length + data.explore.length }) : t('CD1251'), close: t('CD0082') }} onShowResults={() => setSheet(false)} onClose={() => setSheet(false)} />
         </BottomSheet>
       </>
     )
