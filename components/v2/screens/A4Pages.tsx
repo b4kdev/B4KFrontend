@@ -36,7 +36,7 @@ import { useGap } from '../gaps'
 import { keepKNamesDeep } from '../text'
 import { V2Footer, V2Page } from '../V2Page'
 import { useSearchBox } from '../V2Search'
-import { usePlaceActions } from '../usePlaceActions'
+import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { useV2Shell } from '../V2Shell'
 
 const jsonFetch = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
@@ -52,6 +52,7 @@ export function SearchScreen() {
   const phone = usePhone()
   const { labels } = useV2Shell()
   const act = usePlaceActions({ resume: true })
+  const planAct = usePlanActions({ resume: true })
   const params = useSearchParams()
   const q = params?.get('q') ?? ''
   // Phones: the screen's own field; desktop searches from the Header field.
@@ -161,7 +162,7 @@ export function SearchScreen() {
             <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-4)] lg:grid-cols-3 lg:gap-x-[var(--space-4)]">
               {data.plans.map((p) => (
                 <li key={p.id}>
-                  <Card type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD1315', { count: p.stop_count })} sponsored={p.is_partner ? t('CD1314') : undefined} />
+                  <Card type="plan" href={`/plan/${p.id}`} title={p.title} save={planAct(String(p.id), p.title)} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD1315', { count: p.stop_count })} sponsored={p.is_partner ? t('CD1314') : undefined} />
                 </li>
               ))}
             </ul>
@@ -172,7 +173,7 @@ export function SearchScreen() {
             arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
             seeAll={{ href: `/search?q=${encodeURIComponent(q)}&show=plans`, label: t('CD1309') }}
             cards={data.plans.map((p) => (
-              <Card key={p.id} type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD1315', { count: p.stop_count })} sponsored={p.is_partner ? t('CD1314') : undefined} />
+              <Card key={p.id} type="plan" href={`/plan/${p.id}`} title={p.title} save={planAct(String(p.id), p.title)} imageSrc={p.cover_image_url} author={p.author_name} saves={String(p.save_count)} stops={t('CD1315', { count: p.stop_count })} sponsored={p.is_partner ? t('CD1314') : undefined} />
             ))}
           />
         )

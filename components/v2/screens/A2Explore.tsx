@@ -33,7 +33,7 @@ import type { CollectionDetail } from '@/lib/collections'
 import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 import type { HomePopularPlan } from '@/app/api/home/popular-plans/route'
 import { useCd, useCdKey } from '../cd'
-import { usePlaceActions } from '../usePlaceActions'
+import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { useDDay } from '../useDDay'
 import { useGap } from '../gaps'
 import { V2Page } from '../V2Page'
@@ -319,6 +319,7 @@ const PAGE = 12
 export function SeeAllScreen({ category, row }: { category: string; row: string }) {
   const rowLabel = useRowLabel()
   const act = usePlaceActions({ resume: true })
+  const planAct = usePlanActions({ resume: true })
   const GAP = useGap()
   const t = useCd()
   const locale = useLocale()
@@ -354,7 +355,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const places: { id: string; node: React.ReactNode; domain?: string }[] = fromHome
     ? row === 'trending'
       ? (trending.data ?? []).map((p) => ({ id: p.poi_id, domain: p.display_domain, node: <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /> }))
-      : (plans.data ?? []).map((p) => ({ id: p.id, node: <Card type="plan" href={`/plan/${p.id}`} title={p.title} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={t('CD0473', { n: p.stop_count })} /> }))
+      : (plans.data ?? []).map((p) => ({ id: p.id, node: <Card type="plan" href={`/plan/${p.id}`} title={p.title} save={planAct(String(p.id), p.title)} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={t('CD0473', { n: p.stop_count })} /> }))
     : (explore.data?.sections.find((s) => s.id === row)?.items ?? []).map((p) => ({ id: p.poi_id, node: <PoiCard p={p} act={act} /> }))
   const filtered = chip === 'all' ? places : places.filter((p) => p.domain === chip)
   const loading = explore.isLoading || trending.isLoading || plans.isLoading

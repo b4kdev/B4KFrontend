@@ -63,3 +63,42 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
     }
   }
 }
+
+/**
+ * Save for plan cards (Home, Explore, Saved plans, profiles): the Card `save` prop for a plan.
+ * Same gate and resume rules as places; the saved state is read from /api/saved and set
+ * optimistically, with the error toast and the old state back when the request fails.
+ */
+export function usePlanActions({ resume = false }: { resume?: boolean } = {}) {
+  const t = useCd()
+  const k = useCdKey()
+  const { user } = useAuth()
+  const { toast, requireSignIn } = useV2Shell()
+  const saved = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
+  const [taps, setTaps] = useState<Map<string, boolean>>(new Map())
+  const isSaved = (id: string) => taps.get(id) ?? (saved.data?.plans ?? []).some((p) => p.id === id)
+
+  const setSave = (id: string, next: boolean, signedIn = false) => {
+    const tap = (on: boolean) => setTaps((m) => new Map(m).set(id, on))
+    tap(next)
+    send('/api/saved/plan', next ? 'POST' : 'DELETE', { plan_id: id })
+      .then(() => {
+        toast({ type: 'success', message: next ? (signedIn ? t('CD1608') : k('itinerary.actions.savedToast')) : k('itinerary.actions.unsavedToast') })
+        saved.mutate()
+      })
+      .catch(() => {
+        tap(!next)
+        toast({ type: 'critical', message: t('CD0061') })
+      })
+  }
+  usePendingAction('save_plan', resume && !!user, (id) => { if (id) setSave(id, true, true) })
+
+  return (id: string, title: string) => {
+    const on = isSaved(id)
+    return {
+      saved: on,
+      label: on ? k('explore.card.unsaveAria', { name: title }) : k('explore.card.saveAria', { name: title }),
+      onSave: () => (user ? setSave(id, !on) : requireSignIn({ title: t('CD1541'), pending: { type: 'save_plan', id }, run: () => setSave(id, true, true) })),
+    }
+  }
+}
