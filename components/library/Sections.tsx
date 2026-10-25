@@ -166,8 +166,9 @@ export type QuickPlanProps = {
   stepTitle: string
   /** Line under the heading, e.g. "Pick a city, your dates and who you're traveling with." */
   stepSubtitle?: string
-  /** Progress text, e.g. "Step 2 of 3". */
-  progressLabel: string
+  /** Progress text, e.g. "Step 2 of 3". With no progressLabel and no stepList the bar shows no
+   * indicator and Close sits at the left (one-step sheets such as Your interests). */
+  progressLabel?: string
   /** Figma Show step list (option B spare) instead of the progress bar. */
   stepList?: string[]
   /** Step body (destination and who-with chips; interest chips; review rows). */
@@ -176,7 +177,7 @@ export type QuickPlanProps = {
   aside?: ReactNode
   /** Footer: Back (steps 2, 3) and Next / Make my plan. */
   back?: { label: string; onClick: () => void }
-  next: { label: string; onClick: () => void; disabled?: boolean }
+  next: { label: string; onClick: () => void; disabled?: boolean; loading?: boolean }
   /** Accessible name of the dialog, e.g. "Quick plan". */
   title: string
   closeLabel: string
@@ -211,10 +212,16 @@ export function QuickPlan({ open, onClose, step, stepTitle, stepSubtitle, progre
       >
         {phone ? <div className="flex justify-center py-[var(--space-2)]"><span aria-hidden className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" /></div> : null}
         <div className={cn('flex items-center gap-[var(--space-4)] pr-[var(--space-3)]', phone ? 'pb-[var(--space-4)] pl-[var(--space-4)] pt-[var(--space-2)]' : 'py-[var(--space-4)] pl-[var(--space-6)]')}>
-          <div className="min-w-0 flex-1">
-            {stepList ? <StepList label={progressLabel} steps={stepList} current={step} /> : <ProgressIndicator step={step} steps={3} label={progressLabel} className="max-w-[320px]" />}
-          </div>
-          <IconButton label={closeLabel} icon={<X />} onClick={onClose} />
+          {stepList || progressLabel ? (
+            <>
+              <div className="min-w-0 flex-1">
+                {stepList ? <StepList label={progressLabel ?? title} steps={stepList} current={step} /> : <ProgressIndicator step={step} steps={3} label={progressLabel ?? title} className="max-w-[320px]" />}
+              </div>
+              <IconButton label={closeLabel} icon={<X />} onClick={onClose} />
+            </>
+          ) : (
+            <IconButton label={closeLabel} icon={<X />} onClick={onClose} />
+          )}
         </div>
         <Separator className="shrink-0" />
         <div className={cn('flex min-h-0 flex-1 flex-col gap-[var(--space-5)] overflow-y-auto py-[var(--space-6)]', padX)}>
@@ -237,7 +244,7 @@ export function QuickPlan({ open, onClose, step, stepTitle, stepSubtitle, progre
         <Separator className="shrink-0" />
         <div className={cn('flex gap-[var(--gap-sm)] py-[var(--space-4)]', padX, phone ? 'pb-[calc(var(--space-4)+env(safe-area-inset-bottom))] [&>:last-child]:flex-1' : 'justify-end')}>
           {back ? <Button variant="ghost" size="lg" onClick={back.onClick}>{back.label}</Button> : null}
-          <Button size="lg" onClick={next.onClick} disabled={next.disabled}>{next.label}</Button>
+          <Button size="lg" onClick={next.onClick} disabled={next.disabled} loading={next.loading}>{next.label}</Button>
         </div>
       </div>
     </>
