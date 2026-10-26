@@ -22,6 +22,16 @@ const devNaverHttp = isDev
 // Vercel Analytics and Speed Insights load their debug scripts from va.vercel-scripts.com in dev;
 // in production they are served from the site's own /_vercel path.
 const devVercel = isDev ? ' https://va.vercel-scripts.com' : ''
+// Supabase auth, REST and realtime run on the project's own host (a custom domain in production),
+// so connect-src takes it from NEXT_PUBLIC_SUPABASE_URL instead of a hard-coded list that can drift.
+const supabaseHost = (() => {
+  try {
+    const host = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').host
+    return host && !host.endsWith('.supabase.co') ? ` https://${host} wss://${host}` : ''
+  } catch {
+    return ''
+  }
+})()
 // GA4 sends from regional hosts (region1.google-analytics.com) and www.google.com/g/collect, Clarity syncs through c.bing.com,
 // Sentry ingests on *.ingest.sentry.io; place photos may be plain Supabase Storage URLs.
 const CSP = [
@@ -30,7 +40,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com https://www.googletagmanager.com https://*.google-analytics.com https://*.pstatic.net https://*.map.naver.com https://*.clarity.ms https://c.bing.com${devNaverHttp}`,
   "font-src 'self' data:",
-  `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googletagmanager.com https://www.google.com https://*.google-analytics.com https://*.analytics.google.com https://*.clarity.ms https://c.bing.com https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://maps.apigw.ntruss.com https://*.nelo.navercorp.com${devVercel}`,
+  `connect-src 'self' https://*.supabase.co wss://*.supabase.co${supabaseHost} https://www.googletagmanager.com https://www.google.com https://*.google-analytics.com https://*.analytics.google.com https://*.clarity.ms https://c.bing.com https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://maps.apigw.ntruss.com https://*.nelo.navercorp.com${devVercel}`,
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "frame-src 'none'",
