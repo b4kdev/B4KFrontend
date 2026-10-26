@@ -31,7 +31,6 @@
     "searchArea": "Search this area",
     "dayTotal": "Day {n} · {time} · {count} of {max} stops",
     "allDaysTotal": "All days · {time} · {count, plural, one {# stop} other {# stops}}",
-    "areaName": "{district}, {city}",
-    "placesInArea": "{count, plural, one {# place in this area} other {# places in this area}}"
+    "areaName": "{district}, {city}"
   }
 }

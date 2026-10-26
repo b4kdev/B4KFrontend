@@ -517,7 +517,6 @@
     "searchArea": "このエリアを検索",
     "dayTotal": "{n}日目 · {time} · {max}か所中{count}か所",
     "allDaysTotal": "全日程 · {time} · {count}か所",
-    "areaName": "{city} {district}",
-    "placesInArea": "このエリアのスポット {count}件"
+    "areaName": "{city} {district}"
   }
 }

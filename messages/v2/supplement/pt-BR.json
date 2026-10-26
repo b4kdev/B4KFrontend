@@ -407,7 +407,6 @@
     "searchArea": "Buscar nesta área",
     "dayTotal": "Dia {n} · {time} · {count} de {max} paradas",
     "allDaysTotal": "Todos os dias · {time} · {count, plural, one {# parada} other {# paradas}}",
-    "areaName": "{district}, {city}",
-    "placesInArea": "{count, plural, one {# lugar nesta área} other {# lugares nesta área}}"
+    "areaName": "{district}, {city}"
   }
 }
