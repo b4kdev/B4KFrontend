@@ -121,6 +121,8 @@ export type PlanCartProps = {
     all: string
     day: (n: number) => string
     addDay: string
+    /** Spoken name when the visible label is short ("+ Day" reads as "Add day"). */
+    addDayAria?: string
     /** Accessible name of the delete-day button, e.g. "Delete Day 2". */
     removeDay?: (n: number) => string
     /** Day tabs scroll arrows. */
@@ -233,7 +235,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
             />
             {/* Figma "+ Day": a Tab-styled text button (44 high, px 16, body/base, fg-muted). */}
             {onAddDay && days < 8 ? (
-              <button type="button" onClick={onAddDay} className={cn('inline-flex min-h-[var(--target-touch-min)] shrink-0 items-center whitespace-nowrap px-[var(--space-4)] type-body-base text-ui-fg-muted hover:bg-ui-state-hover hover:text-ui-fg', FOCUS_RING_INSET)}>
+              <button type="button" onClick={onAddDay} aria-label={labels.addDayAria} className={cn('inline-flex min-h-[var(--target-touch-min)] shrink-0 items-center whitespace-nowrap px-[var(--space-4)] type-body-base text-ui-fg-muted hover:bg-ui-state-hover hover:text-ui-fg', FOCUS_RING_INSET)}>
                 {labels.addDay}
               </button>
             ) : null}

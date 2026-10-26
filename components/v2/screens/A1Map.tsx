@@ -521,7 +521,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       activeDay={activeDay}
       onDayChange={(d) => setActiveDay(d)}
       onAddDay={draft.addDay}
-      summary={editing ? GAP.editing(editing.title) : order.length ? `${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })} · ${formatMinutes(totalMin, k)}` : t('CD1359')}
+      summary={editing ? GAP.editing(editing.title) : order.length ? `${t('CD0679')} · ${k('itinerary.stats.stops', { count: order.length })} · ${formatMinutes(totalMin, k)}` : t('CD1359')}
       lastAdded={order.length ? nameOf(order[order.length - 1], locale) : undefined}
       lastAddedImage={order.length ? order[order.length - 1].primary_image_url ?? null : undefined}
       lastAddedMeta={order.length ? GAP.lastAddedMore(order.length - 1) : undefined}
@@ -539,8 +539,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       onSave={() => (user || editing ? openSaveSheet() : requireSignIn({ title: t('CD0025'), draftNotice: t('CD1489'), pending: { type: 'save_own_plan' }, run: openSaveSheet }))}
       onDiscard={() => (editing ? stopEditing() : setDiscardOpen(true))}
       labels={{
-        region: k('map.plan.title'), emptyTitle: t('CD1359'), emptyBody: t('CD1607'), all: k('map.plan.allDays'),
-        day: (n) => k('map.plan.dayTab', { n }), addDay: k('map.plan.addDay'), save: editing ? t('CD0993') : k('map.plan.save'), discard: editing ? t('CD1528') : k('map.plan.discardDraft'),
+        region: t('CD0679'), emptyTitle: t('CD1359'), emptyBody: t('CD1607'), all: k('map.plan.allDays'),
+        day: (n) => k('map.plan.dayTab', { n }), addDay: t('CD1480'), addDayAria: t('CD0649'), save: editing ? t('CD0993') : k('map.plan.save'), discard: editing ? t('CD1528') : t('CD0655'),
         remove: (n) => `${k('saved.poi.removeLabel')} ${n}`, reorder: (n) => k('map.plan.dragHandle', { n }), moved: (name, position, total) => t('CD1807', { name, position, total }),
         open: k('map.plan.stripExpand'), close: k('map.plan.stripCollapse'), about: GAP.about,
       }}
@@ -630,7 +630,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         <BottomSheet
           type="map"
           open
-          label={k('map.plan.title')}
+          label={t('CD0679')}
           snap={planSheet ? 'full' : snap}
           onSnapChange={(s) => (planSheet ? s !== 'full' && setPlanSheet(false) : setSnap(s))}
           onClose={() => (planSheet ? setPlanSheet(false) : setSnap('peek'))}
@@ -649,7 +649,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   }
   return (
     <div className="flex min-h-0 flex-1">
-      <LeftPanel type="map" label={k('map.plan.title')} cart={cartNode} cartOpen={cart === 'open'}>
+      <LeftPanel type="map" label={t('CD0679')} cart={cartNode} cartOpen={cart === 'open'}>
         {selectedId ? null : <div className="sticky top-0 z-10 bg-ui-bg pt-[var(--space-4)]">{switcher}</div>}
         {/* The Saved hub's raised background sits 16 under the tabs and 16 above the Plan cart, as drawn. */}
         {!selectedId && mode === 'saved' ? <div className="my-[var(--space-4)] flex-1 bg-ui-bg-raised">{content}</div> : content}
