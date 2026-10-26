@@ -98,6 +98,12 @@ const clusterHtml = (n: number) => {
 const stopHtml = (p: MapPoi, order: number, day: number, selected: boolean) =>
   `<div style="${HIT}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected)}><span style="width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:var(--radius-full);background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${order}</span></div>`
 
+// Inset kept around fitted pins: space-20, read from the token so the map follows it.
+function fitPadding(bottom: number) {
+  const pad = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--space-20')) || 80
+  return { top: pad, right: pad, bottom: pad + bottom, left: pad }
+}
+
 function boundsOf(map: any): MapBounds {
   const b = map.getBounds()
   const sw = b.getSW()
@@ -151,7 +157,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     if (points.length === 1) return map.current.setCenter(new N.LatLng(points[0].lat, points[0].lng))
     const lats = points.map((p) => p.lat)
     const lngs = points.map((p) => p.lng)
-    map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), { top: 80, right: 80, bottom: 80 + fitBottom, left: 80 })
+    map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), fitPadding(fitBottom))
   }
 
   useImperativeHandle(ref, () => ({
@@ -253,7 +259,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     const N = window.naver.maps
     const lats = planStops.map((s) => s.poi.coords_lat)
     const lngs = planStops.map((s) => s.poi.coords_lng)
-    map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), { top: 80, right: 80, bottom: 80 + fitBottom, left: 80 })
+    map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), fitPadding(fitBottom))
   }, [fitStops, planStops, mapReady, fitBottom])
 
   // Location dot: 16 dot with a 2 px ring on a 40 accuracy halo, above the place pins (below a
