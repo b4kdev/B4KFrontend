@@ -8,6 +8,8 @@ export interface HomePopularPlan {
   /** The author's user id, for the link to their profile; null when the BFF sends none. */
   author_id: string | null
   stop_count: number
+  /** Days in the plan; 0 when the BFF sends none. */
+  duration_days: number
   save_count: number
   cover_image_url: string | null
   is_partner: boolean
@@ -37,6 +39,7 @@ export async function GET() {
       author_name: p.author?.name ?? '',
       author_id: p.author?.user_id != null ? String(p.author.user_id) : null,
       stop_count: p.total_places ?? 0,
+      duration_days: p.total_days ?? 0,
       save_count: p.save_count ?? 0,
       cover_image_url: p.cover_image_url,
       is_partner: !!p.is_partner,
