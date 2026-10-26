@@ -1,27 +1,22 @@
-// GA4 event taxonomy — B4K-MVP-Sprint-Plan-2026-07-25.md §3. 10 locked events, snake_case.
-// No-ops without window.gtag (SSR, script not yet loaded, or no Accept yet: Analytics.tsx
-// loads gtag only after Accept), so track() needs no consent check of its own.
+// GA4 launch events, snake_case. No-ops without window.gtag (SSR, script not yet loaded, or no
+// Accept yet: Analytics.tsx loads gtag only after Accept), so track() needs no consent check of its own.
+// Fields carry no ids, emails, names, typed text or exact dates: counts, categories and slugs only.
 
-// Supabase provider id, passed through as-is (email/google/apple/azure) — not narrowed to
-// the taxonomy doc's literal names since Apple/Microsoft OAuth is still broken.
-type PlanMethod = 'manual' | 'ai'
-type ExploreDomain = 'kpop' | 'kdrama' | 'kbeauty' | 'kfood' | 'kculture'
+// An edit saves an existing plan (plan_save only), so it is not a plan_create flow.
+type PlanFlow = 'quick_plan' | 'from_saved' | 'manual'
 
+// method: the Supabase provider id as-is (email, google, ...).
 type AnalyticsEventMap = {
+  sign_up: { method: string }
   sign_in: { method: string; is_new_user: boolean }
-  poi_view: { poi_id: string; domain: string; region?: string }
-  poi_save: { poi_id: string; region?: string }
-  plan_create: { method: PlanMethod }
-  plan_save: { plan_id: string; stop_count: number; method: PlanMethod }
-  ai_open: { entry_point: string }
-  ai_generate: { is_guest: boolean }
-  content_hub_view: { domain: ExploreDomain }
-  plan_share: { plan_id: string }
+  search: { result_count: number; category?: string }
+  poi_view: { category?: string; area?: string }
+  poi_save: { action: 'save' | 'unsave'; category?: string }
+  plan_create: { flow: PlanFlow; days: number; stops: number }
+  plan_save: { days: number; stops: number; is_public: boolean }
+  share_click: { target: 'native' | 'link'; content_type: 'place' | 'plan' }
   lang_switch: { from: string; to: string }
-  // KPI-MEASUREMENT-IMPLEMENTATION-PLAN-2026-07-27.md — closes V2/V3/S2/L1/G1/G3 data gaps.
-  search: { query_raw: string; ui_language: string; result_count: number }
-  outbound_click: { poi_id: string; type: 'poi' | 'package' }
-  share_click: { section: string; method: string }
+  outbound_click: { domain: string; content_type: 'place' | 'package' }
   // Quick plan answers, once per Make my plan: no exact dates and no ids.
   quick_plan_submit: {
     destination: string
@@ -43,4 +38,29 @@ export function track<E extends keyof AnalyticsEventMap>(
 ): void {
   if (typeof window === 'undefined' || !window.gtag) return
   window.gtag('event', event, params)
+}
+
+// Page addresses sent to analytics and error tools keep only campaign tags (utm_*): a search
+// text, an id or a token in the query never leaves the browser.
+export function withoutQuery(url: string): string {
+  try {
+    const u = new URL(url, 'https://x.invalid')
+    const keep = new URLSearchParams()
+    u.searchParams.forEach((v, k) => { if (k.startsWith('utm_')) keep.append(k, v) })
+    u.search = keep.toString()
+    u.hash = ''
+    return url.startsWith('/') ? u.pathname + u.search : u.toString()
+  } catch {
+    return url.split(/[?#]/)[0]
+  }
+}
+
+// The outside site a link points to, for outbound_click (host only, never the path).
+export function linkDomain(href: string): string | null {
+  try {
+    const u = new URL(href, window.location.href)
+    return u.origin === window.location.origin ? null : u.hostname
+  } catch {
+    return null
+  }
 }

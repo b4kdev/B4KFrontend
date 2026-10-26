@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocale } from 'next-intl'
+import { linkDomain, track } from '@/lib/analytics'
 import useSWR from 'swr'
 import { MapPin, RotateCw } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
@@ -279,12 +280,22 @@ export function CategoryScreen({ category }: { category: string }) {
           <RowState title={t('CD0162')} errorBody="CD1564" error={cols.error} onRetry={() => cols.mutate()} />
         ) : null}
         {data?.packages?.length ? (
+          // Package cards open the partner's site: outbound_click with its host only.
+          <div
+            className="contents"
+            onClickCapture={(e) => {
+              const href = (e.target as HTMLElement).closest('a')?.getAttribute('href')
+              const domain = href ? linkDomain(href) : null
+              if (domain) track('outbound_click', { domain, content_type: 'package', locale, screen_id: 'explore' })
+            }}
+          >
           <ExplorePackages
             title={t('CD1341')}
             cards={data.packages.map((p) => (
               <Card key={p.id} type="package" href={p.partner_url} external={{ newTabLabel: GAP.newTab }} title={p.title} imageSrc={p.cover_image_url} partner={p.partner_name} cta={t('CD1342', { partner: p.partner_name })} sponsored={t('CD0476')} />
             ))}
           />
+          </div>
         ) : null}
       </div>
     </ExploreFrame>

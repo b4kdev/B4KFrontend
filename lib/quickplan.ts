@@ -140,25 +140,31 @@ export interface CourseHandoffStop {
 
 const COURSE_HANDOFF_KEY = 'b4k_quickplan_course'
 const COURSE_HANDOFF_NAME_KEY = 'b4k_quickplan_course_name'
+const COURSE_HANDOFF_SOURCE_KEY = 'b4k_quickplan_course_source'
+/** Where a handed-off plan came from (the plan_create flow in analytics). */
+export type CourseHandoffSource = 'quick_plan' | 'from_saved'
 
 /** name: 플랜 이름 미리 채우기 (퀵플랜: "서울 3일 일정"). 없으면 빈칸. */
-export function saveCourseHandoff(stops: CourseHandoffStop[], name?: string): void {
+export function saveCourseHandoff(stops: CourseHandoffStop[], name?: string, source: CourseHandoffSource = 'quick_plan'): void {
   try {
     sessionStorage.setItem(COURSE_HANDOFF_KEY, JSON.stringify(stops))
+    sessionStorage.setItem(COURSE_HANDOFF_SOURCE_KEY, source)
     if (name) sessionStorage.setItem(COURSE_HANDOFF_NAME_KEY, name)
     else sessionStorage.removeItem(COURSE_HANDOFF_NAME_KEY)
   } catch { /* storage unavailable */ }
 }
 
 /** 꺼내면서 지운다 — 새로고침으로 다시 덮어쓰지 않게. */
-export function takeCourseHandoff(): { stops: CourseHandoffStop[]; name?: string } | null {
+export function takeCourseHandoff(): { stops: CourseHandoffStop[]; name?: string; source: CourseHandoffSource } | null {
   try {
     const raw = sessionStorage.getItem(COURSE_HANDOFF_KEY)
     const name = sessionStorage.getItem(COURSE_HANDOFF_NAME_KEY) ?? undefined
+    const source: CourseHandoffSource = sessionStorage.getItem(COURSE_HANDOFF_SOURCE_KEY) === 'from_saved' ? 'from_saved' : 'quick_plan'
     sessionStorage.removeItem(COURSE_HANDOFF_KEY)
     sessionStorage.removeItem(COURSE_HANDOFF_NAME_KEY)
+    sessionStorage.removeItem(COURSE_HANDOFF_SOURCE_KEY)
     const stops = raw ? JSON.parse(raw) as CourseHandoffStop[] : null
-    return Array.isArray(stops) && stops.length > 0 ? { stops, name } : null
+    return Array.isArray(stops) && stops.length > 0 ? { stops, name, source } : null
   } catch {
     return null
   }

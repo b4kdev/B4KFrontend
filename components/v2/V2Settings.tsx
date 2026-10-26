@@ -1,6 +1,7 @@
 'use client'
 
 import { useLocale } from 'next-intl'
+import { track } from '@/lib/analytics'
 import { usePathname, useRouter } from '@/i18n/navigation'
 import { Globe } from 'lucide-react'
 import { DropdownMenu, IconButton, MenuGroup, MenuItem, Modal, ROW_DIVIDER, Tooltip } from '@/components/library'
@@ -35,6 +36,7 @@ export function LanguageSheet({ open, onClose }: { open: boolean; onClose: () =>
             checked={l.code === locale}
             onClick={() => {
               onClose()
+              if (l.code !== locale) track('lang_switch', { from: locale, to: l.code, locale, screen_id: 'settings' })
               router.replace(pathname, { locale: l.code })
             }}
           >
@@ -55,7 +57,14 @@ function LanguageItems() {
   return (
     <MenuGroup label={t('CD0808')}>
       {LANGUAGES.map((l) => (
-        <MenuItem key={l.code} checked={l.code === locale} onClick={() => router.replace(pathname, { locale: l.code })}>
+        <MenuItem
+          key={l.code}
+          checked={l.code === locale}
+          onClick={() => {
+            if (l.code !== locale) track('lang_switch', { from: locale, to: l.code, locale, screen_id: 'menu' })
+            router.replace(pathname, { locale: l.code })
+          }}
+        >
           <span lang={l.code}>{l.name}</span>
         </MenuItem>
       ))}

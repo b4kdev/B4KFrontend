@@ -1,5 +1,7 @@
 'use client'
 
+import { useLocale } from 'next-intl'
+import { track } from '@/lib/analytics'
 import { useState } from 'react'
 import useSWR from 'swr'
 import { useAuth } from '@/contexts/AuthContext'
@@ -23,6 +25,7 @@ const send = (url: string, method: string, body: unknown) =>
  * read for places yet.
  */
 export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
+  const locale = useLocale()
   const t = useCd()
   const k = useCdKey()
   const { user } = useAuth()
@@ -40,6 +43,7 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
     tap(!on)
     await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id })
       .then(() => {
+        track('poi_save', { action: on ? 'unsave' : 'save', locale, screen_id: 'card' })
         toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })
         if (!on) unlock()
       })

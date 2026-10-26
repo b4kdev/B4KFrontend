@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useLocale } from 'next-intl'
+import { track } from '@/lib/analytics'
 import useSWR from 'swr'
 import { Copy, Map } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
@@ -78,6 +79,13 @@ export function SearchScreen() {
   if (filters.district?.[0]) qs.set('area_lv2', filters.district[0])
   if (filters.theme?.length) qs.set('tags', filters.theme.join(','))
   const { data, error, isLoading, mutate } = useSWR<SearchResult>(q.length >= 2 ? `/api/search?${qs}` : null, jsonFetch)
+  // One search event per query and filter set once its results are in: the count, never the text.
+  const counted = useRef('')
+  useEffect(() => {
+    if (!data || counted.current === qs.toString()) return
+    counted.current = qs.toString()
+    track('search', { result_count: data.places.length + data.plans.length + data.explore.length, category: filters.theme?.join(',') || undefined, locale, screen_id: 'search' })
+  }, [data]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const groups: FilterGroup[] = [
     { id: 'show', label: t('CD1271'), options: [['all', 'CD1267'], ['places', 'CD1269'], ['plans', 'CD1270'], ['explore', 'CD1268']].map(([id, cd]) => ({ id, label: t(cd) })) },

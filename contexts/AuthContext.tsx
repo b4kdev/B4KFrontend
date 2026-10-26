@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           method: session.user.app_metadata?.provider ?? 'email',
           is_new_user: isNewUser,
           locale: localeRef.current,
-          screen_id: 'AG_01',
+          screen_id: 'sign_in',
         })
       }
       setSession(session)

@@ -36,6 +36,7 @@ import { useMapPois, type MapBounds, type MapPoi } from '@/hooks/useMapPois'
 import { usePlaceDetail } from '@/hooks/usePlaceDetail'
 import { getDraftPlan } from '@/lib/draft-plan'
 import { takeCourseHandoff } from '@/lib/quickplan'
+import { track } from '@/lib/analytics'
 import type { SavedData } from '@/app/api/saved/route'
 import type { ItineraryDetail } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
@@ -175,10 +176,13 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   // Hand-offs: Quick plan and Plan from Saved open the plan unsaved; ?plan=edit
   // loads a published plan for editing.
+  // How the plan in the editor started, for plan_create: a hand-off, or places added by hand.
+  const planFlow = useRef<'quick_plan' | 'from_saved' | 'manual'>('manual')
   const takeHandoff = () => {
     const handoff = takeCourseHandoff()
     if (!handoff) return
-    const { stops, name } = handoff
+    const { stops, name, source } = handoff
+    planFlow.current = source
     const had = draft.plan.stops.length > 0
     const asPois: MapPoi[] = stops.map((s) => ({ poi_id: s.poi_id, name_ko: s.name_ko, name_preferred: s.name_preferred, coords_lat: s.coords_lat, coords_lng: s.coords_lng, display_region: s.display_region ?? null, primary_image_url: s.primary_image_url }))
     draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])), name)
@@ -230,6 +234,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   useEffect(() => {
     // Phones: the place opens in the sheet at mid (half the screen), so centre it in the map above.
     if (detail) mapRef.current?.focus(detail.coords_lat, detail.coords_lng, phone ? Math.round(window.innerHeight / 2) : 0)
+    if (detail) track('poi_view', { category: detail.display_domain ?? undefined, area: detail.display_region ?? undefined, locale, screen_id: 'map' })
   }, [detail?.poi_id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const order = draft.plan.stops
@@ -288,7 +293,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // `on` = currently saved / liked; after a sign-in the action only ever turns it on.
   // signedIn: the save a guest started, finished after the sign-in (its own toast).
   const setSave = async (id: string, on: boolean, signedIn = false) => {
-    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: navigator.onLine === false ? t('CD1426') : t('CD0061') }))
+    const category = detail?.poi_id === id ? detail.display_domain ?? undefined : undefined
+    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => track('poi_save', { action: on ? 'unsave' : 'save', category, locale, screen_id: 'map' })).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: navigator.onLine === false ? t('CD1426') : t('CD0061') }))
     saved.mutate()
   }
   // Optimistic: the heart changes at once and goes back with a toast if the server refuses.
@@ -326,6 +332,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     if (editing) {
       try {
         await send(`/api/plans/${editing.id}`, 'PUT', { title: planName.trim() || editing.title, stops })
+        track('plan_save', { days: draft.days, stops: stops.length, is_public: true, locale, screen_id: 'map' })
         const id = editing.id
         draft.discard()
         setEditing(null)
@@ -348,6 +355,9 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       const id: string | undefined = res?.plan?.id
       // Saving publishes it, as on the live map.
       if (id) await send(`/api/plans/${id}`, 'PATCH', { is_published: true })
+      track('plan_create', { flow: planFlow.current, days: draft.days, stops: stops.length, locale, screen_id: 'map' })
+      track('plan_save', { days: draft.days, stops: stops.length, is_public: !!id, locale, screen_id: 'map' })
+      planFlow.current = 'manual'
       draft.discard()
       setSaveOpen(false)
       toast({ type: 'success', message: t('CD1636') })
@@ -384,6 +394,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         onShare={() => {
           // The shared link is the place page, not the map address.
           const url = `${location.origin}/${locale}/place/${detail.poi_id}`
+          track('share_click', { target: typeof navigator.share === 'function' ? 'native' : 'link', content_type: 'place', locale, screen_id: 'map' })
           if (navigator.share) navigator.share({ title: detailName, url }).catch(() => {})
           else navigator.clipboard?.writeText(url).then(() => toast({ type: 'success', message: k('itinerary.copiedToast') }), () => {})
         }}
@@ -590,7 +601,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         title={t('CD1536')}
         body={GAP.discardBody(order.length)}
         cancel={<Button variant="secondary" data-autofocus onClick={() => setDiscardOpen(false)}>{k('map.plan.discardCancel')}</Button>}
-        confirm={<Button variant="danger" onClick={() => { draft.discard(); setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
+        confirm={<Button variant="danger" onClick={() => { draft.discard(); planFlow.current = 'manual'; setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
       />
       <Dialog
         open={!!pendingEdit}

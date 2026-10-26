@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
+import { track } from '@/lib/analytics'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
 import { cn } from '@/lib/cn'
@@ -238,7 +239,9 @@ export function SavedScreen() {
                     <MenuItem
                       icon={p.is_public ? <Lock /> : <Globe />}
                       onClick={async () => {
-                        await send(`/api/plans/${p.id}`, 'PATCH', { is_published: !p.is_public }).catch(() => toast({ type: 'critical', message: t('CD0061') }))
+                        await send(`/api/plans/${p.id}`, 'PATCH', { is_published: !p.is_public })
+                          .then(() => track('plan_save', { days: p.duration_days, stops: p.stop_count, is_public: !p.is_public, locale, screen_id: 'saved' }))
+                          .catch(() => toast({ type: 'critical', message: t('CD0061') }))
                         mutate()
                       }}
                     >
@@ -402,6 +405,8 @@ export function PlanFromSavedScreen() {
             day: s.day ?? 1,
           }
         }),
+        undefined,
+        'from_saved',
       )
       router.push('/map?from=saved')
     } catch {

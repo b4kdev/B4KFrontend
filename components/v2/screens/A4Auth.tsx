@@ -192,17 +192,16 @@ export function AuthCallbackScreen() {
         return
       }
 
-      // 'recovery' only verifies password-reset ownership, not a sign-in. is_new_user is a
-      // created_at / last_sign_in_at proximity heuristic (Supabase has no "just created" flag).
+      // 'recovery' only verifies password-reset ownership, not a sign-in. A new account signs in
+      // for the first time when its email is confirmed (email) or when it is created (providers);
+      // Supabase has no "just created" flag, so the two times are compared.
       if (user && otpType !== 'recovery') {
-        const createdAt = new Date(user.created_at).getTime()
-        const lastSignIn = user.last_sign_in_at ? new Date(user.last_sign_in_at).getTime() : createdAt
-        track('sign_in', {
-          method: user.app_metadata?.provider ?? 'email',
-          is_new_user: lastSignIn - createdAt < 10_000,
-          locale,
-          screen_id: 'AG_01',
-        })
+        const firstAt = new Date(user.email_confirmed_at ?? user.created_at).getTime()
+        const lastSignIn = user.last_sign_in_at ? new Date(user.last_sign_in_at).getTime() : firstAt
+        const isNew = Math.abs(lastSignIn - firstAt) < 10_000
+        const method = user.app_metadata?.provider ?? 'email'
+        if (isNew) track('sign_up', { method, locale, screen_id: 'sign_in' })
+        track('sign_in', { method, is_new_user: isNew, locale, screen_id: 'sign_in' })
       }
 
       // An account set to be deleted goes to the sign-in page's Pending deletion view first.

@@ -2,7 +2,9 @@
 
 import Script from 'next/script'
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { getConsent } from '@/lib/consent'
+import { withoutQuery } from '@/lib/analytics'
 
 const GA_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID
@@ -21,6 +23,17 @@ export default function Analytics() {
     return () => window.removeEventListener('b4k-consent-change', onChange)
   }, [])
 
+  // Page views are sent here, not by gtag itself, so the address leaves without its query
+  // (the search text on /search, ids, tokens); campaign tags stay.
+  // The first one goes out from the init script below; data-pv holds the last path sent.
+  const pathname = usePathname()
+  useEffect(() => {
+    const root = document.documentElement
+    if (!granted || !GA_ID || typeof window.gtag !== 'function' || root.dataset.pv === pathname) return
+    root.dataset.pv = pathname ?? ''
+    window.gtag('event', 'page_view', { page_location: withoutQuery(window.location.href), page_title: document.title })
+  }, [granted, pathname])
+
   return (
     <>
       {granted && GA_ID && (
@@ -37,7 +50,14 @@ export default function Analytics() {
                 ad_personalization: 'denied'
               });
               gtag('js', new Date());
-              gtag('config', '${GA_ID}');
+              gtag('config', '${GA_ID}', { send_page_view: false });
+              // First page view, address without its query as withoutQuery() in lib/analytics.ts.
+              var u = new URL(location.href), keep = [];
+              u.searchParams.forEach(function (v, k) { if (k.indexOf('utm_') === 0) keep.push([k, v]); });
+              u.search = new URLSearchParams(keep).toString();
+              u.hash = '';
+              document.documentElement.dataset.pv = location.pathname;
+              gtag('event', 'page_view', { page_location: u.toString(), page_title: document.title });
             `}
           </Script>
           <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
