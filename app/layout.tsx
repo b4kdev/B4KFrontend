@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SITE_URL } from '@/lib/site-url';
 import { seoText } from '@/lib/seo';
 import { THEME_BOOT_SCRIPT } from '@/lib/theme';
 import './tokens.css';
 import './globals.css';
 import { fontVariables } from './fonts';
+import VercelTools from '@/components/analytics/VercelTools';
 
 // The site default (every page without its own title): the Home title and description of the
 // visitor's language from the Copy Deck.
@@ -41,8 +40,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="antialiased">
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         {children}
-        <Analytics />
-        <SpeedInsights />
+        <VercelTools />
       </body>
     </html>
   );
