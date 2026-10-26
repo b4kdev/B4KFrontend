@@ -5,6 +5,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import Script from 'next/script'
 import type { MapBounds, MapPoi } from '@/hooks/useMapPois'
 import { TOKEN_HEX } from '@/tokens/colors'
+import { useCd } from '@/components/v2/cd'
 
 // Map canvas: the Naver map with the B4K markers. Map pin = the place photo in a circle with a
 // tail, no icon, by zoom tier: zoom 15 a dot, zoom 16 a small photo pin, zoom 17 and closer the
@@ -91,9 +92,10 @@ const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
   // Fixed width so the anchor (half of it) stays on the place; a wider name overflows evenly on both sides.
   return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;width:${Math.max(44, PIN_PX[tier])}px" ${markerAttrs(p.poi_id, poiLabel(p), selected)}><span style="box-sizing:border-box;width:${size};height:${size};border-radius:var(--radius-full);border:${ring};${photo};transition:all var(--duration-short4) var(--easing-standard)"></span><span aria-hidden style="width:0;height:0;border-left:${TAIL_PX}px solid transparent;border-right:${TAIL_PX}px solid transparent;border-top:${TAIL_PX}px solid ${tail}"></span>${name}</div>`
 }
-const clusterHtml = (n: number) => {
+// A cluster is a button named by its place count (not shown on screen); Enter or Space zooms in like a click.
+const clusterHtml = (n: number, key: string, name: string) => {
   const size = n < 10 ? '--map-cluster-size-sm' : n < 50 ? '--map-cluster-size-md' : '--map-cluster-size-lg'
-  return `<div style="${HIT};width:52px;height:52px"><span style="width:var(${size});height:var(${size});border-radius:var(--radius-full);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${n}</span></div>`
+  return `<div style="${HIT};width:52px;height:52px" class="b4k-map-marker" role="button" tabindex="0" data-cluster="${esc(key)}" aria-label="${esc(name)}"><span aria-hidden="true" style="width:var(${size});height:var(${size});border-radius:var(--radius-full);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${n}</span></div>`
 }
 const stopHtml = (p: MapPoi, order: number, day: number, selected: boolean) =>
   `<div style="${HIT}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected)}><span style="width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:var(--radius-full);background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${order}</span></div>`
@@ -133,6 +135,8 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID
   const select = useRef(onSelect)
   select.current = onSelect
+  const t = useCd()
+  const clusterZoom = useRef(new Map<string, () => void>())
   // The pin that last had the keyboard focus. A redraw can drop it for a moment (focus falls to the
   // page body), so it is kept until the focus moves somewhere else, and given back when the pin returns.
   const focusedPin = useRef<string | null>(null)
@@ -227,9 +231,16 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     })
     N.Event.once(map.current, 'init', () => setMapReady(true))
     N.Event.addListener(map.current, 'click', () => select.current(null))
-    // Keyboard on a focused pin or stop: Enter or Space selects it.
+    // Keyboard on a focused pin, stop or cluster: Enter or Space selects it (a cluster zooms in).
     el.current.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter' && e.key !== ' ') return
+      const cluster = (e.target as HTMLElement | null)?.closest?.('[data-cluster]')?.getAttribute('data-cluster')
+      const zoomIn = cluster ? clusterZoom.current.get(cluster) : undefined
+      if (zoomIn) {
+        e.preventDefault()
+        e.stopPropagation()
+        return zoomIn()
+      }
       const id = (e.target as HTMLElement | null)?.closest?.('[data-poi-id]')?.getAttribute('data-poi-id')
       if (!id) return
       e.preventDefault()
@@ -281,6 +292,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     const focusedId = !active || active === document.body ? focusedPin.current : active.closest?.('[data-poi-id]')?.getAttribute('data-poi-id')
     overlays.current.forEach((m) => m.setMap(null))
     overlays.current = []
+    clusterZoom.current.clear()
     const inPlan = new Set(planStops.map((s) => s.poi.poi_id))
     const free = pois.filter((p) => !inPlan.has(p.poi_id))
     const add = (lat: number, lng: number, html: string, anchor: { x: number; y: number }, onClick: () => void, z = 1) => {
@@ -328,14 +340,16 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
         const key = `${Math.floor(o.x / CLUSTER_GRID_PX)}:${Math.floor(o.y / CLUSTER_GRID_PX)}`
         buckets.set(key, [...(buckets.get(key) ?? []), p])
       }
-      buckets.forEach((members) => {
+      buckets.forEach((members, key) => {
         if (members.length === 1) return addPin(members[0])
         const lat = members.reduce((sum, p) => sum + p.coords_lat, 0) / members.length
         const lng = members.reduce((sum, p) => sum + p.coords_lng, 0) / members.length
-        add(lat, lng, clusterHtml(members.length), { x: 26, y: 26 }, () => {
+        const zoomIn = () => {
           fitPoints(members.map((p) => ({ lat: p.coords_lat, lng: p.coords_lng })))
           if (live() && map.current.getZoom() > 17) map.current.setZoom(17, true)
-        }, Z.cluster * Z_LAYER)
+        }
+        clusterZoom.current.set(key, zoomIn)
+        add(lat, lng, clusterHtml(members.length, key, t('CD1857', { count: members.length })), { x: 26, y: 26 }, zoomIn, Z.cluster * Z_LAYER)
       })
     } else {
       for (const p of rest) addPin(p)
