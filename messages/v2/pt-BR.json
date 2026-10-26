@@ -1737,6 +1737,8 @@
     "CD1837": "Ajuda e perguntas frequentes | B4K",
     "CD1838": "Respostas sobre o mapa, salvar lugares, roteiros, sua conta e privacidade.",
     "CD1839": "{topic} · Ajuda | B4K",
-    "CD1840": "{topic}: respostas às perguntas frequentes sobre o B4K."
+    "CD1840": "{topic}: respostas às perguntas frequentes sobre o B4K.",
+    "CD1855": "{count, plural, one {# lugar} other {# lugares}} nesta área",
+    "CD1857": "{count, plural, one {# lugar} other {# lugares}}, aproximar"
   }
 }

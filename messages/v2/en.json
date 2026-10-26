@@ -1799,6 +1799,22 @@
     "CD1837": "Help and FAQ | B4K",
     "CD1838": "Answers about the map, saving places, planning, your account and privacy.",
     "CD1839": "{topic} · Help | B4K",
-    "CD1840": "{topic}: answers to common questions about B4K."
+    "CD1840": "{topic}: answers to common questions about B4K.",
+    "CD1841": "Yes, B4K is free. Some plans are made with partners; they're marked Sponsored.",
+    "CD1842": "Search for a place, area, food or artist at the top, or pick a category chip on the map. Tap a pin to see the place. Use Locate me to see places near you.",
+    "CD1843": "Each pin is a place, shown with its photo. The pin you tap gets bigger and opens the place.",
+    "CD1844": "Open the place, tap Report a problem and choose what's wrong. We check every report and fix the place data.",
+    "CD1845": "We only show photos we have the rights to use. Some places don't have one yet; we add them as we get them.",
+    "CD1846": "Quick plan makes a plan for you. Pick where you're going, your dates, who you're traveling with and what you like; B4K picks places and puts them in order by day. You can change anything before you save it.",
+    "CD1847": "In Saved, under My plans. Plans by other people that you saved are under Saved plans.",
+    "CD1848": "No. Your saved places and lists are only visible to you. Other people only see the plans you make public.",
+    "CD1849": "Open Settings and tap your name under Account. Your display name shows on your profile and on plans you make public.",
+    "CD1850": "Open Settings. Choose Language to change the language, and Theme for Light, Dark or Match device.",
+    "CD1851": "Yes, within 30 days. Sign in and choose Keep my account. After 30 days your account and plans are gone for good.",
+    "CD1852": "Open Settings, go to Your data and privacy and choose Download a copy of your data. We email you a download link within 30 days. The file holds your profile, saved places, lists and plans.",
+    "CD1853": "Open the plan or profile, tap the ⋯ menu and choose Report this plan or Report this profile. Pick a reason, add details if you like, and tap Report.",
+    "CD1854": "Our team reviews every report and removes what breaks our rules. The person you reported isn't told who reported them, and we don't send you the outcome.",
+    "CD1855": "{count, plural, one {# place} other {# places}} in this area",
+    "CD1857": "{count, plural, one {# place} other {# places}}, zoom in"
   }
 }
