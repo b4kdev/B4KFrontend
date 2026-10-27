@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import { track } from '@/lib/analytics'
 import useSWR from 'swr'
-import { Copy, Map } from 'lucide-react'
+import { Map } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
   Accordion,
@@ -17,6 +17,7 @@ import {
   CookieBanner,
   EmptyState,
   LeftPanel,
+  ListItem,
   LegalDocument,
   SearchFilters,
   SearchInput,
@@ -24,6 +25,7 @@ import {
   SectionHeader,
   Skeleton,
   TopAppBar,
+  buttonVariants,
   type FilterGroup,
 } from '@/components/library'
 import { usePhone } from '@/components/library/hooks'
@@ -34,6 +36,7 @@ import { cookiePolicyContactEmail, cookiePolicyLastUpdated, cookiePolicySections
 import type { SearchExplore, SearchPlan, SearchPoi } from '@/app/api/search/route'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
+import { HELP_TOP, HELP_TOPICS, helpTopic, type HelpQuestion } from '../help'
 import { keepKNamesDeep } from '../text'
 import { V2Footer, V2Page } from '../V2Page'
 import { useSearchBox } from '../V2Search'
@@ -257,34 +260,63 @@ export function SearchScreen() {
 
 // ── Help ──────────────────────────────────────────────────────────
 
-const HELP_SECTIONS = ['getting-started', 'planning', 'saved', 'account', 'technical'] as const
+const linkRow = ({ href, className, children }: { href: string; className: string; children: ReactNode }) => <IntlLink href={href} className={className}>{children}</IntlLink>
 
+/** Help center: search over the questions, Top questions, topics, and the contact block; a topic
+ * (?topic=) shows its questions as an accordion, the one linked (&q=) or the first one open. */
 export function HelpScreen() {
-  const k = useCdKey()
-  const [copied, setCopied] = useState(false)
-  const email = k('help.sections.contact.emailAddress')
+  const t = useCd()
+  const params = useSearchParams()
+  const topic = helpTopic(params.get('topic'))
+  const [query, setQuery] = useState('')
+  const q = query.trim().toLocaleLowerCase()
+  const found = q ? HELP_TOPICS.flatMap((x) => x.questions).filter((x) => `${t(x.q)} ${t(x.a)}`.toLocaleLowerCase().includes(q)) : []
+  const title = topic ? t(topic.title) : t('CD0806')
+  const qa = (list: HelpQuestion[], open?: string) => (
+    <Accordion>
+      {list.map((x) => (
+        <AccordionItem key={x.id} title={t(x.q)} defaultExpanded={x.id === open} headingLevel={2}>{t(x.a)}</AccordionItem>
+      ))}
+    </Accordion>
+  )
   return (
-    <V2Page bar={{ type: 'page', title: k('help.title') }}>
-      <div className="mx-auto flex max-w-[720px] flex-col gap-[var(--space-10)]">
-        <h1 className="type-display-h1 max-lg:hidden">{k('help.title')}</h1>
-        {HELP_SECTIONS.map((s) => (
-          <section key={s} id={s} aria-labelledby={`h-${s}`} className="flex flex-col gap-[var(--space-3)]">
-            <h2 id={`h-${s}`} className="type-display-h3">{k(`help.sections.${s}.title`)}</h2>
-            <Accordion>
-              {(['q1', 'q2', 'q3'] as const).map((q) => (
-                <AccordionItem key={q} title={k(`help.sections.${s}.items.${q}.q`)}>{k(`help.sections.${s}.items.${q}.a`)}</AccordionItem>
-              ))}
-            </Accordion>
-          </section>
-        ))}
-        <section aria-labelledby="h-contact" className="flex flex-col gap-[var(--space-3)] border border-ui-border bg-ui-bg-raised p-[var(--space-6)]">
-          <h2 id="h-contact" className="type-display-h3">{k('help.sections.contact.title')}</h2>
-          <p className="type-body-base text-ui-fg-muted">{k('help.sections.contact.desc')}</p>
-          <div className="flex flex-wrap gap-[var(--gap-sm)]">
-            <a href={`mailto:${email}`} className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{k('help.sections.contact.ctaEmail')}</a>
-            <Button variant="secondary" size="md" leadingIcon={<Copy />} onClick={() => { navigator.clipboard?.writeText(email); setCopied(true) }}>
-              {copied ? k('help.sections.contact.copyEmailCopied') : k('help.sections.contact.copyEmail')}
-            </Button>
+    <V2Page bar={{ type: 'page', title }}>
+      <div className="mx-auto flex w-full max-w-[720px] flex-col gap-[var(--space-4)] lg:gap-[var(--space-6)] lg:py-[var(--space-4)]">
+        <h1 className="type-display-h2 max-lg:hidden">{title}</h1>
+        {topic ? (
+          <>
+            <p className="type-eyebrow-category text-ui-fg-muted">{t('CD1703', { n: topic.questions.length })}</p>
+            {qa(topic.questions, params.get('q') ?? topic.questions[0].id)}
+          </>
+        ) : (
+          <>
+            <SearchInput label={t('CD1696')} placeholder={t('CD1696')} value={query} onChange={(e) => setQuery(e.target.value)} onClear={() => setQuery('')} clearLabel={t('CD1248')} />
+            {q ? (
+              found.length ? qa(found) : <p className="type-body-base text-ui-fg-muted">{t('CD1322', { query: query.trim() })}</p>
+            ) : (
+              <>
+                <section aria-labelledby="help-top" className="flex flex-col gap-[var(--space-4)] lg:gap-[var(--space-6)]">
+                  <h2 id="help-top" className="type-eyebrow-category text-ui-fg-muted">{t('CD1697')}</h2>
+                  <ul>
+                    {HELP_TOP.map((x) => <ListItem key={x.id} title={t(x.q)} chevron href={`/help?topic=${x.topic}&q=${x.id}`} renderLink={linkRow} />)}
+                  </ul>
+                </section>
+                <section aria-labelledby="help-topics" className="flex flex-col gap-[var(--space-4)] lg:gap-[var(--space-6)]">
+                  <h2 id="help-topics" className="type-eyebrow-category text-ui-fg-muted">{t('CD1698')}</h2>
+                  <ul>
+                    {HELP_TOPICS.map((x) => <ListItem key={x.slug} title={t(x.title)} secondary={t('CD1703', { n: x.questions.length })} chevron href={`/help?topic=${x.slug}`} renderLink={linkRow} />)}
+                  </ul>
+                </section>
+              </>
+            )}
+          </>
+        )}
+        <section aria-labelledby="help-contact" className="flex flex-col gap-[var(--space-3)]">
+          <h2 id="help-contact" className="type-title-card">{t('CD1704')}</h2>
+          <p className="type-body-base text-ui-fg-muted">{t('CD1705')}</p>
+          {/* Send feedback waits for its endpoint; until then the page offers email only. */}
+          <div className="flex flex-wrap gap-[var(--space-2)]">
+            <a href={`mailto:${t('CD0344')}`} className={buttonVariants({ variant: 'ghost', size: 'lg' })}>{t('CD1707')}</a>
           </div>
         </section>
       </div>
