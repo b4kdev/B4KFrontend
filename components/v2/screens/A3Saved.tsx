@@ -152,7 +152,12 @@ export function SavedScreen() {
   const board = GAMIFICATION && tab === 'leaderboard'
   // Figma: Saved is a top-level destination (phone bar with Menu and search), title as a
   // section header on every width, then Tabs, then the Places toolbar (New list, Plan from Saved).
-  const head = <h1 className="type-display-h3">{k('saved.title')}</h1>
+  // On phones the section header is 40 high with the title at its foot.
+  const head = (
+    <div className="flex items-end max-md:min-h-[var(--control-height-md)]">
+      <h1 className="type-display-h3">{k('saved.title')}</h1>
+    </div>
+  )
   const toolbar = (
     <div className="flex items-center justify-between gap-[var(--space-4)]">
       <Button variant="ghost" size="md" onClick={() => setSheet({ mode: 'new' })}>{t('CD1206')}</Button>
