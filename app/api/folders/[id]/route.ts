@@ -4,9 +4,8 @@ import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/
 // M4 — folder rename / delete, wired to the BFF (folder id = UUID string).
 //   PATCH  → BFF PUT    /me/bookmark-folders/:id  body { name }
 //            (BFF rejects renaming the Default "All Saved" folder)
-//   DELETE → BFF DELETE /me/bookmark-folders/:id
-//            ⚠ BFF semantics: bookmarks inside the folder are deleted with it
-// (not moved back to "All Saved" as planned — backend gap).
+//   DELETE → BFF DELETE /me/bookmark-folders/:id: the list goes, its places stay in All saved
+//            places ({ moved: n }).
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const auth = await getSessionAuth()
@@ -31,11 +30,11 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
   const auth = await getSessionAuth()
   if (!auth) return unauthorized()
   try {
-    await bffFetch<{ folder_id: string; deleted_bookmarks: number }>(
+    const data = await bffFetch<{ folder_id: string; moved_bookmarks?: number }>(
       `/me/bookmark-folders/${encodeURIComponent(params.id)}`,
       { method: 'DELETE', token: auth.token },
     )
-    return NextResponse.json({ ok: true, id: params.id })
+    return NextResponse.json({ ok: true, id: params.id, moved: data.moved_bookmarks ?? 0 })
   } catch (e) {
     return bffErrorResponse(e)
   }
