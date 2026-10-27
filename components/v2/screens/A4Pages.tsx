@@ -18,6 +18,7 @@ import {
   EmptyState,
   LeftPanel,
   ListItem,
+  Logo,
   LegalDocument,
   SearchFilters,
   SearchInput,
@@ -423,17 +424,21 @@ export function ErrorScreen({ reset }: { reset: () => void }) {
 
 // ── About B4K (footer link) ─────────────────────────────────────────────────
 
-/** About B4K: a 720 column with the title and contact; the about and company texts come with their Copy Deck rows. */
+/** About B4K as drawn: the full-width wordmark, then the title and the about text, left-aligned
+ * (desktop: a 760 column under the wordmark). */
 export function AboutScreen() {
   const t = useCd()
-  const email = termsContactEmail
   return (
-    <V2Page bar={{ type: 'page', title: t('CD1173') }}>
-      <div className="mx-auto flex w-full max-w-[720px] flex-col gap-[var(--space-6)] lg:py-[var(--space-4)]">
-        <h1 className="type-title-card">{t('CD1173')}</h1>
-        <p className="type-body-base text-ui-fg-muted">
-          {t('CD0345')}: <a href={`mailto:${email}`} className="underline underline-offset-2 hover:text-ui-link-hover">{email}</a>
-        </p>
+    <V2Page bar={{ type: 'page', title: t('CD1173') }} bleed>
+      <div className="flex flex-col gap-[var(--space-4)] px-[var(--grid-gutter-mobile)] pb-[var(--space-6)] pt-[var(--space-8)] lg:gap-0 lg:p-0">
+        <div className="lg:px-[var(--space-10)] lg:pt-[var(--space-16)]">
+          <Logo type="wordmark" className="h-auto w-full" />
+        </div>
+        <div aria-hidden className="h-[var(--space-4)] lg:hidden" />
+        <div className="flex flex-col gap-[var(--space-4)] lg:w-[760px] lg:gap-[var(--space-6)] lg:px-[var(--space-10)] lg:pb-[var(--space-10)] lg:pt-[var(--space-12)]">
+          <h1 className="type-title-card">{t('CD1173')}</h1>
+          <p className="type-body-base text-ui-fg-muted">{t('CD1687')}</p>
+        </div>
       </div>
     </V2Page>
   )
