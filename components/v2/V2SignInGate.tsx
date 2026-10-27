@@ -76,9 +76,10 @@ export function useSignInFlow(next: string, onSignedIn: (user: User) => void, be
   const { toast } = useV2Shell()
   // After a sign-in: an account set to be deleted gets the Pending deletion view first.
   const signedIn = async (user: User) => {
-    const d = await fetch('/api/account/deletion').then((r) => (r.ok ? r.json() : null)).catch(() => null) as { deleted_at: string | null } | null
+    const d = await fetch('/api/account/deletion').then((r) => (r.ok ? r.json() : null)).catch(() => null) as { deleted_at: string | null; restore_deadline: string | null } | null
     if (!d?.deleted_at) return onSignedIn(user)
-    const goes = new Date(new Date(d.deleted_at).getTime() + 30 * 24 * 3600 * 1000)
+    // The server's deadline; 30 days after the request when an older answer has none.
+    const goes = new Date(d.restore_deadline ?? new Date(d.deleted_at).getTime() + 30 * 24 * 3600 * 1000)
     setPending({ user, date: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' }).format(goes) })
     setView('pending-deletion')
   }
