@@ -62,6 +62,7 @@ import { LANGUAGES, LanguageRowMenu } from '../V2Settings'
 import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { jsonFetch } from './A2Home'
 import { SignedOutPrompt } from './A3Saved'
+import { passwordProblem } from '@/lib/password'
 
 // A3 account screens and A5 language and theme: Profile own and visitor, Badges, Leaderboard,
 // Notifications, Settings. Live /api/profile, /api/badges, /api/leaderboard,
@@ -801,10 +802,10 @@ export function SettingsScreen() {
       </Modal>
       <Modal open={pwSheet} onClose={() => setPwSheet(false)} size="sm" title={k('profile.settings.password.heading')} closeLabel={k('badges.detail.close')}
         secondaryAction={<Button variant="ghost" onClick={() => setPwSheet(false)}>{k('saved.folder.cancel')}</Button>}
-        primaryAction={<Button disabled={pw.next.length < 8 || !pw.current} onClick={async () => { try { await send('/api/account/password', 'POST', { currentPassword: pw.current, newPassword: pw.next }); toast({ type: 'success', message: k('profile.settings.password.success') }); setPwSheet(false) } catch { toast({ type: 'critical', message: k('profile.settings.passwordError') }) } }}>{k('profile.settings.password.submit')}</Button>}>
+        primaryAction={<Button disabled={!!passwordProblem(pw.next) || !pw.current} onClick={async () => { try { await send('/api/account/password', 'POST', { currentPassword: pw.current, newPassword: pw.next }); toast({ type: 'success', message: k('profile.settings.password.success') }); setPwSheet(false) } catch { toast({ type: 'critical', message: k('profile.settings.passwordError') }) } }}>{k('profile.settings.password.submit')}</Button>}>
         <div className="flex flex-col gap-[var(--space-4)]">
           <TextInput label={k('profile.settings.password.current')} showLabel type="password" autoComplete="current-password" value={pw.current} onChange={(e) => setPw({ ...pw, current: e.target.value })} data-autofocus />
-          <TextInput label={k('profile.settings.password.new')} showLabel type="password" autoComplete="new-password" help={k('profile.settings.password.hint')} value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} />
+          <TextInput label={k('profile.settings.password.new')} showLabel type="password" autoComplete="new-password" help={k('profile.settings.password.hint')} error={passwordProblem(pw.next) === 'weak' ? t('CD1866') : undefined} value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} />
         </div>
       </Modal>
       <Dialog

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { WEAK_PASSWORD, isWeakPasswordError, passwordProblem } from '@/lib/password'
 
 export async function POST(req: Request) {
   const supabase = createSupabaseServerClient()
@@ -9,6 +10,9 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}))
   if (!body.currentPassword || !body.newPassword) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
+  }
+  if (typeof body.newPassword !== 'string' || passwordProblem(body.newPassword)) {
+    return NextResponse.json({ error: 'Password too weak', code: WEAK_PASSWORD }, { status: 400 })
   }
 
   // Verify current password by re-authenticating
@@ -20,7 +24,10 @@ export async function POST(req: Request) {
 
   // Update password through the user's session
   const { error: updateErr } = await supabase.auth.updateUser({ password: body.newPassword })
-  if (updateErr) return NextResponse.json({ error: updateErr.message }, { status: 400 })
+  if (updateErr) {
+    if (isWeakPasswordError(updateErr)) return NextResponse.json({ error: updateErr.message, code: WEAK_PASSWORD }, { status: 400 })
+    return NextResponse.json({ error: updateErr.message }, { status: 400 })
+  }
 
   return NextResponse.json({ ok: true })
 }

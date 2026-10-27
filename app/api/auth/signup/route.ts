@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { safePath } from '@/lib/safe-path'
+import { WEAK_PASSWORD, isWeakPasswordError, passwordProblem } from '@/lib/password'
 
 // Supabase Auth sign-up with email verification (flow 1).
 // Verification link → user confirms → auto-sign-in → interrupted action resumes.
@@ -14,8 +15,8 @@ export async function POST(req: Request) {
   if (typeof email !== 'string' || !email.includes('@')) {
     return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
   }
-  if (typeof password !== 'string' || password.length < 8) {
-    return NextResponse.json({ error: 'Password too short' }, { status: 400 })
+  if (typeof password !== 'string' || passwordProblem(password)) {
+    return NextResponse.json({ error: 'Password too weak', code: WEAK_PASSWORD }, { status: 400 })
   }
 
   const origin = new URL(req.url).origin
@@ -29,6 +30,7 @@ export async function POST(req: Request) {
   })
 
   if (error) {
+    if (isWeakPasswordError(error)) return NextResponse.json({ error: error.message, code: WEAK_PASSWORD }, { status: 400 })
     return NextResponse.json({ error: error.message }, { status: error.status ?? 400 })
   }
 

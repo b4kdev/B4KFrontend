@@ -6,6 +6,7 @@ import { Scrim, SignInCard, useFocusTrap, usePhone, type SignInView } from '@/co
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { needsConsent as needsConsentFor } from '@/lib/terms-consent'
 import { useLocale } from 'next-intl'
+import { WEAK_PASSWORD, passwordProblem } from '@/lib/password'
 import { useCd } from './cd'
 import { useV2Shell } from './V2Shell'
 
@@ -110,13 +111,17 @@ export function useSignInFlow(next: string, onSignedIn: (user: User) => void, be
           window.location.assign('/')
         }
       } else if (v === 'sign-up') {
-        if ((values.password ?? '').length < 8) return setError(t('CD0037'))
+        const problem = passwordProblem(values.password ?? '')
+        if (problem) return setError(t(problem === 'short' ? 'CD0037' : 'CD1866'))
         const res = await post('/api/auth/signup', { email: values.email, password: values.password, next })
         if (res.ok) {
           setKind('signup')
           setView('check-email')
           setResendLeft(60)
-        } else setError(t('CD0036'))
+        } else {
+          const body = await res.json().catch(() => ({}))
+          setError(t(body?.code === WEAK_PASSWORD ? 'CD1866' : 'CD0036'))
+        }
       } else if (v === 'forgot') {
         if (view === 'check-email' && resendLeft > 0) return
         const res = await post(kind === 'signup' && view === 'check-email' ? '/api/auth/signup/resend' : '/api/auth/forgot-password', { email: values.email ?? email, next })

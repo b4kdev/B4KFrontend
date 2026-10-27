@@ -17,6 +17,7 @@ import { useCd, useCdKey } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 import { useSignInFlow } from '../V2SignInGate'
+import { WEAK_PASSWORD, passwordProblem } from '@/lib/password'
 
 // A4 auth screens: Sign in, Reset password,
 // Consent step. Same auth calls as the live AuthForm.
@@ -68,7 +69,8 @@ export function ResetPasswordScreen() {
     const pw = values.password ?? ''
     setError(undefined)
     setConfirmError(undefined)
-    if (pw.length < 8) return setError(t('CD0063'))
+    const problem = passwordProblem(pw)
+    if (problem) return setError(t(problem === 'short' ? 'CD0063' : 'CD1866'))
     if (pw !== (values.confirm ?? '')) return setConfirmError(t('CD0062'))
     if (!token) return setExpired(true)
     setBusy(true)
@@ -76,7 +78,7 @@ export function ResetPasswordScreen() {
     setBusy(false)
     if (!res?.ok) {
       const body = await res?.json().catch(() => ({}))
-      return body?.code === 'expired' ? setExpired(true) : setError(t('CD0061'))
+      return body?.code === 'expired' ? setExpired(true) : setError(t(body?.code === WEAK_PASSWORD ? 'CD1866' : 'CD0061'))
     }
     toast({ type: 'success', message: t('CD0072') })
     router.push(next)
