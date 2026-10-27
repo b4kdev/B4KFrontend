@@ -47,6 +47,7 @@ import { useLocateMe } from '../map/LocateMe'
 import { useBadgeUnlock } from '../badges'
 import { useV2Shell } from '../V2Shell'
 import { usePendingAction } from '../V2SignInGate'
+import { useLikedPlaces } from '../usePlaceActions'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
 import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_DAYS, MAX_STOPS, PER_DAY, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
 import { CATEGORIES, jsonFetch } from './A2Home'
@@ -149,7 +150,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const detailName = detail ? nameOf(detail, locale) : ''
   const saved = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
   const savedIds = useMemo(() => new Set((saved.data?.pois ?? []).map((p) => p.poi_id)), [saved.data])
-  const [liked, setLiked] = useState<Set<string>>(new Set())
+  const likes = useLikedPlaces(!!user)
 
   const fitPlan = (stops: { coords_lat: number; coords_lng: number }[]) => mapRef.current?.fitTo(stops.map((s) => ({ lat: s.coords_lat, lng: s.coords_lng })))
   const loadForEdit = (it: ItineraryDetail) => {
@@ -298,18 +299,17 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     saved.mutate()
   }
   // Optimistic: the heart changes at once and goes back with a toast if the server refuses.
-  const flipLike = (id: string, on: boolean) => setLiked((s) => { const n = new Set(s); if (on) n.add(id); else n.delete(id); return n })
   const setLike = async (id: string, on: boolean) => {
-    flipLike(id, !on)
+    likes.set(id, !on)
     await send('/api/likes/poi', on ? 'DELETE' : 'POST', { poi_id: id }).catch(() => {
-      flipLike(id, on)
+      likes.set(id, on)
       toast({ type: 'critical', message: t('CD0061') })
     })
   }
   const toggleSave = (poi: { poi_id: string }) =>
     user ? setSave(poi.poi_id, savedIds.has(poi.poi_id)) : requireSignIn({ title: t('CD0027'), pending: { type: 'save_poi', id: poi.poi_id }, run: () => setSave(poi.poi_id, false, true) })
   const toggleLike = (id: string) =>
-    user ? setLike(id, liked.has(id)) : requireSignIn({ title: t('CD0054'), pending: { type: 'like_poi', id }, run: () => setLike(id, false) })
+    user ? setLike(id, likes.isLiked(id)) : requireSignIn({ title: t('CD0054'), pending: { type: 'like_poi', id }, run: () => setLike(id, false) })
   const openSaveSheet = () => { setPlanName(draft.plan.name ?? ''); setNameError(false); setSaveOpen(true) }
   usePendingAction('save_poi', !!user, (id) => { if (id) setSave(id, false, true) })
   usePendingAction('like_poi', !!user, (id) => { if (id) setLike(id, false) })
@@ -387,7 +387,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         description={detail.description}
         details={detail.address ? [{ icon: 'address', title: detail.address }] : []}
         saved={savedIds.has(detail.poi_id)}
-        liked={liked.has(detail.poi_id)}
+        liked={likes.isLiked(detail.poi_id)}
         onAdd={() => addToPlan(detail)}
         onSave={() => toggleSave(detail)}
         onLike={() => toggleLike(detail.poi_id)}
@@ -462,7 +462,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
               description={p.description}
               addToPlan={{ onAdd: () => addToPlan(p), label: `${k('map.poiDetail.addToPlan')}: ${nameOf(p, locale)}` }}
               save={{ saved: savedIds.has(p.poi_id), onSave: () => toggleSave(p), label: `${k('map.poiDetail.save')} ${nameOf(p, locale)}` }}
-              like={{ liked: liked.has(p.poi_id), onLike: () => toggleLike(p.poi_id), label: liked.has(p.poi_id) ? k('explore.card.unlikeAria', { name: nameOf(p, locale) }) : k('explore.card.likeAria', { name: nameOf(p, locale) }) }}
+              like={{ liked: likes.isLiked(p.poi_id), onLike: () => toggleLike(p.poi_id), label: likes.isLiked(p.poi_id) ? k('explore.card.unlikeAria', { name: nameOf(p, locale) }) : k('explore.card.likeAria', { name: nameOf(p, locale) }) }}
             />
           </li>
         ))}

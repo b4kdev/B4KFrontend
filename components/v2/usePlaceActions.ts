@@ -2,7 +2,7 @@
 
 import { useLocale } from 'next-intl'
 import { track } from '@/lib/analytics'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import { useAuth } from '@/contexts/AuthContext'
 import type { SavedData } from '@/app/api/saved/route'
@@ -18,11 +18,45 @@ const send = (url: string, method: string, body: unknown) =>
   })
 
 /**
+ * Liked state of the places on screen: every id asked through isLiked() is read from the account in
+ * batches after the render (signed in only; numeric ids, as seed codes such as 'KP-207' have no
+ * likes). A tap shows at once (set) and wins over the read.
+ */
+export function useLikedPlaces(signedIn: boolean) {
+  const [liked, setLiked] = useState<Set<string>>(new Set())
+  const seen = useRef<Set<string>>(new Set())
+  const asked = useRef<Set<string>>(new Set())
+  const tapped = useRef<Set<string>>(new Set())
+  useEffect(() => {
+    if (!signedIn) return
+    const ids = Array.from(seen.current).filter((id) => /^\d+$/.test(id) && !asked.current.has(id))
+    if (!ids.length) return
+    ids.forEach((id) => asked.current.add(id))
+    for (let i = 0; i < ids.length; i += 300) {
+      jsonFetch<{ liked_ids: string[] }>(`/api/likes/poi?ids=${ids.slice(i, i + 300).join(',')}`)
+        .then(({ liked_ids }) => setLiked((s) => {
+          const n = new Set(s)
+          liked_ids.forEach((id) => { if (!tapped.current.has(id)) n.add(id) })
+          return n
+        }))
+        // A failed read leaves those places unliked until the next visit; no retry loop.
+        .catch(() => {})
+    }
+  })
+  return {
+    isLiked: (id: string) => { seen.current.add(id); return liked.has(id) },
+    set: (id: string, on: boolean) => {
+      tapped.current.add(id)
+      setLiked((s) => { const n = new Set(s); if (on) n.add(id); else n.delete(id); return n })
+    },
+  }
+}
+
+/**
  * Save and Like for place cards (Home, Explore): the Card `save` and `like` props for a place.
  * A guest gets the sign-in gate and the save or like is done after the sign-in. Pass
  * `resume` once per screen so an action kept across Google or the Consent step is finished there.
- * Save is set optimistically (as plans). Liked state is local: the backend has no "liked by me"
- * read for places yet.
+ * Save is set optimistically (as plans). Liked state comes from useLikedPlaces.
  */
 export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
   const locale = useLocale()
@@ -35,7 +69,7 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
   // The tapped state shows at once; the old one comes back when the request fails.
   const [taps, setTaps] = useState<Map<string, boolean>>(new Map())
   const isSaved = (id: string) => taps.get(id) ?? (saved.data?.pois ?? []).some((p) => p.poi_id === id)
-  const [liked, setLiked] = useState<Set<string>>(new Set())
+  const likes = useLikedPlaces(!!user)
 
   // on: saved before the tap. signedIn: the save a guest started, finished after the sign-in (its own toast).
   const setSave = async (id: string, on: boolean, signedIn = false) => {
@@ -55,9 +89,9 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
     saved.mutate()
   }
   const setLike = async (id: string, on: boolean) => {
-    setLiked((s) => { const n = new Set(s); if (on) n.delete(id); else n.add(id); return n })
+    likes.set(id, !on)
     await send('/api/likes/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => { if (!on) unlock() }).catch(() => {
-      setLiked((s) => { const n = new Set(s); if (on) n.add(id); else n.delete(id); return n })
+      likes.set(id, on)
       toast({ type: 'critical', message: t('CD0061') })
     })
   }
@@ -66,7 +100,7 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
 
   return (id: string, name: string) => {
     const on = isSaved(id)
-    const isLiked = liked.has(id)
+    const isLiked = likes.isLiked(id)
     return {
       save: {
         saved: on,

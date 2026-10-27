@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
 
+// GET /api/likes/poi?ids=1,2,3 — which of these places the signed-in person liked → BFF GET
+//   /me/likes?ids= ({ liked_ids }); numeric ids only, at most 300 a call
 // POST /api/likes/poi — like a POI → BFF POST /likes/toggle
 // DELETE /api/likes/poi — unlike a POI → BFF POST /likes/toggle
 // The BFF endpoint is a toggle — the response carries the BFF's actual resulting
@@ -25,6 +27,19 @@ async function toggleLike(poiId: string | number, token: string) {
       liked: data.action === 'added',
       like_count: data.like_count,
     })
+  } catch (e) {
+    return bffErrorResponse(e)
+  }
+}
+
+export async function GET(req: NextRequest) {
+  const auth = await getSessionAuth()
+  if (!auth) return unauthorized()
+  const ids = (req.nextUrl.searchParams.get('ids') ?? '').split(',').filter((x) => /^\d+$/.test(x)).slice(0, 300)
+  if (!ids.length) return NextResponse.json({ liked_ids: [] })
+  try {
+    const data = await bffFetch<{ liked_ids: number[] }>(`/me/likes?ids=${ids.join(',')}`, { token: auth.token })
+    return NextResponse.json({ liked_ids: (data.liked_ids ?? []).map(String) })
   } catch (e) {
     return bffErrorResponse(e)
   }
