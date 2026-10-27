@@ -54,6 +54,18 @@ const send = (url: string, method: string, body?: unknown) =>
 
 const poiName = (p: SavedPoi, locale: string) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
 
+/** When a list last changed (its newest save, else its creation), as relative time in the page
+ * language: today, yesterday, 3 days ago, 2 weeks ago. */
+function updatedWhen(f: { created_at: string; pois: { saved_at: string }[] }, locale: string): string {
+  const last = Math.max(new Date(f.created_at).getTime(), ...f.pois.map((p) => new Date(p.saved_at).getTime()).filter((n) => !Number.isNaN(n)))
+  const days = Math.floor((Date.now() - last) / 86400000)
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
+  if (days < 7) return rtf.format(-days, 'day')
+  if (days < 30) return rtf.format(-Math.floor(days / 7), 'week')
+  if (days < 365) return rtf.format(-Math.floor(days / 30), 'month')
+  return rtf.format(-Math.floor(days / 365), 'year')
+}
+
 export function SignedOutPrompt({ title, text, icon, plain, className }: { title: string; text: string; icon?: React.ReactNode; plain?: boolean; className?: string }) {
   const t = useCd()
   const { requireSignIn } = useV2Shell()
@@ -205,7 +217,7 @@ export function SavedScreen() {
                 <ListCover name={f.name} photos={f.pois.map((p) => p.primary_image_url).filter((u): u is string => !!u)} />
                 <span className="flex flex-col gap-[var(--space-1)] bg-ui-bg-raised p-[var(--space-3)]">
                   <span className="type-title-card text-ui-fg">{f.name}</span>
-                  <span className="type-body-caption text-ui-fg-muted">{k('saved.folder.poiCount', { count: f.pois.length })}</span>
+                  <span className="type-body-caption text-ui-fg-muted">{t('CD1340', { count: f.pois.length, when: updatedWhen(f, locale) })}</span>
                 </span>
               </span>
             </button>
