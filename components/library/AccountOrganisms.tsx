@@ -184,11 +184,14 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
         <Logo />
         {onClose && view !== 'new-password' && view !== 'link-expired' && view !== 'pending-deletion' ? <IconButton label={labels.close} icon={<X />} onClick={onClose} /> : null}
       </div>
-      {view === 'check-email' ? <Mail aria-hidden className="size-[var(--icon-size-2xl)]" /> : null}
-      {view === 'pending-deletion' ? <Clock aria-hidden className="size-[var(--icon-size-2xl)]" /> : null}
-      <div className="flex flex-col gap-[var(--space-2)]">
-        <h2 id={id} className="type-display-h4">{heading}</h2>
-        {sub ? <p className="type-body-base text-ui-fg-muted">{sub}</p> : null}
+      {/* Figma Heading row: Check email and Pending deletion put their 40 icon left of the heading. */}
+      <div className="flex items-start gap-[var(--space-3)]">
+        {view === 'check-email' ? <Mail aria-hidden className="size-[var(--icon-size-2xl)] shrink-0" /> : null}
+        {view === 'pending-deletion' ? <Clock aria-hidden className="size-[var(--icon-size-2xl)] shrink-0" /> : null}
+        <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-2)]">
+          <h2 id={id} className="type-display-h4">{heading}</h2>
+          {sub ? <p className="type-body-base text-ui-fg-muted">{sub}</p> : null}
+        </div>
       </div>
       {draftNotice && view === 'providers' ? (
         <p className="flex items-start gap-[var(--space-2)] bg-ui-bg-sunken p-[var(--space-3)] type-body-caption text-ui-fg-muted">
