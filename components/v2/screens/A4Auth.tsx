@@ -78,7 +78,7 @@ export function ResetPasswordScreen() {
       const body = await res?.json().catch(() => ({}))
       return body?.code === 'expired' ? setExpired(true) : setError(t(body?.code === WEAK_PASSWORD ? 'CD1866' : 'CD0061'))
     }
-    toast({ type: 'success', message: t('CD0072') })
+    toast({ type: 'success', message: t('CD1860') })
     router.push(next)
   }
   const toSignIn = () => router.push(next === '/' ? '/login' : `/login?next=${encodeURIComponent(next)}`)
