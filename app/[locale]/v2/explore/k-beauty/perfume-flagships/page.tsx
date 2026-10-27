@@ -7,10 +7,10 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   return buildPerfumeFlagshipsMetadata(params.locale)
 }
 
-export default function Page({ params }: { params: { locale: string } }) {
+export default async function Page({ params }: { params: { locale: string } }) {
   return (
     <>
-      <JsonLd data={buildPerfumeFlagshipsJsonLd(params.locale)} />
+      <JsonLd data={await buildPerfumeFlagshipsJsonLd(params.locale)} />
       <SpecialScreen category="k-beauty" api="/api/explore/k-beauty/perfume-flagships" />
     </>
   )

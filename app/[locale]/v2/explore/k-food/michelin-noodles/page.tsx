@@ -7,10 +7,10 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   return buildMichelinNoodlesMetadata(params.locale)
 }
 
-export default function Page({ params }: { params: { locale: string } }) {
+export default async function Page({ params }: { params: { locale: string } }) {
   return (
     <>
-      <JsonLd data={buildMichelinNoodlesJsonLd(params.locale)} />
+      <JsonLd data={await buildMichelinNoodlesJsonLd(params.locale)} />
       <SpecialScreen category="k-food" api="/api/explore/k-food/michelin-noodles" />
     </>
   )

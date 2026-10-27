@@ -11,11 +11,12 @@ export async function buildPerfumeFlagshipsMetadata(locale: string): Promise<Met
   return namedPageMeta(locale, PATH, t('CD0272'), { description: t('CD1835', { count: PERFUME_FLAGSHIPS_TOTAL }) })
 }
 
-export function buildPerfumeFlagshipsJsonLd(locale: string) {
+export async function buildPerfumeFlagshipsJsonLd(locale: string) {
+  const { t } = await seoText(locale)
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: 'K-Beauty Flagship Tour',
+    name: t('CD0272'),
     numberOfItems: PERFUME_FLAGSHIPS_TOTAL,
     itemListElement: SEED_PERFUME_FLAGSHIPS.map((poi, i) => ({
       '@type': 'ListItem',

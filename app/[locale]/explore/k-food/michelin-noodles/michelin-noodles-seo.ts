@@ -11,11 +11,12 @@ export async function buildMichelinNoodlesMetadata(locale: string): Promise<Meta
   return namedPageMeta(locale, PATH, t('CD0267'), { description: t('CD1835', { count: MICHELIN_NOODLES_TOTAL }) })
 }
 
-export function buildMichelinNoodlesJsonLd(locale: string) {
+export async function buildMichelinNoodlesJsonLd(locale: string) {
+  const { t } = await seoText(locale)
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: 'Michelin-Picked Noodles',
+    name: t('CD0267'),
     numberOfItems: MICHELIN_NOODLES_TOTAL,
     itemListElement: SEED_MICHELIN_NOODLES.map((poi, i) => ({
       '@type': 'ListItem',
