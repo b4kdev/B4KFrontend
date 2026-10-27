@@ -350,8 +350,9 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
 
 export const config = {
   matcher: [
-    // Non-API pages (intl routing) — exclude api/, _next, _vercel, static files
-    '/((?!api|_next|_vercel|.*\\..*).*)',
+    // Non-API pages (intl routing) — exclude api/, _next, _vercel, static files and the share
+    // image routes (no extension, so the locale redirect would send them to a 404)
+    '/((?!api|_next|_vercel|opengraph-image|twitter-image|.*\\..*).*)',
     // All API routes (rate limiting)
     '/api/:path*',
   ],
