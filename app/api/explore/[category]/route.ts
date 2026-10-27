@@ -12,6 +12,8 @@ export interface ExplorePoi {
   name_en: string
   primary_image_url: string | null
   display_region: string
+  /** The interest category: the place type icon when there is no photo. */
+  interest_category?: string | null
   quality_score: number
   is_trending: boolean
   is_partner?: boolean
@@ -130,6 +132,7 @@ interface BffPlace {
   coords_lng: number
   display_region: string | null
   domains: string[] | null
+  interest_category?: string | null
   translations: Record<string, { name?: string; description?: string }> | null
 }
 
@@ -499,6 +502,7 @@ function mapPlace(p: BffPlace, locale: string): ExplorePoi {
     name_en: p.translations?.[locale]?.name ?? (locale === 'ko' ? p.name_ko : p.translations?.en?.name) ?? p.name_ko,
     primary_image_url: p.primary_image_url,
     display_region: p.display_region ?? '',
+    interest_category: p.interest_category ?? null,
     quality_score: 0, // not exposed by BFF list_places
     is_trending: false, // no backing flag — the trending row is like-ordered instead
     coords_lat: p.coords_lat,

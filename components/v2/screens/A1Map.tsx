@@ -29,6 +29,7 @@ import {
   TopAppBar,
   ZoomControl,
   type SheetSnap,
+  placeTypeOf,
 } from '@/components/library'
 import { usePhone } from '@/components/library/hooks'
 import { useAuth } from '@/contexts/AuthContext'
@@ -470,6 +471,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
               href={`/map?poi=${p.poi_id}`}
               title={nameOf(p, locale)}
               imageSrc={p.primary_image_url}
+              placeType={placeTypeOf(p.interest_category)}
               meta={p.display_region ?? ''}
               description={p.description}
               addToPlan={{ onAdd: () => addToPlan(p), label: `${k('map.poiDetail.addToPlan')}: ${nameOf(p, locale)}` }}

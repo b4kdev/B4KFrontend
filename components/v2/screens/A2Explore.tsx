@@ -24,6 +24,7 @@ import {
   Tabs,
   TreeItem,
   TreeView,
+  placeTypeOf,
 } from '@/components/library'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/cn'
@@ -313,6 +314,7 @@ function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceAct
       {...act(p.poi_id, poiName(p, locale))}
       title={poiName(p, locale)}
       imageSrc={p.primary_image_url}
+      placeType={placeTypeOf(p.interest_category)}
       meta={p.display_region}
       trending={p.is_trending ? t('CD0313') : undefined}
       sponsored={p.is_partner ? t('CD0476') : undefined}

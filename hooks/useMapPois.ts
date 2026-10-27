@@ -16,6 +16,8 @@ export interface MapPoi {
   coords_lat:        number
   coords_lng:        number
   display_domain?:   string | null
+  /** The interest category (food, stay, …): the place type icon when there is no photo. */
+  interest_category?: string | null
   display_region?:   string | null
   display_region_detail?: string
   is_trending?:      boolean   // no backing data yet — always undefined, degrades gracefully
@@ -42,6 +44,7 @@ interface RawPlace {
   coords_lng:        number
   display_region:    string | null
   domains:           string[] | null
+  interest_category?: string | null
   translations:      Record<string, { name?: string; description?: string }>
 }
 
@@ -66,6 +69,7 @@ function mapPlace(row: RawPlace, locale: string): MapPoi {
     coords_lat:         row.coords_lat,
     coords_lng:         row.coords_lng,
     display_domain:     row.domains?.[0] ?? null,
+    interest_category:  row.interest_category ?? null,
     display_region:     row.display_region,
     save_count:         row.save_count,
     like_count:         row.like_count,

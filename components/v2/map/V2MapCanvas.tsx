@@ -1,11 +1,12 @@
 'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any -- the Naver Maps SDK ships without types (as in components/map/NaverMapCanvas.tsx) */
 
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react'
 import Script from 'next/script'
 import type { MapBounds, MapPoi } from '@/hooks/useMapPois'
 import { TOKEN_HEX } from '@/tokens/colors'
 import { useCd } from '@/components/v2/cd'
+import { PLACE_TYPE_ICON, placeTypeOf } from '@/components/library'
 
 // Map canvas: the Naver map with the B4K markers. Map pin = the place photo in a circle with a
 // tail, no icon, by zoom tier: zoom 15 a dot, zoom 16 a small photo pin, zoom 17 and closer the
@@ -79,6 +80,12 @@ const PIN_SIZE: Record<Exclude<PinTier, 'dot'>, string> = { small: '--map-pin-si
 const PIN_PX: Record<PinTier, number> = { dot: 12, small: 32, large: 40, selected: 56 }
 const TAIL_PX = 6
 const LABEL = 'margin-top:var(--space-0-5);max-width:120px;padding:0 var(--space-1);border-radius:var(--radius-full);background:var(--map-pin-stroke);color:var(--map-pin-fill);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis'
+// A pin without a photo shows the place type icon in its disc (muted; on the red selected disc
+// fg-on-media). The SDK takes markup, so the icons are rendered once, hidden, and their SVG reused.
+const TYPE_SVG: Record<string, string> = {}
+const typeIcon = (p: MapPoi, selected: boolean) =>
+  `<span aria-hidden style="width:${selected ? 43 : 50}%;height:${selected ? 43 : 50}%;display:flex;color:${selected ? 'var(--color-fg-on-media)' : 'var(--color-fg-muted)'}">${TYPE_SVG[placeTypeOf(p.interest_category)] ?? ''}</span>`
+
 const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
   const selected = tier === 'selected'
   if (tier === 'dot') {
@@ -87,10 +94,12 @@ const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
   const size = `var(${PIN_SIZE[tier]})`
   const ring = selected ? 'var(--border-width-3) solid var(--map-pin-selected)' : 'var(--border-width-2) solid var(--map-pin-fill)'
   const tail = selected ? 'var(--map-pin-selected)' : 'var(--map-pin-fill)'
-  const photo = p.primary_image_url ? `background:var(--map-pin-stroke) url('${esc(pinSrc(p.primary_image_url))}') center/cover no-repeat` : 'background:var(--map-pin-fill)'
+  const photo = p.primary_image_url
+    ? `background:var(--map-pin-stroke) url('${esc(pinSrc(p.primary_image_url))}') center/cover no-repeat`
+    : `background:${selected ? 'var(--map-pin-selected)' : 'var(--map-pin-stroke)'};display:flex;align-items:center;justify-content:center`
   const name = showName || selected ? `<span style="${LABEL}">${poiLabel(p)}</span>` : ''
   // Fixed width so the anchor (half of it) stays on the place; a wider name overflows evenly on both sides.
-  return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;width:${Math.max(44, PIN_PX[tier])}px" ${markerAttrs(p.poi_id, poiLabel(p), selected)}><span style="box-sizing:border-box;width:${size};height:${size};border-radius:var(--radius-full);border:${ring};${photo};transition:all var(--duration-short4) var(--easing-standard)"></span><span aria-hidden style="width:0;height:0;border-left:${TAIL_PX}px solid transparent;border-right:${TAIL_PX}px solid transparent;border-top:${TAIL_PX}px solid ${tail}"></span>${name}</div>`
+  return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;width:${Math.max(44, PIN_PX[tier])}px" ${markerAttrs(p.poi_id, poiLabel(p), selected)}><span style="box-sizing:border-box;width:${size};height:${size};border-radius:var(--radius-full);border:${ring};${photo};transition:all var(--duration-short4) var(--easing-standard)">${p.primary_image_url ? '' : typeIcon(p, selected)}</span><span aria-hidden style="width:0;height:0;border-left:${TAIL_PX}px solid transparent;border-right:${TAIL_PX}px solid transparent;border-top:${TAIL_PX}px solid ${tail}"></span>${name}</div>`
 }
 // A cluster is a button named by its place count (not shown on screen); Enter or Space zooms in like a click.
 const clusterHtml = (n: number, key: string, name: string) => {
@@ -123,6 +132,11 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   ref,
 ) {
   const el = useRef<HTMLDivElement>(null)
+  const icons = useRef<HTMLDivElement>(null)
+  // The hidden type icons' SVG for the pins without a photo, read before the markers draw.
+  useLayoutEffect(() => {
+    icons.current?.querySelectorAll<SVGElement>('svg[data-type]').forEach((svg) => { TYPE_SVG[svg.dataset.type ?? ''] = svg.outerHTML })
+  }, [])
   const map = useRef<any>(null)
   const overlays = useRef<any[]>([])
   const lines = useRef<any[]>([])
@@ -388,6 +402,9 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
         <Script src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}&submodules=geocoder`} strategy="afterInteractive" onReady={() => setReady(true)} onError={() => setFailed(true)} />
       ) : null}
       <div ref={el} role="application" aria-label={label} data-map-tone={MAP_TONE} className="size-full" />
+      <div ref={icons} hidden>
+        {Object.entries(PLACE_TYPE_ICON).map(([type, Icon]) => <Icon key={type} data-type={type} width="100%" height="100%" aria-hidden />)}
+      </div>
       {failed || !clientId ? (
         <p role="alert" className="absolute inset-0 flex items-center justify-center p-[var(--space-6)] text-center type-body-base text-ui-fg-muted">{errorText}</p>
       ) : null}
