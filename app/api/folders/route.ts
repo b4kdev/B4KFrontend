@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
+import { seoText } from '@/lib/seo'
 
 // M4 — folder CRUD, wired to the BFF.
 //   GET  → BFF GET  /me/bookmark-folders
@@ -19,10 +21,11 @@ export async function GET() {
   if (!auth) return unauthorized()
   try {
     const folders = await bffFetch<BffFolder[]>('/me/bookmark-folders', { token: auth.token })
+    const allSaved = (await seoText(cookies().get('NEXT_LOCALE')?.value ?? 'en')).t('CD1872')
     return NextResponse.json({
       folders: folders.map(f => ({
         id:         f.folder_id,
-        name:       f.is_default ? 'All Saved' : f.name, // fixed label
+        name:       f.is_default ? allSaved : f.name, // the fixed list, named in the reader's language
         is_default: f.is_default,
         count:      f.count,
         created_at: f.created_at,

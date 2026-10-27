@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { bffFetch, bffErrorResponse, getSessionAuth } from '@/lib/bff'
+import { seoText } from '@/lib/seo'
 
 export interface SavedPoi {
   poi_id: string
@@ -21,7 +22,7 @@ export interface SavedFolder {
   name: string
   pois: SavedPoi[]
   created_at: string
-  is_default?: boolean // "All Saved" — not renamable/deletable
+  is_default?: boolean // All saved places: every save; not renamable/deletable
 }
 
 /** Plans saved from other users — social.plan_saves */
@@ -62,16 +63,16 @@ export interface SavedData {
   myPlans:  MyPlan[]
 }
 
-// Signed-out shape — "All Saved" (folder-000) always exists, even with
-// zero saves. The signed-in shape is built from the BFF (real Default folder UUID).
-const EMPTY: SavedData = {
+// Signed-out shape — All saved places (folder-000) always exists, even with zero saves. The
+// signed-in shape is built from the BFF (real Default folder UUID).
+const empty = (allSaved: string): SavedData => ({
   pois: [],
   folders: [
-    { id: 'folder-000', name: 'All Saved', created_at: new Date(0).toISOString(), is_default: true, pois: [] },
+    { id: 'folder-000', name: allSaved, created_at: new Date(0).toISOString(), is_default: true, pois: [] },
   ],
   plans: [],
   myPlans: [],
-}
+})
 
 // ── BFF response shapes (B4KBackend/API_FRONTEND.md) ──
 interface BffBookmark {
@@ -156,10 +157,11 @@ async function fetchAllBookmarks(token: string): Promise<BffBookmark[]> {
 
 export async function GET() {
   const auth = await getSessionAuth()
-  // Signed out — same shape the stub returned; the page's auth gate handles prompting.
-  if (!auth) return NextResponse.json(EMPTY)
-
   const locale = cookies().get('NEXT_LOCALE')?.value ?? 'en'
+  // The fixed list's name in the reader's language (the BFF calls it Default).
+  const allSaved = (await seoText(locale)).t('CD1872')
+  // Signed out — same shape the stub returned; the page's auth gate handles prompting.
+  if (!auth) return NextResponse.json(empty(allSaved))
 
   try {
     const [bookmarks, folders, savedItins, myItins] = await Promise.all([
@@ -182,10 +184,9 @@ export async function GET() {
       pois,
       folders: folders.map(f => ({
         id:         f.folder_id,
-        // BFF names the default folder "Default" — keep the frontend's fixed
-        // "All Saved" label.
-        name:       f.is_default ? 'All Saved' : f.name,
-        pois:       poisByFolder.get(f.folder_id) ?? [],
+        name:       f.is_default ? allSaved : f.name,
+        // All saved places holds every save; the other lists hold their own.
+        pois:       f.is_default ? pois : poisByFolder.get(f.folder_id) ?? [],
         created_at: f.created_at,
         is_default: f.is_default,
       })),
