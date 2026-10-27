@@ -180,16 +180,21 @@ export async function GET() {
       poisByFolder.set(b.folder_id, list)
     }
 
+    const lists: SavedFolder[] = folders.map(f => ({
+      id:         f.folder_id,
+      name:       f.is_default ? allSaved : f.name,
+      // All saved places holds every save; the other lists hold their own.
+      pois:       f.is_default ? pois : poisByFolder.get(f.folder_id) ?? [],
+      created_at: f.created_at,
+      is_default: f.is_default,
+    }))
+    // All saved places comes first, as drawn, and is there even before the BFF has made it.
+    if (!lists.some(f => f.is_default)) lists.unshift({ ...empty(allSaved).folders[0], pois })
+    lists.sort((a, b) => Number(!!b.is_default) - Number(!!a.is_default))
+
     const data: SavedData = {
       pois,
-      folders: folders.map(f => ({
-        id:         f.folder_id,
-        name:       f.is_default ? allSaved : f.name,
-        // All saved places holds every save; the other lists hold their own.
-        pois:       f.is_default ? pois : poisByFolder.get(f.folder_id) ?? [],
-        created_at: f.created_at,
-        is_default: f.is_default,
-      })),
+      folders: lists,
       plans: savedItins.map(p => ({
         id:                String(p.itinerary_id),
         title:             p.title ?? '',
