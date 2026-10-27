@@ -181,7 +181,7 @@ export function SearchScreen() {
       {data?.plans.length ? (
         show === 'plans' ? (
           <section className="flex flex-col gap-[var(--space-4)]">
-            <SectionHeader title={`${t('CD1308')} · ${data.plans.length}`} />
+            <SectionHeader title={t('CD1903', { label: t('CD1308'), count: data.plans.length })} />
             <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-4)] lg:grid-cols-3 lg:gap-x-[var(--space-4)]">
               {data.plans.map((p) => (
                 <li key={p.id}>
@@ -192,7 +192,7 @@ export function SearchScreen() {
           </section>
         ) : (
           <RowSection
-            title={`${t('CD1308')} · ${data.plans.length}`}
+            title={t('CD1903', { label: t('CD1308'), count: data.plans.length })}
             arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
             seeAll={{ href: `/search?q=${encodeURIComponent(q)}&show=plans`, label: t('CD1309') }}
             cards={data.plans.map((p) => (
@@ -203,7 +203,7 @@ export function SearchScreen() {
       ) : null}
       {data?.explore.length && !noResults ? (
         <section className="flex flex-col gap-[var(--space-4)]">
-          <SectionHeader title={`${t('CD1306')} · ${data.explore.length}`} />
+          <SectionHeader title={t('CD1903', { label: t('CD1306'), count: data.explore.length })} />
           <div className="flex flex-wrap gap-[var(--space-2)]">{exploreChips}</div>
         </section>
       ) : null}
