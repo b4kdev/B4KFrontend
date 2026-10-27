@@ -408,7 +408,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
           ) : (
           <>
           {/* No count while the list failed to load. */}
-          {failed ? null : <p aria-live="polite" className="type-body-caption text-ui-fg-muted">{isPlans ? t('CD1302', { count: filtered.length }) : t('CD0160', { count: filtered.length })}</p>}
+          {failed ? null : <p aria-live="polite" className="type-body-caption text-ui-fg-muted">{isPlans ? t('CD0575', { count: filtered.length }) : t('CD0160', { count: filtered.length })}</p>}
           <label className="relative">
             <Chip type="dropdown" aria-hidden tabIndex={-1} className="pointer-events-none">{sortLabel}</Chip>
             <select aria-label={t('CD1272')} value={sort} onChange={(e) => setSort(e.target.value)} className="absolute inset-0 cursor-pointer opacity-0">
