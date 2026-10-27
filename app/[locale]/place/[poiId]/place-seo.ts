@@ -1,19 +1,8 @@
 import type { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
 import { localizedUrl } from '@/lib/site-url'
 import { fitDescription, fitTitle, pageMeta, regionName, seoText } from '@/lib/seo'
 import { CATEGORIES } from '@/components/v2/categories'
 import type { PlaceDetail } from '@/lib/place-detail'
-
-// display_domain slug -> explore.<key> namespace, reusing the same translated
-// category names Explore already ships in all 7 locales instead of adding
-// duplicate strings.
-const DOMAIN_TO_EXPLORE_KEY: Record<string, string> = {
-  'k-pop':     'kpop',
-  'k-drama':   'kdrama',
-  'k-beauty':  'kbeauty',
-  'k-culture': 'kculture',
-}
 
 // "{name} — {kind} in {area} | B4K", then without the area, then the name only (the first that fits
 // 60 characters). Other languages than Korean show the Korean name too: "{name} ({nameKo})". The
@@ -39,10 +28,11 @@ export async function buildPlaceMetadata(place: PlaceDetail, locale: string): Pr
 
 // Breadcrumb for a place page: Home, the place's Explore category (when it has one), the place.
 export async function buildPlaceBreadcrumbJsonLd(place: PlaceDetail, locale: string) {
-  const categoryKey = place.display_domain ? DOMAIN_TO_EXPLORE_KEY[place.display_domain] : null
-  const category = categoryKey ? await getTranslations({ locale, namespace: 'explore' }).then((te) => te(`${categoryKey}.title`)) : null
+  const { t } = await seoText(locale)
+  const label = CATEGORIES.find((c) => c.slug === place.display_domain)?.label
+  const category = label ? t(label) : null
   const items = [
-    { name: 'B4K', url: localizedUrl(locale) },
+    { name: t('CD0807'), url: localizedUrl(locale) },
     ...(category ? [{ name: category, url: localizedUrl(locale, `/explore/${place.display_domain}`) }] : []),
     { name: place.name, url: localizedUrl(locale, `/place/${place.poi_id}`) },
   ]

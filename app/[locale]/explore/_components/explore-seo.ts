@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
 import { NextRequest } from 'next/server'
 import { localizedUrl } from '@/lib/site-url'
 import { fitDescription, pageMeta, seoText } from '@/lib/seo'
@@ -44,15 +43,16 @@ export async function buildExploreMetadata(
 }
 
 export async function buildExploreBreadcrumbJsonLd(category: ExploreCategory, locale: string) {
-  const { tKey, path } = CATEGORY_MAP[category]
-  const t = await getTranslations({ locale, namespace: 'explore' })
+  const { path } = CATEGORY_MAP[category]
+  // Copy Deck rows as the on-screen breadcrumbs: Home, Explore, the category.
+  const { t } = await seoText(locale)
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'B4K', item: localizedUrl(locale, '') },
-      { '@type': 'ListItem', position: 2, name: t('title'), item: localizedUrl(locale, '/explore') },
-      { '@type': 'ListItem', position: 3, name: t(`${tKey}.title`), item: localizedUrl(locale, path) },
+      { '@type': 'ListItem', position: 1, name: t('CD0807'), item: localizedUrl(locale, '') },
+      { '@type': 'ListItem', position: 2, name: t('CD0804'), item: localizedUrl(locale, '/explore') },
+      { '@type': 'ListItem', position: 3, name: t(CATEGORIES.find((c) => c.slug === category)?.label ?? 'CD0804'), item: localizedUrl(locale, path) },
     ],
   }
 }
