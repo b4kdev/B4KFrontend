@@ -533,7 +533,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       activeDay={activeDay}
       onDayChange={(d) => setActiveDay(d)}
       onAddDay={draft.addDay}
-      summary={editing ? GAP.editing(editing.title) : order.length ? `${t('CD0679')} · ${k('itinerary.stats.stops', { count: order.length })} · ${formatMinutes(totalMin, k)}` : t('CD1359')}
+      summary={editing ? GAP.editing(editing.title) : order.length ? t('CD1858', { count: order.length, time: formatMinutes(totalMin, k) }) : t('CD1359')}
       lastAdded={order.length ? nameOf(order[order.length - 1], locale) : undefined}
       lastAddedImage={order.length ? order[order.length - 1].primary_image_url ?? null : undefined}
       lastAddedMeta={order.length ? GAP.lastAddedMore(order.length - 1) : undefined}
