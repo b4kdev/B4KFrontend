@@ -16,8 +16,9 @@ import { V2_LIVE_HEADER } from '@/lib/v2-live'
 // those keep the live site's metadata instead of the preview's.
 export async function generateMetadata(): Promise<Metadata> {
   if (headers().get(V2_LIVE_HEADER)) return {}
+  // The preview address itself (/[locale]/v2/...) redirects to the live one; whatever is still
+  // served here stays out of search results and keeps the site title.
   return {
-    title: 'B4K preview',
     robots: { index: false, follow: false, nocache: true },
   }
 }
