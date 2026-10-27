@@ -76,7 +76,7 @@ export function AccordionItem({ title, children, defaultExpanded = false, headin
   const id = useId()
   const H = `h${headingLevel}` as 'h3'
   return (
-    <div className="border-b border-ui-border">
+    <div className={ROW_DIVIDER}>
       <H className="m-0">
         <button
           type="button"

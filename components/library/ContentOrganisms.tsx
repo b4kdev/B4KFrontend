@@ -181,9 +181,9 @@ export function TreeView({ label, children, className }: { label: string; childr
   return <ul role="tree" aria-label={label} className={className}>{children}</ul>
 }
 
-/** Accordion: Accordion items under a 1px top border; several can be open. */
+/** Accordion: a stack of Accordion items, each with its divider inside; several can be open. */
 export function Accordion({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn('border-t border-ui-border', className)}>{children}</div>
+  return <div className={className}>{children}</div>
 }
 
 export type NowSeoulCardProps = {
