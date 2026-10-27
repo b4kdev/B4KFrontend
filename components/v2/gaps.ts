@@ -1,15 +1,12 @@
 'use client'
 
 import { useMemo } from 'react'
-import { useTranslations } from 'next-intl'
 import { useCd } from './cd'
 
 // Texts with parameters or shared by several screens, read from the Copy Deck rows (cd namespace);
-// screens may call t('CDxxxx') directly instead. areaName still has no deck row:
-// it lives in the gap namespace of messages/v2/supplement/{locale}.json until the deck has it.
+// screens may call t('CDxxxx') directly instead.
 export function useGap() {
   const t = useCd()
-  const g = useTranslations('gap')
   return useMemo(
     () => ({
       breadcrumb: t('CD1640'),
@@ -46,13 +43,13 @@ export function useGap() {
       // Map: refetch the filter results for the area in view after a pan.
       searchArea: t('CD1686'),
       // Map list header: the area at the map center and how many places the list holds.
-      areaName: (district: string, city: string) => g('areaName', { district, city }),
+      areaName: (district: string, city: string) => t('CD1900', { district, city }),
       placesInArea: (count: number) => (count ? t('CD1855', { count }) : t('CD0626')),
       dayTotal: (n: number, time: string, count: number, max: number) => t('CD1481', { n, time, count, max }),
       allDaysTotal: (time: string, count: number) => t('CD1549', { time, count }),
       // A new plan with no stops: the line without a time (All days · 0 stops).
       allDaysEmpty: t('CD1902', { count: 0 }),
     }),
-    [t, g],
+    [t],
   )
 }
