@@ -58,6 +58,9 @@ export async function GET(req: Request) {
     ),
     {
       ...SIZE,
+      // Share images (title cards) change only with the title in their address: a day, a week at the
+      // CDN. Set here, not in next.config, so the response carries one Cache-Control.
+      headers: { 'Cache-Control': 'public, max-age=86400, s-maxage=604800' },
       ...(font ? { fonts: [{ name: 'Display', data: font, style: 'normal' as const, weight: 400 as const }] } : {}),
     },
   )

@@ -35,14 +35,13 @@ const nextConfig = {
         headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' }],
       })),
       // API: never cached by default (account, saved, plans, notifications, anything with a session).
-      { source: '/api/:path*', headers: [{ key: 'Cache-Control', value: 'private, no-store' }] },
+      // The share image route sets its own (app/api/og/route.tsx).
+      { source: '/api/:path((?!og$).*)', headers: [{ key: 'Cache-Control', value: 'private, no-store' }] },
       // Public data that reads no session or cookie: 5 minutes at the CDN, then refreshed in the background.
       ...PUBLIC_API.map((source) => ({
         source,
         headers: [{ key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=600' }],
       })),
-      // Share images (title cards) change only with the title in their address: a day, a week at the CDN.
-      { source: '/api/og', headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, s-maxage=604800' }] },
     ];
   },
   images: {
