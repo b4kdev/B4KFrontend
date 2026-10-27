@@ -41,7 +41,7 @@ export async function GET(req: Request) {
   const family = FACE[locale] ?? 'Archivo Black'
   const font = title ? await loadFont(family, `${title}${kind}`) : null
   const logo = await markSrc()
-  return new ImageResponse(
+  const res = new ImageResponse(
     (
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 80, backgroundColor: BG }}>
         {font ? (
@@ -58,10 +58,11 @@ export async function GET(req: Request) {
     ),
     {
       ...SIZE,
-      // Share images (title cards) change only with the title in their address: a day, a week at the
-      // CDN. Set here, not in next.config, so the response carries one Cache-Control.
-      headers: { 'Cache-Control': 'public, max-age=86400, s-maxage=604800' },
       ...(font ? { fonts: [{ name: 'Display', data: font, style: 'normal' as const, weight: 400 as const }] } : {}),
     },
   )
+  // Share images (title cards) change only with the title in their address: a day, a week at the CDN.
+  // Replaces ImageResponse's own year-long value, so the response carries one Cache-Control.
+  res.headers.set('Cache-Control', 'public, max-age=86400, s-maxage=604800')
+  return res
 }
