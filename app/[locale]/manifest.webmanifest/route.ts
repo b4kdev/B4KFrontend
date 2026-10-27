@@ -4,7 +4,7 @@ import { seoText } from '@/lib/seo'
 
 // Web app manifest per language (installable, no service worker): opens on the visitor's language,
 // colors from the dark color-bg token (the icons are the white mark on it).
-const BG = '#0a0a0a'
+const BG = '#0a0a0a' // allow-hex — color-bg (dark); a manifest cannot read CSS variables
 
 export async function GET(_req: Request, { params }: { params: { locale: string } }) {
   if (!routing.locales.includes(params.locale as (typeof routing.locales)[number])) return new NextResponse(null, { status: 404 })

@@ -6,14 +6,14 @@ import { ImageResponse } from 'next/og'
 // dark background, the B4K mark below. Colors are the dark theme's token values (color-bg,
 // color-fg, color-fg-muted); ImageResponse needs literal colors. The face is the display face of
 // the language (Archivo Black; Noto Sans KR / JP / TC Black), loaded from Google Fonts as a subset
-// of the title's characters; when that fails the image shows the mark alone. Cache: next.config.
+// of the title's characters; when that fails the image shows the mark alone. Cache: set below.
 
 export const runtime = 'nodejs'
 
 const SIZE = { width: 1200, height: 630 }
-const BG = '#0a0a0a'
-const FG = '#f7f6f3'
-const MUTED = '#8f8e8c'
+const BG = '#0a0a0a' // allow-hex — color-bg (dark); ImageResponse requires literal colours
+const FG = '#f7f6f3' // allow-hex — color-fg (dark)
+const MUTED = '#8f8e8c' // allow-hex — color-fg-muted (dark)
 const FACE: Record<string, string> = { ko: 'Noto Sans KR', ja: 'Noto Sans JP', 'zh-TW': 'Noto Sans TC' }
 
 async function loadFont(family: string, text: string): Promise<ArrayBuffer | null> {
