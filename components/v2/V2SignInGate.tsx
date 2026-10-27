@@ -195,6 +195,7 @@ export type GateRequest = {
 
 /** The gate overlay: Modal-style card on desktop, bottom sheet style on phones. */
 export function SignInGate({ request, onClose, onConsent }: { request: GateRequest | null; onClose: () => void; onConsent: (next: string) => void }) {
+  const t = useCd()
   const phone = usePhone()
   const ref = useFocusTrap<HTMLDivElement>(!!request, onClose)
   const flow = useSignInFlow(
@@ -223,7 +224,7 @@ export function SignInGate({ request, onClose, onConsent }: { request: GateReque
           ? 'fixed inset-x-0 bottom-0 z-50 max-h-[90dvh] overflow-y-auto rounded-t-3xl bg-ui-bg-elevated pb-[env(safe-area-inset-bottom)]'
           : 'fixed left-1/2 top-1/2 z-50 w-[calc(100%-var(--space-8))] max-w-[420px] -translate-x-1/2 -translate-y-1/2'}
       >
-        <SignInCard {...flow} title={request.title} draftNotice={request.draftNotice} onClose={onClose} onGuest={onClose} />
+        <SignInCard {...flow} title={request.title} subtitle={t('CD0056')} draftNotice={request.draftNotice} onClose={onClose} onGuest={onClose} />
       </div>
     </>
   )

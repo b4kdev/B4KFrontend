@@ -12,7 +12,6 @@ import { afterSignIn, fetchAccountStatus } from '@/lib/terms-consent'
 import { safePath } from '@/lib/safe-path'
 import { useGap } from '../gaps'
 import { track } from '@/lib/analytics'
-import { GAMIFICATION } from '@/lib/features'
 import { useCd, useCdKey } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
@@ -39,8 +38,7 @@ export function LoginScreen() {
   }, [deletion])
   return (
     <V2Page bar={{ type: 'page', title: t('CD0050') }} noFooter="phone" className="flex items-center justify-center">
-      {/* The drawn value line names leaderboards and badges: shown only while those are on. */}
-      <SignInCard {...flow} title={t('CD0054')} subtitle={GAMIFICATION ? t('CD0056') : undefined} />
+      <SignInCard {...flow} title={t('CD0054')} subtitle={t('CD0056')} />
     </V2Page>
   )
 }
