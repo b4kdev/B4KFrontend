@@ -664,6 +664,10 @@ export function SettingsScreen() {
   const [nameSheet, setNameSheet] = useState(false)
   const [name, setName] = useState('')
   const [pwSheet, setPwSheet] = useState(false)
+  // What you agreed to: the account's consent record, read when the sheet opens.
+  const [agreedSheet, setAgreedSheet] = useState(false)
+  const consent = useSWR<{ consent: { age_confirmed?: boolean; accepted_at?: string } | null }>(user && agreedSheet ? '/api/account/consent' : null, jsonFetch)
+  const agreedOn = consent.data?.consent?.accepted_at ? new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(consent.data.consent.accepted_at)) : null
   const [pw, setPw] = useState({ current: '', next: '' })
   const [deleting, setDeleting] = useState(false)
   // Account delete needs a sign-in within the last 10 minutes (the delete route enforces it too):
@@ -768,6 +772,7 @@ export function SettingsScreen() {
         {/* Privacy is per plan: no per-tab public toggles here. */}
         <h2 className={heading}>{GAP.settingsData}</h2>
         <ul>
+          {user ? <ListItem title={t('CD1766')} secondary={t('CD1767')} chevron onClick={() => setAgreedSheet(true)} /> : null}
           <ListItem title={t('CD1603')} secondary={t('CD0137')} chevron onClick={() => router.push('/legal/cookies')} />
           {user ? <ListItem title={<span className="text-ui-danger">{k('profile.settings.deleteAccount')}</span>} secondary={GAP.deleteAccountNote} onClick={startDelete} /> : null}
         </ul>
@@ -806,6 +811,17 @@ export function SettingsScreen() {
         <div className="flex flex-col gap-[var(--space-4)]">
           <TextInput label={k('profile.settings.password.current')} showLabel type="password" autoComplete="current-password" value={pw.current} onChange={(e) => setPw({ ...pw, current: e.target.value })} data-autofocus />
           <TextInput label={k('profile.settings.password.new')} showLabel type="password" autoComplete="new-password" help={k('profile.settings.password.hint')} error={passwordProblem(pw.next) === 'weak' ? t('CD1866') : undefined} value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} />
+        </div>
+      </Modal>
+      <Modal open={agreedSheet} onClose={() => setAgreedSheet(false)} size="sm" title={t('CD1766')} closeLabel={t('CD0758')} hideClose
+        primaryAction={<Button onClick={() => setAgreedSheet(false)}>{t('CD0758')}</Button>}>
+        <div className="flex flex-col gap-[var(--space-2)]">
+          <p className="type-body-base text-ui-fg-muted">{t('CD1769')}</p>
+          <ul>
+            <ListItem title={t('CD0812')} secondary={agreedOn ? t('CD1770', { date: agreedOn }) : undefined} chevron href="/legal/terms" renderLink={({ href, className, children }) => <IntlLink href={href} className={className}>{children}</IntlLink>} />
+            <ListItem title={t('CD0811')} secondary={agreedOn ? t('CD1770', { date: agreedOn }) : undefined} chevron href="/legal/privacy" renderLink={({ href, className, children }) => <IntlLink href={href} className={className}>{children}</IntlLink>} />
+            <ListItem title={t('CD1771')} secondary={agreedOn && consent.data?.consent?.age_confirmed ? t('CD1772', { date: agreedOn }) : undefined} />
+          </ul>
         </div>
       </Modal>
       <Dialog
