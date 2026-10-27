@@ -116,6 +116,31 @@ export function clearDraftTags(): void {
   try { localStorage.removeItem(DRAFT_KEY) } catch { /* storage unavailable */ }
 }
 
+// Quick plan 답변(목적지·날짜·동행) — 로그인 유저는 PUT /me/quick-plan, 게스트는 로컬에 두었다가 로그인 후 전송.
+export type QuickPlanAnswers = { destination?: string; start_date?: string; end_date?: string; who_with?: string }
+const ANSWERS_KEY = 'b4k_quickplan_answers'
+
+export function saveDraftAnswers(a: QuickPlanAnswers): void {
+  try { localStorage.setItem(ANSWERS_KEY, JSON.stringify({ a, ts: Date.now() })) } catch { /* storage unavailable */ }
+}
+
+export function readDraftAnswers(): QuickPlanAnswers | null {
+  try {
+    const raw = localStorage.getItem(ANSWERS_KEY)
+    if (!raw) return null
+    const d = JSON.parse(raw) as { a?: QuickPlanAnswers; ts?: unknown }
+    if (!d.a || typeof d.ts !== 'number' || Date.now() - d.ts > DRAFT_TTL_MS) {
+      localStorage.removeItem(ANSWERS_KEY)
+      return null
+    }
+    return d.a
+  } catch { return null }
+}
+
+export function clearDraftAnswers(): void {
+  try { localStorage.removeItem(ANSWERS_KEY) } catch { /* storage unavailable */ }
+}
+
 // ── 날짜 ────────────────────────────────────────────────────────────────────
 export function toISODate(d: Date): string {
   const m = String(d.getMonth() + 1).padStart(2, '0')

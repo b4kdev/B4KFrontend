@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { apiFetch } from '@/lib/api';
-import { clearDraftTags, readDraftTags } from '@/lib/quickplan';
+import { clearDraftAnswers, clearDraftTags, readDraftAnswers, readDraftTags } from '@/lib/quickplan';
 
 // 퀵플랜 모달의 전역 진입점. 사이드바 버튼은 호출자 중 하나일 뿐 —
 // 어느 페이지/컴포넌트에서든 `useQuickPlan().open()` 으로 열 수 있다.
@@ -29,6 +29,13 @@ export function QuickPlanProvider({ children }: { children: React.ReactNode }) {
   const close = useCallback(() => setIsOpen(false), []);
 
   // 게스트가 고른 칩은 로컬에 보관돼 있다 → 로그인되면 서버에 저장.
+  // Quick plan 답변(목적지·날짜·동행)도 같이 올린다 — 조용히, 실패하면 다음 로그인 때 다시.
+  useEffect(() => {
+    if (loading || !user) return;
+    const answers = readDraftAnswers();
+    if (answers) apiFetch('/me/quick-plan', { method: 'PUT', body: JSON.stringify(answers) }).then(clearDraftAnswers).catch(() => {});
+  }, [user, loading]);
+
   useEffect(() => {
     if (loading || !user || syncingTags.current) return;
     const tags = readDraftTags();
