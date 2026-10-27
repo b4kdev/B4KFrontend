@@ -24,14 +24,17 @@ export default function Analytics() {
   }, [])
 
   // Page views are sent here, not by gtag itself, so the address leaves without its query
-  // (the search text on /search, ids, tokens); campaign tags stay.
+  // (the search text on /search, ids, tokens); campaign tags stay. Every other hit takes the same
+  // cleaned address and referrer from gtag('set'), not gtag's own read of document.location.
   // The first one goes out from the init script below; data-pv holds the last path sent.
   const pathname = usePathname()
   useEffect(() => {
     const root = document.documentElement
     if (!granted || !GA_ID || typeof window.gtag !== 'function' || root.dataset.pv === pathname) return
     root.dataset.pv = pathname ?? ''
-    window.gtag('event', 'page_view', { page_location: withoutQuery(window.location.href), page_title: document.title })
+    const page_location = withoutQuery(window.location.href)
+    window.gtag('set', { page_location })
+    window.gtag('event', 'page_view', { page_location, page_title: document.title })
   }, [granted, pathname])
 
   return (
@@ -50,14 +53,22 @@ export default function Analytics() {
                 ad_personalization: 'denied'
               });
               gtag('js', new Date());
-              gtag('config', '${GA_ID}', { send_page_view: false });
-              // First page view, address without its query as withoutQuery() in lib/analytics.ts.
-              var u = new URL(location.href), keep = [];
-              u.searchParams.forEach(function (v, k) { if (k.indexOf('utm_') === 0) keep.push([k, v]); });
-              u.search = new URLSearchParams(keep).toString();
-              u.hash = '';
+              // Addresses without their query, as withoutQuery() in lib/analytics.ts: set for every
+              // hit (page views, search, engagement, custom events), the referrer too.
+              function clean(href) {
+                try {
+                  var u = new URL(href), keep = [];
+                  u.searchParams.forEach(function (v, k) { if (k.indexOf('utm_') === 0) keep.push([k, v]); });
+                  u.search = new URLSearchParams(keep).toString();
+                  u.hash = '';
+                  return u.toString();
+                } catch (e) { return ''; }
+              }
+              var loc = clean(location.href), ref = document.referrer ? clean(document.referrer) : '';
+              gtag('set', { page_location: loc, page_referrer: ref });
+              gtag('config', '${GA_ID}', { send_page_view: false, page_location: loc, page_referrer: ref });
               document.documentElement.dataset.pv = location.pathname;
-              gtag('event', 'page_view', { page_location: u.toString(), page_title: document.title });
+              gtag('event', 'page_view', { page_location: loc, page_title: document.title });
             `}
           </Script>
           <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
