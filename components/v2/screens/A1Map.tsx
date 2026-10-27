@@ -537,7 +537,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       lastAdded={order.length ? nameOf(order[order.length - 1], locale) : undefined}
       lastAddedImage={order.length ? order[order.length - 1].primary_image_url ?? null : undefined}
       lastAddedMeta={order.length ? GAP.lastAddedMore(order.length - 1) : undefined}
-      dayTotal={withEditNote(dayTotal !== null ? (dayStops && typeof activeDay === 'number' ? GAP.dayTotal(activeDay, formatMinutes(dayTotal, k), dayStops, PER_DAY) : [k('map.plan.dayTab', { n: activeDay }), k('itinerary.stats.stops', { count: dayStops })].join(' · ')) : order.length ? GAP.allDaysTotal(formatMinutes(totalMin, k), order.length) : undefined)}
+      dayTotal={withEditNote(dayTotal !== null ? (dayStops && typeof activeDay === 'number' ? GAP.dayTotal(activeDay, formatMinutes(dayTotal, k), dayStops, PER_DAY) : [k('map.plan.dayTab', { n: activeDay }), k('itinerary.stats.stops', { count: dayStops })].join(' · ')) : order.length ? GAP.allDaysTotal(formatMinutes(totalMin, k), order.length) : GAP.allDaysEmpty)}
       durationMenu={(id) => DURATIONS.map((m) => (
         <MenuItem key={m} checked={draft.plan.durations[id] === m} onClick={() => draft.setDuration(id, m)}>{formatMinutes(m, k)}</MenuItem>
       ))}

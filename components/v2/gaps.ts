@@ -50,6 +50,8 @@ export function useGap() {
       placesInArea: (count: number) => (count ? t('CD1855', { count }) : t('CD0626')),
       dayTotal: (n: number, time: string, count: number, max: number) => t('CD1481', { n, time, count, max }),
       allDaysTotal: (time: string, count: number) => t('CD1549', { time, count }),
+      // A new plan with no stops: the line without a time (All days · 0 stops).
+      allDaysEmpty: t('CD1902', { count: 0 }),
     }),
     [t, g],
   )
