@@ -8,7 +8,7 @@ import { ConsentStep, EmptyState, Modal, Scrim, SignInCard, Spinner, usePhone, t
 import { termsSections } from '@/content/legal/terms-content'
 import { privacyPolicySections } from '@/content/legal/privacy-policy-content'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { afterSignIn } from '@/lib/terms-consent'
+import { afterSignIn, fetchAccountStatus } from '@/lib/terms-consent'
 import { safePath } from '@/lib/safe-path'
 import { useGap } from '../gaps'
 import { track } from '@/lib/analytics'
@@ -29,7 +29,7 @@ export function LoginScreen() {
   const t = useCd()
   const router = useRouter()
   const next = safePath(useSearchParams()?.get('next'))
-  const flow = useSignInFlow(next, (user) => router.push(afterSignIn(user, next)))
+  const flow = useSignInFlow(next, (_user, consent) => router.push(consent ? `/consent?next=${encodeURIComponent(next)}` : next))
   // Back from Google with an account set to be deleted: show the Pending deletion view.
   const deletion = useSearchParams()?.get('deletion') === '1'
   useEffect(() => {
@@ -134,8 +134,6 @@ export function ConsentScreen() {
         onContinue={async () => {
           const res = await post('/api/account/consent', { age: !!checked.age }).catch(() => null)
           if (!res?.ok) return toast({ type: 'critical', message: t('CD0061') })
-          // Pick up the new consent record in the session before moving on.
-          await createSupabaseBrowserClient().auth.refreshSession()
           router.push(next)
         }}
         onCancel={cancel}
@@ -207,11 +205,10 @@ export function AuthCallbackScreen() {
       }
 
       // An account set to be deleted goes to the sign-in page's Pending deletion view first.
-      if (user && otpType !== 'recovery') {
-        const d = await fetch('/api/account/deletion').then((r) => (r.ok ? r.json() : null)).catch(() => null)
-        if (d?.deleted_at) return router.replace(`/login?deletion=1&next=${encodeURIComponent(safe)}`)
-      }
-      router.replace(otpType === 'recovery' ? safe : afterSignIn(user, safe))
+      if (!user || otpType === 'recovery') return router.replace(safe)
+      const d = await fetchAccountStatus()
+      if (d?.deleted_at) return router.replace(`/login?deletion=1&next=${encodeURIComponent(safe)}`)
+      router.replace(afterSignIn(d, safe))
     }
 
     completeAuth()

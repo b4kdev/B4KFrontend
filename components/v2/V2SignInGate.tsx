@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { Scrim, SignInCard, useFocusTrap, usePhone, type SignInView } from '@/components/library'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { needsConsent as needsConsentFor } from '@/lib/terms-consent'
+import { fetchAccountStatus, needsConsent } from '@/lib/terms-consent'
 import { useLocale } from 'next-intl'
 import { WEAK_PASSWORD, passwordProblem } from '@/lib/password'
 import { useCd } from './cd'
@@ -63,7 +63,7 @@ export function usePendingAction(type: PendingAction['type'], signedIn: boolean,
  * page and the sign-in gate. `next` is where Google and email links come back to; `onSignedIn`
  * runs after an email sign-in; `beforeRedirect` runs before Google leaves the page.
  */
-export function useSignInFlow(next: string, onSignedIn: (user: User) => void, beforeRedirect?: () => void) {
+export function useSignInFlow(next: string, onSignedIn: (user: User, consent: boolean) => void, beforeRedirect?: () => void) {
   const t = useCd()
   const [view, setView] = useState<SignInView>('providers')
   const [busy, setBusy] = useState(false)
@@ -71,16 +71,18 @@ export function useSignInFlow(next: string, onSignedIn: (user: User) => void, be
   const [email, setEmail] = useState('')
   const [kind, setKind] = useState<'signup' | 'reset'>('signup')
   // An account set to be deleted that signs in: the date it goes, and the user to continue with.
-  const [pending, setPending] = useState<{ user: User; date: string } | null>(null)
+  const [pending, setPending] = useState<{ user: User; date: string; consent: boolean } | null>(null)
   const locale = useLocale()
   const { toast } = useV2Shell()
-  // After a sign-in: an account set to be deleted gets the Pending deletion view first.
+  // After a sign-in: an account set to be deleted gets the Pending deletion view first; `consent`
+  // tells the caller the account still has to agree to the current documents.
   const signedIn = async (user: User) => {
-    const d = await fetch('/api/account/deletion').then((r) => (r.ok ? r.json() : null)).catch(() => null) as { deleted_at: string | null; restore_deadline: string | null } | null
-    if (!d?.deleted_at) return onSignedIn(user)
+    const d = await fetchAccountStatus()
+    const consent = needsConsent(d)
+    if (!d?.deleted_at) return onSignedIn(user, consent)
     // The server's deadline; 30 days after the request when an older answer has none.
     const goes = new Date(d.restore_deadline ?? new Date(d.deleted_at).getTime() + 30 * 24 * 3600 * 1000)
-    setPending({ user, date: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' }).format(goes) })
+    setPending({ user, consent, date: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' }).format(goes) })
     setView('pending-deletion')
   }
   // Check email: Resend waits 60 s after each email sent.
@@ -106,7 +108,7 @@ export function useSignInFlow(next: string, onSignedIn: (user: User) => void, be
           if (!res.ok) return setError(t('CD0061'))
           toast({ type: 'success', message: t('CD1780') })
           setPending(null)
-          onSignedIn(pending.user)
+          onSignedIn(pending.user, pending.consent)
         } else {
           await createSupabaseBrowserClient().auth.signOut()
           window.location.assign('/')
@@ -197,11 +199,11 @@ export function SignInGate({ request, onClose, onConsent }: { request: GateReque
   const ref = useFocusTrap<HTMLDivElement>(!!request, onClose)
   const flow = useSignInFlow(
     typeof window === 'undefined' ? '/' : here(),
-    (user: User) => {
+    (_user: User, consent: boolean) => {
       const r = request
       onClose()
       if (!r) return
-      if (needsConsentFor(user)) {
+      if (consent) {
         if (r.pending) savePendingAction(r.pending)
         onConsent(here())
       } else r.run()
