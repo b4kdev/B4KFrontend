@@ -334,9 +334,9 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const fromHome = category === 'all'
   const explore = useSWR<ExploreData>(fromHome ? null : `/api/explore/${category}`, jsonFetch)
   const trending = useSWR<HomeTrendingPoi[]>(fromHome && row === 'trending' ? '/api/home/trending' : null, jsonFetch)
-  const plans = useSWR<HomePopularPlan[]>(fromHome && row === 'popular-plans' ? '/api/home/popular-plans' : null, jsonFetch)
   const [chip, setChip] = useState('all')
   const [sort, setSort] = useState('popular')
+  const plans = useSWR<HomePopularPlan[]>(fromHome && row === 'popular-plans' ? `/api/home/popular-plans${sort === 'new' ? '?sort=newest' : ''}` : null, jsonFetch)
   const [shown, setShown] = useState(PAGE)
   // Load more is a real link to ?page=n: a page opened with ?page=n shows n pages; after a tap the
   // first new card takes the focus and the URL follows.
@@ -365,7 +365,11 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
       ? (trending.data ?? []).map((p) => ({ id: p.poi_id, domain: p.display_domain, node: <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /> }))
       : (plans.data ?? []).map((p) => ({ id: p.id, node: <Card type="plan" href={`/plan/${p.id}`} title={p.title} save={planAct(String(p.id), p.title)} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={[t('CD0473', { n: p.stop_count }), ...(p.duration_days ? [t('CD1232', { count: p.duration_days })] : [])].join(' · ')} /> }))
     : (explore.data?.sections.find((s) => s.id === row)?.items ?? []).map((p) => ({ id: p.poi_id, node: <PoiCard p={p} act={act} /> }))
-  const filtered = chip === 'all' ? places : places.filter((p) => p.domain === chip)
+  const chipped = chip === 'all' ? places : places.filter((p) => p.domain === chip)
+  // Newest: plans come sorted by the server; places by when B4K added them (a higher id is newer,
+  // as the backend's own newest order), places without a numeric id keep their place at the end.
+  const added = (id: string) => (/^\d+$/.test(id) ? Number(id) : -1)
+  const filtered = sort === 'new' && row !== 'popular-plans' ? [...chipped].sort((a, b) => added(b.id) - added(a.id)) : chipped
   const loading = explore.isLoading || trending.isLoading || plans.isLoading
   const failed = explore.error || trending.error || plans.error
   const sections = explore.data?.sections.filter((s) => s.items.length).map((s) => s.id) ?? []
