@@ -65,6 +65,18 @@ export async function settingsMetadata(locale: string): Promise<Metadata> {
   return namedPageMeta(locale, '/settings', t('CD0823'), { robots: NOINDEX });
 }
 
+// The map: its own title and the site description, canonical and hreflang (in the sitemap).
+export async function mapMetadata(locale: string): Promise<Metadata> {
+  const { t } = await seoText(locale);
+  return namedPageMeta(locale, '/map', t('CD0815'), { description: t('CD0799') });
+}
+
+// Steps of a sign-in and a personal utility page: a title of their own, kept out of search results.
+export async function utilityMetadata(locale: string, path: string, id: string): Promise<Metadata> {
+  const { t } = await seoText(locale);
+  return namedPageMeta(locale, path, t(id), { robots: NOINDEX });
+}
+
 export async function exploreMetadata(locale: string): Promise<Metadata> {
   const { t } = await seoText(locale);
   return pageMeta({ locale, path: '/explore', title: t('CD1824'), description: fitDescription(t('CD1825')) });
