@@ -6,6 +6,7 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 // API routes whose answer is the same for every visitor (no session, no cookie); later entries win.
 const PUBLIC_API = [
   '/api/home/:path+',
+  '/api/places/areas',
   '/api/explore/collections/:slug',
   '/api/explore/k-beauty/perfume-flagships',
   '/api/explore/k-culture/heritage/:region',

@@ -42,6 +42,8 @@ import { V2Footer, V2Page } from '../V2Page'
 import { useSearchBox } from '../V2Search'
 import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { useV2Shell } from '../V2Shell'
+import { districtName, regionName } from '../map/areaName'
+import type { PlaceArea } from '@/app/api/places/areas/route'
 
 const jsonFetch = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
 
@@ -49,12 +51,6 @@ const jsonFetch = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : Pro
 
 type SearchResult = { places: SearchPoi[]; plans: SearchPlan[]; explore: SearchExplore[] }
 
-// Search districts by region: [district, region, text].
-const DISTRICTS = [
-  ['Gangnam', 'Seoul', 'CD1257'], ['Hongdae', 'Seoul', 'CD1259'], ['Myeongdong', 'Seoul', 'CD1261'], ['Seongsu', 'Seoul', 'CD0200'], ['Itaewon', 'Seoul', 'CD1813'],
-  ['Haeundae', 'Busan', 'CD1258'], ['Seomyeon', 'Busan', 'CD1263'],
-  ['Jeju City', 'Jeju', 'CD1260'], ['Seogwipo', 'Jeju', 'CD1262'],
-] as const
 
 export function SearchScreen() {
   const t = useCd()
@@ -82,6 +78,8 @@ export function SearchScreen() {
   if (filters.district?.[0]) qs.set('area_lv2', filters.district[0])
   if (filters.theme?.length) qs.set('tags', filters.theme.join(','))
   const { data, error, isLoading, mutate } = useSWR<SearchResult>(q.length >= 2 ? `/api/search?${qs}` : null, jsonFetch)
+  // Region and district options: the areas that have places, most places first, named per language.
+  const areas = useSWR<PlaceArea[]>('/api/places/areas', jsonFetch, { revalidateOnFocus: false })
   // One search event per query and filter set once its results are in: the count, never the text.
   const counted = useRef('')
   useEffect(() => {
@@ -92,15 +90,16 @@ export function SearchScreen() {
 
   const groups: FilterGroup[] = [
     { id: 'show', label: t('CD1271'), options: [['all', 'CD1267'], ['places', 'CD1269'], ['plans', 'CD1270'], ['explore', 'CD1268']].map(([id, cd]) => ({ id, label: t(cd) })) },
-    { id: 'region', label: t('CD1254'), options: [['Seoul', 'CD1266'], ['Busan', 'CD1264'], ['Jeju', 'CD1265']].map(([id, cd]) => ({ id, label: t(cd) })) },
-    // Districts of the picked region only, as drawn; every district while no region is picked.
-    { id: 'district', label: t('CD1255'), options: DISTRICTS.filter(([, region]) => !filters.region?.[0] || region === filters.region[0]).map(([id, , cd]) => ({ id, label: t(cd) })) },
+    { id: 'region', label: t('CD1254'), options: (areas.data ?? []).map((a) => ({ id: a.region, label: regionName(a.region, locale) })) },
+    // Districts of the picked region only, as drawn; the group shows once a region is picked.
+    ...(filters.region?.[0] ? [{ id: 'district', label: t('CD1255'), options: (areas.data?.find((a) => a.region === filters.region[0])?.districts ?? []).map((d) => ({ id: d.name, label: districtName(d.name, locale) })) }] : []),
     { id: 'theme', label: t('CD1283'), multi: true, options: [['kpop', 'CD1279'], ['kdrama', 'CD1278'], ['kbeauty', 'CD1277'], ['food', 'CD1275'], ['nature', 'CD1280'], ['shopping', 'CD1282'], ['history', 'CD1276'], ['nightlife', 'CD1281']].map(([id, cd]) => ({ id, label: t(cd) })) },
   ]
   // A picked district leaves when its region is no longer picked.
   const pickFilters = (v: Record<string, string[]>) => {
     const region = v.region?.[0]
-    setFilters({ ...v, district: (v.district ?? []).filter((d) => !region || DISTRICTS.some(([id, r]) => id === d && r === region)) })
+    const districts = areas.data?.find((a) => a.region === region)?.districts ?? []
+    setFilters({ ...v, district: (v.district ?? []).filter((d) => districts.some((x) => x.name === d)) })
   }
   const sortCfg = { label: t('CD1272'), options: [{ id: 'relevance', label: t('CD1274') }, { id: 'popularity', label: t('CD1273') }], value: sort, onValueChange: setSort }
   // Filters set beyond the defaults (Show All), for the phone All filters chip.

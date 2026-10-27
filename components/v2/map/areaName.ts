@@ -77,6 +77,16 @@ export function romanize(name: string): string {
   return suffix ? `${word}-${({ 구: 'gu', 시: 'si', 군: 'gun' } as Record<string, string>)[suffix]}` : word
 }
 
+/** A region as the place data names it (서울, 경기): the Korean short name on Korean pages, the
+ * English name elsewhere. */
+export function regionName(short: string, locale: string): string {
+  if (locale === 'ko') return short
+  return Object.values(CITY).find(([ko]) => ko === short)?.[1] ?? romanize(short)
+}
+
+/** A district as the place data names it (강남구): Korean on Korean pages, else Revised Romanization. */
+export const districtName = (name: string, locale: string) => (locale === 'ko' ? name : romanize(name))
+
 type Geo = { area1: string; area2: string }
 const cache = new Map<string, Geo | null>()
 

@@ -75,6 +75,22 @@ const EXPLORE_FACETS: Record<string, { param: string; values: string[] } | undef
   'k-drama':   undefined,
 }
 
+// The search themes as drawn, as BFF place filters: an interest category, or chips (any of them).
+// Several themes: one call each, the places joined.
+const THEMES: Record<string, string> = {
+  kpop: 'tags=kpop',
+  kdrama: 'tags=kdrama',
+  kbeauty: 'interest=beauty',
+  food: 'interest=food',
+  nature: 'interest=nature',
+  shopping: 'interest=shopping',
+  history: 'interest=heritage',
+  nightlife: 'tags=pub,wine-bar,performance,concert',
+}
+
+// Region and district names as the place data writes them (서울, 강남구): Hangul, at most 20 characters.
+const AREA = /^[가-힣]{1,20}$/
+
 // Build explore results with a facet query attached where the query implies one.
 function buildExploreResults(q: string): SearchExplore[] {
   const needle = q.trim().toLowerCase()
@@ -94,17 +110,16 @@ export async function GET(request: Request) {
   const type = searchParams.get('type') // 'places' | 'plans' | 'explore' | null = all
   const sort = searchParams.get('sort') ?? 'relevance'
 
-  // M14 area + tag filters — accepted + echoed; the BFF has no area/tag facets
-  // yet, so they don't narrow results (same as the previous stub behavior).
-  const areaLv1 = searchParams.get('area_lv1') ?? null
-  const areaLv2 = searchParams.get('area_lv2') ?? null
-  const tags = searchParams.get('tags')
-    ? searchParams.get('tags')!.split(',').filter(Boolean)
-    : []
+  // Filters: region and district (names from /api/places/areas) and themes narrow the places. The
+  // public plans have no such fields, so a set filter leaves them out rather than show them unfiltered.
+  const areaLv1 = AREA.test(searchParams.get('area_lv1') ?? '') ? searchParams.get('area_lv1') : null
+  const areaLv2 = AREA.test(searchParams.get('area_lv2') ?? '') ? searchParams.get('area_lv2') : null
+  const tags = (searchParams.get('tags') ?? '').split(',').filter((t) => t in THEMES)
 
   const wantAll = !type || type === 'all'
   const wantPlaces = wantAll || type === 'places'
-  const wantPlans = wantAll || type === 'plans'
+  const filtered = !!(areaLv1 || areaLv2 || tags.length)
+  const wantPlans = (wantAll || type === 'plans') && !filtered
   const explore = (wantAll || type === 'explore') ? buildExploreResults(q) : []
 
   const needle = q.trim().toLowerCase()
@@ -113,9 +128,16 @@ export async function GET(request: Request) {
   const locale = cookies().get('NEXT_LOCALE')?.value ?? 'en'
 
   try {
+    const base = `/places?q=${encodeURIComponent(q.trim())}&limit=20`
+      + (areaLv1 ? `&region=${encodeURIComponent(areaLv1)}` : '')
+      + (areaLv2 ? `&district=${encodeURIComponent(areaLv2)}` : '')
+    const placeCalls = tags.length ? tags.map((t) => `${base}&${THEMES[t]}`) : [base]
     const [rawPlaces, rawPlans] = await Promise.all([
       wantPlaces && needle
-        ? bffFetch<BffPlace[]>(`/places?q=${encodeURIComponent(q.trim())}&limit=20`)
+        ? Promise.all(placeCalls.map((path) => bffFetch<BffPlace[]>(path))).then((lists) => {
+            const seen = new Set<number>()
+            return lists.flat().filter((p) => !seen.has(p.poi_id) && !!seen.add(p.poi_id))
+          })
         : Promise.resolve<BffPlace[]>([]),
       // The BFF has no plan text search — fetch the public list and match
       // titles here (covers the top 50 public itineraries only).
