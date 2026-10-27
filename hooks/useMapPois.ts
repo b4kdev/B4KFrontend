@@ -145,10 +145,12 @@ export function useMapPois(
   activeFilters: string[],
   bounds: MapBounds | null,
   zoom: number,
+  /** A place-type filter as BFF query parameters, e.g. 'tags=cafe' or 'interest=shopping'. */
+  typeQuery?: string | null,
 ) {
   const locale = useLocale()
 
-  const params = new URLSearchParams()
+  const params = new URLSearchParams(typeQuery ?? '')
   if (region) params.set('region', REGION_API_NAME[region] ?? region)
   if (activeFilters.length > 0) params.set('domain', activeFilters[0])
   if (bounds) {

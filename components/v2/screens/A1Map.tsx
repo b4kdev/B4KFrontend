@@ -66,6 +66,18 @@ const send = (url: string, method: string, body?: unknown) =>
 
 const nameOf = (p: { name_ko: string; name_en?: string; name_preferred?: string }, locale: string) => p.name_preferred ?? (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
 
+// The map chips: place types, one at a time, as BFF place filters (tags = any of these chips).
+const PLACE_TYPES = [
+  { id: 'restaurants', label: 'CD0633', query: 'tags=restaurant' },
+  { id: 'cafes', label: 'CD0628', query: 'tags=cafe' },
+  { id: 'stays', label: 'CD0629', query: 'tags=hotel,resort,pension,guesthouse,hanok-stay,motel' },
+  { id: 'shopping', label: 'CD1282', query: 'interest=shopping' },
+  { id: 'palaces', label: 'CD0631', query: 'tags=palace' },
+  { id: 'temples', label: 'CD0635', query: 'tags=temple' },
+  { id: 'museums', label: 'CD0630', query: 'tags=museum' },
+  { id: 'parks', label: 'CD0632', query: 'tags=park' },
+] as const
+
 /** `poiId`: the place to open (the /place/[poiId] page); otherwise ?poi= in the address. */
 export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const GAP = useGap()
@@ -128,7 +140,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const [editing, setEditing] = useState<{ id: string; title: string } | null>(null)
   const [pendingEdit, setPendingEdit] = useState<ItineraryDetail | null>(null)
 
-  const { pois, isLoading } = useMapPois(null, filter ? [filter] : [], filter ? areaBounds ?? bounds : bounds, zoom)
+  const { pois, isLoading } = useMapPois(null, [], filter ? areaBounds ?? bounds : bounds, zoom, PLACE_TYPES.find((c) => c.id === filter)?.query)
   // View on map from a category special page (?collection=/api/explore/...): that page's places
   // only, on the map and in the list, until a category is picked.
   const collectionApi = params?.get('collection')
@@ -549,8 +561,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   const chips = (
     <div className="flex gap-[var(--space-2)] overflow-x-auto [scrollbar-width:none]">
-      {CATEGORIES.map((c) => (
-        <Chip key={c.slug} type="map" selected={filter === c.slug} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setAreaBounds(bounds); setAreaMoved(false); setFilter((f) => (f === c.slug ? null : c.slug)) }}>{t(c.label)}</Chip>
+      {PLACE_TYPES.map((c) => (
+        <Chip key={c.id} type="map" selected={filter === c.id} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setAreaBounds(bounds); setAreaMoved(false); setFilter((f) => (f === c.id ? null : c.id)) }}>{t(c.label)}</Chip>
       ))}
     </div>
   )
