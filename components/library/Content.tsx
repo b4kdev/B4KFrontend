@@ -1,5 +1,5 @@
 import { forwardRef, type ButtonHTMLAttributes, type ElementType, type ReactNode } from 'react'
-import { Info, MapPin } from 'lucide-react'
+import { BedDouble, Camera, Frame, Info, Landmark, MapPin, ShoppingBag, Sparkles, Star, Ticket, Trees, Utensils } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { FOCUS_RING, HIT_AREA } from './styles'
 
@@ -37,11 +37,31 @@ export function CreditLine({ children, className }: { children: ReactNode; class
   )
 }
 
-/** Place type icon (Figma atom): the icon for a place's type, at the size the parent sets. Only
- * Type=Place exists in code until the API sends each place's type. Decorative. */
-export function PlaceTypeIcon({ type = 'place', className }: { type?: 'place'; className?: string }) {
-  void type
-  return <MapPin aria-hidden className={className} />
+/** Figma Place type icon › Type: the place's interest category (the API's interest_category). */
+export const PLACE_TYPE_ICON = {
+  food: Utensils,
+  shopping: ShoppingBag,
+  activity: Ticket,
+  nature: Trees,
+  exhibition: Frame,
+  heritage: Landmark,
+  sightseeing: Camera,
+  stay: BedDouble,
+  beauty: Sparkles,
+  hallyu: Star,
+  place: MapPin,
+} as const
+
+export type PlaceType = keyof typeof PLACE_TYPE_ICON
+
+/** The Place type of an interest category; Place when it is missing or unknown. */
+export const placeTypeOf = (category: string | null | undefined): PlaceType =>
+  category && category in PLACE_TYPE_ICON ? (category as PlaceType) : 'place'
+
+/** Place type icon (Figma atom): the icon for a place's type, at the size the parent sets. Decorative. */
+export function PlaceTypeIcon({ type = 'place', className }: { type?: PlaceType; className?: string }) {
+  const Icon = PLACE_TYPE_ICON[type]
+  return <Icon aria-hidden className={className} />
 }
 
 export type LegalLineProps = {

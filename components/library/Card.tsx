@@ -7,6 +7,7 @@ import { cn } from '@/lib/cn'
 import { Badge } from './Badge'
 import { IconButton } from './IconButton'
 import { Image, ImageMissingLabel } from './Image'
+import type { PlaceType } from './Content'
 import { SaveLikeOverlay } from './ContentMolecules'
 
 // Card (Figma Organisms › Card). Filled and square, no shadow; the text panel on
@@ -29,6 +30,8 @@ export type CardProps = Common &
     | (Media & {
         type: 'place'
         meta: ReactNode
+        /** Figma Place type icon on a missing photo: the place's interest category. */
+        placeType?: PlaceType
         description?: string
         save?: { saved: boolean; onSave: () => void; label: string }
         like?: { liked: boolean; onLike: () => void; label: string }
@@ -93,7 +96,8 @@ export function Card(props: CardProps) {
         <article className={cn(SHELL, 'flex-col', className)}>
           <div className="relative">
             {/* A place photo is named after the place unless the caller gives its own description. */}
-            <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? title} sizes="280px" missingLabel={missingLabel} />
+            {/* The shell's label names Place: shown only while the type is Place (no label text per type yet). */}
+            <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? title} sizes="280px" placeType={props.placeType} missingLabel={(props.placeType ?? 'place') === 'place' ? missingLabel : undefined} />
             <div className="absolute left-[var(--space-2)] top-[var(--space-2)] z-10 flex gap-[var(--gap-xs)]">
               {props.dDay ? <Badge variant="strong">{props.dDay}</Badge> : null}
               {props.sponsored ? <Badge variant="on-image">{props.sponsored}</Badge> : null}
