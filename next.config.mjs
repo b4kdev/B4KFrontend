@@ -30,7 +30,7 @@ const nextConfig = {
         ],
       },
       // Static files in public/ have no hash in their name: a day in caches, refreshed in the background.
-      ...['/images/:path*', '/mock-images/:path*', '/brand/:path*'].map((source) => ({
+      ...['/images/:path*', '/mock-images/:path*', '/brand/:path*', '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png', '/apple-touch-icon.png'].map((source) => ({
         source,
         headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' }],
       })),
