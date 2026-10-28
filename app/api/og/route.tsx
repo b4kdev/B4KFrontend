@@ -14,6 +14,10 @@ const SIZE = { width: 1200, height: 630 }
 const BG = '#0a0a0a' // allow-hex — color-bg (dark); ImageResponse requires literal colours
 const FG = '#f7f6f3' // allow-hex — color-fg (dark)
 const MUTED = '#8f8e8c' // allow-hex — color-fg-muted (dark)
+// Spacing of the 1200 x 630 card, in image pixels
+const PAD = 80 // allow-raw — ImageResponse cannot read CSS variables
+const GAP = 24 // allow-raw
+const LOGO_LIFT = 120 // allow-raw
 const FACE: Record<string, string> = { ko: 'Noto Sans KR', ja: 'Noto Sans JP', 'zh-TW': 'Noto Sans TC' }
 
 async function loadFont(family: string, text: string): Promise<ArrayBuffer | null> {
@@ -43,9 +47,9 @@ export async function GET(req: Request) {
   const logo = await markSrc()
   const res = new ImageResponse(
     (
-      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 80, backgroundColor: BG }}>
+      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: PAD, backgroundColor: BG }}>
         {font ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: GAP }}>
             {kind ? <div style={{ fontFamily: 'Display', fontSize: 28, color: MUTED, textTransform: 'uppercase', letterSpacing: 2 }}>{kind}</div> : null}
             <div style={{ fontFamily: 'Display', fontSize: title.length > 40 ? 64 : 80, lineHeight: 1.1, color: FG, display: 'flex' }}>{title}</div>
           </div>
@@ -53,7 +57,7 @@ export async function GET(req: Request) {
           <div style={{ display: 'flex' }} />
         )}
         {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse can't use next/image */}
-        <img src={logo} alt="" width={font ? 104 : 240} height={font ? 96 : 222} style={font ? {} : { alignSelf: 'center', marginBottom: 120 }} />
+        <img src={logo} alt="" width={font ? 104 : 240} height={font ? 96 : 222} style={font ? {} : { alignSelf: 'center', marginBottom: LOGO_LIFT }} />
       </div>
     ),
     {

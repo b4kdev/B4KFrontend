@@ -123,7 +123,7 @@ export type ZoomControlProps = {
 /** Zoom control: two Map controls sharing one border, bottom right on desktop and tablet. */
 export function ZoomControl({ onZoomIn, onZoomOut, zoomInLabel, zoomOutLabel, atMax, atMin, className }: ZoomControlProps) {
   return (
-    <div className={cn('flex flex-col [&>button+button]:-mt-px', className)}>
+    <div className={cn('flex flex-col [&>button+button]:-mt-[var(--border-width-1)]', className)}>
       <MapControl icon={<Plus />} label={zoomInLabel} onClick={onZoomIn} disabled={atMax} aria-disabled={atMax} />
       <MapControl icon={<Minus />} label={zoomOutLabel} onClick={onZoomOut} disabled={atMin} aria-disabled={atMin} />
     </div>
