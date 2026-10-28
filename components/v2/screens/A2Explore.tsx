@@ -268,7 +268,7 @@ export function CategoryScreen({ category }: { category: string }) {
           <div id="row-collections" data-explore-row="collections" className="scroll-mt-[var(--space-6)]">
           <ExploreCollections
             title={t('CD0162')}
-            filters={[{ id: 'all', label: t('CD1267') }, ...colTypes.map((c) => ({ id: c, label: t(COLLECTION_TYPE[c]) }))]}
+            filters={[{ id: 'all', label: t('CD1903', { label: t('CD1267'), count: cols.data.items.length }) }, ...colTypes.map((c) => ({ id: c, label: t(COLLECTION_TYPE[c]) }))]}
             active={colType}
             onFilter={setColType}
             cards={cols.data.items
