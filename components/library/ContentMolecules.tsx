@@ -27,8 +27,9 @@ export type SectionHeaderProps = {
 }
 
 export function SectionHeader({ title, subtitle, seeAll, arrows, id, className }: SectionHeaderProps) {
+  // Figma's phone header runs to the screen edge with 16 padding inside; here the page gutter gives the 16.
   return (
-    <div className={cn('flex items-end gap-[var(--space-2)] max-md:min-h-[var(--control-height-md)] max-md:pr-[var(--space-4)]', className)}>
+    <div className={cn('flex items-end gap-[var(--space-2)] max-md:min-h-[var(--control-height-md)]', className)}>
       <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
         <h2 id={id} className="type-display-h3 text-ui-fg">{title}</h2>
         {subtitle ? <p className="type-body-base text-ui-fg-muted">{subtitle}</p> : null}
