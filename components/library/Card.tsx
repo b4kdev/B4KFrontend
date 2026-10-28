@@ -194,6 +194,7 @@ export function Card(props: CardProps) {
         </article>
       )
     default: {
+      // Below 640 the Featured card stacks and takes the stacked panel (12 padding, 4 gap), as drawn on phones.
       const stacked = props.type === 'featured-stacked'
       return (
         <article className={cn(SHELL, stacked ? 'flex-col' : 'flex-col sm:flex-row', className)}>
@@ -201,7 +202,7 @@ export function Card(props: CardProps) {
             <Image ratio="16:9" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="(min-width: 640px) 360px, 100vw" className={!stacked ? 'sm:h-full' : undefined} />
             {props.sponsored ? <Badge variant="on-image" className="absolute left-[var(--space-2)] top-[var(--space-2)]">{props.sponsored}</Badge> : null}
           </div>
-          <div className={cn('panel flex min-w-0 flex-1 flex-col justify-center', stacked ? 'gap-[var(--space-1)] p-[var(--space-3)]' : 'gap-[var(--space-2)] p-[var(--space-4)]')}>
+          <div className={cn('panel flex min-w-0 flex-1 flex-col justify-center', stacked ? 'gap-[var(--space-1)] p-[var(--space-3)]' : 'gap-[var(--space-1)] p-[var(--space-3)] sm:gap-[var(--space-2)] sm:p-[var(--space-4)]')}>
             <span className="type-eyebrow-badge text-ui-fg">{props.eyebrow}</span>
             <CardLink href={href} external={external} className="line-clamp-2 type-title-empty-state">{title}</CardLink>
             <MetaRow meta={props.meta} trending={props.trending} external={!!external} />
