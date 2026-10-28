@@ -82,13 +82,13 @@ export type NavigationRailProps = {
 /** Navigation rail: desktop from 1024, 64 wide, icons with tooltips. */
 export function NavigationRail({ active = null, labels, user, onQuickPlan, showLogo, accountMenu, notificationsHref = '/notifications', profileHref = '/profile', className }: NavigationRailProps) {
   return (
-    <nav aria-label={labels.main} className={cn('flex h-full w-[var(--layout-nav-rail)] shrink-0 flex-col items-center bg-ui-bg pb-[var(--space-3)]', showLogo && 'pt-[var(--space-2)]', className)}>
+    <nav aria-label={labels.main} className={cn('flex h-full w-[var(--layout-nav-rail)] shrink-0 flex-col items-center bg-ui-bg pb-[var(--space-3)] pt-[var(--space-2)]', className)}>
       {showLogo ? (
         <IntlLink href="/" aria-label={labels.homeLink} className={cn('flex size-[var(--layout-nav-rail)] items-center justify-center', FOCUS_RING_INSET)}>
           <Logo type="mark" className="h-9" />
         </IntlLink>
       ) : null}
-      <ul className="flex w-full flex-col items-center gap-[var(--space-1)] pt-[var(--space-2)]">
+      <ul className={cn('flex w-full flex-col items-center gap-[var(--space-1)]', showLogo && 'pt-[var(--space-2)]')}>
         {DESTS.map(({ id, href, Icon }) => (
           <li key={id} className={RAIL_CELL}>
             <Tooltip text={labels[id]} wrapperClassName="flex w-full">
