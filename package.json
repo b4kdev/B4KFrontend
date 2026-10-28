@@ -12,6 +12,7 @@
     "i18n:overflow": "node b4k-i18n-overflow-audit.mjs",
     "qa:vitals": "node b4k-vitals-audit.mjs",
     "tokens:build": "node scripts/build-tokens.mjs",
+    "lint:tokens": "node scripts/lint-tokens.mjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

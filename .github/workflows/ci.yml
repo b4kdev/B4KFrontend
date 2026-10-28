@@ -6,7 +6,7 @@ name: CI
 #   2. typecheck       — tsc --noEmit
 #   3. build           — next build (no deploy)
 #   4. i18n-keys       — every t() key exists in every locale file
-#   5. token-compliance — no hardcoded hex / arbitrary Tailwind / forbidden tokens
+#   5. token-compliance — no hardcoded hex / arbitrary Tailwind / forbidden tokens / hard-coded colors and spacing
 #   6. storybook       — storybook build (components/library)
 
 on:
@@ -243,7 +243,7 @@ jobs:
           python3 .ci/i18n-completeness.py .
 
   token-compliance:
-    name: Token compliance (no hex / arbitrary tw / forbidden tokens / px spacing / token drift)
+    name: Token compliance (no hex / arbitrary tw / forbidden tokens / px spacing / token drift / token lint)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -355,6 +355,14 @@ jobs:
           else
             echo "FAIL: app/tokens.css, tokens/tailwind-preset.ts or tokens/colors.ts was edited by hand or not rebuilt; run npm run tokens:build"
             git diff --stat -- app/tokens.css tokens/tailwind-preset.ts tokens/colors.ts
+            VIOLATIONS=$((VIOLATIONS + 1))
+          fi
+          echo ""
+
+          echo "--- Rule 6: token lint (hard-coded colors and spacing, scripts/lint-tokens.mjs) ---"
+          if node scripts/lint-tokens.mjs; then
+            :
+          else
             VIOLATIONS=$((VIOLATIONS + 1))
           fi
           echo ""
