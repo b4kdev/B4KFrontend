@@ -556,7 +556,7 @@ export function SpecialScreen({ api, category }: { api: string; category: string
             </div>
           </div>
         </section>
-        {data ? <p aria-live="polite" className="type-body-caption text-ui-fg-muted lg:self-end">{t('CD0160', { count: data.items.length })}</p> : null}
+        {data ? <p aria-live="polite" className="type-body-caption text-ui-fg-muted lg:self-end">{t('CD0160', { count: typeof data.totalCount === 'number' ? data.totalCount : data.items.length })}</p> : null}
         {isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div> : null}
         {error ? <EmptyState type="error" container="bordered" title={t('CD1571')}>{t('CD1572')}</EmptyState> : null}
         <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">
