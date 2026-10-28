@@ -119,7 +119,8 @@ export function NavItem({ icon, label, active = false, badge, className }: NavIt
       {/* The icon stays centered in the item; the dot hangs 4 below it, out of the flow, as drawn. */}
       <span className="relative inline-flex size-[var(--icon-size-md)] [&>svg]:size-full">
         {icon}
-        {badge ? <span className="absolute -right-[var(--space-0-5)] -top-[var(--space-0-5)]">{badge}</span> : null}
+        {/* Figma: the dot starts at the icon's center line, 6 above the icon. */}
+        {badge ? <span className="absolute left-1/2 -top-[var(--space-1-5)] flex">{badge}</span> : null}
         <span
           aria-hidden
           className={cn(
