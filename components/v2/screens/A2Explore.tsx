@@ -257,7 +257,7 @@ export function CategoryScreen({ category }: { category: string }) {
                 arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
                 title={rowLabel(category, s.id)}
                 seeAll={{ href: rowHref(category, s.id), label: t('CD1309') }}
-                featured={featured ? <Card type="featured" href={`/map?poi=${featured.poi_id}`} title={poiName(featured, locale)} imageSrc={featured.primary_image_url} eyebrow={t('CD0423')} meta={featured.display_region} /> : undefined}
+                featured={featured ? <Card type="featured" href={`/map?poi=${featured.poi_id}`} title={poiName(featured, locale)} imageSrc={featured.primary_image_url} eyebrow={t('CD0151')} meta={featured.display_region} /> : undefined}
                 cards={s.items.filter((p) => p !== featured).map((p) => <PoiCard key={p.poi_id} p={p} act={act} />)}
               />
               {i === 0 ? cue : null}
