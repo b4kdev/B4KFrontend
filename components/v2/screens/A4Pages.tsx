@@ -399,6 +399,8 @@ export function NotFoundScreen() {
   // (not inside it): 16 on phones, 24 on desktop.
   return (
     <V2Page bar={{ type: 'home' }} className="flex flex-col items-center justify-center gap-[var(--space-4)] lg:gap-[var(--space-6)]">
+      {/* A not-found page has no metadata hook in this Next version; React places the title in the head. */}
+      <title>{t('CD1832', { page: t('CD0116') })}</title>
       <EmptyState type="no-results" titleAs="h1" title={t('CD0116')} className="w-full lg:w-[400px]">{t('CD0115')}</EmptyState>
       <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
         <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0114')}</IntlLink>
