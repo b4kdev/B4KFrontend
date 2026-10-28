@@ -87,6 +87,18 @@ export async function profileOwnMetadata(locale: string): Promise<Metadata> {
   return namedPageMeta(locale, '/profile', t('CD0821'), { robots: NOINDEX });
 }
 
+// Badges and Popular planners (off at launch, 404 until then): named by their screen title and
+// kept out of search results like the own profile.
+export async function badgesMetadata(locale: string): Promise<Metadata> {
+  const { k } = await seoText(locale);
+  return namedPageMeta(locale, '/badges', k('badges.title'), { robots: NOINDEX });
+}
+
+export async function leaderboardMetadata(locale: string): Promise<Metadata> {
+  const { t } = await seoText(locale);
+  return namedPageMeta(locale, '/leaderboard', t('CD1650'), { robots: NOINDEX });
+}
+
 // A planner's profile stays out of search results at launch; its title is the planner's name.
 export async function profileMetadata(locale: string, id: string): Promise<Metadata> {
   const name = await bffFetch<{ name: string | null }>(`/profiles/${encodeURIComponent(id)}`, { token: null }).then((p) => p.name).catch(() => null);
