@@ -60,7 +60,8 @@ export async function fetchPlaceDetail(poiId: string, locale: string): Promise<P
     // Fully public read, no per-viewer fields in this shape — force anonymous
     // (token: null) rather than let bffFetch look up the cookie session, which
     // would risk a token-refresh cookie write during Server Component render.
-    row = await bffFetch<RawPlaceDetail>(`/places/${resolvePoiId(poiId)}`, { token: null })
+    // Public, so it may come from the data cache for as long as the place page (5 minutes).
+    row = await bffFetch<RawPlaceDetail>(`/places/${resolvePoiId(poiId)}`, { token: null, cache: undefined, next: { revalidate: 300 } })
   } catch (e) {
     if (e instanceof BffError && e.status === 404) return null
     throw e
