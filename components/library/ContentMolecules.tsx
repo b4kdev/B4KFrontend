@@ -241,9 +241,10 @@ export type ItineraryStopProps = {
 }
 
 /** Itinerary stop: Stop badge md on the route rail, name, meta, optional note and 40 thumbnail. */
+// Figma: the row is 80 high with 8 above; a name, meta and one-line note (66) leave 6 below.
 export function ItineraryStop({ name, number, day, meta, note, thumbnail, selected, onSelect, className }: ItineraryStopProps) {
   return (
-    <li aria-current={selected || undefined} className={cn('flex min-h-[var(--space-20)] items-start gap-[var(--space-3)] p-[var(--space-2)]', selected && 'bg-ui-state-selected', onSelect && 'cursor-pointer hover:bg-ui-state-hover', className)} onClick={onSelect}>
+    <li aria-current={selected || undefined} className={cn('flex min-h-[var(--space-20)] items-start gap-[var(--space-3)] px-[var(--space-2)] pb-[var(--space-1-5)] pt-[var(--space-2)]', selected && 'bg-ui-state-selected', onSelect && 'cursor-pointer hover:bg-ui-state-hover', className)} onClick={onSelect}>
       <StopBadge number={number} day={day} size="md" />
       <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
         <span className="type-title-card text-ui-fg">{name}</span>
