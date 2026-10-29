@@ -39,6 +39,22 @@ async function deleteAccountDraft() {
   if (d?.id) await fetch(`/api/plans/${d.id}`, { method: 'DELETE' })
 }
 
+/** Stops in the plan in progress: on this device, or in the account (signed in; 401 for guests). */
+export async function draftStopCount(): Promise<number> {
+  const device = getDraftPlan()?.stops.length ?? 0
+  if (device) return device
+  return fetch('/api/plans/draft')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((d: { stop_count?: number } | null) => d?.stop_count ?? 0)
+    .catch(() => 0)
+}
+
+/** Throws the plan in progress away outside the map (device and account), e.g. before Edit plan. */
+export async function discardDraftPlan() {
+  clearDraftPlan()
+  await deleteAccountDraft().catch(() => {})
+}
+
 export function usePlanDraft() {
   const { user, loading } = useAuth()
   const signedIn = !!user

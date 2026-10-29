@@ -36,7 +36,7 @@ import { useLocateMe } from '../map/LocateMe'
 import { useV2Shell } from '../V2Shell'
 import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
-import { formatMinutes } from '../map/usePlanDraft'
+import { discardDraftPlan, draftStopCount, formatMinutes } from '../map/usePlanDraft'
 
 // Published plan (A1): the Itinerary panel beside the map (desktop)
 // or in the map Bottom sheet (phones). Owner: Edit plan, Share, Delete and leg modes; visitor:
@@ -74,6 +74,9 @@ export function PlanScreen({ id }: { id: string }) {
   const [snap, setSnap] = useState<SheetSnap>('mid')
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  // Edit plan with a plan in progress on the map: its stop count while the save-or-discard prompt is open.
+  const [draftPrompt, setDraftPrompt] = useState(0)
+  const [discardingDraft, setDiscardingDraft] = useState(false)
   const [liked, setLiked] = useState<boolean | null>(null)
   const [saved, setSaved] = useState<boolean | null>(null)
   // Related plans: saved state from the person's saved plans, with taps applied on top.
@@ -134,6 +137,18 @@ export function PlanScreen({ id }: { id: string }) {
     } catch {
       toast({ type: 'critical', message: k('map.plan.saveError') })
     }
+  }
+  // Edit opens the plan on the map; a plan in progress there is saved or discarded first, asked here.
+  const editHref = `/map?plan=edit&id=${id}`
+  const edit = async () => {
+    const count = await draftStopCount()
+    if (count) setDraftPrompt(count)
+    else router.push(editHref)
+  }
+  const discardDraftAndEdit = async () => {
+    setDiscardingDraft(true)
+    await discardDraftPlan()
+    router.push(editHref)
   }
   const remove = async () => {
     setDeleting(true)
@@ -253,7 +268,7 @@ export function PlanScreen({ id }: { id: string }) {
         footer={
           isOwner ? (
             <>
-              <Button variant="secondary" className="flex-1" onClick={() => router.push(`/map?plan=edit&id=${id}`)}>{t('CD1487')}</Button>
+              <Button variant="secondary" className="flex-1" onClick={edit}>{t('CD1487')}</Button>
               <IconButton variant="secondary" label={k('itinerary.actions.shareAria')} icon={<Share2 />} onClick={share} />
               <IconButton variant="ghost" label={t('CD1454')} icon={<Trash2 />} onClick={() => setDeleteOpen(true)} />
             </>
@@ -298,6 +313,15 @@ export function PlanScreen({ id }: { id: string }) {
         body={t('CD1546')}
         cancel={<Button variant="secondary" data-autofocus onClick={() => setDeleteOpen(false)}>{k('itinerary.actions.deleteCancel')}</Button>}
         confirm={<Button variant="danger" loading={deleting} onClick={remove}>{k('itinerary.actions.deleteConfirm')}</Button>}
+      />
+      <Dialog
+        open={draftPrompt > 0}
+        onCancel={() => setDraftPrompt(0)}
+        title={t('CD1525')}
+        body={GAP.editDraftBody(draftPrompt, it.title)}
+        cancel={<Button variant="secondary" data-autofocus onClick={() => setDraftPrompt(0)}>{k('map.plan.discardCancel')}</Button>}
+        third={<Button variant="ghost" loading={discardingDraft} onClick={discardDraftAndEdit}>{t('CD1527')}</Button>}
+        confirm={<Button onClick={() => router.push(`${editHref}&draft=save`)}>{k('map.plan.save')}</Button>}
       />
     </>
   ) : null

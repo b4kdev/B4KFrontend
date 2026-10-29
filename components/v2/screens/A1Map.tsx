@@ -35,7 +35,6 @@ import { usePhone } from '@/components/library/hooks'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMapPois, type MapBounds, type MapPoi } from '@/hooks/useMapPois'
 import { usePlaceDetail } from '@/hooks/usePlaceDetail'
-import { getDraftPlan } from '@/lib/draft-plan'
 import { takeCourseHandoff } from '@/lib/quickplan'
 import { placeSourceFrom, shareUrl, track } from '@/lib/analytics'
 import type { SavedData } from '@/app/api/saved/route'
@@ -50,7 +49,7 @@ import { useV2Shell } from '../V2Shell'
 import { usePendingAction } from '../V2SignInGate'
 import { useLikedPlaces } from '../usePlaceActions'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
-import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_DAYS, MAX_STOPS, PER_DAY, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
+import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_DAYS, MAX_STOPS, PER_DAY, draftStopCount, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
 import { useRoutedLegs } from '../map/useRoutedLegs'
 import { CATEGORIES, jsonFetch } from './A2Home'
 
@@ -183,6 +182,9 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const [folderId, setFolderId] = useState<string | null>(params?.get('folder'))
   const [editing, setEditing] = useState<{ id: string; title: string } | null>(null)
   const [pendingEdit, setPendingEdit] = useState<ItineraryDetail | null>(null)
+  // Save plan picked on the plan page's save-or-discard prompt: the name sheet opens once the plan in
+  // progress has loaded, and the published plan opens for editing after the save.
+  const [saveFirst, setSaveFirst] = useState(params?.get('draft') === 'save')
 
   const { pois, isLoading } = useMapPois(null, [], filter ? areaBounds ?? bounds : bounds, zoom, PLACE_TYPES.find((c) => c.id === filter)?.query)
   // View on map from a category special page (?collection=/api/explore/...): that page's places
@@ -263,14 +265,14 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     if (params?.get('from')) takeHandoff()
     const editId = params?.get('plan') === 'edit' ? params.get('id') : null
     if (editId) {
-      // A plan in progress: on this device, or in the account (signed in; 401 for guests).
-      const inProgress = async () =>
-        !!getDraftPlan()?.stops.length ||
-        (await fetch('/api/plans/draft').then((r) => (r.ok ? r.json() : null)).then((d: { stop_count?: number } | null) => (d?.stop_count ?? 0) > 0).catch(() => false))
       fetch(`/api/plans/${editId}`).then((r) => (r.ok ? r.json() : Promise.reject())).then(async (it: ItineraryDetail) => {
-        // Plan from another plan: a plan in progress is saved or discarded before the published plan loads.
-        if (await inProgress()) setPendingEdit(it)
-        else loadForEdit(it)
+        // The plan page asks first; a direct link still has a plan in progress saved or discarded
+        // before the published plan loads.
+        if ((await draftStopCount()) > 0) setPendingEdit(it)
+        else {
+          setSaveFirst(false)
+          loadForEdit(it)
+        }
       }).catch(() => toast({ type: 'critical', message: k('itinerary.error.title') }))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -387,6 +389,12 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   usePendingAction('save_poi', !!user, (id) => { if (id) setSave(id, false, true) })
   usePendingAction('like_poi', !!user, (id) => { if (id) setLike(id, false) })
   usePendingAction('save_own_plan', !!user, () => { setCart('open'); openSaveSheet() })
+  useEffect(() => {
+    if (!saveFirst || !pendingEdit || !order.length) return
+    setSaveFirst(false)
+    setCart('open')
+    openSaveSheet()
+  }, [saveFirst, pendingEdit, order.length]) // eslint-disable-line react-hooks/exhaustive-deps
   const totalMin = order.reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0)
   const dayStops = typeof activeDay === 'number' ? order.filter((p) => draft.dayOf(p.poi_id) === activeDay).length : 0
   // A published plan open for editing: the day line ends with "keeps the same link".
@@ -681,7 +689,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         confirm={<Button variant="danger" onClick={() => { draft.discard(); planFlow.current = 'manual'; setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
       />
       <Dialog
-        open={!!pendingEdit}
+        open={!!pendingEdit && !saveFirst && !saveOpen}
         onCancel={() => { setPendingEdit(null); if (pendingEdit) router.push(`/plan/${pendingEdit.id}`) }}
         title={t('CD1525')}
         body={pendingEdit ? GAP.editDraftBody(order.length, pendingEdit.title) : ''}
