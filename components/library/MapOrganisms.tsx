@@ -242,7 +242,13 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
           </div>
           <ol className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
             {/* No stops yet: the hint under the tabs, Save off and no Discard (nothing to discard). */}
-            {stops.length ? null : <li className="list-none type-body-base text-ui-fg-muted">{labels.emptyBody}</li>}
+            {/* In All days the hint sits under the Day 1 label, as drawn. */}
+            {stops.length ? null : (
+              <li className="list-none">
+                {activeDay === 'all' ? <p className="type-eyebrow-category uppercase text-ui-fg-muted">{labels.day(1)}</p> : null}
+                <p className="type-body-base text-ui-fg-muted">{labels.emptyBody}</p>
+              </li>
+            )}
             {shown.map((s, i) => (
               <li key={s.id} className="list-none">
                 {/* All days: each day's stops under its label, numbered from 1 in that day (Figma Day label). */}
