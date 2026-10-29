@@ -644,9 +644,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         </div>
         {/* The open plan dims the map and the bar above it, as drawn; a tap there closes it. */}
         {planSheet ? <Scrim onClick={() => setPlanSheet(false)} className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] z-30" /> : null}
+        {/* Naming the plan shows the map behind its sheet, as drawn; Cancel brings the map sheet back as it was. */}
         <BottomSheet
           type="map"
-          open
+          open={!saveOpen}
           label={t('CD0679')}
           snap={planSheet ? 'full' : snap}
           onSnapChange={(s) => (planSheet ? s !== 'full' && setPlanSheet(false) : setSnap(s))}
