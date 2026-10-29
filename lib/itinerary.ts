@@ -257,7 +257,6 @@ export function mapBffToDetail(bff: BffItinerary): ItineraryDetail {
     })
   }
 
-  const legMinutes  = legs.reduce((sum, l) => sum + Math.round(l.estimated_duration_s / 60), 0)
   const stayMinutes = stops.reduce((sum, s) => sum + s.duration_min, 0)
   const distance    = legs.reduce((sum, l) => sum + l.distance_m, 0)
 
@@ -269,7 +268,8 @@ export function mapBffToDetail(bff: BffItinerary): ItineraryDetail {
     share_url:          null,
     like_count:         bff.like_count ?? 0,
     save_count:         bff.save_count ?? 0,
-    total_duration_min: stayMinutes + legMinutes,
+    // Plan totals count the stop times only, as on the map while building (legs are shown per leg).
+    total_duration_min: stayMinutes,
     distance_m:         legs.length > 0 ? distance : null,
     author: {
       id:             bff.author ? String(bff.author.user_id) : '',
