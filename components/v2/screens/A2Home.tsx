@@ -45,12 +45,12 @@ export const jsonFetch = <T,>(url: string) => fetch(url).then((r) => (r.ok ? (r.
 
 export { CATEGORIES } from '../categories'
 
-/** Loading cards as drawn: a 4:3 photo and two lines; 240 wide on phones, desktop width per page. */
-function CardSkeletons({ cardClassName = 'lg:w-[296px]' }: { cardClassName?: string }) {
+/** Loading cards as drawn: a 4:3 photo and two lines; Home's are 280 wide, other pages pass their own widths. */
+function CardSkeletons({ cardClassName = 'w-[280px]' }: { cardClassName?: string }) {
   return (
     <div className="flex gap-[var(--space-3)] overflow-hidden">
       {Array.from({ length: 4 }, (_, i) => (
-        <div key={i} className={`flex w-[240px] shrink-0 flex-col gap-[var(--space-2)] ${cardClassName}`}>
+        <div key={i} className={`flex shrink-0 flex-col gap-[var(--space-2)] ${cardClassName}`}>
           <Skeleton className="aspect-[4/3] w-full" />
           <Skeleton shape="line" className="h-[var(--space-3-5)] w-4/5" />
           <Skeleton shape="line" className="h-[var(--space-3-5)] w-1/2" />

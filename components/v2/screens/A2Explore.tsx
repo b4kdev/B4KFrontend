@@ -236,7 +236,7 @@ export function CategoryScreen({ category }: { category: string }) {
       <ExploreFrame category={category} sections={[]}>
         <div aria-busy className="flex flex-col">
           <Skeleton className="-mx-[var(--grid-gutter-mobile)] -mt-[var(--space-6)] h-[var(--hero-height-section)] w-auto md:-mx-[var(--grid-gutter-tablet)] lg:-mx-[var(--space-8)]" />
-          <SectionSkeletons cardClassName="lg:w-[260px]" />
+          <SectionSkeletons cardClassName="w-[240px] lg:w-[260px]" />
         </div>
       </ExploreFrame>
     )
