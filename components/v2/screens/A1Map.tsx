@@ -137,6 +137,14 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     setPlanSheet(true)
   }, [phone, params])
   const [saveOpen, setSaveOpen] = useState(false)
+  // Phones: the screen height, for the room the open sheet takes from the bottom of the map.
+  const [screenH, setScreenH] = useState(0)
+  useEffect(() => {
+    const read = () => setScreenH(window.innerHeight)
+    read()
+    window.addEventListener('resize', read)
+    return () => window.removeEventListener('resize', read)
+  }, [])
   const [planName, setPlanName] = useState('')
   const [nameError, setNameError] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -286,6 +294,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const showPlanOnly = planVisible && order.length > 0
   // Phones: with the browse sheet down at peek, the plan's stops and route stay drawn among the places, as drawn.
   const stopsVisible = planVisible || (phone && snap === 'peek' && !selectedId && mode === 'nearby')
+  // Phones: fitted stops land in the map above the open sheet, as drawn. The fit keeps 80
+  // around the points; above the sheet 16 is enough, so the sheet's height less 64 is passed.
+  const sheetH = !phone || saveOpen ? 0 : planSheet ? screenH * 0.7 : snap === 'mid' ? screenH * 0.5 : snap === 'full' ? screenH * 0.85 : 76
+  const fitBottom = Math.max(0, Math.round(sheetH) - 64)
   // Plan only: no other places on the map, except the one opened from the list.
   // Saved on the map: while Saved is on, the map shows the saved places only,
   // or the open list's places, and fits them.
@@ -599,6 +611,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       selectedId={selectedId}
       onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
       planStops={stopsVisible ? planStops : []}
+      fitBottom={fitBottom}
       activeDay={activeDay}
       savedIds={savedIds}
       onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => { setBounds(b); if (filterOn.current) setAreaMoved(true) }, 300) }}

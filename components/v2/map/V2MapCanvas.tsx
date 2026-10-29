@@ -169,6 +169,9 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     }
   }, [])
   const pendingFit = useRef<{ lat: number; lng: number }[] | null>(null)
+  // The last points fitted by request: when the room under the map changes (a phone sheet moves),
+  // they are fitted again into the new visible area, until the person drags the map.
+  const lastFit = useRef<{ lat: number; lng: number }[] | null>(null)
   const live = () => (map.current && sdkAlive() ? map.current : null)
 
   const fitPoints = (points: { lat: number; lng: number }[]) => {
@@ -197,6 +200,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
       m.panTo(proj.fromOffsetToCoord(new N.Point(o.x, o.y + bottom / 2)))
     },
     fitTo: (points) => {
+      lastFit.current = points
       // Before the SDK is up (a hand-off on first load) the fit waits for the map.
       if (!live() || !mapReady) pendingFit.current = points
       else fitPoints(points)
@@ -247,6 +251,9 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     })
     N.Event.once(map.current, 'init', () => setMapReady(true))
     N.Event.addListener(map.current, 'click', () => select.current(null))
+    N.Event.addListener(map.current, 'dragstart', () => {
+      lastFit.current = null
+    })
     // Keyboard on a focused pin, stop or cluster: Enter or Space selects it (a cluster zooms in).
     el.current.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter' && e.key !== ' ') return
@@ -266,6 +273,12 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     idle()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready])
+
+  // The sheet over the map changed height: fit the last requested points into the new visible area.
+  useEffect(() => {
+    if (mapReady && lastFit.current) fitPoints(lastFit.current)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fitBottom])
 
   // A fit asked for before the map was ready runs once it is.
   useEffect(() => {
