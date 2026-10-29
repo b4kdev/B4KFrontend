@@ -73,7 +73,12 @@ export function useSignInFlow(next: string, onSignedIn: (user: User, consent: bo
   // An account set to be deleted that signs in: the date it goes, and the user to continue with.
   const [pending, setPending] = useState<{ user: User; date: string; consent: boolean } | null>(null)
   const locale = useLocale()
-  const { toast } = useV2Shell()
+  const { toast, holdAccount } = useV2Shell()
+  // The chrome stays signed out while the Pending deletion view is up.
+  useEffect(() => {
+    holdAccount(view === 'pending-deletion')
+    return () => holdAccount(false)
+  }, [view, holdAccount])
   // After a sign-in: an account set to be deleted gets the Pending deletion view first; `consent`
   // tells the caller the account still has to agree to the current documents.
   const signedIn = async (user: User) => {

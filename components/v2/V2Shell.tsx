@@ -49,6 +49,8 @@ type ShellCtx = {
   requireSignIn: (r: GateRequest) => void
   /** Phones: height of the open toast (0 when none), so map controls on its line move above it. */
   toastHeight: number
+  /** While an account set to be deleted decides (Pending deletion), the chrome shows it signed out. */
+  holdAccount: (on: boolean) => void
 }
 
 /** SWR key of the unread notification count (shared with the Notifications screen). */
@@ -116,6 +118,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const [cookie, setCookie] = useState<string | null>('unknown')
   const [online, setOnline] = useState(true)
   const [gate, setGate] = useState<GateRequest | null>(null)
+  const [held, setHeld] = useState(false)
   const router = useRouter()
   const signOut = useV2SignOut()
   const [toastMsg, setToastMsg] = useState<{ type?: 'info' | 'success' | 'warning' | 'critical'; message: string; action?: { label: string; onClick: () => void } } | null>(null)
@@ -166,8 +169,9 @@ export default function V2Shell({ children }: { children: ReactNode }) {
     [t, unreadCount],
   )
   const meta = authUser?.user_metadata as { full_name?: string; name?: string; avatar_url?: string } | undefined
-  // During the Consent step the person counts as signed out until Continue (Back signs them out).
-  const user: ShellUser = authUser && v2Area(pathname) !== 'consent' ? { name: meta?.full_name ?? meta?.name ?? authUser.email?.split('@')[0] ?? '', avatarSrc: meta?.avatar_url ?? null, unread: unreadCount } : null
+  // During the Consent step the person counts as signed out until Continue (Back signs them out);
+  // so do accounts set to be deleted until they keep the account, as drawn.
+  const user: ShellUser = authUser && !held && v2Area(pathname) !== 'consent' ? { name: meta?.full_name ?? meta?.name ?? authUser.email?.split('@')[0] ?? '', avatarSrc: meta?.avatar_url ?? null, unread: unreadCount } : null
   const active = activeFrom(pathname)
   const onMap = ['map', 'plan', 'place'].includes(v2Area(pathname))
   // Sign-in, reset and consent are full-screen flows on phones: no Navigation bar.
@@ -200,6 +204,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
     toast: setToastMsg,
     requireSignIn: (r) => (authUser ? r.run() : setGate(r)),
     toastHeight,
+    holdAccount: setHeld,
   }
   const LANG_NAMES: Record<string, string> = { en: 'English', ko: '한국어', ja: '日本語', 'zh-TW': '繁體中文', 'pt-BR': 'Português (BR)' }
 
