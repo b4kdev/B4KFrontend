@@ -129,6 +129,8 @@ export type SignInCardProps = {
     /** The Email field label; left out, `email`. */
     emailField?: string
     /** Figma placeholders: Password on Sign in, Password on Sign up and New password, Confirm password. */
+    /** Figma email field placeholder, e.g. you@example.com. */
+    emailPlaceholder?: string
     passwordPlaceholder?: string
     newPasswordPlaceholder?: string
     confirmPlaceholder?: string
@@ -208,14 +210,14 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
       ) : view === 'sign-in' || view === 'sign-up' ? (
         <form noValidate onSubmit={submit} aria-labelledby={id} className="flex flex-col gap-[var(--space-4)]">
           <Tabs label={labels.tabs} width="equal" baseline={false} value={view} onValueChange={(v) => onViewChange(v as SignInView)} tabs={[{ id: 'sign-in', label: labels.signIn }, { id: 'sign-up', label: labels.signUp }]} />
-          <TextInput label={emailField} showLabel type="email" autoComplete="email" required value={values.email ?? ''} onChange={set('email')} />
+          <TextInput label={emailField} showLabel type="email" autoComplete="email" required placeholder={labels.emailPlaceholder} value={values.email ?? ''} onChange={set('email')} />
           <TextInput label={labels.password} showLabel type="password" autoComplete={view === 'sign-in' ? 'current-password' : 'new-password'} required placeholder={view === 'sign-in' ? labels.passwordPlaceholder : labels.newPasswordPlaceholder} value={values.password ?? ''} onChange={set('password')} help={view === 'sign-up' ? labels.passwordHint : undefined} />
           {view === 'sign-in' ? <button type="button" onClick={() => onViewChange('forgot')} className="self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover">{labels.forgot}</button> : null}
           <Button type="submit" loading={busy} className="w-full">{view === 'sign-in' ? labels.signIn : labels.signUp}</Button>
         </form>
       ) : view === 'forgot' ? (
         <form noValidate onSubmit={submit} className="flex flex-col gap-[var(--space-4)]">
-          <TextInput label={emailField} showLabel type="email" autoComplete="email" required value={values.email ?? ''} onChange={set('email')} />
+          <TextInput label={emailField} showLabel type="email" autoComplete="email" required placeholder={labels.emailPlaceholder} value={values.email ?? ''} onChange={set('email')} />
           <Button type="submit" loading={busy} className="w-full">{labels.sendLink}</Button>
         </form>
       ) : view === 'link-expired' ? (

@@ -174,7 +174,7 @@ export function useSignInFlow(next: string, onSignedIn: (user: User, consent: bo
       or: t('CD1376'), tabs: t('CD0054'), backToSignIn: t('CD1498'),
       signInTitle: t('CD1490'), signInBody: t('CD1491'), signUpTitle: t('CD1494'), signUpBody: t('CD1495'),
       forgotTitle: t('CD0042'), forgotBody: t('CD1497'), emailField: t('CD0921'),
-      passwordPlaceholder: t('CD1492'), newPasswordPlaceholder: t('CD0978'), confirmPlaceholder: t('CD1502'),
+      emailPlaceholder: t('CD1859'), passwordPlaceholder: t('CD1492'), newPasswordPlaceholder: t('CD0978'), confirmPlaceholder: t('CD1502'),
       pendingTitle: t('CD1776'), pendingBody: pending ? t('CD1777', { date: pending.date }) : undefined,
       keepAccount: t('CD1778'), continueDeletion: t('CD1779'),
     },
