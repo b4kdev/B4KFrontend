@@ -8,7 +8,7 @@ import type { MapPoi } from '@/hooks/useMapPois'
 // per-IP limit on their own; a server-side relay would make every visitor share one address.
 // Draft legs have no transport mode yet; a saved plan's legs start as walking, so the draft asks
 // for walking too and shows what the saved plan will show. Until an answer comes, or when the call
-// fails, the straight-line estimate stays (legMinutes).
+// fails, the walking estimate stays (legMinutes).
 
 const ROUTE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/osrm` : null
 const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
