@@ -362,7 +362,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         toast({ type: 'success', message: t('CD1636') })
         router.push(`/plan/${id}`)
       } catch {
-        toast({ type: 'critical', message: k('map.plan.saveError') })
+        toast({ type: 'critical', message: t('CD0949') })
       } finally {
         setSaving(false)
       }
@@ -388,7 +388,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       if (pendingEdit) loadForEdit(pendingEdit)
       else if (id) router.push(`/plan/${id}`)
     } catch {
-      toast({ type: 'critical', message: k('map.plan.saveError') })
+      toast({ type: 'critical', message: t('CD0949') })
     } finally {
       setSaving(false)
     }
