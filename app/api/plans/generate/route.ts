@@ -21,7 +21,7 @@ export interface GeneratedPlan {
   transport: 'car' | 'public'
 }
 
-const MAX_PLACES = 40 // mirrored by the BFF/DB
+const MAX_PLACES = 48 // the BFF caps a plan at 48 stops too
 
 // POST /api/plans/generate — BFF POST /itineraries/plan: clusters the places
 // into days and persists a real draft itinerary. The returned id resolves on
