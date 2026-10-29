@@ -25,7 +25,7 @@ export type V2PageProps = {
 
 export function V2Page({ bar = { type: 'home' }, bleed, noFooter, underBar, children, className }: V2PageProps) {
   const router = useRouter()
-  const { labels, openDrawer } = useV2Shell()
+  const { labels, openDrawer, navOverlays } = useV2Shell()
   return (
     <>
       {bar.type === 'home' ? (
@@ -39,6 +39,8 @@ export function V2Page({ bar = { type: 'home' }, bleed, noFooter, underBar, chil
         {children}
       </main>
       {noFooter === true ? null : <V2Footer className={noFooter === 'phone' ? 'max-lg:hidden' : undefined} />}
+      {/* A page on a map address (error, not found) ends above the floating Navigation bar, as drawn. */}
+      {navOverlays ? <div aria-hidden className="h-[calc(var(--fab-size)+env(safe-area-inset-bottom))] shrink-0 lg:hidden" /> : null}
     </>
   )
 }

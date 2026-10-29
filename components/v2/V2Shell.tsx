@@ -51,6 +51,8 @@ type ShellCtx = {
   toastHeight: number
   /** While an account set to be deleted decides (Pending deletion), the chrome shows it signed out. */
   holdAccount: (on: boolean) => void
+  /** Phones: the Navigation bar floats over the page (map pages), so page content needs room under it. */
+  navOverlays: boolean
 }
 
 /** SWR key of the unread notification count (shared with the Notifications screen). */
@@ -205,6 +207,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
     requireSignIn: (r) => (authUser ? r.run() : setGate(r)),
     toastHeight,
     holdAccount: setHeld,
+    navOverlays: onMap && !inFlow && !fullFlow,
   }
   const LANG_NAMES: Record<string, string> = { en: 'English', ko: '한국어', ja: '日本語', 'zh-TW': '繁體中文', 'pt-BR': 'Português (BR)' }
 
