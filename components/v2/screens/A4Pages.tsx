@@ -222,7 +222,7 @@ export function SearchScreen() {
       <>
         <TopAppBar type="search" labels={labels} onBack={() => router.back()} search={field} className="sticky top-0 z-30" />
         <main id="main" className="flex-1 px-[var(--grid-gutter-mobile)] py-[var(--space-3)]">
-          <h1 className="sr-only">{t('CD1293')}</h1>
+          <h1 className="sr-only">{q ? t('CD1861', { query: q }) : t('CD1293')}</h1>
           {box.open ? box.suggestions : (
             <>
               <div className="-mx-[var(--grid-gutter-mobile)] mb-[var(--space-4)] flex gap-[var(--space-2)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none]">
@@ -248,7 +248,15 @@ export function SearchScreen() {
       </LeftPanel>
       <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
         <main id="main" tabIndex={-1} className="flex flex-1 flex-col gap-[var(--space-6)] px-[var(--space-8)] py-[var(--space-6)] outline-none">
-          <h1 className={q ? 'type-display-h3' : 'sr-only'}>{t('CD1293')}</h1>
+          {/* Figma: the results title names the search, with a muted line under it (4 apart). */}
+          {q ? (
+            <div className="flex flex-col gap-[var(--space-1)]">
+              <h1 className="type-display-h3">{t('CD1861', { query: q })}</h1>
+              <p className="type-body-base text-ui-fg-muted">{t('CD1862')}</p>
+            </div>
+          ) : (
+            <h1 className="sr-only">{t('CD1293')}</h1>
+          )}
           {results}
           {q ? <IntlLink href="/map" className="inline-flex items-center gap-[var(--space-2)] self-start type-label-button text-ui-link hover:text-ui-link-hover"><Map aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1287')}</IntlLink> : null}
         </main>
