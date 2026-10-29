@@ -68,6 +68,8 @@ export function Modal({ open, onClose, title, closeLabel, size = 'md', children,
         aria-modal="true"
         aria-labelledby={id}
         tabIndex={-1}
+        // Phones: the modal is a sheet at the bottom, so toasts sit 12 above its top (V2Shell).
+        data-toast-floor={phone || undefined}
         className={cn(
           'outline-none',
           phone
