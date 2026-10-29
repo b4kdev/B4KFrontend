@@ -179,10 +179,51 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   const fitPoints = (points: { lat: number; lng: number }[]) => {
     if (!live() || !points.length) return
     const N = window.naver.maps
+    // Phones pass the room the bars and the sheet take: fit into the box between them by hand,
+    // since the SDK's fit drops a margin that leaves only a thin band of map.
+    if (fitTop !== undefined) return fitIntoBox(points)
     if (points.length === 1) return map.current.setCenter(new N.LatLng(points[0].lat, points[0].lng))
     const lats = points.map((p) => p.lat)
     const lngs = points.map((p) => p.lng)
     map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), fitPadding(fitBottom, fitTop))
+  }
+
+  // Web Mercator: world pixels at zoom 0 (256 wide), so zoom z multiplies them by 2^z.
+  const worldX = (lng: number) => ((lng + 180) / 360) * 256
+  const worldY = (lat: number) => {
+    const s = Math.sin((lat * Math.PI) / 180)
+    return (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * 256
+  }
+  const fromWorld = (x: number, y: number) => ({
+    lat: (Math.atan(Math.sinh(Math.PI * (1 - (2 * y) / 256))) * 180) / Math.PI,
+    lng: (x / 256) * 360 - 180,
+  })
+  const fitIntoBox = (points: { lat: number; lng: number }[]) => {
+    const N = window.naver.maps
+    const size = map.current.getSize()
+    const side = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--space-6')) || 24
+    const top = fitTop ?? 0
+    const box = { left: side, right: size.width - side, top, bottom: size.height - fitBottom - 80 }
+    const boxW = Math.max(1, box.right - box.left)
+    const boxH = Math.max(1, box.bottom - box.top)
+    const xs = points.map((p) => worldX(p.lng))
+    const ys = points.map((p) => worldY(p.lat))
+    const spanX = Math.max(...xs) - Math.min(...xs)
+    const spanY = Math.max(...ys) - Math.min(...ys)
+    // One stop keeps the zoom; more get the closest whole zoom that holds them, never past the opening zoom.
+    const zoom = points.length === 1 || (!spanX && !spanY) ? map.current.getZoom() : Math.max(6, Math.min(OPEN_ZOOM, Math.floor(Math.log2(Math.min(spanX ? boxW / spanX : Infinity, spanY ? boxH / spanY : Infinity)))))
+    const scale = 2 ** zoom
+    // The points' middle goes to the box's middle: the map centre sits that far from it.
+    const midX = ((Math.max(...xs) + Math.min(...xs)) / 2) * scale
+    const midY = ((Math.max(...ys) + Math.min(...ys)) / 2) * scale
+    const dx = (box.left + box.right) / 2 - size.width / 2
+    const dy = (box.top + box.bottom) / 2 - size.height / 2
+    const c = fromWorld((midX - dx) / scale, (midY - dy) / scale)
+    try {
+      if (localStorage.getItem('b4k-debug-fit')) console.debug('[b4k fit]', { size: [size.width, size.height], box, zoom, points: points.length })
+    } catch {}
+    map.current.setZoom(zoom, false)
+    map.current.setCenter(new N.LatLng(c.lat, c.lng))
   }
 
   useImperativeHandle(ref, () => ({
@@ -302,9 +343,11 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   useEffect(() => {
     if (!live() || !mapReady || !fitStops || planStops.length < 2) return
     const N = window.naver.maps
+    if (fitTop !== undefined) return fitIntoBox(planStops.map((s) => ({ lat: s.poi.coords_lat, lng: s.poi.coords_lng })))
     const lats = planStops.map((s) => s.poi.coords_lat)
     const lngs = planStops.map((s) => s.poi.coords_lng)
     map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), fitPadding(fitBottom, fitTop))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fitStops, planStops, mapReady, fitBottom, fitTop])
 
   // Location dot: 16 dot with a 2 px ring on a 40 accuracy halo, above the place pins (below a
