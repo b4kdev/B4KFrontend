@@ -51,6 +51,7 @@ export function useLocateMe(map: RefObject<V2MapHandle | null>, { phone = false 
   const control = <MapControl icon={icon} label={t('CD1805')} aria-busy={state === 'locating' || undefined} onClick={locate} />
   // Phones: an open toast shares the control's line above the sheet; the control moves 8 above it.
   const lifted = toastHeight ? <div style={{ transform: `translateY(calc(-${toastHeight}px - var(--space-2)))` }} className="transition-transform motion-reduce:transition-none">{control}</div> : control
-  if (!inKorea) return { control: null, location: null }
-  return { control: !phone ? <Tooltip text={t('CD1805')} side="top">{control}</Tooltip> : lifted, location }
+  if (!inKorea) return { control: null, still: null, location: null }
+  // `still`: the phone control without the lift, for places where the toast is not on its line.
+  return { control: !phone ? <Tooltip text={t('CD1805')} side="top">{control}</Tooltip> : lifted, still: control, location }
 }
