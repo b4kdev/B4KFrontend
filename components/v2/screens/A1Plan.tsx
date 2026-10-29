@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from 'react'
 import { useLocale } from 'next-intl'
-import { track } from '@/lib/analytics'
+import { shareUrl, track } from '@/lib/analytics'
 import useSWR, { useSWRConfig } from 'swr'
 import { Bookmark, Heart, Share2, Trash2 } from 'lucide-react'
 import { useRouter } from '@/i18n/navigation'
@@ -114,16 +114,17 @@ export function PlanScreen({ id }: { id: string }) {
   const share = async () => {
     const url = new URL(it?.share_url ?? window.location.href, window.location.origin)
     url.searchParams.set('ref', 'share')
+    const link = shareUrl(url.toString(), 'plan')
     track('share_click', { target: typeof navigator.share === 'function' ? 'native' : 'link', content_type: 'plan', locale, screen_id: 'plan' })
     if (typeof navigator.share === 'function') {
       try {
-        await navigator.share({ title: it?.title, url: url.toString() })
+        await navigator.share({ title: it?.title, url: link })
         return
       } catch (e) {
         if ((e as DOMException)?.name === 'AbortError') return
       }
     }
-    await navigator.clipboard?.writeText(url.toString()).catch(() => {})
+    await navigator.clipboard?.writeText(link).catch(() => {})
     toast({ type: 'success', message: k('itinerary.copiedToast') })
   }
   const setLegMode = async (from: number, mode: Mode) => {

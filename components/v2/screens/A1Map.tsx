@@ -37,7 +37,7 @@ import { useMapPois, type MapBounds, type MapPoi } from '@/hooks/useMapPois'
 import { usePlaceDetail } from '@/hooks/usePlaceDetail'
 import { getDraftPlan } from '@/lib/draft-plan'
 import { takeCourseHandoff } from '@/lib/quickplan'
-import { track } from '@/lib/analytics'
+import { placeSourceFrom, shareUrl, track } from '@/lib/analytics'
 import type { SavedData } from '@/app/api/saved/route'
 import type { ItineraryDetail } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
@@ -112,6 +112,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   filterOn.current = !!filter
   const [mode, setMode] = useState<'nearby' | 'saved'>(params?.get('saved') ? 'saved' : 'nearby')
   const [selectedId, setSelectedId] = useState<string | null>(poiId ?? params?.get('poi') ?? null)
+  const [openedWith] = useState(selectedId)
+  const viewedOnce = useRef(false)
   // Escape goes back from a selected place to the list (no dialog open); a map tap does the same.
   useEffect(() => {
     if (!selectedId) return
@@ -249,7 +251,13 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   useEffect(() => {
     // Phones: the place opens in the sheet at mid (half the screen), so centre it in the map above.
     if (detail) mapRef.current?.focus(detail.coords_lat, detail.coords_lng, phone ? Math.round(window.innerHeight / 2) : 0)
-    if (detail) track('poi_view', { category: detail.display_domain ?? undefined, area: detail.display_region ?? undefined, locale, screen_id: 'map' })
+    if (!detail) return
+    // The place the map opened with came from the page before; later picks are made on the map
+    // (or its Saved tab).
+    const first = !viewedOnce.current && detail.poi_id === openedWith
+    viewedOnce.current = true
+    const source = first ? placeSourceFrom() : mode === 'saved' ? 'saved' : 'map'
+    track('poi_view', { category: detail.display_domain ?? undefined, area: detail.display_region ?? undefined, source, locale, screen_id: 'map' })
   }, [detail?.poi_id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const order = draft.plan.stops
@@ -407,7 +415,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         onLike={() => toggleLike(detail.poi_id)}
         onShare={() => {
           // The shared link is the place page, not the map address.
-          const url = `${location.origin}/${locale}/place/${detail.poi_id}`
+          const url = shareUrl(`${location.origin}/${locale}/place/${detail.poi_id}`, 'place')
           track('share_click', { target: typeof navigator.share === 'function' ? 'native' : 'link', content_type: 'place', locale, screen_id: 'map' })
           if (navigator.share) navigator.share({ title: detailName, url }).catch(() => {})
           else navigator.clipboard?.writeText(url).then(() => toast({ type: 'success', message: k('itinerary.copiedToast') }), () => {})

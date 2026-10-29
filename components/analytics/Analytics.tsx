@@ -4,7 +4,7 @@ import Script from 'next/script'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { getConsent } from '@/lib/consent'
-import { withoutQuery } from '@/lib/analytics'
+import { notePath, withoutQuery } from '@/lib/analytics'
 
 const GA_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID
@@ -28,6 +28,8 @@ export default function Analytics() {
   // cleaned address and referrer from gtag('set'), not gtag's own read of document.location.
   // The first one goes out from the init script below; data-pv holds the last path sent.
   const pathname = usePathname()
+  // Kept with or without consent: only the last two paths, in memory, for the place source.
+  useEffect(() => notePath(pathname), [pathname])
   useEffect(() => {
     const root = document.documentElement
     if (!granted || !GA_ID || typeof window.gtag !== 'function' || root.dataset.pv === pathname) return
