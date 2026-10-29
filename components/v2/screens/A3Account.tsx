@@ -736,7 +736,7 @@ export function SettingsScreen() {
               <ListItem
                 leading={<Avatar size="md" src={profile.data?.avatar_url} name={profile.data?.name} decorative />}
                 title={profile.data?.name ?? ''}
-                secondary={t('CD1597')}
+                secondary={t('CD1871')}
                 chevron
                 onClick={() => { setName(profile.data?.name ?? ''); setNameSheet(true) }}
               />
