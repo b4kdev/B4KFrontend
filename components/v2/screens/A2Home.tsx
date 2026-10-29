@@ -216,7 +216,8 @@ export function HomeScreen() {
                 title={t('CD0313')}
                 seeAll={{ href: '/explore/trending', label: t('CD1309') }}
                 cards={trending.data.map((p) => (
-                  <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, name(p))} title={name(p)} imageSrc={p.primary_image_url} meta={p.display_region} />
+                  // Every place in the Trending row is trending, so each card carries the badge, as drawn.
+                  <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, name(p))} title={name(p)} imageSrc={p.primary_image_url} meta={p.display_region} trending={t('CD0313')} />
                 ))}
               />
             ) : (
