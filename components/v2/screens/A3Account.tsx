@@ -129,7 +129,7 @@ export function ProfileOwnScreen() {
           <section aria-labelledby="profile-plans" className="flex flex-col gap-[var(--space-6)] lg:px-[var(--space-6)]">
             <SectionHeader id="profile-plans" title={t('CD1300')} subtitle={GAP.profilePlansNote} seeAll={{ href: '/saved?tab=my-plans', label: t('CD1309') }} />
             <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-3 lg:gap-[var(--space-4)]">
-              {plans.slice(0, phone ? 2 : 3).map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} imageSrc={tr.thumbnail_url} author={p?.name ?? ''} saves={String(tr.save_count)} stops={k('saved.plan.stops', { count: tr.stop_count })} /></li>)}
+              {plans.slice(0, phone ? 2 : 3).map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} imageSrc={tr.thumbnail_url} author={p?.name ?? ''} saves={String(tr.save_count)} stops={`${k('saved.plan.stops', { count: tr.stop_count })} · ${k('saved.plan.days', { count: tr.day_count })}`} /></li>)}
             </ul>
             <IntlLink href="/saved?tab=my-plans" className="inline-flex h-[var(--control-height-md)] items-center self-start px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover">{GAP.openSaved}</IntlLink>
           </section>
