@@ -73,6 +73,8 @@ export function SearchScreen() {
   const [sheet, setSheet] = useState(false)
 
   const show = filters.show?.[0] ?? 'all'
+  // No results names the picked area: the district if one is picked, else the region.
+  const noResultsArea = filters.district?.[0] ? districtName(filters.district[0], locale) : filters.region?.[0] ? regionName(filters.region[0], locale) : null
   const qs = new URLSearchParams({ q, sort })
   if (show !== 'all') qs.set('type', show)
   if (filters.region?.[0]) qs.set('area_lv1', filters.region[0])
@@ -144,7 +146,7 @@ export function SearchScreen() {
         <EmptyState
           type="no-results"
           titleAs="h2"
-          title={t('CD1291', { query: q })}
+          title={noResultsArea ? t('CD1863', { query: q, area: noResultsArea }) : t('CD1291', { query: q })}
           action={
             <div className="flex flex-col items-center gap-[var(--space-6)]">
               <div className="flex flex-wrap justify-center gap-[var(--space-2)]">{exploreChips}</div>
