@@ -669,6 +669,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         >
           {planSheet ? <div className="-mx-[var(--space-4)] -mb-[var(--space-6)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div> : content}
         </BottomSheet>
+        {/* While the plan is named, Locate me stays on the map where it sits above the half sheet, under the dimmed layer, as drawn. */}
+        {saveOpen && locate.control ? <div className="absolute right-[var(--space-4)] bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom)+50dvh+var(--space-3))] z-20">{locate.control}</div> : null}
         {dialogs}
       </div>
     )
