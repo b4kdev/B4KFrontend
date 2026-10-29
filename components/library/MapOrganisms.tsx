@@ -213,7 +213,8 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
       </button>
       {state === 'open' ? (
         <>
-          <div className="flex items-center gap-[var(--space-1)]">
+          {/* "+ Day" follows the last day tab with no gap, as drawn. */}
+          <div className="flex items-center">
             <Tabs
               label={labels.region}
               baseline={false}
