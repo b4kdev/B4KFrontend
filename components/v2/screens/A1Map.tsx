@@ -51,6 +51,7 @@ import { usePendingAction } from '../V2SignInGate'
 import { useLikedPlaces } from '../usePlaceActions'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
 import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_DAYS, MAX_STOPS, PER_DAY, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
+import { useRoutedLegs } from '../map/useRoutedLegs'
 import { CATEGORIES, jsonFetch } from './A2Home'
 
 // The map (A1): Map browse
@@ -261,6 +262,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   }, [detail?.poi_id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const order = draft.plan.stops
+  // Routed leg minutes from the route engine; the straight-line estimate until they come.
+  const routedLeg = useRoutedLegs(order, draft.dayOf)
   // Phones: when the map opens with a plan draft, the browse sheet starts at peek with the Plan pill
   // 12 above it; dragging it up or tapping Saved brings the list back. Stops added here keep the sheet
   // where it is (adding from the Saved hub keeps it open). A place open in the sheet stays until closed.
@@ -540,7 +543,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         day: Math.min(draft.dayOf(p.poi_id), 8) as 1,
         duration: formatMinutes(draft.plan.durations[p.poi_id] ?? 60, k),
         durationLabel: k('map.plan.durationAriaLabel', { name: nameOf(p, locale) }),
-        leg: order[i + 1] && draft.dayOf(order[i + 1].poi_id) === draft.dayOf(p.poi_id) ? k('itinerary.stats.min', { min: legMinutes(p, order[i + 1]) }) : undefined,
+        leg: order[i + 1] && draft.dayOf(order[i + 1].poi_id) === draft.dayOf(p.poi_id) ? k('itinerary.stats.min', { min: routedLeg(p.poi_id, order[i + 1].poi_id) ?? legMinutes(p, order[i + 1]) }) : undefined,
       }))}
       days={draft.days}
       activeDay={activeDay}
