@@ -92,7 +92,7 @@ Static category folders each carry their own `[row]` pages so they do not shadow
 ### A5 System
 | SCR | Screen | Address |
 |---|---|---|
-| 034 | Language and theme | `/settings` (Preferences), Language sheet in the shell; theme Light / Dark / Match device |
+| 034 | Language and theme | `/settings` (Preferences), Language sheet in the shell; theme Light / Dark / System |
 
 ## Checks to run
 
