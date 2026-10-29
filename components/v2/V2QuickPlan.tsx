@@ -266,7 +266,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
       next={
         step < 3
           ? { label: t('CD0768'), onClick: () => setStep((s) => (s + 1) as 2 | 3) }
-          : { label: building ? t('CD0774') : t('CD0763'), onClick: make, disabled: building }
+          : { label: t('CD0763'), onClick: make, loading: building }
       }
     >
       {body}
