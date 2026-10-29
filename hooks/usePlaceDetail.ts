@@ -51,6 +51,7 @@ function mapDetail(row: RawPlaceDetail, locale: string): MapPoi {
     description:        cur.description ?? en.description,
     address,
     display_domain:     row.display_domain ?? row.domains?.[0] ?? null,
+    display_region:     row.display_region ?? null,
     primary_image_url:  row.primary_image_url ?? undefined,
     save_count:         row.save_count,
     like_count:         row.like_count,
