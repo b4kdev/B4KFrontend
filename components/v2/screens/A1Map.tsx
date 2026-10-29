@@ -396,7 +396,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   // ── Panel content ──────────────────────────────────────────────────────────
   const switcher = (
-    <Tabs label={t('CD0815')} width="equal" className={phone ? undefined : 'px-[var(--space-4)]'} value={mode} onValueChange={(v) => { setMode(v as 'nearby' | 'saved'); setSelectedId(null); if (v === 'saved' && phone && snap === 'peek') setSnap('mid') }} tabs={[{ id: 'nearby', label: t('CD1576') }, { id: 'saved', label: k('saved.title') }]} />
+    <Tabs label={t('CD0815')} width="equal" className={phone ? undefined : 'mx-[var(--space-4)]'} value={mode} onValueChange={(v) => { setMode(v as 'nearby' | 'saved'); setSelectedId(null); if (v === 'saved' && phone && snap === 'peek') setSnap('mid') }} tabs={[{ id: 'nearby', label: t('CD1576') }, { id: 'saved', label: k('saved.title') }]} />
   )
   const placeView = detail ? (
     <div className={cn('flex flex-col gap-[var(--space-2)] pb-[var(--space-4)]', phone && '-mx-[var(--space-4)] -mt-[var(--space-2)]')}>
@@ -518,7 +518,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         const p = saved.data?.pois.find((x) => x.poi_id === id)
         if (p) addToPlan({ poi_id: p.poi_id, name_ko: p.name_ko, name_en: p.name_en, coords_lat: p.coords_lat, coords_lng: p.coords_lng, display_region: p.display_region, primary_image_url: p.primary_image_url ?? undefined })
       }}
-      emptyAction={<Button size="md" variant="secondary" onClick={() => setMode('nearby')}>{t('CD1430')}</Button>}
+      emptyAction={<Button size="md" onClick={() => setMode('nearby')}>{t('CD1430')}</Button>}
       labels={{ back: k('saved.folder.back'), add: (n) => `${k('map.poiDetail.addToPlan')}: ${n}`, emptyTitle: k('saved.empty.places.title'), emptyBody: t('CD1429') }}
     />
   )
