@@ -172,7 +172,9 @@ export function formatMinutes(min: number, f: (key: string, v: Record<string, nu
   return h && m ? f('itinerary.duration.hoursMinutes', { h, m }) : h ? f('itinerary.duration.hours', { h }) : f('itinerary.duration.minutes', { m })
 }
 
-/** Straight-line estimate between two stops (as live until the plan is saved). */
+/** Estimate between two stops while the plan is being built, as on the live site: straight-line
+ * distance at an average Seoul car speed of 25 km/h, in whole minutes, at least 1. Routed times
+ * replace it once the plan is saved. */
 export function legMinutes(a: MapPoi, b: MapPoi) {
   const R = 6371e3
   const toR = (x: number) => (x * Math.PI) / 180
@@ -180,5 +182,5 @@ export function legMinutes(a: MapPoi, b: MapPoi) {
   const dLng = toR(b.coords_lng - a.coords_lng)
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(toR(a.coords_lat)) * Math.cos(toR(b.coords_lat)) * Math.sin(dLng / 2) ** 2
   const meters = 2 * R * Math.asin(Math.sqrt(h))
-  return Math.max(5, Math.round(meters / 1.3 / 60 / 5) * 5 + 5)
+  return Math.max(1, Math.round((meters / 25000) * 60))
 }
