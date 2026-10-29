@@ -38,8 +38,7 @@ import { useDDay } from '../useDDay'
 // Live data from /api/home/*; a row with no content hides; a row that fails shows an
 // Empty state Error with Try again.
 
-// The K-Drama work the second hero slide opens; the hero's action button look.
-const HERO_DRAMA = 'tangerines'
+// The hero's action button look.
 const HERO_ACTION = 'inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none'
 
 export const jsonFetch = <T,>(url: string) => fetch(url).then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(r.status)))
@@ -152,9 +151,8 @@ export function HomeScreen() {
   const locale = useLocale()
   const { openQuickPlan, toast } = useV2Shell()
   const { user } = useAuth()
-  // Hero slides 2 and 3 show the photo their Theme page shows (its first place's photo), read from
-  // the same data as that page so the two stay in step.
-  const dramaTheme = useSWR<{ items: { primary_image_url: string | null }[] }>(`/api/explore/k-drama/filming-spots/${HERO_DRAMA}`, jsonFetch)
+  // Hero slide 2 shows the photo its Theme page shows (its first place's photo), read from the same
+  // data as that page so the two stay in step.
   const foodTheme = useSWR<{ items: { primary_image_url: string | null }[] }>('/api/explore/k-food/michelin-noodles', jsonFetch)
   const trending = useSWR<HomeTrendingPoi[]>('/api/home/trending', jsonFetch)
   const plans = useSWR<HomePopularPlan[]>('/api/home/popular-plans', jsonFetch)
@@ -278,12 +276,12 @@ export function HomeScreen() {
 
   return (
     <V2Page bleed underBar>
-      {/* Three slides as drawn: no autoplay, the arrows wrap around. Slide 1 is the brand slide (no
-          photo, the media surface with the fade); its action opens Quick plan. */}
+      {/* Two slides: no autoplay, the arrows wrap around. Slide 1 is the brand slide (no photo, the
+          media surface with the fade); its action opens Quick plan. The drawn K-Drama slide waits for
+          its photo. */}
       <Carousel type="hero" label={t('CD0388')} previousLabel={t('CD0390')} nextLabel={t('CD0389')} slideLabel={(n) => t('CD0391', { n })}>
         {[
           { id: 'plan', eyebrow: t('CD0463'), title: t('CD1781'), subtitle: t('CD1782'), image: null, action: <button type="button" onClick={openQuickPlan} className={HERO_ACTION}>{t('CD0738')}</button> },
-          { id: 'drama', eyebrow: t('CD0419'), title: t('CD1783'), subtitle: t('CD1784'), image: dramaTheme.data?.items[0]?.primary_image_url ?? null, action: <IntlLink href={`/explore/k-drama/${HERO_DRAMA}/filming-spots`} className={HERO_ACTION}>{t('CD1785')}</IntlLink> },
           { id: 'food', eyebrow: t('CD0251'), title: t('CD1786'), subtitle: t('CD1787'), image: foodTheme.data?.items[0]?.primary_image_url ?? null, action: <IntlLink href="/explore/k-food/michelin-noodles" className={HERO_ACTION}>{t('CD1785')}</IntlLink> },
         ].map((s, i) => (
           <Hero key={s.id} className={heroPhone} as={i === 0 ? 'h1' : 'h2'} priority={i === 0} imageSrc={s.image} eyebrow={s.eyebrow} title={s.title} subtitle={s.subtitle} action={s.action} />
