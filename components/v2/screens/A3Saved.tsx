@@ -511,7 +511,7 @@ function ListCover({ name, photos }: { name: string; photos: string[] }) {
         // eslint-disable-next-line @next/next/no-img-element
         <img src={photos[0]} alt="" className="absolute inset-0 size-full object-cover" />
       ) : (
-        <span className="absolute inset-0 flex items-end p-[var(--space-3)] type-display-h4 text-ui-fg line-clamp-3">{name}</span>
+        <span className="absolute inset-0 flex items-end p-[var(--space-3)] type-display-h4 text-ui-fg-muted line-clamp-3">{name}</span>
       )}
     </span>
   )
