@@ -392,10 +392,12 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const categoryLabel = t(CATEGORIES.find((c) => c.slug === category)?.label ?? 'CD0804')
   const sortLabel = sort === 'new' ? t('CD1405') : t('CD1565')
   // Desktop: an empty or failed list fills the page down to the footer, its state centred in it.
-  // Lists from Home end 56 above the footer as drawn (32 here plus the page's 24); lists in the
-  // Explore frame end 24 above it (the page's 24 alone).
+  // From Home, as drawn: a loaded list ends 56 above the footer (32 here plus the page's 24); the
+  // loading cards and the filled empty or error state keep 16 here. In the Explore frame the page's
+  // 24 alone.
+  const listShown = !loading && !failed && filtered.length > 0
   const body = (
-    <div className={cn('flex flex-col gap-[var(--space-4)] lg:flex-1', fromHome && 'lg:pb-[var(--space-8)]')}>
+    <div className={cn('flex flex-col gap-[var(--space-4)] lg:flex-1', fromHome && (listShown ? 'lg:pb-[var(--space-8)]' : 'lg:pb-[var(--space-4)]'))}>
       <Breadcrumbs
         label={title}
         items={fromHome ? [{ label: t('CD0807'), href: '/' }, { label: title }] : [{ label: categoryLabel, href: `/explore/${category}` }, { label: title }]}
