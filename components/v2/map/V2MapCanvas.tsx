@@ -52,6 +52,8 @@ type Props = {
 }
 
 const SEOUL = { lat: 37.5665, lng: 126.978 }
+// The map opens at the small photo pin zoom, so the first view shows place photos, as drawn.
+const OPEN_ZOOM = 16
 const CLUSTER_BELOW = 15
 const CLUSTER_GRID_PX = 60
 // Overlap order, top first: selected, plan stops, saved, clusters, other places. Within a layer,
@@ -104,7 +106,7 @@ const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
 // A cluster is a button named by its place count (not shown on screen); Enter or Space zooms in like a click.
 const clusterHtml = (n: number, key: string, name: string) => {
   const size = n < 10 ? '--map-cluster-size-sm' : n < 50 ? '--map-cluster-size-md' : '--map-cluster-size-lg'
-  return `<div style="${HIT};width:52px;height:52px" class="b4k-map-marker" role="button" tabindex="0" data-cluster="${esc(key)}" aria-label="${esc(name)}"><span aria-hidden="true" style="width:var(${size});height:var(${size});border-radius:var(--radius-full);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--color-fg-on-media);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${n}</span></div>`
+  return `<div style="${HIT};width:52px;height:52px" class="b4k-map-marker" role="button" tabindex="0" data-cluster="${esc(key)}" aria-label="${esc(name)}"><span aria-hidden="true" style="width:var(${size});height:var(${size});border-radius:var(--radius-full);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--map-pin-stroke);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${n}</span></div>`
 }
 const stopHtml = (p: MapPoi, order: number, day: number, selected: boolean) =>
   `<div style="${HIT}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected)}><span style="width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:var(--radius-full);background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${order}</span></div>`
@@ -144,7 +146,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   // The SDK can hand back a map before its projection exists (a second load in the same tab);
   // pins and fits wait for the map's init (or first idle) event.
   const [mapReady, setMapReady] = useState(false)
-  const [zoom, setZoom] = useState(13)
+  const [zoom, setZoom] = useState(OPEN_ZOOM)
   const [failed, setFailed] = useState(false)
   const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID
   const select = useRef(onSelect)
@@ -225,7 +227,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     const c = center ?? SEOUL
     map.current = new N.Map(el.current, {
       center: new N.LatLng(c.lat, c.lng),
-      zoom: 13,
+      zoom: OPEN_ZOOM,
       zoomControl: false,
       mapDataControl: false,
       scaleControl: false,
