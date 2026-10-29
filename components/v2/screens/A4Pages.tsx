@@ -104,7 +104,7 @@ export function SearchScreen() {
     const districts = areas.data?.find((a) => a.region === region)?.districts ?? []
     setFilters({ ...v, district: (v.district ?? []).filter((d) => districts.some((x) => x.name === d)) })
   }
-  const sortCfg = { label: t('CD1272'), options: [{ id: 'relevance', label: t('CD1274') }, { id: 'popularity', label: t('CD1273') }], value: sort, onValueChange: setSort }
+  const sortCfg = { label: t('CD1272'), options: [{ id: 'relevance', label: t('CD1274') }, { id: 'popularity', label: t('CD1565') }], value: sort, onValueChange: setSort }
   // Filters set beyond the defaults (Show All), for the phone All filters chip.
   const active = Object.entries(filters).reduce((n, [g, v]) => n + (g === 'show' ? (v[0] && v[0] !== 'all' ? 1 : 0) : v.length), 0)
   // The filters title carries the count once a filter is set: "Filters (3)".
