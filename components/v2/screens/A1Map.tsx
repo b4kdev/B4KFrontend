@@ -281,6 +281,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // Any plan (Quick plan, Plan from Saved, built by hand, opened for editing) works the same: while
   // it is open the map shows its stops only; a category chip folds it and goes back to browsing.
   const showPlanOnly = planVisible && order.length > 0
+  // Phones: with the browse sheet down at peek, the plan's stops and route stay drawn among the places, as drawn.
+  const stopsVisible = planVisible || (phone && snap === 'peek' && !selectedId && mode === 'nearby')
   // Plan only: no other places on the map, except the one opened from the list.
   // Saved on the map: while Saved is on, the map shows the saved places only,
   // or the open list's places, and fits them.
@@ -593,7 +595,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       pois={mapPois}
       selectedId={selectedId}
       onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
-      planStops={planVisible ? planStops : []}
+      planStops={stopsVisible ? planStops : []}
       activeDay={activeDay}
       savedIds={savedIds}
       onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => { setBounds(b); if (filterOn.current) setAreaMoved(true) }, 300) }}
