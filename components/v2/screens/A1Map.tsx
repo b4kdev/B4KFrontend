@@ -562,7 +562,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     />
   )
 
-  const chips = (
+  // Chips belong to browsing: an open place hides them (phone and desktop), as drawn.
+  const chips = selectedId ? null : (
     <div className="flex gap-[var(--space-2)] overflow-x-auto [scrollbar-width:none]">
       {PLACE_TYPES.map((c) => (
         <Chip key={c.id} type="map" selected={filter === c.id} leadingIcon={<c.icon />} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setAreaBounds(bounds); setAreaMoved(false); setFilter((f) => (f === c.id ? null : c.id)) }}>{t(c.label)}</Chip>
@@ -635,7 +636,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       <div className="relative h-[calc(100dvh)] w-full overflow-hidden">
         {/* The map ends at the navigation bar, so Naver's logo stays in view. */}
         <main id="main" className="absolute inset-x-0 top-0 bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))]">{map}</main>
-        <div className="absolute inset-x-0 top-0 z-20 flex flex-col pt-[var(--space-2)]">
+        {/* With the browse sheet full, the bar and chips stay drawn over the sheet's top edge. */}
+        <div className={cn('absolute inset-x-0 top-0 flex flex-col pt-[var(--space-2)]', !planSheet && snap === 'full' ? 'z-50' : 'z-20')}>
           <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} />
           <div className="px-[var(--space-4)]">{chips}</div>
           {searchArea ? <div className="mt-[var(--space-4)]">{searchArea}</div> : null}
@@ -652,7 +654,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           resizeLabel={k('itinerary.sheet.handle')}
           heights={planSheet ? { full: '70dvh' } : undefined}
           header={selectedId || planSheet ? undefined : <div className="pt-[var(--space-4)]">{switcher}</div>}
-          aboveEnd={planSheet ? undefined : locate.control}
+          aboveEnd={planSheet || snap === 'full' ? undefined : locate.control}
           above={order.length && !planSheet ? <PlanPill label={t('CD0686', { count: order.length })} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /> : undefined}
           className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0"
         >
