@@ -66,6 +66,17 @@ const SPECIAL_HREF: Record<string, Record<string, string>> = {
 }
 const rowHref = (category: string, row: string) => SPECIAL_HREF[category]?.[row] ?? `/explore/${category}/${row}`
 
+// An Explore card opened: its kind and its place among the region's cards of that kind (1 = first).
+// One link per card counts (a card can hold two links to the same address).
+const cardOpen = (card_type: 'theme' | 'collection' | 'package', locale: string, isCard: (a: HTMLAnchorElement) => boolean) => (e: React.MouseEvent<HTMLElement>) => {
+  const a = (e.target as HTMLElement).closest('a')
+  if (!a || !isCard(a)) return
+  const hrefs = Array.from(e.currentTarget.querySelectorAll('a')).filter(isCard).map((x) => x.href).filter((h, i, all) => all.indexOf(h) === i)
+  track('explore_card_open', { card_type, position: hrefs.indexOf(a.href) + 1, locale, screen_id: 'explore' })
+}
+const isCollection = (a: HTMLAnchorElement) => a.pathname.includes('/explore/collections/')
+const isExternal = (a: HTMLAnchorElement) => a.target === '_blank'
+
 // Row labels drawn per category where the Copy Deck has them; the shared row label otherwise.
 
 function useRowLabel() {
@@ -242,7 +253,7 @@ export function CategoryScreen({ category }: { category: string }) {
             eyebrow={hero.badge}
             title={hero.title}
             subtitle={hero.subtitle}
-            action={<IntlLink href={`${hero.cta_href}`} className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{hero.cta_label}</IntlLink>}
+            action={<IntlLink href={`${hero.cta_href}`} onClick={() => track('explore_card_open', { card_type: 'theme', position: 1, locale, screen_id: 'explore' })} className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{hero.cta_label}</IntlLink>}
             // Edge to edge in the content area: flush under the header on desktop, under the tabs on phones; 24 to the first row.
             className="-mx-[var(--grid-gutter-mobile)] -mb-[var(--space-6)] -mt-[var(--space-6)] w-auto md:-mx-[var(--grid-gutter-tablet)] lg:-mx-[var(--space-8)]"
           />
@@ -265,7 +276,7 @@ export function CategoryScreen({ category }: { category: string }) {
           )
         })}
         {cols.data?.items.length ? (
-          <div id="row-collections" data-explore-row="collections" className="scroll-mt-[var(--space-6)]">
+          <div id="row-collections" data-explore-row="collections" className="scroll-mt-[var(--space-6)]" onClickCapture={cardOpen('collection', locale, isCollection)}>
           <ExploreCollections
             title={t('CD0162')}
             filters={[{ id: 'all', label: t('CD1903', { label: t('CD1267'), count: cols.data.items.length }) }, ...colTypes.map((c) => ({ id: c, label: t(COLLECTION_TYPE[c]) }))]}
@@ -288,6 +299,7 @@ export function CategoryScreen({ category }: { category: string }) {
               const href = (e.target as HTMLElement).closest('a')?.getAttribute('href')
               const domain = href ? linkDomain(href) : null
               if (domain) track('outbound_click', { domain, content_type: 'package', locale, screen_id: 'explore' })
+              cardOpen('package', locale, isExternal)(e)
             }}
           >
           <ExplorePackages
@@ -495,7 +507,7 @@ export function CollectionScreen({ slug }: { slug: string }) {
       {isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div> : null}
       {error ? <EmptyState type="error" container="bordered" title={t('CD1571')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
       {data?.children?.length ? (
-        <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4" onClickCapture={cardOpen('collection', locale, isCollection)}>
           {data.children.map((c) => <li key={c.slug}><Card type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta="" /></li>)}
         </ul>
       ) : null}
