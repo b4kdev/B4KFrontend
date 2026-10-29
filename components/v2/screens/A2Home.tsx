@@ -240,9 +240,9 @@ export function HomeScreen() {
                 tags={interestTags(categories).map((c) => ({ id: c.slug, label: labelOf(c, locale) }))}
                 selected={picked}
                 onToggle={(id) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : p.length < 10 ? [...p, id] : p))}
-                // A failed save keeps the card and its picks, with the error toast.
+                // A failed save keeps the card and its picks, with the error toast. Save with nothing picked closes the card as Dismiss does.
                 onSave={() =>
-                  apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) })
+                  !picked.length ? doneInterests() : apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) })
                     .then(doneInterests)
                     .catch(() => toast({ type: 'critical', message: t('CD0061') }))
                 }

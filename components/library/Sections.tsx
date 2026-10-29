@@ -152,7 +152,7 @@ export function InterestsCard({ title, text, tags, selected, onToggle, onSave, o
       <div className="flex flex-wrap gap-[var(--space-2)]">
         {tags.map((t) => <Chip key={t.id} selected={selected.includes(t.id)} onClick={() => onToggle(t.id)}>{t.label}</Chip>)}
       </div>
-      <Button variant="secondary" size="lg" disabled={!selected.length} onClick={onSave} className="max-md:w-full md:self-start">{labels.save}</Button>
+      <Button variant="secondary" size="lg" onClick={onSave} className="max-md:w-full md:self-start">{labels.save}</Button>
     </section>
   )
 }
