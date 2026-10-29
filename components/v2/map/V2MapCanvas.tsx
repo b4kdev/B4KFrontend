@@ -45,6 +45,8 @@ type Props = {
   fitStops?: boolean
   /** Extra space kept clear when fitting stops, e.g. the phone sheet over the map's lower part (px). */
   fitBottom?: number
+  /** Room taken at the top of the map (phones: the floating bars and chips); fitted points stay below it. */
+  fitTop?: number
   /** The visitor's location from Locate me: the location dot (not a button). */
   userLocation?: { lat: number; lng: number } | null
   label: string
@@ -112,9 +114,9 @@ const stopHtml = (p: MapPoi, order: number, day: number, selected: boolean) =>
   `<div style="${HIT}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected)}><span style="width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:var(--radius-full);background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${order}</span></div>`
 
 // Inset kept around fitted pins: space-20, read from the token so the map follows it.
-function fitPadding(bottom: number) {
+function fitPadding(bottom: number, top?: number) {
   const pad = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--space-20')) || 80
-  return { top: pad, right: pad, bottom: pad + bottom, left: pad }
+  return { top: top ?? pad, right: pad, bottom: pad + bottom, left: pad }
 }
 
 function boundsOf(map: any): MapBounds {
@@ -130,7 +132,7 @@ function boundsOf(map: any): MapBounds {
 const sdkAlive = () => typeof window !== 'undefined' && !!window.naver?.maps
 
 export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
-  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', savedIds, routeLegs, onBounds, onZoom, center, fitStops, fitBottom = 0, userLocation, label, errorText },
+  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', savedIds, routeLegs, onBounds, onZoom, center, fitStops, fitBottom = 0, fitTop, userLocation, label, errorText },
   ref,
 ) {
   const el = useRef<HTMLDivElement>(null)
@@ -180,7 +182,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     if (points.length === 1) return map.current.setCenter(new N.LatLng(points[0].lat, points[0].lng))
     const lats = points.map((p) => p.lat)
     const lngs = points.map((p) => p.lng)
-    map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), fitPadding(fitBottom))
+    map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), fitPadding(fitBottom, fitTop))
   }
 
   useImperativeHandle(ref, () => ({
@@ -275,10 +277,13 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
   }, [ready])
 
   // The sheet over the map changed height: fit the last requested points into the new visible area.
+  // Waits for the sheet to settle (its height eases over a few frames) so the map moves once.
   useEffect(() => {
-    if (mapReady && lastFit.current) fitPoints(lastFit.current)
+    if (!mapReady || !lastFit.current) return
+    const t = setTimeout(() => lastFit.current && fitPoints(lastFit.current), 150)
+    return () => clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fitBottom])
+  }, [fitBottom, fitTop, mapReady])
 
   // A fit asked for before the map was ready runs once it is.
   useEffect(() => {
@@ -299,8 +304,8 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     const N = window.naver.maps
     const lats = planStops.map((s) => s.poi.coords_lat)
     const lngs = planStops.map((s) => s.poi.coords_lng)
-    map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), fitPadding(fitBottom))
-  }, [fitStops, planStops, mapReady, fitBottom])
+    map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), fitPadding(fitBottom, fitTop))
+  }, [fitStops, planStops, mapReady, fitBottom, fitTop])
 
   // Location dot: 16 dot with a 2 px ring on a 40 accuracy halo, above the place pins (below a
   // selected one); taps go through it to the pins. Colors follow MAP_TONE like the pins.

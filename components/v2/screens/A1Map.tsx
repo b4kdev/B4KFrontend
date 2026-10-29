@@ -137,14 +137,45 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     setPlanSheet(true)
   }, [phone, params])
   const [saveOpen, setSaveOpen] = useState(false)
-  // Phones: the screen height, for the room the open sheet takes from the bottom of the map.
-  const [screenH, setScreenH] = useState(0)
+  // Phones: what covers the map, measured from the parts themselves: the floating bars and chips at
+  // the top, the map sheet (its real top edge, through its height transition) at the bottom.
+  const mapArea = useRef<HTMLElement>(null)
+  const topBars = useRef<HTMLDivElement>(null)
+  const [covered, setCovered] = useState({ top: 0, bottom: 0, height: 0 })
   useEffect(() => {
-    const read = () => setScreenH(window.innerHeight)
-    read()
-    window.addEventListener('resize', read)
-    return () => window.removeEventListener('resize', read)
-  }, [])
+    if (!phone) return
+    let frame = 0
+    const measure = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        const area = mapArea.current?.getBoundingClientRect()
+        if (!area) return
+        const sheet = document.querySelector('[role="region"][data-toast-floor]')?.getBoundingClientRect()
+        const bars = topBars.current?.getBoundingClientRect()
+        setCovered({
+          top: bars ? Math.max(0, Math.round(bars.bottom - area.top)) : 0,
+          bottom: sheet ? Math.max(0, Math.round(area.bottom - sheet.top)) : 0,
+          height: Math.round(area.height),
+        })
+      })
+    }
+    const sizes = new ResizeObserver(measure)
+    const watch = () => {
+      sizes.disconnect()
+      ;[mapArea.current, topBars.current, document.querySelector('[role="region"][data-toast-floor]')].forEach((e) => e && sizes.observe(e))
+      measure()
+    }
+    const parts = new MutationObserver(watch)
+    parts.observe(document.body, { childList: true, subtree: true })
+    window.addEventListener('resize', measure)
+    watch()
+    return () => {
+      cancelAnimationFrame(frame)
+      sizes.disconnect()
+      parts.disconnect()
+      window.removeEventListener('resize', measure)
+    }
+  }, [phone])
   const [planName, setPlanName] = useState('')
   const [nameError, setNameError] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -294,10 +325,13 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const showPlanOnly = planVisible && order.length > 0
   // Phones: with the browse sheet down at peek, the plan's stops and route stay drawn among the places, as drawn.
   const stopsVisible = planVisible || (phone && snap === 'peek' && !selectedId && mode === 'nearby')
-  // Phones: fitted stops land in the map above the open sheet, as drawn. The fit keeps 80
-  // around the points; above the sheet 16 is enough, so the sheet's height less 64 is passed.
-  const sheetH = !phone || saveOpen ? 0 : planSheet ? screenH * 0.7 : snap === 'mid' ? screenH * 0.5 : snap === 'full' ? screenH * 0.85 : 76
-  const fitBottom = Math.max(0, Math.round(sheetH) - 64)
+  // Phones: fitted stops land in the map between the bars and the open sheet, as drawn: each edge
+  // keeps half a stop marker (12) and 8 clear. The canvas adds its usual 80 below, so 80 less is passed.
+  // Where that leaves less than 40 of map, the top gives way.
+  const FIT_CLEAR = 20
+  const fitBottomPx = phone && !saveOpen ? covered.bottom + FIT_CLEAR : 0
+  const fitTopPx = phone ? Math.max(0, Math.min(covered.top + FIT_CLEAR, covered.height - fitBottomPx - 40)) : undefined
+  const fitBottom = Math.max(0, fitBottomPx - 80)
   // Plan only: no other places on the map, except the one opened from the list.
   // Saved on the map: while Saved is on, the map shows the saved places only,
   // or the open list's places, and fits them.
@@ -612,6 +646,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
       planStops={stopsVisible ? planStops : []}
       fitBottom={fitBottom}
+      fitTop={fitTopPx}
       activeDay={activeDay}
       savedIds={savedIds}
       onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => { setBounds(b); if (filterOn.current) setAreaMoved(true) }, 300) }}
@@ -661,9 +696,9 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     return (
       <div className="relative h-[calc(100dvh)] w-full overflow-hidden">
         {/* The map ends at the navigation bar, so Naver's logo stays in view. */}
-        <main id="main" className="absolute inset-x-0 top-0 bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))]">{map}</main>
+        <main id="main" ref={mapArea} className="absolute inset-x-0 top-0 bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))]">{map}</main>
         {/* With the browse sheet full, the bar and chips stay drawn over the sheet's top edge. */}
-        <div className={cn('absolute inset-x-0 top-0 flex flex-col pt-[var(--space-2)]', !planSheet && snap === 'full' ? 'z-50' : 'z-20')}>
+        <div ref={topBars} className={cn('absolute inset-x-0 top-0 flex flex-col pt-[var(--space-2)]', !planSheet && snap === 'full' ? 'z-50' : 'z-20')}>
           <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} />
           <div className="px-[var(--space-4)]">{chips}</div>
           {searchArea ? <div className="mt-[var(--space-4)]">{searchArea}</div> : null}
