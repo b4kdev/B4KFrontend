@@ -105,6 +105,8 @@ export type SignInCardProps = {
     newPassword: string
     confirmPassword: string
     passwordHint: string
+    /** New password: the password rule under the field; left out, `passwordHint`. */
+    newPasswordHint?: string
     forgot: string
     sendLink: string
     checkEmailTitle: string
@@ -232,7 +234,7 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
         </div>
       ) : (
         <form noValidate onSubmit={submit} className="flex flex-col gap-[var(--space-4)]">
-          <TextInput label={labels.newPassword} showLabel type="password" autoComplete="new-password" required value={values.password ?? ''} onChange={set('password')} />
+          <TextInput label={labels.newPassword} showLabel type="password" autoComplete="new-password" required value={values.password ?? ''} onChange={set('password')} help={labels.newPasswordHint ?? labels.passwordHint} />
           <TextInput label={labels.confirmPassword} showLabel type="password" autoComplete="new-password" required placeholder={labels.confirmPlaceholder} value={values.confirm ?? ''} onChange={set('confirm')} error={confirmError} />
           <Button type="submit" loading={busy} className="w-full">{labels.savePassword}</Button>
         </form>

@@ -172,7 +172,7 @@ export function useSignInFlow(next: string, onSignedIn: (user: User, consent: bo
     email,
     labels: {
       close: t('CD0021'), google: t('CD0043'), email: t('CD0031'), signIn: t('CD0051'), signUp: t('CD0052'),
-      password: t('CD0046'), newPassword: t('CD0066'), confirmPassword: t('CD0058'), passwordHint: t('CD1468'),
+      password: t('CD0046'), newPassword: t('CD0066'), confirmPassword: t('CD0058'), passwordHint: t('CD1468'), newPasswordHint: t('CD0978'),
       forgot: t('CD0039'), sendLink: t('CD0040'), checkEmailTitle: t('CD0020'),
       checkEmailBody: (e: string) => (kind === 'signup' ? t('CD0019', { email: e }) : t('CD0018', { email: e })),
       resend: resendLeft > 0 ? t('CD0049', { seconds: resendLeft }) : t('CD0048'), savePassword: t('CD1503'), newPasswordBody: t('CD1501'), back: t('CD1493'), guest: t('CD0029'),
