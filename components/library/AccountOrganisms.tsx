@@ -128,11 +128,10 @@ export type SignInCardProps = {
     forgotBody?: string
     /** The Email field label; left out, `email`. */
     emailField?: string
-    /** Figma placeholders: Password on Sign in, Password on Sign up and New password, Confirm password. */
+    /** Figma placeholders: Password on Sign in, Confirm password; Password on Sign up and New password have none. */
     /** Figma email field placeholder, e.g. you@example.com. */
     emailPlaceholder?: string
     passwordPlaceholder?: string
-    newPasswordPlaceholder?: string
     confirmPlaceholder?: string
     /** Pending deletion (an account set to be deleted signs in): title, body with the date, Keep, Continue. */
     pendingTitle?: string
@@ -211,7 +210,7 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
         <form noValidate onSubmit={submit} aria-labelledby={id} className="flex flex-col gap-[var(--space-4)]">
           <Tabs label={labels.tabs} width="equal" baseline={false} value={view} onValueChange={(v) => onViewChange(v as SignInView)} tabs={[{ id: 'sign-in', label: labels.signIn }, { id: 'sign-up', label: labels.signUp }]} />
           <TextInput label={emailField} showLabel type="email" autoComplete="email" required placeholder={labels.emailPlaceholder} value={values.email ?? ''} onChange={set('email')} />
-          <TextInput label={labels.password} showLabel type="password" autoComplete={view === 'sign-in' ? 'current-password' : 'new-password'} required placeholder={view === 'sign-in' ? labels.passwordPlaceholder : labels.newPasswordPlaceholder} value={values.password ?? ''} onChange={set('password')} help={view === 'sign-up' ? labels.passwordHint : undefined} />
+          <TextInput label={labels.password} showLabel type="password" autoComplete={view === 'sign-in' ? 'current-password' : 'new-password'} required placeholder={view === 'sign-in' ? labels.passwordPlaceholder : undefined} value={values.password ?? ''} onChange={set('password')} help={view === 'sign-up' ? labels.passwordHint : undefined} />
           {view === 'sign-in' ? <button type="button" onClick={() => onViewChange('forgot')} className="self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover">{labels.forgot}</button> : null}
           <Button type="submit" loading={busy} className="w-full">{view === 'sign-in' ? labels.signIn : labels.signUp}</Button>
         </form>
@@ -233,7 +232,7 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
         </div>
       ) : (
         <form noValidate onSubmit={submit} className="flex flex-col gap-[var(--space-4)]">
-          <TextInput label={labels.newPassword} showLabel type="password" autoComplete="new-password" required placeholder={labels.newPasswordPlaceholder} value={values.password ?? ''} onChange={set('password')} />
+          <TextInput label={labels.newPassword} showLabel type="password" autoComplete="new-password" required value={values.password ?? ''} onChange={set('password')} />
           <TextInput label={labels.confirmPassword} showLabel type="password" autoComplete="new-password" required placeholder={labels.confirmPlaceholder} value={values.confirm ?? ''} onChange={set('confirm')} error={confirmError} />
           <Button type="submit" loading={busy} className="w-full">{labels.savePassword}</Button>
         </form>
