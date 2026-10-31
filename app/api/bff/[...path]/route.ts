@@ -12,8 +12,8 @@ const ALLOWED: { method: string; path: RegExp }[] = [
   { method: 'PUT', path: /^me\/interests$/ },
 ]
 
-async function proxy(req: NextRequest, { params }: { params: { path: string[] } }) {
-  const path = params.path.join('/')
+async function proxy(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const path = (await params).path.join('/')
   if (!ALLOWED.some((a) => a.method === req.method && a.path.test(path))) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
