@@ -237,7 +237,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
             onQuickPlan={() => setQuick(true)}
             accountMenu={<AccountMenu labels={labels} user={user} onSignOut={signOut} links={{ profile: `/${locale}/profile`, settings: `/${locale}/settings`, signIn: `/${locale}/login` }} />}
           />
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto">{children}</div>
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto"><PageSlot>{children}</PageSlot></div>
         </div>
         {inFlow || fullFlow ? null : <NavigationBar className={cn(onMap ? 'fixed inset-x-0 bottom-0 z-[45]' : 'sticky bottom-0 z-30', 'lg:hidden')} active={active} labels={labels} onQuickPlan={() => setQuick(true)} />}
       </div>
@@ -303,4 +303,12 @@ export function useV2SignOut() {
     // Home of the current locale.
     window.location.assign(window.location.pathname.replace(/^(\/[^/]+).*/, '$1'))
   }
+}
+
+// The page sits under a plain component instead of directly under the wrapper <div>. With the
+// React copy bundled in Next 15, a page whose code arrived after the shell's (parallel loads, slow
+// networks) made hydration lose its place under a host element and re-render the whole page on
+// the client. A Suspense boundary also avoids it but turns not-found pages into 200s.
+function PageSlot({ children }: { children: ReactNode }) {
+  return <>{children}</>
 }
