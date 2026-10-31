@@ -255,7 +255,8 @@ export function SearchScreen() {
     return (
       <>
         <TopAppBar type="search" labels={labels} onBack={() => router.back()} search={field} className="sticky top-0 z-30" />
-        <main id="main" className="flex flex-1 flex-col px-[var(--grid-gutter-mobile)] py-[var(--space-3)]">
+        {/* Figma: results start 12 under the bar; the suggestions card 16 under it. */}
+        <main id="main" className={cn('flex flex-1 flex-col px-[var(--grid-gutter-mobile)] py-[var(--space-3)]', box.open && 'pt-[var(--space-4)]')}>
           <h1 className="sr-only">{q ? t('CD1861', { query: q }) : t('CD1293')}</h1>
           {box.open ? box.suggestions : (
             <>

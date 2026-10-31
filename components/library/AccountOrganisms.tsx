@@ -506,7 +506,8 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
   const icon = 'size-[var(--icon-size-md)] shrink-0 text-ui-fg-muted'
   const thumb = 'w-[var(--space-12)] shrink-0'
   const twoLine = (name: string, meta?: string) => (
-    <span className="flex min-w-0 flex-col"><span className="truncate type-body-base">{bold(name, query)}</span>{meta ? <span className="truncate type-body-caption text-ui-fg-muted">{meta}</span> : null}</span>
+    // Figma: title and secondary line 2 apart.
+    <span className="flex min-w-0 flex-col gap-[var(--space-0-5)]"><span className="truncate type-body-base">{bold(name, query)}</span>{meta ? <span className="truncate type-body-caption text-ui-fg-muted">{meta}</span> : null}</span>
   )
   // Figma: the same card on desktop and phones (bg-raised, 1px border, radius 2xl, p12, gap 12).
   return (
