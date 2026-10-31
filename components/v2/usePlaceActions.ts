@@ -72,13 +72,20 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
   const likes = useLikedPlaces(!!user)
 
   // on: saved before the tap. signedIn: the save a guest started, finished after the sign-in (its own toast).
-  const setSave = async (id: string, on: boolean, signedIn = false) => {
+  // undo: the save put back by Undo on the remove toast, into the list it was in (folder), with no toast of its own.
+  const setSave = async (id: string, on: boolean, signedIn = false, undo?: { folder?: string }) => {
     const tap = (next: boolean) => setTaps((m) => new Map(m).set(id, next))
+    // The list the place sits in, so Undo can put it back there; All saved places needs no folder.
+    const folder = on ? saved.data?.folders.find((f) => !f.is_default && f.pois.some((p) => p.poi_id === id))?.id : undefined
     tap(!on)
-    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id })
+    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id, ...(undo?.folder ? { folder_id: undo.folder } : {}) })
       .then(() => {
         track('poi_save', { action: on ? 'unsave' : 'save', locale, screen_id: 'card' })
-        toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })
+        if (undo) return
+        // Removed: the toast offers Undo (it then stays 8 s).
+        toast(on
+          ? { type: 'success', message: t('CD0698'), action: { label: t('CD1428'), onClick: () => { setSave(id, false, false, { folder }) } } }
+          : { type: 'success', message: signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })
         if (!on) unlock()
       })
       .catch(() => {
