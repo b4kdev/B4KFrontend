@@ -237,7 +237,10 @@ export default function V2Shell({ children }: { children: ReactNode }) {
             onQuickPlan={() => setQuick(true)}
             accountMenu={<AccountMenu labels={labels} user={user} onSignOut={signOut} links={{ profile: `/${locale}/profile`, settings: `/${locale}/settings`, signIn: `/${locale}/login` }} />}
           />
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto">{children}</div>
+          {/* The page hydrates on its own: without this boundary, a page whose code arrives after the
+              shell's (parallel loads, a slow network) made React lose its place and re-render the whole
+              page on the client. No fallback: the server HTML stays on screen until it hydrates. */}
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto"><Suspense>{children}</Suspense></div>
         </div>
         {inFlow || fullFlow ? null : <NavigationBar className={cn(onMap ? 'fixed inset-x-0 bottom-0 z-[45]' : 'sticky bottom-0 z-30', 'lg:hidden')} active={active} labels={labels} onQuickPlan={() => setQuick(true)} />}
       </div>
