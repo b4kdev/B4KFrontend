@@ -285,7 +285,9 @@ export function CategoryScreen({ category }: { category: string }) {
             cards={cols.data.items
               .filter((c) => colType === 'all' || c.primaryType === colType)
               .slice(0, 8)
-              .map((c) => <Card key={c.slug} type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta={c.primaryType && COLLECTION_TYPE[c.primaryType] ? t(COLLECTION_TYPE[c.primaryType]) : ''} />)}
+              .map((c) => c.cover_images?.length
+                ? <Card key={c.slug} type="collection" href={`/explore/collections/${c.slug}`} title={c.title} images={c.cover_images} meta={c.primaryType && COLLECTION_TYPE[c.primaryType] ? t(COLLECTION_TYPE[c.primaryType]) : ''} />
+                : <Card key={c.slug} type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta={c.primaryType && COLLECTION_TYPE[c.primaryType] ? t(COLLECTION_TYPE[c.primaryType]) : ''} />)}
           />
           </div>
         ) : cols.error ? (

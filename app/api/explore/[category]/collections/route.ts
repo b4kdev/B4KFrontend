@@ -15,6 +15,8 @@ interface EntitySummary {
   name_en?: string | null
   translations?: Record<string, { name?: string; description?: string }>
   primary_image_url: string | null
+  /** Up to 4 photos of the collection's places, most liked first. */
+  cover_images?: string[]
   metadata?: { frd_domain?: string; primary_type?: string; runtime_kind?: string }
 }
 
@@ -22,6 +24,8 @@ export interface CollectionCard {
   slug: string
   title: string
   primary_image_url: string | null
+  /** The 2x2 cover: up to 4 place photos (fewer when the collection has fewer). */
+  cover_images: string[]
   primaryType: string | null
 }
 
@@ -40,6 +44,7 @@ export async function GET(req: NextRequest, props: { params: Promise<{ category:
         slug: e.slug,
         title: pickEntityTitle(e, locale),
         primary_image_url: e.primary_image_url,
+        cover_images: (e.cover_images ?? []).slice(0, 4),
         primaryType: e.metadata?.primary_type ?? null,
       }))
     return NextResponse.json({ items })
