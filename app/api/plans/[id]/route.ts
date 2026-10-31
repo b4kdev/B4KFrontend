@@ -11,6 +11,16 @@ import {
 } from '@/lib/itinerary'
 import { PLACE_SOURCES, type PlaceSource } from '@/lib/place-source'
 
+// BFF GET /itineraries/public/:id/related item (public plan card + shared_places, is_saved)
+interface BffRelatedItinerary {
+  itinerary_id:    number
+  title:           string | null
+  like_count:      number
+  save_count:      number
+  total_places:    number
+  cover_image_url: string | null
+}
+
 // GET /api/plans/:id — itinerary detail for any viewer.
 // BFF GET /itineraries/public/:id serves every case: public plans (anyone,
 // incl. anonymous share links) and the owner's own private/draft plans
@@ -24,8 +34,23 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
     return NextResponse.json({ error: 'not_found' }, { status: 404 })
   }
   try {
-    const bff = await bffFetch<BffItinerary>(`/itineraries/public/${id}`)
-    return NextResponse.json(mapBffToDetail(bff))
+    // More plans like this: public plans sharing the most places (else the same province). A failed
+    // list only leaves the section out.
+    const [bff, related] = await Promise.all([
+      bffFetch<BffItinerary>(`/itineraries/public/${id}`),
+      bffFetch<BffRelatedItinerary[]>(`/itineraries/public/${id}/related?limit=6`).catch(() => []),
+    ])
+    return NextResponse.json({
+      ...mapBffToDetail(bff),
+      related: (related ?? []).map(r => ({
+        id:            String(r.itinerary_id),
+        title:         r.title ?? '',
+        like_count:    r.like_count ?? 0,
+        save_count:    r.save_count ?? 0,
+        stop_count:    r.total_places ?? 0,
+        thumbnail_url: r.cover_image_url ?? null,
+      })),
+    })
   } catch (e) {
     if (e instanceof BffError && e.status === 404) {
       return NextResponse.json({ error: 'not_found' }, { status: 404 })

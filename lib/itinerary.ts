@@ -286,7 +286,7 @@ export function mapBffToDetail(bff: BffItinerary): ItineraryDetail {
     },
     stops,
     legs,
-    related: [],   // no BFF source yet — honest empty list (contract keeps the field)
+    related: [],   // filled by app/api/plans/[id] from GET /itineraries/public/:id/related
     viewer: {
       is_liked: bff.viewer?.is_liked ?? false,
       is_saved: bff.viewer?.is_saved ?? false,
