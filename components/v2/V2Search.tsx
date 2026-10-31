@@ -6,6 +6,8 @@ import { useLocale } from 'next-intl'
 import useSWR from 'swr'
 import { usePathname, useRouter } from '@/i18n/navigation'
 import { SearchInput, SearchSuggestions } from '@/components/library'
+import type { SearchSuggestions as SuggestionsData } from '@/app/api/search/suggestions/route'
+import { districtName, regionName } from './map/areaName'
 import { useCd } from './cd'
 
 // Search field and suggestions: the desktop Header field with its suggestions
@@ -55,6 +57,9 @@ export function useRecent() {
 
 const CATEGORIES = [['k-pop', 'CD1247'], ['k-drama', 'CD1246'], ['k-beauty', 'CD1244'], ['k-culture', 'CD1245'], ['k-food', 'CD0251']]
 
+// Collection types → their Copy Deck labels, as on Explore.
+const COLLECTION_TYPE: Record<string, string> = { ROUTE: 'CD1336', FAN_THEME: 'CD1337', STORY: 'CD1338' }
+
 /** The field's text, the suggestions open or not, and the suggestions card for it. */
 export function useSearchBox({ viewport, initial = '', open: startOpen = false }: { viewport: 'desktop' | 'mobile'; initial?: string; open?: boolean }) {
   const t = useCd()
@@ -73,7 +78,7 @@ export function useSearchBox({ viewport, initial = '', open: startOpen = false }
     const id = window.setTimeout(() => setTyped(draft), 300)
     return () => window.clearTimeout(id)
   }, [draft])
-  const { data: sugg } = useSWR<{ suggestions: string[] }>(open && typed.trim().length >= 2 ? `/api/search/suggestions?q=${encodeURIComponent(typed)}&lang=${locale}` : null, jsonFetch)
+  const { data: sugg } = useSWR<SuggestionsData>(open && typed.trim().length >= 2 ? `/api/search/suggestions?q=${encodeURIComponent(typed)}&lang=${locale}` : null, jsonFetch)
   const go = (text: string) => {
     if (!text.trim()) return
     recents.add(text.trim())
@@ -86,7 +91,10 @@ export function useSearchBox({ viewport, initial = '', open: startOpen = false }
       state={draft.trim() ? 'typing' : 'empty'}
       query={draft}
       onSearch={go}
-      places={(sugg?.suggestions ?? []).slice(0, 3).map((s, i) => ({ id: `s${i}`, name: s, meta: '', href: `/search?q=${encodeURIComponent(s)}` }))}
+      // Grouped as drawn: places with photo and area, plans with days and stops, Explore pages with their type.
+      places={(sugg?.places ?? []).slice(0, 3).map((p) => ({ id: p.id, name: p.name, meta: [p.district && districtName(p.district, locale), p.region && regionName(p.region, locale)].filter(Boolean).join(', '), imageSrc: p.imageSrc, href: `/map?poi=${p.id}` }))}
+      plans={(sugg?.plans ?? []).slice(0, 3).map((p) => ({ id: p.id, name: p.name, meta: [t('CD1232', { count: p.days }), t('CD1315', { count: p.stops })].join(' · '), imageSrc: p.imageSrc, href: `/plan/${p.id}` }))}
+      explore={(sugg?.explore ?? []).slice(0, 3).map((e) => ({ id: e.slug, name: e.name, meta: e.primaryType && COLLECTION_TYPE[e.primaryType] ? t(COLLECTION_TYPE[e.primaryType]) : undefined, href: `/explore/collections/${e.slug}` }))}
       recent={recents.recent.map((r) => ({ id: r, text: r }))}
       onRemoveRecent={recents.remove}
       onClearRecent={recents.clear}
