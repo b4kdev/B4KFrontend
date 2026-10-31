@@ -107,8 +107,10 @@ export async function profileMetadata(locale: string, id: string): Promise<Metad
 }
 
 // A collection (theme) page: its title, and its intro or the place count as the description.
+// A failed load renders the error state, which stays out of search results.
 export async function collectionMetadata(slug: string, locale: string): Promise<Metadata> {
-  const detail = await fetchCollectionDetail(slug, locale).catch(() => null);
+  const detail = await fetchCollectionDetail(slug, locale).catch(() => undefined);
+  if (detail === undefined) return { robots: NOINDEX };
   if (!detail) return {};
   const { t } = await seoText(locale);
   return namedPageMeta(locale, `/explore/collections/${slug}`, detail.title, {
