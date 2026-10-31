@@ -23,6 +23,7 @@ import {
   SearchFilters,
   SearchInput,
   RowSection,
+  ExploreCollections,
   SectionHeader,
   Skeleton,
   TopAppBar,
@@ -34,7 +35,7 @@ import { getConsent, setConsent } from '@/lib/consent'
 import { termsContactEmail, termsLastUpdated, termsSections } from '@/content/legal/terms-content'
 import { privacyPolicyContactEmail, privacyPolicyLastUpdated, privacyPolicySections } from '@/content/legal/privacy-policy-content'
 import { cookiePolicyContactEmail, cookiePolicyLastUpdated, cookiePolicySections } from '@/content/legal/cookie-policy-content'
-import type { SearchExplore, SearchPlan, SearchPoi } from '@/app/api/search/route'
+import type { SearchCollection, SearchExplore, SearchPlan, SearchPoi } from '@/app/api/search/route'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
 import { HELP_TOP, HELP_TOPICS, helpTopic, type HelpQuestion } from '../help'
@@ -50,7 +51,9 @@ const jsonFetch = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : Pro
 
 // ── Search ───────────────────────────────────
 
-type SearchResult = { places: SearchPoi[]; plans: SearchPlan[]; explore: SearchExplore[] }
+type SearchResult = { places: SearchPoi[]; plans: SearchPlan[]; explore: SearchExplore[]; collections?: SearchCollection[] }
+// Collection types → their Copy Deck chip labels, as on Explore.
+const COLLECTION_TYPE: Record<string, string> = { ROUTE: 'CD1336', FAN_THEME: 'CD1337', STORY: 'CD1338' }
 
 
 export function SearchScreen() {
@@ -124,8 +127,11 @@ export function SearchScreen() {
     />
   )
   const placeName = (p: SearchPoi) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
+  const [colType, setColType] = useState('all')
+  const colTypes = Array.from(new Set((data?.collections ?? []).map((c) => c.primaryType).filter((c): c is string => !!c && c in COLLECTION_TYPE)))
   const morePlaces = show !== 'places' && (data?.places.length ?? 0) > (phone ? 4 : 3)
-  const noResults = !!data && !data.places.length && !data.plans.length && (show !== 'explore' || !data.explore.length)
+  const collections = data?.collections ?? []
+  const noResults = !!data && !data.places.length && !data.plans.length && !collections.length
   const exploreChips = (data?.explore ?? []).map((e) => (
     <IntlLink key={e.href} href={`${e.href}`} className="inline-flex h-[var(--control-height-sm)] items-center rounded-full border border-ui-border-strong px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
       {t(({ kpop: 'CD1247', kdrama: 'CD1246', kbeauty: 'CD1244', kculture: 'CD1245' } as Record<string, string>)[e.label_key] ?? 'CD1306')}
@@ -204,7 +210,23 @@ export function SearchScreen() {
           />
         )
       ) : null}
-      {data?.explore.length && !noResults ? (
+      {/* Explore: the matching collections with their type chips, as drawn; the category chips when none match. */}
+      {collections.length && !noResults ? (
+        <ExploreCollections
+          title={t('CD1903', { label: t('CD1306'), count: collections.length })}
+          filters={[{ id: 'all', label: t('CD1903', { label: t('CD1267'), count: collections.length }) }, ...colTypes.map((c) => ({ id: c, label: t(COLLECTION_TYPE[c]) }))]}
+          active={colType}
+          onFilter={setColType}
+          cards={collections
+            .filter((c) => colType === 'all' || c.primaryType === colType)
+            .map((c) => {
+              const meta = c.primaryType && COLLECTION_TYPE[c.primaryType] ? t(COLLECTION_TYPE[c.primaryType]) : ''
+              return c.cover_images.length
+                ? <Card key={c.slug} type="collection" href={`/explore/collections/${c.slug}`} title={c.title} images={c.cover_images} meta={meta} />
+                : <Card key={c.slug} type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta={meta} />
+            })}
+        />
+      ) : data?.explore.length && !noResults ? (
         <section className="flex flex-col gap-[var(--space-4)]">
           <SectionHeader title={t('CD1903', { label: t('CD1306'), count: data.explore.length })} />
           <div className="flex flex-wrap gap-[var(--space-2)]">{exploreChips}</div>

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { bffFetch, bffErrorResponse } from '@/lib/bff'
+import { pickEntityTitle } from '@/lib/entity-i18n'
 
 export interface SearchPoi {
   poi_id: string
@@ -26,6 +27,33 @@ export interface SearchExplore {
   category: string
   label_key: string
   href: string
+}
+
+/** An Explore page that matches the query (a collection): its 2x2 cover and type. */
+export interface SearchCollection {
+  slug: string
+  title: string
+  cover_images: string[]
+  primary_image_url: string | null
+  primaryType: string | null
+}
+
+// BFF GET /search entities item (api.list_entities shape, + cover_images)
+interface BffEntity {
+  slug: string
+  name_ko: string
+  name_en?: string | null
+  translations?: Record<string, { name?: string; description?: string }>
+  primary_image_url: string | null
+  cover_images?: string[]
+  entity_type: string
+  metadata?: { primary_type?: string; runtime_kind?: string }
+}
+
+interface BffSearch {
+  places: BffPlace[]
+  explore: BffEntity[]
+  plans: BffPublicItinerary[]
 }
 
 // BFF GET /places item (api.list_places)
@@ -120,7 +148,8 @@ export async function GET(request: Request) {
   const wantPlaces = wantAll || type === 'places'
   const filtered = !!(areaLv1 || areaLv2 || tags.length)
   const wantPlans = (wantAll || type === 'plans') && !filtered
-  const explore = (wantAll || type === 'explore') ? buildExploreResults(q) : []
+  const wantExplore = wantAll || type === 'explore'
+  const explore = wantExplore ? buildExploreResults(q) : []
 
   const needle = q.trim().toLowerCase()
   // next-intl locales (i18n/routing.ts) — translations JSONB keys must match this
@@ -132,19 +161,28 @@ export async function GET(request: Request) {
       + (areaLv1 ? `&region=${encodeURIComponent(areaLv1)}` : '')
       + (areaLv2 ? `&district=${encodeURIComponent(areaLv2)}` : '')
     const placeCalls = tags.length ? tags.map((t) => `${base}&${THEMES[t]}`) : [base]
-    const [rawPlaces, rawPlans] = await Promise.all([
+    const [rawPlaces, found] = await Promise.all([
       wantPlaces && needle
         ? Promise.all(placeCalls.map((path) => bffFetch<BffPlace[]>(path))).then((lists) => {
             const seen = new Set<number>()
             return lists.flat().filter((p) => !seen.has(p.poi_id) && !!seen.add(p.poi_id))
           })
         : Promise.resolve<BffPlace[]>([]),
-      // The BFF has no plan text search — fetch the public list and match
-      // titles here (covers the top 50 public itineraries only).
-      wantPlans && needle
-        ? bffFetch<BffPublicItinerary[]>('/itineraries/public?sort=popular&limit=50')
-        : Promise.resolve<BffPublicItinerary[]>([]),
+      // Plans (title, area and the places in them) and Explore pages, matched by the backend.
+      (wantPlans || wantExplore) && needle
+        ? bffFetch<BffSearch>(`/search?q=${encodeURIComponent(q.trim().slice(0, 50))}&limit=20`, { token: null })
+        : Promise.resolve<BffSearch>({ places: [], explore: [], plans: [] }),
     ])
+    const rawPlans = wantPlans ? found.plans ?? [] : []
+    const collections: SearchCollection[] = (wantExplore ? found.explore ?? [] : [])
+      .filter(e => e.entity_type === 'collection')
+      .map(e => ({
+        slug: e.slug,
+        title: pickEntityTitle(e, locale),
+        cover_images: (e.cover_images ?? []).slice(0, 4),
+        primary_image_url: e.primary_image_url,
+        primaryType: e.metadata?.primary_type ?? null,
+      }))
 
     let places: SearchPoi[] = (rawPlaces ?? []).map(p => ({
       poi_id: String(p.poi_id),
@@ -158,8 +196,7 @@ export async function GET(request: Request) {
       primary_image_url: p.primary_image_url ?? '',
     }))
 
-    let plans: SearchPlan[] = (rawPlans ?? [])
-      .filter(p => (p.title ?? '').toLowerCase().includes(needle))
+    let plans: SearchPlan[] = rawPlans
       .map(p => ({
         id: String(p.itinerary_id),
         title: p.title,
@@ -179,6 +216,7 @@ export async function GET(request: Request) {
       places,
       plans,
       explore,
+      collections,
       query: q,
       filters: { area_lv1: areaLv1, area_lv2: areaLv2, tags },
     })
