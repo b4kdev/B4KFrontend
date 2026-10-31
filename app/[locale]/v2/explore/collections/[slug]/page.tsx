@@ -11,6 +11,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function Page({ params }: Props) {
-  if (!(await fetchCollectionDetail(params.slug, params.locale))) notFound()
+  // Page not found only when the collection does not exist; when the load fails the screen
+  // still renders and shows its error state with Try again.
+  const detail = await fetchCollectionDetail(params.slug, params.locale).catch(() => undefined)
+  if (detail === null) notFound()
   return <CollectionScreen slug={params.slug} />
 }

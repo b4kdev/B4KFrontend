@@ -108,7 +108,7 @@ export async function profileMetadata(locale: string, id: string): Promise<Metad
 
 // A collection (theme) page: its title, and its intro or the place count as the description.
 export async function collectionMetadata(slug: string, locale: string): Promise<Metadata> {
-  const detail = await fetchCollectionDetail(slug, locale);
+  const detail = await fetchCollectionDetail(slug, locale).catch(() => null);
   if (!detail) return {};
   const { t } = await seoText(locale);
   return namedPageMeta(locale, `/explore/collections/${slug}`, detail.title, {
