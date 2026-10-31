@@ -33,7 +33,7 @@ export async function GET(request: Request) {
   // Callers don't send ?lang= today, so fall back to the locale cookie
   // next-intl's middleware already sets on every page. Display-name rule:
   // translations[lang].name, falling back to English then Korean.
-  const lang = searchParams.get('lang') ?? cookies().get('NEXT_LOCALE')?.value ?? 'en'
+  const lang = searchParams.get('lang') ?? (await cookies()).get('NEXT_LOCALE')?.value ?? 'en'
 
   if (!q) return NextResponse.json({ suggestions: [] })
 

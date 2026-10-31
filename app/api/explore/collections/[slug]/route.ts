@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { bffErrorResponse } from '@/lib/bff'
 import { fetchCollectionDetail } from '@/lib/collections'
 
-export async function GET(req: NextRequest, { params }: { params: { slug: string } }) {
+export async function GET(req: NextRequest, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const locale = req.nextUrl.searchParams.get('locale') ?? 'en'
   try {
     const data = await fetchCollectionDetail(params.slug, locale)

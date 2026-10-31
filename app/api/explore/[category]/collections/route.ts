@@ -25,7 +25,8 @@ export interface CollectionCard {
   primaryType: string | null
 }
 
-export async function GET(req: NextRequest, { params }: { params: { category: string } }) {
+export async function GET(req: NextRequest, props: { params: Promise<{ category: string }> }) {
+  const params = await props.params;
   try {
     const locale = req.nextUrl.searchParams.get('locale') ?? 'en'
     const [page1, page2] = await Promise.all([

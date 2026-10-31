@@ -7,7 +7,8 @@ import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/
 //   DELETE → BFF DELETE /me/bookmark-folders/:id: the list goes, its places stay in All saved
 //            places ({ moved: n }).
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await getSessionAuth()
   if (!auth) return unauthorized()
   const body = await req.json().catch(() => ({}))
@@ -26,7 +27,8 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 }
 
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await getSessionAuth()
   if (!auth) return unauthorized()
   try {

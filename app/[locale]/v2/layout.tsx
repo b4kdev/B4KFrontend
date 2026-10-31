@@ -15,7 +15,7 @@ import { V2_LIVE_HEADER } from '@/lib/v2-live'
 // Areas listed in lib/v2-live.ts are served here from their live address (middleware rewrite);
 // those keep the live site's metadata instead of the preview's.
 export async function generateMetadata(): Promise<Metadata> {
-  if (headers().get(V2_LIVE_HEADER)) return {}
+  if ((await headers()).get(V2_LIVE_HEADER)) return {}
   // The preview address itself (/[locale]/v2/...) redirects to the live one; whatever is still
   // served here stays out of search results and keeps the site title.
   return {
@@ -23,7 +23,13 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function V2Layout({ children, params }: { children: React.ReactNode; params: { locale: string } }) {
+export default async function V2Layout(props: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
+  const params = await props.params;
+
+  const {
+    children
+  } = props;
+
   const base = await getMessages()
   // A locale without a file yet gets the English texts.
   const load = (name: string): Promise<{ cd?: Record<string, string>; gap?: Record<string, string> }> =>

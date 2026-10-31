@@ -16,7 +16,8 @@ import {
 // (get_public_itinerary lets the owner through), and it is the only endpoint
 // that carries author + viewer.is_liked/is_saved. 404 = missing or private
 // non-owner, matching the stub's not_found contract.
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params
   if (!id || !isNumericId(id)) {
     return NextResponse.json({ error: 'not_found' }, { status: 404 })
@@ -37,7 +38,8 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 //    per-stop endpoint, so read the itinerary, update that stop's travel_mode
 //    and write the whole structure back (status preserved).
 // · { is_published } (MapView publish step) → BFF POST /itineraries/:id/publish.
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params
   const auth = await getSessionAuth()
   if (!auth) return unauthorized()
@@ -99,7 +101,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 // PUT /api/plans/:id   body: { title?, stops: [{ poi_id, stop_order, duration_min, day }] }
 // Save changes to an existing plan (edit mode): BFF PUT /itineraries/:id replaces its days, so the
 // plan keeps its id, link, likes and saves. A stop that stays keeps its travel mode and note.
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params
   const auth = await getSessionAuth()
   if (!auth) return unauthorized()
@@ -149,10 +152,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params
   if (!id) return NextResponse.json({ error: 'missing_id' }, { status: 400 })
   const auth = await getSessionAuth()

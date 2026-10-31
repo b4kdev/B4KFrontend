@@ -21,7 +21,7 @@ export async function GET() {
   if (!auth) return unauthorized()
   try {
     const folders = await bffFetch<BffFolder[]>('/me/bookmark-folders', { token: auth.token })
-    const allSaved = (await seoText(cookies().get('NEXT_LOCALE')?.value ?? 'en')).t('CD1872')
+    const allSaved = (await seoText((await cookies()).get('NEXT_LOCALE')?.value ?? 'en')).t('CD1872')
     return NextResponse.json({
       folders: folders.map(f => ({
         id:         f.folder_id,

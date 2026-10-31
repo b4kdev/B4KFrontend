@@ -6,7 +6,8 @@ import { fetchPlaceDetail } from '@/lib/place-detail'
 import { buildPlaceBreadcrumbJsonLd, buildPlaceJsonLd, buildPlaceMetadata } from '@/app/[locale]/place/[poiId]/place-seo'
 import { JsonLd } from '@/components/v2/JsonLd'
 
-export async function generateMetadata({ params }: { params: { locale: string; poiId: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ locale: string; poiId: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const place = await fetchPlaceDetail(params.poiId, params.locale)
   if (!place) return {}
   return buildPlaceMetadata(place, params.locale)
@@ -14,7 +15,8 @@ export async function generateMetadata({ params }: { params: { locale: string; p
 
 // Place page in the new design: the live SSR shell (metadata, JSON-LD, 404 for an unknown
 // place) over the map with the place selected.
-export default async function Page({ params }: { params: { locale: string; poiId: string } }) {
+export default async function Page(props: { params: Promise<{ locale: string; poiId: string }> }) {
+  const params = await props.params;
   const place = await fetchPlaceDetail(params.poiId, params.locale)
   if (!place) notFound()
   return (

@@ -125,7 +125,7 @@ export async function GET(request: Request) {
   const needle = q.trim().toLowerCase()
   // next-intl locales (i18n/routing.ts) — translations JSONB keys must match this
   // exact casing (e.g. 'zh-CN' not 'zh_CN') or the lookup below silently misses.
-  const locale = cookies().get('NEXT_LOCALE')?.value ?? 'en'
+  const locale = (await cookies()).get('NEXT_LOCALE')?.value ?? 'en'
 
   try {
     const base = `/places?q=${encodeURIComponent(q.trim())}&limit=20`

@@ -6,7 +6,8 @@ import { seoText } from '@/lib/seo'
 // colors from the dark color-bg token (the icons are the white mark on it).
 const BG = '#0a0a0a' // allow-hex — color-bg (dark); a manifest cannot read CSS variables
 
-export async function GET(_req: Request, { params }: { params: { locale: string } }) {
+export async function GET(_req: Request, props: { params: Promise<{ locale: string }> }) {
+  const params = await props.params;
   if (!routing.locales.includes(params.locale as (typeof routing.locales)[number])) return new NextResponse(null, { status: 404 })
   const { t } = await seoText(params.locale)
   return NextResponse.json(

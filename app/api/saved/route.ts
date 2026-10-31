@@ -157,7 +157,7 @@ async function fetchAllBookmarks(token: string): Promise<BffBookmark[]> {
 
 export async function GET() {
   const auth = await getSessionAuth()
-  const locale = cookies().get('NEXT_LOCALE')?.value ?? 'en'
+  const locale = (await cookies()).get('NEXT_LOCALE')?.value ?? 'en'
   // The fixed list's name in the reader's language (the BFF calls it Default).
   const allSaved = (await seoText(locale)).t('CD1872')
   // Signed out — same shape the stub returned; the page's auth gate handles prompting.

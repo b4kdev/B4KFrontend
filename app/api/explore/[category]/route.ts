@@ -578,17 +578,15 @@ function mapArtist(e: BffEntity, locale: string): ExploreArtist {
     debut_year: e.metadata?.debut_year,
     member_count: e.metadata?.member_count,
     fandom_name: e.metadata?.fandom_name,
-  }
+  };
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { category: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ category: string }> }) {
+  const params = await props.params;
   const sectionIds = SECTIONS_BY_CATEGORY[params.category]
   if (!sectionIds) return NextResponse.json({ error: 'not_found' }, { status: 404 })
 
-  const locale = cookies().get('NEXT_LOCALE')?.value ?? 'en'
+  const locale = (await cookies()).get('NEXT_LOCALE')?.value ?? 'en'
 
   // dev-only preview of placeholder (verified:false) content so
   // DoD gates 2/3/6 can be tested against complete-looking rows before

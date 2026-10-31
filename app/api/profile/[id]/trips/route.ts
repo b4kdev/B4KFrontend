@@ -27,7 +27,8 @@ interface BffProfileItineraries {
 // GET /api/profile/[id]/trips → BFF GET /profiles/:id/itineraries
 // Note: the backend list doesn't report per-viewer save state, so is_saved is
 // always false here until the BFF adds that field.
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   if (!/^\d+$/.test(params.id)) {
     return NextResponse.json({ error: 'not found' }, { status: 404 })
   }
