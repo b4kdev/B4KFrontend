@@ -561,13 +561,15 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
                 <p className={heading}>{labels.recent}</p>
                 {onClearRecent ? <button type="button" onClick={onClearRecent} className="-my-[var(--space-1)] type-body-caption text-ui-fg-muted underline-offset-2 hover:text-ui-fg hover:underline">{labels.clearAll}</button> : null}
               </div>
+              {/* Figma List item: 16 and 12 padding, clock icon, the search, and the 40 Ghost remove button
+                  (64 high, above the 44 tap minimum); the search text is the button that runs it, the remove button sits beside it. */}
               {recent.map((r) => (
-                <div key={r.id} className="flex items-center hover:bg-ui-state-hover">
-                  <button type="button" className={cn(row, 'hover:bg-transparent')} onClick={() => onSearch(r.text)}>
+                <div key={r.id} className="flex items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] hover:bg-ui-state-hover">
+                  <button type="button" className={cn('flex min-w-0 flex-1 items-center gap-[var(--space-3)] self-stretch text-left', FOCUS_RING_INSET)} onClick={() => onSearch(r.text)}>
                     <Clock aria-hidden className={icon} />
-                    <span className="type-body-base">{r.text}</span>
+                    <span className="truncate type-body-base">{r.text}</span>
                   </button>
-                  {onRemoveRecent ? <IconButton label={labels.remove(r.text)} icon={<X />} onClick={() => onRemoveRecent(r.id)} className="mr-[var(--space-2)]" /> : null}
+                  {onRemoveRecent ? <IconButton label={labels.remove(r.text)} icon={<X />} onClick={() => onRemoveRecent(r.id)} /> : null}
                 </div>
               ))}
             </div>
