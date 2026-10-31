@@ -132,7 +132,7 @@ export function usePlanDraft() {
     while (day <= MAX_DAYS && countOn(day) >= PER_DAY) day++
     if (day > MAX_DAYS) return null
     if (day > days) setDays(day)
-    commit({ ...plan, stops: [...plan.stops, poi], durations: { ...plan.durations, [poi.poi_id]: plan.durations[poi.poi_id] ?? 60 }, days: { ...plan.days, [poi.poi_id]: day } })
+    commit({ ...plan, stops: [...plan.stops, poi], durations: { ...plan.durations, [poi.poi_id]: plan.durations[poi.poi_id] ?? poi.default_visit_min ?? 60 }, days: { ...plan.days, [poi.poi_id]: day } })
     return day
   }
   const remove = (id: string) => {
@@ -159,7 +159,7 @@ export function usePlanDraft() {
     if (days <= 1) return
     const stops = plan.stops.filter((s) => dayOf(s.poi_id) !== n)
     const dayMap = Object.fromEntries(stops.map((s) => [s.poi_id, dayOf(s.poi_id) > n ? dayOf(s.poi_id) - 1 : dayOf(s.poi_id)]))
-    const durations = Object.fromEntries(stops.map((s) => [s.poi_id, plan.durations[s.poi_id] ?? 60]))
+    const durations = Object.fromEntries(stops.map((s) => [s.poi_id, plan.durations[s.poi_id] ?? s.default_visit_min ?? 60]))
     setDays((d) => Math.max(1, d - 1))
     commit({ ...plan, stops, days: dayMap, durations })
   }
@@ -167,7 +167,7 @@ export function usePlanDraft() {
   const replace = (stops: MapPoi[], dayMap: Record<string, number>, name?: string, durations?: Record<string, number>, opts?: { editing?: boolean }) => {
     editing.current = !!opts?.editing
     setDays(Math.max(1, ...Object.values(dayMap)))
-    commit({ stops, durations: Object.fromEntries(stops.map((s) => [s.poi_id, durations?.[s.poi_id] ?? 60])), days: dayMap, name })
+    commit({ stops, durations: Object.fromEntries(stops.map((s) => [s.poi_id, durations?.[s.poi_id] ?? s.default_visit_min ?? 60])), days: dayMap, name })
   }
   const discard = () => {
     touched.current = true

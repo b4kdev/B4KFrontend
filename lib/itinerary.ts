@@ -91,6 +91,8 @@ export interface BffPlace {
   visit_order: number
   travel_mode?: string | null            // walking | transit | driving
   duration_min?: number | null
+  /** The usual visit length for this kind of place; the stop's length when it has none. */
+  default_visit_min?: number | null
   note?: string | null
   name_ko?: string | null
   address_ko?: string | null
@@ -220,7 +222,7 @@ export function mapBffToDetail(bff: BffItinerary): ItineraryDetail {
   const stops: ItineraryStop[] = flat.map(({ place, day, order }) => ({
     stop_order:     order,
     day,
-    duration_min:   place.duration_min ?? DEFAULT_DURATION_MIN,
+    duration_min:   place.duration_min ?? place.default_visit_min ?? DEFAULT_DURATION_MIN,
     transport_mode: toFrontMode(place.travel_mode),
     notes:          place.note ?? null,
     poi: {

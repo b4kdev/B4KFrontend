@@ -24,6 +24,7 @@ interface RawPlaceDetail {
   save_count:        number
   translations:      Record<string, { name?: string; description?: string }>
   context:           unknown
+  default_visit_min?: number | null
 }
 
 function mapDetail(row: RawPlaceDetail, locale: string): MapPoi {
@@ -55,6 +56,7 @@ function mapDetail(row: RawPlaceDetail, locale: string): MapPoi {
     primary_image_url:  row.primary_image_url ?? undefined,
     save_count:         row.save_count,
     like_count:         row.like_count,
+    default_visit_min:  row.default_visit_min ?? null,
   }
 }
 

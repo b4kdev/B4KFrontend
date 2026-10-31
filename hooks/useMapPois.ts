@@ -32,6 +32,8 @@ export interface MapPoi {
   address?:          string
   website_url?:      string
   primary_image_url?: string
+  /** The usual visit length for this kind of place (minutes): where the duration menu starts. Null for stays. */
+  default_visit_min?: number | null
 }
 
 interface RawPlace {
@@ -45,6 +47,7 @@ interface RawPlace {
   display_region:    string | null
   domains:           string[] | null
   interest_category?: string | null
+  default_visit_min?: number | null
   translations:      Record<string, { name?: string; description?: string }>
 }
 
@@ -74,6 +77,7 @@ function mapPlace(row: RawPlace, locale: string): MapPoi {
     save_count:         row.save_count,
     like_count:         row.like_count,
     primary_image_url:  row.primary_image_url ?? undefined,
+    default_visit_min:  row.default_visit_min ?? null,
     // One-line note on the list card, in the visitor's language when there is one.
     description:        cur.description ?? en.description,
   }
