@@ -819,7 +819,8 @@ export function SettingsScreen() {
       <Modal open={nameSheet} onClose={() => setNameSheet(false)} size="sm" title={t('CD1597')} closeLabel={k('badges.detail.close')}
         secondaryAction={<Button variant="ghost" onClick={() => setNameSheet(false)}>{k('saved.folder.cancel')}</Button>}
         primaryAction={<Button disabled={!name.trim()} onClick={async () => { await send('/api/account/profile', 'PATCH', { display_name: name.trim() }).catch(() => toast({ type: 'critical', message: k('profile.settings.identity.error') })); setNameSheet(false); profile.mutate() }}>{k('profile.settings.identity.save')}</Button>}>
-        <TextInput label={k('profile.settings.identity.displayName')} showLabel value={name} onChange={(e) => setName(e.target.value)} data-autofocus />
+        {/* The account accepts names up to 100 characters. */}
+        <TextInput label={k('profile.settings.identity.displayName')} showLabel value={name} onChange={(e) => setName(e.target.value)} maxLength={100} data-autofocus />
       </Modal>
       <Modal open={pwSheet} onClose={() => setPwSheet(false)} size="sm" title={k('profile.settings.password.heading')} closeLabel={k('badges.detail.close')}
         secondaryAction={<Button variant="ghost" onClick={() => setPwSheet(false)}>{k('saved.folder.cancel')}</Button>}
