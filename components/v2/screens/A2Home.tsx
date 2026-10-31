@@ -161,8 +161,9 @@ export function HomeScreen() {
   const draft = useContinueDraft()
 
   // Interests card: on a following visit (a later browser session than the one in which this device
-  // first opened Home), signed in, no interests saved yet, not dismissed on this device.
-  const mine = useSWR(user ? '/me/interests' : null, (p: string) => apiFetch<{ interest_tags: string[] }>(p))
+  // first opened Home), signed in, and the account has not answered it yet (no onboarded_at: never
+  // saved nor dismissed, on any device).
+  const mine = useSWR(user ? '/me/interests' : null, (p: string) => apiFetch<{ interest_tags: string[]; onboarded_at: string | null }>(p))
   const [dismissed, setDismissed] = useState(true)
   useEffect(() => {
     try {
@@ -175,7 +176,7 @@ export function HomeScreen() {
       setDismissed(!following || localStorage.getItem('b4k-v2-interests-card') === 'done')
     } catch {}
   }, [])
-  const showInterests = !!user && !dismissed && !!mine.data && mine.data.interest_tags.length === 0
+  const showInterests = !!user && !dismissed && !!mine.data && !mine.data.onboarded_at && mine.data.interest_tags.length === 0
   const { categories } = useInterests(showInterests)
   const [picked, setPicked] = useState<string[]>([])
   const doneInterests = () => {
@@ -183,6 +184,12 @@ export function HomeScreen() {
       localStorage.setItem('b4k-v2-interests-card', 'done')
     } catch {}
     setDismissed(true)
+  }
+  // Dismiss (or Save with nothing picked) is recorded on the account as answered with no interests,
+  // so the card does not come back on another device. A failed call still closes it here.
+  const skipInterests = () => {
+    doneInterests()
+    apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: [], completed: true }) }).catch(() => {})
   }
 
   const name = (p: HomeTrendingPoi) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
@@ -242,11 +249,11 @@ export function HomeScreen() {
                 onToggle={(id) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : p.length < 10 ? [...p, id] : p))}
                 // A failed save keeps the card and its picks, with the error toast. Save with nothing picked closes the card as Dismiss does.
                 onSave={() =>
-                  !picked.length ? doneInterests() : apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) })
+                  !picked.length ? skipInterests() : apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) })
                     .then(doneInterests)
                     .catch(() => toast({ type: 'critical', message: t('CD0061') }))
                 }
-                onDismiss={doneInterests}
+                onDismiss={skipInterests}
                 labels={{ save: t('CD1610'), dismiss: t('CD0128') }}
               />
             ) : null),
