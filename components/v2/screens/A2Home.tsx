@@ -154,7 +154,7 @@ export function HomeScreen() {
   // Hero slide 2 shows the photo its Theme page shows (its first place's photo), read from the same
   // data as that page so the two stay in step.
   const foodTheme = useSWR<{ items: { primary_image_url: string | null }[] }>('/api/explore/k-food/michelin-noodles', jsonFetch)
-  const trending = useSWR<HomeTrendingPoi[]>('/api/home/trending', jsonFetch)
+  const trending = useSWR<HomeTrendingPoi[]>(`/api/home/trending?locale=${locale}`, jsonFetch)
   const plans = useSWR<HomePopularPlan[]>('/api/home/popular-plans', jsonFetch)
   const events = useSWR<HomeEvent[]>('/api/home/events', jsonFetch)
   const order = useSWR<HomeSectionOrder>('/api/home/section-order', jsonFetch, { revalidateOnFocus: false })

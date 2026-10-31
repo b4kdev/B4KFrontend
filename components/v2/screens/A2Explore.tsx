@@ -347,7 +347,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const locale = useLocale()
   const fromHome = category === 'all'
   const explore = useSWR<ExploreData>(fromHome ? null : `/api/explore/${category}`, jsonFetch)
-  const trending = useSWR<HomeTrendingPoi[]>(fromHome && row === 'trending' ? '/api/home/trending' : null, jsonFetch)
+  const trending = useSWR<HomeTrendingPoi[]>(fromHome && row === 'trending' ? `/api/home/trending?locale=${locale}` : null, jsonFetch)
   const [chip, setChip] = useState('all')
   const [sort, setSort] = useState('popular')
   const plans = useSWR<HomePopularPlan[]>(fromHome && row === 'popular-plans' ? `/api/home/popular-plans${sort === 'new' ? '?sort=newest' : ''}` : null, jsonFetch)

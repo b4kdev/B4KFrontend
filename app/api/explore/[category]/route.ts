@@ -486,11 +486,6 @@ const SEED_SECTIONS: Record<string, Record<string, ExplorePoi[]>> = {
   },
 }
 
-// K-Pop's Trending Now can be the seasonal birthday row: an artist whose birthday_month matches
-// the current month supplies it through SEED_TRENDING_BY_ARTIST. No artist does today, so K-Pop
-// shows the regular Trending Now row of real places (see GET).
-const SEED_TRENDING_BY_ARTIST: Record<string, ExplorePoi[]> = {}
-
 // next-intl locales (i18n/routing.ts) — translations JSONB keys must match this
 // exact casing (e.g. 'zh-CN' not 'zh_CN') or the lookup below silently misses.
 function mapPlace(p: BffPlace, locale: string): ExplorePoi {
@@ -504,7 +499,7 @@ function mapPlace(p: BffPlace, locale: string): ExplorePoi {
     display_region: p.display_region ?? '',
     interest_category: p.interest_category ?? null,
     quality_score: 0, // not exposed by BFF list_places
-    is_trending: false, // no backing flag — the trending row is like-ordered instead
+    is_trending: false, // set by the Trending Now row (GET /places/trending)
     coords_lat: p.coords_lat,
     coords_lng: p.coords_lng,
   }
@@ -601,14 +596,15 @@ export async function GET(req: NextRequest, props: { params: Promise<{ category:
   // thematic sections) still needs to render even when the real backend is
   // unreachable/not-yet-wired. Only the live Trending Now row degrades to
   // empty on failure; everything else falls back to the seed as normal.
-  let items: ExplorePoi[] = []
+  let trending: ExplorePoi[] = []
   try {
     const places = await bffFetch<BffPlace[]>(
-      `/places?domain=${encodeURIComponent(params.category)}&limit=40`
+      `/places/trending?domain=${encodeURIComponent(params.category)}&limit=8`,
+      { token: null },
     )
-    items = (places ?? []).map(p => mapPlace(p, locale))
+    trending = (places ?? []).map(p => ({ ...mapPlace(p, locale), is_trending: true }))
   } catch {
-    items = []
+    trending = []
   }
 
   // k-pop artist index now backed by core.entities (real roster)
@@ -654,38 +650,10 @@ export async function GET(req: NextRequest, props: { params: Promise<{ category:
 
   const facets = FACETS_BY_CATEGORY[params.category] ?? []
 
-  // Trending Now (KP/KB/KC_02) is built from the UNFILTERED data — the trending
-  // row sits above the chip-scoped sections and must not collapse under a
-  // filter. Items flagged is_trending in sections take priority; otherwise the
-  // BFF like-count ordering (list_places sorts like_count DESC) stands in.
-  const seen = new Set<string>()
-  const flagged: ExplorePoi[] = []
-  for (const s of base.sections) {
-    for (const it of s.items) {
-      if (it.is_trending && !seen.has(it.poi_id)) {
-        seen.add(it.poi_id)
-        flagged.push(it)
-      }
-    }
-  }
-  let trendingSection: ExploreSection = {
-    id: 'trending',
-    items: (flagged.length > 0 ? flagged : items).slice(0, 8),
-  }
-
-  // k-pop only: Trending Now is reframed as the seasonal
-  // birthday-member auto-rotation row instead of the generic like-ordered/flagged
-  // one above. Whichever artist's birthday_month matches the current calendar month
-  // supplies the content; none does today (see SEED_ARTISTS), so every real k-pop
-  // user sees the unattributed placeholder set only via ?includeUnverified=1.
-  if (params.category === 'k-pop') {
-    const currentMonth = new Date().getMonth() + 1
-    const birthdayArtist = (SEED_ARTISTS['k-pop'] ?? []).find(a => a.birthday_month === currentMonth)
-    // No birthday artist this month: keep the generic row above (real places from the backend)
-    // instead of the hand-picked placeholder set.
-    const trendingItems = birthdayArtist ? SEED_TRENDING_BY_ARTIST[birthdayArtist.id] : undefined
-    if (trendingItems?.length) trendingSection = { id: 'trending', items: trendingItems.filter(dropUnverified) }
-  }
+  // Trending Now: the backend's weekly ranking for this category (saves and likes in the last
+  // 7 days, publishable places only). It sits above the chip-scoped sections, so filters do not
+  // narrow it. No activity in the window, or a failed call, leaves it empty and the row hides.
+  const trendingSection: ExploreSection = { id: 'trending', items: trending }
 
   // Apply each active chip filter only to sections whose items carry that facet (the
   // chip is spec-scoped to those sections). Untagged sections pass through unchanged.

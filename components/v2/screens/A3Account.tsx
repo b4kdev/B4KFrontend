@@ -376,7 +376,7 @@ export function LeaderboardTab() {
   const [win, setWin] = useState<LeaderboardWindow>('weekly')
   const board = useSWR<LeaderboardData>(`/api/leaderboard?window=${win}`, jsonFetch)
   const plans = useSWR<HomePopularPlan[]>('/api/home/popular-plans', jsonFetch)
-  const places = useSWR<HomeTrendingPoi[]>('/api/home/trending', jsonFetch)
+  const places = useSWR<HomeTrendingPoi[]>(`/api/home/trending?locale=${locale}`, jsonFetch)
   const badges = useSWR<BadgesData>(user ? '/api/badges' : null, jsonFetch)
   const act = usePlaceActions({ resume: true })
   const planAct = usePlanActions({ resume: true })
