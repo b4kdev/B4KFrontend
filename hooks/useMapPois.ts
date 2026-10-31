@@ -28,6 +28,8 @@ export interface MapPoi {
   is_open?:          boolean   // no opening-hours data collected yet — always undefined
   hours_open?:       string
   hours_close?:      string
+  /** Opening hours and closed days as the source writes them (place detail only). */
+  hours_text?:       string
   description?:      string
   address?:          string
   website_url?:      string

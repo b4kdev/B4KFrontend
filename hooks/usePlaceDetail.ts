@@ -25,6 +25,8 @@ interface RawPlaceDetail {
   translations:      Record<string, { name?: string; description?: string }>
   context:           unknown
   default_visit_min?: number | null
+  /** Opening hours and closed days as written by the source (mostly English); null when there are none. */
+  hours_info?: { opening_hours?: string; closed_days?: string; info_url?: string } | null
 }
 
 function mapDetail(row: RawPlaceDetail, locale: string): MapPoi {
@@ -57,6 +59,7 @@ function mapDetail(row: RawPlaceDetail, locale: string): MapPoi {
     save_count:         row.save_count,
     like_count:         row.like_count,
     default_visit_min:  row.default_visit_min ?? null,
+    hours_text:         [row.hours_info?.opening_hours, row.hours_info?.closed_days].map((x) => x?.trim()).filter(Boolean).join(' · ') || undefined,
   }
 }
 

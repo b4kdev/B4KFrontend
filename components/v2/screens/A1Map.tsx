@@ -466,7 +466,11 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         imageSrc={detail.primary_image_url}
         imageAlt={detailName}
         description={detail.description}
-        details={detail.address ? [{ icon: 'address', title: detail.address }] : []}
+        // Hours (as the source writes them) and address, in the drawn order; open status and the website wait on data.
+        details={[
+          ...(detail.hours_text ? [{ icon: 'hours' as const, title: detail.hours_text }] : []),
+          ...(detail.address ? [{ icon: 'address' as const, title: detail.address }] : []),
+        ]}
         saved={savedIds.has(detail.poi_id)}
         liked={likes.isLiked(detail.poi_id)}
         onAdd={() => addToPlan(detail)}
