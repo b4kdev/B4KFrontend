@@ -22,6 +22,7 @@ interface RawPlaceDetail {
   like_count:        number
   save_count:        number
   translations:      Record<string, { name?: string; description?: string }>
+  business_type?:    string | null
 }
 
 export interface PlaceDetail {
@@ -38,6 +39,8 @@ export interface PlaceDetail {
   primary_image_url?: string
   save_count:        number
   like_count:        number
+  /** schema.org LocalBusiness type for a commercial place (Restaurant, Hotel, Store, …); null otherwise. */
+  business_type:     string | null
 }
 
 // TODO(remove-hardcoding-poi): app/api/explore/* and app/api/home/* still ship
@@ -93,5 +96,6 @@ export async function fetchPlaceDetail(poiId: string, locale: string): Promise<P
     primary_image_url:  row.primary_image_url ?? undefined,
     save_count:         row.save_count,
     like_count:         row.like_count,
+    business_type:      row.business_type ?? null,
   }
 }

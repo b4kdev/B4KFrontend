@@ -49,7 +49,8 @@ export async function buildPlaceBreadcrumbJsonLd(place: PlaceDetail, locale: str
 export function buildPlaceJsonLd(place: PlaceDetail, locale: string) {
   return {
     '@context': 'https://schema.org',
-    '@type': 'TouristAttraction',
+    // A commercial place is its LocalBusiness type (Restaurant, Hotel, Store, …); anything else a tourist attraction.
+    '@type': place.business_type ?? 'TouristAttraction',
     name: place.name,
     ...(place.description ? { description: place.description } : {}),
     ...(place.primary_image_url ? { image: place.primary_image_url } : {}),
