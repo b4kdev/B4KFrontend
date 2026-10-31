@@ -19,6 +19,9 @@ export interface HomeTrendingPoi {
 // the real backend ranking once it exists (weekly saves and likes, publishable places only).
 const TRENDING: HomeTrendingPoi[] = []
 
+// Same answer for everyone, built once (Next 15 no longer makes such GET handlers static by default).
+export const dynamic = 'force-static'
+
 export async function GET() {
   return NextResponse.json(withDbPoiIds(TRENDING))
 }

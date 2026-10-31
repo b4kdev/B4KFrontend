@@ -14,6 +14,9 @@ import { HOME_SECTION_ORDER, type HomeSectionOrder } from './order'
  * Unknown keys returned here are ignored by the client; missing keys fall back
  * to their default position, so the payload can never break the page.
  */
+// Same answer for everyone, built once (Next 15 no longer makes such GET handlers static by default).
+export const dynamic = 'force-static'
+
 export async function GET() {
   // Real impl: resolve session → load behavioral weights → reorder.
   // Guests / no signals → HOME_SECTION_ORDER.
