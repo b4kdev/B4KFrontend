@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { bffFetch, bffErrorResponse, getSessionAuth } from '@/lib/bff'
 
-export type NotificationType = 'event_drop' | 'deal_expiring' | 'editorial_pick' | 'badge_earned' | 'challenge_new' | 'promotion'
+export type NotificationType = 'event_drop' | 'deal_expiring' | 'editorial_pick' | 'badge_earned' | 'challenge_new' | 'promotion' | 'plan_saved'
 
 export interface Notification {
   id: string
   type: NotificationType
+  /** English defaults from the server; the screen builds the text from type and params where it can. */
   title: string
   body: string
+  /** badge_earned: { badge_slug, badge_name }; plan_saved: { itinerary_id, plan_title, saver_user_id, saver_name }; else null. */
+  params: Record<string, string | number | null> | null
   deep_link_url: string
   is_read: boolean
   created_at: string
@@ -26,6 +29,7 @@ interface BffNotification {
   deep_link_url: string | null
   is_read: boolean
   created_at: string
+  params?: Record<string, string | number | null> | null
 }
 
 interface BffNotificationsData {
@@ -61,6 +65,7 @@ export async function GET(req: NextRequest) {
         type: n.type,
         title: n.title,
         body: n.body ?? '',
+        params: n.params ?? null,
         deep_link_url: n.deep_link_url ?? '',
         is_read: n.is_read,
         created_at: n.created_at,

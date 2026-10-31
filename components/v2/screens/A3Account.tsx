@@ -466,7 +466,7 @@ export function LeaderboardScreen() {
 
 // ── Notifications ──────────────────────────────────────────────────
 
-const NOTIF_ICON: Record<string, React.ReactNode> = { badge_earned: <Award />, event_drop: <Calendar />, editorial_pick: <Sparkles />, deal_expiring: <Bell />, challenge_new: <Trophy />, promotion: <Bookmark /> }
+const NOTIF_ICON: Record<string, React.ReactNode> = { badge_earned: <Award />, event_drop: <Calendar />, editorial_pick: <Sparkles />, deal_expiring: <Bell />, challenge_new: <Trophy />, promotion: <Bookmark />, plan_saved: <Bookmark /> }
 
 const NOTIF_PAGE = 20
 
@@ -512,6 +512,12 @@ export function NotificationsScreen() {
     const min = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 6e4))
     return min < 60 ? rtf.format(-min, 'minute') : min < 1440 ? rtf.format(-Math.round(min / 60), 'hour') : rtf.format(-Math.round(min / 1440), 'day')
   }
+  const notifText = (n: Notification) => {
+    const p = n.params ?? {}
+    if (n.type === 'plan_saved' && p.plan_title) return { title: t('CD1875'), body: t('CD1876', { name: String(p.saver_name ?? ''), plan: String(p.plan_title) }) }
+    if (n.type === 'badge_earned' && p.badge_name) return { title: t('CD1877', { badge: String(p.badge_name) }), body: '' }
+    return { title: n.title, body: n.body }
+  }
   if (!user) return <V2Page bar={{ type: 'page', title: k('notifications.title') }}><SignedOutPrompt title={k('notifications.title')} text={t('CD1596')} /></V2Page>
   return (
     <V2Page bar={{ type: 'page', title: k('notifications.title') }} className="flex flex-col max-lg:py-[var(--space-4)] lg:pb-[var(--space-8)]">
@@ -532,12 +538,13 @@ export function NotificationsScreen() {
                   <NotificationItem
                     key={n.id}
                     icon={NOTIF_ICON[n.type] ?? <Bell />}
-                    title={n.title}
-                    body={n.body}
+                    // In the reader's language from the type and its values; other types keep the server's text.
+                    title={notifText(n).title}
+                    body={notifText(n).body}
                     time={time(n.created_at)}
                     read={n.is_read}
                     unreadLabel={k('notifications.unread', { count: 1 })}
-                    href={n.deep_link_url ? `${n.deep_link_url}` : '/notifications'}
+                    href={n.deep_link_url ? `${n.deep_link_url}` : n.type === 'plan_saved' && n.params?.itinerary_id ? `/plan/${n.params.itinerary_id}` : '/notifications'}
                     renderLink={({ href, className, children }) => (
                       <IntlLink href={href} className={className} onClick={() => !n.is_read && markRead(n.id)}>{children}</IntlLink>
                     )}
@@ -773,7 +780,7 @@ export function SettingsScreen() {
 
         <h2 className={heading}>{k('profile.settings.notifications.heading')}</h2>
         <ul>
-          {([['badge_earned', 'CD1600'], ['event_drop', 'CD1602'], ['editorial_pick', 'CD0971']] as const).filter(([type]) => GAMIFICATION || type !== 'badge_earned').map(([type, cd]) => (
+          {([['badge_earned', 'CD1600'], ['plan_saved', 'CD1601'], ['event_drop', 'CD1602'], ['editorial_pick', 'CD0971']] as const).filter(([type]) => GAMIFICATION || type !== 'badge_earned').map(([type, cd]) => (
             <ListItem key={type} title={t(cd)} disabled={!user} trailing={<Toggle label={t(cd)} hideLabel disabled={!user} checked={!!user && !optOut(type)} onCheckedChange={(on) => toggleNotif(type, on)} />} />
           ))}
         </ul>
