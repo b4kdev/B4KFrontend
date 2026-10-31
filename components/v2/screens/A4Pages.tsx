@@ -154,7 +154,7 @@ export function SearchScreen() {
             </div>
           }
         >
-          {t('CD1292')}
+          {t('CD1864')}
         </EmptyState>
       ) : null}
       {data?.places.length ? (
