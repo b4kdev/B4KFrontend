@@ -39,6 +39,7 @@ import { cookiePolicyContactEmail, cookiePolicyLastUpdated, cookiePolicySections
 import type { SearchCollection, SearchExplore, SearchPlan, SearchPoi } from '@/app/api/search/route'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
+import { cn } from '@/lib/cn'
 import { HELP_TOP, HELP_TOPICS, helpTopic, type HelpQuestion } from '../help'
 import { keepKNamesDeep } from '../text'
 import { V2Footer, V2Page } from '../V2Page'
@@ -139,8 +140,10 @@ export function SearchScreen() {
     </IntlLink>
   ))
 
+  // Figma No results fills the results area to the bottom with its block centred in it, so the
+  // results column grows and the empty state takes the rest of it.
   const results = (
-    <div className="flex flex-col gap-[var(--space-10)]">
+    <div className={cn('flex flex-col gap-[var(--space-10)]', noResults && 'flex-1')}>
       {/* Screen readers hear the counts of every section once the results arrive. */}
       {q ? <p aria-live="polite" className="sr-only">{data ? t('CD1303', { query: q, places: data.places.length, plans: data.plans.length, explore: data.explore.length }) : isLoading ? t('CD1285') : ''}</p> : null}
       {error ? <EmptyState type="error" title={t('CD1249')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{t('CD1304')}</Button>} /> : null}
@@ -149,9 +152,14 @@ export function SearchScreen() {
       ) : null}
       {/* Explore matches are the fixed category links, so no places and no plans is No results;
           the categories become its suggestions (Figma No results: chips, then Clear filters). */}
+      {/* Figma No results: on desktop the "0 places" count 16 under the title; the block ends 12 (phone) or 32
+          (desktop) above the end of the page area. */}
       {noResults ? (
+        <div className="flex flex-1 flex-col gap-[var(--space-4)] max-lg:mb-[var(--space-3)] lg:-mt-[var(--space-2)] lg:mb-[var(--space-8)]">
+        {!phone ? <p className="type-body-caption text-ui-fg-muted">{t('CD0160', { count: 0 })}</p> : null}
         <EmptyState
           type="no-results"
+          className="flex-1"
           titleAs="h2"
           title={noResultsArea ? t('CD1863', { query: q, area: noResultsArea }) : t('CD1291', { query: q })}
           action={
@@ -163,6 +171,7 @@ export function SearchScreen() {
         >
           {t('CD1864')}
         </EmptyState>
+        </div>
       ) : null}
       {data?.places.length ? (
         <section aria-label={t('CD1307')} className="flex flex-col gap-[var(--space-4)]">
@@ -246,7 +255,7 @@ export function SearchScreen() {
     return (
       <>
         <TopAppBar type="search" labels={labels} onBack={() => router.back()} search={field} className="sticky top-0 z-30" />
-        <main id="main" className="flex-1 px-[var(--grid-gutter-mobile)] py-[var(--space-3)]">
+        <main id="main" className="flex flex-1 flex-col px-[var(--grid-gutter-mobile)] py-[var(--space-3)]">
           <h1 className="sr-only">{q ? t('CD1861', { query: q }) : t('CD1293')}</h1>
           {box.open ? box.suggestions : (
             <>
@@ -283,7 +292,7 @@ export function SearchScreen() {
             <h1 className="sr-only">{t('CD1293')}</h1>
           )}
           {results}
-          {q ? <IntlLink href="/map" className="inline-flex items-center gap-[var(--space-2)] self-start type-label-button text-ui-link hover:text-ui-link-hover"><Map aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1287')}</IntlLink> : null}
+          {q && !noResults ? <IntlLink href="/map" className="inline-flex items-center gap-[var(--space-2)] self-start type-label-button text-ui-link hover:text-ui-link-hover"><Map aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1287')}</IntlLink> : null}
         </main>
         <V2Footer />
       </div>
