@@ -125,20 +125,21 @@ export function usePlanDraft() {
   const countOn = (day: number) => plan.stops.filter((s) => dayOf(s.poi_id) === day).length
 
   /** Adds to the given day, or the first day with room. Returns the day it went to, or null when full. */
-  const add = (poi: MapPoi, preferDay?: number): number | null => {
+  const add = (poi: MapPoi, preferDay?: number, source?: string): number | null => {
     if (plan.stops.some((s) => s.poi_id === poi.poi_id)) return dayOf(poi.poi_id)
     if (plan.stops.length >= MAX_STOPS) return null
     let day = preferDay ?? days
     while (day <= MAX_DAYS && countOn(day) >= PER_DAY) day++
     if (day > MAX_DAYS) return null
     if (day > days) setDays(day)
-    commit({ ...plan, stops: [...plan.stops, poi], durations: { ...plan.durations, [poi.poi_id]: plan.durations[poi.poi_id] ?? poi.default_visit_min ?? 60 }, days: { ...plan.days, [poi.poi_id]: day } })
+    commit({ ...plan, stops: [...plan.stops, poi], durations: { ...plan.durations, [poi.poi_id]: plan.durations[poi.poi_id] ?? poi.default_visit_min ?? 60 }, days: { ...plan.days, [poi.poi_id]: day }, sources: source ? { ...plan.sources, [poi.poi_id]: source } : plan.sources })
     return day
   }
   const remove = (id: string) => {
     const { [id]: _d, ...durations } = plan.durations
     const { [id]: _y, ...rest } = plan.days ?? {}
-    commit({ ...plan, stops: plan.stops.filter((s) => s.poi_id !== id), durations, days: rest })
+    const { [id]: _s, ...sources } = plan.sources ?? {}
+    commit({ ...plan, stops: plan.stops.filter((s) => s.poi_id !== id), durations, days: rest, sources })
   }
   /** Moves stop `id` to the slot of `toId` on the same day; other days' stops keep their slots. */
   const move = (id: string, toId: string) => {
@@ -164,10 +165,11 @@ export function usePlanDraft() {
     commit({ ...plan, stops, days: dayMap, durations })
   }
   /** Replaces the plan; `editing` marks a published plan open for editing (not autosaved). */
-  const replace = (stops: MapPoi[], dayMap: Record<string, number>, name?: string, durations?: Record<string, number>, opts?: { editing?: boolean }) => {
+  /** `source`: where every stop of the hand-off came from (Quick plan, saved places). */
+  const replace = (stops: MapPoi[], dayMap: Record<string, number>, name?: string, durations?: Record<string, number>, opts?: { editing?: boolean; source?: string }) => {
     editing.current = !!opts?.editing
     setDays(Math.max(1, ...Object.values(dayMap)))
-    commit({ stops, durations: Object.fromEntries(stops.map((s) => [s.poi_id, durations?.[s.poi_id] ?? s.default_visit_min ?? 60])), days: dayMap, name })
+    commit({ stops, durations: Object.fromEntries(stops.map((s) => [s.poi_id, durations?.[s.poi_id] ?? s.default_visit_min ?? 60])), days: dayMap, name, sources: opts?.source ? Object.fromEntries(stops.map((s) => [s.poi_id, opts.source as string])) : undefined })
   }
   const discard = () => {
     touched.current = true

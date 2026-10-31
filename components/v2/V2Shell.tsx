@@ -32,6 +32,7 @@ import V2QuickPlan from './V2QuickPlan'
 import { LanguageMenu, LanguageSheet } from './V2Settings'
 import { SignInGate, type GateRequest } from './V2SignInGate'
 import { V2HeaderSearch } from './V2Search'
+import { rememberPath } from '@/lib/place-source'
 
 // Shell of the preview (original layout with the Header, the shell layout still open): desktop Header + rail,
 // phones Top app bar (per page) + Navigation bar + Drawer. Quick plan, Drawer and the language
@@ -113,6 +114,8 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const t = useCd()
   const locale = useLocale()
   const pathname = usePathname() ?? ''
+  // The screen before the current one, for where a place in a plan was found.
+  useEffect(() => { rememberPath(pathname) }, [pathname])
   const { user: authUser } = useAuth()
   const [drawer, setDrawer] = useState(false)
   const [quick, setQuick] = useState(false)

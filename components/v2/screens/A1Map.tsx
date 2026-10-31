@@ -52,6 +52,7 @@ import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
 import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_DAYS, MAX_STOPS, PER_DAY, draftStopCount, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
 import { useRoutedLegs } from '../map/useRoutedLegs'
 import { CATEGORIES, jsonFetch } from './A2Home'
+import { previousScreenSource, type PlaceSource, type PlanFlow } from '@/lib/place-source'
 
 // The map (A1): Map browse
 //, Place selected, Plan in progress / Plan editor, Save plan
@@ -112,6 +113,9 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   filterOn.current = !!filter
   const [mode, setMode] = useState<'nearby' | 'saved'>(params?.get('saved') ? 'saved' : 'nearby')
   const [selectedId, setSelectedId] = useState<string | null>(poiId ?? params?.get('poi') ?? null)
+  // A place opened from another screen (/map?poi=…) was found there; anything picked on the map, on the map.
+  const entry = useRef<{ id: string | null; source: PlaceSource }>({ id: null, source: 'map' })
+  useEffect(() => { entry.current = { id: poiId ?? params?.get('poi') ?? null, source: previousScreenSource() } }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const [openedWith] = useState(selectedId)
   const viewedOnce = useRef(false)
   // Escape goes back from a selected place to the list (no dialog open); a map tap does the same.
@@ -236,7 +240,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // Hand-offs: Quick plan and Plan from Saved open the plan unsaved; ?plan=edit
   // loads a published plan for editing.
   // How the plan in the editor started, for plan_create: a hand-off, or places added by hand.
-  const planFlow = useRef<'quick_plan' | 'from_saved' | 'manual'>('manual')
+  const planFlow = useRef<PlanFlow>('manual')
   const takeHandoff = () => {
     const handoff = takeCourseHandoff()
     if (!handoff) return
@@ -244,7 +248,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     planFlow.current = source
     const had = draft.plan.stops.length > 0
     const asPois: MapPoi[] = stops.map((s) => ({ poi_id: s.poi_id, name_ko: s.name_ko, name_preferred: s.name_preferred, coords_lat: s.coords_lat, coords_lng: s.coords_lng, display_region: s.display_region ?? null, primary_image_url: s.primary_image_url }))
-    draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])), name)
+    draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])), name, undefined, { source: source === 'from_saved' ? 'saved' : source === 'quick_plan' ? 'quick_plan' : undefined })
     setActiveDay('all')
     setSelectedId(null)
     setCollectionOn(false)
@@ -346,7 +350,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     if (savedPois?.length) mapRef.current?.fitTo(savedPois.map((p) => ({ lat: p.coords_lat, lng: p.coords_lng })))
   }, [savedPois])
   const mapPois = showPlanOnly ? (detail && !order.some((p) => p.poi_id === detail.poi_id) ? [detail] : []) : savedPois ?? listPois
-  const addToPlan = (poi: MapPoi, toDay?: number) => {
+  const addToPlan = (poi: MapPoi, toDay?: number, from?: PlaceSource) => {
+    const source = from ?? (poi.poi_id === entry.current.id ? entry.current.source : 'map')
     // Read through the ref: the toast's action runs later, on the plan as it is then.
     const draft = latestDraft.current
     // The open day, or the last day on All days. A full day is not skipped silently: the toast
@@ -357,12 +362,12 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       let next = target + 1
       while (next <= MAX_DAYS && draft.countOn(next) >= PER_DAY) next++
       if (next <= MAX_DAYS) {
-        toast({ type: 'warning', message: t('CD1533', { day: target }), action: { label: t('CD1534', { next }), onClick: () => addToPlan(poi, next) } })
+        toast({ type: 'warning', message: t('CD1533', { day: target }), action: { label: t('CD1534', { next }), onClick: () => addToPlan(poi, next, source) } })
         return
       }
     }
     addedHere.current = true
-    const day = draft.add(poi, target)
+    const day = draft.add(poi, target, source)
     if (day === null) toast({ type: 'warning', message: k('map.plan.maxStopsToast', { max: MAX_STOPS }) })
     else toast({ type: 'success', message: t('CD0689'), action: { label: t('CD1428'), onClick: () => latestDraft.current.remove(poi.poi_id) } })
   }
@@ -408,7 +413,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     // Save stays enabled; an empty name is said on the field (an edit keeps its old name).
     if (!editing && !planName.trim()) return setNameError(true)
     setSaving(true)
-    const stops = order.map((p, i) => ({ poi_id: p.poi_id, stop_order: i + 1, duration_min: draft.plan.durations[p.poi_id] ?? 60, day: draft.dayOf(p.poi_id) }))
+    const stops = order.map((p, i) => ({ poi_id: p.poi_id, stop_order: i + 1, duration_min: draft.plan.durations[p.poi_id] ?? 60, day: draft.dayOf(p.poi_id), source: draft.plan.sources?.[p.poi_id] }))
     // Save changes on a plan opened for editing updates that plan in place (same link).
     if (editing) {
       try {
@@ -431,6 +436,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       const res = await send('/api/plans', 'POST', {
         title: planName.trim(),
         stops,
+        source: planFlow.current,
         is_published: false,
       })
       const id: string | undefined = res?.plan?.id
@@ -579,7 +585,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       onBack={() => setFolderId(null)}
       onAdd={(id) => {
         const p = saved.data?.pois.find((x) => x.poi_id === id)
-        if (p) addToPlan({ poi_id: p.poi_id, name_ko: p.name_ko, name_en: p.name_en, coords_lat: p.coords_lat, coords_lng: p.coords_lng, display_region: p.display_region, primary_image_url: p.primary_image_url ?? undefined })
+        if (p) addToPlan({ poi_id: p.poi_id, name_ko: p.name_ko, name_en: p.name_en, coords_lat: p.coords_lat, coords_lng: p.coords_lng, display_region: p.display_region, primary_image_url: p.primary_image_url ?? undefined }, undefined, 'saved')
       }}
       emptyAction={<Button size="md" onClick={() => setMode('nearby')}>{t('CD1430')}</Button>}
       labels={{ back: k('saved.folder.back'), add: (n) => `${k('map.poiDetail.addToPlan')}: ${n}`, emptyTitle: k('saved.empty.places.title'), emptyBody: t('CD1429') }}

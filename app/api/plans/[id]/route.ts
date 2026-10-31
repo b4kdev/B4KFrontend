@@ -9,6 +9,7 @@ import {
   mapBffToDetail,
   type BffItinerary,
 } from '@/lib/itinerary'
+import { PLACE_SOURCES, type PlaceSource } from '@/lib/place-source'
 
 // GET /api/plans/:id — itinerary detail for any viewer.
 // BFF GET /itineraries/public/:id serves every case: public plans (anyone,
@@ -110,7 +111,7 @@ export async function PUT(req: NextRequest, props: { params: Promise<{ id: strin
 
   const body = await req.json().catch(() => ({})) as {
     title?: string
-    stops?: Array<{ poi_id?: string | number; stop_order?: number; duration_min?: number; day?: number }>
+    stops?: Array<{ poi_id?: string | number; stop_order?: number; duration_min?: number; day?: number; source?: string }>
   }
   const stops = (Array.isArray(body.stops) ? body.stops : [])
     .filter(s => s.poi_id !== undefined && Number.isFinite(Number(s.poi_id)))
@@ -131,6 +132,8 @@ export async function PUT(req: NextRequest, props: { params: Promise<{ id: strin
         travel_mode:  prev?.travel_mode ?? 'walking',
         note:         prev?.note ?? null,
         day:          s.day,
+        // Where the place was found: sent by the editor for a stop added now, else the stop's own.
+        ...(PLACE_SOURCES.includes(s.source as PlaceSource) ? { source: s.source } : prev?.source ? { source: prev.source } : {}),
       }
     })
     const title = typeof body.title === 'string' && body.title.trim() ? body.title.trim() : undefined

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
 import { fetchDbDraft, groupPlacesIntoDays, type BffItinerary } from '@/lib/itinerary'
+import { PLACE_SOURCES, PLAN_FLOWS, type PlaceSource, type PlanFlow } from '@/lib/place-source'
 
 export interface PlanStop {
   poi_id:      string
@@ -86,7 +87,9 @@ export async function POST(req: Request) {
 
   const body = await req.json().catch(() => ({})) as {
     title?: string
-    stops?: Array<{ poi_id?: string | number; stop_order?: number; duration_min?: number; day?: number }>
+    stops?: Array<{ poi_id?: string | number; stop_order?: number; duration_min?: number; day?: number; source?: string }>
+    /** How the plan was made: manual (editor), quick_plan or from_saved. */
+    source?: string
     is_published?: boolean
   }
 
@@ -99,12 +102,15 @@ export async function POST(req: Request) {
       poi_id:       Number(s.poi_id),
       duration_min: typeof s.duration_min === 'number' && s.duration_min > 0 ? s.duration_min : null,
       day:          s.day,
+      // Where the place was found; an unknown value is left out.
+      ...(PLACE_SOURCES.includes(s.source as PlaceSource) ? { source: s.source } : {}),
     }))
   if (places.length === 0) {
     return NextResponse.json({ error: 'stops required' }, { status: 400 })
   }
 
   const title = typeof body.title === 'string' && body.title.trim() ? body.title : null
+  const flow = PLAN_FLOWS.includes(body.source as PlanFlow) ? { source: body.source } : {}
 
   try {
     const existingDraft = await fetchDbDraft(auth.token)
@@ -120,6 +126,7 @@ export async function POST(req: Request) {
           days:   groupPlacesIntoDays(places),
           title,
           status: 'confirmed',
+          ...flow,
         }),
         token: auth.token,
       })
@@ -134,6 +141,7 @@ export async function POST(req: Request) {
           days:   groupPlacesIntoDays(places),
           title,
           status: 'confirmed',
+          ...flow,
         }),
         token: auth.token,
       })

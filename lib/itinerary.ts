@@ -93,6 +93,8 @@ export interface BffPlace {
   duration_min?: number | null
   /** The usual visit length for this kind of place; the stop's length when it has none. */
   default_visit_min?: number | null
+  /** Where the place was found when it was added to the plan. */
+  source?: string | null
   note?: string | null
   name_ko?: string | null
   address_ko?: string | null
@@ -211,6 +213,7 @@ export function daysToPutPayload(days: BffDay[] | null) {
       travel_mode:  p.travel_mode ?? 'walking',
       note:         p.note ?? null,
       duration_min: p.duration_min ?? null,
+      ...(p.source ? { source: p.source } : {}),
     })),
   }))
 }
