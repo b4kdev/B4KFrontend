@@ -23,12 +23,8 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function V2Layout(props: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
-  const params = await props.params;
-
-  const {
-    children
-  } = props;
+export default async function V2Layout({ children, params: paramsPromise }: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
+  const params = await paramsPromise
 
   const base = await getMessages()
   // A locale without a file yet gets the English texts.

@@ -20,7 +20,7 @@ export class BffError extends Error {
 
 /** Validated user + access token from the cookie session. Null when signed out. */
 export async function getSessionAuth(): Promise<{ user: User; token: string } | null> {
-  const supabase = createSupabaseServerClient()
+  const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
   const { data: { session } } = await supabase.auth.getSession()

@@ -27,7 +27,7 @@ export async function buildExploreMetadata(
   const name = t(CATEGORIES.find((c) => c.slug === category)?.label ?? 'CD0804')
   let description: string | undefined
   try {
-    const res = await exploreGet(new NextRequest(localizedUrl(locale, `/api/explore/${category}`)), { params: { category } })
+    const res = await exploreGet(new NextRequest(localizedUrl(locale, `/api/explore/${category}`)), { params: Promise.resolve({ category }) })
     const data = (await res.json()) as ExploreData
     const rows = data.sections.filter((s) => s.items.length && s.id !== 'trending')
     const count = new Set(data.sections.flatMap((s) => s.items.map((i) => i.poi_id))).size

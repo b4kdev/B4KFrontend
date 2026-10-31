@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   }
 
   const origin = new URL(req.url).origin
-  const supabase = createSupabaseServerClient()
+  const supabase = await createSupabaseServerClient()
 
   const { error } = await supabase.auth.signUp({
     email,

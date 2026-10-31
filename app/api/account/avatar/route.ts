@@ -6,7 +6,7 @@ import { createSupabaseServerClient } from '@/lib/supabase-server'
 // → upload via server-side signed upload to whichever image host lands on
 //   → UPDATE accounts.users SET avatar_url = <uploaded url> WHERE id = user.id
 export async function POST(req: NextRequest) {
-  const supabase = createSupabaseServerClient()
+  const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 })
 
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 // DELETE /api/account/avatar
 // Real impl: destroy the uploaded asset → UPDATE accounts.users SET avatar_url = NULL WHERE id = user.id
 export async function DELETE() {
-  const supabase = createSupabaseServerClient()
+  const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 })
 

@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   }
 
   const origin = new URL(req.url).origin
-  const supabase = createSupabaseServerClient()
+  const supabase = await createSupabaseServerClient()
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     // The reset link brings the person back to the page they asked from (same site only).

@@ -6,7 +6,7 @@ const RECENT_WINDOW_MS = 10 * 60 * 1000
 // GET /api/account/recent-login → { recent: boolean }
 // recent = signed in within the last 10 minutes (the account deletion rule).
 export async function GET() {
-  const supabase = createSupabaseServerClient()
+  const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -18,7 +18,7 @@ export async function GET() {
 // POST /api/account/recent-login   body: { password: string }
 // Re-auth verify via Supabase signInWithPassword. 401 on wrong password.
 export async function POST(req: NextRequest) {
-  const supabase = createSupabaseServerClient()
+  const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 

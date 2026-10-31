@@ -219,7 +219,7 @@ function maintenanceResponse(): NextResponse {
 // ── IP extraction ──────────────────────────────────────────────────────────────
 function getIp(req: NextRequest): string {
   return (
-    req.ip ??
+    req.headers.get('x-real-ip') ??
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     '127.0.0.1'
   )

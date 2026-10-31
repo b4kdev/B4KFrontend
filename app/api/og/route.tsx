@@ -20,12 +20,13 @@ const GAP = 24 // allow-raw
 const LOGO_LIFT = 120 // allow-raw
 const FACE: Record<string, string> = { ko: 'Noto Sans KR', ja: 'Noto Sans JP', 'zh-TW': 'Noto Sans TC' }
 
+// Fonts are cached once fetched (Next 15 no longer caches fetch by default).
 async function loadFont(family: string, text: string): Promise<ArrayBuffer | null> {
   try {
     const weight = family === 'Archivo Black' ? '400' : '900'
-    const css = await fetch(`https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@${weight}&text=${encodeURIComponent(text)}`, { signal: AbortSignal.timeout(4000) }).then((r) => r.text())
+    const css = await fetch(`https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@${weight}&text=${encodeURIComponent(text)}`, { cache: 'force-cache', signal: AbortSignal.timeout(4000) }).then((r) => r.text())
     const url = /src: url\((.+?)\) format\('(?:opentype|truetype)'\)/.exec(css)?.[1]
-    return url ? await fetch(url, { signal: AbortSignal.timeout(4000) }).then((r) => r.arrayBuffer()) : null
+    return url ? await fetch(url, { cache: 'force-cache', signal: AbortSignal.timeout(4000) }).then((r) => r.arrayBuffer()) : null
   } catch {
     return null
   }

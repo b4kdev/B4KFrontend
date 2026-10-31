@@ -17,7 +17,7 @@ import { FOCUS_RING } from './styles'
 
 const SURFACE = 'absolute z-50 mt-[var(--space-2)] rounded-2xl border border-ui-border bg-ui-bg-elevated text-ui-fg'
 
-function useDismiss(open: boolean, close: () => void, ref: React.RefObject<HTMLElement>) {
+function useDismiss(open: boolean, close: () => void, ref: React.RefObject<HTMLElement | null>) {
   useEffect(() => {
     if (!open) return
     const onKey = (e: globalThis.KeyboardEvent) => e.key === 'Escape' && close()
@@ -33,7 +33,7 @@ function useDismiss(open: boolean, close: () => void, ref: React.RefObject<HTMLE
 
 export type DropdownMenuProps = {
   /** The trigger button; it gets aria-haspopup, aria-expanded and the click. */
-  trigger: ReactElement
+  trigger: ReactElement<React.HTMLAttributes<HTMLElement>>
   /** Accessible name of the menu. */
   label: string
   /** Menu items; groups are separated by space, Danger last. */
@@ -124,7 +124,7 @@ export function MenuGroup({ label, children }: { label?: string; children: React
 }
 
 export type PopoverProps = {
-  trigger: ReactElement
+  trigger: ReactElement<React.HTMLAttributes<HTMLElement>>
   /** Figma Title (Show title); also the dialog name. */
   title?: string
   /** Accessible name when there is no title. */
@@ -183,7 +183,7 @@ export function Popover({ trigger, title, label, closeLabel, children, action, s
   )
 }
 
-export type ComboboxItem = { id: string; node: ReactElement; onSelect: () => void; onRemove?: () => void }
+export type ComboboxItem = { id: string; node: ReactElement<{ active?: boolean }>; onSelect: () => void; onRemove?: () => void }
 
 export type ComboboxProps = {
   /** Search input label and placeholder. */

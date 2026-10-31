@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Password too weak', code: WEAK_PASSWORD }, { status: 400 })
   }
 
-  const supabase = createSupabaseServerClient()
+  const supabase = await createSupabaseServerClient()
 
   // Exchange the recovery token for a session (user-scoped, not admin)
   const { error: sessionErr } = await supabase.auth.exchangeCodeForSession(token)

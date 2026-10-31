@@ -15,7 +15,7 @@ export type TooltipProps = {
   text: string
   side?: 'bottom' | 'top'
   /** The trigger: one focusable element. */
-  children: ReactElement
+  children: ReactElement<React.HTMLAttributes<HTMLElement>>
   className?: string
   /** Class for the wrapper around the trigger (e.g. full width in the rail). */
   wrapperClassName?: string
