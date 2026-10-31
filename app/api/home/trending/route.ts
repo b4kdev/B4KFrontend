@@ -9,6 +9,8 @@ export interface HomeTrendingPoi {
   display_domain: string
   save_count: number
   primary_image_url: string | null
+  /** The interest category: the place type icon when there is no photo. */
+  interest_category: string | null
   // Quick-add-to-plan needs coords — service.places_snapshot has them for real
   coords_lat: number
   coords_lng: number
@@ -23,6 +25,7 @@ interface BffTrendingPlace {
   coords_lng: number
   display_region: string | null
   domains: string[] | null
+  interest_category?: string | null
   translations: Record<string, { name?: string }> | null
 }
 
@@ -40,6 +43,7 @@ export async function GET(req: NextRequest) {
     display_domain: p.domains?.find((d) => d.startsWith('k-')) ?? '',
     save_count: p.save_count,
     primary_image_url: p.primary_image_url,
+    interest_category: p.interest_category ?? null,
     coords_lat: p.coords_lat,
     coords_lng: p.coords_lng,
   })))

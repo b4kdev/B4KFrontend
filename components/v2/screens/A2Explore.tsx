@@ -378,7 +378,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const subtitle = fromHome ? (row === 'trending' ? t('CD1566') : t('CD1568')) : undefined
   const places: { id: string; node: React.ReactNode; domain?: string }[] = fromHome
     ? row === 'trending'
-      ? (trending.data ?? []).map((p) => ({ id: p.poi_id, domain: p.display_domain, node: <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /> }))
+      ? (trending.data ?? []).map((p) => ({ id: p.poi_id, domain: p.display_domain, node: <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} meta={p.display_region} /> }))
       : (plans.data ?? []).map((p) => ({ id: p.id, node: <Card type="plan" href={`/plan/${p.id}`} title={p.title} save={planAct(String(p.id), p.title)} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={[t('CD0473', { n: p.stop_count }), ...(p.duration_days ? [t('CD1232', { count: p.duration_days })] : [])].join(' · ')} /> }))
     : (explore.data?.sections.find((s) => s.id === row)?.items ?? []).map((p) => ({ id: p.poi_id, node: <PoiCard p={p} act={act} /> }))
   const chipped = chip === 'all' ? places : places.filter((p) => p.domain === chip)

@@ -11,6 +11,8 @@ export interface SearchPoi {
   display_domain: string
   save_count: number
   primary_image_url: string
+  /** The interest category: the place type icon when there is no photo. */
+  interest_category: string | null
 }
 
 export interface SearchPlan {
@@ -67,6 +69,7 @@ interface BffPlace {
   coords_lng: number
   display_region: string | null
   domains: string[] | null
+  interest_category?: string | null
   translations: Record<string, { name?: string; description?: string }> | null
 }
 
@@ -194,6 +197,7 @@ export async function GET(request: Request) {
       display_domain: p.domains?.[0] ?? '',
       save_count: p.save_count ?? 0,
       primary_image_url: p.primary_image_url ?? '',
+      interest_category: p.interest_category ?? null,
     }))
 
     let plans: SearchPlan[] = rawPlans
