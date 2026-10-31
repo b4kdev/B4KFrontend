@@ -91,9 +91,10 @@ export function useSearchBox({ viewport, initial = '', open: startOpen = false }
       state={draft.trim() ? 'typing' : 'empty'}
       query={draft}
       onSearch={go}
-      // Grouped as drawn: places with photo and area, plans with days and stops, Explore pages with their type.
-      places={(sugg?.places ?? []).slice(0, 3).map((p) => ({ id: p.id, name: p.name, meta: [p.district && districtName(p.district, locale), p.region && regionName(p.region, locale)].filter(Boolean).join(', '), imageSrc: p.imageSrc, href: `/map?poi=${p.id}` }))}
-      plans={(sugg?.plans ?? []).slice(0, 3).map((p) => ({ id: p.id, name: p.name, meta: [t('CD1232', { count: p.days }), t('CD1315', { count: p.stops })].join(' · '), imageSrc: p.imageSrc, href: `/plan/${p.id}` }))}
+      // Grouped as drawn: places with photo and area ('district · …', the drawn place type is data the
+      // suggestions do not carry, so the region stands in), plans with stops then days, Explore pages with their type.
+      places={(sugg?.places ?? []).slice(0, 3).map((p) => ({ id: p.id, name: p.name, meta: [p.district && districtName(p.district, locale), p.region && regionName(p.region, locale)].filter(Boolean).join(' · '), imageSrc: p.imageSrc, href: `/map?poi=${p.id}` }))}
+      plans={(sugg?.plans ?? []).slice(0, 3).map((p) => ({ id: p.id, name: p.name, meta: [t('CD1315', { count: p.stops }), t('CD1232', { count: p.days })].join(' · '), imageSrc: p.imageSrc, href: `/plan/${p.id}` }))}
       explore={(sugg?.explore ?? []).slice(0, 3).map((e) => ({ id: e.slug, name: e.name, meta: e.primaryType && COLLECTION_TYPE[e.primaryType] ? t(COLLECTION_TYPE[e.primaryType]) : undefined, href: `/explore/collections/${e.slug}` }))}
       recent={recents.recent.map((r) => ({ id: r, text: r }))}
       onRemoveRecent={recents.remove}
