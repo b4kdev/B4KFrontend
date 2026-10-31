@@ -153,7 +153,8 @@ export const isNumericId = (id: string) => /^\d+$/.test(id)
 // deciding create-vs-reuse.
 export interface DbDraftSummary {
   itinerary_id: number
-  title: string
+  /** A draft has no name until the person gives it one (the backend no longer makes one up). */
+  title: string | null
   total_places: number
   created_at?: string
   updated_at?: string

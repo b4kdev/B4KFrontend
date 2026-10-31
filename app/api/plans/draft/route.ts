@@ -4,7 +4,8 @@ import { fetchDbDraft, groupPlacesIntoDays } from '@/lib/itinerary'
 
 export interface PlanDraft {
   id: string
-  title: string
+  /** null: not named yet; the name field starts empty. */
+  title: string | null
   stop_count: number
   updated_at: string
 }

@@ -114,7 +114,7 @@ export async function POST(req: Request) {
     let createdAt: string
 
     if (existingDraft) {
-      await bffFetch(`/itineraries/${existingDraft.itinerary_id}`, {
+      const saved = await bffFetch<BffItinerary>(`/itineraries/${existingDraft.itinerary_id}`, {
         method: 'PUT',
         body: JSON.stringify({
           days:   groupPlacesIntoDays(places),
@@ -124,7 +124,8 @@ export async function POST(req: Request) {
         token: auth.token,
       })
       planId    = existingDraft.itinerary_id
-      planTitle = title ?? existingDraft.title
+      // A confirmed plan saved without a name gets the backend's default name.
+      planTitle = saved.title ?? title ?? existingDraft.title ?? ''
       createdAt = existingDraft.created_at ?? existingDraft.updated_at ?? new Date().toISOString()
     } else {
       const created = await bffFetch<BffItinerary>('/itineraries', {
