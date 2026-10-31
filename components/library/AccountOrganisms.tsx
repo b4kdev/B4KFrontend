@@ -556,9 +556,10 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
         <>
           {recent.length ? (
             <div className={group}>
+              {/* Figma: the row is the heading's height; the taller Clear all text is centred on it without growing it. */}
               <div className="flex items-center justify-between gap-[var(--space-2)]">
                 <p className={heading}>{labels.recent}</p>
-                {onClearRecent ? <button type="button" onClick={onClearRecent} className="type-body-caption text-ui-fg-muted underline-offset-2 hover:text-ui-fg hover:underline">{labels.clearAll}</button> : null}
+                {onClearRecent ? <button type="button" onClick={onClearRecent} className="-my-[var(--space-1)] type-body-caption text-ui-fg-muted underline-offset-2 hover:text-ui-fg hover:underline">{labels.clearAll}</button> : null}
               </div>
               {recent.map((r) => (
                 <div key={r.id} className="flex items-center hover:bg-ui-state-hover">
