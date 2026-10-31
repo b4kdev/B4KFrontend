@@ -30,11 +30,13 @@ interface BffPublicItinerary {
   published_at: string | null
 }
 
-// ?sort=newest: the most recently published first (BFF sort=recent); default most popular.
+// ?sort=newest: the most recently published first (BFF sort=recent); default popular this week
+// (likes and saves in the last 7 days first, then all-time).
 export async function GET(req: Request) {
   const sort = new URL(req.url).searchParams.get('sort') === 'newest' ? 'recent' : 'popular'
+  const period = sort === 'popular' ? '&period=week' : ''
   try {
-    const plans = await bffFetch<BffPublicItinerary[]>(`/itineraries/public?sort=${sort}&limit=20`)
+    const plans = await bffFetch<BffPublicItinerary[]>(`/itineraries/public?sort=${sort}${period}&limit=20`)
     const out: HomePopularPlan[] = (plans ?? []).map(p => ({
       id: String(p.itinerary_id),
       title: p.title,
