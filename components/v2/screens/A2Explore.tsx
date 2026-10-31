@@ -498,10 +498,12 @@ export function CollectionScreen({ slug }: { slug: string }) {
         />
       ) : null}
       {/* Phones show the title in the top bar only; the subtitle sits 12 under the bar. */}
-      <header className={`flex flex-col gap-[var(--space-1)] ${subtitle ? 'max-lg:-mt-[var(--space-3)]' : ''}`}>
-        <h1 className="type-display-h3 max-lg:sr-only">{title}</h1>
-        {subtitle ? <p className="type-body-caption text-ui-fg-muted lg:type-body-base">{subtitle}</p> : null}
-      </header>
+      {title ? (
+        <header className={`flex flex-col gap-[var(--space-1)] ${subtitle ? 'max-lg:-mt-[var(--space-3)]' : ''}`}>
+          <h1 className="type-display-h3 max-lg:sr-only">{title}</h1>
+          {subtitle ? <p className="type-body-caption text-ui-fg-muted lg:type-body-base">{subtitle}</p> : null}
+        </header>
+      ) : null}
       {data?.siblings && data.siblings.length > 1 ? (
         <div role="group" aria-label={t('CD0162')} className="flex flex-wrap gap-[var(--space-2)]">
           {data.siblings.map((c) => <Chip key={c.slug} selected={c.slug === slug} onClick={() => router.push(`/explore/collections/${c.slug}`)}>{c.title}</Chip>)}
@@ -509,7 +511,8 @@ export function CollectionScreen({ slug }: { slug: string }) {
       ) : null}
       {data && items.length ? <p aria-live="polite" className="type-body-caption text-ui-fg-muted lg:self-end">{t('CD0160', { count: data.totalCount })}</p> : null}
       {isLoading ? <div aria-busy className="grid grid-cols-2 gap-[var(--space-4)] lg:grid-cols-4">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div> : null}
-      {error ? <EmptyState type="error" container="bordered" title={t('CD1571')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
+      {/* Without the collection's title, the error title is the page heading. */}
+      {error ? <EmptyState type="error" container="bordered" titleAs={title ? 'h2' : 'h1'} title={t('CD1571')} action={<Button size="md" variant="secondary" onClick={() => mutate()}>{t('CD0125')}</Button>}>{t('CD1572')}</EmptyState> : null}
       {data?.children?.length ? (
         <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4" onClickCapture={cardOpen('collection', locale, isCollection)}>
           {data.children.map((c) => <li key={c.slug}><Card type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta="" /></li>)}
