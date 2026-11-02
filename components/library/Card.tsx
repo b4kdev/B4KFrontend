@@ -169,7 +169,9 @@ export function Card(props: CardProps) {
             <CardLink href={href} className={TITLE2}>{title}</CardLink>
             <div className="flex items-center justify-between gap-[var(--space-1)] type-body-caption text-ui-fg-muted">
               {props.authorHref ? (
-                <IntlLink href={props.authorHref} className="relative z-10 truncate hover:text-ui-fg hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none">{props.author}</IntlLink>
+                // At least 24 x 24 to tap (it sits over the card's own link, so size is the only way): padding
+                // grows the box, the same negative margin keeps the drawn row height.
+                <IntlLink href={props.authorHref} className="relative z-10 block min-w-[var(--space-6)] truncate py-[calc((var(--space-6)-1lh)/2)] -my-[calc((var(--space-6)-1lh)/2)] hover:text-ui-fg hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none">{props.author}</IntlLink>
               ) : (
                 <span className="truncate">{props.author}</span>
               )}
