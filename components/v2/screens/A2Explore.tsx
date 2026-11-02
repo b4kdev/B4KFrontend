@@ -28,6 +28,7 @@ import {
 } from '@/components/library'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/cn'
+import { PACKAGES } from '@/lib/features'
 import { useMediaQuery } from '@/components/library/hooks'
 import type { ExploreData, ExplorePoi } from '@/app/api/explore/[category]/route'
 import type { CollectionCard } from '@/app/api/explore/[category]/collections/route'
@@ -296,7 +297,7 @@ export function CategoryScreen({ category }: { category: string }) {
         ) : cols.error ? (
           <RowState title={t('CD0162')} errorBody="CD1564" error={cols.error} onRetry={() => cols.mutate()} />
         ) : null}
-        {data?.packages?.length ? (
+        {PACKAGES && data?.packages?.length ? (
           // Package cards open the partner's site: outbound_click with its host only.
           <div
             className="contents"
