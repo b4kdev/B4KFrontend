@@ -21,8 +21,14 @@ export async function POST(req: Request) {
     : await supabase.auth.exchangeCodeForSession(token)
 
   if (sessionErr) {
-    const code = sessionErr.message?.includes('expired') ? 'expired' : 'invalid'
-    return NextResponse.json({ error: sessionErr.message, code }, { status: 400 })
+    // A link that cannot be used (old, used, or a code opened in another browser) shows Link
+    // expired, where the person asks for a new one; only a network or server failure is an error.
+    const down =
+      sessionErr.name === 'AuthRetryableFetchError' ||
+      sessionErr.name === 'AuthUnknownError' ||
+      (sessionErr.name === 'AuthApiError' && (sessionErr.status ?? 0) >= 500)
+    if (down) return NextResponse.json({ error: sessionErr.message }, { status: 502 })
+    return NextResponse.json({ error: sessionErr.message, code: 'expired' }, { status: 400 })
   }
 
   // Update password through the now-authenticated session
