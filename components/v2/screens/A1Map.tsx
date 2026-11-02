@@ -208,6 +208,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // the sheet; none for a category page's places).
   const area = useAreaName(collectionOn ? null : bounds, zoom, locale, phone ? (snap === 'peek' ? 0.45 : 0.25) : 0.5)
   const areaLine = area ? (area.district ? GAP.areaName(area.district, area.city) : area.city) : null
+  // An area name can come at this zoom (the geocoder names nothing past a province): hold its line.
+  const areaHeld = !collectionOn && zoom >= 9
   const { detail, isError: placeMissing } = usePlaceDetail(selectedId)
   const detailName = detail ? nameOf(detail, locale) : ''
   const saved = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
@@ -528,10 +530,12 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           ))}
         </div>
       ) : null}
-      {/* The area name and the place count, 16 above the cards; with no places the name only. */}
-      {!(collectionOn ? collection.isLoading : isLoading) && (areaLine || (listPois.length && !collectionOn)) ? (
+      {/* The area name and the place count, 16 above the cards; with no places the name only. The name
+          comes later from the geocoder, so its line is held from the first paint (blank until then) and
+          the list does not move down when it arrives. */}
+      {!(collectionOn ? collection.isLoading : isLoading) && (areaLine || areaHeld || (listPois.length && !collectionOn)) ? (
         <div className="mb-[var(--space-1)] flex flex-col">
-          {areaLine ? <h2 className="type-title-card text-ui-fg">{areaLine}</h2> : null}
+          {areaLine ? <h2 className="type-title-card text-ui-fg">{areaLine}</h2> : areaHeld ? <div aria-hidden className="type-title-card">{'\u00a0'}</div> : null}
           {listPois.length && !collectionOn ? <p className="type-body-caption text-ui-fg-muted">{GAP.placesInArea(listPois.length)}</p> : null}
         </div>
       ) : null}
