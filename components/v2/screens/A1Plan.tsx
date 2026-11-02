@@ -220,7 +220,7 @@ export function PlanScreen({ id }: { id: string }) {
     const km = it.distance_m ? Math.round(it.distance_m / 100) / 10 : null
     panel = (
       <ItineraryPanel
-        title={it.title}
+        title={it.title || k('profile.untitledPlan')}
         owner={GAP.createdBy(author)}
         ownerAvatarSrc={it.author.avatar_url ?? null}
         ownerName={author}
@@ -309,7 +309,7 @@ export function PlanScreen({ id }: { id: string }) {
       <Dialog
         open={deleteOpen}
         onCancel={() => setDeleteOpen(false)}
-        title={GAP.deletePlanTitle(it.title)}
+        title={GAP.deletePlanTitle(it.title || k('profile.untitledPlan'))}
         body={t('CD1546')}
         cancel={<Button variant="secondary" data-autofocus onClick={() => setDeleteOpen(false)}>{k('itinerary.actions.deleteCancel')}</Button>}
         confirm={<Button variant="danger" loading={deleting} onClick={remove}>{k('itinerary.actions.deleteConfirm')}</Button>}
@@ -318,7 +318,7 @@ export function PlanScreen({ id }: { id: string }) {
         open={draftPrompt > 0}
         onCancel={() => setDraftPrompt(0)}
         title={t('CD1525')}
-        body={GAP.editDraftBody(draftPrompt, it.title)}
+        body={GAP.editDraftBody(draftPrompt, it.title || k('profile.untitledPlan'))}
         cancel={<Button variant="secondary" data-autofocus onClick={() => setDraftPrompt(0)}>{k('map.plan.discardCancel')}</Button>}
         third={<Button variant="ghost" loading={discardingDraft} onClick={discardDraftAndEdit}>{t('CD1527')}</Button>}
         confirm={<Button onClick={() => router.push(`${editHref}&draft=save`)}>{k('map.plan.save')}</Button>}

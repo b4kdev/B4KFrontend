@@ -234,10 +234,10 @@ export function SavedScreen() {
 
   const myPlans = data?.myPlans.length ? (
     <ul>
-      {data.myPlans.map((p) => (
+      {data.myPlans.map((p) => { const name = p.title || k('profile.untitledPlan'); return (
         <ListItem
           key={p.id}
-          title={p.title || k('profile.untitledPlan')}
+          title={name}
           // Figma: status in the second line ("5 stops · 2 days · Public", "Draft · 3 stops").
           secondary={p.is_draft
             ? `${k('saved.myPlan.draft')} · ${k('saved.plan.stops', { count: p.stop_count })}`
@@ -247,7 +247,7 @@ export function SavedScreen() {
           renderLink={({ href, className, children }) => (
             <div className="flex items-center">
               <IntlLink href={href} className={`${className} flex-1`}>{children}</IntlLink>
-              <DropdownMenu label={p.title} align="end" trigger={<IconButton label={k('saved.myPlan.ariaLabel', { title: p.title })} icon={<Ellipsis />} className="mr-[var(--space-4)]" />}>
+              <DropdownMenu label={name} align="end" trigger={<IconButton label={k('saved.myPlan.ariaLabel', { title: name })} icon={<Ellipsis />} className="mr-[var(--space-4)]" />}>
                 <MenuGroup>
                   <MenuItem icon={<Pencil />} onClick={() => router.push(`/map?plan=edit&id=${p.id}`)}>{t('CD1487')}</MenuItem>
                   <MenuItem icon={<Share2 />} onClick={() => { navigator.clipboard?.writeText(`${location.origin}/${locale}/plan/${p.id}`); toast({ type: 'success', message: k('profile.trips.card.shareCopiedToast') }) }}>{k('saved.myPlan.share')}</MenuItem>
@@ -267,13 +267,13 @@ export function SavedScreen() {
                   ) : null}
                 </MenuGroup>
                 <MenuGroup>
-                  <MenuItem icon={<Trash2 />} variant="danger" onClick={() => setDel({ kind: 'plan', id: p.id, name: p.title })}>{t('CD1454')}</MenuItem>
+                  <MenuItem icon={<Trash2 />} variant="danger" onClick={() => setDel({ kind: 'plan', id: p.id, name })}>{t('CD1454')}</MenuItem>
                 </MenuGroup>
               </DropdownMenu>
             </div>
           )}
         />
-      ))}
+      ) })}
     </ul>
   ) : (
     <EmptyState container="bordered" title={k('saved.empty.myPlans.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('saved.empty.myPlans.cta')}</IntlLink>}>{k('saved.empty.myPlans.desc')}</EmptyState>
