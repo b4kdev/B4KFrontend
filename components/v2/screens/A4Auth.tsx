@@ -52,14 +52,17 @@ export function ResetPasswordScreen() {
   const next = safePath(useSearchParams()?.get('next'))
   // An expired or missing link: the card asks for the email to send a new one (Forgot view).
   const flow = useSignInFlow(next, () => {})
-  const [token, setToken] = useState<string | null | undefined>(undefined)
+  // A PKCE code, or a token_hash link (type=recovery) that opens in any browser.
+  const [token, setToken] = useState<{ token?: string; token_hash?: string } | null | undefined>(undefined)
   const [expired, setExpired] = useState(false)
   const [error, setError] = useState<string | undefined>()
   const [confirmError, setConfirmError] = useState<string | undefined>()
   const [busy, setBusy] = useState(false)
   useEffect(() => {
     const p = new URLSearchParams(window.location.hash.slice(1) || window.location.search)
-    const tk = p.get('access_token') ?? p.get('code')
+    const hash = p.get('type') === 'recovery' ? p.get('token_hash') : null
+    const code = p.get('access_token') ?? p.get('code')
+    const tk = hash ? { token_hash: hash } : code ? { token: code } : null
     setToken(tk)
     if (!tk) setExpired(true)
   }, [])
@@ -72,7 +75,7 @@ export function ResetPasswordScreen() {
     if (pw !== (values.confirm ?? '')) return setConfirmError(t('CD0062'))
     if (!token) return setExpired(true)
     setBusy(true)
-    const res = await post('/api/auth/reset-password', { token, password: pw }).catch(() => null)
+    const res = await post('/api/auth/reset-password', { ...token, password: pw }).catch(() => null)
     setBusy(false)
     if (!res?.ok) {
       const body = await res?.json().catch(() => ({}))

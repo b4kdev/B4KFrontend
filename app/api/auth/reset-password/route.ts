@@ -3,9 +3,9 @@ import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { WEAK_PASSWORD, isWeakPasswordError, passwordProblem } from '@/lib/password'
 
 export async function POST(req: Request) {
-  const { token, password } = await req.json().catch(() => ({}))
+  const { token, token_hash, password } = await req.json().catch(() => ({}))
 
-  if (!token || !password) {
+  if ((!token && !token_hash) || !password) {
     return NextResponse.json({ error: 'Missing token or password' }, { status: 400 })
   }
   if (typeof password !== 'string' || passwordProblem(password)) {
@@ -14,8 +14,11 @@ export async function POST(req: Request) {
 
   const supabase = await createSupabaseServerClient()
 
-  // Exchange the recovery token for a session (user-scoped, not admin)
-  const { error: sessionErr } = await supabase.auth.exchangeCodeForSession(token)
+  // Turn the recovery link into a session (user-scoped, not admin). A token_hash link works in any
+  // browser; a PKCE code only in the one that asked for the reset (it holds the code verifier).
+  const { error: sessionErr } = token_hash
+    ? await supabase.auth.verifyOtp({ token_hash, type: 'recovery' })
+    : await supabase.auth.exchangeCodeForSession(token)
 
   if (sessionErr) {
     const code = sessionErr.message?.includes('expired') ? 'expired' : 'invalid'
