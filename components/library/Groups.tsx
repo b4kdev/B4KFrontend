@@ -39,7 +39,7 @@ export type SelectionBarProps = {
   className?: string
 }
 
-/** Button group Type=Selection bar: shows while items are selected; sticks to the bottom of the list. */
+/** Button group Type=selection-bar: shows while items are selected; sticks to the bottom of the list. */
 export function SelectionBar({ countText, children, onClear, clearLabel, label, className }: SelectionBarProps) {
   return (
     <div

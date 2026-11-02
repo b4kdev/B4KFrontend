@@ -10,7 +10,7 @@ export type StatCounterProps = {
   number: ReactNode
   /** Figma Label, e.g. "Trips". */
   label: string
-  /** Figma Separator=On: a middle dot before (all stats but the first). */
+  /** Figma Separator=true: a middle dot before (all stats but the first). */
   separator?: boolean
 }
 
@@ -87,7 +87,7 @@ export function LegalLine({ lead, links, linkAs: LinkTag = 'a', className }: Leg
 }
 
 export type ImageActionProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
-  /** Figma State=On: filled icon, aria-pressed. */
+  /** Figma State=on: filled icon, aria-pressed. */
   on?: boolean
   /** Outline icon (Off) and filled icon (On), e.g. two Lucide bookmarks with fill. */
   icon: ReactNode
@@ -198,7 +198,7 @@ export type CalendarDayProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'ty
   /** Full date, e.g. "Monday, 20 October 2026". */
   label: string
   today?: boolean
-  /** Figma State=Start / End / In range. */
+  /** Figma State=start / end / in-range. */
   position?: 'start' | 'end' | 'in-range'
 }
 

@@ -9,7 +9,7 @@ export type LabelProps = {
   children: React.ReactNode
   /** Figma Required: muted asterisk. */
   required?: boolean
-  /** Figma State=Disabled. */
+  /** Figma State=disabled. */
   disabled?: boolean
   /** Placeholder-only fields still render the label for screen readers. */
   srOnly?: boolean
@@ -37,7 +37,7 @@ export type FieldMessageProps = {
   id: string
   help?: React.ReactNode
   error?: React.ReactNode
-  /** Figma State=Disabled: help in fg-disabled. */
+  /** Figma State=disabled: help in fg-disabled. */
   disabled?: boolean
   /** Fieldset (Figma Molecules › Fieldset): the hint stays and the error shows below it. */
   stacked?: boolean

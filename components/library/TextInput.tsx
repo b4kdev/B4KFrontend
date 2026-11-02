@@ -19,7 +19,7 @@ export type TextInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'size'>
   size?: 'lg' | 'md'
   /** Figma Help text (Show help). */
   help?: ReactNode
-  /** Figma Error text (State=Error). */
+  /** Figma Error text (State=error). */
   error?: ReactNode
   /** Figma Show leading icon + Icon. */
   leadingIcon?: ReactNode

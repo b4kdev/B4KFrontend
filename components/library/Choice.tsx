@@ -23,9 +23,9 @@ type ChoiceBase = Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> &
 }
 
 export type CheckboxProps = ChoiceBase & {
-  /** Figma Value=Indeterminate. */
+  /** Figma Value=indeterminate. */
   indeterminate?: boolean
-  /** Figma State=Error (e.g. required terms); the message comes from Fieldset. */
+  /** Figma State=error (e.g. required terms); the message comes from Fieldset. */
   invalid?: boolean
 }
 
@@ -108,7 +108,7 @@ export type ToggleProps = {
   /** Figma Label (before the track). */
   label: ReactNode
   hideLabel?: boolean
-  /** Figma Value=On. */
+  /** Figma Value=true. */
   checked: boolean
   onCheckedChange: (checked: boolean) => void
   disabled?: boolean

@@ -18,7 +18,7 @@ export type ListItemProps = {
   leading?: ReactNode
   /** Figma Trailing slot: chevron, Toggle, value text, Ghost icon button, Checkbox or Segmented control. */
   trailing?: ReactNode
-  /** Built-in chevron (Trailing=Chevron) for rows that open a page. */
+  /** Built-in chevron (Trailing=chevron) for rows that open a page. */
   chevron?: boolean
   /** Figma Show divider. */
   divider?: boolean
@@ -155,7 +155,7 @@ export type LeaderboardRowProps = {
   avatarSrc?: string | null
   /** Figma Show trend: up / down with labels; left out when flat. */
   trend?: { direction: 'up' | 'down'; label: string }
-  /** Figma Viewer=You: the person's own row, title "You" from the messages. */
+  /** Figma Viewer=you: the person's own row, title "You" from the messages. */
   you?: string
   /** Accessible name of the rank, e.g. "Rank 1". */
   rankLabel: string

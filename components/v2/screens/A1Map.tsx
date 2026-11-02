@@ -57,7 +57,7 @@ import { previousScreenSource, type PlaceSource, type PlanFlow } from '@/lib/pla
 // The map (A1): Map browse
 //, Place selected, Plan in progress / Plan editor, Save plan
 //, Quick plan and Plan from Saved results, Saved on the map.
-// Desktop: Left panel Type=Map (Nearby / Saved switch, content, Plan cart) beside the map; phones:
+// Desktop: Left panel Type=map (Nearby / Saved switch, content, Plan cart) beside the map; phones:
 // Top app bar Map, chips, a map Bottom sheet and the Plan pill. Live POIs, place detail, saves.
 
 const send = (url: string, method: string, body?: unknown) =>

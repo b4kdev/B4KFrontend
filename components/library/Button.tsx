@@ -61,7 +61,7 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof buttonVariants> & {
     /** Figma "Show leading icon" + "Icon": a Lucide icon element, e.g. <Plus />. */
     leadingIcon?: ReactNode
-    /** Figma State=Loading. */
+    /** Figma State=loading. */
     loading?: boolean
   }
 

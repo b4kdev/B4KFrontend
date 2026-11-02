@@ -20,7 +20,7 @@ const PX = { xs: 24, sm: 32, md: 40, lg: 64, xl: 80 } as const
 
 export type AvatarProps = {
   size?: keyof typeof SIZE
-  /** Photo URL (Type=Photo). */
+  /** Photo URL (Type=photo). */
   src?: string | null
   /** The person's name: alt text and the source of the initials. */
   name?: string

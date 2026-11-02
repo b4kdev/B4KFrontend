@@ -11,7 +11,7 @@ export type FabProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
   type?: 'icon' | 'extended'
   /** Figma Label: visible on Extended, the accessible name on Icon. */
   label: string
-  /** Figma State=Open. */
+  /** Figma State=open. */
   open?: boolean
   icon?: React.ReactNode
 }

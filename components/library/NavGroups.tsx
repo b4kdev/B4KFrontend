@@ -141,7 +141,7 @@ export type BreadcrumbsProps = {
   label: string
   /** Earlier levels link; the last item is the current page. */
   items: { label: string; href?: string }[]
-  /** Figma Levels=Collapsed: middle levels behind … on narrow screens. */
+  /** Figma Levels=collapsed: middle levels behind … on narrow screens. */
   collapseLabel?: string
   className?: string
 }

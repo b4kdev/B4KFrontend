@@ -95,7 +95,7 @@ export type DialogProps = {
   title: string
   /** One or two sentences. */
   body: ReactNode
-  /** Primary (right on desktop); a Danger Button for Type=Destructive. */
+  /** Primary (right on desktop); a Danger Button for Type=destructive. */
   confirm: ReactNode
   /** The safe action; give it data-autofocus so focus starts there. */
   cancel: ReactNode

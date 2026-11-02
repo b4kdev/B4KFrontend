@@ -15,7 +15,7 @@ export type FieldsetProps = {
   legend: string
   /** Figma Hint (Show hint). */
   hint?: ReactNode
-  /** Figma Error text (State=Error): once for the group. */
+  /** Figma Error text (State=error): once for the group. */
   error?: ReactNode
   disabled?: boolean
   /** Legend for screen readers only (e.g. Consent step, where the heading above names the group). */
@@ -92,7 +92,7 @@ export type FileUploadProps = {
   error?: ReactNode
   accept?: string
   onFile: (file: File) => void
-  /** Figma State=Uploading: 0 to 100. */
+  /** Figma State=uploading: 0 to 100. */
   progress?: number
   progressLabel?: string
   className?: string

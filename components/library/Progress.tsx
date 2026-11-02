@@ -3,7 +3,7 @@ import { cn } from '@/lib/cn'
 // Progress bar and Skeleton (Figma Atoms).
 
 export type ProgressBarProps = {
-  /** 0 to 100. Left out = Figma Type=Indeterminate. */
+  /** 0 to 100. Left out = Figma Type=indeterminate. */
   value?: number
   /** Accessible name, e.g. "Step 2 of 3" or "Uploading photo". */
   label: string

@@ -99,7 +99,7 @@ export type TransportModeProps = {
   menu?: ReactNode
   /** Accessible name of the mode menu. */
   menuLabel?: string
-  /** Figma State=Loading. */
+  /** Figma State=loading. */
   loading?: boolean
   className?: string
 }

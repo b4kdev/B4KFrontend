@@ -41,7 +41,7 @@ export function Badge({ variant, children, leadingIcon, className }: BadgeProps)
 }
 
 export type CountBadgeProps = {
-  /** Figma Type=Dot when left out. Shows 99+ above 99. */
+  /** Figma Type=dot when left out. Shows 99+ above 99. */
   count?: number
   className?: string
 }

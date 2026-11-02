@@ -19,7 +19,7 @@ const CATEGORY_ICON = {
 export type MapPinProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
   /** Figma Category. */
   category?: keyof typeof CATEGORY_ICON
-  /** Figma State=Selected: map/pin-selected and 1.25x. */
+  /** Figma State=selected: map/pin-selected and 1.25x. */
   selected?: boolean
   /** The place name, read by screen readers. */
   label: string

@@ -6,7 +6,7 @@ import { FOCUS_RING_INSET } from './styles'
 // Menu item (part of Dropdown menu) and Combobox option (part of Combobox).
 
 export type MenuItemProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
-  /** Figma Variant=Danger: destructive action in the danger color. */
+  /** Figma Variant=danger: destructive action in the danger color. */
   variant?: 'default' | 'danger'
   /** Figma Show icon + Icon. */
   icon?: ReactNode
@@ -54,7 +54,7 @@ export type ComboboxOptionProps = {
   /** Figma Secondary (area, category). */
   secondary?: string
   icon?: ReactNode
-  /** Figma State=Active (aria-activedescendant). */
+  /** Figma State=active (aria-activedescendant). */
   active?: boolean
   onSelect: () => void
   /** Recent: remove the entry (mouse; the Combobox maps Delete to it for keyboards). */

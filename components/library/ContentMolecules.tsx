@@ -175,7 +175,7 @@ export type PlanStopRowProps = {
   onRemove: () => void
   removeLabel: string
   reorderLabel: string
-  /** Figma State=Dragging. */
+  /** Figma State=dragging. */
   dragging?: boolean
   /** Tap the name: select the stop. */
   onSelect?: () => void
@@ -234,7 +234,7 @@ export type ItineraryStopProps = {
   meta: string
   note?: string
   thumbnail?: string | null
-  /** Figma State=Selected: the stop whose pin is selected on the map. */
+  /** Figma State=selected: the stop whose pin is selected on the map. */
   selected?: boolean
   onSelect?: () => void
   className?: string
