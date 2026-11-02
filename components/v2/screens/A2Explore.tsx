@@ -344,22 +344,11 @@ function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceAct
 
 const PAGE = 12
 
-export function SeeAllScreen({ category, row }: { category: string; row: string }) {
-  const rowLabel = useRowLabel()
-  const act = usePlaceActions({ resume: true })
-  const planAct = usePlanActions({ resume: true })
-  const t = useCd()
-  const locale = useLocale()
-  const fromHome = category === 'all'
-  const explore = useSWR<ExploreData>(fromHome ? null : `/api/explore/${category}`, jsonFetch)
-  const trending = useSWR<HomeTrendingPoi[]>(fromHome && row === 'trending' ? `/api/home/trending?locale=${locale}` : null, jsonFetch)
-  const [chip, setChip] = useState('all')
-  const [sort, setSort] = useState('popular')
-  const plans = useSWR<HomePopularPlan[]>(fromHome && row === 'popular-plans' ? `/api/home/popular-plans${sort === 'new' ? '?sort=newest' : ''}` : null, jsonFetch)
+/** Load more is a real link to ?page=n: a page opened with ?page=n shows n pages; after a tap the
+ * first new card takes the focus and the URL follows. `list` goes on the list element. */
+function usePaged<T extends HTMLElement>() {
   const [shown, setShown] = useState(PAGE)
-  // Load more is a real link to ?page=n: a page opened with ?page=n shows n pages; after a tap the
-  // first new card takes the focus and the URL follows.
-  const list = useRef<HTMLUListElement>(null)
+  const list = useRef<T>(null)
   const focusFrom = useRef<number | null>(null)
   useEffect(() => {
     const n = Number(new URLSearchParams(window.location.search).get('page'))
@@ -376,6 +365,22 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
     setShown(shown + PAGE)
     window.history.replaceState(window.history.state, '', `?page=${shown / PAGE + 1}`)
   }
+  return { shown, list, loadMore }
+}
+
+export function SeeAllScreen({ category, row }: { category: string; row: string }) {
+  const rowLabel = useRowLabel()
+  const act = usePlaceActions({ resume: true })
+  const planAct = usePlanActions({ resume: true })
+  const t = useCd()
+  const locale = useLocale()
+  const fromHome = category === 'all'
+  const explore = useSWR<ExploreData>(fromHome ? null : `/api/explore/${category}`, jsonFetch)
+  const trending = useSWR<HomeTrendingPoi[]>(fromHome && row === 'trending' ? `/api/home/trending?locale=${locale}` : null, jsonFetch)
+  const [chip, setChip] = useState('all')
+  const [sort, setSort] = useState('popular')
+  const plans = useSWR<HomePopularPlan[]>(fromHome && row === 'popular-plans' ? `/api/home/popular-plans${sort === 'new' ? '?sort=newest' : ''}` : null, jsonFetch)
+  const { shown, list, loadMore } = usePaged<HTMLUListElement>()
 
   const title = fromHome ? (row === 'trending' ? t('CD0313') : t('CD0477')) : rowLabel(category, row)
   const subtitle = fromHome ? (row === 'trending' ? t('CD1566') : t('CD1568')) : undefined
@@ -479,7 +484,7 @@ export function CollectionScreen({ slug }: { slug: string }) {
   const locale = useLocale()
   const router = useRouter()
   const { data, error, isLoading, mutate } = useSWR<CollectionDetail>(`/api/explore/collections/${slug}?locale=${locale}`, jsonFetch)
-  const [shown, setShown] = useState(PAGE)
+  const { shown, list, loadMore } = usePaged<HTMLOListElement>()
   // The category comes from the collection's slug (slide-kculture-..., slide-kpop-...); a slug
   // without one shows the page without the Index panel.
   const category = CATEGORIES.find((c) => slug.includes(`-${c.slug.replace('-', '')}-`))?.slug
@@ -524,13 +529,17 @@ export function CollectionScreen({ slug }: { slug: string }) {
         </ul>
       ) : null}
       {items.length ? (
-        <ol className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">
+        <ol ref={list} className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">
           {items.slice(0, shown).map((p) => (
             <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={regionName(p.display_region ?? '', locale)} /></li>
           ))}
         </ol>
       ) : null}
-      {items.length > shown ? <Button variant="secondary" className="self-center" onClick={() => setShown((n) => n + PAGE)}>{t('CD0836')}</Button> : null}
+      {items.length > shown ? (
+        <a href={`?page=${shown / PAGE + 1}`} onClick={loadMore} className={cn(buttonVariants({ variant: 'secondary' }), 'self-center hover:bg-ui-state-hover active:bg-ui-state-pressed')}>
+          {t('CD0836')}
+        </a>
+      ) : null}
     </div>
   )
   if (!category) return <V2Page bar={{ type: 'page', title: title ?? '' }}>{body}</V2Page>
