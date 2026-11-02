@@ -16,13 +16,13 @@ export async function fetchPublicPlan(id: string): Promise<ItineraryDetail | nul
 const placeName = (p: ItineraryDetail['stops'][number]['poi'], locale: string) => p.name_preferred ?? (locale === 'ko' ? p.name_ko : p.name_en) ?? p.name_ko
 
 /** TouristTrip for a published plan: its stops in order, each a TouristAttraction with its position. */
-export function buildPlanJsonLd(plan: ItineraryDetail, locale: string) {
+export function buildPlanJsonLd(plan: ItineraryDetail, locale: string, untitled: string) {
   const author = plan.author.name_preferred ?? plan.author.name_en ?? plan.author.name_ko
   const image = plan.stops.find((s) => s.poi.primary_image_url)?.poi.primary_image_url
   return {
     '@context': 'https://schema.org',
     '@type': 'TouristTrip',
-    name: plan.title,
+    name: plan.title || untitled,
     url: localizedUrl(locale, `/plan/${plan.id}`),
     inLanguage: locale,
     ...(image ? { image } : {}),

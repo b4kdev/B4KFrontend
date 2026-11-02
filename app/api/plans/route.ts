@@ -146,7 +146,7 @@ export async function POST(req: Request) {
         token: auth.token,
       })
       planId    = created.itinerary_id
-      planTitle = created.title
+      planTitle = created.title ?? title ?? ''
       createdAt = created.created_at ?? new Date().toISOString()
     }
 

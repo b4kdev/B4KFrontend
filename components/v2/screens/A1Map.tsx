@@ -219,8 +219,9 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const fitPlan = (stops: { coords_lat: number; coords_lng: number }[]) => mapRef.current?.fitTo(stops.map((s) => ({ lat: s.coords_lat, lng: s.coords_lng })))
   const loadForEdit = (it: ItineraryDetail) => {
     const { stops, days: dayMap, durations } = itineraryToDraft(it)
-    draft.replace(stops, dayMap, it.title, durations, { editing: true })
-    setEditing({ id: it.id, title: it.title })
+    // An unnamed plan opens with an empty name field.
+    draft.replace(stops, dayMap, it.title ?? undefined, durations, { editing: true })
+    setEditing({ id: it.id, title: it.title ?? '' })
     // Every plan opens on All days; a place added there goes to the last day.
     setActiveDay('all')
     setPendingEdit(null)
@@ -706,7 +707,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         open={!!pendingEdit && !saveFirst && !saveOpen}
         onCancel={() => { setPendingEdit(null); if (pendingEdit) router.push(`/plan/${pendingEdit.id}`) }}
         title={t('CD1525')}
-        body={pendingEdit ? GAP.editDraftBody(order.length, pendingEdit.title) : ''}
+        body={pendingEdit ? GAP.editDraftBody(order.length, pendingEdit.title || k('profile.untitledPlan')) : ''}
         cancel={<Button variant="secondary" data-autofocus onClick={() => { const id = pendingEdit?.id; setPendingEdit(null); if (id) router.push(`/plan/${id}`) }}>{k('map.plan.discardCancel')}</Button>}
         third={<Button variant="ghost" onClick={() => { if (pendingEdit) { draft.discard(); loadForEdit(pendingEdit) } }}>{t('CD1527')}</Button>}
         confirm={<Button onClick={openSaveSheet}>{k('map.plan.save')}</Button>}

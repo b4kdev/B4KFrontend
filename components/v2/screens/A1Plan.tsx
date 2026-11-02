@@ -121,7 +121,7 @@ export function PlanScreen({ id }: { id: string }) {
     track('share_click', { target: typeof navigator.share === 'function' ? 'native' : 'link', content_type: 'plan', locale, screen_id: 'plan' })
     if (typeof navigator.share === 'function') {
       try {
-        await navigator.share({ title: it?.title, url: link })
+        await navigator.share({ title: it?.title || k('profile.untitledPlan'), url: link })
         return
       } catch (e) {
         if ((e as DOMException)?.name === 'AbortError') return

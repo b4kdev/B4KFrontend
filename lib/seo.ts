@@ -46,8 +46,9 @@ export function fitDescription(text: string | null | undefined): string | undefi
   return `${cut.slice(0, cut.lastIndexOf(' ') > 80 ? cut.lastIndexOf(' ') : cut.length).replace(/[\s,;:·—-]+$/, '')}…`
 }
 
-/** A name cut to `max` characters on a word boundary (plan names in titles). */
-export function cutName(name: string, max: number): string {
+/** A name cut to `max` characters on a word boundary (plan names in titles); empty for no name. */
+export function cutName(name: string | null | undefined, max: number): string {
+  if (!name) return ''
   if (name.length <= max) return name
   const cut = name.slice(0, max)
   return `${cut.slice(0, cut.lastIndexOf(' ') > max / 2 ? cut.lastIndexOf(' ') : max).trimEnd()}…`

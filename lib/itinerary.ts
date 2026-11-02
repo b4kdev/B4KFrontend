@@ -46,7 +46,8 @@ export interface ItineraryRelated {
 
 export interface ItineraryDetail {
   id: string
-  title: string
+  /** Null for a draft nobody has named yet; screens show the Untitled plan text. */
+  title: string | null
   is_partner: boolean
   is_published: boolean
   share_url: string | null
@@ -114,7 +115,8 @@ export interface BffDay {
 
 export interface BffItinerary {
   itinerary_id: number
-  title: string
+  /** Null for a draft nobody has named yet. */
+  title: string | null
   status?: string                        // draft | confirmed (owner GET only)
   is_public?: boolean
   is_partner?: boolean

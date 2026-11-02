@@ -134,10 +134,11 @@ export async function planMetadata(locale: string, id: string): Promise<Metadata
   } catch {
     return { robots: NOINDEX };
   }
-  const { t } = await seoText(locale);
+  const { t, k } = await seoText(locale);
   const days = bff.total_days || Math.max(1, ...detail.stops.map((s) => s.day ?? 1));
   const count = detail.stops.length;
-  const name = cutName(detail.title, 40);
+  // A plan nobody has named reads Untitled plan, as on its page.
+  const name = cutName(detail.title || k('profile.untitledPlan'), 40);
   const title = fitTitle(t('CD1833', { planName: name, count, days }), t('CD1832', { page: name }));
   const stopName = (s: (typeof detail.stops)[number]) => (locale === 'ko' ? s.poi.name_ko : s.poi.name_en || s.poi.name_ko);
   // The BFF names the region in Korean (서울): other languages get its English name; none = Korea.
