@@ -269,9 +269,9 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           className={cn(!inFlow && 'max-lg:bottom-[var(--fab-size)] max-lg:pb-[var(--space-4)]')}
         />
       ) : null}
-      {/* Offline notice: bottom center on every screen (16 above the Navigation bar on phones), as drawn. Desktop:
+      {/* Offline notice: bottom center on every screen (above the Navigation bar on phones), as drawn. Desktop:
           centred on the content beside the rail, and on the map beside the left panel. */}
-      <div aria-live="polite" style={{ '--toast-floor': toastFloor } as CSSProperties} className={cn('pointer-events-none fixed inset-x-0 bottom-[calc(var(--toast-floor)+var(--space-4))] z-50 flex justify-center px-[var(--space-4)] lg:bottom-[var(--space-6)] lg:px-0', fullFlow ? null : onMap ? 'lg:pl-[calc(var(--layout-nav-rail)+var(--layout-left-panel))]' : 'lg:pl-[var(--layout-nav-rail)]')}>
+      <div aria-live="polite" style={{ '--toast-floor': toastFloor } as CSSProperties} className={cn('pointer-events-none fixed inset-x-0 bottom-[calc(var(--toast-floor)+var(--space-3))] z-50 flex justify-center px-[var(--space-4)] lg:bottom-[var(--space-6)] lg:px-0', fullFlow ? null : onMap ? 'lg:pl-[calc(var(--layout-nav-rail)+var(--layout-left-panel))]' : 'lg:pl-[var(--layout-nav-rail)]')}>
         {!online ? <Toast type="warning" message={onMap ? t('CD0120') : t('CD1865')} className="pointer-events-auto" /> : null}
       </div>
       {/* Toasts: on phones 12 above whatever is at the bottom (above the offline notice while offline);
