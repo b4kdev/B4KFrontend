@@ -28,7 +28,7 @@ import {
 } from '@/components/library'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/cn'
-import { usePhone } from '@/components/library/hooks'
+import { useMediaQuery } from '@/components/library/hooks'
 import type { ExploreData, ExplorePoi } from '@/app/api/explore/[category]/route'
 import type { CollectionCard } from '@/app/api/explore/[category]/collections/route'
 import type { CollectionDetail } from '@/lib/collections'
@@ -153,7 +153,9 @@ function CategoryIndex({ category, sections, active, rowsKey }: { category: stri
 
 function ExploreFrame({ category, sections, active, pageTitle, rowsKey, children }: { category: string; sections: string[]; active?: string; pageTitle?: string; rowsKey?: string; children: React.ReactNode }) {
   const t = useCd()
-  const phone = usePhone()
+  // The phone layout (category tabs, no Index panel) runs until the shell's desktop layout, as
+  // the shell keeps its phone bars below that width too.
+  const phone = useMediaQuery('(max-width: 1023px)')
   const router = useRouter()
   return (
     <div className="flex min-h-0 flex-1">
