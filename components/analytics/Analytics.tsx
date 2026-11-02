@@ -10,7 +10,8 @@ const GA_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID
 
 // GA4 and Clarity both stay off until the visitor accepts in the cookie banner: no script
-// tag, no request, not even a cookieless ping. A later Decline sends a consent update to GA4.
+// tag, no request, not even a cookieless ping. Accept sends Clarity its consent signal; a later
+// Decline sends a consent update to GA4 and Clarity.
 export default function Analytics() {
   const [granted, setGranted] = useState(false)
 
@@ -85,6 +86,8 @@ export default function Analytics() {
               t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
               y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
             })(window, document, "clarity", "script", "${CLARITY_ID}");
+            // The visitor accepted in the cookie banner: analytics only, no advertising.
+            window.clarity("consentv2", { ad_Storage: "denied", analytics_Storage: "granted" });
           `}
         </Script>
       )}
