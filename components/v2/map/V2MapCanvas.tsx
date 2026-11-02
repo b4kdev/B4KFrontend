@@ -41,6 +41,11 @@ type Props = {
   onBounds?: (b: MapBounds, zoom: number) => void
   onZoom?: (zoom: number) => void
   center?: { lat: number; lng: number }
+  /** A place the page opens on (a link to it): the map is made already centred on it, at the
+   *  picked-place zoom, `bottom` px of sheet kept clear, so nothing moves after the first paint. */
+  openAt?: { lat: number; lng: number; bottom: number } | null
+  /** Wait for `openAt` before making the map (its place is still loading). */
+  holdOpen?: boolean
   /** Published plan: zoom to show every stop once they load. */
   fitStops?: boolean
   /** Extra space kept clear when fitting stops, e.g. the phone sheet over the map's lower part (px). */
@@ -56,6 +61,8 @@ type Props = {
 const SEOUL = { lat: 37.5665, lng: 126.978 }
 // The map opens at the small photo pin zoom, so the first view shows place photos, as drawn.
 const OPEN_ZOOM = 16
+// A picked place shows at this zoom or closer.
+const PICK_ZOOM = 16
 const CLUSTER_BELOW = 15
 const CLUSTER_GRID_PX = 60
 // Overlap order, top first: selected, plan stops, saved, clusters, other places. Within a layer,
@@ -132,7 +139,7 @@ function boundsOf(map: any): MapBounds {
 const sdkAlive = () => typeof window !== 'undefined' && !!window.naver?.maps
 
 export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
-  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', savedIds, routeLegs, onBounds, onZoom, center, fitStops, fitBottom = 0, fitTop, userLocation, label, errorText },
+  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', savedIds, routeLegs, onBounds, onZoom, center, openAt, holdOpen, fitStops, fitBottom = 0, fitTop, userLocation, label, errorText },
   ref,
 ) {
   const el = useRef<HTMLDivElement>(null)
@@ -234,7 +241,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
       const m = live()
       if (!m) return
       const N = window.naver.maps
-      if (m.getZoom() < 16) m.setZoom(16, false)
+      if (m.getZoom() < PICK_ZOOM) m.setZoom(PICK_ZOOM, false)
       const at = new N.LatLng(lat, lng)
       const proj = mapReady ? m.getProjection() : null
       if (!proj || !bottom) return m.panTo(at)
@@ -269,12 +276,15 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
 
   // Create the map once the SDK is there.
   useEffect(() => {
-    if (!ready || !el.current || map.current || !sdkAlive()) return
+    if (!ready || !el.current || map.current || !sdkAlive() || (holdOpen && !openAt)) return
     const N = window.naver.maps
-    const c = center ?? SEOUL
+    // Opening on a place: its centre as focus() would set it (the place bottom/2 above the canvas
+    // centre), worked out before the map exists so the first tiles are already in place.
+    const s = 2 ** PICK_ZOOM
+    const c = openAt ? fromWorld(worldX(openAt.lng), worldY(openAt.lat) + openAt.bottom / 2 / s) : center ?? SEOUL
     map.current = new N.Map(el.current, {
       center: new N.LatLng(c.lat, c.lng),
-      zoom: OPEN_ZOOM,
+      zoom: openAt ? Math.max(OPEN_ZOOM, PICK_ZOOM) : OPEN_ZOOM,
       zoomControl: false,
       mapDataControl: false,
       scaleControl: false,
@@ -315,7 +325,7 @@ export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(
     })
     idle()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready])
+  }, [ready, holdOpen, openAt?.lat, openAt?.lng])
 
   // The sheet over the map changed height: fit the last requested points into the new visible area.
   // Waits for the sheet to settle (its height eases over a few frames) so the map moves once.

@@ -212,6 +212,11 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const areaHeld = !collectionOn && zoom >= 9
   const { detail, isError: placeMissing } = usePlaceDetail(selectedId)
   const detailName = detail ? nameOf(detail, locale) : ''
+  // A link to a place opens the map already on it (no pan or zoom after the first paint).
+  const openAt = useMemo(
+    () => (detail && detail.poi_id === openedWith ? { lat: detail.coords_lat, lng: detail.coords_lng, bottom: phone ? Math.round(window.innerHeight / 2) : 0 } : null),
+    [detail?.poi_id, phone], // eslint-disable-line react-hooks/exhaustive-deps
+  )
   const saved = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
   const savedIds = useMemo(() => new Set((saved.data?.pois ?? []).map((p) => p.poi_id)), [saved.data])
   const likes = useLikedPlaces(!!user)
@@ -298,12 +303,13 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   }, [draft.plan.stops]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    // Phones: the place opens in the sheet at mid (half the screen), so centre it in the map above.
-    if (detail) mapRef.current?.focus(detail.coords_lat, detail.coords_lng, phone ? Math.round(window.innerHeight / 2) : 0)
     if (!detail) return
     // The place the map opened with came from the page before; later picks are made on the map
     // (or its Saved tab).
     const first = !viewedOnce.current && detail.poi_id === openedWith
+    // Phones: the place opens in the sheet at mid (half the screen), so centre it in the map above.
+    // The place a link opened on needs no move: the map was made centred on it (openAt).
+    if (!first) mapRef.current?.focus(detail.coords_lat, detail.coords_lng, phone ? Math.round(window.innerHeight / 2) : 0)
     viewedOnce.current = true
     const source = first ? placeSourceFrom() : mode === 'saved' ? 'saved' : 'map'
     track('poi_view', { category: detail.display_domain ?? undefined, area: detail.display_region ?? undefined, source, locale, screen_id: 'map' })
@@ -665,6 +671,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const map = (
     <V2MapCanvas
       ref={mapRef}
+      openAt={openAt}
+      holdOpen={!!openedWith && !placeMissing}
       pois={mapPois}
       selectedId={selectedId}
       onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
