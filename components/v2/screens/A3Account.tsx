@@ -206,7 +206,7 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
           <section aria-labelledby="visitor-plans" className="flex flex-col gap-[var(--space-6)] lg:px-[var(--space-6)]">
             <SectionHeader id="visitor-plans" title={t('CD1300')} className="max-md:pr-[var(--space-4)]" />
             <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-3 lg:gap-[var(--space-4)]">
-              {trips.data.map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} author={p?.name ?? ''} saves={String(tr.save_count)} stops={`${k('saved.plan.stops', { count: tr.stop_count })} · ${k('saved.plan.days', { count: tr.day_count })}`} save={planActions(String(tr.id), tr.title)} /></li>)}
+              {trips.data.map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} imageSrc={tr.cover_image_url} author={p?.name ?? ''} saves={String(tr.save_count)} stops={`${k('saved.plan.stops', { count: tr.stop_count })} · ${k('saved.plan.days', { count: tr.day_count })}`} save={planActions(String(tr.id), tr.title)} /></li>)}
             </ul>
           </section>
         ) : null}
