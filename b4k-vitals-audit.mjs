@@ -92,7 +92,17 @@ for (const vp of VIEWPORTS) {
       await page.goto(BASE + pg.path, { waitUntil: 'networkidle', timeout: 30000 });
       await page.waitForTimeout(1500);
       const { lcp, cls } = await page.evaluate(() => window.__vitals);
-      const small = vp.touch ? await page.evaluate(SMALL_TARGETS, TARGET_MIN) : [];
+      // Targets on the whole page, not only the first screen: scroll down one screen at a time (after
+      // the vitals are read, so scrolling does not count as a layout shift) and keep each find once.
+      const small = [];
+      if (vp.touch) {
+        const height = await page.evaluate(() => document.documentElement.scrollHeight);
+        for (let y = 0; y < height; y += vp.height) {
+          await page.evaluate((top) => window.scrollTo(0, top), y);
+          await page.waitForTimeout(300);
+          for (const s of await page.evaluate(SMALL_TARGETS, TARGET_MIN)) if (!small.includes(s)) small.push(s);
+        }
+      }
       const bad = lcp > LCP_MAX || cls > CLS_MAX || small.length > 0;
       if (bad) failed++;
       console.log(`${bad ? 'FAIL' : 'PASS'}  ${pg.label} ${vp.name}: LCP ${Math.round(lcp)} ms, CLS ${cls.toFixed(3)}${vp.touch ? `, small targets ${small.length}` : ''}`);
