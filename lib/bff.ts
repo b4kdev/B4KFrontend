@@ -7,6 +7,7 @@ import 'server-only'
 import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { unstable_rethrow } from 'next/navigation'
+import * as Sentry from '@sentry/nextjs'
 import type { User } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from './supabase-server'
 
@@ -71,11 +72,25 @@ export async function bffFetch<T = unknown>(path: string, init: BffFetchOptions 
     signal: rest.signal ?? AbortSignal.timeout(8000),
   })
   const json = await res.json().catch(() => ({}))
+  if (res.status === 429) reportLimited(path)
   if (!res.ok) {
     const message = (json as { error?: string })?.error ?? res.statusText
     throw new BffError(message, res.status)
   }
   return json as T
+}
+
+// A BFF guest limit answered 429: one Sentry issue for all of them (warning level), at most one
+// event per route every 10 minutes per server instance, so a busy hour cannot use up the quota.
+// The route only: no query, ids or visitor IP.
+const LIMIT_REPORT_MS = 10 * 60 * 1000
+const lastLimitReport = new Map<string, number>()
+function reportLimited(path: string) {
+  const route = path.split('?')[0].replace(/\/[^/]*\d[^/]*/g, '/:id')
+  const now = Date.now()
+  if (now - (lastLimitReport.get(route) ?? 0) < LIMIT_REPORT_MS) return
+  lastLimitReport.set(route, now)
+  Sentry.captureMessage('BFF guest limit reached (429)', { level: 'warning', fingerprint: ['bff-429'], tags: { bff_route: route } })
 }
 
 /** Map a caught error to a JSON error response (preserves BFF status codes). */
