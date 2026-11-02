@@ -1,4 +1,6 @@
 import type { LegalSection } from './types';
+import { cn } from '@/lib/cn';
+import { HIT_AREA } from '@/components/library/styles';
 
 export const cookiePolicyLastUpdated = 'July 24, 2026';
 export const cookiePolicyContactEmail = 'support@b4korea.com';
@@ -162,13 +164,13 @@ export const cookiePolicySections: LegalSection[] = [
         <ul>
           <li>
             Google Analytics:{' '}
-            <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">
+            <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer" className={cn('relative', HIT_AREA)}>
               tools.google.com/dlpage/gaoptout
             </a>
           </li>
           <li>
             Microsoft Clarity:{' '}
-            <a href="https://privacy.microsoft.com/en-us/privacystatement" target="_blank" rel="noopener noreferrer">
+            <a href="https://privacy.microsoft.com/en-us/privacystatement" target="_blank" rel="noopener noreferrer" className={cn('relative', HIT_AREA)}>
               privacy.microsoft.com
             </a>
           </li>
