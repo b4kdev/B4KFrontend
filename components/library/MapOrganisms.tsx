@@ -395,7 +395,8 @@ export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, ownerH
         <h1 className="type-display-h3">{title}</h1>
         <p className="flex items-center gap-[var(--space-2)] type-body-caption text-ui-fg-muted">
           {ownerAvatarSrc !== undefined ? <Avatar size="xs" src={ownerAvatarSrc} name={ownerName ?? owner} decorative /> : null}
-          {ownerHref ? <IntlLink href={ownerHref} className="hover:text-ui-fg hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none">{owner}</IntlLink> : owner}
+          {/* The owner link takes 24 to tap; padding grows the box, the same negative margin keeps the line. */}
+          {ownerHref ? <IntlLink href={ownerHref} className="block py-[calc((var(--space-6)-1lh)/2)] -my-[calc((var(--space-6)-1lh)/2)] hover:text-ui-fg hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none">{owner}</IntlLink> : owner}
           {privateLabel ? <span className="inline-flex items-center gap-[var(--space-2)]"><Lock aria-hidden className="size-[var(--icon-size-xs)]" />{privateLabel}</span> : null}
         </p>
       </div>
