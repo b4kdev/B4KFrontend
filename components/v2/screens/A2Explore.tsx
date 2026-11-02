@@ -253,7 +253,7 @@ export function CategoryScreen({ category }: { category: string }) {
             imageSrc={hero.image_url}
             eyebrow={hero.badge}
             title={hero.title}
-            subtitle={hero.subtitle}
+            // No subtitle line: the category hero is drawn with eyebrow, title and action only.
             action={<IntlLink href={`${hero.cta_href}`} onClick={() => track('explore_card_open', { card_type: 'theme', position: 1, locale, screen_id: 'explore' })} className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{hero.cta_label}</IntlLink>}
             // Edge to edge in the content area: flush under the header on desktop, under the tabs on phones; 24 to the first row.
             className="-mx-[var(--grid-gutter-mobile)] -mb-[var(--space-6)] -mt-[var(--space-6)] w-auto md:-mx-[var(--grid-gutter-tablet)] lg:-mx-[var(--space-8)]"
