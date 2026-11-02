@@ -11,6 +11,7 @@ import { Alert } from './Feedback'
 import { IconButton } from './IconButton'
 import { Image } from './Image'
 import { Pagination } from './NavGroups'
+import { HIT_AREA } from './styles'
 
 // Content organisms (Figma Organisms): Hero, Carousel, Footer, Form, Tree view,
 // Accordion, Now Seoul card.
@@ -129,7 +130,7 @@ export function Footer({ links, copyright, navLabel, className }: FooterProps) {
         <ul className="flex flex-wrap gap-x-[var(--space-4)] gap-y-[var(--space-2)]">
           {links.map((l) => (
             <li key={l.href}>
-              <IntlLink href={l.href} className={cn(l.strong && 'type-body-label', 'hover:text-ui-link-hover focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus')}>{l.label}</IntlLink>
+              <IntlLink href={l.href} className={cn(l.strong && 'type-body-label', 'relative', HIT_AREA, 'hover:text-ui-link-hover focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus')}>{l.label}</IntlLink>
             </li>
           ))}
         </ul>

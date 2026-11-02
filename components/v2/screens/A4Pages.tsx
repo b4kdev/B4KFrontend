@@ -40,6 +40,7 @@ import type { SearchCollection, SearchExplore, SearchPlan, SearchPoi } from '@/a
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
 import { cn } from '@/lib/cn'
+import { HIT_AREA } from '@/components/library/styles'
 import { HELP_TOP, HELP_TOPICS, helpTopic, type HelpQuestion } from '../help'
 import { keepKNamesDeep } from '../text'
 import { V2Footer, V2Page } from '../V2Page'
@@ -412,7 +413,7 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
           breadcrumbs={[{ label: t('CD0807'), href: '/' }, { label: cfg.title }]}
           title={cfg.title}
           updated={GAP.lastUpdated(cfg.updated)}
-          contact={{ label: t('CD0345'), link: <a href={`mailto:${cfg.email}`} className="type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover">{cfg.email}</a> }}
+          contact={{ label: t('CD0345'), link: <a href={`mailto:${cfg.email}`} className={cn('relative type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{cfg.email}</a> }}
           sections={cfg.sections.map((s) => ({ id: s.id, title: s.heading.replace(/^\d+\.\s*/, ''), body: s.body }))}
           currentSection={current}
           intro={doc === 'cookies' ? (

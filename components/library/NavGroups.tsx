@@ -6,6 +6,7 @@ import { Link as IntlLink } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
 import { IconButton } from './IconButton'
 import { PageItem, Segment, StepItem, Tab } from './Nav'
+import { HIT_AREA } from './styles'
 
 // Navigation molecules (Figma Molecules): Tabs, Segmented control, Breadcrumbs, Pagination,
 // Progress indicator, Step list.
@@ -164,7 +165,7 @@ export function Breadcrumbs({ label, items, collapseLabel, className }: Breadcru
               {i === last || !it.href ? (
                 <span aria-current={i === last ? 'page' : undefined} className="text-ui-fg">{it.label}</span>
               ) : (
-                <IntlLink href={it.href} className="text-ui-fg-muted underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus">
+                <IntlLink href={it.href} className={cn('relative text-ui-fg-muted underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus', HIT_AREA)}>
                   {it.label}
                 </IntlLink>
               )}
