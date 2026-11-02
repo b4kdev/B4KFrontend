@@ -5,6 +5,8 @@
 // the live map).
 import 'server-only'
 import { NextResponse } from 'next/server'
+import { headers } from 'next/headers'
+import { unstable_rethrow } from 'next/navigation'
 import type { User } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from './supabase-server'
 
@@ -28,23 +30,42 @@ export async function getSessionAuth(): Promise<{ user: User; token: string } | 
   return { user, token: session.access_token }
 }
 
+/** The visitor's IP as the host gives it (Vercel sets x-real-ip and x-forwarded-for itself and
+ *  overwrites what a client sends). Null outside a request (build, scripts). */
+export async function visitorIp(): Promise<string | null> {
+  try {
+    const h = await headers()
+    return h.get('x-real-ip') ?? h.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null
+  } catch (e) {
+    unstable_rethrow(e)
+    return null
+  }
+}
+
 interface BffFetchOptions extends RequestInit {
   /** Pre-fetched token (from getSessionAuth). undefined = look up the cookie
    *  session; null = force anonymous call. */
   token?: string | null
+  /** The visitor's IP for the BFF's guest limits. undefined = this request's visitor (uncached
+   *  calls only: an IP header would split the data cache per visitor); null = none. */
+  clientIp?: string | null
 }
 
-/** Call the BFF. Attaches Bearer when a session exists. Throws BffError on non-2xx. */
+/** Call the BFF. Attaches Bearer when a session exists. Throws BffError on non-2xx. Uncached calls
+ *  carry the visitor's IP, so the BFF's guest limits count each visitor, not the website server. */
 export async function bffFetch<T = unknown>(path: string, init: BffFetchOptions = {}): Promise<T> {
   if (!BFF_URL) throw new BffError('BFF not configured', 503)
-  const { token, ...rest } = init
+  const { token, clientIp, ...rest } = init
   const accessToken = token !== undefined ? token : (await getSessionAuth())?.token ?? null
+  const cached = rest.next?.revalidate !== undefined || ('cache' in rest && rest.cache !== 'no-store')
+  const ip = clientIp !== undefined ? clientIp : cached ? null : await visitorIp()
   const res = await fetch(`${BFF_URL}${path}`, {
     cache: 'no-store',
     ...rest,
     headers: {
       'Content-Type': 'application/json',
       ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      ...(ip ? { 'X-Forwarded-For': ip } : {}),
       ...rest.headers,
     },
     signal: rest.signal ?? AbortSignal.timeout(8000),

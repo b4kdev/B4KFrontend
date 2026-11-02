@@ -3,7 +3,9 @@
 // mapping but calls the BFF directly server-side (bffFetch) instead of the
 // client-only apiFetch, since this route must be SSR per shared/legal-seo.md
 // ("POI detail pages must be SSR (not client-rendered) for Naver indexing").
-import { bffFetch, BffError } from './bff'
+import { cache } from 'react'
+import { unstable_cache } from 'next/cache'
+import { bffFetch, BffError, visitorIp } from './bff'
 import { getDisplayName } from './display-name'
 import { DB_POI_MAPPING } from './db-poi-mapping'
 
@@ -56,6 +58,14 @@ function resolvePoiId(poiId: string): string {
   return mapped !== undefined ? String(mapped) : poiId
 }
 
+// One read per request (the page and its metadata share it), cached by place only; a miss is read
+// with the IP of the visitor (or crawler) who caused it, so the BFF's guest limit counts them and
+// not the website server.
+const readPlace = cache(async (id: string) => {
+  const ip = await visitorIp()
+  return unstable_cache(() => bffFetch<RawPlaceDetail>(`/places/${id}`, { token: null, clientIp: ip }), ['place-detail', id], { revalidate: 300 })()
+})
+
 /** null when the poi_id doesn't resolve (404) — callers should notFound(). */
 export async function fetchPlaceDetail(poiId: string, locale: string): Promise<PlaceDetail | null> {
   let row: RawPlaceDetail
@@ -63,8 +73,8 @@ export async function fetchPlaceDetail(poiId: string, locale: string): Promise<P
     // Fully public read, no per-viewer fields in this shape — force anonymous
     // (token: null) rather than let bffFetch look up the cookie session, which
     // would risk a token-refresh cookie write during Server Component render.
-    // Public, so it may come from the data cache for as long as the place page (5 minutes).
-    row = await bffFetch<RawPlaceDetail>(`/places/${resolvePoiId(poiId)}`, { token: null, cache: undefined, next: { revalidate: 300 } })
+    // Public, so it may come from the cache for as long as the place page (5 minutes).
+    row = await readPlace(resolvePoiId(poiId))
   } catch (e) {
     if (e instanceof BffError && e.status === 404) return null
     throw e
