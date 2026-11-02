@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { getConsent } from '@/lib/consent'
 import { notePath, withoutQuery } from '@/lib/analytics'
+import { useAuth } from '@/contexts/AuthContext'
 
 const GA_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID
@@ -40,6 +41,17 @@ export default function Analytics() {
     window.gtag('event', 'page_view', { page_location, page_title: document.title })
   }, [granted, pathname])
 
+  // signed_in ('yes'/'no') rides on every hit as a user property: whether the visitor has a
+  // session, never who. data-si hands it to the init script when the session is known before
+  // gtag loads; once gtag is there, each session change sets it again.
+  const { user, loading } = useAuth()
+  const signedIn = loading ? undefined : user ? 'yes' : 'no'
+  useEffect(() => {
+    if (!signedIn) return
+    document.documentElement.dataset.si = signedIn
+    if (granted && GA_ID && typeof window.gtag === 'function') window.gtag('set', 'user_properties', { signed_in: signedIn })
+  }, [granted, signedIn])
+
   return (
     <>
       {granted && GA_ID && (
@@ -69,6 +81,8 @@ export default function Analytics() {
               }
               var loc = clean(location.href), ref = document.referrer ? clean(document.referrer) : '';
               gtag('set', { page_location: loc, page_referrer: ref });
+              var si = document.documentElement.dataset.si;
+              if (si) gtag('set', 'user_properties', { signed_in: si });
               gtag('config', '${GA_ID}', { send_page_view: false, page_location: loc, page_referrer: ref });
               document.documentElement.dataset.pv = location.pathname;
               gtag('event', 'page_view', { page_location: loc, page_title: document.title });
