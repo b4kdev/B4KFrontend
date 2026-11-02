@@ -169,7 +169,7 @@ function BadgeTile({ b, onOpen }: { b: BadgeT; onOpen?: () => void }) {
 
 // ── Profile (visitor) ───────────────────────────────────────────────
 
-type OtherProfile = { id: number; name: string | null; avatar_url: string | null; trips_count: number; saves_count: number; badges_count: number; trips_public: boolean; badges_public: boolean }
+type OtherProfile = { id: number; display_name: string | null; avatar_url: string | null; trips_count: number; saves_count: number; badges_count: number; trips_public: boolean; badges_public: boolean }
 
 export function ProfileVisitorScreen({ id }: { id: string }) {
   const badgeName = useBadgeName()
@@ -186,13 +186,13 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
   const p = profile.data
   if (profile.error) return <V2Page bar={{ type: 'page', title: '' }}><EmptyState title={k('profile.notFound')} /></V2Page>
   return (
-    <V2Page bar={{ type: 'page', title: p?.name ?? '' }}>
+    <V2Page bar={{ type: 'page', title: p?.display_name ?? '' }}>
       {/* Figma: the own profile layout; Share is a round icon button in the header row. */}
       <div className="mx-auto flex w-full max-w-[960px] flex-col gap-[var(--space-6)]">
         {p ? (
           <div className={HEADER_BLEED}><ProfileHeader
             viewport={phone ? 'mobile' : 'desktop'}
-            name={p.name || k('profile.anonymousUser')}
+            name={p.display_name || k('profile.anonymousUser')}
             avatarSrc={p.avatar_url}
             stats={[
               { number: p.trips_count, label: k('profile.header.tripsLabel') },
@@ -207,7 +207,7 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
           <section aria-labelledby="visitor-plans" className="flex flex-col gap-[var(--space-6)] lg:px-[var(--space-6)]">
             <SectionHeader id="visitor-plans" title={t('CD1300')} className="max-md:pr-[var(--space-4)]" />
             <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-3 lg:gap-[var(--space-4)]">
-              {trips.data.map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} imageSrc={tr.cover_image_url} author={p?.name ?? ''} saves={String(tr.save_count)} stops={`${k('saved.plan.stops', { count: tr.stop_count })} · ${k('saved.plan.days', { count: tr.day_count })}`} save={planActions(String(tr.id), tr.title)} /></li>)}
+              {trips.data.map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} imageSrc={tr.cover_image_url} author={p?.display_name ?? ''} saves={String(tr.save_count)} stops={`${k('saved.plan.stops', { count: tr.stop_count })} · ${k('saved.plan.days', { count: tr.day_count })}`} save={planActions(String(tr.id), tr.title)} /></li>)}
             </ul>
           </section>
         ) : null}
