@@ -15,7 +15,7 @@ import { Image } from './Image'
 import { ListItem } from './Lists'
 import { Tabs } from './NavGroups'
 import { TransportMode } from './Plan'
-import { FOCUS_RING_INSET } from './styles'
+import { FOCUS_RING_INSET, HIT_AREA } from './styles'
 import { Link as IntlLink } from '@/i18n/navigation'
 
 // Map and planning organisms (Figma Organisms): AI panel, Plan cart,
@@ -194,7 +194,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
     <section aria-labelledby={id} className={cn('flex flex-col rounded-t-3xl text-ui-fg', state === 'open' ? 'h-full gap-[var(--space-3)] bg-ui-bg-sunken p-[var(--space-4)]' : 'bg-ui-bg-sunken', className)}>
       <p aria-live="polite" className="sr-only">{announce}</p>
       {/* Open: the Left panel's color/bg, everything inside the root's 16 padding; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
-      <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('flex w-full flex-col gap-[var(--space-3)] text-left hover:bg-ui-state-hover', state === 'collapsed' && 'p-[var(--space-4)]', FOCUS_RING_INSET)}>
+      <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('relative flex w-full flex-col gap-[var(--space-3)] text-left hover:bg-ui-state-hover', HIT_AREA, state === 'collapsed' && 'p-[var(--space-4)]', FOCUS_RING_INSET)}>
         <span className="flex w-full items-center gap-[var(--space-2)]">
           <span id={id} aria-live="polite" className="min-w-0 flex-1 type-title-card">{summary}</span>
           <span className="sr-only">{state === 'open' ? labels.close : labels.open}</span>

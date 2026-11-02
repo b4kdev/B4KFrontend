@@ -209,7 +209,8 @@ export function PlanStopRow({ name, number, day, duration, durationLabel, onDura
       <StopBadge number={number} day={day} />
       {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="80px" className="w-[var(--control-height-md)] shrink-0" /> : null}
       {onSelect ? (
-        <button type="button" onClick={onSelect} className="min-w-0 flex-1 truncate text-left type-body-base text-ui-fg hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none">{name}</button>
+        // 44 to tap: padding grows the button around its line; the row centres it, so the row keeps its height.
+        <button type="button" onClick={onSelect} className="min-w-0 flex-1 truncate py-[calc((var(--target-touch-min)-1lh)/2)] text-left type-body-base text-ui-fg hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none">{name}</button>
       ) : (
         <span className="min-w-0 flex-1 truncate type-body-base text-ui-fg">{name}</span>
       )}
