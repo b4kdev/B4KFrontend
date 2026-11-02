@@ -105,9 +105,9 @@ export type PlanningCueProps = {
   }
 }
 
-/** Planning cue: three tiles between content rows; side by side on desktop, stacked on phones. */
+/** Planning cue: three tiles between content rows; side by side on desktop, stacked below it. */
 export function PlanningCue({ state, label, tiles }: PlanningCueProps) {
-  const tile = 'flex min-h-[var(--target-touch-min)] flex-1 items-center gap-[var(--space-4)] rounded-2xl bg-ui-bg-raised p-[var(--space-4)] md:py-[var(--space-6)] text-left text-ui-fg hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] focus-visible:shadow-focus-ring focus-visible:outline-none'
+  const tile = 'flex min-h-[var(--target-touch-min)] min-w-0 flex-1 items-center gap-[var(--space-4)] rounded-2xl bg-ui-bg-raised p-[var(--space-4)] md:py-[var(--space-6)] text-left text-ui-fg hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] focus-visible:shadow-focus-ring focus-visible:outline-none'
   const body = (icon: ReactNode, t: { title: string; text: string }) => (
     <>
       <span aria-hidden className="inline-flex size-[var(--icon-size-lg)] shrink-0 [&>svg]:size-full">{icon}</span>
@@ -120,7 +120,7 @@ export function PlanningCue({ state, label, tiles }: PlanningCueProps) {
   )
   const first = state === 'continue' && tiles.continue ? tiles.continue : tiles.newPlan
   return (
-    <section aria-label={label} className="flex gap-[var(--space-3)] max-md:flex-col">
+    <section aria-label={label} className="flex gap-[var(--space-3)] max-lg:flex-col">
       <IntlLink href={first.href} className={tile}>{body(state === 'continue' ? <Route /> : <Plus />, first)}</IntlLink>
       <button type="button" onClick={tiles.quickPlan.onOpen} className={tile}>{body(<Zap />, tiles.quickPlan)}</button>
       <IntlLink href={tiles.fromSaved.href} className={tile}>{body(<Bookmark />, tiles.fromSaved)}</IntlLink>
