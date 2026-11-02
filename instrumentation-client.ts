@@ -1,11 +1,11 @@
 import * as Sentry from '@sentry/nextjs';
-import { scrubBreadcrumb, scrubEvent } from '@/lib/sentry-scrub';
+import { DATA_COLLECTION, scrubBreadcrumb, scrubEvent } from '@/lib/sentry-scrub';
 
 // PIPA note: no user identifiers, no session replay, no default PII —
 // crash telemetry only. See adjacent discussion, 2026-07-22.
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  sendDefaultPii: false,
+  dataCollection: DATA_COLLECTION,
   integrations: [],
   beforeSend: scrubEvent,
   beforeSendTransaction: scrubEvent,

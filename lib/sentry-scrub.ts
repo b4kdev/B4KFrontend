@@ -1,5 +1,20 @@
-import type { Breadcrumb, Event } from '@sentry/nextjs'
+import type { Breadcrumb, Event, init } from '@sentry/nextjs'
 import { withoutQuery } from '@/lib/analytics'
+
+// What the SDK may collect on its own: nothing about the person or the request (no user fields,
+// cookies, headers, query strings, bodies, query data or local variables). Errors keep their
+// stack trace and source lines.
+export const DATA_COLLECTION: NonNullable<Parameters<typeof init>[0]>['dataCollection'] = {
+  userInfo: false,
+  cookies: false,
+  httpHeaders: false,
+  httpBodies: [],
+  urlQueryParams: false,
+  graphQL: { document: false, variables: false },
+  genAI: { inputs: false, outputs: false },
+  databaseQueryData: false,
+  stackFrameVariables: false,
+}
 
 // Sentry runs without the cookie banner: crash telemetry only. Every event and breadcrumb leaves
 // without user identifiers, cookies, request bodies or query strings (search text, ids, tokens).
