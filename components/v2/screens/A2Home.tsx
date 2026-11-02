@@ -258,6 +258,7 @@ export function HomeScreen() {
                 labels={{ save: t('CD1610'), dismiss: t('CD0128') }}
               />
             ) : null),
+    // No events source yet: an empty list, a missing endpoint or a failed load leave the row out.
     events: (events.data?.length ? (
               <RowSection
                 arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
@@ -266,9 +267,7 @@ export function HomeScreen() {
                   <Card key={e.id} type="place" href={`/map?event=${e.id}`} title={e.title} imageSrc={e.image_url} meta={e.location} dDay={dDay(e.date_start)} />
                 ))}
               />
-            ) : (
-              <RowState title={t('CD0425')} error={events.error} onRetry={() => events.mutate()} />
-            )),
+            ) : null),
     popularPlans: (plans.data?.length ? (
               <RowSection
                 arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
