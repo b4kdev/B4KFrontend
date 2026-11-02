@@ -67,12 +67,17 @@ const SMALL_TARGETS = (min) => {
     if (r.width >= min && r.height >= min) return;
     // Inline links inside running text are exempt.
     if (el.tagName === 'A' && getComputedStyle(el).display === 'inline' && el.parentElement && el.parentElement.textContent.trim().length > el.textContent.trim().length + 20) return;
-    // WCAG 2.5.8 spacing: a 24 px circle on the target's center may not touch another target.
+    // WCAG 2.5.8 spacing: a 24 px circle on the target's center may not touch another target. A
+    // neighbor counts only where it can be tapped: its point nearest the center must hit it, so
+    // parts under a fixed bar, or a card's own link under a link drawn over it, do not count.
     const [cx, cy] = center(r);
     const crowded = boxes.some((o, j) => {
       if (j === i || els[j].contains(el) || el.contains(els[j])) return false;
       const dx = Math.max(o.left - cx, 0, cx - o.right), dy = Math.max(o.top - cy, 0, cy - o.bottom);
-      return Math.hypot(dx, dy) < 12;
+      if (Math.hypot(dx, dy) >= 12) return false;
+      const px = Math.min(Math.max(cx, o.left), o.right - 1), py = Math.min(Math.max(cy, o.top), o.bottom - 1);
+      const hit = document.elementFromPoint(Math.min(Math.max(px, 0), innerWidth - 1), Math.min(Math.max(py, 0), innerHeight - 1));
+      return !!hit && (hit === els[j] || els[j].contains(hit));
     });
     if (r.width >= 24 && r.height >= 24 && !crowded) return;
     const name = (el.getAttribute('aria-label') || el.textContent || el.tagName).trim().replace(/\s+/g, ' ').slice(0, 40);
