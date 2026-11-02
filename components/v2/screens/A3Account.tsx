@@ -65,6 +65,7 @@ import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { jsonFetch } from './A2Home'
 import { SignedOutPrompt } from './A3Saved'
 import { passwordProblem } from '@/lib/password'
+import { regionName } from '../map/areaName'
 
 // A3 account screens and A5 language and theme: Profile own and visitor, Badges, Leaderboard,
 // Notifications, Settings. Live /api/profile, /api/badges, /api/leaderboard,
@@ -408,7 +409,7 @@ export function LeaderboardTab() {
           arrowLabels={arrows}
           title={t('CD1649')}
           seeAll={{ href: '/explore/trending', label: t('CD1309') }}
-          cards={places.data.map((p) => <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, placeName(p))} title={placeName(p)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} meta={p.display_region} trending={t('CD0313')} />)}
+          cards={places.data.map((p) => <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, placeName(p))} title={placeName(p)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} meta={regionName(p.display_region ?? '', locale)} trending={t('CD0313')} />)}
         />
       ) : null}
       <section aria-labelledby="lb-planners" className={section}>

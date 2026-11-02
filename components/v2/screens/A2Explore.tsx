@@ -43,6 +43,7 @@ import { useV2Shell } from '../V2Shell'
 import { jsonFetch, RowState, SectionSkeletons, useContinueDraft } from './A2Home'
 import { CATEGORIES, rowName } from '../categories'
 import { NotFoundScreen } from './A4Pages'
+import { regionName } from '../map/areaName'
 
 // Explore (A2): Category page, See all list, Collection page,
 // Category special pages. Live data from /api/explore/*. Desktop: Left panel Index (280)
@@ -268,7 +269,7 @@ export function CategoryScreen({ category }: { category: string }) {
                 arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
                 title={rowLabel(category, s.id)}
                 seeAll={{ href: rowHref(category, s.id), label: t('CD1309') }}
-                featured={featured ? <Card type="featured" href={`/map?poi=${featured.poi_id}`} title={poiName(featured, locale)} imageSrc={featured.primary_image_url} eyebrow={t('CD0151')} meta={featured.display_region} trending={featured.is_trending ? t('CD0313') : undefined} /> : undefined}
+                featured={featured ? <Card type="featured" href={`/map?poi=${featured.poi_id}`} title={poiName(featured, locale)} imageSrc={featured.primary_image_url} eyebrow={t('CD0151')} meta={regionName(featured.display_region ?? '', locale)} trending={featured.is_trending ? t('CD0313') : undefined} /> : undefined}
                 cards={s.items.filter((p) => p !== featured).map((p) => <PoiCard key={p.poi_id} p={p} act={act} />)}
               />
               {i === 0 ? cue : null}
@@ -329,7 +330,7 @@ function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceAct
       title={poiName(p, locale)}
       imageSrc={p.primary_image_url}
       placeType={placeTypeOf(p.interest_category)}
-      meta={p.display_region}
+      meta={regionName(p.display_region ?? '', locale)}
       trending={p.is_trending ? t('CD0313') : undefined}
       sponsored={p.is_partner ? t('CD0476') : undefined}
       dDay={p.event_date ? dDay(p.event_date) : undefined}
@@ -378,7 +379,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const subtitle = fromHome ? (row === 'trending' ? t('CD1566') : t('CD1568')) : undefined
   const places: { id: string; node: React.ReactNode; domain?: string }[] = fromHome
     ? row === 'trending'
-      ? (trending.data ?? []).map((p) => ({ id: p.poi_id, domain: p.display_domain, node: <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} meta={p.display_region} /> }))
+      ? (trending.data ?? []).map((p) => ({ id: p.poi_id, domain: p.display_domain, node: <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} meta={regionName(p.display_region ?? '', locale)} /> }))
       : (plans.data ?? []).map((p) => ({ id: p.id, node: <Card type="plan" href={`/plan/${p.id}`} title={p.title} save={planAct(String(p.id), p.title)} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={[t('CD0473', { n: p.stop_count }), ...(p.duration_days ? [t('CD1232', { count: p.duration_days })] : [])].join(' · ')} /> }))
     : (explore.data?.sections.find((s) => s.id === row)?.items ?? []).map((p) => ({ id: p.poi_id, node: <PoiCard p={p} act={act} /> }))
   const chipped = chip === 'all' ? places : places.filter((p) => p.domain === chip)
@@ -523,7 +524,7 @@ export function CollectionScreen({ slug }: { slug: string }) {
       {items.length ? (
         <ol className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">
           {items.slice(0, shown).map((p) => (
-            <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} /></li>
+            <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={regionName(p.display_region ?? '', locale)} /></li>
           ))}
         </ol>
       ) : null}
@@ -583,7 +584,7 @@ export function SpecialScreen({ api, category }: { api: string; category: string
         <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">
           {data?.items.map((p) => (
             <li key={p.poi_id}>
-              <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={(locale === 'ko' ? p.relationship_ko : p.relationship_en) ?? p.display_region} />
+              <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={(locale === 'ko' ? p.relationship_ko : p.relationship_en) ?? regionName(p.display_region ?? '', locale)} />
             </li>
           ))}
         </ul>

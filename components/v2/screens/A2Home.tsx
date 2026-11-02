@@ -33,6 +33,7 @@ import { useV2Shell } from '../V2Shell'
 import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { CATEGORIES } from '../categories'
 import { useDDay } from '../useDDay'
+import { regionName } from '../map/areaName'
 
 // Home: hero, Explore by category, Trending now,
 // Planning cue (after Trending), Interests card, Upcoming events, Popular plans.
@@ -225,7 +226,7 @@ export function HomeScreen() {
                 seeAll={{ href: '/explore/trending', label: t('CD1309') }}
                 cards={trending.data.map((p) => (
                   // Every place in the Trending row is trending, so each card carries the badge, as drawn.
-                  <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, name(p))} title={name(p)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} meta={p.display_region} trending={t('CD0313')} />
+                  <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, name(p))} title={name(p)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} meta={regionName(p.display_region ?? '', locale)} trending={t('CD0313')} />
                 ))}
               />
             ) : (

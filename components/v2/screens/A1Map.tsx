@@ -41,7 +41,7 @@ import type { SavedData } from '@/app/api/saved/route'
 import type { ItineraryDetail } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
-import { useAreaName } from '../map/areaName'
+import { useAreaName, regionName } from '../map/areaName'
 import { ABOVE_LEGAL_LINE, MapLegalLine } from '../map/MapLegalLine'
 import { useLocateMe } from '../map/LocateMe'
 import { useBadgeUnlock } from '../badges'
@@ -468,7 +468,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       <PlaceDetail
         viewport={phone ? 'mobile' : 'desktop'}
         name={detailName}
-        meta={[detail.display_domain && t(CATEGORIES.find((c) => c.slug === detail.display_domain)?.label ?? 'CD0804'), detail.display_region].filter(Boolean).join(' · ')}
+        meta={[detail.display_domain && t(CATEGORIES.find((c) => c.slug === detail.display_domain)?.label ?? 'CD0804'), detail.display_region && regionName(detail.display_region, locale)].filter(Boolean).join(' · ')}
         imageSrc={detail.primary_image_url}
         imageAlt={detailName}
         description={detail.description}
@@ -550,7 +550,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
               title={nameOf(p, locale)}
               imageSrc={p.primary_image_url}
               placeType={placeTypeOf(p.interest_category)}
-              meta={p.display_region ?? ''}
+              meta={regionName(p.display_region ?? '', locale)}
               description={p.description}
               addToPlan={{ onAdd: () => addToPlan(p), label: `${k('map.poiDetail.addToPlan')}: ${nameOf(p, locale)}` }}
               save={{ saved: savedIds.has(p.poi_id), onSave: () => toggleSave(p), label: `${k('map.poiDetail.save')} ${nameOf(p, locale)}` }}
@@ -579,7 +579,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       folders={(saved.data?.folders ?? []).filter((f) => !f.is_default).map((f) => ({ id: f.id, name: f.name, count: k('saved.folder.poiCount', { count: f.pois.length }) }))}
       folder={(() => {
         const f = saved.data?.folders.find((x) => x.id === folderId)
-        return f ? { name: f.name, places: f.pois.map((p) => ({ id: p.poi_id, name: nameOf(p, locale), meta: p.display_region, imageSrc: p.primary_image_url })) } : undefined
+        return f ? { name: f.name, places: f.pois.map((p) => ({ id: p.poi_id, name: nameOf(p, locale), meta: regionName(p.display_region ?? '', locale), imageSrc: p.primary_image_url })) } : undefined
       })()}
       onOpenFolder={setFolderId}
       onBack={() => setFolderId(null)}

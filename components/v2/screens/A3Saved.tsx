@@ -42,6 +42,7 @@ import { useV2Shell } from '../V2Shell'
 import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { jsonFetch } from './A2Home'
 import { LeaderboardTab } from './A3Account'
+import { regionName } from '../map/areaName'
 
 // Saved and Plan from saved places.
 // Live /api/saved, /api/folders, /api/plans, /api/profile/trips.
@@ -206,7 +207,7 @@ export function SavedScreen() {
       </div>
       <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4 lg:gap-[var(--space-4)]">
         {folder.pois.map((p) => (
-          <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={p.display_region} {...placeActions(p.poi_id, poiName(p, locale))} /></li>
+          <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={regionName(p.display_region ?? '', locale)} {...placeActions(p.poi_id, poiName(p, locale))} /></li>
         ))}
       </ul>
     </div>
@@ -460,7 +461,7 @@ export function PlanFromSavedScreen() {
                 onChange={() => toggle(p.poi_id)}
                 label={<>
                   <Image ratio="1:1" src={p.primary_image_url} alt="" sizes="80px" className="size-[var(--space-12)] shrink-0" />
-                  <span className="flex min-w-0 flex-col gap-[var(--space-0-5)]"><span className="truncate text-ui-fg">{poiName(p, locale)}</span><span className="type-body-caption text-ui-fg-muted">{p.display_region}</span></span>
+                  <span className="flex min-w-0 flex-col gap-[var(--space-0-5)]"><span className="truncate text-ui-fg">{poiName(p, locale)}</span><span className="type-body-caption text-ui-fg-muted">{regionName(p.display_region ?? '', locale)}</span></span>
                 </>}
               />
             </li>
