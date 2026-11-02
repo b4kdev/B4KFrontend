@@ -533,8 +533,9 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       ) : null}
       {/* The area name and the place count, 16 above the cards; with no places the name only. The name
           comes later from the geocoder, so its line is held from the first paint (blank until then) and
-          the list does not move down when it arrives. */}
-      {!(collectionOn ? collection.isLoading : isLoading) && (areaLine || areaHeld || (listPois.length && !collectionOn)) ? (
+          the list does not move down when it arrives. The header goes only on the first load: while
+          the list reloads for a new map area it stays, and the count changes when the answer lands. */}
+      {!((collectionOn ? collection.isLoading : isLoading) && !listPois.length) && (areaLine || areaHeld || (listPois.length && !collectionOn)) ? (
         <div className="mb-[var(--space-1)] flex flex-col">
           {areaLine ? <h2 className="type-title-card text-ui-fg">{areaLine}</h2> : areaHeld ? <div aria-hidden className="type-title-card">{'\u00a0'}</div> : null}
           {listPois.length && !collectionOn ? <p className="type-body-caption text-ui-fg-muted">{GAP.placesInArea(listPois.length)}</p> : null}
