@@ -73,7 +73,8 @@ export function Image({ ratio = '1:1', src, alt, sizes = '100vw', priority, miss
       {state === 'missing' ? (
         <span className="absolute inset-0 flex flex-col items-center justify-center gap-[var(--space-2)] text-ui-fg-muted">
           <PlaceTypeIcon type={placeType} className="size-[var(--icon-size-xl)]" />
-          {missingLabel ? <span aria-hidden className="type-eyebrow-category uppercase">{missingLabel}</span> : null}
+          {/* The label takes the full text color: muted text on this fill is under 4.5:1 in both modes (the icon keeps muted, 3:1 is enough). */}
+          {missingLabel ? <span aria-hidden className="type-eyebrow-category uppercase text-ui-fg">{missingLabel}</span> : null}
         </span>
       ) : null}
     </span>
