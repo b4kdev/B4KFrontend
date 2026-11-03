@@ -155,17 +155,25 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         if (!area) return
         const sheet = document.querySelector('[role="region"][data-toast-floor]')?.getBoundingClientRect()
         const bars = topBars.current?.getBoundingClientRect()
-        setCovered({
+        const next = {
           top: bars ? Math.max(0, Math.round(bars.bottom - area.top)) : 0,
           bottom: sheet ? Math.max(0, Math.round(area.bottom - sheet.top)) : 0,
           height: Math.round(area.height),
-        })
+        }
+        // Same numbers keep the same state, so the page does not render again: a render rewrites the
+        // map's markers, which the watcher below would see and measure again, without end.
+        setCovered((c) => (c.top === next.top && c.bottom === next.bottom && c.height === next.height ? c : next))
       })
     }
     const sizes = new ResizeObserver(measure)
+    // Watched again only when one of the parts is swapped (the sheet comes and goes), not on every change in the page.
+    let watched: (Element | null)[] = []
     const watch = () => {
+      const els = [mapArea.current, topBars.current, document.querySelector('[role="region"][data-toast-floor]')]
+      if (els.every((e, i) => e === watched[i])) return
+      watched = els
       sizes.disconnect()
-      ;[mapArea.current, topBars.current, document.querySelector('[role="region"][data-toast-floor]')].forEach((e) => e && sizes.observe(e))
+      els.forEach((e) => e && sizes.observe(e))
       measure()
     }
     const parts = new MutationObserver(watch)
