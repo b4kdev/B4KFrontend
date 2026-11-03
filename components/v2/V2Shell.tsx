@@ -278,7 +278,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
       {/* Toasts: on phones 12 above whatever is at the bottom (above the offline notice while offline);
           desktop 24 from the right edge and 24 under the Header (64 on map pages, under the map chips). A timed toast has no close button in the
           design: it leaves on its own after 4 s. */}
-      <div aria-live="polite" style={{ '--toast-floor': toastFloor } as CSSProperties} className={cn('pointer-events-none fixed inset-x-0 bottom-[var(--space-3)] -translate-y-[var(--toast-floor)] lg:translate-y-0 z-[60] flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-auto lg:left-auto lg:right-[var(--space-6)] lg:items-end lg:px-0', onMap ? 'lg:top-[calc(var(--layout-header-height)+var(--space-16))]' : 'lg:top-[calc(var(--layout-header-height)+var(--space-6))]', !online && 'max-lg:bottom-[calc(var(--toast-floor)+var(--space-3)+var(--space-16))]')}>
+      <div aria-live="polite" style={{ '--toast-floor': toastFloor } as CSSProperties} className={cn('pointer-events-none fixed inset-x-0 bottom-[var(--space-3)] -translate-y-[var(--toast-floor)] lg:translate-y-0 z-[60] flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-auto lg:left-auto lg:right-[var(--space-6)] lg:items-end lg:px-0', onMap ? 'lg:top-[calc(var(--layout-header-height)+var(--space-16))]' : 'lg:top-[calc(var(--layout-header-height)+var(--space-6))]', !online && 'max-lg:bottom-[calc(var(--space-3)+var(--space-16))]')}>
         <div ref={toastBox} className="flex w-full flex-col items-center lg:items-end">
         {toastMsg ? (
           <Toast
