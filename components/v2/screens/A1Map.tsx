@@ -746,7 +746,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         {/* The open plan dims the map and the bar above it, as drawn; a tap there closes it. */}
         {planSheet ? <Scrim onClick={() => setPlanSheet(false)} className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] z-30" /> : null}
         {/* Naming the plan shows the map behind its sheet, as drawn; Cancel brings the map sheet back as it was. */}
+        {/* The plan sheet is its own sheet, shown at its full height at once: a plan made by Quick plan arrives
+            well after the tap, and the map sheet growing into it then moved the page under the reader. */}
         <BottomSheet
+          key={planSheet ? 'plan' : 'browse'}
           type="map"
           open={!saveOpen}
           label={t('CD0679')}
