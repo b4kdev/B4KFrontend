@@ -193,6 +193,8 @@ export type TopAppBarProps = {
   onBack?: () => void
   /** Page: one-line title. */
   title?: string
+  /** Page: the title is the page's h1 (default), or plain text when the page shows its own h1. */
+  titleAs?: 'h1' | 'p'
   /** Page: one optional action (an Icon button). */
   action?: ReactNode
   /** Home and Map: the search pill (a link or button that opens search). Search: the filled field. */
@@ -204,7 +206,7 @@ export type TopAppBarProps = {
  * Top app bar: below 1024, 56 high plus the safe area, no border. Home and Map float:
  * no strip, a round Menu button and the Search pill over the content.
  */
-export function TopAppBar({ type, labels, onMenu, onBack, title, action, search, className }: TopAppBarProps) {
+export function TopAppBar({ type, labels, onMenu, onBack, title, titleAs: Title = 'h1', action, search, className }: TopAppBarProps) {
   const round = 'rounded-full bg-ui-bg'
   const floating = type === 'home' || type === 'map'
   return (
@@ -235,7 +237,7 @@ export function TopAppBar({ type, labels, onMenu, onBack, title, action, search,
         ) : (
           <>
             <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onBack} />
-            <h1 className="min-w-0 flex-1 truncate type-title-card">{title}</h1>
+            <Title className="min-w-0 flex-1 truncate type-title-card">{title}</Title>
             {action}
           </>
         )}

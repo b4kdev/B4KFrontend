@@ -11,8 +11,12 @@ import { useV2Shell } from './V2Shell'
 // with Back and a title), the main landmark, centered content up to 1280, Footer.
 
 export type V2PageProps = {
-  /** Phone top bar: Home (menu + search) or Page (back + title). */
-  bar?: { type: 'home' } | { type: 'page'; title: string; action?: ReactNode } | { type: 'none' }
+  /**
+   * Phone top bar: Home (menu + search) or Page (back + title). Every page has one h1: by default the
+   * Page bar's title on phones; h1 'page' = the page shows its own h1 at every width, so the title is
+   * plain text; h1 'always' = the page has none of its own, so desktop gets the title as a hidden h1.
+   */
+  bar?: { type: 'home' } | { type: 'page'; title: string; action?: ReactNode; h1?: 'page' | 'always' } | { type: 'none' }
   /** Full width (no 1280 container), e.g. Home with its hero. */
   bleed?: boolean
   /** Hide the footer (flows); 'phone' hides it on phones only (sign-in pages). */
@@ -31,11 +35,12 @@ export function V2Page({ bar = { type: 'home' }, bleed, noFooter, underBar, chil
       {bar.type === 'home' ? (
         <TopAppBar type="home" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} className="fixed inset-x-0 top-0 z-30 lg:hidden" />
       ) : bar.type === 'page' ? (
-        <TopAppBar type="page" labels={labels} onBack={() => router.back()} title={bar.title} action={bar.action} className="sticky top-0 z-30 lg:hidden" />
+        <TopAppBar type="page" labels={labels} onBack={() => router.back()} title={bar.title} titleAs={bar.h1 === 'page' ? 'p' : 'h1'} action={bar.action} className="sticky top-0 z-30 lg:hidden" />
       ) : null}
       {/* The floating Home bar sits over the page: the first block starts below it on phones. */}
       {bar.type === 'home' && !underBar ? <div aria-hidden className="h-[calc(var(--fab-size)+env(safe-area-inset-top))] shrink-0 lg:hidden" /> : null}
       <main id="main" tabIndex={-1} className={cn('flex-1 outline-none', !bleed && 'mx-auto w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] px-[var(--grid-gutter-mobile)] py-[var(--space-6)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]', className)}>
+        {bar.type === 'page' && bar.h1 === 'always' ? <h1 className="sr-only max-lg:hidden">{bar.title}</h1> : null}
         {children}
       </main>
       {noFooter === true ? null : <V2Footer className={noFooter === 'phone' ? 'max-lg:hidden' : undefined} />}

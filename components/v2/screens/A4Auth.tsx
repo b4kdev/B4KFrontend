@@ -37,7 +37,7 @@ export function LoginScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deletion])
   return (
-    <V2Page bar={{ type: 'page', title: t('CD0050') }} noFooter="phone" className="flex items-center justify-center">
+    <V2Page bar={{ type: 'page', title: t('CD0050'), h1: 'always' }} noFooter="phone" className="flex items-center justify-center">
       <SignInCard {...flow} title={t('CD0054')} subtitle={t('CD0056')} />
     </V2Page>
   )
@@ -86,7 +86,7 @@ export function ResetPasswordScreen() {
   }
   const toSignIn = () => router.push(next === '/' ? '/login' : `/login?next=${encodeURIComponent(next)}`)
   return (
-    <V2Page bar={{ type: 'page', title: gap.resetPassword }} noFooter="phone" className="flex items-center justify-center">
+    <V2Page bar={{ type: 'page', title: gap.resetPassword, h1: 'always' }} noFooter="phone" className="flex items-center justify-center">
       {expired ? (
         <SignInCard
           {...flow}

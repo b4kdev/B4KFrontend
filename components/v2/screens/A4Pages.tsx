@@ -406,7 +406,7 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
   return (
     // Figma legal pages: a 1200 wide content area (narrower than the 1344 list pages), 72 from the top;
     // on phones the document adds 32 above and below the page's 24.
-    <V2Page bar={{ type: 'page', title: cfg.title }} className="max-lg:py-[calc(var(--space-6)+var(--space-8))] lg:max-w-[1200px] lg:pt-[calc(var(--space-10)+var(--space-8))]">
+    <V2Page bar={{ type: 'page', title: cfg.title, h1: 'page' }} className="max-lg:py-[calc(var(--space-6)+var(--space-8))] lg:max-w-[1200px] lg:pt-[calc(var(--space-10)+var(--space-8))]">
       <div className="flex flex-col gap-[var(--space-8)]">
         <LegalDocument
           viewport={phone ? 'mobile' : 'desktop'}
@@ -477,7 +477,7 @@ export function ErrorScreen({ reset }: { reset: () => void }) {
 export function AboutScreen() {
   const t = useCd()
   return (
-    <V2Page bar={{ type: 'page', title: t('CD1173') }} bleed>
+    <V2Page bar={{ type: 'page', title: t('CD1173'), h1: 'page' }} bleed>
       <div className="flex flex-col gap-[var(--space-4)] px-[var(--grid-gutter-mobile)] pb-[var(--space-6)] pt-[var(--space-8)] lg:gap-0 lg:p-0">
         <div className="lg:px-[var(--space-10)] lg:pt-[var(--space-16)]">
           <Logo type="wordmark" className="h-auto w-full" />

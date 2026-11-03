@@ -99,13 +99,13 @@ export function ProfileOwnScreen() {
   const trips = useSWR<ProfileTrip[]>(user ? '/api/profile/trips' : null, jsonFetch)
   const badges = useSWR<BadgesData>(user && GAMIFICATION ? '/api/badges' : null, jsonFetch)
   if (!user) {
-    return <V2Page bar={{ type: 'page', title: k('profile.header.breadcrumb') }}><SignedOutPrompt title={k('auth.gate.context.profile_nav')} text={k('auth.gate.valueProp')} /></V2Page>
+    return <V2Page bar={{ type: 'page', title: k('profile.header.breadcrumb'), h1: 'always' }}><SignedOutPrompt title={k('auth.gate.context.profile_nav')} text={k('auth.gate.valueProp')} /></V2Page>
   }
   const p = profile.data
   // Your profile is your public page: only published plans; drafts and private plans live in Saved.
   const plans = trips.data?.filter((tr) => tr.is_published)
   return (
-    <V2Page bar={{ type: 'page', title: k('profile.header.breadcrumb') }}>
+    <V2Page bar={{ type: 'page', title: k('profile.header.breadcrumb'), h1: 'page' }}>
       {/* Figma: one 960 column; header, then the Plans section (subtitle, See all, three
           cards, Open Saved) on the 24 inset. */}
       <div className="mx-auto flex w-full max-w-[960px] flex-col gap-[var(--space-6)]">
@@ -184,9 +184,9 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
   const badges = useSWR<OtherUserBadge[] | { badges: OtherUserBadge[] }>(GAMIFICATION ? `/api/profile/${id}/badges` : null, jsonFetch)
   const badgeList = Array.isArray(badges.data) ? badges.data : badges.data?.badges ?? []
   const p = profile.data
-  if (profile.error) return <V2Page bar={{ type: 'page', title: '' }}><EmptyState title={k('profile.notFound')} /></V2Page>
+  if (profile.error) return <V2Page bar={{ type: 'page', title: '', h1: 'page' }}><EmptyState titleAs="h1" title={k('profile.notFound')} /></V2Page>
   return (
-    <V2Page bar={{ type: 'page', title: p?.display_name ?? '' }}>
+    <V2Page bar={{ type: 'page', title: p?.display_name ?? '', h1: 'page' }}>
       {/* Figma: the own profile layout; Share is a round icon button in the header row. */}
       <div className="mx-auto flex w-full max-w-[960px] flex-col gap-[var(--space-6)]">
         {p ? (
@@ -454,7 +454,7 @@ export function LeaderboardScreen() {
   return (
     // Figma: 16 above on phones; 24 above and 32 below on desktop.
     // An empty board fills the page, the empty state centred in it.
-    <V2Page bar={{ type: 'page', title: t('CD1650') }} className="flex flex-col max-lg:py-[var(--space-4)] lg:pb-[var(--space-8)]">
+    <V2Page bar={{ type: 'page', title: t('CD1650'), h1: 'always' }} className="flex flex-col max-lg:py-[var(--space-4)] lg:pb-[var(--space-8)]">
       <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col gap-[var(--space-4)]">
         <SectionHeader title={t('CD1650')} subtitle={t('CD1651')} className="max-lg:hidden" />
         <Tabs label={k('leaderboard.windows.ariaLabel')} width={phone ? 'equal' : 'hug'} value={win} onValueChange={(v) => setWin(v as LeaderboardWindow)} tabs={PERIODS.map((w) => ({ id: w, label: k(`leaderboard.windows.${w}`) }))} className="lg:max-w-[480px]" />
@@ -520,7 +520,7 @@ export function NotificationsScreen() {
     if (n.type === 'badge_earned' && p.badge_name) return { title: t('CD1877', { badge: String(p.badge_name) }), body: '' }
     return { title: n.title, body: n.body }
   }
-  if (!user) return <V2Page bar={{ type: 'page', title: k('notifications.title') }}><SignedOutPrompt title={k('notifications.title')} text={t('CD1596')} /></V2Page>
+  if (!user) return <V2Page bar={{ type: 'page', title: k('notifications.title'), h1: 'always' }}><SignedOutPrompt title={k('notifications.title')} text={t('CD1596')} /></V2Page>
   return (
     <V2Page bar={{ type: 'page', title: k('notifications.title') }} className="flex flex-col max-lg:py-[var(--space-4)] lg:pb-[var(--space-8)]">
       {/* Figma: 720 column, section-header title, Mark all read on its own row at the end,

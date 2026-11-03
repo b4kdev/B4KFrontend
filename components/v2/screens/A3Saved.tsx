@@ -471,7 +471,7 @@ export function PlanFromSavedScreen() {
     )
   }
   return (
-    <V2Page bar={{ type: 'page', title: t('CD1363') }} noFooter bleed>
+    <V2Page bar={{ type: 'page', title: t('CD1363'), h1: 'always' }} noFooter bleed>
       {/* Phones use the Page top bar; desktop the Flow bar. */}
       <div className="sticky top-0 z-30 hidden h-[var(--layout-header-height)] items-center justify-between bg-ui-bg pl-[var(--space-6)] pr-[var(--space-3)] lg:flex">
         <IntlLink href="/" className="inline-flex focus-visible:shadow-focus-ring focus-visible:outline-none"><Logo label="B4K" className="h-[var(--space-6)] w-auto" /></IntlLink>

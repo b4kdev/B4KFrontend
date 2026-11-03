@@ -676,24 +676,29 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     </div>
   ) : null
 
+  // One h1 per page: an open place's name (Place detail) while it shows, else a hidden Map heading.
+  const placeShown = !!(selectedId && detail) && !(phone && planSheet)
   const map = (
-    <V2MapCanvas
-      ref={mapRef}
-      openAt={openAt}
-      holdOpen={!!openedWith && !placeMissing}
-      pois={mapPois}
-      selectedId={selectedId}
-      onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
-      planStops={stopsVisible ? planStops : []}
-      fitBottom={fitBottom}
-      fitTop={fitTopPx}
-      activeDay={activeDay}
-      savedIds={savedIds}
-      onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => { setBounds(b); if (filterOn.current) setAreaMoved(true) }, 300) }}
-      userLocation={locate.location}
-      label={k('itinerary.mapAriaLabel')}
-      errorText={GAP.mapError}
-    />
+    <>
+      {placeShown ? null : <h1 className="sr-only">{labels.map}</h1>}
+      <V2MapCanvas
+        ref={mapRef}
+        openAt={openAt}
+        holdOpen={!!openedWith && !placeMissing}
+        pois={mapPois}
+        selectedId={selectedId}
+        onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
+        planStops={stopsVisible ? planStops : []}
+        fitBottom={fitBottom}
+        fitTop={fitTopPx}
+        activeDay={activeDay}
+        savedIds={savedIds}
+        onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => { setBounds(b); if (filterOn.current) setAreaMoved(true) }, 300) }}
+        userLocation={locate.location}
+        label={k('itinerary.mapAriaLabel')}
+        errorText={GAP.mapError}
+      />
+    </>
   )
 
   const dialogs = (

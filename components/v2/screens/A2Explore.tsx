@@ -167,7 +167,7 @@ function ExploreFrame({ category, sections, active, pageTitle, rowsKey, children
       ) : null}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* A list page inside a category (See all) gets a Page top bar with its title on phones, no tabs. */}
-        <V2Page bar={pageTitle ? { type: 'page', title: pageTitle } : { type: 'home' }}>
+        <V2Page bar={pageTitle ? { type: 'page', title: pageTitle, h1: 'page' } : { type: 'home' }}>
           {phone && !pageTitle ? (
             <Tabs
               label={t('CD0804')}
@@ -473,7 +473,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
       ) : null}
     </div>
   )
-  if (fromHome) return <V2Page bar={{ type: 'page', title }} className="lg:flex lg:flex-col">{body}</V2Page>
+  if (fromHome) return <V2Page bar={{ type: 'page', title, h1: 'page' }} className="lg:flex lg:flex-col">{body}</V2Page>
   return <ExploreFrame category={category} sections={sections} active={row} pageTitle={title}>{body}</ExploreFrame>
 }
 
@@ -543,7 +543,7 @@ export function CollectionScreen({ slug }: { slug: string }) {
       ) : null}
     </div>
   )
-  if (!category) return <V2Page bar={{ type: 'page', title: title ?? '' }}>{body}</V2Page>
+  if (!category) return <V2Page bar={{ type: 'page', title: title ?? '', h1: 'page' }}>{body}</V2Page>
   return <ExploreFrame category={category} sections={rows} active="collections" pageTitle={title ?? ''}>{body}</ExploreFrame>
 }
 
