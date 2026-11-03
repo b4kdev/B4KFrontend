@@ -213,7 +213,7 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
           <Tabs label={labels.tabs} width="equal" baseline={false} value={view} onValueChange={(v) => onViewChange(v as SignInView)} tabs={[{ id: 'sign-in', label: labels.signIn }, { id: 'sign-up', label: labels.signUp }]} />
           <TextInput label={emailField} showLabel type="email" autoComplete="email" required placeholder={labels.emailPlaceholder} value={values.email ?? ''} onChange={set('email')} />
           <TextInput label={labels.password} showLabel type="password" autoComplete={view === 'sign-in' ? 'current-password' : 'new-password'} required placeholder={view === 'sign-in' ? labels.passwordPlaceholder : undefined} value={values.password ?? ''} onChange={set('password')} help={view === 'sign-up' ? labels.passwordHint : undefined} />
-          {view === 'sign-in' ? <button type="button" onClick={() => onViewChange('forgot')} className="self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover">{labels.forgot}</button> : null}
+          {view === 'sign-in' ? <button type="button" onClick={() => onViewChange('forgot')} className={cn('relative self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{labels.forgot}</button> : null}
           <Button type="submit" loading={busy} className="w-full">{view === 'sign-in' ? labels.signIn : labels.signUp}</Button>
         </form>
       ) : view === 'forgot' ? (
@@ -295,7 +295,7 @@ export function ConsentStep({ title, subtitle, footnote, items, checked, onCheck
                 label={<span className="inline-flex flex-wrap items-center gap-[var(--space-2)]">{i.label}<span className="type-body-caption text-ui-fg-muted">{i.required ? labels.required : labels.optional}</span></span>}
               />
               {i.viewHref ? (
-                <button type="button" onClick={() => onView(i)} className="inline-flex shrink-0 items-center gap-[var(--space-1-5)] type-label-button text-ui-link hover:text-ui-link-hover">
+                <button type="button" onClick={() => onView(i)} className={cn('relative inline-flex shrink-0 items-center gap-[var(--space-1-5)] type-label-button text-ui-link hover:text-ui-link-hover', HIT_AREA)}>
                   {labels.view}
                   <ArrowRight aria-hidden className="size-[var(--icon-size-sm)]" />
                 </button>
