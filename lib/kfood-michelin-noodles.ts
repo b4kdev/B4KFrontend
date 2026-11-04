@@ -16,6 +16,8 @@ export interface MichelinNoodlePoi {
   name_en: string
   primary_image_url: string | null
   display_region: string
+  /** The place's district (중구), when read from the place itself. */
+  display_district?: string | null
   /** Seed data: 'naengmyeon'|'other' invented bucket. Real API data: the raw
    *  core.poi_context.relation value. Free string so both sources fit one field. */
   poi_type: string

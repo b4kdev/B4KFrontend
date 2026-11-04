@@ -371,14 +371,19 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     const source = from ?? (poi.poi_id === entry.current.id ? entry.current.source : 'map')
     // Read through the ref: the toast's action runs later, on the plan as it is then.
     const draft = latestDraft.current
-    // The open day, or the last day on All days. A full day is not skipped silently: the toast
-    // offers the next day with room.
-    const target = toDay ?? (typeof activeDay === 'number' ? activeDay : draft.days)
+    // The open day, or the last day on All days. A full day is not skipped silently: a later day the
+    // plan already has with room takes the place and the toast names that day; otherwise the toast
+    // offers to start the next day.
+    let target = toDay ?? (typeof activeDay === 'number' ? activeDay : draft.days)
+    let moved = false
     const inPlan = draft.plan.stops.some((s) => s.poi_id === poi.poi_id)
     if (!inPlan && draft.plan.stops.length < MAX_STOPS && draft.countOn(target) >= PER_DAY) {
       let next = target + 1
       while (next <= MAX_DAYS && draft.countOn(next) >= PER_DAY) next++
-      if (next <= MAX_DAYS) {
+      if (next <= draft.days) {
+        target = next
+        moved = true
+      } else if (next <= MAX_DAYS) {
         toast({ type: 'warning', message: t('CD1533', { day: target }), action: { label: t('CD1534', { next }), onClick: () => addToPlan(poi, next, source) } })
         return
       }
@@ -386,7 +391,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     addedHere.current = true
     const day = draft.add(poi, target, source)
     if (day === null) toast({ type: 'warning', message: k('map.plan.maxStopsToast', { max: MAX_STOPS }) })
-    else toast({ type: 'success', message: t('CD0689'), action: { label: t('CD1428'), onClick: () => latestDraft.current.remove(poi.poi_id) } })
+    else toast({ type: 'success', message: moved ? `${t('CD0689')} · ${k('map.plan.dayTab', { n: day })}` : t('CD0689'), action: { label: t('CD1428'), onClick: () => latestDraft.current.remove(poi.poi_id) } })
   }
   // `on` = currently saved / liked; after a sign-in the action only ever turns it on.
   // signedIn: the save a guest started, finished after the sign-in (its own toast).

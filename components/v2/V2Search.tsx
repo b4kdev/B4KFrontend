@@ -58,7 +58,7 @@ export function useRecent() {
 const CATEGORIES = [['k-pop', 'CD1247'], ['k-drama', 'CD1246'], ['k-beauty', 'CD1244'], ['k-culture', 'CD1245'], ['k-food', 'CD0251']]
 
 // Collection types → their Copy Deck labels, as on Explore.
-const COLLECTION_TYPE: Record<string, string> = { ROUTE: 'CD1336', FAN_THEME: 'CD1337', STORY: 'CD1338' }
+const COLLECTION_TYPE: Record<string, string> = { ROUTE: 'CD1336', FAN_THEME: 'CD1337', SHOPPING: 'CD1282', STORY: 'CD1338' }
 
 /** The field's text, the suggestions open or not, and the suggestions card for it. */
 export function useSearchBox({ viewport, initial = '', open: startOpen = false }: { viewport: 'desktop' | 'mobile'; initial?: string; open?: boolean }) {
