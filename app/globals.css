@@ -14,6 +14,18 @@ body {
   color: var(--color-fg);
 }
 
+/* No visible scrollbars anywhere (page, panels, lists, rows), in every browser; scrolling by wheel,
+   trackpad, touch and keyboard stays as it is. */
+html, body, * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 /* Map pins and plan stops are focusable buttons inside the Naver map (V2MapCanvas). */
 /* Map pins are inverse to the map, not to the page theme: dark pins on the light map tiles. */
 [data-map-tone="light"] { --map-pin-fill: var(--neutral-950); --map-pin-stroke: var(--neutral-50); }

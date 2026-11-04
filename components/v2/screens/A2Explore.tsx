@@ -44,7 +44,7 @@ import { useV2Shell } from '../V2Shell'
 import { jsonFetch, RowState, SectionSkeletons, useContinueDraft } from './A2Home'
 import { CATEGORIES, rowName } from '../categories'
 import { NotFoundScreen } from './A4Pages'
-import { regionName } from '../map/areaName'
+import { districtName, regionName } from '../map/areaName'
 
 // Explore (A2): Category page, See all list, Collection page,
 // Category special pages. Live data from /api/explore/*. Desktop: Left panel Index (280)
@@ -52,10 +52,19 @@ import { regionName } from '../map/areaName'
 //; the Planning cue sits after the first row.
 
 const CAT_KEY: Record<string, string> = { 'k-pop': 'kpop', 'k-drama': 'kdrama', 'k-beauty': 'kbeauty', 'k-culture': 'kculture', 'k-food': 'kfood' }
-// Collection types (lib/collections) → their Copy Deck chip labels (Explore collections).
-// Chips All, Route, Fandom, Story; a type with no text gets no chip (its collections stay under All).
-const COLLECTION_TYPE: Record<string, string> = { ROUTE: 'CD1336', FAN_THEME: 'CD1337', STORY: 'CD1338' }
+// Collection types (lib/collections) → their Copy Deck chip labels (Explore collections), in the
+// drawn chip order after All: Route, Fandom, Shopping, Story. A type with no text gets no chip (its
+// collections stay under All).
+const COLLECTION_TYPE: Record<string, string> = { ROUTE: 'CD1336', FAN_THEME: 'CD1337', SHOPPING: 'CD1282', STORY: 'CD1338' }
 const poiName = (p: { name_ko: string; name_en?: string | null }, locale: string) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
+// A place card's area: "Jung-gu, Seoul" (서울 중구 on Korean pages) when the place has a district,
+// else its region.
+const placeArea = (p: { display_region?: string | null; display_district?: string | null }, locale: string) =>
+  p.display_district
+    ? locale === 'ko'
+      ? [p.display_region, p.display_district].filter(Boolean).join(' ')
+      : [districtName(p.display_district, locale), p.display_region && regionName(p.display_region, locale)].filter(Boolean).join(', ')
+    : regionName(p.display_region ?? '', locale)
 
 // Rows that open their special page instead of the generic See all list (as on the live site),
 // keyed by category then row id.
@@ -235,7 +244,7 @@ export function CategoryScreen({ category }: { category: string }) {
       }}
     />
   )
-  const colTypes = useMemo(() => Array.from(new Set((cols.data?.items ?? []).map((c) => c.primaryType).filter((c): c is string => !!c && c in COLLECTION_TYPE))), [cols.data])
+  const colTypes = useMemo(() => Object.keys(COLLECTION_TYPE).filter((type) => (cols.data?.items ?? []).some((c) => c.primaryType === type)), [cols.data])
   if (isLoading) {
     // As drawn: the hero block, then two loading sections (cards 260 wide on desktop).
     return (
@@ -274,7 +283,7 @@ export function CategoryScreen({ category }: { category: string }) {
                 arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
                 title={rowLabel(category, s.id)}
                 seeAll={{ href: rowHref(category, s.id), label: t('CD1309') }}
-                featured={featured ? <Card type="featured" href={`/map?poi=${featured.poi_id}`} title={poiName(featured, locale)} imageSrc={featured.primary_image_url} eyebrow={t('CD0151')} meta={regionName(featured.display_region ?? '', locale)} trending={featured.is_trending ? t('CD0313') : undefined} /> : undefined}
+                featured={featured ? <Card type="featured" href={`/map?poi=${featured.poi_id}`} title={poiName(featured, locale)} imageSrc={featured.primary_image_url} eyebrow={t('CD0151')} meta={placeArea(featured, locale)} trending={featured.is_trending ? t('CD0313') : undefined} /> : undefined}
                 cards={s.items.filter((p) => p !== featured).map((p) => <PoiCard key={p.poi_id} p={p} act={act} />)}
               />
               {i === 0 ? cue : null}
@@ -335,7 +344,7 @@ function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceAct
       title={poiName(p, locale)}
       imageSrc={p.primary_image_url}
       placeType={placeTypeOf(p.interest_category)}
-      meta={regionName(p.display_region ?? '', locale)}
+      meta={placeArea(p, locale)}
       trending={p.is_trending ? t('CD0313') : undefined}
       sponsored={p.is_partner ? t('CD0476') : undefined}
       dDay={p.event_date ? dDay(p.event_date) : undefined}
@@ -488,9 +497,12 @@ export function CollectionScreen({ slug }: { slug: string }) {
   const router = useRouter()
   const { data, error, isLoading, mutate } = useSWR<CollectionDetail>(`/api/explore/collections/${slug}?locale=${locale}`, jsonFetch)
   const { shown, list, loadMore } = usePaged<HTMLOListElement>()
-  // The category comes from the collection's slug (slide-kculture-..., slide-kpop-...); a slug
-  // without one shows the page without the Index panel.
-  const category = CATEGORIES.find((c) => slug.includes(`-${c.slug.replace('-', '')}-`))?.slug
+  // The category comes from the collection's slug (slide-kculture-..., slide-culture-...,
+  // slide-food-...) so the Index panel is there on first paint; a slug without one falls back to
+  // the collection's section ("K-Food"), and without either the page shows no Index panel.
+  const category =
+    CATEGORIES.find((c) => new RegExp(`-k?${c.slug.replace('k-', '')}-`).test(slug))?.slug ??
+    CATEGORIES.find((c) => c.slug === data?.section?.toLowerCase())?.slug
   const explore = useSWR<ExploreData>(category ? `/api/explore/${category}` : null, jsonFetch)
   const rows = explore.data?.sections.filter((x) => x.items.length).map((x) => x.id) ?? []
   const items = data?.items ?? []
@@ -551,7 +563,7 @@ export function CollectionScreen({ slug }: { slug: string }) {
 
 // ── Category special pages ────────────────────────────────────────
 
-type SpecialItem = { poi_id: string; name_ko: string; name_en: string; primary_image_url: string | null; display_region: string; relationship_en?: string; relationship_ko?: string }
+type SpecialItem = { poi_id: string; name_ko: string; name_en: string; primary_image_url: string | null; display_region: string; display_district?: string | null; relationship_en?: string; relationship_ko?: string }
 
 export function SpecialScreen({ api, category }: { api: string; category: string }) {
   const act = usePlaceActions({ resume: true })
@@ -598,7 +610,7 @@ export function SpecialScreen({ api, category }: { api: string; category: string
         <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">
           {data?.items.map((p) => (
             <li key={p.poi_id}>
-              <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={(locale === 'ko' ? p.relationship_ko : p.relationship_en) ?? regionName(p.display_region ?? '', locale)} />
+              <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={(locale === 'ko' ? p.relationship_ko : p.relationship_en) || placeArea(p, locale)} />
             </li>
           ))}
         </ul>

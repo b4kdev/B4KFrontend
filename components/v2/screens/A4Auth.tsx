@@ -188,6 +188,18 @@ export function AuthCallbackScreen() {
         user = result.data.session?.user ?? null
       }
 
+      // The shared browser client reads the OAuth code from the address on its own when it starts,
+      // before this page runs, so the code is used up and the exchange above fails although the
+      // visitor is signed in. A session already there counts as success. A password reset link
+      // never signs in this way.
+      if (error && otpType !== 'recovery') {
+        const { data } = await supabase.auth.getSession()
+        if (data.session) {
+          error = null
+          user = data.session.user
+        }
+      }
+
       if (error) {
         setFailed(true)
         return
