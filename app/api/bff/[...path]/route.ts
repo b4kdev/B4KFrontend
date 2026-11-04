@@ -10,6 +10,9 @@ const ALLOWED: { method: string; path: RegExp }[] = [
   { method: 'GET', path: /^interests$/ },
   { method: 'GET', path: /^me\/interests$/ },
   { method: 'PUT', path: /^me\/interests$/ },
+  // Quick plan answers: saved to the account and read back from the profile.
+  { method: 'GET', path: /^me$/ },
+  { method: 'PUT', path: /^me\/quick-plan$/ },
 ]
 
 async function proxy(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
