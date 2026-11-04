@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { bffFetch } from '@/lib/bff'
 import { withDbPoiIds } from '@/lib/db-poi-mapping'
+import { withDbPlaces } from '@/lib/collections'
 import { withSafePartnerUrls } from '@/lib/partner-url'
 import { SECTIONS_BY_CATEGORY } from '@/lib/explore-sections'
 import { resolveMichelinNoodles, type MichelinNoodlePoi } from '@/lib/kfood-michelin-noodles'
@@ -12,6 +13,8 @@ export interface ExplorePoi {
   name_en: string
   primary_image_url: string | null
   display_region: string
+  /** The place's district (중구), when read from the place itself. */
+  display_district?: string | null
   /** The interest category: the place type icon when there is no photo. */
   interest_category?: string | null
   quality_score: number
@@ -688,19 +691,29 @@ export async function GET(req: NextRequest, props: { params: Promise<{ category:
     })
   }
 
+  // Each themed place takes its own name, area and photo (the typed values only when it cannot be
+  // read); one read per place across all rows.
+  const themed = sections.map((s) => ({ ...s, items: withDbPoiIds(s.items) }))
+  const read = new Map(
+    (await withDbPlaces(themed.flatMap((s) => s.items), locale)).map(
+      ({ poi_id, name_ko, name_en, primary_image_url, display_region, display_district }) =>
+        [poi_id, { name_ko, name_en, primary_image_url, display_region, display_district }] as const,
+    ),
+  )
+
   const data: ExploreData = {
     category: base.category,
     hero: base.hero,
     packages: withSafePartnerUrls(base.packages ?? []),
     artists,
     // Seed rows carry content-sheet codes ('KD016-007'): swap in the DB place_id and drop the
-    // ones with no DB row, which open nothing when tapped (lib/db-poi-mapping.ts). Then each themed
-    // row puts the places with a photo first (the hand-picked order kept within each group; the
-    // featured place keeps its flag) and a themed row with fewer than 3 places is not shown.
+    // ones with no DB row, which open nothing when tapped (lib/db-poi-mapping.ts). Then each themed row puts the places with a photo first (the hand-picked order kept within
+    // each group; the featured place keeps its flag) and a themed row with fewer than 3 places is
+    // not shown.
     sections: [
       { ...trendingSection, items: withDbPoiIds(trendingSection.items) },
-      ...sections
-        .map((s) => ({ ...s, items: photosFirst(withDbPoiIds(s.items)) }))
+      ...themed
+        .map((s) => ({ ...s, items: photosFirst(s.items.map((p) => ({ ...p, ...read.get(p.poi_id) }))) }))
         .filter((s) => s.items.length >= MIN_THEMED_ROW),
     ],
   }

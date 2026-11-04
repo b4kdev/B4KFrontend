@@ -116,6 +116,37 @@ async function fetchSummary(slug: string, locale: string): Promise<CollectionSum
   }
 }
 
+/** A collection's type as a code (ROUTE, STORY, ...). Some collections carry the content team's
+ *  Korean label with the code in parentheses ("실제 루트형 (Route)"); those read as the same code. */
+export function collectionTypeCode(raw: string | null | undefined): string | null {
+  if (!raw) return null
+  const code = raw.match(/\(([^)]+)\)\s*$/)?.[1] ?? raw
+  return code.trim().toUpperCase().replace(/\s+/g, '_')
+}
+
+/** Whether the collection page has something to show, so a list can leave out a card whose page
+ *  would read Page not found. A cover photo means the collection has places. Without one: a hub
+ *  needs known children, any other collection at least one place. A failed check keeps the card. */
+export async function collectionHasContent(e: {
+  slug: string
+  entity_id: number
+  cover_images?: string[]
+  metadata?: { runtime_kind?: string }
+}): Promise<boolean> {
+  if (e.cover_images?.length) return true
+  if (e.metadata?.runtime_kind === 'HUB') return (HUB_CHILDREN[e.slug] ?? []).length > 0
+  try {
+    const context = await bffFetch<ContextItem[]>(`/context/entity:${e.entity_id}?limit=1`, {
+      token: null,
+      cache: undefined,
+      next: { revalidate: 300 },
+    })
+    return context.length > 0
+  } catch {
+    return true
+  }
+}
+
 /** The collection; null when it does not exist or has nothing to show. Throws when the BFF call fails. */
 export async function fetchCollectionDetail(slug: string, locale: string): Promise<CollectionDetail | null> {
   let profile: EntityProfile
@@ -126,7 +157,7 @@ export async function fetchCollectionDetail(slug: string, locale: string): Promi
     throw e
   }
   const runtimeKind = (profile.metadata?.runtime_kind as CollectionRuntimeKind | undefined) ?? 'LEAF'
-  const primaryType = (profile.metadata?.primary_type as CollectionPrimaryType | undefined) ?? null
+  const primaryType = collectionTypeCode(profile.metadata?.primary_type) as CollectionPrimaryType | null
   const isOrdered = profile.metadata?.is_ordered === 'TRUE'
 
   let items: CollectionItem[] = []
@@ -176,4 +207,57 @@ export async function fetchCollectionDetail(slug: string, locale: string): Promi
     children,
     siblings,
   }
+}
+
+/** A place as the Explore cards need it, read from the place itself. */
+interface DbPlace {
+  name_ko: string
+  translations?: Record<string, { name?: string }> | null
+  primary_image_url: string | null
+  display_region: string | null
+  display_district?: string | null
+}
+
+/** Place reads at a time, kept small for the BFF's guest limits. */
+const PLACE_READS_AT_ONCE = 6
+
+/** Explore cards from hand-made lists carry a name, area and photo typed by hand; the place's
+ *  own name (in the page language), area and photo replace them. A place that cannot be read
+ *  keeps the typed values. Each place is cached an hour, so a page view does not call the BFF
+ *  for every card. */
+export async function withDbPlaces<T extends {
+  poi_id: string
+  name_ko: string
+  name_en: string
+  primary_image_url: string | null
+  display_region: string
+  display_district?: string | null
+}>(items: T[], locale: string): Promise<T[]> {
+  const ids = [...new Set(items.map((p) => p.poi_id))]
+  const places = new Map<string, DbPlace>()
+  let next = 0
+  const worker = async () => {
+    while (next < ids.length) {
+      const id = ids[next++]
+      try {
+        places.set(id, await bffFetch<DbPlace>(`/places/${id}`, { token: null, cache: undefined, next: { revalidate: 3600 } }))
+      } catch {
+        // the card keeps its typed values
+      }
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(PLACE_READS_AT_ONCE, ids.length) }, worker))
+  return items.map((p) => {
+    const db = places.get(p.poi_id)
+    if (!db) return p
+    return {
+      ...p,
+      name_ko: db.name_ko,
+      // The place's name in the page language, else English, else Korean (as the map does).
+      name_en: db.translations?.[locale]?.name ?? (locale === 'ko' ? db.name_ko : db.translations?.en?.name) ?? db.name_ko,
+      primary_image_url: db.primary_image_url ?? p.primary_image_url,
+      display_region: db.display_region ?? p.display_region,
+      display_district: db.display_district ?? null,
+    }
+  })
 }
