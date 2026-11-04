@@ -67,12 +67,12 @@ const placeArea = (p: { display_region?: string | null; display_district?: strin
     : regionName(p.display_region ?? '', locale)
 
 // Rows that open their special page instead of the generic See all list (as on the live site),
-// keyed by category then row id.
+// keyed by category then row id. Only rows whose special page lists the same places: Brand
+// flagships and Historical heritage hold other places than their special pages (perfume flagships,
+// Gyeongbuk heritage), so their See all opens their own list.
 const SPECIAL_HREF: Record<string, Record<string, string>> = {
   'k-pop': { memberFootsteps: '/explore/k-pop/bts/footsteps' },
   'k-drama': { filming: '/explore/k-drama/tangerines/filming-spots' },
-  'k-beauty': { brandFlagship: '/explore/k-beauty/perfume-flagships' },
-  'k-culture': { heritage: '/explore/k-culture/gyeongbuk/heritage' },
   'k-food': { noodles: '/explore/k-food/michelin-noodles' },
 }
 const rowHref = (category: string, row: string) => SPECIAL_HREF[category]?.[row] ?? `/explore/${category}/${row}`
