@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { bffFetch, bffErrorResponse } from '@/lib/bff'
 import { pickEntityTitle } from '@/lib/entity-i18n'
+import { collectionHasContent } from '@/lib/collections'
 
 export interface SearchPoi {
   poi_id: string
@@ -43,6 +44,7 @@ export interface SearchCollection {
 // BFF GET /search entities item (api.list_entities shape, + cover_images)
 interface BffEntity {
   slug: string
+  entity_id: number
   name_ko: string
   name_en?: string | null
   translations?: Record<string, { name?: string; description?: string }>
@@ -177,8 +179,11 @@ export async function GET(request: Request) {
         : Promise.resolve<BffSearch>({ places: [], explore: [], plans: [] }),
     ])
     const rawPlans = wantPlans ? found.plans ?? [] : []
-    const collections: SearchCollection[] = (wantExplore ? found.explore ?? [] : [])
-      .filter(e => e.entity_type === 'collection')
+    // A collection with no places is left out: its page has nothing to show.
+    const matched = (wantExplore ? found.explore ?? [] : []).filter(e => e.entity_type === 'collection')
+    const shown = await Promise.all(matched.map(collectionHasContent))
+    const collections: SearchCollection[] = matched
+      .filter((_, i) => shown[i])
       .map(e => ({
         slug: e.slug,
         title: pickEntityTitle(e, locale),
