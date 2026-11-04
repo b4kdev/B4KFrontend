@@ -3,7 +3,11 @@ import type { MapPoi } from '@/hooks/useMapPois'
 export interface DraftPlan {
   stops:     MapPoi[]
   durations: Record<string, number>
+  /** poi_id → 일차 탭(1–7). 없으면(이전 버전 초안) 전부 1일차. */
+  days?:     Record<string, number>
   name?:     string
+  /** poi_id → where the place was found (lib/place-source); kept with the stop when the plan is saved. */
+  sources?:  Record<string, string>
 }
 
 const KEY = 'b4k_draft_plan'

@@ -28,7 +28,8 @@
     "legalTerms": "利用規約",
     "legalPrivacy": "プライバシーポリシー",
     "legalCookies": "クッキーポリシー",
-    "guestSubtitle": "ログインして場所を保存し、旅行を計画しよう"
+    "guestSubtitle": "ログインして場所を保存し、旅行を計画しよう",
+    "quickPlan": "おすすめマップ"
   },
   "topNav": {
     "searchPlaceholder": "旅程、場所、クリエイターを検索…",
@@ -453,14 +454,6 @@
         "desc": "バッジコレクションの全一覧。"
       }
     },
-    "onboarding": {
-      "breadcrumb": "B4Kへようこそ",
-      "title": "B4Kへようこそ",
-      "empty": {
-        "title": "近日公開",
-        "desc": "最初の旅行をパーソナライズする簡単な興味タグ。"
-      }
-    },
     "help": {
       "breadcrumb": "ヘルプ",
       "title": "ヘルプ",
@@ -629,13 +622,13 @@
     "zoomIn": "ズームイン",
     "zoomOut": "ズームアウト",
     "empty": {
-      "title": "No spots in this area"
+      "title": "このエリアにスポットはありません"
     },
     "leftPanel": {
       "ariaLabel": "探索パネル",
       "viewSaved": "保存済みの場所を見る",
-      "tagline": "Find your place",
-      "savedLabel": "Saved"
+      "tagline": "あなたの場所を見つけよう",
+      "savedLabel": "保存済み"
     },
     "regions": {
       "title": "地域から探す",
@@ -644,20 +637,20 @@
       "jeju": "済州",
       "incheon": "仁川",
       "gyeongju": "慶州",
-      "daegu": "Daegu",
-      "gwangju": "Gwangju",
-      "daejeon": "Daejeon",
-      "ulsan": "Ulsan",
-      "sejong": "Sejong",
-      "gyeonggi": "Gyeonggi",
-      "gangwon": "Gangwon",
-      "chungbuk": "North Chungcheong",
-      "chungnam": "South Chungcheong",
-      "jeonbuk": "North Jeolla",
-      "jeonnam": "South Jeolla",
-      "gyeongnam": "South Gyeongsang",
+      "daegu": "大邱",
+      "gwangju": "光州",
+      "daejeon": "大田",
+      "ulsan": "蔚山",
+      "sejong": "世宗",
+      "gyeonggi": "京畿道",
+      "gangwon": "江原道",
+      "chungbuk": "忠清北道",
+      "chungnam": "忠清南道",
+      "jeonbuk": "全羅北道",
+      "jeonnam": "全羅南道",
+      "gyeongnam": "慶尚南道",
       "more": "他の地域",
-      "less": "Show fewer"
+      "less": "表示を減らす"
     },
     "filters": {
       "title": "タイプで絞り込む",
@@ -714,7 +707,8 @@
       },
       "save": "プランを保存",
       "savedToast": "プランを保存しました！",
-      "previewPlan": "プランをプレビュー",
+      "saveToMyPlans": "マイプランに保存",
+      "replacedDraftToast": "以前の下書きを削除して新しいプランを作成しました。",
       "close": "プランパネルを閉じる",
       "stripExpand": "プランパネルを展開",
       "stripCollapse": "プランパネルを折りたたむ",
@@ -728,6 +722,12 @@
       "discardCancel": "キャンセル",
       "discardConfirm": "下書きを破棄",
       "dayTab": "{n}日目",
+      "allDays": "すべて",
+      "addDay": "日を追加",
+      "removeDay": "{n}日目を削除",
+      "removeDayTitle": "{n}日目を削除しますか？",
+      "removeDayWarning": "この日には{count}件の予定があります。削除すると場所も一緒に外れ、後ろの日が1日ずつ繰り上がります。",
+      "removeDayConfirm": "削除",
       "legEstimate": "約{min}分",
       "legAriaLabel": "スポット{from}からスポット{to}までの推定移動時間"
     },
@@ -984,9 +984,9 @@
       "preferences": {
         "heading": "設定",
         "language": "言語",
-        "appearance": "Appearance",
-        "appearanceDark": "Dark",
-        "appearanceLight": "Light",
+        "appearance": "外観",
+        "appearanceDark": "ダーク",
+        "appearanceLight": "ライト",
         "transport": "デフォルトの移動手段",
         "transportCar": "車",
         "transportPublic": "公共交通機関",
@@ -1190,7 +1190,7 @@
         "desc": "グルメ、伝統市場、文化遺産体験"
       },
       "kfood": {
-        "desc": "Michelin picks, award-winning dishes, and traditional recipes"
+        "desc": "ミシュラン掲載店、受賞料理、伝統レシピ"
       }
     },
     "kpop": {
@@ -1242,19 +1242,19 @@
       "festivals": "フェスティバル",
       "crafts": "工芸品",
       "trending": "今話題",
-      "agencyHq": "Agency HQ",
-      "memberFootsteps": "Member Footsteps",
-      "birthdayCafe": "This Month's Birthday Cafés",
-      "shopping": "Shopping & Select Shops",
-      "brandFlagship": "Brand Flagships",
-      "derma": "Pharmacy & Derma",
-      "noodles": "Noodles",
-      "soups": "Soups & Stews",
-      "hanjeongsik": "Hanjeongsik & Bapsang",
-      "heritage": "Historical Heritage",
-      "nature": "Nature & Scenery",
-      "temple": "Temples & Religion",
-      "museum": "Museums & Galleries"
+      "agencyHq": "事務所本社",
+      "memberFootsteps": "メンバーの足跡",
+      "birthdayCafe": "今月のセンイルカフェ",
+      "shopping": "ショッピング＆セレクトショップ",
+      "brandFlagship": "ブランド旗艦店",
+      "derma": "薬局＆ダーマ",
+      "noodles": "麺料理",
+      "soups": "スープ＆鍋料理",
+      "hanjeongsik": "韓定食＆定食",
+      "heritage": "歴史遺産",
+      "nature": "自然＆景観",
+      "temple": "寺院＆宗教",
+      "museum": "博物館＆美術館"
     },
     "viewAll": "すべて見る",
     "viewAllAria": "{section}をすべて見る",
@@ -1280,25 +1280,25 @@
         "Myeongdong": "明洞",
         "Hongdae": "弘大",
         "Gangnam": "江南",
-        "Seongsu": "Seongsu",
-        "Jongno": "Jongno",
-        "Jamsil": "Jamsil"
+        "Seongsu": "聖水",
+        "Jongno": "鍾路",
+        "Jamsil": "蚕室"
       },
       "region": {
         "Seoul": "ソウル",
         "Jeonju": "全州",
         "Gyeongju": "慶州",
         "Andong": "安東",
-        "Jeju": "Jeju",
-        "Ulsan": "Ulsan",
-        "Jeonbuk": "Jeonbuk",
-        "Jongno": "Jongno",
-        "Gangwon": "Gangwon",
-        "Gyeongbuk": "Gyeongbuk",
-        "Busan": "Busan",
-        "GyeongnamUlsan": "Gyeongnam·Ulsan",
-        "GangwonChungbuk": "Gangwon·Chungbuk",
-        "GyeonggiIncheon": "Gyeonggi·Incheon"
+        "Jeju": "済州",
+        "Ulsan": "蔚山",
+        "Jeonbuk": "全北",
+        "Jongno": "鍾路",
+        "Gangwon": "江原",
+        "Gyeongbuk": "慶北",
+        "Busan": "釜山",
+        "GyeongnamUlsan": "慶南・蔚山",
+        "GangwonChungbuk": "江原・忠北",
+        "GyeonggiIncheon": "京畿・仁川"
       },
       "broadcaster": {
         "tvN": "tvN",
@@ -1309,13 +1309,13 @@
         "Netflix": "Netflix"
       },
       "badge": {
-        "MICHELIN": "Michelin",
-        "REDRIBBON": "Red Ribbon",
-        "B4KPICK": "B4K Pick",
+        "MICHELIN": "ミシュラン",
+        "REDRIBBON": "レッドリボン",
+        "B4KPICK": "B4Kおすすめ",
         "WOOSOLLANG": "Woosollang",
-        "MULTI": "2+ Badges",
+        "MULTI": "バッジ2つ以上",
         "UNESCO": "UNESCO",
-        "NATIONAL_HERITAGE": "National Heritage"
+        "NATIONAL_HERITAGE": "国家遺産"
       }
     },
     "packages": {
@@ -1326,71 +1326,71 @@
     },
     "kpopArtistNav": {
       "tileGrid": {
-        "ariaLabel": "Browse by artist",
-        "showMore": "{count} more",
-        "showLess": "Show less",
-        "selectAria": "Filter by {name}",
-        "empty": "No artists to show yet",
-        "memberCount": "{count, plural, one {# member} other {# members}}"
+        "ariaLabel": "アーティストから探す",
+        "showMore": "他{count}件",
+        "showLess": "表示を減らす",
+        "selectAria": "{name}で絞り込む",
+        "empty": "表示できるアーティストはまだいません",
+        "memberCount": "{count, plural, one {メンバー#人} other {メンバー#人}}"
       }
     },
     "footsteps": {
-      "breadcrumb": "Footsteps",
-      "title": "Footsteps",
-      "subtitle": "{count} places",
+      "breadcrumb": "足跡",
+      "title": "足跡",
+      "subtitle": "{count}か所",
       "filterAll": "All",
-      "filterMuseum": "Museums",
-      "filterPark": "Parks",
+      "filterMuseum": "博物館",
+      "filterPark": "公園",
       "filterCafe": "Cafés"
     },
     "kfood": {
       "title": "K-Food",
       "empty": {
-        "title": "No K-Food spots yet",
-        "desc": "K-Food content is coming soon."
+        "title": "まだK-Foodスポットがありません",
+        "desc": "K-Foodコンテンツは近日公開です。"
       }
     },
     "filmingSpots": {
-      "breadcrumb": "Filming Spots",
-      "title": "Filming Spots",
-      "subtitle": "{count} real filming locations",
+      "breadcrumb": "撮影スポット",
+      "title": "撮影スポット",
+      "subtitle": "実際の撮影地{count}か所",
       "filterAll": "All",
-      "filterNature": "Nature",
-      "filterHistoric": "Historic",
-      "filterExperience": "Experience"
+      "filterNature": "自然",
+      "filterHistoric": "歴史",
+      "filterExperience": "体験"
     },
     "perfumeFlagships": {
-      "breadcrumb": "K-Beauty Flagship Tour",
-      "title": "K-Beauty Flagship Tour",
-      "subtitle": "{count} K-Beauty flagship stores",
+      "breadcrumb": "K-Beauty旗艦店ツアー",
+      "title": "K-Beauty旗艦店ツアー",
+      "subtitle": "K-Beauty旗艦店{count}店舗",
       "filterAll": "All",
-      "filterSeongsu": "Seongsu",
-      "filterHannam": "Hannam",
-      "filterGarosugil": "Garosu-gil"
+      "filterSeongsu": "聖水",
+      "filterHannam": "漢南",
+      "filterGarosugil": "カロスキル"
     },
     "michelinNoodles": {
-      "breadcrumb": "Michelin Noodles",
-      "title": "Michelin-Picked Noodles",
-      "subtitle": "{count} Michelin-recognized noodle restaurants",
+      "breadcrumb": "ミシュランの麺料理",
+      "title": "ミシュランが選んだ麺料理",
+      "subtitle": "ミシュラン掲載の麺料理店{count}軒",
       "filterAll": "All",
-      "filterNaengmyeon": "Naengmyeon",
-      "filterOther": "Other"
+      "filterNaengmyeon": "冷麺",
+      "filterOther": "その他"
     },
     "heritage": {
-      "breadcrumb": "UNESCO Heritage",
-      "title": "UNESCO Heritage",
-      "subtitle": "{count} UNESCO heritage sites",
+      "breadcrumb": "ユネスコ遺産",
+      "title": "ユネスコ遺産",
+      "subtitle": "ユネスコ遺産{count}か所",
       "filterAll": "All",
-      "filterGyeongju": "Gyeongju",
-      "filterAndong": "Andong",
-      "filterYeongju": "Yeongju"
+      "filterGyeongju": "慶州",
+      "filterAndong": "安東",
+      "filterYeongju": "栄州"
     },
     "collections": {
-      "itemCount": "{count} places",
+      "itemCount": "{count}か所",
       "filterAll": "All"
     },
     "collectionsGrid": {
-      "title": "Collections",
+      "title": "コレクション",
       "filterAll": "All"
     }
   },
@@ -1736,55 +1736,12 @@
       "cookies": "クッキーポリシー"
     }
   },
-  "onboarding": {
-    "ariaLabel": "オンボーディング — 興味を選択",
-    "title": "韓国旅行の目的は？",
-    "subtitle": "B4Kの体験をパーソナライズしましょう。",
-    "desc": "興味のあるものを選択してください。後で変更できます。",
-    "interests": {
-      "label": "興味を選択",
-      "kpop": {
-        "label": "K-Pop",
-        "desc": "コンサート、会場、ファンダム"
-      },
-      "kdrama": {
-        "label": "K-Drama",
-        "desc": "撮影地とツアー"
-      },
-      "kbeauty": {
-        "label": "K-Beauty",
-        "desc": "スキンケア、メイク、スパ"
-      },
-      "kculture": {
-        "label": "K-Culture",
-        "desc": "グルメ、市場、伝統"
-      },
-      "food": {
-        "label": "グルメ",
-        "desc": "屋台グルメとローカルダイニング"
-      },
-      "nature": {
-        "label": "自然",
-        "desc": "公園、トレイル、アウトドア"
-      },
-      "nightlife": {
-        "label": "ナイトライフ",
-        "desc": "バー、クラブ、深夜の時間"
-      },
-      "history": {
-        "label": "歴史",
-        "desc": "宮殿、寺院、文化遺産"
-      }
-    },
-    "cta": "続ける",
-    "skip": "今はスキップ"
-  },
   "search": {
     "title": "検索",
-    "pageTitle": "Search Results",
-    "breadcrumb": "Search",
-    "resultsSummary": "\"{query}\" — {places} Places · {plans} Plans · {explore} Explore",
-    "resultsCount": "{count} results",
+    "pageTitle": "検索結果",
+    "breadcrumb": "検索",
+    "resultsSummary": "「{query}」— 場所{places}件 · プラン{plans}件 · 探索{explore}件",
+    "resultsCount": "{count}件の結果",
     "placeholder": "旅程、場所を検索...",
     "recentTitle": "最近の検索",
     "clearAll": "すべてクリア",
@@ -1906,9 +1863,90 @@
     "actionFailed": "エラーが発生しました。もう一度お試しください。"
   },
   "place": {
-    "imagePending": "Image being prepared",
-    "viewOnMap": "View on Map",
-    "saves": "saves",
-    "fallbackDescription": "{name} — discover this spot in Korea."
+    "imagePending": "画像を準備中です",
+    "viewOnMap": "マップで見る",
+    "saves": "件の保存",
+    "fallbackDescription": "{name} — 韓国のこのスポットを見つけよう。"
+  },
+  "quickPlan": {
+    "ariaLabel": "おすすめマップを作成",
+    "title": "おすすめマップを作成",
+    "close": "閉じる",
+    "prev": "戻る",
+    "next": "次へ",
+    "saving": "保存中…",
+    "saveFailed": "好みを保存できませんでした。もう一度お試しください。",
+    "savedToast": "好みを保存しました。",
+    "steps": {
+      "where": "行き先・時期",
+      "taste": "好み",
+      "confirm": "確認"
+    },
+    "where": {
+      "title": "どこへ行きますか？",
+      "subtitle": "都市・日程・同行者をすべて選んでください。",
+      "label": "行き先"
+    },
+    "when": {
+      "label": "いつ",
+      "clear": "リセット"
+    },
+    "who": {
+      "label": "誰と",
+      "solo": "ひとり",
+      "couple": "恋人と",
+      "friends": "友達と",
+      "family": "家族と"
+    },
+    "calendar": {
+      "prevMonth": "前の月",
+      "nextMonth": "次の月"
+    },
+    "taste": {
+      "title": "何が好きですか？",
+      "subtitle": "選ぶほどおすすめの精度が上がります。",
+      "selected": "選択した好み",
+      "emptySelection": "まだ選択されていません",
+      "maxReached": "{max}個までしか選べません。",
+      "remove": "{label}を解除",
+      "categories": "カテゴリ",
+      "loading": "好みを読み込み中…",
+      "error": "好みを読み込めませんでした。",
+      "retry": "再試行"
+    },
+    "confirm": {
+      "title": "この内容で作成しますか？",
+      "save": "マイ日程に保存",
+      "subtitle": "各項目をタップして修正できます。",
+      "region": "地域",
+      "period": "時期",
+      "companion": "同行者",
+      "taste": "好み {count}",
+      "unset": "未定",
+      "edit": "修正"
+    },
+    "result": {
+      "error": "スポットを読み込めませんでした。",
+      "emptyDesc": "別の都市を選ぶか、好みを減らしてみてください。"
+    },
+    "cities": {
+      "Seoul": "ソウル",
+      "Busan": "釜山",
+      "Jeju": "済州",
+      "Incheon": "仁川",
+      "Gyeongju": "慶州",
+      "Daegu": "大邱",
+      "Gwangju": "光州",
+      "Daejeon": "大田",
+      "Ulsan": "蔚山",
+      "Sejong": "世宗",
+      "Gyeonggi": "京畿",
+      "Gangwon": "江原",
+      "Chungbuk": "忠北",
+      "Chungnam": "忠南",
+      "Jeonbuk": "全北",
+      "Jeonnam": "全南",
+      "Gyeongnam": "慶南"
+    }
   }
 }

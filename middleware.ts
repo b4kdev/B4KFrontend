@@ -3,7 +3,8 @@ import createIntlMiddleware from 'next-intl/middleware'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import { createServerClient } from '@supabase/ssr'
-import { routing } from './i18n/routing'
+import { routing, RETIRED_LOCALES } from './i18n/routing'
+import { isV2Live, v2LiveAlias, V2_LIVE_HEADER } from './lib/v2-live'
 
 // ── Security headers ────────────────────────────────────────────────────────────
 // 'unsafe-eval' is added to script-src only in dev — Next.js Fast Refresh
@@ -18,32 +19,57 @@ const isDev = process.env.NODE_ENV === 'development'
 const devNaverHttp = isDev
   ? ' http://oapi.map.naver.com http://*.map.naver.com http://*.map.naver.net http://static.naver.net'
   : ''
+// Vercel Analytics and Speed Insights load their debug scripts from va.vercel-scripts.com in dev;
+// in production they are served from the site's own /_vercel path.
+const devVercel = isDev ? ' https://va.vercel-scripts.com' : ''
+// Supabase auth, REST and realtime run on the project's own host (a custom domain in production),
+// so connect-src takes it from NEXT_PUBLIC_SUPABASE_URL instead of a hard-coded list that can drift.
+const supabaseHost = (() => {
+  try {
+    const host = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').host
+    return host && !host.endsWith('.supabase.co') ? ` https://${host} wss://${host}` : ''
+  } catch {
+    return ''
+  }
+})()
+// GA4 sends from regional hosts (region1.google-analytics.com) and www.google.com/g/collect, Clarity syncs through c.bing.com,
+// Sentry ingests on *.ingest.sentry.io; place photos may be plain Supabase Storage URLs.
+// The vector map (a custom map style) fetches its tiles and glyphs from map.pstatic.net, the published
+// style from mape.pstatic.net and the raster styles it falls back to from nrbe.pstatic.net.
 const CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://*.clarity.ms https://oapi.map.naver.com https://*.pstatic.net${devNaverHttp}`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://*.clarity.ms https://oapi.map.naver.com https://*.pstatic.net${devNaverHttp}${devVercel}`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob: https://lh3.googleusercontent.com https://*.pstatic.net https://*.map.naver.com https://*.clarity.ms${devNaverHttp}`,
+  `img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com https://www.googletagmanager.com https://*.google-analytics.com https://*.pstatic.net https://*.map.naver.com https://*.clarity.ms https://c.bing.com${devNaverHttp}`,
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.b4korea.com https://www.google-analytics.com https://analytics.google.com https://*.clarity.ms https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://*.nelo.navercorp.com",
+  `connect-src 'self' https://*.supabase.co wss://*.supabase.co${supabaseHost} https://www.googletagmanager.com https://www.google.com https://*.google-analytics.com https://*.analytics.google.com https://*.clarity.ms https://c.bing.com https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://map.pstatic.net https://mape.pstatic.net https://nrbe.pstatic.net https://maps.apigw.ntruss.com https://*.nelo.navercorp.com${devVercel}`,
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  "frame-src 'none'",
   "frame-ancestors 'none'",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
+  ...(isDev ? [] : ['upgrade-insecure-requests']),
 ].join('; ')
+
+// Location for Locate me only; everything else the site never asks for.
+const PERMISSIONS = 'geolocation=(self), camera=(), microphone=(), payment=(), usb=(), serial=(), bluetooth=(), hid=(), midi=(), browsing-topics=()'
 
 function withSecurityHeaders(res: NextResponse): NextResponse {
   res.headers.set('Content-Security-Policy', CSP)
   res.headers.set('X-Content-Type-Options', 'nosniff')
   res.headers.set('X-Frame-Options', 'DENY')
   res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  res.headers.set('Permissions-Policy', 'geolocation=(self), camera=(), microphone=()')
+  res.headers.set('Permissions-Policy', PERMISSIONS)
+  res.headers.set('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
   res.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
   return res
 }
 
 // ── Rate limiters ──────────────────────────────────────────────────────────────
-// Fail-open when env vars are missing (dev machines without Upstash creds).
-// In production Vercel will have the real values; missing = 429 risk, not safety risk.
+// Without the env vars (dev machines without Upstash creds) the global limit is off and auth and
+// AI generate use the in-memory fallback below. Production must have the real values.
 let rlGlobal: Ratelimit | null = null
 let rlAuth: Ratelimit | null = null
 let rlAiGenerate: Ratelimit | null = null
@@ -79,11 +105,51 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
   })
 } else {
   // eslint-disable-next-line no-console
-  console.warn('[B4K] Upstash env vars missing — rate limiting disabled (fail-open)')
+  console.warn('[B4K] Upstash env vars missing — global rate limit off, auth and AI on the in-memory limit')
+}
+
+// In-memory fallback for the sensitive limits (auth, AI generate) when Upstash is missing or
+// down: per server instance only, so looser than Upstash, but never unlimited.
+const memHits = new Map<string, number[]>()
+function memLimit(key: string, max: number, windowMs: number): { success: boolean; reset: number } {
+  const now = Date.now()
+  const hits = (memHits.get(key) ?? []).filter((t) => now - t < windowMs)
+  if (hits.length >= max) {
+    memHits.set(key, hits)
+    return { success: false, reset: hits[0] + windowMs }
+  }
+  hits.push(now)
+  if (memHits.size > 10_000) memHits.clear()
+  memHits.set(key, hits)
+  return { success: true, reset: now + windowMs }
 }
 
 // ── Intl middleware (non-api routes only) ──────────────────────────────────────
 const intlMiddleware = createIntlMiddleware(routing)
+
+// /zh-CN/... and /th/... (retired locales) → /en/... with a permanent
+// redirect, keeping the rest of the path and the query string.
+const RETIRED_LOCALE_RE = new RegExp(`^/(${RETIRED_LOCALES.join('|')})(?=/|$)`, 'i')
+
+// ── New design, live areas (lib/v2-live.ts) ──────────────────────────────────────
+// /<locale>[/v2]<path>: groups are the locale, the /v2 preview prefix, and the rest of the path.
+const V2_ROUTE_RE = new RegExp(`^/(${routing.locales.join('|')})(/v2(?=/|$))?(/.*)?$`)
+
+// Serves /<locale><path> from the v2 screen at /<locale>/v2<path>, keeping what the intl
+// middleware set on its own response (locale cookie, alternate links) and the locale request
+// header it forwards.
+function rewriteToV2(req: NextRequest, intl: NextResponse, locale: string, path: string): NextResponse {
+  const url = req.nextUrl.clone()
+  url.pathname = `/${locale}/v2${path === '/' ? '' : path}`
+  const headers = new Headers(req.headers)
+  headers.set('X-NEXT-INTL-LOCALE', locale)
+  headers.set(V2_LIVE_HEADER, '1')
+  const res = NextResponse.rewrite(url, { request: { headers } })
+  intl.cookies.getAll().forEach((c) => res.cookies.set(c))
+  const link = intl.headers.get('Link')
+  if (link) res.headers.set('Link', link)
+  return res
+}
 
 // ── Maintenance mode ─────────────────────────────────────────────────────────────
 // Gate everything behind a 503 when MAINTENANCE_MODE=1. Never gates Preview deploys
@@ -117,20 +183,27 @@ function maintenanceResponse(): NextResponse {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>B4K — Under Maintenance</title>
+<title>B4K is under maintenance</title>
 <style>
+  /* Values copied from app/tokens.css (this page is served before any app CSS):
+     neutral-100 bg, neutral-950 fg, neutral-550 muted in light; neutral-950, neutral-50, neutral-450 in dark. */
+  :root{color-scheme:light dark;--bg:#f5f5f3;--fg:#0a0a0a;--muted:#636362}
+  @media (prefers-color-scheme:dark){:root{--bg:#0a0a0a;--fg:#f7f6f3;--muted:#8f8e8c}}
   html,body{height:100%;margin:0}
-  body{background:#0a0a0a;color:#ffffff;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
-  .card{max-width:420px}
-  h1{font-size:20px;font-weight:600;margin:0 0 12px;color:#C4A8E0}
-  p{font-size:14px;line-height:1.7;color:rgba(255,255,255,0.55);margin:0 0 8px}
+  body{background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px}
+  .card{max-width:400px}
+  h1{font-size:20px;line-height:1.25;font-weight:600;margin:0 0 8px}
+  p{font-size:14px;line-height:1.5;color:var(--muted);margin:0 0 4px}
 </style>
 </head>
 <body>
   <div class="card">
-    <h1>B4K is getting ready</h1>
-    <p>We&rsquo;re putting the finishing touches on things. Check back shortly.</p>
-    <p lang="ko">잠시 점검 중입니다. 곧 돌아오겠습니다.</p>
+    <h1>We&rsquo;ll be back soon</h1>
+    <p>B4K is being updated. Check back in a little while.</p>
+    <p lang="ko">곧 돌아올게요. B4K를 업데이트하고 있어요. 잠시 후 다시 확인해 주세요.</p>
+    <p lang="ja">まもなく再開します。B4Kは現在更新中です。しばらくしてからもう一度アクセスしてください。</p>
+    <p lang="zh-TW">我們很快回來。B4K 正在更新，請稍後再回來看看。</p>
+    <p lang="pt-BR">Voltamos em breve. O B4K está sendo atualizado. Volte daqui a pouco.</p>
   </div>
 </body>
 </html>`
@@ -148,7 +221,7 @@ function maintenanceResponse(): NextResponse {
 // ── IP extraction ──────────────────────────────────────────────────────────────
 function getIp(req: NextRequest): string {
   return (
-    req.ip ??
+    req.headers.get('x-real-ip') ??
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     '127.0.0.1'
   )
@@ -180,32 +253,67 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
   if (pathname.startsWith('/api/')) {
     const ip = getIp(req)
 
-    // Per-route limiters — most-specific first, then global.
-    // Only one limiter fires per request.
-    // Fail-open on a live Upstash error (not just a missing env var) — a
-    // rate-limiter outage should degrade rate limiting, not 500 every request.
-    try {
-      if (pathname === '/api/plans/generate' && rlAiGenerate) {
-        const { success, reset } = await rlAiGenerate.limit(ip)
-        if (!success) return withSecurityHeaders(tooManyRequests(reset))
-      } else if (pathname.startsWith('/api/auth/') && rlAuth) {
-        const { success, reset } = await rlAuth.limit(ip)
-        if (!success) return withSecurityHeaders(tooManyRequests(reset))
-      } else if (rlGlobal) {
+    // Per-route limiters — most-specific first, then global. Only one limiter fires per request.
+    // Auth and AI generate never run unlimited: without Upstash (missing env or a live error)
+    // they fall back to the in-memory limit. The global limit stays fail-open on an outage, so a
+    // rate-limiter outage degrades rate limiting instead of failing every request.
+    const sensitive =
+      pathname === '/api/plans/generate' ? { rl: rlAiGenerate, key: `ai:${ip}`, max: 5 } :
+      pathname.startsWith('/api/auth/') ? { rl: rlAuth, key: `auth:${ip}`, max: 10 } :
+      null
+    if (sensitive) {
+      let result: { success: boolean; reset: number }
+      try {
+        result = sensitive.rl ? await sensitive.rl.limit(ip) : memLimit(sensitive.key, sensitive.max, 60_000)
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('[B4K] Rate limiter check failed — using the in-memory limit', err)
+        result = memLimit(sensitive.key, sensitive.max, 60_000)
+      }
+      if (!result.success) return withSecurityHeaders(tooManyRequests(result.reset))
+    } else if (rlGlobal) {
+      try {
         const { success, reset } = await rlGlobal.limit(ip)
         if (!success) return withSecurityHeaders(tooManyRequests(reset))
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('[B4K] Rate limiter check failed — continuing without it', err)
       }
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('[B4K] Rate limiter check failed — continuing without it', err)
     }
 
     return withSecurityHeaders(NextResponse.next())
   }
 
+  // ── Retired locales → en ──────────────────────────────────────────────────
+  if (RETIRED_LOCALE_RE.test(pathname)) {
+    const url = req.nextUrl.clone()
+    url.pathname = pathname.replace(RETIRED_LOCALE_RE, '/en')
+    return withSecurityHeaders(NextResponse.redirect(url, 308))
+  }
+
+  // ── New design: live areas are served by their v2 screens ─────────────────
+  // The old preview address of a live area, and the old live addresses without a v2 screen,
+  // move to the live address; the live address renders the v2 screen without changing the URL.
+  const v2Route = V2_ROUTE_RE.exec(pathname)
+  const v2Path = v2Route?.[3] ?? ''
+  const v2Alias = v2Route && !v2Route[2] ? v2LiveAlias(v2Path) : null
+  if (v2Route && ((v2Route[2] && isV2Live(v2Path)) || v2Alias)) {
+    const [targetPath, targetQuery] = (v2Alias ?? v2Path).split('?')
+    const url = req.nextUrl.clone()
+    url.pathname = `/${v2Route[1]}${targetPath === '/' ? '' : targetPath}`
+    // An alias may carry its own query (/plan → /map?plan=new); the request's query is kept too.
+    new URLSearchParams(targetQuery ?? '').forEach((v, key) => url.searchParams.set(key, v))
+    // Old preview addresses and old live addresses moved for good (308); the v2 layout keeps noindex
+    // while a preview page still answers.
+    return withSecurityHeaders(NextResponse.redirect(url, 308))
+  }
+
   // ── Non-API routes: Supabase session refresh + intl routing ──────────────
   // Build the intl response first so we can pass its headers through.
-  const response = intlMiddleware(req)
+  let response = intlMiddleware(req)
+  if (v2Route && !v2Route[2] && isV2Live(v2Path) && response.status < 300 && !response.headers.has('x-middleware-rewrite')) {
+    response = rewriteToV2(req, response, v2Route[1], v2Path)
+  }
 
   // Refresh the Supabase auth token so SSR can read the session on every page.
   // Fail-open on missing/invalid config — a bad env var should degrade auth,
@@ -244,8 +352,9 @@ export default async function middleware(req: NextRequest): Promise<NextResponse
 
 export const config = {
   matcher: [
-    // Non-API pages (intl routing) — exclude api/, _next, _vercel, static files
-    '/((?!api|_next|_vercel|.*\\..*).*)',
+    // Non-API pages (intl routing) — exclude api/, _next, _vercel, static files and the share
+    // image routes (no extension, so the locale redirect would send them to a 404)
+    '/((?!api|_next|_vercel|opengraph-image|twitter-image|.*\\..*).*)',
     // All API routes (rate limiting)
     '/api/:path*',
   ],

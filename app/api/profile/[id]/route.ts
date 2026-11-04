@@ -20,7 +20,8 @@ interface BffPublicProfile {
   created_at: string
 }
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   if (!/^\d+$/.test(params.id)) {
     return NextResponse.json({ error: 'not found' }, { status: 404 })
   }

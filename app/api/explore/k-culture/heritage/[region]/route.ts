@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { withDbPoiIds } from '@/lib/db-poi-mapping'
 import { resolveHeritageDetail } from '@/lib/kculture-heritage'
 
-export async function GET(req: NextRequest, { params }: { params: { region: string } }) {
+export async function GET(req: NextRequest, props: { params: Promise<{ region: string }> }) {
+  const params = await props.params;
   const includeUnverified =
     process.env.NODE_ENV !== 'production' && req.nextUrl.searchParams.get('includeUnverified') === '1'
 
   const data = await resolveHeritageDetail(params.region, includeUnverified)
   if (!data) return NextResponse.json({ error: 'not_found' }, { status: 404 })
-  return NextResponse.json(data)
+  return NextResponse.json({ ...data, items: withDbPoiIds(data.items) })
 }

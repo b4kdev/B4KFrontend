@@ -33,7 +33,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setToasts(prev => prev.filter(t => t.id !== id))
   }, [])
 
-  // UF-13 (G11.2) — toasts with an action (e.g. badge unlock's "View badge")
+  // Toasts with an action (e.g. badge unlock's "View badge")
   // stay until the user explicitly dismisses or acts, instead of auto-closing —
   // an action worth noticing shouldn't vanish in 3s. `warning` toasts are
   // persistent for the same reason (shared/states.md Toast System: "never

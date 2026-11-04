@@ -9,6 +9,7 @@ const NOTIF_TYPES = [
   'badge_earned',
   'challenge_new',
   'promotion',
+  'plan_saved',
 ] as const
 
 export type NotifType = (typeof NOTIF_TYPES)[number]

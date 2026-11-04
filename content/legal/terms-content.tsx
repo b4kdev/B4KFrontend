@@ -1,4 +1,4 @@
-import type { LegalSection } from '@/components/legal/LegalDocument';
+import type { LegalSection } from './types';
 
 export const termsLastUpdated = 'July 24, 2026';
 export const termsContactEmail = 'support@b4korea.com';
@@ -48,7 +48,7 @@ export const termsSections: LegalSection[] = [
     heading: '4. Account Registration',
     body: (
       <ul>
-        <li>You may register with email and password, or sign in via Google, Apple, or Microsoft.</li>
+        <li>You may register with email and password, or sign in with Google.</li>
         <li>You are responsible for maintaining the security of your account credentials.</li>
         <li>You must not share your account or use another person&rsquo;s account.</li>
         <li>You must provide accurate information and keep it up to date.</li>

@@ -6,11 +6,11 @@ import ShellClient from './_shell/ShellClient';
 
 type Props = {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 
 export default async function LocaleLayout({ children, params }: Props) {
-  const { locale } = params;
+  const { locale } = await params;
 
   if (!routing.locales.includes(locale as (typeof routing.locales)[number])) {
     notFound();

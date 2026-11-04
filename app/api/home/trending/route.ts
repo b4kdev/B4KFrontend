@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { bffFetch } from '@/lib/bff'
 
 export interface HomeTrendingPoi {
   poi_id: string
@@ -8,26 +9,42 @@ export interface HomeTrendingPoi {
   display_domain: string
   save_count: number
   primary_image_url: string | null
+  /** The interest category: the place type icon when there is no photo. */
+  interest_category: string | null
   // Quick-add-to-plan needs coords — service.places_snapshot has them for real
   coords_lat: number
   coords_lng: number
 }
 
-// Interim content seed — every row cross-checked against
-// B4K_POI_DB_IMPORT_CLEANED_1500.xlsx (poi_id/coords are the real DB values).
-// save_count is 0 for all rows: no real engagement data exists pre-launch and
-// this file does not fabricate social-proof numbers. primary_image_url is null -
-// image host TBD, see DEC-55. Replace this seed with the real BFF call once
-// dev friend wires /places (or an equivalent trending endpoint) — see DEC-50.
-const SEED: HomeTrendingPoi[] = [
-  { poi_id: 'KP-207', name_ko: '올림픽공원 KSPO DOME', name_en: 'KSPO Dome Olympic Park', display_region: 'Songpa-gu, Seoul', display_domain: 'k-pop', save_count: 0, primary_image_url: '/images/home/trending/KP-207_kspo-dome-olympic-park.webp', coords_lat: 37.5192612328545, coords_lng: 127.1273998904141 },
-  { poi_id: 'KD016-007', name_ko: '광장시장', name_en: 'Gwangjang Market', display_region: 'Jongno-gu, Seoul', display_domain: 'k-culture', save_count: 0, primary_image_url: '/images/home/trending/KD016-007_gwangjang-market.webp', coords_lat: 37.57005529646949, coords_lng: 126.9989472822363 },
-  { poi_id: 'KB-DER-GN-005', name_ko: 'Abijou Clinic Gangnam', name_en: 'Abijou Clinic Gangnam', display_region: 'Seocho-gu, Seoul', display_domain: 'k-beauty', save_count: 0, primary_image_url: '/images/home/trending/KB-DER-GN-005_abijou-clinic-gangnam.webp', coords_lat: 37.49864716138882, coords_lng: 127.0262645904912 },
-  { poi_id: 'KD016-003', name_ko: '문경새재 오픈세트장', name_en: 'Mungyeong Saejae Open Set', display_region: 'Mungyeong, Gyeongsangbuk-do', display_domain: 'k-drama', save_count: 0, primary_image_url: '/images/home/trending/KD016-003_mungyeong-saejae-open-set.webp', coords_lat: 36.7713996802656, coords_lng: 128.074072026373 },
-  { poi_id: 'KD016-001', name_ko: '창덕궁', name_en: 'Changdeokgung Palace', display_region: 'Jongno-gu, Seoul', display_domain: 'k-culture', save_count: 0, primary_image_url: '/images/home/trending/KD016-001_changdeokgung-palace.webp', coords_lat: 37.57964694739535, coords_lng: 126.9909998067713 },
-  { poi_id: 'KP-058', name_ko: '강남 댄스 스튜디오', name_en: 'Gangnam Dance Studio Zone', display_region: 'Gangnam-gu, Seoul', display_domain: 'k-pop', save_count: 0, primary_image_url: '/images/home/trending/KP-058_gangnam-dance-studio.webp', coords_lat: 37.5271629824846, coords_lng: 127.039432806226 },
-]
+interface BffTrendingPlace {
+  poi_id: number
+  name_ko: string
+  primary_image_url: string | null
+  save_count: number
+  coords_lat: number
+  coords_lng: number
+  display_region: string | null
+  domains: string[] | null
+  interest_category?: string | null
+  translations: Record<string, { name?: string }> | null
+}
 
-export async function GET() {
-  return NextResponse.json(SEED)
+// Trending now: the backend's weekly ranking over every category (saves and likes in the last 7
+// days, publishable places only). No activity in the window, or a failed call, answers an empty
+// list, so Home hides the row. The language comes in the query: the answer is cached at the CDN.
+export async function GET(req: NextRequest) {
+  const locale = req.nextUrl.searchParams.get('locale') ?? 'en'
+  const rows = await bffFetch<BffTrendingPlace[]>('/places/trending?limit=10', { token: null }).catch(() => [])
+  return NextResponse.json<HomeTrendingPoi[]>((rows ?? []).map((p) => ({
+    poi_id: String(p.poi_id),
+    name_ko: p.name_ko,
+    name_en: p.translations?.[locale]?.name ?? (locale === 'ko' ? p.name_ko : p.translations?.en?.name) ?? p.name_ko,
+    display_region: p.display_region ?? '',
+    display_domain: p.domains?.find((d) => d.startsWith('k-')) ?? '',
+    save_count: p.save_count,
+    primary_image_url: p.primary_image_url,
+    interest_category: p.interest_category ?? null,
+    coords_lat: p.coords_lat,
+    coords_lng: p.coords_lng,
+  })))
 }

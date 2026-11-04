@@ -6,7 +6,7 @@ export interface PlanMeta {
   isOwner: boolean
 }
 
-// SC-35 (S-DEGJDE) — ownership is a per-session authorization check, kept out
+// ownership is a per-session authorization check, kept out
 // of the main GET /api/plans/[id] payload on purpose: that response is the
 // same for every viewer (share links, previews) and must never carry a
 // client-trusted owner flag. This route re-derives it from the real session
@@ -16,7 +16,8 @@ export interface PlanMeta {
 // Derivation: BFF GET /itineraries/:id is owner-scoped (404 = not mine), so a
 // 2xx means the session user owns the plan. On 404 fall back to the public
 // endpoint's viewer.is_owner; anything else resolves to false.
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params
   const notOwner = NextResponse.json({ isOwner: false } satisfies PlanMeta)
 

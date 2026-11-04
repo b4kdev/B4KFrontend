@@ -4,7 +4,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getDraftPlan, clearDraftPlan, type DraftPlan } from '@/lib/draft-plan';
 import type { PlanDraft } from '@/app/api/plans/draft/route';
-import type { DraftMeta } from '@/components/auth/DraftConflictModal';
+
+export interface DraftMeta {
+  stopCount:    number;
+  lastModified: string;  // ISO string
+}
 
 export interface PostLoginConflict {
   deviceDraft:  DraftMeta;
@@ -14,10 +18,10 @@ export interface PostLoginConflict {
 }
 
 // On first login: migrate any localStorage guest draft → DB.
-// DEC-33 T3 — before migrating, check whether the account already has an
+// T3 — before migrating, check whether the account already has an
 // unpublished DB draft. If not, migrate directly (safe, unchanged behavior).
 // If one exists, surface the conflict instead of silently clobbering either
-// side — caller renders DraftConflictModal and calls resolveKeepDevice /
+// side — caller (V2DraftMigration) shows the choice and calls resolveKeepDevice /
 // resolveKeepAccount once the user picks.
 export function useDraftMigration() {
   const { user, loading } = useAuth();
@@ -43,7 +47,7 @@ export function useDraftMigration() {
           }).then(res => { if (res.ok) clearDraftPlan(); });
         }
 
-        // DEC-33 T3 — both a local and an account draft exist. Don't touch
+        // T3 — both a local and an account draft exist. Don't touch
         // either until the user picks; render the modal.
         setConflict({
           deviceDraft:  { stopCount: localDraft.stops.length, lastModified: new Date().toISOString() },

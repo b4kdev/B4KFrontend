@@ -3,7 +3,17 @@
 import useSWR from 'swr'
 import { useLocale } from 'next-intl'
 import { apiFetch } from '@/lib/api'
+import { dbPoiId } from '@/lib/db-poi-mapping'
 import type { MapPoi } from './useMapPois'
+
+/** One photo of a place (BFF images[]); keys without a value are left out. */
+interface PlaceImage {
+  md?:     string
+  lg?:     string
+  orig?:   string
+  source?: 'tourapi' | 'google_map' | 'commons' | 'naver_map' | 'manual'
+  credit?: string
+}
 
 // api.get_place (BFF: GET /places/:id) — richer fields than the list, fetched
 // once a POI is actually selected. Merge onto the list-shape MapPoi so the
@@ -19,10 +29,14 @@ interface RawPlaceDetail {
   domains:           string[] | null
   display_region:    string | null
   primary_image_url: string | null
+  images?:           PlaceImage[] | null
   like_count:        number
   save_count:        number
   translations:      Record<string, { name?: string; description?: string }>
   context:           unknown
+  default_visit_min?: number | null
+  /** Opening hours and closed days as written by the source (mostly English); null when there are none. */
+  hours_info?: { opening_hours?: string; closed_days?: string; info_url?: string } | null
 }
 
 function mapDetail(row: RawPlaceDetail, locale: string): MapPoi {
@@ -34,6 +48,9 @@ function mapDetail(row: RawPlaceDetail, locale: string): MapPoi {
   if (locale !== 'ko' && row.address_en) {
     address = `${row.address_ko ?? ''}\n${row.address_en}`.trim()
   }
+
+  // The photo shown is primary_image_url: its entry in images[] (any size) says where it comes from.
+  const primary = row.images?.find((i) => [i.md, i.lg, i.orig].includes(row.primary_image_url ?? undefined)) ?? row.images?.[0]
 
   return {
     // poi_id/name_ko/coords are here (not just in useMapPois' list shape) so
@@ -50,23 +67,30 @@ function mapDetail(row: RawPlaceDetail, locale: string): MapPoi {
     description:        cur.description ?? en.description,
     address,
     display_domain:     row.display_domain ?? row.domains?.[0] ?? null,
+    display_region:     row.display_region ?? null,
     primary_image_url:  row.primary_image_url ?? undefined,
+    primary_image_source: primary?.source,
     save_count:         row.save_count,
     like_count:         row.like_count,
+    default_visit_min:  row.default_visit_min ?? null,
+    hours_text:         [row.hours_info?.opening_hours, row.hours_info?.closed_days].map((x) => x?.trim()).filter(Boolean).join(' · ') || undefined,
   }
 }
 
 export function usePlaceDetail(poiId: string | null) {
   const locale = useLocale()
+  // Old seed links carry content-sheet codes ('KD016-007'); the BFF only knows the DB id.
+  const id = poiId ? dbPoiId(poiId) ?? poiId : null
 
-  const { data, isLoading } = useSWR(
-    poiId ? ['/places', poiId, locale] : null,
-    () => apiFetch<RawPlaceDetail>(`/places/${poiId}`),
+  const { data, error, isLoading } = useSWR(
+    id ? ['/places', id, locale] : null,
+    () => apiFetch<RawPlaceDetail>(`/places/${id}`),
     { revalidateOnFocus: false }
   )
 
   return {
     detail: data ? mapDetail(data, locale) : null,
     isLoading,
+    isError: !!error,
   }
 }

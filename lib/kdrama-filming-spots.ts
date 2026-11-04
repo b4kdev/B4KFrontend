@@ -1,4 +1,4 @@
-// DEC-61 — 촬영지 (filming spots) detail page data, "Tangerines" (폭싹 속았수다) example.
+// 촬영지 (filming spots) detail page data, "Tangerines" (폭싹 속았수다) example.
 // Self-contained, mirrors lib/kpop-footsteps.ts's pattern (own seed, own gate, no
 // cross-import from app/api/explore/[category]/route.ts).
 import 'server-only'
@@ -26,9 +26,9 @@ export interface FilmingSpotsDetail {
   workNameEn: string
   workNameKo: string
   broadcaster: string
-  /** Real, from the deck's own subtitle ("제주 촬영지 24곳"). Sub-type counts aren't
-   * individually confirmed in the source deck, so only this total is shown as a count
-   * — the type chips below are plain category labels, not claimed counts. */
+  /** How many spots the page lists. The seed keeps the deck's own total ("제주 촬영지 24곳")
+   * for reference; the page shows the count of spots it lists. The type chips below are
+   * plain category labels, not claimed counts. */
   totalCount: number
   items: FilmingSpotPoi[]
 }
@@ -111,10 +111,9 @@ const SEED_FILMING_SPOTS: Record<string, FilmingSpotsDetail> = {
 export function getFilmingSpotsDetail(workId: string, includeUnverified: boolean): FilmingSpotsDetail | null {
   const detail = SEED_FILMING_SPOTS[workId]
   if (!detail) return null
-  return {
-    ...detail,
-    items: detail.items.filter(poi => includeUnverified || poi.verified !== false),
-  }
+  // The count says how many spots the page lists, so it never promises more than it shows.
+  const items = detail.items.filter(poi => includeUnverified || poi.verified !== false)
+  return { ...detail, totalCount: items.length, items }
 }
 
 // workId -> core.entities row backing real data. Still empty — 2026-08-29 re-check:

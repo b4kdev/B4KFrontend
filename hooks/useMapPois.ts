@@ -16,6 +16,8 @@ export interface MapPoi {
   coords_lat:        number
   coords_lng:        number
   display_domain?:   string | null
+  /** The interest category (food, stay, …): the place type icon when there is no photo. */
+  interest_category?: string | null
   display_region?:   string | null
   display_region_detail?: string
   is_trending?:      boolean   // no backing data yet — always undefined, degrades gracefully
@@ -26,10 +28,16 @@ export interface MapPoi {
   is_open?:          boolean   // no opening-hours data collected yet — always undefined
   hours_open?:       string
   hours_close?:      string
+  /** Opening hours and closed days as the source writes them (place detail only). */
+  hours_text?:       string
   description?:      string
   address?:          string
   website_url?:      string
   primary_image_url?: string
+  /** Where the primary photo comes from (place detail only); TourAPI photos carry a credit line. */
+  primary_image_source?: string
+  /** The usual visit length for this kind of place (minutes): where the duration menu starts. Null for stays. */
+  default_visit_min?: number | null
 }
 
 interface RawPlace {
@@ -42,6 +50,8 @@ interface RawPlace {
   coords_lng:        number
   display_region:    string | null
   domains:           string[] | null
+  interest_category?: string | null
+  default_visit_min?: number | null
   translations:      Record<string, { name?: string; description?: string }>
 }
 
@@ -66,10 +76,14 @@ function mapPlace(row: RawPlace, locale: string): MapPoi {
     coords_lat:         row.coords_lat,
     coords_lng:         row.coords_lng,
     display_domain:     row.domains?.[0] ?? null,
+    interest_category:  row.interest_category ?? null,
     display_region:     row.display_region,
     save_count:         row.save_count,
     like_count:         row.like_count,
     primary_image_url:  row.primary_image_url ?? undefined,
+    default_visit_min:  row.default_visit_min ?? null,
+    // One-line note on the list card, in the visitor's language when there is one.
+    description:        cur.description ?? en.description,
   }
 }
 
@@ -78,7 +92,7 @@ function mapPlace(row: RawPlace, locale: string): MapPoi {
 // value or the BFF's exact-match filter returns zero rows every time. Gyeongju has
 // no city-level row (province is 경북, which also covers other Gyeongbuk cities) —
 // best available match, not exact.
-const REGION_API_NAME: Record<string, string> = {
+export const REGION_API_NAME: Record<string, string> = {
   Seoul:     '서울',
   Busan:     '부산',
   Jeju:      '제주',
@@ -99,7 +113,7 @@ const REGION_API_NAME: Record<string, string> = {
   Gyeongnam: '경남',
 }
 
-// BLK-39 — region-chip camera jump. Real administrative bounding boxes
+// region-chip camera jump. Real administrative bounding boxes
 // (OpenStreetMap/Nominatim, minLat/maxLat/minLng/maxLng = south/north/west/
 // east), not eyeballed — a static per-region target sidesteps both the
 // region-switch fetch deadlock (MapView's old cameraFocusPois path required
@@ -143,10 +157,12 @@ export function useMapPois(
   activeFilters: string[],
   bounds: MapBounds | null,
   zoom: number,
+  /** A place-type filter as BFF query parameters, e.g. 'tags=cafe' or 'interest=shopping'. */
+  typeQuery?: string | null,
 ) {
   const locale = useLocale()
 
-  const params = new URLSearchParams()
+  const params = new URLSearchParams(typeQuery ?? '')
   if (region) params.set('region', REGION_API_NAME[region] ?? region)
   if (activeFilters.length > 0) params.set('domain', activeFilters[0])
   if (bounds) {
@@ -182,7 +198,7 @@ export function useMapPois(
   const rows = useMemo(() => {
     const extraFilters = activeFilters.slice(1)
     return (data ?? []).filter(row =>
-      // BLK-40 — a live row can have null coords_lat/coords_lng despite the
+      // a live row can have null coords_lat/coords_lng despite the
       // RawPlace/MapPoi type saying number (schema.md's three-divergent-
       // coordinate-tables callout — some source never backfilled). Every
       // downstream consumer (clustering, markers, bounds, panTo) assumes a

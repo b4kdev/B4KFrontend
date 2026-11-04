@@ -1,4 +1,6 @@
-import type { LegalSection } from '@/components/legal/LegalDocument';
+import type { LegalSection } from './types';
+import { cn } from '@/lib/cn';
+import { HIT_AREA } from '@/components/library/styles';
 
 export const cookiePolicyLastUpdated = 'July 24, 2026';
 export const cookiePolicyContactEmail = 'support@b4korea.com';
@@ -18,7 +20,7 @@ export const cookiePolicySections: LegalSection[] = [
     id: 'cookies-we-use',
     heading: '2. Cookies We Use',
     body: (
-      <div className="overflow-x-auto">
+      <div tabIndex={0} className="overflow-x-auto focus-visible:shadow-focus-ring focus-visible:outline-none">
         <h3>2.1 Strictly Necessary</h3>
         <p>These cookies are required for the platform to function. They cannot be disabled.</p>
         <table>
@@ -109,6 +111,30 @@ export const cookiePolicySections: LegalSection[] = [
     ),
   },
   {
+    id: 'without-cookies',
+    heading: '2.3 Measurement Without Cookies',
+    body: (
+      <>
+        <p>
+          These tools set no cookies and collect no personal data, so they run on every visit, before and after your
+          choice in the cookie banner:
+        </p>
+        <ul>
+          <li>
+            <strong>Vercel Web Analytics</strong> — counts page views, referrer, country, browser and device type; no
+            IP address is stored
+          </li>
+          <li>
+            <strong>Vercel Speed Insights</strong> — measures how fast pages load and respond
+          </li>
+          <li>
+            <strong>Sentry</strong> — records errors and crashes, with IP address, email and cookies stripped
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
     id: 'not-used-for',
     heading: '3. What We Do NOT Use Cookies For',
     body: (
@@ -138,13 +164,13 @@ export const cookiePolicySections: LegalSection[] = [
         <ul>
           <li>
             Google Analytics:{' '}
-            <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">
+            <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer" className={cn('relative', HIT_AREA)}>
               tools.google.com/dlpage/gaoptout
             </a>
           </li>
           <li>
             Microsoft Clarity:{' '}
-            <a href="https://privacy.microsoft.com/en-us/privacystatement" target="_blank" rel="noopener noreferrer">
+            <a href="https://privacy.microsoft.com/en-us/privacystatement" target="_blank" rel="noopener noreferrer" className={cn('relative', HIT_AREA)}>
               privacy.microsoft.com
             </a>
           </li>

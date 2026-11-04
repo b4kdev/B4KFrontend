@@ -1,11 +1,7 @@
-// lib/api.ts — BFF caller (B4KBackend supabase/functions/api). See b4k/API-ARCHITECTURE.md.
-// The frontend never calls Supabase Postgres directly — every data read/write goes through this.
-import { createSupabaseBrowserClient } from './supabase-browser'
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL
-if (!API_URL) {
-  throw new Error('NEXT_PUBLIC_API_URL is not set — map/POI reads will fail. Set it in .env.local / Vercel env.')
-}
+// lib/api.ts — the browser's BFF caller. It goes through the app's own proxy (/api/bff/<path>,
+// app/api/bff/[...path]/route.ts), which adds the session from the cookie: the browser never calls
+// the BFF host itself (no CORS, works on every origin). The frontend never calls Supabase Postgres
+// directly — every data read/write goes through the BFF.
 
 export class ApiError extends Error {
   status: number
@@ -16,16 +12,9 @@ export class ApiError extends Error {
 }
 
 export async function apiFetch<T = unknown>(path: string, init: RequestInit = {}): Promise<T> {
-  const supabase = createSupabaseBrowserClient()
-  const { data: { session } } = await supabase.auth.getSession()
-
-  const res = await fetch(`${API_URL}${path}`, {
+  const res = await fetch(`/api/bff${path}`, {
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(session ? { Authorization: `Bearer ${session.access_token}` } : {}),
-      ...init.headers,
-    },
+    headers: { 'Content-Type': 'application/json', ...init.headers },
   })
 
   const json = await res.json().catch(() => ({}))
