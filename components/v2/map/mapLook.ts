@@ -24,8 +24,8 @@ type Look = {
 // roads neutral-white, district names neutral-950, street names neutral-600; dark district names
 // are neutral-50. The rest are map-only greys with no token. Text halos use the land color.
 export const MAP_LOOK: Record<'light' | 'dark', Look> = {
-  light: { land: '#f5f5f3', building: '#ebebe7', park: '#e2e8dc', water: '#d3dde4', minorRoad: '#ffffff', majorRoad: '#ffffff', casing: '#c4c4c1', districtName: '#0a0a0a', streetName: '#575756' },
-  dark: { land: '#141414', building: '#1e1e1e', park: '#191d1a', water: '#101c26', minorRoad: '#2a2a2a', majorRoad: '#4a4a4a', casing: '#0a0a0a', districtName: '#f7f6f3', streetName: '#b4b4b2' },
+  light: { land: '#f5f5f3', building: '#ebebe7', park: '#e2e8dc', water: '#d3dde4', minorRoad: '#ffffff', majorRoad: '#ffffff', casing: '#c4c4c1', districtName: '#0a0a0a', streetName: '#575756' }, // allow-hex: Naver map paint values, not UI tokens
+  dark: { land: '#141414', building: '#1e1e1e', park: '#191d1a', water: '#101c26', minorRoad: '#2a2a2a', majorRoad: '#4a4a4a', casing: '#0a0a0a', districtName: '#f7f6f3', streetName: '#b4b4b2' }, // allow-hex: Naver map paint values, not UI tokens
 }
 
 // Label layers that stay: district names, subway stations and exits, street names, landmarks,
