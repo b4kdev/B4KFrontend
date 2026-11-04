@@ -488,6 +488,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         meta={[detail.display_domain && t(CATEGORIES.find((c) => c.slug === detail.display_domain)?.label ?? 'CD0804'), detail.display_region && regionName(detail.display_region, locale)].filter(Boolean).join(' · ')}
         imageSrc={detail.primary_image_url}
         imageAlt={detailName}
+        // Korea Tourism Organization photos (TourAPI) must name their source; other sources show no line yet.
+        credit={detail.primary_image_source === 'tourapi' ? t('CD1874') : undefined}
         description={detail.description}
         // Hours (as the source writes them) and address, in the drawn order; open status and the website wait on data.
         details={[

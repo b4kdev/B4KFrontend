@@ -40,6 +40,7 @@ import type { SearchCollection, SearchExplore, SearchPlan, SearchPoi } from '@/a
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
 import { cn } from '@/lib/cn'
+import { COMPANY, companyValues, fillCompanyText } from '@/lib/company'
 import { HIT_AREA } from '@/components/library/styles'
 import { HELP_TOP, HELP_TOPICS, helpTopic, type HelpQuestion } from '../help'
 import { keepKNamesDeep } from '../text'
@@ -390,23 +391,43 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
       })[doc],
     [doc, k],
   )
+  // Read on every scroll of the page's scroller (the window on phones, the shell column on desktop),
+  // looking the headings up each time: the document column moves in the tree when the layout
+  // settles on phone or desktop, so headings found once would go stale. At the end of the page the
+  // last section is current, since a short final section never reaches the upper third.
   useEffect(() => {
     const ids = cfg.sections.map((s) => s.id)
-    const io = new IntersectionObserver(
-      () => {
-        const top = window.innerHeight / 3
-        const passed = ids.filter((id) => (document.getElementById(id)?.getBoundingClientRect().top ?? Infinity) <= top)
-        setCurrent(passed[passed.length - 1] ?? ids[0])
-      },
-      { rootMargin: '0px 0px -66% 0px', threshold: [0, 1] },
-    )
-    ids.forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el) })
-    return () => io.disconnect()
-  }, [cfg.sections])
+    let frame = 0
+    // The element that scrolls the document: the nearest scrolling ancestor of the first heading.
+    const scroller = () => {
+      for (let el = document.getElementById(ids[0])?.parentElement; el; el = el.parentElement) {
+        const y = getComputedStyle(el).overflowY
+        if ((y === 'auto' || y === 'scroll') && el.scrollHeight > el.clientHeight) return el
+      }
+      return document.scrollingElement
+    }
+    const update = () => {
+      const top = window.innerHeight / 3
+      const passed = ids.filter((id) => (document.getElementById(id)?.getBoundingClientRect().top ?? Infinity) <= top)
+      const el = scroller()
+      const atEnd = !!el && el.scrollHeight > el.clientHeight && el.scrollTop + el.clientHeight >= el.scrollHeight - 2
+      setCurrent(atEnd ? ids[ids.length - 1] : (passed[passed.length - 1] ?? ids[0]))
+    }
+    const onScroll = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(update)
+    }
+    update()
+    document.addEventListener('scroll', onScroll, { capture: true, passive: true })
+    return () => {
+      cancelAnimationFrame(frame)
+      document.removeEventListener('scroll', onScroll, { capture: true })
+    }
+  }, [cfg.sections, phone])
   return (
-    // Figma legal pages: a 1200 wide content area (narrower than the 1344 list pages), 72 from the top;
-    // on phones the document adds 32 above and below the page's 24.
-    <V2Page bar={{ type: 'page', title: cfg.title, h1: 'page' }} className="max-lg:py-[calc(var(--space-6)+var(--space-8))] lg:max-w-[1200px] lg:pt-[calc(var(--space-10)+var(--space-8))]">
+    // The page container as every content page; the document is a centered reading column inside it,
+    // 72 from the top; on phones the document adds 32 above and below the page's 24.
+    <V2Page bar={{ type: 'page', title: cfg.title, h1: 'page' }} className="max-lg:py-[calc(var(--space-6)+var(--space-8))] lg:pt-[calc(var(--space-10)+var(--space-8))]">
       <div className="flex flex-col gap-[var(--space-8)]">
         <LegalDocument
           viewport={phone ? 'mobile' : 'desktop'}
@@ -472,20 +493,24 @@ export function ErrorScreen({ reset }: { reset: () => void }) {
 
 // ── About B4K (footer link) ─────────────────────────────────────────────────
 
-/** About B4K as drawn: the full-width wordmark, then the title and the about text, left-aligned
- * (desktop: a 760 column under the wordmark). */
+/** About B4K: the wordmark across the page container, then the title and the about text,
+ * left-aligned (desktop: a 760 column under the wordmark). Spacing as drawn: 32 above the wordmark on
+ * phones, 64 on desktop; the text 48 under it and 40 above the footer. */
 export function AboutScreen() {
   const t = useCd()
+  const locale = useLocale()
   return (
-    <V2Page bar={{ type: 'page', title: t('CD1173'), h1: 'page' }} bleed>
-      <div className="flex flex-col gap-[var(--space-4)] px-[var(--grid-gutter-mobile)] pb-[var(--space-6)] pt-[var(--space-8)] lg:gap-0 lg:p-0">
-        <div className="lg:px-[var(--space-10)] lg:pt-[var(--space-16)]">
-          <Logo type="wordmark" className="h-auto w-full" />
-        </div>
+    <V2Page bar={{ type: 'page', title: t('CD1173'), h1: 'page' }}>
+      <div className="flex flex-col gap-[var(--space-4)] pt-[var(--space-2)] lg:gap-0 lg:pt-[var(--space-10)]">
+        <Logo type="wordmark" className="h-auto w-full" />
         <div aria-hidden className="h-[var(--space-4)] lg:hidden" />
-        <div className="flex flex-col gap-[var(--space-4)] lg:w-[760px] lg:gap-[var(--space-6)] lg:px-[var(--space-10)] lg:pb-[var(--space-10)] lg:pt-[var(--space-12)]">
+        <div className="flex flex-col gap-[var(--space-4)] lg:max-w-[760px] lg:gap-[var(--space-6)] lg:pb-[var(--space-4)] lg:pt-[var(--space-12)]">
           <h1 className="type-title-card">{t('CD1173')}</h1>
           <p className="type-body-base text-ui-fg-muted">{t('CD1687')}</p>
+          {/* Company details as drawn under the about text: title, one line per detail, Check business info. */}
+          <h2 className="type-title-card">{t('CD1688')}</h2>
+          <p className="whitespace-pre-line type-body-base text-ui-fg-muted">{fillCompanyText(t.raw('CD1689') as string, companyValues(locale))}</p>
+          <a href={COMPANY.checkUrl} target="_blank" rel="noopener noreferrer" className={cn('relative self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{t('CD1685')}</a>
         </div>
       </div>
     </V2Page>

@@ -28,8 +28,12 @@ export type SectionHeaderProps = {
 
 export function SectionHeader({ title, subtitle, seeAll, arrows, id, className }: SectionHeaderProps) {
   // Figma's phone header runs to the screen edge with 16 padding inside; here the page gutter gives the 16.
+  // With the desktop arrows, the title, See all and the 40 arrow buttons share one center line, so
+  // See all does not sit on the buttons' bottom edge. When the whole row fits, both arrows would only
+  // show disabled: they are hidden then, keeping their space so the header does not change height.
+  const fits = !!arrows && !!arrows.atStart && !!arrows.atEnd
   return (
-    <div className={cn('flex items-end gap-[var(--space-2)] max-md:min-h-[var(--control-height-md)]', className)}>
+    <div className={cn('flex items-end gap-[var(--space-2)] max-md:min-h-[var(--control-height-md)]', arrows && 'lg:items-center', className)}>
       <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
         <h2 id={id} className="type-display-h3 text-ui-fg">{title}</h2>
         {subtitle ? <p className="type-body-base text-ui-fg-muted">{subtitle}</p> : null}
@@ -45,7 +49,7 @@ export function SectionHeader({ title, subtitle, seeAll, arrows, id, className }
         </IntlLink>
       ) : null}
       {arrows ? (
-        <div className="flex gap-[var(--space-2)] max-lg:hidden">
+        <div className={cn('flex gap-[var(--space-2)] max-lg:hidden', fits && 'invisible')}>
           <IconButton variant="secondary" label={arrows.previousLabel} icon={<ChevronLeft />} disabled={arrows.atStart} onClick={arrows.onPrevious} />
           <IconButton variant="secondary" label={arrows.nextLabel} icon={<ChevronRight />} disabled={arrows.atEnd} onClick={arrows.onNext} />
         </div>

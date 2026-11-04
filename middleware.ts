@@ -34,13 +34,15 @@ const supabaseHost = (() => {
 })()
 // GA4 sends from regional hosts (region1.google-analytics.com) and www.google.com/g/collect, Clarity syncs through c.bing.com,
 // Sentry ingests on *.ingest.sentry.io; place photos may be plain Supabase Storage URLs.
+// The vector map (a custom map style) fetches its tiles and glyphs from map.pstatic.net, the published
+// style from mape.pstatic.net and the raster styles it falls back to from nrbe.pstatic.net.
 const CSP = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://*.clarity.ms https://oapi.map.naver.com https://*.pstatic.net${devNaverHttp}${devVercel}`,
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com https://www.googletagmanager.com https://*.google-analytics.com https://*.pstatic.net https://*.map.naver.com https://*.clarity.ms https://c.bing.com${devNaverHttp}`,
   "font-src 'self' data:",
-  `connect-src 'self' https://*.supabase.co wss://*.supabase.co${supabaseHost} https://www.googletagmanager.com https://www.google.com https://*.google-analytics.com https://*.analytics.google.com https://*.clarity.ms https://c.bing.com https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://maps.apigw.ntruss.com https://*.nelo.navercorp.com${devVercel}`,
+  `connect-src 'self' https://*.supabase.co wss://*.supabase.co${supabaseHost} https://www.googletagmanager.com https://www.google.com https://*.google-analytics.com https://*.analytics.google.com https://*.clarity.ms https://c.bing.com https://*.sentry.io https://oapi.map.naver.com https://*.map.naver.com https://map.pstatic.net https://mape.pstatic.net https://nrbe.pstatic.net https://maps.apigw.ntruss.com https://*.nelo.navercorp.com${devVercel}`,
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "frame-src 'none'",

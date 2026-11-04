@@ -21,11 +21,18 @@ export const LANGUAGES = [
   { code: 'pt-BR', name: 'Português (BR)' },
 ] as const
 
+/** Opens the same page in another language, keeping its query (search words, filters, the open
+ * place, paging) and its #section, so the page shows the same state. */
+function useSwitchLanguage() {
+  const pathname = usePathname()
+  const router = useRouter()
+  return (code: string) => router.replace(`${pathname}${window.location.search}${window.location.hash}`, { locale: code })
+}
+
 export function LanguageSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const t = useCd()
   const locale = useLocale()
-  const pathname = usePathname()
-  const router = useRouter()
+  const switchLanguage = useSwitchLanguage()
   return (
     <Modal open={open} onClose={onClose} title={t('CD0808')} closeLabel={t('CD0758')} size="sm">
       {/* Figma: the list sits 8 from the header and the sheet edges, each item 16 inside (the body pads 24). */}
@@ -37,7 +44,7 @@ export function LanguageSheet({ open, onClose }: { open: boolean; onClose: () =>
             onClick={() => {
               onClose()
               if (l.code !== locale) track('lang_switch', { from: locale, to: l.code, locale, screen_id: 'settings' })
-              router.replace(pathname, { locale: l.code })
+              switchLanguage(l.code)
             }}
           >
             <span lang={l.code}>{l.name}</span>
@@ -52,8 +59,7 @@ export function LanguageSheet({ open, onClose }: { open: boolean; onClose: () =>
 function LanguageItems() {
   const t = useCd()
   const locale = useLocale()
-  const pathname = usePathname()
-  const router = useRouter()
+  const switchLanguage = useSwitchLanguage()
   return (
     <MenuGroup label={t('CD0808')}>
       {LANGUAGES.map((l) => (
@@ -62,7 +68,7 @@ function LanguageItems() {
           checked={l.code === locale}
           onClick={() => {
             if (l.code !== locale) track('lang_switch', { from: locale, to: l.code, locale, screen_id: 'menu' })
-            router.replace(pathname, { locale: l.code })
+            switchLanguage(l.code)
           }}
         >
           <span lang={l.code}>{l.name}</span>

@@ -77,8 +77,14 @@ export function Carousel({ type, label, children, seeAll, subtitle, previousLabe
     const update = () => setEdges({ start: el.scrollLeft <= 4, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 4 })
     update()
     el.addEventListener('scroll', update, { passive: true })
-    return () => el.removeEventListener('scroll', update)
-  }, [])
+    // The rail can start or stop overflowing when the window or the cards change size.
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(update)
+    ro?.observe(el)
+    return () => {
+      el.removeEventListener('scroll', update)
+      ro?.disconnect()
+    }
+  }, [items.length])
   if (type === 'rail') {
     const scroll = (dir: 1 | -1) => rail.current?.scrollBy({ left: dir * rail.current.clientWidth * 0.8, behavior: 'smooth' })
     return (
@@ -119,13 +125,21 @@ export type FooterProps = {
   links: { label: string; href: string; strong?: boolean }[]
   copyright: string
   navLabel: string
+  /** Figma Show company line: the company details and Check business info (phones: behind Company details). */
+  company?: { line: string; check: { href: string; label: string }; toggleLabel: string }
   className?: string
 }
 
-/** Footer: one row of legal links and the copyright; content pages only. */
-export function Footer({ links, copyright, navLabel, className }: FooterProps) {
+const FOOTER_LINK = 'relative hover:text-ui-link-hover focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus'
+
+/** Footer: legal links and the copyright, then the company line; content pages only. */
+export function Footer({ links, copyright, navLabel, company, className }: FooterProps) {
+  const [companyOpen, setCompanyOpen] = useState(false)
+  const companyId = useId()
+  // Desktop: the links and the copyright in one row, the company line under it (12 apart).
+  // Phones: the links, Company details (opens the company line), the copyright.
   return (
-    <footer className={cn('flex flex-wrap items-center gap-[var(--space-4)] border-t border-ui-border bg-ui-bg px-[var(--space-8)] py-[var(--space-6)] type-body-caption text-ui-fg-muted max-md:flex-col max-md:items-start max-md:gap-[var(--space-3)] max-md:px-[var(--space-4)]', className)}>
+    <footer className={cn('flex flex-wrap items-center gap-x-[var(--space-4)] gap-y-[var(--space-3)] border-t border-ui-border bg-ui-bg px-[var(--space-8)] py-[var(--space-6)] type-body-caption text-ui-fg-muted max-md:flex-col max-md:flex-nowrap max-md:items-start max-md:px-[var(--space-4)]', className)}>
       <nav aria-label={navLabel} className="flex-1">
         <ul className="flex flex-wrap gap-x-[var(--space-4)] gap-y-[var(--space-2)]">
           {links.map((l) => (
@@ -135,7 +149,18 @@ export function Footer({ links, copyright, navLabel, className }: FooterProps) {
           ))}
         </ul>
       </nav>
-      <p>{copyright}</p>
+      {company ? (
+        <button type="button" aria-expanded={companyOpen} aria-controls={companyId} onClick={() => setCompanyOpen((o) => !o)} className={cn(FOOTER_LINK, HIT_AREA, 'md:hidden')}>
+          {company.toggleLabel}
+        </button>
+      ) : null}
+      <p className="max-md:order-last">{copyright}</p>
+      {company ? (
+        <div id={companyId} className={cn('flex w-full gap-[var(--space-3)] max-md:flex-col md:flex-wrap md:items-start', !companyOpen && 'max-md:hidden')}>
+          <p className="md:min-w-0 md:max-w-max md:flex-1">{company.line}</p>
+          <a href={company.check.href} target="_blank" rel="noopener noreferrer" className={cn(FOOTER_LINK, HIT_AREA, 'shrink-0 self-start')}>{company.check.label}</a>
+        </div>
+      ) : null}
     </footer>
   )
 }

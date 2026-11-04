@@ -26,6 +26,8 @@ export async function generateMetadata(): Promise<Metadata> {
     manifest: `/${locale}/manifest.webmanifest`,
     openGraph: { title, description, siteName: 'B4K', locale, type: 'website' },
     twitter: { card: 'summary_large_image', title, description },
+    // Site ownership for Naver Search Advisor (the token is public by design).
+    verification: { other: { 'naver-site-verification': '40bee30ff7d84115489ea026d14d4bd452ec8437' } },
   };
 }
 

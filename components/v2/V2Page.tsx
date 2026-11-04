@@ -3,7 +3,9 @@
 import type { ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { Footer, SearchPill, TopAppBar } from '@/components/library'
+import { useLocale } from 'next-intl'
 import { cn } from '@/lib/cn'
+import { COMPANY, companyValues, fillCompanyText } from '@/lib/company'
 import { useCd } from './cd'
 import { useV2Shell } from './V2Shell'
 
@@ -50,12 +52,14 @@ export function V2Page({ bar = { type: 'home' }, bleed, noFooter, underBar, chil
   )
 }
 
-/** The page Footer (About B4K, Help, Terms, Privacy Policy, Cookies). */
+/** The page Footer (About B4K, Help, Terms, Privacy Policy, Cookies) and the company line. */
 export function V2Footer({ className }: { className?: string }) {
   const t = useCd()
+  const locale = useLocale()
   return (
     <Footer
       className={className}
+      company={{ line: fillCompanyText(t.raw('CD1684') as string, companyValues(locale)), check: { href: COMPANY.checkUrl, label: t('CD1685') }, toggleLabel: t('CD1683') }}
       navLabel={t('CD0809')}
       copyright={t('CD1462')}
       links={[

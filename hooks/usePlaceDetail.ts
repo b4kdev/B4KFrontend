@@ -6,6 +6,15 @@ import { apiFetch } from '@/lib/api'
 import { dbPoiId } from '@/lib/db-poi-mapping'
 import type { MapPoi } from './useMapPois'
 
+/** One photo of a place (BFF images[]); keys without a value are left out. */
+interface PlaceImage {
+  md?:     string
+  lg?:     string
+  orig?:   string
+  source?: 'tourapi' | 'google_map' | 'commons' | 'naver_map' | 'manual'
+  credit?: string
+}
+
 // api.get_place (BFF: GET /places/:id) — richer fields than the list, fetched
 // once a POI is actually selected. Merge onto the list-shape MapPoi so the
 // panel shows list data immediately and fills in address/description once this resolves.
@@ -20,6 +29,7 @@ interface RawPlaceDetail {
   domains:           string[] | null
   display_region:    string | null
   primary_image_url: string | null
+  images?:           PlaceImage[] | null
   like_count:        number
   save_count:        number
   translations:      Record<string, { name?: string; description?: string }>
@@ -39,6 +49,9 @@ function mapDetail(row: RawPlaceDetail, locale: string): MapPoi {
     address = `${row.address_ko ?? ''}\n${row.address_en}`.trim()
   }
 
+  // The photo shown is primary_image_url: its entry in images[] (any size) says where it comes from.
+  const primary = row.images?.find((i) => [i.md, i.lg, i.orig].includes(row.primary_image_url ?? undefined)) ?? row.images?.[0]
+
   return {
     // poi_id/name_ko/coords are here (not just in useMapPois' list shape) so
     // `detail` alone is a complete MapPoi — MapView falls back to it directly
@@ -56,6 +69,7 @@ function mapDetail(row: RawPlaceDetail, locale: string): MapPoi {
     display_domain:     row.display_domain ?? row.domains?.[0] ?? null,
     display_region:     row.display_region ?? null,
     primary_image_url:  row.primary_image_url ?? undefined,
+    primary_image_source: primary?.source,
     save_count:         row.save_count,
     like_count:         row.like_count,
     default_visit_min:  row.default_visit_min ?? null,

@@ -159,9 +159,11 @@ function ExploreFrame({ category, sections, active, pageTitle, rowsKey, children
   const phone = useMediaQuery('(max-width: 1023px)')
   const router = useRouter()
   return (
-    <div className="flex min-h-0 flex-1">
+    // The row grows with the page content (no min-h-0), so the sticky Index has the whole page to stay in.
+    <div className="flex flex-1">
       {!phone ? (
-        <LeftPanel type="index" label={t('CD0804')}>
+        // The page scrolls under the Header; the Index stays put below it and scrolls on its own.
+        <LeftPanel type="index" label={t('CD0804')} className="sticky top-0 h-[calc(100dvh-var(--layout-header-height))] self-start">
           <CategoryIndex category={category} sections={sections} active={active} rowsKey={rowsKey} />
         </LeftPanel>
       ) : null}

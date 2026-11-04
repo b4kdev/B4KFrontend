@@ -108,7 +108,7 @@ export function ProfileOwnScreen() {
     <V2Page bar={{ type: 'page', title: k('profile.header.breadcrumb'), h1: 'page' }}>
       {/* Figma: one 960 column; header, then the Plans section (subtitle, See all, three
           cards, Open Saved) on the 24 inset. */}
-      <div className="mx-auto flex w-full max-w-[960px] flex-col gap-[var(--space-6)]">
+      <div className="flex w-full flex-col gap-[var(--space-6)]">
         {p ? (
           <div className={HEADER_BLEED}><ProfileHeader
             viewport={phone ? 'mobile' : 'desktop'}
@@ -188,7 +188,7 @@ export function ProfileVisitorScreen({ id }: { id: string }) {
   return (
     <V2Page bar={{ type: 'page', title: p?.display_name ?? '', h1: 'page' }}>
       {/* Figma: the own profile layout; Share is a round icon button in the header row. */}
-      <div className="mx-auto flex w-full max-w-[960px] flex-col gap-[var(--space-6)]">
+      <div className="flex w-full flex-col gap-[var(--space-6)]">
         {p ? (
           <div className={HEADER_BLEED}><ProfileHeader
             viewport={phone ? 'mobile' : 'desktop'}
@@ -262,7 +262,7 @@ export function BadgesScreen() {
   return (
     // Figma: 16 above and below on phones; 24 above and 32 below on desktop.
     <V2Page bar={{ type: 'page', title: k('badges.title') }} className="max-lg:py-[var(--space-4)] lg:pb-[var(--space-8)]">
-      <div className="mx-auto flex w-full max-w-[960px] flex-col gap-[var(--space-6)]">
+      <div className="flex w-full flex-col gap-[var(--space-6)]">
         {/* Desktop only: phones carry the title in the top bar and draw no count line. */}
         <header className="flex flex-col gap-[var(--space-1)] max-lg:hidden">
           <h1 className="type-display-h3">{k('badges.title')}</h1>
@@ -455,7 +455,7 @@ export function LeaderboardScreen() {
     // Figma: 16 above on phones; 24 above and 32 below on desktop.
     // An empty board fills the page, the empty state centred in it.
     <V2Page bar={{ type: 'page', title: t('CD1650'), h1: 'always' }} className="flex flex-col max-lg:py-[var(--space-4)] lg:pb-[var(--space-8)]">
-      <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col gap-[var(--space-4)]">
+      <div className="flex w-full flex-1 flex-col gap-[var(--space-4)]">
         <SectionHeader title={t('CD1650')} subtitle={t('CD1651')} className="max-lg:hidden" />
         <Tabs label={k('leaderboard.windows.ariaLabel')} width={phone ? 'equal' : 'hug'} value={win} onValueChange={(v) => setWin(v as LeaderboardWindow)} tabs={PERIODS.map((w) => ({ id: w, label: k(`leaderboard.windows.${w}`) }))} className="lg:max-w-[480px]" />
         {isLoading ? <Skeleton className="h-[320px]" /> : null}
@@ -525,7 +525,7 @@ export function NotificationsScreen() {
     <V2Page bar={{ type: 'page', title: k('notifications.title') }} className="flex flex-col max-lg:py-[var(--space-4)] lg:pb-[var(--space-8)]">
       {/* Figma: 720 column, section-header title, Mark all read on its own row at the end,
           caps day labels, Load more at the start; Nothing yet is a plain empty state. */}
-      <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col gap-[var(--space-4)]">
+      <div className="flex w-full flex-1 flex-col gap-[var(--space-4)]">
         <h1 className="type-display-h3 max-lg:hidden">{k('notifications.title')}</h1>
         {data?.unread_count ? <Button variant="ghost" size="md" className="self-end" onClick={() => markRead(null)}>{k('notifications.markAllRead')}</Button> : null}
         {isLoading ? <Skeleton className="h-[240px]" /> : null}
