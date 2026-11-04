@@ -74,10 +74,12 @@ export type ExploreCollectionsProps = {
   active: string
   onFilter: (id: string) => void
   cards: ReactNode[]
+  /** Under the grid while more collections remain (Load more). */
+  more?: ReactNode
 }
 
 /** Explore collections: header, filter chips, grid of Card Collection (4 across, 2 on phones). */
-export function ExploreCollections({ title, filters, active, onFilter, cards }: ExploreCollectionsProps) {
+export function ExploreCollections({ title, filters, active, onFilter, cards, more }: ExploreCollectionsProps) {
   const id = useId()
   return (
     <section aria-labelledby={id} className="flex flex-col gap-[var(--space-4)]">
@@ -86,6 +88,7 @@ export function ExploreCollections({ title, filters, active, onFilter, cards }: 
         {filters.map((f) => <Chip key={f.id} selected={f.id === active} onClick={() => onFilter(f.id)} className="shrink-0">{f.label}</Chip>)}
       </div>
       <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4">{cards.map((c, i) => <li key={i}>{c}</li>)}</ul>
+      {more}
     </section>
   )
 }
