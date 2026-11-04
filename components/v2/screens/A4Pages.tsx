@@ -40,6 +40,7 @@ import type { SearchCollection, SearchExplore, SearchPlan, SearchPoi } from '@/a
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
 import { cn } from '@/lib/cn'
+import { COMPANY, companyValues, fillCompanyText } from '@/lib/company'
 import { HIT_AREA } from '@/components/library/styles'
 import { HELP_TOP, HELP_TOPICS, helpTopic, type HelpQuestion } from '../help'
 import { keepKNamesDeep } from '../text'
@@ -497,6 +498,7 @@ export function ErrorScreen({ reset }: { reset: () => void }) {
  * phones, 64 on desktop; the text 48 under it and 40 above the footer. */
 export function AboutScreen() {
   const t = useCd()
+  const locale = useLocale()
   return (
     <V2Page bar={{ type: 'page', title: t('CD1173'), h1: 'page' }}>
       <div className="flex flex-col gap-[var(--space-4)] pt-[var(--space-2)] lg:gap-0 lg:pt-[var(--space-10)]">
@@ -505,6 +507,10 @@ export function AboutScreen() {
         <div className="flex flex-col gap-[var(--space-4)] lg:max-w-[760px] lg:gap-[var(--space-6)] lg:pb-[var(--space-4)] lg:pt-[var(--space-12)]">
           <h1 className="type-title-card">{t('CD1173')}</h1>
           <p className="type-body-base text-ui-fg-muted">{t('CD1687')}</p>
+          {/* Company details as drawn under the about text: title, one line per detail, Check business info. */}
+          <h2 className="type-title-card">{t('CD1688')}</h2>
+          <p className="whitespace-pre-line type-body-base text-ui-fg-muted">{fillCompanyText(t.raw('CD1689') as string, companyValues(locale))}</p>
+          <a href={COMPANY.checkUrl} target="_blank" rel="noopener noreferrer" className={cn('relative self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{t('CD1685')}</a>
         </div>
       </div>
     </V2Page>
