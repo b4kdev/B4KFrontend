@@ -3,6 +3,7 @@
 
 import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState, useSyncExternalStore, type MutableRefObject } from 'react'
 import Script from 'next/script'
+import { useLocale } from 'next-intl'
 import type { MapBounds, MapPoi } from '@/hooks/useMapPois'
 import { TOKEN_HEX } from '@/tokens/colors'
 import { useCd } from '@/components/v2/cd'
@@ -81,6 +82,11 @@ const toneFor = (styleId: string): 'light' | 'dark' => (styleId && styleId === M
 // (pin tiers, clusters, fits) and shifts them at the SDK calls.
 const GL_SDK = !!(MAP_STYLE.light || MAP_STYLE.dark)
 const ZOOM_SHIFT = GL_SDK ? 1 : 0
+// Map labels follow the site language: the name in that language with the Korean name below it.
+// NAVER has no Traditional Chinese, so zh-TW gets Simplified Chinese labels; pt-BR gets English.
+const NAVER_LANG: Record<string, string> = { ko: 'ko', en: 'en', ja: 'ja', 'zh-TW': 'zh', 'pt-BR': 'en' }
+// The SDK's language is fixed when maps.js loads; this is the language of the one loaded.
+let sdkLang: string | null = null
 // A style the SDK cannot load (a wrong ID, a server error) makes it tear the map down without an
 // event: the canvas checks for that this long and then makes the raster map instead.
 const GL_WATCH_MS = 20000
@@ -150,7 +156,7 @@ function boundsOf(map: any): MapBounds {
 // before that throws. Every map call goes through live().
 const sdkAlive = () => typeof window !== 'undefined' && !!window.naver?.maps
 // The GL module runs after maps.js itself: a map made before it is a raster map.
-const sdkLoaded = () => sdkAlive() && (!GL_SDK || !!window.naver.maps.jsContentLoaded)
+const sdkLoaded = (lang: string) => sdkAlive() && sdkLang === lang && (!GL_SDK || !!window.naver.maps.jsContentLoaded)
 
 // The theme only picks the style when a separate dark style is set; otherwise it is not watched.
 const THEMED = !!MAP_STYLE.dark && MAP_STYLE.dark !== MAP_STYLE.light
@@ -163,16 +169,18 @@ const subscribeTheme = (onChange: () => void) => {
 const themeNow = () => (THEMED ? document.documentElement.dataset.theme : undefined)
 type MapView = { lat: number; lng: number; zoom: number }
 
-// The SDK reads the style only when it makes a map, so a theme switch makes a new map (a new
-// canvas, keyed by the style) at the view the old one had.
+// The SDK reads the style and the language only when it makes a map (the language only when maps.js
+// loads), so a theme or language switch makes a new map (a new canvas, keyed by both) at the view
+// the old one had.
 export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(props, ref) {
   const styleId = styleFor(useSyncExternalStore(subscribeTheme, themeNow, () => undefined))
+  const lang = NAVER_LANG[useLocale()] ?? 'en'
   const view = useRef<MapView | null>(null)
-  return <Canvas key={styleId} ref={ref} {...props} styleId={styleId} view={view} />
+  return <Canvas key={`${styleId}:${lang}`} ref={ref} {...props} styleId={styleId} lang={lang} view={view} />
 })
 
-const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; view: MutableRefObject<MapView | null> }>(function Canvas(
-  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', savedIds, routeLegs, onBounds, onZoom, center, openAt, holdOpen, fitStops, fitBottom = 0, fitTop, userLocation, label, errorText, styleId, view },
+const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; view: MutableRefObject<MapView | null> }>(function Canvas(
+  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', savedIds, routeLegs, onBounds, onZoom, center, openAt, holdOpen, fitStops, fitBottom = 0, fitTop, userLocation, label, errorText, styleId, lang, view },
   ref,
 ) {
   const el = useRef<HTMLDivElement>(null)
@@ -184,7 +192,15 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; view: MutableR
   const map = useRef<any>(null)
   const overlays = useRef<any[]>([])
   const lines = useRef<any[]>([])
-  const [ready, setReady] = useState(sdkLoaded)
+  const [ready, setReady] = useState(() => sdkLoaded(lang))
+  // A language switch without a page load (the locale router) finds the SDK made in the old
+  // language: it is dropped before the Script below loads maps.js again in the new one.
+  useLayoutEffect(() => {
+    if (sdkAlive() && sdkLang !== lang) {
+      delete window.naver
+      sdkLang = null
+    }
+  }, [lang])
   // The SDK can hand back a map before its projection exists (a second load in the same tab);
   // pins and fits wait for the map's init (or first idle) event.
   const [mapReady, setMapReady] = useState(false)
@@ -202,7 +218,11 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; view: MutableR
   // maps.js ran. With a style its GL module still loads after it, and the SDK marks its modules
   // loaded only for a page that waits for them.
   const sdkReady = () => {
-    if (sdkLoaded()) return setReady(true)
+    // next/script loads a src once per page: back on a language whose SDK was dropped, it only
+    // reports it ready, and a page load brings that SDK back.
+    if (!sdkAlive()) return window.location.reload()
+    sdkLang = lang
+    if (sdkLoaded(lang)) return setReady(true)
     window.naver.maps.onJSContentLoaded = () => setReady(true)
   }
   const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID
@@ -317,10 +337,10 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; view: MutableR
   useEffect(() => {
     if (ready) return
     const t = window.setInterval(() => {
-      if (sdkLoaded()) setReady(true)
+      if (sdkLoaded(lang)) setReady(true)
     }, 200)
     return () => window.clearInterval(t)
-  }, [ready])
+  }, [ready, lang])
 
   // Create the map once the SDK is there.
   useEffect(() => {
@@ -362,10 +382,8 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; view: MutableR
       if (!live()) return
       const z = getZ()
       if (gl) setGlOn(!!map.current.getOptions('gl'))
-      if (THEMED) {
-        const at = map.current.getCenter()
-        view.current = { lat: at.lat(), lng: at.lng(), zoom: z }
-      }
+      const at = map.current.getCenter()
+      view.current = { lat: at.lat(), lng: at.lng(), zoom: z }
       setZoom(z)
       onZoom?.(z)
       onBounds?.(boundsOf(map.current), z)
@@ -557,7 +575,7 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; view: MutableR
     // isolate: the SDK gives its logo and controls a high z-index; keep them under sheets and dialogs.
     <div className="relative isolate size-full bg-ui-bg-sunken">
       {clientId ? (
-        <Script src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}&submodules=geocoder${GL_SDK ? ',gl' : ''}`} strategy="afterInteractive" onReady={sdkReady} onError={() => setFailed(true)} />
+        <Script src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}&submodules=geocoder${GL_SDK ? ',gl' : ''}&language=${lang}`} strategy="afterInteractive" onReady={sdkReady} onError={() => setFailed(true)} />
       ) : null}
       <div ref={el} role="application" aria-label={label} data-map-tone={toneFor(glOn ? styleId : '')} className="size-full" />
       <div ref={icons} hidden>
