@@ -122,6 +122,7 @@ export interface BffItinerary {
   is_partner?: boolean
   start_date?: string | null
   region?: string | null
+  source?: string | null                 // how the plan was made (owner GET only)
   like_count?: number
   save_count?: number
   total_days?: number
@@ -218,6 +219,19 @@ export function daysToPutPayload(days: BffDay[] | null) {
       ...(p.source ? { source: p.source } : {}),
     })),
   }))
+}
+
+/** The plan-level fields a BFF PUT /itineraries/:id writes back as given (a missing one is
+ *  cleared, an empty title on a saved plan becomes the backend's default name), taken from the
+ *  owner's current plan so a partial edit keeps the plan whole. */
+export function keptPlanFields(current: BffItinerary) {
+  return {
+    title:      current.title ?? null,
+    start_date: current.start_date ?? null,
+    region:     current.region ?? null,
+    ...(current.source ? { source: current.source } : {}),
+    status:     current.status === 'draft' ? 'draft' : 'confirmed',
+  }
 }
 
 /** Map a BFF itinerary (get_itinerary / get_public_itinerary shape) to the
