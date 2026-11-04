@@ -177,7 +177,7 @@ export function SavedScreen() {
         {/* Figma: the tabs stay; a plain prompt with the bookmark icon fills the page. */}
         <div className="flex flex-1 flex-col gap-[var(--space-4)]">
           {head}
-          <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={setTab} tabs={tabs} className="self-start" />
+          <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={setTab} tabs={tabs.map((x) => ({ ...x, color: 'var(--nav-saved)' }))} className="self-start" />
           {board ? <LeaderboardTab /> : <SignedOutPrompt title={t('CD1577')} text={t('CD1581')} icon={<Bookmark />} plain className="flex-1" />}
         </div>
       </V2Page>
@@ -296,7 +296,7 @@ export function SavedScreen() {
         {folder && tab === 'places' ? null : (
           <>
             {head}
-            <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={(v) => { setTab(v); setFolderId(null) }} tabs={tabs} className="self-start" />
+            <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={(v) => { setTab(v); setFolderId(null) }} tabs={tabs.map((x) => ({ ...x, color: 'var(--nav-saved)' }))} className="self-start" />
           </>
         )}
         {tab === 'places' && !folder ? toolbar : null}

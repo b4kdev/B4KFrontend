@@ -631,7 +631,7 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
 
   return (
     // isolate: the SDK gives its logo and controls a high z-index; keep them under sheets and dialogs.
-    <div className="relative isolate size-full bg-ui-bg-sunken">
+    <div className="relative isolate size-full bg-map-ui-ground">
       {clientId ? (
         <Script src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}&submodules=geocoder${GL_SDK ? ',gl' : ''}&language=${lang}`} strategy="afterInteractive" onReady={sdkReady} onError={() => setFailed(true)} />
       ) : null}

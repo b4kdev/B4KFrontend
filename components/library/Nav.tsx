@@ -148,7 +148,8 @@ export function NavItem({ icon, label, active = false, badge, color, size = 'md'
           size === 'lg' ? 'size-[var(--nav-quick-plan-size)] rounded-sq-lg' : 'size-[var(--nav-tile-size)]',
           active || size === 'lg'
             ? 'scale-[1.08] bg-[var(--nav-c,var(--color-bg-inverse))] text-field-fg group-active:scale-100'
-            : 'bg-nav-tile-idle text-nav-icon-idle [@media(hover:hover)_and_(pointer:fine)]:group-hover:bg-nav-tile-hover',
+            : // Dark: the icon in the item's colour; light: ink (pastel icons on white fall under 3:1).
+            'bg-nav-tile-idle text-nav-icon-idle dark:text-[var(--nav-c,var(--color-fg))] [@media(hover:hover)_and_(pointer:fine)]:group-hover:bg-nav-tile-hover',
           size === 'lg' && 'scale-100',
         )}
       >

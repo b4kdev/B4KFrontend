@@ -29,6 +29,8 @@ export const iconButtonVariants = cva(
           'disabled:bg-ui-bg-disabled disabled:text-ui-fg-disabled',
         ],
         ghost: ['text-ui-fg', 'enabled:hover:bg-ui-state-hover enabled:active:bg-ui-state-pressed', 'disabled:text-ui-fg-disabled'],
+        // On the ground (header, top bars): the idle nav tile, the hover tile under a fine pointer.
+        tile: ['bg-nav-tile-idle text-ui-fg', '[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-nav-tile-hover', 'disabled:text-ui-fg-disabled'],
       },
     },
     defaultVariants: { variant: 'ghost' },

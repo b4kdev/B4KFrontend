@@ -57,7 +57,7 @@ export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action
             <Glyph name="arrow" size="100%" className="b4k-glyph-in" />
           )}
         </span>
-        <div className="absolute inset-0 flex flex-col items-start justify-between gap-[var(--space-4)] p-[var(--space-11)] max-md:justify-end max-md:p-[var(--space-5)]">
+        <div className="absolute inset-0 flex flex-col items-start justify-between gap-[var(--space-4)] p-[var(--space-11)] max-md:justify-end max-md:p-[var(--space-5)] max-md:pb-[var(--space-10)]">
           <div className="flex min-w-0 flex-col items-start gap-[var(--space-3)] md:max-w-[calc(100%-min(30vw,400px)-var(--space-6))]">
             {eyebrow ? <span className="type-eyebrow-category">{eyebrow}</span> : null}
             <H className="b4k-rise min-w-0 max-w-[min(980px,100%)] type-display-hero hyphens-auto [overflow-wrap:anywhere]">{title}</H>
