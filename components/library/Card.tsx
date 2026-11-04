@@ -43,6 +43,8 @@ export type CardProps = Common &
         sponsored?: string
         dDay?: string
         trending?: string
+        /** The place's category key ("pop"): data-category on the card. */
+        category?: string
       })
     | (Media & { type: 'compact'; meta: ReactNode; save?: { saved: boolean; onSave: () => void; label: string }; addToPlan?: { onAdd: () => void; label: string } })
     | { type: 'collection'; images: (string | null)[]; meta: ReactNode }
@@ -114,7 +116,7 @@ export function Card(props: CardProps) {
   switch (props.type) {
     case 'place':
       return (
-        <article className={cn(SHELL, 'flex-col', className)}>
+        <article data-category={props.category} className={cn(SHELL, 'flex-col', className)}>
           <div className={cn('relative', MEDIA)}>
             {/* A place photo is named after the place unless the caller gives its own description. */}
             {/* The shell's label names Place: shown only while the type is Place (no label text per type yet). */}
