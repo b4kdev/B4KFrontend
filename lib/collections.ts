@@ -116,6 +116,14 @@ async function fetchSummary(slug: string, locale: string): Promise<CollectionSum
   }
 }
 
+/** A collection's type as a code (ROUTE, STORY, ...). Some collections carry the content team's
+ *  Korean label with the code in parentheses ("실제 루트형 (Route)"); those read as the same code. */
+export function collectionTypeCode(raw: string | null | undefined): string | null {
+  if (!raw) return null
+  const code = raw.match(/\(([^)]+)\)\s*$/)?.[1] ?? raw
+  return code.trim().toUpperCase().replace(/\s+/g, '_')
+}
+
 /** Whether the collection page has something to show, so a list can leave out a card whose page
  *  would read Page not found. A cover photo means the collection has places. Without one: a hub
  *  needs known children, any other collection at least one place. A failed check keeps the card. */
@@ -149,7 +157,7 @@ export async function fetchCollectionDetail(slug: string, locale: string): Promi
     throw e
   }
   const runtimeKind = (profile.metadata?.runtime_kind as CollectionRuntimeKind | undefined) ?? 'LEAF'
-  const primaryType = (profile.metadata?.primary_type as CollectionPrimaryType | undefined) ?? null
+  const primaryType = collectionTypeCode(profile.metadata?.primary_type) as CollectionPrimaryType | null
   const isOrdered = profile.metadata?.is_ordered === 'TRUE'
 
   let items: CollectionItem[] = []

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { bffFetch } from '@/lib/bff'
 import { pickEntityTitle } from '@/lib/entity-i18n'
-import { collectionHasContent } from '@/lib/collections'
+import { collectionHasContent, collectionTypeCode } from '@/lib/collections'
 
 // Real entity_type='collection' rows for one Explore section (k-pop/k-drama/k-beauty/
 // k-food/k-culture), confirmed live 2026-08-30 via GET /entities?type=collection (108
@@ -50,7 +50,7 @@ export async function GET(req: NextRequest, props: { params: Promise<{ category:
         title: pickEntityTitle(e, locale),
         primary_image_url: e.primary_image_url,
         cover_images: (e.cover_images ?? []).slice(0, 4),
-        primaryType: e.metadata?.primary_type ?? null,
+        primaryType: collectionTypeCode(e.metadata?.primary_type),
       }))
     return NextResponse.json({ items })
   } catch {

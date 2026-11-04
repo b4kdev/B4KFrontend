@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { bffFetch, bffErrorResponse } from '@/lib/bff'
 import { pickEntityTitle } from '@/lib/entity-i18n'
-import { collectionHasContent } from '@/lib/collections'
+import { collectionHasContent, collectionTypeCode } from '@/lib/collections'
 
 export interface SearchPoi {
   poi_id: string
@@ -189,7 +189,7 @@ export async function GET(request: Request) {
         title: pickEntityTitle(e, locale),
         cover_images: (e.cover_images ?? []).slice(0, 4),
         primary_image_url: e.primary_image_url,
-        primaryType: e.metadata?.primary_type ?? null,
+        primaryType: collectionTypeCode(e.metadata?.primary_type),
       }))
 
     let places: SearchPoi[] = (rawPlaces ?? []).map(p => ({

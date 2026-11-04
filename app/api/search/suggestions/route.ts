@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { bffFetch, bffErrorResponse } from '@/lib/bff'
 import { pickEntityTitle } from '@/lib/entity-i18n'
-import { collectionHasContent } from '@/lib/collections'
+import { collectionHasContent, collectionTypeCode } from '@/lib/collections'
 
 // BFF GET /search/suggest: the same groups as GET /search, 5 each, nothing recorded.
 interface BffSuggest {
@@ -68,7 +68,7 @@ export async function GET(request: Request) {
     const explore = matched.filter((_, i) => shown[i]).map(e => ({
       slug: e.slug,
       name: pickEntityTitle(e, lang),
-      primaryType: e.metadata?.primary_type ?? null,
+      primaryType: collectionTypeCode(e.metadata?.primary_type),
     }))
     const suggestions = Array.from(new Set([...places.map(p => p.name), ...plans.map(p => p.name), ...explore.map(e => e.name)])).slice(0, 8)
     return NextResponse.json({ suggestions, places, plans, explore } satisfies SearchSuggestions)
