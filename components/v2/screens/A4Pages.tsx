@@ -390,19 +390,39 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
       })[doc],
     [doc, k],
   )
+  // Read on every scroll of the page's scroller (the window on phones, the shell column on desktop),
+  // looking the headings up each time: the document column moves in the tree when the layout
+  // settles on phone or desktop, so headings found once would go stale. At the end of the page the
+  // last section is current, since a short final section never reaches the upper third.
   useEffect(() => {
     const ids = cfg.sections.map((s) => s.id)
-    const io = new IntersectionObserver(
-      () => {
-        const top = window.innerHeight / 3
-        const passed = ids.filter((id) => (document.getElementById(id)?.getBoundingClientRect().top ?? Infinity) <= top)
-        setCurrent(passed[passed.length - 1] ?? ids[0])
-      },
-      { rootMargin: '0px 0px -66% 0px', threshold: [0, 1] },
-    )
-    ids.forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el) })
-    return () => io.disconnect()
-  }, [cfg.sections])
+    let frame = 0
+    // The element that scrolls the document: the nearest scrolling ancestor of the first heading.
+    const scroller = () => {
+      for (let el = document.getElementById(ids[0])?.parentElement; el; el = el.parentElement) {
+        const y = getComputedStyle(el).overflowY
+        if ((y === 'auto' || y === 'scroll') && el.scrollHeight > el.clientHeight) return el
+      }
+      return document.scrollingElement
+    }
+    const update = () => {
+      const top = window.innerHeight / 3
+      const passed = ids.filter((id) => (document.getElementById(id)?.getBoundingClientRect().top ?? Infinity) <= top)
+      const el = scroller()
+      const atEnd = !!el && el.scrollHeight > el.clientHeight && el.scrollTop + el.clientHeight >= el.scrollHeight - 2
+      setCurrent(atEnd ? ids[ids.length - 1] : (passed[passed.length - 1] ?? ids[0]))
+    }
+    const onScroll = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(update)
+    }
+    update()
+    document.addEventListener('scroll', onScroll, { capture: true, passive: true })
+    return () => {
+      cancelAnimationFrame(frame)
+      document.removeEventListener('scroll', onScroll, { capture: true })
+    }
+  }, [cfg.sections, phone])
   return (
     // Figma legal pages: a 1200 wide content area (narrower than the 1344 list pages), 72 from the top;
     // on phones the document adds 32 above and below the page's 24.
