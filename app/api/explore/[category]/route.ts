@@ -576,6 +576,14 @@ function mapArtist(e: BffEntity, locale: string): ExploreArtist {
   };
 }
 
+/** A themed row needs at least this many places to show. */
+const MIN_THEMED_ROW = 3
+
+/** Places with a photo first; the order within each group stays as given (a stable sort). */
+function photosFirst<T extends { primary_image_url?: string | null }>(items: T[]): T[] {
+  return [...items.filter((p) => p.primary_image_url), ...items.filter((p) => !p.primary_image_url)]
+}
+
 export async function GET(req: NextRequest, props: { params: Promise<{ category: string }> }) {
   const params = await props.params;
   const sectionIds = SECTIONS_BY_CATEGORY[params.category]
@@ -686,8 +694,15 @@ export async function GET(req: NextRequest, props: { params: Promise<{ category:
     packages: withSafePartnerUrls(base.packages ?? []),
     artists,
     // Seed rows carry content-sheet codes ('KD016-007'): swap in the DB place_id and drop the
-    // ones with no DB row, which open nothing when tapped (lib/db-poi-mapping.ts).
-    sections: [trendingSection, ...sections].map((s) => ({ ...s, items: withDbPoiIds(s.items) })),
+    // ones with no DB row, which open nothing when tapped (lib/db-poi-mapping.ts). Then each themed
+    // row puts the places with a photo first (the hand-picked order kept within each group; the
+    // featured place keeps its flag) and a themed row with fewer than 3 places is not shown.
+    sections: [
+      { ...trendingSection, items: withDbPoiIds(trendingSection.items) },
+      ...sections
+        .map((s) => ({ ...s, items: photosFirst(withDbPoiIds(s.items)) }))
+        .filter((s) => s.items.length >= MIN_THEMED_ROW),
+    ],
   }
   return NextResponse.json(data)
 }
