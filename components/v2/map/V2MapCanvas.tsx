@@ -8,6 +8,7 @@ import type { MapBounds, MapPoi } from '@/hooks/useMapPois'
 import { TOKEN_HEX } from '@/tokens/colors'
 import { useCd } from '@/components/v2/cd'
 import { PLACE_TYPE_ICON, placeTypeOf } from '@/components/library'
+import { keepMapLook } from './mapLook'
 
 // Map canvas: the Naver map with the B4K markers. Map pin = the place photo in a circle with a
 // tail, no icon, by zoom tier: zoom 15 a dot, zoom 16 a small photo pin, zoom 17 and closer the
@@ -90,6 +91,8 @@ let sdkLang: string | null = null
 // A style the SDK cannot load (a wrong ID, a server error) makes it tear the map down without an
 // event: the canvas checks for that this long and then makes the raster map instead.
 const GL_WATCH_MS = 20000
+// The B4K map look over the style (mapLook.ts): on only when set to 'on', apart from the style IDs.
+const RESTYLE = process.env.NEXT_PUBLIC_NAVER_MAP_RESTYLE === 'on'
 
 // window.naver and window.navermap_authFailure are declared in components/map/NaverMapCanvas.tsx.
 
@@ -377,11 +380,17 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
         setGlFailed(true)
       }, 500)
     }
+    // The vector map is really drawn (not the raster fallback): pin tone and the B4K look follow it.
+    const glCheck = () => {
+      const on = !!map.current.getOptions('gl')
+      setGlOn(on)
+      if (on && RESTYLE) keepMapLook(map.current, toneFor(styleId))
+    }
     const idle = () => {
       // The SDK can still fire events on a map it has torn down.
       if (!live()) return
       const z = getZ()
-      if (gl) setGlOn(!!map.current.getOptions('gl'))
+      if (gl) glCheck()
       const at = map.current.getCenter()
       view.current = { lat: at.lat(), lng: at.lng(), zoom: z }
       setZoom(z)
@@ -392,7 +401,10 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
       setMapReady(true)
       idle()
     })
-    N.Event.once(map.current, 'init', () => setMapReady(true))
+    N.Event.once(map.current, 'init', () => {
+      setMapReady(true)
+      if (gl && live()) glCheck()
+    })
     N.Event.addListener(map.current, 'click', () => select.current(null))
     N.Event.addListener(map.current, 'dragstart', () => {
       lastFit.current = null
