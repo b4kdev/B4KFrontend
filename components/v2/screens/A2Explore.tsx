@@ -67,12 +67,12 @@ const placeArea = (p: { display_region?: string | null; display_district?: strin
     : regionName(p.display_region ?? '', locale)
 
 // Rows that open their special page instead of the generic See all list (as on the live site),
-// keyed by category then row id.
+// keyed by category then row id. Only rows whose special page lists the same places: Brand
+// flagships and Historical heritage hold other places than their special pages (perfume flagships,
+// Gyeongbuk heritage), so their See all opens their own list.
 const SPECIAL_HREF: Record<string, Record<string, string>> = {
   'k-pop': { memberFootsteps: '/explore/k-pop/bts/footsteps' },
   'k-drama': { filming: '/explore/k-drama/tangerines/filming-spots' },
-  'k-beauty': { brandFlagship: '/explore/k-beauty/perfume-flagships' },
-  'k-culture': { heritage: '/explore/k-culture/gyeongbuk/heritage' },
   'k-food': { noodles: '/explore/k-food/michelin-noodles' },
 }
 const rowHref = (category: string, row: string) => SPECIAL_HREF[category]?.[row] ?? `/explore/${category}/${row}`
@@ -224,6 +224,15 @@ export function CategoryScreen({ category }: { category: string }) {
   const { data, error, isLoading, mutate } = useSWR<ExploreData>(`/api/explore/${category}`, jsonFetch)
   const cols = useSWR<{ items: CollectionCard[] }>(`/api/explore/${category}/collections?locale=${locale}`, jsonFetch)
   const [colType, setColType] = useState('all')
+  // The Collections grid shows 8 and Load more adds 8 while more remain under the chip; a chip
+  // change starts again at 8. After Load more, focus moves to the first new card.
+  const [colShown, setColShown] = useState(COLLECTIONS_PAGE)
+  const colFocusFrom = useRef<number | null>(null)
+  useEffect(() => {
+    if (colFocusFrom.current === null) return
+    document.querySelectorAll<HTMLElement>('#row-collections ul > li')[colFocusFrom.current]?.querySelector<HTMLElement>('a')?.focus()
+    colFocusFrom.current = null
+  }, [colShown])
   const sections = data?.sections.filter((s) => s.items.length) ?? []
   const hero = data?.hero?.[0]
   // A link to a row (#row-<id>, from a list page's Index) scrolls there once the rows exist.
@@ -296,10 +305,15 @@ export function CategoryScreen({ category }: { category: string }) {
             title={t('CD0162')}
             filters={[{ id: 'all', label: t('CD1903', { label: t('CD1267'), count: cols.data.items.length }) }, ...colTypes.map((c) => ({ id: c, label: t(COLLECTION_TYPE[c]) }))]}
             active={colType}
-            onFilter={setColType}
+            onFilter={(type) => { setColType(type); setColShown(COLLECTIONS_PAGE) }}
+            more={cols.data.items.filter((c) => colType === 'all' || c.primaryType === colType).length > colShown ? (
+              <button type="button" onClick={() => { colFocusFrom.current = colShown; setColShown(colShown + COLLECTIONS_PAGE) }} className={cn(buttonVariants({ variant: 'secondary' }), 'self-center hover:bg-ui-state-hover active:bg-ui-state-pressed')}>
+                {t('CD0836')}
+              </button>
+            ) : undefined}
             cards={cols.data.items
               .filter((c) => colType === 'all' || c.primaryType === colType)
-              .slice(0, 8)
+              .slice(0, colShown)
               .map((c) => c.cover_images?.length
                 ? <Card key={c.slug} type="collection" href={`/explore/collections/${c.slug}`} title={c.title} images={c.cover_images} meta={c.primaryType && COLLECTION_TYPE[c.primaryType] ? t(COLLECTION_TYPE[c.primaryType]) : ''} />
                 : <Card key={c.slug} type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta={c.primaryType && COLLECTION_TYPE[c.primaryType] ? t(COLLECTION_TYPE[c.primaryType]) : ''} />)}
@@ -355,6 +369,8 @@ function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceAct
 // ── See all list ──────────────────────────────────────────────────
 
 const PAGE = 12
+/** Collections shown at first on a category page, and added by each Load more. */
+const COLLECTIONS_PAGE = 8
 
 /** Load more is a real link to ?page=n: a page opened with ?page=n shows n pages; after a tap the
  * first new card takes the focus and the URL follows. `list` goes on the list element. */
