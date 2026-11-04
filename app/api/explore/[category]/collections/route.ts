@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { bffFetch } from '@/lib/bff'
 import { pickEntityTitle } from '@/lib/entity-i18n'
+import { collectionHasContent } from '@/lib/collections'
 
 // Real entity_type='collection' rows for one Explore section (k-pop/k-drama/k-beauty/
 // k-food/k-culture), confirmed live 2026-08-30 via GET /entities?type=collection (108
@@ -8,9 +9,11 @@ import { pickEntityTitle } from '@/lib/entity-i18n'
 // domain-scoped query param exists so this fetches all and filters server-side).
 // CHILD-kind entities (e.g. individual theme parks under a "pick a theme park" hub) are
 // excluded — they're reached through their HUB card, not listed twice at top level.
+// A collection with no places yet is left out: its page has nothing to show.
 
 interface EntitySummary {
   slug: string
+  entity_id: number
   name_ko: string
   name_en?: string | null
   translations?: Record<string, { name?: string; description?: string }>
@@ -38,8 +41,10 @@ export async function GET(req: NextRequest, props: { params: Promise<{ category:
       bffFetch<EntitySummary[]>('/entities?type=collection&limit=100&offset=100', { token: null }),
     ])
     const all = [...page1, ...page2]
-    const items: CollectionCard[] = all
-      .filter(e => e.metadata?.frd_domain === params.category && e.metadata?.runtime_kind !== 'CHILD')
+    const listed = all.filter(e => e.metadata?.frd_domain === params.category && e.metadata?.runtime_kind !== 'CHILD')
+    const shown = await Promise.all(listed.map(collectionHasContent))
+    const items: CollectionCard[] = listed
+      .filter((_, i) => shown[i])
       .map(e => ({
         slug: e.slug,
         title: pickEntityTitle(e, locale),

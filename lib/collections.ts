@@ -116,6 +116,29 @@ async function fetchSummary(slug: string, locale: string): Promise<CollectionSum
   }
 }
 
+/** Whether the collection page has something to show, so a list can leave out a card whose page
+ *  would read Page not found. A cover photo means the collection has places. Without one: a hub
+ *  needs known children, any other collection at least one place. A failed check keeps the card. */
+export async function collectionHasContent(e: {
+  slug: string
+  entity_id: number
+  cover_images?: string[]
+  metadata?: { runtime_kind?: string }
+}): Promise<boolean> {
+  if (e.cover_images?.length) return true
+  if (e.metadata?.runtime_kind === 'HUB') return (HUB_CHILDREN[e.slug] ?? []).length > 0
+  try {
+    const context = await bffFetch<ContextItem[]>(`/context/entity:${e.entity_id}?limit=1`, {
+      token: null,
+      cache: undefined,
+      next: { revalidate: 300 },
+    })
+    return context.length > 0
+  } catch {
+    return true
+  }
+}
+
 /** The collection; null when it does not exist or has nothing to show. Throws when the BFF call fails. */
 export async function fetchCollectionDetail(slug: string, locale: string): Promise<CollectionDetail | null> {
   let profile: EntityProfile
