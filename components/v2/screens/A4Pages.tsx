@@ -424,9 +424,9 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
     }
   }, [cfg.sections, phone])
   return (
-    // Figma legal pages: a 1200 wide content area (narrower than the 1344 list pages), 72 from the top;
-    // on phones the document adds 32 above and below the page's 24.
-    <V2Page bar={{ type: 'page', title: cfg.title, h1: 'page' }} className="max-lg:py-[calc(var(--space-6)+var(--space-8))] lg:max-w-[1200px] lg:pt-[calc(var(--space-10)+var(--space-8))]">
+    // The page container as every content page; the document is a centered reading column inside it,
+    // 72 from the top; on phones the document adds 32 above and below the page's 24.
+    <V2Page bar={{ type: 'page', title: cfg.title, h1: 'page' }} className="max-lg:py-[calc(var(--space-6)+var(--space-8))] lg:pt-[calc(var(--space-10)+var(--space-8))]">
       <div className="flex flex-col gap-[var(--space-8)]">
         <LegalDocument
           viewport={phone ? 'mobile' : 'desktop'}
@@ -492,18 +492,17 @@ export function ErrorScreen({ reset }: { reset: () => void }) {
 
 // ── About B4K (footer link) ─────────────────────────────────────────────────
 
-/** About B4K as drawn: the full-width wordmark, then the title and the about text, left-aligned
- * (desktop: a 760 column under the wordmark). */
+/** About B4K: the wordmark across the page container, then the title and the about text,
+ * left-aligned (desktop: a 760 column under the wordmark). Spacing as drawn: 32 above the wordmark on
+ * phones, 64 on desktop; the text 48 under it and 40 above the footer. */
 export function AboutScreen() {
   const t = useCd()
   return (
-    <V2Page bar={{ type: 'page', title: t('CD1173'), h1: 'page' }} bleed>
-      <div className="flex flex-col gap-[var(--space-4)] px-[var(--grid-gutter-mobile)] pb-[var(--space-6)] pt-[var(--space-8)] lg:gap-0 lg:p-0">
-        <div className="lg:px-[var(--space-10)] lg:pt-[var(--space-16)]">
-          <Logo type="wordmark" className="h-auto w-full" />
-        </div>
+    <V2Page bar={{ type: 'page', title: t('CD1173'), h1: 'page' }}>
+      <div className="flex flex-col gap-[var(--space-4)] pt-[var(--space-2)] lg:gap-0 lg:pt-[var(--space-10)]">
+        <Logo type="wordmark" className="h-auto w-full" />
         <div aria-hidden className="h-[var(--space-4)] lg:hidden" />
-        <div className="flex flex-col gap-[var(--space-4)] lg:w-[760px] lg:gap-[var(--space-6)] lg:px-[var(--space-10)] lg:pb-[var(--space-10)] lg:pt-[var(--space-12)]">
+        <div className="flex flex-col gap-[var(--space-4)] lg:max-w-[760px] lg:gap-[var(--space-6)] lg:pb-[var(--space-4)] lg:pt-[var(--space-12)]">
           <h1 className="type-title-card">{t('CD1173')}</h1>
           <p className="type-body-base text-ui-fg-muted">{t('CD1687')}</p>
         </div>

@@ -456,7 +456,9 @@ export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, 
   )
   if (viewport === 'mobile') return <article className="text-ui-fg">{doc}</article>
   return (
-    <article className="flex gap-[var(--space-12)] text-ui-fg">
+    // The 720 reading column sits in the middle of the page container; the contents list takes the
+    // left column (240) and the right column matches it, so at full width the text is centered.
+    <article className="grid grid-cols-[240px_minmax(0,720px)_minmax(0,1fr)] gap-x-[var(--space-10)] text-ui-fg">
       {/* Figma Contents: "ON THIS PAGE" eyebrow, items 12 apart; current in body/label fg (the first until one is read). */}
       <nav aria-labelledby={contentsId} className="sticky top-[var(--space-6)] flex w-[240px] shrink-0 flex-col gap-[var(--space-3)] self-start">
         <p id={contentsId} className="type-eyebrow-category text-ui-fg-muted">{labels.contents}</p>
