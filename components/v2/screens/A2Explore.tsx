@@ -488,9 +488,12 @@ export function CollectionScreen({ slug }: { slug: string }) {
   const router = useRouter()
   const { data, error, isLoading, mutate } = useSWR<CollectionDetail>(`/api/explore/collections/${slug}?locale=${locale}`, jsonFetch)
   const { shown, list, loadMore } = usePaged<HTMLOListElement>()
-  // The category comes from the collection's slug (slide-kculture-..., slide-kpop-...); a slug
-  // without one shows the page without the Index panel.
-  const category = CATEGORIES.find((c) => slug.includes(`-${c.slug.replace('-', '')}-`))?.slug
+  // The category comes from the collection's slug (slide-kculture-..., slide-culture-...,
+  // slide-food-...) so the Index panel is there on first paint; a slug without one falls back to
+  // the collection's section ("K-Food"), and without either the page shows no Index panel.
+  const category =
+    CATEGORIES.find((c) => new RegExp(`-k?${c.slug.replace('k-', '')}-`).test(slug))?.slug ??
+    CATEGORIES.find((c) => c.slug === data?.section?.toLowerCase())?.slug
   const explore = useSWR<ExploreData>(category ? `/api/explore/${category}` : null, jsonFetch)
   const rows = explore.data?.sections.filter((x) => x.items.length).map((x) => x.id) ?? []
   const items = data?.items ?? []
