@@ -41,7 +41,15 @@ export function RowSection({ title, subtitle, seeAll, featured, cards, arrowLabe
     const el = track.current
     if (el) setEdges({ start: el.scrollLeft <= 1, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 1 })
   }, [])
-  useEffect(measure, [measure, cards.length])
+  useEffect(() => {
+    measure()
+    // The row can start or stop overflowing when the window or the cards change size.
+    const el = track.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [measure, cards.length])
   const page = (dir: 1 | -1) => track.current?.scrollBy({ left: dir * track.current.clientWidth, behavior: 'smooth' })
   return (
     <section aria-labelledby={id} className={cn('flex flex-col gap-[var(--space-4)]', className)}>
