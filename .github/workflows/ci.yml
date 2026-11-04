@@ -136,6 +136,7 @@ jobs:
           # v2 preview: useCd() (components/v2/cd.ts) is useTranslations('cd'), the Copy Deck
           # namespace that app/[locale]/v2/layout.tsx loads from messages/v2/{locale}.json.
           cd_hook_re = re.compile(r"""\buseCd\(\s*\)""")
+          cd_id_re = re.compile(r"""^CD\d{4}$""")
           comment_line_re = re.compile(r"""^\s*(?://|/\*|\*)""")
 
           key_candidates = []
@@ -170,6 +171,10 @@ jobs:
                           candidates.append(f"{ns}.{k}")
                   if k not in candidates:
                       candidates.append(k)
+                  # A Copy Deck id lives only in the `cd` namespace, whatever loaded the translator
+                  # (useCd, the page-metadata helpers, or a `t` passed in as an argument).
+                  if cd_id_re.match(k) and f"cd.{k}" not in candidates:
+                      candidates.append(f"cd.{k}")
                   key_candidates.append(candidates)
 
           for root in ("app", "components"):
