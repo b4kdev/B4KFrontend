@@ -118,23 +118,25 @@ export type PlanningCueProps = {
 
 /** Planning cue: three tiles between content rows; side by side on desktop, stacked below it. */
 export function PlanningCue({ state, label, tiles }: PlanningCueProps) {
-  const tile = 'flex min-h-[var(--target-touch-min)] min-w-0 flex-1 items-center gap-[var(--space-4)] rounded-2xl bg-ui-bg-raised p-[var(--space-4)] md:py-[var(--space-6)] text-left text-ui-fg hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] focus-visible:shadow-focus-ring focus-visible:outline-none'
+  // Three colour fields (new plan powder, Quick plan lime, from Saved stone), black ink, content at
+  // the bottom; the chevron slides on hover.
+  const tile = 'b4k-press group/tile flex min-h-[var(--action-tile-min-height)] min-w-0 flex-1 items-end gap-[var(--space-4)] rounded-tile px-[var(--space-6)] py-[calc(var(--space-5)+var(--space-0-5))] text-left text-field-fg focus-visible:shadow-focus-ring focus-visible:outline-none max-md:px-[var(--space-5)] max-md:py-[calc(var(--space-4)+var(--space-0-5))]'
   const body = (icon: ReactNode, t: { title: string; text: string }) => (
     <>
-      <span aria-hidden className="inline-flex size-[var(--icon-size-lg)] shrink-0 [&>svg]:size-full">{icon}</span>
-      <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
-        <span className="type-title-card">{t.title}</span>
-        <span className="line-clamp-2 [text-wrap:pretty] type-body-base text-ui-fg-muted">{t.text}</span>
+      <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-2)]">
+        <span aria-hidden className="inline-flex size-[var(--glyph-tile-size)] shrink-0 [&>svg]:size-full [&>svg]:[stroke-width:2.6]">{icon}</span>
+        <span className="text-[length:var(--title-size-tile)] font-[var(--font-weight-extrabold)] leading-[1.05] tracking-[-0.03em] [overflow-wrap:anywhere] [&:lang(ko)]:break-keep">{t.title}</span>
+        <span className="line-clamp-2 [text-wrap:pretty] type-body-base text-[length:calc(var(--font-size-base)-var(--border-width-1))] text-field-fg-muted">{t.text}</span>
       </span>
-      <ChevronRight aria-hidden className="size-[var(--icon-size-lg)] shrink-0 text-ui-fg" />
+      <ChevronRight aria-hidden className="size-[var(--icon-size-lg)] shrink-0 transition-transform duration-short4 ease-out-strong [@media(hover:hover)_and_(pointer:fine)]:group-hover/tile:translate-x-[var(--space-1)]" />
     </>
   )
   const first = state === 'continue' && tiles.continue ? tiles.continue : tiles.newPlan
   return (
-    <section aria-label={label} className="flex gap-[var(--space-3)] max-lg:flex-col">
-      <IntlLink href={first.href} className={tile}>{body(state === 'continue' ? <Route /> : <Plus />, first)}</IntlLink>
-      <button type="button" onClick={tiles.quickPlan.onOpen} className={tile}>{body(<Zap />, tiles.quickPlan)}</button>
-      <IntlLink href={tiles.fromSaved.href} className={tile}>{body(<Bookmark />, tiles.fromSaved)}</IntlLink>
+    <section aria-label={label} className="flex gap-[var(--tile-gap)] max-lg:flex-col">
+      <IntlLink href={first.href} className={cn(tile, 'bg-action-new-plan')}>{body(state === 'continue' ? <Route /> : <Plus />, first)}</IntlLink>
+      <button type="button" onClick={tiles.quickPlan.onOpen} className={cn(tile, 'bg-action-quick-plan')}>{body(<Zap />, tiles.quickPlan)}</button>
+      <IntlLink href={tiles.fromSaved.href} className={cn(tile, 'bg-action-from-saved')}>{body(<Bookmark />, tiles.fromSaved)}</IntlLink>
     </section>
   )
 }
@@ -154,7 +156,7 @@ export type InterestsCardProps = {
 export function InterestsCard({ title, text, tags, selected, onToggle, onSave, onDismiss, labels }: InterestsCardProps) {
   const id = useId()
   return (
-    <section aria-labelledby={id} className="flex flex-col gap-[var(--space-3)] rounded-2xl bg-ui-bg-raised p-[var(--space-4)] text-ui-fg">
+    <section aria-labelledby={id} className="flex flex-col gap-[var(--space-3)] rounded-tile bg-tile-surface p-[var(--tile-padding)] text-ui-fg">
       <div className="flex items-center">
         <h2 id={id} className="min-w-0 flex-1 type-title-card">{title}</h2>
         <IconButton label={labels.dismiss} icon={<X />} onClick={onDismiss} />
@@ -217,11 +219,11 @@ export function QuickPlan({ open, onClose, step, stepTitle, stepSubtitle, progre
         aria-modal="true"
         aria-label={title}
         className={cn(
-          'fixed z-50 flex flex-col overflow-hidden bg-ui-bg-elevated text-ui-fg',
-          phone ? 'inset-x-0 bottom-0 max-h-[min(768px,calc(100dvh-44px))] rounded-t-3xl border border-ui-border motion-safe:animate-b4k-sheet-in' : 'left-1/2 top-1/2 max-h-[90dvh] w-[min(864px,calc(100%-var(--space-8)))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ui-border',
+          'fixed z-50 flex flex-col overflow-hidden bg-ui-bg-raised text-ui-fg dark:bg-ui-bg-media',
+          phone ? 'inset-x-0 bottom-0 max-h-[min(768px,calc(100dvh-44px))] rounded-t-tile shadow-sheet motion-safe:animate-b4k-sheet-in' : 'left-1/2 top-1/2 max-h-[90dvh] w-[min(864px,calc(100%-var(--space-8)))] -translate-x-1/2 -translate-y-1/2 rounded-tile shadow-menu',
         )}
       >
-        {phone ? <div className="flex justify-center py-[var(--space-2)]"><span aria-hidden className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" /></div> : null}
+        {phone ? <div className="flex justify-center py-[var(--space-2)]"><span aria-hidden className="h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-11)] rounded-[3px] bg-sheet-handle" /></div> : null}
         <div className={cn('flex items-center gap-[var(--space-4)] pr-[var(--space-3)]', phone ? 'pb-[var(--space-4)] pl-[var(--space-4)] pt-[var(--space-2)]' : 'py-[var(--space-4)] pl-[var(--space-6)]')}>
           {stepList || progressLabel ? (
             <>

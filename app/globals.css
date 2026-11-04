@@ -90,6 +90,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
 .b4k-press { transition: transform var(--duration-short3) var(--easing-out-strong); }
 .b4k-press:active { transform: scale(var(--press-scale)); }
 
+/* Cards (fine pointer only): the photo zooms a little, the title underlines, a category glyph tilts. */
+.b4k-card-media img { transition: transform var(--duration-long4) var(--easing-out-strong); }
+.b4k-card-glyph { transition: transform 260ms var(--easing-out-strong); }
+@media (hover: hover) and (pointer: fine) {
+  .b4k-card:hover .b4k-card-media img { transform: scale(1.04); }
+  .b4k-card:hover .b4k-card-title {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+  .b4k-card:hover .b4k-card-glyph { transform: rotate(-12deg) scale(1.06); }
+}
+
 /* ─── Reduced motion ────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   html:focus-within { scroll-behavior: auto; }
@@ -97,6 +110,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
     animation: b4k-fade-in 200ms ease both !important;
   }
   .b4k-press:active { transform: none; }
+  .b4k-card:hover .b4k-card-media img, .b4k-card:hover .b4k-card-glyph { transform: none; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

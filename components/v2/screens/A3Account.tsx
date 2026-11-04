@@ -163,7 +163,7 @@ function BadgeTile({ b, onOpen }: { b: BadgeT; onOpen?: () => void }) {
     : b.unlock_criteria.description
   const tile = <AchievementBadge name={badgeName(b)} detail={detail} icon={BADGE_ICON(b.category)} rarity={b.rarity} locked={!b.earned} lockedLabel={k('badges.badge.locked')} />
   return onOpen ? (
-    <button type="button" onClick={onOpen} className="rounded-2xl p-[var(--space-2)] hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{tile}</button>
+    <button type="button" onClick={onOpen} className="rounded-tile-inner p-[var(--space-2)] hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{tile}</button>
   ) : tile
 }
 
@@ -276,7 +276,7 @@ export function BadgesScreen() {
             <ul className="flex flex-wrap gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-6)]">
               {g.list.map((b) => (
                 <li key={b.id}>
-                  <button type="button" onClick={() => setOpen(b)} className={cn('flex rounded-xl text-left', FOCUS_RING)}>
+                  <button type="button" onClick={() => setOpen(b)} className={cn('flex rounded-sq-lg text-left', FOCUS_RING)}>
                     <AchievementBadge name={badgeName(b)} detail={b.earned && b.earned_at ? k('badges.badge.earnedOn', { date: day(b.earned_at) }) : how(b)} icon={<Trophy />} rarity={b.rarity} locked={!b.earned} lockedLabel={k('badges.badge.locked')} />
                   </button>
                 </li>
@@ -430,7 +430,7 @@ export function LeaderboardTab() {
             {/* relative: keeps the locked tiles' screen-reader label inside the scrolling track. */}
             {next.map((b) => (
               <li key={b.id} className="relative shrink-0">
-                <button type="button" onClick={() => router.push('/badges')} className={cn('flex rounded-xl text-left', FOCUS_RING)}>
+                <button type="button" onClick={() => router.push('/badges')} className={cn('flex rounded-sq-lg text-left', FOCUS_RING)}>
                   <AchievementBadge name={badgeName(b)} detail={b.earned && b.earned_at ? k('badges.badge.earnedOn', { date: day(b.earned_at) }) : b.unlock_criteria.description} icon={<Trophy />} rarity={b.rarity} locked={!b.earned} lockedLabel={k('badges.badge.locked')} />
                 </button>
               </li>

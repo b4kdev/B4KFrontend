@@ -5,11 +5,12 @@ import { createContext, useEffect, useRef, useState } from 'react'
 import * as Sentry from '@sentry/nextjs'
 import { cn } from '@/lib/cn'
 import { Skeleton } from './Progress'
-import { PlaceTypeIcon, type PlaceType } from './Content'
+import { PLACE_TYPE_COLOR, PlaceTypeIcon, type PlaceType } from './Content'
 
-// Image (Figma Atoms › Image): a photo of a place, square corners, locked to one of four
-// ratios: 1:1 (thumbnails), 4:3 (cards), 16:9 (media), 12:5 (wide heroes). Loading = skeleton
-// pulse; Missing = state-selected with the place type icon (Place when the type is unknown).
+// Image (Figma Atoms › Image): a photo of a place, locked to one of four ratios: 1:1 (thumbnails),
+// 4:3 (cards), 16:9 (media), 12:5 (wide heroes); the parent rounds it. Loading = skeleton pulse;
+// Missing = control fill with a squircle tile in the place type's colour and its icon in black (Place
+// when the type is unknown).
 // object-cover, lazy. A photo that fails is tried once more after a second, keeps its box, and
 // leaves its URL for the data team.
 
@@ -55,7 +56,7 @@ export function Image({ ratio = '1:1', src, alt, sizes = '100vw', priority, miss
     Sentry.addBreadcrumb({ category: 'image', level: 'warning', message: 'photo failed to load', data: { src } })
   }
   return (
-    <span className={cn('relative block w-full overflow-hidden rounded-none', state !== 'loading' && 'bg-ui-state-selected', RATIO[ratio], className)}>
+    <span className={cn('relative block w-full overflow-hidden', state !== 'loading' && 'bg-control-fill', RATIO[ratio], className)}>
       {src && state !== 'missing' ? (
         <NextImage
           key={attempt}
@@ -72,7 +73,13 @@ export function Image({ ratio = '1:1', src, alt, sizes = '100vw', priority, miss
       {state === 'loading' ? <Skeleton className="absolute inset-0" /> : null}
       {state === 'missing' ? (
         <span className="absolute inset-0 flex flex-col items-center justify-center gap-[var(--space-2)] text-ui-fg-muted">
-          <PlaceTypeIcon type={placeType} className="size-[var(--icon-size-xl)]" />
+          <span
+            aria-hidden
+            style={{ backgroundColor: PLACE_TYPE_COLOR[placeType] }}
+            className="flex aspect-square w-[min(40%,var(--empty-tile-size))] items-center justify-center rounded-sq-md text-field-fg"
+          >
+            <PlaceTypeIcon type={placeType} className="size-1/2 [stroke-width:2.6]" />
+          </span>
           {/* The label takes the full text color: muted text on this fill is under 4.5:1 in both modes (the icon keeps muted, 3:1 is enough). */}
           {missingLabel ? <span aria-hidden className="type-eyebrow-category uppercase text-ui-fg">{missingLabel}</span> : null}
         </span>

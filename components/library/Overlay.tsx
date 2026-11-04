@@ -11,11 +11,11 @@ import { Spinner } from './Spinner'
 import { FOCUS_RING } from './styles'
 
 // Overlay molecules (Figma Molecules): Dropdown menu, Popover, Combobox.
-// Elevated surface, radius/2xl, 1px color/border, no shadow, 8 from the trigger.
+// Raised surface, radius lg, 1px color/border, 6 inside, the menu shadow, 8 from the trigger.
 // Esc and an outside click close. Placement is CSS (below, start-aligned); a collision-aware
 // version can replace it without changing props.
 
-const SURFACE = 'absolute z-50 mt-[var(--space-2)] rounded-2xl border border-ui-border bg-ui-bg-elevated text-ui-fg'
+const SURFACE = 'absolute z-50 mt-[var(--space-2)] rounded-sq-lg border border-ui-border bg-ui-bg-raised p-[var(--space-1-5)] text-ui-fg shadow-menu'
 
 function useDismiss(open: boolean, close: () => void, ref: React.RefObject<HTMLElement | null>) {
   useEffect(() => {

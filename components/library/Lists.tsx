@@ -1,10 +1,11 @@
 'use client'
 
-import { useId, useState, type ReactNode } from 'react'
+import { createContext, useContext, useId, useState, type CSSProperties, type ReactNode } from 'react'
 import { ChevronDown, ChevronRight, TrendingDown, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Avatar } from './Avatar'
 import { CountBadge } from './Badge'
+import { Glyph, type GlyphName } from './Glyph'
 import { FOCUS_RING_INSET } from './styles'
 
 // List molecules (Figma Molecules): List item, Accordion item, Tree item,
@@ -107,26 +108,75 @@ export type TreeItemProps = {
   count?: number
   /** Figma Show checkbox: a Checkbox element (checklist tree). */
   checkbox?: ReactNode
+  /** Level 1 of a category index: the category colour (a CSS colour) and glyph. The row leads with a
+   * glyph tile; opened, the whole row and its children become the colour field with black ink. */
+  color?: string
+  glyph?: GlyphName
   onToggle?: () => void
   onSelect?: () => void
   children?: ReactNode
 }
 
+/** The colour of the open category a row sits in (null outside one). */
+const TreeField = createContext<string | null>(null)
+
 /** Tree item (part of Tree view): chevron turns when expanded; leaf keeps the space. */
-export function TreeItem({ label, kind, level = 1, selected, count, checkbox, onToggle, onSelect, children }: TreeItemProps) {
+export function TreeItem({ label, kind, level = 1, selected, count, checkbox, color, glyph, onToggle, onSelect, children }: TreeItemProps) {
+  const field = useContext(TreeField)
+  const open = kind === 'expanded'
+  if (color && glyph) {
+    // Category row: a sunken squircle; open = the colour field, the glyph tile turns black.
+    return (
+      <li
+        role="treeitem"
+        aria-expanded={kind === 'leaf' ? undefined : open}
+        aria-selected={selected}
+        aria-level={level}
+        style={{ '--tree-c': color } as CSSProperties}
+        className={cn(
+          'overflow-hidden rounded-sq-lg transition-colors duration-short4 ease-out-strong',
+          open ? 'bg-[var(--tree-c)] pb-[var(--space-1-5)] text-field-fg' : 'bg-tile-surface-sunken text-ui-fg [@media(hover:hover)_and_(pointer:fine)]:hover:bg-control-fill',
+        )}
+      >
+        <div className="flex min-h-[var(--target-touch-min)] items-center gap-[var(--space-2)] px-[var(--space-2)] py-[var(--space-1-5)] [&:has(>button:first-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-border-focus)]">
+          <button type="button" onClick={onSelect ?? onToggle} className="b4k-press flex min-w-0 flex-1 items-center gap-[var(--space-3)] text-left text-[length:var(--font-size-base)] font-[var(--font-weight-bold)] focus-visible:outline-none">
+            <span aria-hidden className={cn('inline-flex size-[var(--glyph-tile-size)] shrink-0 items-center justify-center rounded-sq-sm', open ? 'bg-field-fg text-[var(--tree-c)]' : 'bg-[var(--tree-c)] text-field-fg')}>
+              <Glyph name={glyph} size={20} />
+            </span>
+            <span className="min-w-0 flex-1 truncate">{label}</span>
+            {count !== undefined ? <span className="type-body-caption tabular-nums opacity-70">{count}</span> : null}
+          </button>
+          {kind === 'leaf' ? null : (
+            <button type="button" tabIndex={-1} aria-hidden onClick={onToggle} className={cn('inline-flex shrink-0', open ? 'text-field-fg' : 'text-ui-fg-placeholder')}>
+              <ChevronRight className={cn('size-[var(--icon-size-sm)] transition-transform duration-short4 ease-out-strong', open && 'rotate-90')} />
+            </button>
+          )}
+        </div>
+        {open && children ? (
+          <TreeField.Provider value={color}>
+            <ul role="group">{children}</ul>
+          </TreeField.Provider>
+        ) : null}
+      </li>
+    )
+  }
   return (
     <li role="treeitem" aria-expanded={kind === 'leaf' ? undefined : kind === 'expanded'} aria-selected={selected} aria-level={level}>
       {/* Indent (16 per level) sits outside the row, so the selected fill starts at it. */}
-      <div style={{ paddingLeft: `calc(var(--space-4) * ${level - 1})` }}>
+      <div style={field ? undefined : { paddingLeft: `calc(var(--space-4) * ${level - 1})` }}>
         <div
           className={cn(
             'flex min-h-[var(--target-touch-min)] items-center gap-[var(--space-2)] pl-[var(--space-2)] pr-[var(--space-3)]',
-            selected ? 'bg-ui-state-selected' : 'hover:bg-ui-state-hover',
+            field
+              ? cn('mx-[var(--space-1-5)] rounded-sq-md px-[var(--space-1-5)] transition-colors duration-short3 ease-out-strong', selected ? 'bg-field-fg text-photo-action-fg' : 'text-field-fg [@media(hover:hover)_and_(pointer:fine)]:hover:bg-field-inset')
+              : selected ? 'rounded-sq-md bg-ui-state-selected' : 'rounded-sq-md hover:bg-ui-state-hover',
             // Focus ring around the whole row while the label button has keyboard focus.
             '[&:has(>button:last-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-border-focus)]',
           )}
         >
-          {kind === 'leaf' ? (
+          {field ? (
+            <span aria-hidden className="size-[10px] shrink-0 rounded-[3px]" style={{ backgroundColor: selected ? field : 'var(--neutral-black-28)' }} />
+          ) : kind === 'leaf' ? (
             <span aria-hidden className="size-[var(--icon-size-sm)] shrink-0" />
           ) : (
             <button type="button" tabIndex={-1} aria-hidden onClick={onToggle} className="inline-flex shrink-0 text-ui-fg-muted">
@@ -134,9 +184,9 @@ export function TreeItem({ label, kind, level = 1, selected, count, checkbox, on
             </button>
           )}
           {checkbox}
-          <button type="button" onClick={onSelect ?? onToggle} className="flex min-h-[var(--target-touch-min)] min-w-0 flex-1 items-center gap-[var(--space-2)] text-left type-body-base text-ui-fg focus-visible:outline-none">
+          <button type="button" onClick={onSelect ?? onToggle} className={cn('flex min-h-[var(--target-touch-min)] min-w-0 flex-1 items-center gap-[var(--space-2)] text-left type-body-base focus-visible:outline-none', field ? 'text-[length:calc(var(--font-size-base)-var(--border-width-1))] font-[500] text-current' : 'text-ui-fg')}>
             <span className="min-w-0 flex-1 truncate">{label}</span>
-            {count !== undefined ? <span className="type-body-caption text-ui-fg-muted">{count}</span> : null}
+            {count !== undefined ? <span className={cn('type-body-caption', field ? 'opacity-70' : 'text-ui-fg-muted')}>{count}</span> : null}
           </button>
         </div>
       </div>

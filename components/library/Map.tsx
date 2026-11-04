@@ -2,6 +2,7 @@ import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { Clapperboard, Landmark, MapPin as MapPinIcon, Music, Sparkles, Utensils } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { FOCUS_RING, HIT_AREA } from './styles'
+import { categoryStyle } from './category'
 
 // Map atoms (Figma Atoms): Map pin, Cluster bubble, Map control.
 // These are the DOM versions (lists, legends, overlays). Markers inside the Naver map are drawn
@@ -25,7 +26,8 @@ export type MapPinProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> 
   label: string
 }
 
-/** Map pin: round, map/pin-fill with a map/pin-stroke ring, K-domain icon in fg-on-media. 44 tap area. */
+/** Map pin: a squircle in the category colour (generic: the other-type colour) with a 3 px pin-stroke
+ * ring and a black icon; selected = the selected colour, 48. 44 tap area. */
 export const MapPin = forwardRef<HTMLButtonElement, MapPinProps>(function MapPin(
   { category = 'generic', selected = false, label, className, ...props },
   ref,
@@ -37,10 +39,12 @@ export const MapPin = forwardRef<HTMLButtonElement, MapPinProps>(function MapPin
       type="button"
       aria-label={label}
       aria-pressed={selected}
+      data-category={categoryStyle(category)?.key}
+      style={{ backgroundColor: selected ? 'var(--map-pin-selected)' : (categoryStyle(category)?.color ?? 'var(--map-type-other)') }}
       className={cn(
-        'relative inline-flex shrink-0 items-center justify-center rounded-full border-[length:var(--border-width-2)] border-map-ui-pin-stroke text-ui-fg-on-media',
-        'transition-[width,height,background-color] duration-short4 ease-standard',
-        selected ? 'size-[var(--map-pin-size-selected)] bg-map-ui-pin-selected' : 'size-[var(--map-pin-size)] bg-map-ui-pin-fill',
+        'relative inline-flex shrink-0 items-center justify-center rounded-sq-sm border-[length:var(--border-width-pin)] border-map-ui-pin-stroke text-field-fg shadow-pin [&>svg]:[stroke-width:2.6]',
+        'transition-[width,height,background-color] duration-short4 ease-out-strong',
+        selected ? 'size-[var(--map-pin-size-selected)]' : 'size-[var(--map-pin-size)]',
         FOCUS_RING,
         HIT_AREA,
         className,
@@ -70,7 +74,7 @@ export const ClusterBubble = forwardRef<HTMLButtonElement, ClusterBubbleProps>(f
       type="button"
       aria-label={label}
       className={cn(
-        'relative inline-flex shrink-0 items-center justify-center rounded-full border-[length:var(--border-width-2)] border-map-ui-pin-stroke bg-map-ui-pin-fill type-body-label text-ui-fg-on-media',
+        'relative inline-flex shrink-0 items-center justify-center rounded-sq-md border-[length:var(--border-width-pin)] border-map-ui-cluster-stroke bg-map-ui-cluster-fill type-body-label font-[var(--font-weight-extrabold)] tabular-nums text-map-ui-cluster-fg shadow-float',
         count < 10 ? 'size-[var(--map-cluster-size-sm)]' : count < 50 ? 'size-[var(--map-cluster-size-md)]' : 'size-[var(--map-cluster-size-lg)]',
         FOCUS_RING,
         HIT_AREA,
@@ -93,7 +97,7 @@ export type MapControlProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'typ
 const CONTROL_FOCUS_RING =
   'focus-visible:outline-none focus-visible:shadow-[0_0_0_calc(var(--focus-ring-offset)_+_var(--border-width-1))_var(--color-focus-halo),0_0_0_calc(var(--focus-ring-offset)_+_var(--focus-ring-width)_+_var(--border-width-1))_var(--color-border-focus)]'
 
-/** Map control: square 44 map button (Zoom, later Locate me): bg-raised, 1px border, icon 16. */
+/** Map control: 48 squircle map button (Zoom, Locate me): bg-raised, no border, the overlay shadow, icon 20. */
 export const MapControl = forwardRef<HTMLButtonElement, MapControlProps>(function MapControl(
   { icon, label, className, ...props },
   ref,
@@ -104,9 +108,9 @@ export const MapControl = forwardRef<HTMLButtonElement, MapControlProps>(functio
       type="button"
       aria-label={label}
       className={cn(
-        'inline-flex size-[var(--target-touch-min)] shrink-0 items-center justify-center rounded-none border border-ui-border bg-ui-bg-raised text-ui-fg',
+        'inline-flex size-[var(--control-height-xl)] shrink-0 items-center justify-center rounded-sq-md bg-ui-bg-raised text-ui-fg shadow-overlay',
         'enabled:hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] enabled:active:bg-[image:linear-gradient(var(--color-state-pressed),var(--color-state-pressed))]',
-        'disabled:cursor-not-allowed disabled:text-ui-fg-disabled [&>svg]:size-[var(--icon-size-sm)]',
+        'disabled:cursor-not-allowed disabled:text-ui-fg-disabled [&>svg]:size-[var(--icon-size-md)]',
         CONTROL_FOCUS_RING,
         className,
       )}

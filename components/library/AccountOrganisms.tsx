@@ -181,7 +181,7 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
                 : undefined
   const emailField = labels.emailField ?? labels.email
   return (
-    <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg">
+    <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-tile bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg">
       {/* Figma Top row: Logo wordmark 24 + Close Ghost 40 (no Close on New password). */}
       <div className="flex items-center justify-between gap-[var(--space-2)]">
         <Logo />
@@ -273,7 +273,7 @@ export function ConsentStep({ title, subtitle, footnote, items, checked, onCheck
   const some = items.some((i) => checked[i.id])
   const ready = items.filter((i) => i.required).every((i) => checked[i.id])
   return (
-    <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg">
+    <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-tile bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg">
       <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onCancel} className="self-start" />
       <div className="flex flex-col gap-[var(--space-2)]">
         <h1 className="type-display-h3">{title}</h1>
@@ -513,7 +513,7 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
   )
   // Figma: the same card on desktop and phones (bg-raised, 1px border, radius 2xl, p12, gap 12).
   return (
-    <div className={cn('flex flex-col gap-[var(--space-3)] rounded-2xl border border-ui-border bg-ui-bg-raised p-[var(--space-3)] text-ui-fg', viewport === 'desktop' ? 'w-[560px]' : 'w-full')}>
+    <div className={cn('flex flex-col gap-[var(--space-3)] rounded-sq-lg bg-ui-bg-raised p-[var(--space-3)] text-ui-fg shadow-float', viewport === 'desktop' ? 'w-[560px]' : 'w-full')}>
       {state === 'typing' ? (
         <>
           <button type="button" className={row} onClick={() => onSearch(query)}>
@@ -590,7 +590,7 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
               {/* Figma Browse: category chips, like Trending now. */}
               <div className="flex flex-wrap gap-[var(--space-2)] py-[var(--space-1)]">
                 {categories.map((c) => (
-                  <IntlLink key={c.id} href={c.href} className="inline-flex h-[var(--control-height-sm)] items-center rounded-full border border-ui-border-strong px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+                  <IntlLink key={c.id} href={c.href} className="inline-flex h-[var(--control-height-sm)] items-center rounded-sq-sm bg-control-fill px-[var(--space-3)] hover:bg-control-fill-hover type-body-chip text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
                     {c.name}
                   </IntlLink>
                 ))}

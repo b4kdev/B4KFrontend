@@ -4,7 +4,7 @@ import { cloneElement, useEffect, useId, useState, type ReactElement } from 'rea
 import { cn } from '@/lib/cn'
 
 // Tooltip (Figma Atoms › Tooltip): short help text for a control on hover and keyboard focus
-// (role tooltip, aria-describedby), closed with Esc. Inverse, square, no arrow, no shadow; 8 below
+// (role tooltip, aria-describedby), closed with Esc. Inverse, radius xs, no arrow, no shadow; 8 below
 // the trigger by default; wraps at tooltip/max-width, body/caption. Never the only place for
 // essential information (no tooltips on touch).
 // Placement is CSS-only for now (centered below or above the trigger); a collision-aware version
@@ -43,7 +43,7 @@ export function Tooltip({ text, side = 'bottom', children, className, wrapperCla
         id={id}
         role="tooltip"
         className={cn(
-          'pointer-events-none absolute left-1/2 z-50 w-max max-w-[var(--tooltip-max-width)] -translate-x-1/2 bg-ui-bg-inverse px-[var(--space-3)] py-[var(--space-2)] type-body-caption text-ui-fg-inverse',
+          'pointer-events-none absolute left-1/2 z-50 w-max max-w-[var(--tooltip-max-width)] -translate-x-1/2 rounded-sq-xs bg-ui-bg-inverse px-[var(--space-3)] py-[var(--space-2)] type-body-caption font-[var(--font-weight-semibold)] text-ui-fg-inverse',
           side === 'bottom' ? 'top-[calc(100%+var(--space-2))]' : 'bottom-[calc(100%+var(--space-2))]',
           open ? 'visible opacity-100' : 'invisible opacity-0',
           'transition-opacity duration-short3 ease-standard',

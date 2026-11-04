@@ -54,6 +54,21 @@ export const PLACE_TYPE_ICON = {
 
 export type PlaceType = keyof typeof PLACE_TYPE_ICON
 
+/** The colour field of a place type (map pins, missing-photo tiles): the map type colours. */
+export const PLACE_TYPE_COLOR: Record<PlaceType, string> = {
+  food: 'var(--map-type-food)',
+  shopping: 'var(--map-type-shopping)',
+  beauty: 'var(--map-type-shopping)',
+  stay: 'var(--map-type-stay)',
+  heritage: 'var(--map-type-heritage)',
+  exhibition: 'var(--map-type-heritage)',
+  nature: 'var(--map-type-park)',
+  hallyu: 'var(--category-pop)',
+  activity: 'var(--map-type-other)',
+  sightseeing: 'var(--map-type-other)',
+  place: 'var(--map-type-other)',
+}
+
 /** The Place type of an interest category; Place when it is missing or unknown. */
 export const placeTypeOf = (category: string | null | undefined): PlaceType =>
   category && category in PLACE_TYPE_ICON ? (category as PlaceType) : 'place'
@@ -95,7 +110,7 @@ export type ImageActionProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'ty
   label: string
 }
 
-/** Image action: round 32 button on a photo, scrim behind a 16 icon in fg-on-media. */
+/** Image action: 32 squircle on a photo, black 62% behind a 16 white icon in both themes; on = white with a black icon. */
 export const ImageAction = forwardRef<HTMLButtonElement, ImageActionProps>(function ImageAction(
   { on = false, icon, label, className, ...props },
   ref,
@@ -107,9 +122,9 @@ export const ImageAction = forwardRef<HTMLButtonElement, ImageActionProps>(funct
       aria-label={label}
       aria-pressed={on}
       className={cn(
-        'relative inline-flex size-[var(--control-height-sm)] shrink-0 items-center justify-center rounded-full bg-ui-scrim text-ui-fg-on-media',
+        'relative inline-flex size-[var(--control-height-sm)] shrink-0 items-center justify-center rounded-sq-sm transition-[background-color,color,transform] duration-short3 ease-out-strong active:scale-[var(--press-scale)]',
         '[&>svg]:size-[var(--icon-size-sm)]',
-        on && '[&>svg]:fill-current',
+        on ? 'bg-photo-action-fill-on text-photo-action-fg-on [&>svg]:fill-current' : 'bg-photo-action-fill text-photo-action-fg',
         FOCUS_RING,
         HIT_AREA,
         className,
@@ -157,7 +172,7 @@ export function ChatBubble({ role, children, typingLabel }: ChatBubbleProps) {
     <div className={cn('flex w-full', role === 'user' ? 'justify-end' : 'justify-start')}>
       <div
         className={cn(
-          'max-w-[80%] rounded-2xl px-[var(--space-3)] py-[var(--space-2)] type-body-base',
+          'max-w-[80%] rounded-sq-lg px-[var(--space-3)] py-[var(--space-2)] type-body-base',
           role === 'user' ? 'bg-ui-bg-inverse text-ui-fg-inverse' : 'bg-ui-bg-sunken text-ui-fg',
         )}
       >

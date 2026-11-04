@@ -19,7 +19,8 @@ import { FOCUS_RING_INSET } from './styles'
 
 // App shell organisms (Figma Organisms): Navigation
 // rail, Navigation bar, Header, Top app bar, Drawer, Account menu, Universal search.
-// One color with no borders. Texts come in through `labels` (from the messages).
+// The ground colour with no borders; each destination is a colour squircle tile. Texts come in
+// through `labels` (from the messages).
 
 export type Destination = 'home' | 'map' | 'explore' | 'saved'
 
@@ -58,12 +59,17 @@ export type ShellUser = { name: string; avatarSrc?: string | null; unread?: numb
 /** Rail cell: 56 wide, centered in the 64 rail (no space token for 56). */
 const RAIL_CELL = 'w-[56px]'
 
-const DESTS: { id: Destination; href: string; Icon: typeof House }[] = [
-  { id: 'home', href: '/', Icon: House },
-  { id: 'map', href: '/map', Icon: MapPin },
-  { id: 'explore', href: '/explore', Icon: Compass },
-  { id: 'saved', href: '/saved', Icon: Bookmark },
+const DESTS: { id: Destination; href: string; Icon: typeof House; color: string }[] = [
+  { id: 'home', href: '/', Icon: House, color: 'var(--nav-home)' },
+  { id: 'map', href: '/map', Icon: MapPin, color: 'var(--nav-map)' },
+  { id: 'explore', href: '/explore', Icon: Compass, color: 'var(--nav-explore)' },
+  { id: 'saved', href: '/saved', Icon: Bookmark, color: 'var(--nav-saved)' },
 ]
+const QUICK_PLAN_COLOR = 'var(--nav-quick-plan)'
+
+/** A 44 tile button on the ground (rail account, header and top bar icon buttons): idle tile, icon in fg. */
+const TILE_BUTTON =
+  'relative inline-flex shrink-0 items-center justify-center rounded-sq-md bg-nav-tile-idle text-ui-fg transition-[background-color,transform] duration-short4 ease-out-strong active:scale-[var(--press-scale)] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-nav-tile-hover focus-visible:shadow-focus-ring focus-visible:outline-none'
 
 export type NavigationRailProps = {
   active?: Destination | null
@@ -88,12 +94,12 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
           <Logo type="mark" className="h-9" />
         </IntlLink>
       ) : null}
-      <ul className={cn('flex w-full flex-col items-center gap-[var(--space-1)]', showLogo && 'pt-[var(--space-2)]')}>
-        {DESTS.map(({ id, href, Icon }) => (
+      <ul className={cn('flex w-full flex-col items-center gap-[var(--space-2-5)] pt-[var(--space-1-5)]', showLogo && 'pt-[var(--space-2)]')}>
+        {DESTS.map(({ id, href, Icon, color }) => (
           <li key={id} className={RAIL_CELL}>
             <Tooltip text={labels[id]} wrapperClassName="flex w-full">
               <IntlLink href={href} aria-current={active === id ? 'page' : undefined} className={NAV_ITEM_TARGET}>
-                <NavItem icon={<Icon />} label={labels[id]} active={active === id} />
+                <NavItem icon={<Icon />} label={labels[id]} active={active === id} color={color} />
               </IntlLink>
             </Tooltip>
           </li>
@@ -101,7 +107,7 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
         <li className={RAIL_CELL}>
           <Tooltip text={labels.quickPlan} wrapperClassName="flex w-full">
             <button type="button" onClick={onQuickPlan} className={NAV_ITEM_TARGET}>
-              <NavItem icon={<Zap />} label={labels.quickPlan} />
+              <NavItem icon={<Zap />} label={labels.quickPlan} color={QUICK_PLAN_COLOR} />
             </button>
           </Tooltip>
         </li>
@@ -115,7 +121,7 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
           </Tooltip>
         ) : null}
         {accountMenu ?? (
-          <IntlLink href={user ? profileHref : '/login'} aria-label={user ? labels.account : labels.signIn} className={cn('flex h-[var(--control-height-xl)] items-center justify-center hover:bg-ui-state-hover', RAIL_CELL, FOCUS_RING_INSET)}>
+          <IntlLink href={user ? profileHref : '/login'} aria-label={user ? labels.account : labels.signIn} className={cn(TILE_BUTTON, 'size-[var(--nav-tile-size)]')}>
             {user ? <Avatar size="sm" src={user.avatarSrc} name={user.name} decorative /> : <User aria-hidden className="size-[var(--icon-size-md)] text-ui-fg-muted" />}
           </IntlLink>
         )}
@@ -128,10 +134,10 @@ export type NavigationBarProps = { active?: Destination | null; labels: ShellLab
 
 /** Navigation bar: below 1024, 56 high plus the safe area; Quick plan in the center. */
 export function NavigationBar({ active = null, labels, onQuickPlan, className }: NavigationBarProps) {
-  const item = ({ id, href, Icon }: (typeof DESTS)[number]) => (
+  const item = ({ id, href, Icon, color }: (typeof DESTS)[number]) => (
     <li key={id} className="flex-1">
       <IntlLink href={href} aria-label={labels[id]} aria-current={active === id ? 'page' : undefined} className={NAV_ITEM_TARGET}>
-        <NavItem icon={<Icon />} label="" active={active === id} />
+        <NavItem icon={<Icon />} label="" active={active === id} color={color} />
       </IntlLink>
     </li>
   )
@@ -140,7 +146,10 @@ export function NavigationBar({ active = null, labels, onQuickPlan, className }:
       <ul className="flex h-[var(--fab-size)] items-center px-[var(--space-2)] py-[var(--space-1)]">
         {DESTS.slice(0, 2).map(item)}
         <li className="flex flex-1 justify-center">
-          <IconButton variant="primary" label={labels.quickPlan} icon={<Zap />} onClick={onQuickPlan} />
+          {/* Quick plan: the 52 squircle, always in its colour. */}
+          <button type="button" aria-label={labels.quickPlan} onClick={onQuickPlan} className={NAV_ITEM_TARGET}>
+            <NavItem icon={<Zap />} label="" size="lg" color={QUICK_PLAN_COLOR} />
+          </button>
         </li>
         {DESTS.slice(2).map(item)}
       </ul>
@@ -163,20 +172,20 @@ export type HeaderProps = {
 /** Header: desktop original layout (kept until the shell layout is decided), 64 high. */
 export function Header({ labels, signedIn, search, onLanguage, languageMenu, helpHref = '/help', className }: HeaderProps) {
   return (
-    <header className={cn('flex h-[var(--layout-header-height)] items-center gap-[var(--space-6)] bg-ui-bg pr-[var(--space-6)]', className)}>
+    <header className={cn('flex h-[var(--layout-header-height)] items-center gap-[var(--space-5)] bg-ui-bg pr-[var(--space-6)]', className)}>
       <IntlLink href="/" aria-label={labels.homeLink} className={cn('flex h-full w-[var(--layout-nav-rail)] shrink-0 items-center justify-center', FOCUS_RING_INSET)}>
         <Logo type="mark" className="h-9" />
       </IntlLink>
-      <div role="search" className="w-[480px] min-w-0">{search}</div>
-      <div className="ml-auto flex items-center gap-[var(--space-1)]">
-        {languageMenu ?? <Tooltip text={labels.language}><IconButton label={labels.language} icon={<Globe />} onClick={onLanguage} /></Tooltip>}
+      <div role="search" className="w-[520px] min-w-0">{search}</div>
+      <div className="ml-auto flex items-center gap-[var(--space-2)]">
+        {languageMenu ?? <Tooltip text={labels.language}><IconButton label={labels.language} icon={<Globe />} onClick={onLanguage} className={cn(TILE_BUTTON, 'size-[var(--control-height-md)]')} /></Tooltip>}
         <Tooltip text={labels.help}>
-          <IntlLink href={helpHref} aria-label={labels.help} className="relative inline-flex size-[var(--control-height-md)] items-center justify-center rounded-full text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+          <IntlLink href={helpHref} aria-label={labels.help} className={cn(TILE_BUTTON, 'size-[var(--control-height-md)]')}>
             <CircleHelp aria-hidden className="size-[var(--icon-size-md)]" />
           </IntlLink>
         </Tooltip>
         {signedIn ? null : (
-          <IntlLink href="/login" className={cn(buttonVariants({ variant: 'secondary', size: 'sm' }), 'hover:bg-ui-state-hover active:bg-ui-state-pressed')}>
+          <IntlLink href="/login" className={cn(buttonVariants({ variant: 'primary', size: 'md' }), '[@media(hover:hover)_and_(pointer:fine)]:hover:opacity-90')}>
             {labels.signIn}
           </IntlLink>
         )}
@@ -207,7 +216,7 @@ export type TopAppBarProps = {
  * no strip, a round Menu button and the Search pill over the content.
  */
 export function TopAppBar({ type, labels, onMenu, onBack, title, titleAs: Title = 'h1', action, search, className }: TopAppBarProps) {
-  const round = 'rounded-full bg-ui-bg'
+  const round = TILE_BUTTON
   const floating = type === 'home' || type === 'map'
   return (
     <div className={cn('pt-[env(safe-area-inset-top)]', floating ? 'bg-transparent' : 'bg-ui-bg', className)}>
@@ -231,13 +240,13 @@ export function TopAppBar({ type, labels, onMenu, onBack, title, titleAs: Title 
           </>
         ) : type === 'search' ? (
           <>
-            <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onBack} />
+            <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onBack} className={TILE_BUTTON} />
             <div className="min-w-0 flex-1">{search}</div>
           </>
         ) : (
           <>
-            <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onBack} />
-            <Title className="min-w-0 flex-1 truncate type-title-card">{title}</Title>
+            <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onBack} className={TILE_BUTTON} />
+            <Title className="min-w-0 flex-1 truncate type-title-card font-[var(--font-weight-extrabold)] tracking-[-0.02em]">{title}</Title>
             {action}
           </>
         )}
@@ -272,11 +281,11 @@ export function Drawer({ open, onClose, labels, user, onQuickPlan, language, lin
   const [legalOpen, setLegalOpen] = useState(false)
   if (!open) return null
   const L = { notifications: '/notifications', settings: '/settings', help: '/help', legal: '/legal', profile: '/profile', signIn: '/login', ...links }
-  const row = cn('flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left type-body-base text-ui-fg hover:bg-ui-state-hover', FOCUS_RING_INSET)
+  const row = cn('flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] rounded-sq-md px-[var(--space-4)] py-[var(--space-3)] text-left type-body-base text-ui-fg hover:bg-ui-state-hover aria-[current=page]:bg-ui-state-selected', FOCUS_RING_INSET)
   return (
     <>
       <Scrim onClick={onClose} className="z-50" />
-      <div ref={ref} role="dialog" aria-modal="true" aria-labelledby={id} className="fixed inset-y-0 left-0 z-50 flex w-[300px] max-w-[85vw] flex-col bg-ui-bg-raised pt-[env(safe-area-inset-top)] text-ui-fg motion-safe:animate-b4k-drawer-in">
+      <div ref={ref} role="dialog" aria-modal="true" aria-labelledby={id} className="fixed inset-y-0 left-0 z-50 flex w-[300px] max-w-[85vw] flex-col bg-ui-bg px-[var(--space-2)] pt-[env(safe-area-inset-top)] text-ui-fg motion-safe:animate-b4k-drawer-in">
         <div className="flex h-[var(--control-height-xl)] items-center justify-between pl-[var(--space-4)] pr-[var(--space-1)]">
           <span id={id}><Logo label="B4K" /></span>
           <IconButton label={labels.close} icon={<X />} onClick={onClose} />
@@ -346,7 +355,7 @@ export function AccountMenu({ labels, user, onSignOut, links = {}, showHelp = fa
     <DropdownMenu
       label={labels.account}
       trigger={
-        <button type="button" aria-label={labels.account} className={cn('flex h-[var(--control-height-xl)] items-center justify-center hover:bg-ui-state-hover', RAIL_CELL, FOCUS_RING_INSET)}>
+        <button type="button" aria-label={labels.account} className={cn(TILE_BUTTON, 'size-[var(--nav-tile-size)]')}>
           {user ? <Avatar size="sm" src={user.avatarSrc} name={user.name} decorative /> : <User aria-hidden className="size-[var(--icon-size-md)] text-ui-fg-muted" />}
         </button>
       }
@@ -376,22 +385,32 @@ export function AccountMenu({ labels, user, onSignOut, links = {}, showHelp = fa
   )
 }
 
+/** The search glyph tile at the start of every search field: the search accent with a black icon. */
+export function SearchGlyphTile({ className }: { className?: string }) {
+  return (
+    <span aria-hidden className={cn('inline-flex size-[var(--control-height-sm)] shrink-0 items-center justify-center rounded-sq-sm bg-accent-search p-[var(--space-1-5)] text-field-fg', className)}>
+      <Search className="size-full [stroke-width:2.6]" />
+    </span>
+  )
+}
+
 export type UniversalSearchProps = { children: ReactNode; className?: string }
 
 /** Universal search (Proposed): the one desktop search field, 560 wide, centered, 12 from the top, floating. */
 export function UniversalSearch({ children, className }: UniversalSearchProps) {
   return (
     <div role="search" className={cn('pointer-events-none fixed inset-x-0 top-[var(--space-3)] z-30 flex justify-center', className)}>
-      <div className="pointer-events-auto w-[560px] rounded-full bg-ui-bg-elevated">{children}</div>
+      <div className="pointer-events-auto w-[560px] rounded-sq-lg bg-ui-bg-elevated">{children}</div>
     </div>
   )
 }
 
-/** A search pill that opens the full search (Top app bar Home and Map). */
+/** A search field look-alike that opens the full search (Top app bar Home and Map): a squircle with the
+ * search glyph tile at its start. */
 export function SearchPill({ label, href = '/search', className }: { label: string; href?: string; className?: string }) {
   return (
-    <IntlLink href={href} className={cn('flex h-[var(--control-height-md)] items-center gap-[var(--space-2)] rounded-full border border-ui-border-strong bg-ui-bg-raised px-[var(--space-4)] type-body-base text-ui-fg-placeholder focus-visible:shadow-focus-ring focus-visible:outline-none', className)}>
-      <Search aria-hidden className="size-[var(--icon-size-sm)] shrink-0" />
+    <IntlLink href={href} className={cn('flex h-[var(--control-height-md)] items-center gap-[var(--space-2)] rounded-sq-lg bg-ui-bg-raised pl-[var(--space-1)] pr-[var(--space-4)] type-body-base text-ui-fg-placeholder shadow-overlay focus-visible:shadow-focus-ring focus-visible:outline-none', className)}>
+      <SearchGlyphTile className="size-[var(--control-height-sm)]" />
       <span className="truncate">{label}</span>
     </IntlLink>
   )

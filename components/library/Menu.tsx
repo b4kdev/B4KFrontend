@@ -27,7 +27,7 @@ export const MenuItem = forwardRef<HTMLButtonElement, MenuItemProps>(function Me
       role={checked === undefined ? 'menuitem' : 'menuitemradio'}
       aria-checked={checked}
       className={cn(
-        'flex h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] text-left type-body-base',
+        'flex h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] rounded-sq-sm px-[var(--space-3)] text-left type-body-base aria-checked:bg-ui-bg-inverse aria-checked:text-ui-fg-inverse',
         'disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
         variant === 'danger'
           ? 'text-ui-danger enabled:hover:bg-ui-danger-bg focus-visible:bg-ui-danger-bg'

@@ -39,11 +39,15 @@ const initialsOf = (name?: string) =>
     .map((w) => w[0]?.toUpperCase())
     .join('') ?? ''
 
+/** Squircle avatars: radius steps with the size (xs 8 … xl the inner tile radius). */
+const RADIUS = { xs: 'rounded-sq-xs', sm: 'rounded-sq-sm', md: 'rounded-sq-md', lg: 'rounded-sq-lg', xl: 'rounded-tile-inner' } as const
+
 export function Avatar({ size = 'md', src, name, initials, decorative, className }: AvatarProps) {
   const [failed, setFailed] = useState(false)
   const letters = initials ?? initialsOf(name)
   const box = cn(
-    'relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-ui-state-selected text-ui-fg [&>svg]:text-ui-fg-muted',
+    'relative inline-flex shrink-0 items-center justify-center overflow-hidden bg-accent-avatar text-field-fg [&>svg]:text-field-fg',
+    RADIUS[size],
     SIZE[size],
     className,
   )

@@ -30,7 +30,8 @@ export type StopBadgeProps = {
   className?: string
 }
 
-/** Stop badge: numbered itinerary stop. sm 20 (lists, plan panel), md 24 (route preview, map, timeline). */
+/** Stop badge: numbered itinerary stop, a squircle in the day colour with black figures. sm 24 (lists,
+ * route preview), md 34 (plan stops, map). */
 export function StopBadge({ number, size = 'sm', day = 0, label, className }: StopBadgeProps) {
   return (
     <span
@@ -38,8 +39,8 @@ export function StopBadge({ number, size = 'sm', day = 0, label, className }: St
       aria-label={label}
       aria-hidden={label ? undefined : true}
       className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded-full',
-        size === 'sm' ? 'size-[var(--stop-badge-size-sm)] type-numeric-count' : 'size-[var(--stop-badge-size-md)] type-body-label',
+        'inline-flex shrink-0 items-center justify-center tabular-nums',
+        size === 'sm' ? 'size-[var(--stop-badge-size-sm)] rounded-sq-xs type-body-label font-[var(--font-weight-extrabold)]' : 'size-[var(--stop-badge-size-md)] rounded-sq-sm text-[length:calc(var(--font-size-base)-var(--border-width-1))] font-[var(--font-weight-extrabold)] leading-none',
         DAY_FILL[day],
         className,
       )}
@@ -78,7 +79,7 @@ export const DragHandle = forwardRef<HTMLButtonElement, DragHandleProps>(functio
       {type === 'grip' ? (
         <GripVertical aria-hidden className="size-[var(--icon-size-xs)]" />
       ) : (
-        <span aria-hidden className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" />
+        <span aria-hidden className="h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-11)] rounded-[3px] bg-sheet-handle" />
       )}
     </button>
   )
@@ -104,7 +105,8 @@ export type TransportModeProps = {
   className?: string
 }
 
-/** Transport mode: the leg between two stops, on a 1px rail under the stop badge center. */
+/** Transport mode: the leg between two stops, on a 2px dotted thread under the stop badge center; the
+ * mode and time sit in a small sunken tag. */
 export function TransportMode({ mode, modeLabel, time, onChange, menu, menuLabel, loading, className }: TransportModeProps) {
   const Icon = MODE_ICON[mode]
   const content = (
@@ -119,14 +121,14 @@ export function TransportMode({ mode, modeLabel, time, onChange, menu, menuLabel
       type="button"
       onClick={onChange}
       aria-busy={loading || undefined}
-      className={cn('relative inline-flex items-center gap-[var(--space-1-5)] type-body-caption text-ui-fg-muted hover:text-ui-fg', FOCUS_RING, HIT_AREA)}
+      className={cn('relative inline-flex items-center gap-[var(--space-1-5)] rounded-sq-xs bg-tile-surface-sunken px-[var(--space-2)] py-[var(--space-0-5)] type-body-caption tabular-nums text-ui-fg-muted hover:text-ui-fg', FOCUS_RING, HIT_AREA)}
     >
       {content}
     </button>
   )
   return (
     // Figma: the part hugs its content (the rail is as wide as mode and time), it does not fill the row.
-    <div className={cn('flex w-fit items-center py-[var(--space-1-5)]', mode !== 'estimate' && 'border-l border-ui-border-strong pl-[var(--space-3)]', className)}>
+    <div className={cn('flex w-fit items-center py-[var(--space-1-5)]', mode !== 'estimate' && 'border-l-2 border-dotted border-control-fill-hover pl-[var(--space-3-5)]', className)}>
       {(onChange || menu) && mode !== 'estimate' ? (
         menu ? (
           // Figma: the menu starts at the rail, 12 left of the mode.
@@ -137,7 +139,7 @@ export function TransportMode({ mode, modeLabel, time, onChange, menu, menuLabel
           button
         )
       ) : (
-        <span className="inline-flex items-center gap-[var(--space-1-5)] type-body-caption text-ui-fg-muted">{content}</span>
+        <span className="inline-flex items-center gap-[var(--space-1-5)] rounded-sq-xs bg-tile-surface-sunken px-[var(--space-2)] py-[var(--space-0-5)] type-body-caption tabular-nums text-ui-fg-muted">{content}</span>
       )}
     </div>
   )
@@ -167,7 +169,7 @@ export const PlanPill = forwardRef<HTMLButtonElement, PlanPillProps>(function Pl
       aria-label={accessibleLabel}
       aria-expanded={expanded}
       className={cn(
-        'inline-flex h-[var(--target-touch-min)] items-center gap-[var(--space-2)] rounded-full border border-ui-border-strong bg-ui-bg-raised px-[var(--space-4)] type-body-label text-ui-fg',
+        'inline-flex h-[var(--target-touch-min)] items-center gap-[var(--space-2)] rounded-sq-md bg-ui-bg-raised px-[var(--space-4)] type-body-label text-ui-fg shadow-overlay',
         'hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]',
         PILL_FOCUS_RING,
         className,

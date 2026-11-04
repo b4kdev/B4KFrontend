@@ -228,7 +228,7 @@ export function SignInGate({ request, onClose, onConsent }: { request: GateReque
         aria-modal="true"
         aria-label={request.title}
         className={phone
-          ? 'fixed inset-x-0 bottom-0 z-50 max-h-[90dvh] overflow-y-auto rounded-t-3xl bg-ui-bg-elevated pb-[env(safe-area-inset-bottom)]'
+          ? 'fixed inset-x-0 bottom-0 z-50 max-h-[90dvh] overflow-y-auto rounded-t-tile bg-ui-bg-raised shadow-sheet dark:bg-ui-bg-media pb-[env(safe-area-inset-bottom)]'
           : 'fixed left-1/2 top-1/2 z-50 w-[calc(100%-var(--space-8))] max-w-[420px] -translate-x-1/2 -translate-y-1/2'}
       >
         <SignInCard {...flow} title={request.title} subtitle={t('CD0056')} draftNotice={request.draftNotice} onClose={onClose} onGuest={planSave ? undefined : onClose} />

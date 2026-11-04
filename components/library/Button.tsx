@@ -4,17 +4,18 @@ import { cn } from '@/lib/cn'
 import { Spinner } from './Spinner'
 
 // Button (Figma B4K UI Components › Atoms › Button).
-// Variant: Primary (filled inverse), Secondary (outline), Ghost (text only), Danger (destructive).
-// Size: lg 44 (default), md 40, sm 32; md and sm keep a 44 tap area (target/touch-min).
+// Variant: Primary (filled inverse), Secondary (control fill), Ghost (text only), Danger (destructive).
+// Squircle (radius md), sentence-case label, press scale 0.97.
+// Size: 2xl 52 (hero), xl 48 (panels), lg 44 (default), md 40, sm 32; md and sm keep a 44 tap area (target/touch-min).
 // Focus: keyboard only, focus/ring. One primary action per view.
 // Loading: the label stays (transparent, still read out) so the width does not change, a Spinner sm is centered on
 // top, taps are ignored (aria-busy, aria-disabled, no pointer events) and the accessible name stays.
 
 export const buttonVariants = cva(
   [
-    'relative inline-flex select-none items-center justify-center whitespace-nowrap rounded-none',
+    'relative inline-flex select-none items-center justify-center whitespace-nowrap rounded-sq-md',
     'gap-[var(--gap-sm)] px-[var(--button-padding-x)] type-label-button',
-    'transition-[background-color,background-image,border-color,color] duration-short4 ease-standard',
+    'transition-[background-color,background-image,border-color,color,transform] duration-short4 ease-out-strong enabled:active:scale-[var(--press-scale)] motion-reduce:enabled:active:scale-100',
     'focus-visible:shadow-focus-ring focus-visible:outline-none',
     "before:absolute before:inset-x-0 before:top-1/2 before:h-[max(100%,var(--target-touch-min))] before:-translate-y-1/2 before:content-['']",
     'disabled:cursor-not-allowed aria-busy:pointer-events-none',
@@ -29,10 +30,9 @@ export const buttonVariants = cva(
           'disabled:bg-ui-bg-disabled disabled:text-ui-fg-disabled',
         ],
         secondary: [
-          'border border-ui-border-strong text-ui-fg',
-          'enabled:hover:bg-ui-state-hover',
-          'enabled:active:bg-ui-state-pressed',
-          'disabled:border-ui-border-disabled disabled:text-ui-fg-disabled',
+          'bg-control-fill text-ui-fg',
+          'enabled:hover:bg-control-fill-hover',
+          'disabled:bg-ui-bg-disabled disabled:text-ui-fg-disabled',
         ],
         ghost: [
           'text-ui-fg',
@@ -48,6 +48,8 @@ export const buttonVariants = cva(
         ],
       },
       size: {
+        '2xl': 'h-[var(--control-height-2xl)] px-[var(--space-7)] text-base',
+        xl: 'h-[var(--control-height-xl)]',
         lg: 'h-[var(--control-height-lg)]',
         md: 'h-[var(--control-height-md)]',
         sm: 'h-[var(--control-height-sm)]',

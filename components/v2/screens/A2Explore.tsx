@@ -24,6 +24,7 @@ import {
   Tabs,
   TreeItem,
   TreeView,
+  categoryStyle,
   placeTypeOf,
 } from '@/components/library'
 import { usePathname } from 'next/navigation'
@@ -136,10 +137,12 @@ function CategoryIndex({ category, sections, active, rowsKey }: { category: stri
   return (
     <div className="flex flex-col gap-[var(--space-4)] pt-[var(--space-4)]">
       <p aria-hidden className="px-[var(--space-4)] type-eyebrow-category text-ui-fg-muted">{t('CD0804')}</p>
-      <TreeView label={t('CD0804')}>
+      <TreeView label={t('CD0804')} className="b4k-stagger flex flex-col gap-[var(--space-1-5)] pl-[var(--space-2)] pr-[var(--space-2-5)]">
         {CATEGORIES.map((c) => (
           <TreeItem
             key={c.slug}
+            color={categoryStyle(c.slug)?.color}
+            glyph={categoryStyle(c.slug)?.glyph}
             label={t(c.label)}
             kind={c.slug === category ? 'expanded' : 'collapsed'}
             selected={false}
@@ -184,8 +187,9 @@ function ExploreFrame({ category, sections, active, pageTitle, rowsKey, children
               label={t('CD0804')}
               value={category}
               onValueChange={(v) => router.push(`/explore/${v}`)}
-              tabs={CATEGORIES.map((c) => ({ id: c.slug, label: t(c.label) }))}
-              className="-mx-[var(--grid-gutter-mobile)] -mt-[var(--space-6)] mb-[var(--space-6)] px-[var(--grid-gutter-mobile)]"
+              tabs={CATEGORIES.map((c) => ({ id: c.slug, label: t(c.label), color: categoryStyle(c.slug)?.color, glyph: categoryStyle(c.slug)?.glyph }))}
+              width="equal"
+              className="-mt-[var(--space-4)] mb-[var(--space-6)] w-full justify-start"
             />
           ) : null}
           {children}
@@ -277,9 +281,9 @@ export function CategoryScreen({ category }: { category: string }) {
             eyebrow={hero.badge}
             title={hero.title}
             // No subtitle line: the category hero is drawn with eyebrow, title and action only.
-            action={<IntlLink href={`${hero.cta_href}`} onClick={() => track('explore_card_open', { card_type: 'theme', position: 1, locale, screen_id: 'explore' })} className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{hero.cta_label}</IntlLink>}
+            action={<IntlLink href={`${hero.cta_href}`} onClick={() => track('explore_card_open', { card_type: 'theme', position: 1, locale, screen_id: 'explore' })} className="b4k-press inline-flex h-[var(--control-height-2xl)] items-center rounded-sq-lg bg-ui-bg-inverse px-[var(--space-7)] type-label-button text-base text-ui-fg-inverse">{hero.cta_label}</IntlLink>}
             // Edge to edge in the content area: flush under the header on desktop, under the tabs on phones; 24 to the first row.
-            className="-mx-[var(--grid-gutter-mobile)] -mb-[var(--space-6)] -mt-[var(--space-6)] w-auto md:-mx-[var(--grid-gutter-tablet)] lg:-mx-[var(--space-8)]"
+            className="m-0 -mb-[var(--space-6)] w-full max-md:m-0 max-md:-mb-[var(--space-6)] max-md:w-full"
           />
         ) : null}
         {/* One request loads every row, so a failure is page-wide: the generic body, not 'the other rows still work'. */}

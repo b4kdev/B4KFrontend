@@ -32,6 +32,7 @@ import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { CATEGORIES } from '../categories'
+import { categoryStyle } from '@/components/library/category'
 import { useDDay } from '../useDDay'
 import { regionName } from '../map/areaName'
 
@@ -41,7 +42,7 @@ import { regionName } from '../map/areaName'
 // Empty state Error with Try again.
 
 // The hero's action button look.
-const HERO_ACTION = 'inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none'
+const HERO_ACTION = 'b4k-press inline-flex h-[var(--control-height-2xl)] items-center rounded-sq-lg bg-field-fg px-[var(--space-7)] type-label-button text-base text-photo-action-fg focus-visible:shadow-focus-ring focus-visible:outline-none'
 
 export const jsonFetch = <T,>(url: string) => fetch(url).then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(r.status)))
 
@@ -211,12 +212,16 @@ export function HomeScreen() {
   const blocks: Record<string, React.ReactNode> = {
     exploreHub: <section aria-labelledby="explore-cats" className="flex flex-col gap-[var(--space-4)]">
               <SectionHeader id="explore-cats" title={t('CD0426')} />
-              <ul className="-mx-[var(--grid-gutter-mobile)] flex gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
-                {CATEGORIES.map((c) => (
-                  <li key={c.slug} className="w-[160px] shrink-0 lg:w-auto">
-                    <Card type="collection-photo" href={`/explore/${c.slug}`} title={t(c.label)} imageSrc={c.image} meta={t(c.sub)} />
-                  </li>
-                ))}
+              <ul className="-mx-[var(--grid-gutter-mobile)] flex gap-[var(--tile-gap)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
+                {CATEGORIES.map((c, i) => {
+                  const k = categoryStyle(c.slug)
+                  return (
+                    // The tiles arrive in a short stagger, 60 ms apart.
+                    <li key={c.slug} className="b4k-tile-in w-[150px] shrink-0 lg:w-auto" style={{ animationDelay: `${i * 60}ms` }}>
+                      <Card type="category" href={`/explore/${c.slug}`} title={t(c.label)} imageSrc={c.image} meta={t(c.sub)} color={k?.color ?? 'var(--tile-surface)'} glyph={k?.glyph ?? 'spark'} category={k?.key} />
+                    </li>
+                  )
+                })}
               </ul>
             </section>,
     trending: (trending.data?.length ? (
