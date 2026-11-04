@@ -6,6 +6,7 @@ import {
   flattenBffDays,
   daysToPutPayload,
   groupPlacesIntoDays,
+  keptPlanFields,
   mapBffToDetail,
   type BffItinerary,
 } from '@/lib/itinerary'
@@ -62,7 +63,7 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
 // PATCH /api/plans/:id — two consumer shapes:
 // · { from_stop_order, transport_mode } (IT_01 LegRow): the BFF has no
 //    per-stop endpoint, so read the itinerary, update that stop's travel_mode
-//    and write the whole structure back (status preserved).
+//    and write the whole structure back (name, date, region, how it was made and status kept).
 // · { is_published } (MapView publish step) → BFF POST /itineraries/:id/publish.
 export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -110,8 +111,8 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
     await bffFetch(`/itineraries/${id}`, {
       method: 'PUT',
       body: JSON.stringify({
-        days:   daysToPutPayload(bff.days),
-        status: bff.status === 'draft' ? 'draft' : 'confirmed',   // keep whatever it was
+        ...keptPlanFields(bff),
+        days: daysToPutPayload(bff.days),
       }),
       token: auth.token,
     })
@@ -165,9 +166,9 @@ export async function PUT(req: NextRequest, props: { params: Promise<{ id: strin
     await bffFetch(`/itineraries/${id}`, {
       method: 'PUT',
       body: JSON.stringify({
-        days:   groupPlacesIntoDays(places),
+        ...keptPlanFields(current),
+        days: groupPlacesIntoDays(places),
         ...(title ? { title } : {}),
-        status: current.status === 'draft' ? 'draft' : 'confirmed',
       }),
       token: auth.token,
     })
