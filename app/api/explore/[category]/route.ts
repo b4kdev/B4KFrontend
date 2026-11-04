@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { bffFetch } from '@/lib/bff'
 import { withDbPoiIds } from '@/lib/db-poi-mapping'
+import { withDbPlaces } from '@/lib/collections'
 import { withSafePartnerUrls } from '@/lib/partner-url'
 import { SECTIONS_BY_CATEGORY } from '@/lib/explore-sections'
 import { resolveMichelinNoodles, type MichelinNoodlePoi } from '@/lib/kfood-michelin-noodles'
@@ -12,6 +13,8 @@ export interface ExplorePoi {
   name_en: string
   primary_image_url: string | null
   display_region: string
+  /** The place's district (중구), when read from the place itself. */
+  display_district?: string | null
   /** The interest category: the place type icon when there is no photo. */
   interest_category?: string | null
   quality_score: number
@@ -579,35 +582,6 @@ function mapArtist(e: BffEntity, locale: string): ExploreArtist {
 /** A themed row needs at least this many places to show. */
 const MIN_THEMED_ROW = 3
 
-/** Place reads at a time, kept small for the BFF's guest limits. */
-const PHOTO_READS_AT_ONCE = 6
-
-/** Each place's own photo by DB place_id. A place without a photo, or whose read fails, is left
- *  out (the caller keeps the seed photo). Cached an hour per place, so a page view does not call
- *  the BFF for every card. */
-async function dbPhotos(placeIds: string[]): Promise<Map<string, string>> {
-  const ids = [...new Set(placeIds)]
-  const photos = new Map<string, string>()
-  let next = 0
-  const worker = async () => {
-    while (next < ids.length) {
-      const id = ids[next++]
-      try {
-        const place = await bffFetch<{ primary_image_url?: string | null }>(`/places/${id}`, {
-          token: null,
-          cache: undefined,
-          next: { revalidate: 3600 },
-        })
-        if (place.primary_image_url) photos.set(id, place.primary_image_url)
-      } catch {
-        // the caller keeps the seed photo
-      }
-    }
-  }
-  await Promise.all(Array.from({ length: Math.min(PHOTO_READS_AT_ONCE, ids.length) }, worker))
-  return photos
-}
-
 /** Places with a photo first; the order within each group stays as given (a stable sort). */
 function photosFirst<T extends { primary_image_url?: string | null }>(items: T[]): T[] {
   return [...items.filter((p) => p.primary_image_url), ...items.filter((p) => !p.primary_image_url)]
@@ -717,8 +691,15 @@ export async function GET(req: NextRequest, props: { params: Promise<{ category:
     })
   }
 
+  // Each themed place takes its own name, area and photo (the typed values only when it cannot be
+  // read); one read per place across all rows.
   const themed = sections.map((s) => ({ ...s, items: withDbPoiIds(s.items) }))
-  const photos = await dbPhotos(themed.flatMap((s) => s.items.map((p) => p.poi_id)))
+  const read = new Map(
+    (await withDbPlaces(themed.flatMap((s) => s.items), locale)).map(
+      ({ poi_id, name_ko, name_en, primary_image_url, display_region, display_district }) =>
+        [poi_id, { name_ko, name_en, primary_image_url, display_region, display_district }] as const,
+    ),
+  )
 
   const data: ExploreData = {
     category: base.category,
@@ -726,15 +707,13 @@ export async function GET(req: NextRequest, props: { params: Promise<{ category:
     packages: withSafePartnerUrls(base.packages ?? []),
     artists,
     // Seed rows carry content-sheet codes ('KD016-007'): swap in the DB place_id and drop the
-    // ones with no DB row, which open nothing when tapped (lib/db-poi-mapping.ts). Each themed
-    // place then takes its photo from the DB place (the seed photo only when the DB has none).
-    // Then each themed row puts the places with a photo first (the hand-picked order kept within
+    // ones with no DB row, which open nothing when tapped (lib/db-poi-mapping.ts). Then each themed row puts the places with a photo first (the hand-picked order kept within
     // each group; the featured place keeps its flag) and a themed row with fewer than 3 places is
     // not shown.
     sections: [
       { ...trendingSection, items: withDbPoiIds(trendingSection.items) },
       ...themed
-        .map((s) => ({ ...s, items: photosFirst(s.items.map((p) => ({ ...p, primary_image_url: photos.get(p.poi_id) ?? p.primary_image_url }))) }))
+        .map((s) => ({ ...s, items: photosFirst(s.items.map((p) => ({ ...p, ...read.get(p.poi_id) }))) }))
         .filter((s) => s.items.length >= MIN_THEMED_ROW),
     ],
   }
