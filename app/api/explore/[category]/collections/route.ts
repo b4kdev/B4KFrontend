@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { bffFetch } from '@/lib/bff'
 import { pickEntityTitle } from '@/lib/entity-i18n'
-import { collectionHasContent, collectionTypeCode } from '@/lib/collections'
+import { collectionHasContent, collectionTypeCode, hubCoverImages } from '@/lib/collections'
 
 // Real entity_type='collection' rows for one Explore section (k-pop/k-drama/k-beauty/
 // k-food/k-culture), confirmed live 2026-08-30 via GET /entities?type=collection (108
@@ -9,7 +9,8 @@ import { collectionHasContent, collectionTypeCode } from '@/lib/collections'
 // domain-scoped query param exists so this fetches all and filters server-side).
 // CHILD-kind entities (e.g. individual theme parks under a "pick a theme park" hub) are
 // excluded — they're reached through their HUB card, not listed twice at top level.
-// A collection with no places yet is left out: its page has nothing to show.
+// A collection with no places yet is left out: its page has nothing to show. A hub without photos of
+// its own takes its cover from its child collections.
 
 interface EntitySummary {
   slug: string
@@ -41,6 +42,7 @@ export async function GET(req: NextRequest, props: { params: Promise<{ category:
       bffFetch<EntitySummary[]>('/entities?type=collection&limit=100&offset=100', { token: null }),
     ])
     const all = [...page1, ...page2]
+    const bySlug = new Map(all.map(e => [e.slug, e]))
     const listed = all.filter(e => e.metadata?.frd_domain === params.category && e.metadata?.runtime_kind !== 'CHILD')
     const shown = await Promise.all(listed.map(collectionHasContent))
     const items: CollectionCard[] = listed
@@ -49,7 +51,9 @@ export async function GET(req: NextRequest, props: { params: Promise<{ category:
         slug: e.slug,
         title: pickEntityTitle(e, locale),
         primary_image_url: e.primary_image_url,
-        cover_images: (e.cover_images ?? []).slice(0, 4),
+        cover_images: e.cover_images?.length || e.metadata?.runtime_kind !== 'HUB'
+          ? (e.cover_images ?? []).slice(0, 4)
+          : hubCoverImages(e.slug, bySlug),
         primaryType: collectionTypeCode(e.metadata?.primary_type),
       }))
     return NextResponse.json({ items })

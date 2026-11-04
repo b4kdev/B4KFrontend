@@ -116,6 +116,28 @@ async function fetchSummary(slug: string, locale: string): Promise<CollectionSum
   }
 }
 
+/** A hub's 2x2 cover when the hub has no photos of its own (its places sit in its children): the
+ *  children's cover photos taken in turns, one from each child, up to 4, never the same photo twice
+ *  (the same file can belong to two places: .../<place>/<file hash>/lg.webp). */
+export function hubCoverImages(
+  slug: string,
+  bySlug: Map<string, { cover_images?: string[]; primary_image_url: string | null }>,
+): string[] {
+  const photos = (HUB_CHILDREN[slug] ?? []).map((c) => {
+    const child = bySlug.get(c)
+    return child?.cover_images?.length ? child.cover_images : child?.primary_image_url ? [child.primary_image_url] : []
+  })
+  const cover: string[] = []
+  const files = new Set<string>()
+  for (let i = 0; cover.length < 4 && photos.some((p) => p.length > i); i++) {
+    for (const p of photos) {
+      const file = p[i]?.split('/').slice(-2, -1)[0] ?? p[i]
+      if (p[i] && cover.length < 4 && !files.has(file)) { cover.push(p[i]); files.add(file) }
+    }
+  }
+  return cover
+}
+
 /** A collection's type as a code (ROUTE, STORY, ...). Some collections carry the content team's
  *  Korean label with the code in parentheses ("실제 루트형 (Route)"); those read as the same code. */
 export function collectionTypeCode(raw: string | null | undefined): string | null {
