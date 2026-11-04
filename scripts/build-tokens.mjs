@@ -158,6 +158,7 @@ const colors = {
   tile: colorGroup('tile'),
   control: colorGroup('control'),
   sheet: colorGroup('sheet'),
+  photo: colorGroup('photo'),
 }
 // Squircle radii (plain border-radius). The Tailwind defaults (rounded-sm, rounded-lg …) keep
 // their own values; these sit under their own keys.
@@ -220,6 +221,7 @@ const b4kTokens: Partial<Config> = {
       borderRadius: ${JSON.stringify(radii, null, 2).replace(/\n/g, '\n      ')},
       boxShadow: {
         'focus-ring': 'var(--focus-ring)',
+${tokens.filter((t) => t.path.startsWith('shadow.')).map((t) => `        '${t.path.slice(7)}': 'var(${t.css})',`).join('\n')}
       },
       backgroundImage: {
         'overlay-fade': 'var(--gradient-overlay-fade)',

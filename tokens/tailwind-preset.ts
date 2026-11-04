@@ -123,6 +123,12 @@ const b4kTokens: Partial<Config> = {
         },
         "sheet": {
           "handle": "var(--sheet-handle)"
+        },
+        "photo": {
+          "action-fill": "var(--photo-action-fill)",
+          "action-fg": "var(--photo-action-fg)",
+          "action-fill-on": "var(--photo-action-fill-on)",
+          "action-fg-on": "var(--photo-action-fg-on)"
         }
       },
       fontFamily: {
@@ -142,6 +148,11 @@ const b4kTokens: Partial<Config> = {
       },
       boxShadow: {
         'focus-ring': 'var(--focus-ring)',
+        'float': 'var(--shadow-float)',
+        'menu': 'var(--shadow-menu)',
+        'overlay': 'var(--shadow-overlay)',
+        'pin': 'var(--shadow-pin)',
+        'sheet': 'var(--shadow-sheet)',
       },
       backgroundImage: {
         'overlay-fade': 'var(--gradient-overlay-fade)',
