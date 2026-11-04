@@ -52,9 +52,10 @@ import { districtName, regionName } from '../map/areaName'
 //; the Planning cue sits after the first row.
 
 const CAT_KEY: Record<string, string> = { 'k-pop': 'kpop', 'k-drama': 'kdrama', 'k-beauty': 'kbeauty', 'k-culture': 'kculture', 'k-food': 'kfood' }
-// Collection types (lib/collections) → their Copy Deck chip labels (Explore collections).
-// Chips All, Route, Fandom, Story; a type with no text gets no chip (its collections stay under All).
-const COLLECTION_TYPE: Record<string, string> = { ROUTE: 'CD1336', FAN_THEME: 'CD1337', STORY: 'CD1338' }
+// Collection types (lib/collections) → their Copy Deck chip labels (Explore collections), in the
+// drawn chip order after All: Route, Fandom, Shopping, Story. A type with no text gets no chip (its
+// collections stay under All).
+const COLLECTION_TYPE: Record<string, string> = { ROUTE: 'CD1336', FAN_THEME: 'CD1337', SHOPPING: 'CD1282', STORY: 'CD1338' }
 const poiName = (p: { name_ko: string; name_en?: string | null }, locale: string) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
 // A place card's area: "Jung-gu, Seoul" (서울 중구 on Korean pages) when the place has a district,
 // else its region.
@@ -243,7 +244,7 @@ export function CategoryScreen({ category }: { category: string }) {
       }}
     />
   )
-  const colTypes = useMemo(() => Array.from(new Set((cols.data?.items ?? []).map((c) => c.primaryType).filter((c): c is string => !!c && c in COLLECTION_TYPE))), [cols.data])
+  const colTypes = useMemo(() => Object.keys(COLLECTION_TYPE).filter((type) => (cols.data?.items ?? []).some((c) => c.primaryType === type)), [cols.data])
   if (isLoading) {
     // As drawn: the hero block, then two loading sections (cards 260 wide on desktop).
     return (
