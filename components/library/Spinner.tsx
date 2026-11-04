@@ -1,6 +1,6 @@
 import { cn } from '@/lib/cn'
 
-// Spinner (UI-56, Figma B4K UI Components › Atoms › Spinner): a color/fg round-cap quarter arc turning
+// Spinner (Figma B4K UI Components › Atoms › Spinner): a color/fg round-cap quarter arc turning
 // on a color/state-selected track, border-width/2. One turn per duration/long4, linear; slower under
 // reduced motion (it still shows progress).
 

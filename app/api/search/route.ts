@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { bffFetch, bffErrorResponse } from '@/lib/bff'
+import { pickEntityTitle } from '@/lib/entity-i18n'
 
 export interface SearchPoi {
   poi_id: string
@@ -10,6 +11,8 @@ export interface SearchPoi {
   display_domain: string
   save_count: number
   primary_image_url: string
+  /** The interest category: the place type icon when there is no photo. */
+  interest_category: string | null
 }
 
 export interface SearchPlan {
@@ -28,6 +31,33 @@ export interface SearchExplore {
   href: string
 }
 
+/** An Explore page that matches the query (a collection): its 2x2 cover and type. */
+export interface SearchCollection {
+  slug: string
+  title: string
+  cover_images: string[]
+  primary_image_url: string | null
+  primaryType: string | null
+}
+
+// BFF GET /search entities item (api.list_entities shape, + cover_images)
+interface BffEntity {
+  slug: string
+  name_ko: string
+  name_en?: string | null
+  translations?: Record<string, { name?: string; description?: string }>
+  primary_image_url: string | null
+  cover_images?: string[]
+  entity_type: string
+  metadata?: { primary_type?: string; runtime_kind?: string }
+}
+
+interface BffSearch {
+  places: BffPlace[]
+  explore: BffEntity[]
+  plans: BffPublicItinerary[]
+}
+
 // BFF GET /places item (api.list_places)
 interface BffPlace {
   poi_id: number
@@ -39,6 +69,7 @@ interface BffPlace {
   coords_lng: number
   display_region: string | null
   domains: string[] | null
+  interest_category?: string | null
   translations: Record<string, { name?: string; description?: string }> | null
 }
 
@@ -64,7 +95,7 @@ const EXPLORE_CATEGORIES: SearchExplore[] = [
   { category: 'k-culture', label_key: 'kculture',href: '/explore/k-culture' },
 ]
 
-// UF-9 (G9.5): map a query to an Explore hub chip facet so a tapped explore
+// Map a query to an Explore hub chip facet so a tapped explore
 // result lands on the hub with the relevant chip pre-selected.
 // Source of truth for these value lists: CATEGORIES[].filter in
 // app/[locale]/explore/_components/ExplorePage.tsx — keep in sync.
@@ -74,6 +105,22 @@ const EXPLORE_FACETS: Record<string, { param: string; values: string[] } | undef
   'k-culture': { param: 'region',   values: ['Seoul', 'Jeonju', 'Gyeongju', 'Andong'] },
   'k-drama':   undefined,
 }
+
+// The search themes as drawn, as BFF place filters: an interest category, or chips (any of them).
+// Several themes: one call each, the places joined.
+const THEMES: Record<string, string> = {
+  kpop: 'tags=kpop',
+  kdrama: 'tags=kdrama',
+  kbeauty: 'interest=beauty',
+  food: 'interest=food',
+  nature: 'interest=nature',
+  shopping: 'interest=shopping',
+  history: 'interest=heritage',
+  nightlife: 'tags=pub,wine-bar,performance,concert',
+}
+
+// Region and district names as the place data writes them (서울, 강남구): Hangul, at most 20 characters.
+const AREA = /^[가-힣]{1,20}$/
 
 // Build explore results with a facet query attached where the query implies one.
 function buildExploreResults(q: string): SearchExplore[] {
@@ -94,35 +141,51 @@ export async function GET(request: Request) {
   const type = searchParams.get('type') // 'places' | 'plans' | 'explore' | null = all
   const sort = searchParams.get('sort') ?? 'relevance'
 
-  // M14 area + tag filters — accepted + echoed; the BFF has no area/tag facets
-  // yet, so they don't narrow results (same as the previous stub behavior).
-  const areaLv1 = searchParams.get('area_lv1') ?? null
-  const areaLv2 = searchParams.get('area_lv2') ?? null
-  const tags = searchParams.get('tags')
-    ? searchParams.get('tags')!.split(',').filter(Boolean)
-    : []
+  // Filters: region and district (names from /api/places/areas) and themes narrow the places. The
+  // public plans have no such fields, so a set filter leaves them out rather than show them unfiltered.
+  const areaLv1 = AREA.test(searchParams.get('area_lv1') ?? '') ? searchParams.get('area_lv1') : null
+  const areaLv2 = AREA.test(searchParams.get('area_lv2') ?? '') ? searchParams.get('area_lv2') : null
+  const tags = (searchParams.get('tags') ?? '').split(',').filter((t) => t in THEMES)
 
   const wantAll = !type || type === 'all'
   const wantPlaces = wantAll || type === 'places'
-  const wantPlans = wantAll || type === 'plans'
-  const explore = (wantAll || type === 'explore') ? buildExploreResults(q) : []
+  const filtered = !!(areaLv1 || areaLv2 || tags.length)
+  const wantPlans = (wantAll || type === 'plans') && !filtered
+  const wantExplore = wantAll || type === 'explore'
+  const explore = wantExplore ? buildExploreResults(q) : []
 
   const needle = q.trim().toLowerCase()
   // next-intl locales (i18n/routing.ts) — translations JSONB keys must match this
   // exact casing (e.g. 'zh-CN' not 'zh_CN') or the lookup below silently misses.
-  const locale = cookies().get('NEXT_LOCALE')?.value ?? 'en'
+  const locale = (await cookies()).get('NEXT_LOCALE')?.value ?? 'en'
 
   try {
-    const [rawPlaces, rawPlans] = await Promise.all([
+    const base = `/places?q=${encodeURIComponent(q.trim())}&limit=20`
+      + (areaLv1 ? `&region=${encodeURIComponent(areaLv1)}` : '')
+      + (areaLv2 ? `&district=${encodeURIComponent(areaLv2)}` : '')
+    const placeCalls = tags.length ? tags.map((t) => `${base}&${THEMES[t]}`) : [base]
+    const [rawPlaces, found] = await Promise.all([
       wantPlaces && needle
-        ? bffFetch<BffPlace[]>(`/places?q=${encodeURIComponent(q.trim())}&limit=20`)
+        ? Promise.all(placeCalls.map((path) => bffFetch<BffPlace[]>(path))).then((lists) => {
+            const seen = new Set<number>()
+            return lists.flat().filter((p) => !seen.has(p.poi_id) && !!seen.add(p.poi_id))
+          })
         : Promise.resolve<BffPlace[]>([]),
-      // The BFF has no plan text search — fetch the public list and match
-      // titles here (covers the top 50 public itineraries only).
-      wantPlans && needle
-        ? bffFetch<BffPublicItinerary[]>('/itineraries/public?sort=popular&limit=50')
-        : Promise.resolve<BffPublicItinerary[]>([]),
+      // Plans (title, area and the places in them) and Explore pages, matched by the backend.
+      (wantPlans || wantExplore) && needle
+        ? bffFetch<BffSearch>(`/search?q=${encodeURIComponent(q.trim().slice(0, 50))}&limit=20`, { token: null })
+        : Promise.resolve<BffSearch>({ places: [], explore: [], plans: [] }),
     ])
+    const rawPlans = wantPlans ? found.plans ?? [] : []
+    const collections: SearchCollection[] = (wantExplore ? found.explore ?? [] : [])
+      .filter(e => e.entity_type === 'collection')
+      .map(e => ({
+        slug: e.slug,
+        title: pickEntityTitle(e, locale),
+        cover_images: (e.cover_images ?? []).slice(0, 4),
+        primary_image_url: e.primary_image_url,
+        primaryType: e.metadata?.primary_type ?? null,
+      }))
 
     let places: SearchPoi[] = (rawPlaces ?? []).map(p => ({
       poi_id: String(p.poi_id),
@@ -134,10 +197,10 @@ export async function GET(request: Request) {
       display_domain: p.domains?.[0] ?? '',
       save_count: p.save_count ?? 0,
       primary_image_url: p.primary_image_url ?? '',
+      interest_category: p.interest_category ?? null,
     }))
 
-    let plans: SearchPlan[] = (rawPlans ?? [])
-      .filter(p => (p.title ?? '').toLowerCase().includes(needle))
+    let plans: SearchPlan[] = rawPlans
       .map(p => ({
         id: String(p.itinerary_id),
         title: p.title,
@@ -157,6 +220,7 @@ export async function GET(request: Request) {
       places,
       plans,
       explore,
+      collections,
       query: q,
       filters: { area_lv1: areaLv1, area_lv2: areaLv2, tags },
     })

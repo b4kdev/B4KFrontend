@@ -187,7 +187,6 @@
     "CD1336": "路線",
     "CD1337": "粉絲",
     "CD1338": "故事",
-    "CD1339": "挑戰",
     "CD1340": "12個地點 · 今天更新",
     "CD1341": "套裝行程",
     "CD1342": "在Klook查看",
@@ -508,6 +507,16 @@
     "deleteDayBody": "這一天的{count}個地點將從你的行程中移除。",
     "deleteDayConfirm": "刪除",
     "previousDays": "前幾天",
-    "nextDays": "後幾天"
+    "nextDays": "後幾天",
+    "settingsData": "你的資料與隱私",
+    "deleteAccountNote": "30 天後刪除；在此之前登入即可復原",
+    "profilePlansNote": "其他人看到的公開行程。草稿與私人行程在已儲存中。",
+    "openSaved": "開啟已儲存",
+    "linkExpired": "連結已過期",
+    "interestsPicked": "已選 {count} 個 · 用於首頁和快速行程",
+    "searchArea": "搜尋這個區域",
+    "dayTotal": "第{n}天 · {time} · {count}/{max} 個地點",
+    "allDaysTotal": "所有天數 · {time} · {count} 個地點",
+    "areaName": "{city} {district}"
   }
 }

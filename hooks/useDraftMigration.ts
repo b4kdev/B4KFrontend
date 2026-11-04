@@ -18,7 +18,7 @@ export interface PostLoginConflict {
 }
 
 // On first login: migrate any localStorage guest draft → DB.
-// DEC-33 T3 — before migrating, check whether the account already has an
+// T3 — before migrating, check whether the account already has an
 // unpublished DB draft. If not, migrate directly (safe, unchanged behavior).
 // If one exists, surface the conflict instead of silently clobbering either
 // side — caller (V2DraftMigration) shows the choice and calls resolveKeepDevice /
@@ -47,7 +47,7 @@ export function useDraftMigration() {
           }).then(res => { if (res.ok) clearDraftPlan(); });
         }
 
-        // DEC-33 T3 — both a local and an account draft exist. Don't touch
+        // T3 — both a local and an account draft exist. Don't touch
         // either until the user picks; render the modal.
         setConflict({
           deviceDraft:  { stopCount: localDraft.stops.length, lastModified: new Date().toISOString() },

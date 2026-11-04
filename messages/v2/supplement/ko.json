@@ -106,7 +106,6 @@
     "CD1336": "코스",
     "CD1337": "팬덤",
     "CD1338": "스토리",
-    "CD1339": "챌린지",
     "CD1340": "장소 12곳 · 오늘 업데이트",
     "CD1341": "패키지",
     "CD1342": "Klook에서 보기",
@@ -427,6 +426,16 @@
     "deleteDayBody": "이 일차의 장소 {count}곳이 플랜에서 삭제됩니다.",
     "deleteDayConfirm": "삭제",
     "previousDays": "이전 일차",
-    "nextDays": "다음 일차"
+    "nextDays": "다음 일차",
+    "settingsData": "내 데이터와 개인정보",
+    "deleteAccountNote": "30일 후 삭제됩니다. 그 전에 로그인하면 복구됩니다",
+    "profilePlansNote": "다른 사람에게 보이는 공개 여행 계획입니다. 임시 저장과 비공개 계획은 저장됨에 있습니다.",
+    "openSaved": "저장됨 열기",
+    "linkExpired": "링크 만료",
+    "interestsPicked": "{count}개 선택 · 홈과 빠른 일정에 사용",
+    "searchArea": "이 지역 검색",
+    "dayTotal": "{n}일차 · {time} · {max}곳 중 {count}곳",
+    "allDaysTotal": "전체 일정 · {time} · {count}곳",
+    "areaName": "{city} {district}"
   }
 }

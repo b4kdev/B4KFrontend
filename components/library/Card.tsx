@@ -1,18 +1,19 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { useContext, type ReactNode } from 'react'
 import { Bookmark, ExternalLink, MapPin, Plus, Route, TrendingUp } from 'lucide-react'
 import { Link as IntlLink } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
 import { Badge } from './Badge'
 import { IconButton } from './IconButton'
-import { Image } from './Image'
+import { Image, ImageMissingLabel } from './Image'
+import type { PlaceType } from './Content'
 import { SaveLikeOverlay } from './ContentMolecules'
 
-// Card (CMP-049, UI-81; Figma Organisms › Card). Filled and square, no shadow; the text panel on
+// Card (Figma Organisms › Card). Filled and square, no shadow; the text panel on
 // bg-raised; hover adds the state layer; keyboard focus rings the whole card. The card is one link
 // (a stretched link); Save, Like and Add to plan are separate buttons above it.
-// Text fit (UI-102): titles and meta two lines then an ellipsis; Place description one line.
+// Text fit: titles and meta two lines then an ellipsis; Place description one line.
 
 type Common = {
   href: string
@@ -29,6 +30,8 @@ export type CardProps = Common &
     | (Media & {
         type: 'place'
         meta: ReactNode
+        /** Figma Place type icon on a missing photo: the place's interest category. */
+        placeType?: PlaceType
         description?: string
         save?: { saved: boolean; onSave: () => void; label: string }
         like?: { liked: boolean; onLike: () => void; label: string }
@@ -40,7 +43,17 @@ export type CardProps = Common &
     | (Media & { type: 'compact'; meta: ReactNode; save?: { saved: boolean; onSave: () => void; label: string }; addToPlan?: { onAdd: () => void; label: string } })
     | { type: 'collection'; images: (string | null)[]; meta: ReactNode }
     | (Media & { type: 'collection-photo'; meta: ReactNode })
-    | (Media & { type: 'plan'; author: string; saves?: string; stops: string; sponsored?: string })
+    | (Media & {
+        type: 'plan'
+        author: string
+        /** The author's profile; the name links there above the card link. */
+        authorHref?: string
+        saves?: string
+        stops: string
+        sponsored?: string
+        /** Save on the cover (no Like); saved = the Unsave state on Saved plans. */
+        save?: { saved: boolean; onSave: () => void; label: string }
+      })
     | (Media & { type: 'package'; partner: string; cta: string; sponsored: string })
     | (Media & { type: 'featured' | 'featured-stacked'; eyebrow: string; meta: string; sponsored?: string; trending?: string })
   )
@@ -76,12 +89,15 @@ function MetaRow({ meta, trending, external, className }: { meta: ReactNode; tre
 
 export function Card(props: CardProps) {
   const { href, title, external, className } = props
+  const missingLabel = useContext(ImageMissingLabel)
   switch (props.type) {
     case 'place':
       return (
         <article className={cn(SHELL, 'flex-col', className)}>
           <div className="relative">
-            <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="(min-width: 1024px) 280px, 50vw" />
+            {/* A place photo is named after the place unless the caller gives its own description. */}
+            {/* The shell's label names Place: shown only while the type is Place (no label text per type yet). */}
+            <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? title} sizes="280px" placeType={props.placeType} missingLabel={(props.placeType ?? 'place') === 'place' ? missingLabel : undefined} />
             <div className="absolute left-[var(--space-2)] top-[var(--space-2)] z-10 flex gap-[var(--gap-xs)]">
               {props.dDay ? <Badge variant="strong">{props.dDay}</Badge> : null}
               {props.sponsored ? <Badge variant="on-image">{props.sponsored}</Badge> : null}
@@ -122,12 +138,12 @@ export function Card(props: CardProps) {
         <article className={cn(SHELL, 'flex-col', className)}>
           <div className="grid aspect-[2/1] grid-cols-2 grid-rows-2 gap-[var(--space-0-5)] bg-ui-bg">
             {[0, 1, 2, 3].map((i) => (
-              <Image key={i} ratio="1:1" src={props.images[i] ?? null} alt="" sizes="140px" className="h-full !aspect-auto" />
+              <Image key={i} ratio="1:1" src={props.images[i] ?? null} alt="" sizes="280px" className="h-full !aspect-auto" />
             ))}
           </div>
           <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
             <CardLink href={href} className={TITLE2}>{title}</CardLink>
-            <div className="type-body-caption text-ui-fg-muted">{props.meta}</div>
+            {props.meta ? <div className="type-body-caption text-ui-fg-muted">{props.meta}</div> : null}
           </div>
         </article>
       )
@@ -137,7 +153,7 @@ export function Card(props: CardProps) {
           <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="280px" />
           <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
             <CardLink href={href} className={TITLE2}>{title}</CardLink>
-            <div className="type-body-caption text-ui-fg-muted">{props.meta}</div>
+            {props.meta ? <div className="type-body-caption text-ui-fg-muted">{props.meta}</div> : null}
           </div>
         </article>
       )
@@ -147,11 +163,18 @@ export function Card(props: CardProps) {
           <div className="relative">
             <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="280px" />
             {props.sponsored ? <Badge variant="on-image" className="absolute left-[var(--space-2)] top-[var(--space-2)]">{props.sponsored}</Badge> : null}
+            {props.save ? <SaveLikeOverlay className="z-10" saved={props.save.saved} onSave={props.save.onSave} saveLabel={props.save.label} /> : null}
           </div>
           <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
             <CardLink href={href} className={TITLE2}>{title}</CardLink>
             <div className="flex items-center justify-between gap-[var(--space-1)] type-body-caption text-ui-fg-muted">
-              <span className="truncate">{props.author}</span>
+              {props.authorHref ? (
+                // At least 24 x 24 to tap (it sits over the card's own link, so size is the only way): padding
+                // grows the box, the same negative margin keeps the drawn row height.
+                <IntlLink href={props.authorHref} className="relative z-10 block min-w-[var(--space-6)] truncate py-[calc((var(--space-6)-1lh)/2)] -my-[calc((var(--space-6)-1lh)/2)] hover:text-ui-fg hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none">{props.author}</IntlLink>
+              ) : (
+                <span className="truncate">{props.author}</span>
+              )}
               {props.saves ? <span className="inline-flex shrink-0 items-center gap-[var(--gap-xs)]"><Bookmark aria-hidden className="size-[var(--icon-size-xs)]" />{props.saves}</span> : null}
             </div>
             <div className="flex items-center gap-[var(--gap-xs)] type-body-caption text-ui-fg-muted"><Route aria-hidden className="size-[var(--icon-size-xs)]" />{props.stops}</div>
@@ -173,6 +196,7 @@ export function Card(props: CardProps) {
         </article>
       )
     default: {
+      // Below 640 the Featured card stacks and takes the stacked panel (12 padding, 4 gap), as drawn on phones.
       const stacked = props.type === 'featured-stacked'
       return (
         <article className={cn(SHELL, stacked ? 'flex-col' : 'flex-col sm:flex-row', className)}>
@@ -180,7 +204,7 @@ export function Card(props: CardProps) {
             <Image ratio="16:9" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="(min-width: 640px) 360px, 100vw" className={!stacked ? 'sm:h-full' : undefined} />
             {props.sponsored ? <Badge variant="on-image" className="absolute left-[var(--space-2)] top-[var(--space-2)]">{props.sponsored}</Badge> : null}
           </div>
-          <div className={cn('panel flex min-w-0 flex-1 flex-col justify-center', stacked ? 'gap-[var(--space-1)] p-[var(--space-3)]' : 'gap-[var(--space-2)] p-[var(--space-4)]')}>
+          <div className={cn('panel flex min-w-0 flex-1 flex-col justify-center', stacked ? 'gap-[var(--space-1)] p-[var(--space-3)]' : 'gap-[var(--space-1)] p-[var(--space-3)] sm:gap-[var(--space-2)] sm:p-[var(--space-4)]')}>
             <span className="type-eyebrow-badge text-ui-fg">{props.eyebrow}</span>
             <CardLink href={href} external={external} className="line-clamp-2 type-title-empty-state">{title}</CardLink>
             <MetaRow meta={props.meta} trending={props.trending} external={!!external} />

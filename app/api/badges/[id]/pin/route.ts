@@ -3,10 +3,8 @@ import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/
 
 // PATCH /api/badges/:id/pin  body: { is_pinned: boolean }
 //   → BFF PUT /me/badges/:id/pin (max 3 pins + "earned only" enforced server-side).
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } },
-) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await getSessionAuth()
   if (!auth) return unauthorized()
 

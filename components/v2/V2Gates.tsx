@@ -1,51 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useLocale } from 'next-intl'
-import { Link as IntlLink } from '@/i18n/navigation'
 import { Button, Modal } from '@/components/library'
 import { useDraftMigration } from '@/hooks/useDraftMigration'
-import { acceptTerms, hasAcceptedTerms } from '@/lib/terms-consent'
 import { useCd } from './cd'
 
-// What the live shell runs on every page, in the new design: the terms gate (BLK-14, once per
-// device, no way out but accepting) and the post-login draft migration with its "keep which
-// draft" choice (DEC-33 T3). Same storage and calls as components/legal/TermsGate and
-// components/auth/DraftConflictModal.
-
-export function V2TermsGate() {
-  const t = useCd()
-  const [open, setOpen] = useState(false)
-  useEffect(() => {
-    setOpen(!hasAcceptedTerms())
-  }, [])
-  const accept = () => {
-    acceptTerms()
-    setOpen(false)
-  }
-  const link = (href: string) =>
-    function LegalLink(chunks: React.ReactNode) {
-      return (
-        <IntlLink href={href} target="_blank" className="text-ui-fg underline underline-offset-2 hover:text-ui-fg-muted">
-          {chunks}
-        </IntlLink>
-      )
-    }
-  return (
-    <Modal
-      open={open}
-      onClose={() => {}}
-      title={t('CD0591')}
-      closeLabel=""
-      size="sm"
-      blocking
-      hideClose
-      primaryAction={<Button onClick={accept} data-autofocus>{t('CD0588')}</Button>}
-    >
-      <p className="text-ui-fg-muted">{t.rich('CD0590', { terms: link('/legal/terms'), privacy: link('/legal/privacy') })}</p>
-    </Modal>
-  )
-}
+// What the shell runs on every page: the post-login draft migration with its "keep which draft"
+// choice. Terms are agreed in the Consent step after sign-in, so there is no first-visit gate.
 
 function useRelativeTime() {
   const locale = useLocale()

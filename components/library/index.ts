@@ -8,11 +8,11 @@ export { Logo, ProviderLogo, type LogoProps } from './Brand'
 export { Button, buttonVariants, type ButtonProps } from './Button'
 export { Checkbox, Radio, Toggle, type CheckboxProps, type RadioProps, type ToggleProps } from './Choice'
 export { Chip, type ChipProps } from './Chip'
-export { CalendarDay, ChatBubble, ForecastDay, ImageAction, Scrim, StatCounter, type CalendarDayProps, type ChatBubbleProps, type ForecastDayProps, type ImageActionProps, type StatCounterProps } from './Content'
+export { CalendarDay, ChatBubble, CreditLine, ForecastDay, ImageAction, LegalLine, PLACE_TYPE_ICON, PlaceTypeIcon, placeTypeOf, Scrim, StatCounter, type CalendarDayProps, type LegalLineProps, type PlaceType, type ChatBubbleProps, type ForecastDayProps, type ImageActionProps, type StatCounterProps } from './Content'
 export { Fab, type FabProps } from './Fab'
 export { FieldMessage, Label, type FieldMessageProps, type LabelProps } from './Field'
 export { IconButton, iconButtonVariants, type IconButtonProps } from './IconButton'
-export { Image, type ImageProps } from './Image'
+export { Image, ImageMissingLabel, type ImageProps } from './Image'
 export { Link, type LinkProps } from './Link'
 export { ClusterBubble, MapControl, MapPin, type ClusterBubbleProps, type MapControlProps, type MapPinProps } from './Map'
 export { ComboboxOption, MenuItem, type ComboboxOptionProps, type MenuItemProps } from './Menu'
@@ -33,7 +33,7 @@ export { Tooltip, type TooltipProps } from './Tooltip'
 export { Toast, type ToastProps } from './Toast'
 export { Alert, EmptyState, type AlertProps, type EmptyStateProps } from './Feedback'
 export { FileUpload, Fieldset, Stepper, type FieldsetProps, type FileUploadProps, type StepperProps } from './FormGroups'
-export { AccordionItem, LeaderboardRow, ListItem, NotificationItem, TreeItem, type AccordionItemProps, type LeaderboardRowProps, type ListItemProps, type NotificationItemProps, type TreeItemProps } from './Lists'
+export { AccordionItem, LeaderboardRow, ListItem, NotificationItem, ROW_DIVIDER, TreeItem, type AccordionItemProps, type LeaderboardRowProps, type ListItemProps, type NotificationItemProps, type TreeItemProps } from './Lists'
 export { Breadcrumbs, Pagination, ProgressIndicator, SegmentedControl, StepList, Tabs, type BreadcrumbsProps, type PaginationProps, type ProgressIndicatorProps, type SegmentedControlProps, type StepListProps, type TabsProps } from './NavGroups'
 export { Combobox, DropdownMenu, MenuGroup, Popover, type ComboboxProps, type DropdownMenuProps, type PopoverProps } from './Overlay'
 export { ButtonGroup, Rating, RouteMapPreview, SelectionBar, ZoomControl, type ButtonGroupProps, type RatingProps, type RouteMapPreviewProps, type SelectionBarProps, type ZoomControlProps } from './Groups'
@@ -50,6 +50,8 @@ export { AiPanel, ItineraryPanel, LeftPanel, PlaceDetail, PlanCart, SavedHub, ty
 export { ConsentStep, CookieBanner, LegalDocument, ProfileHeader, SearchFilters, SearchSuggestions, SignInCard, type ConsentItem, type ConsentStepProps, type CookieBannerProps, type FilterGroup, type LegalDocumentProps, type ProfileHeaderProps, type SearchFiltersProps, type SearchSuggestionsProps, type SignInCardProps, type SignInView } from './AccountOrganisms'
 
 // Sections
+// Figma's Explore section row and Plan card row are RowSection with place or plan cards.
+export { RowSection as ExploreSectionRow, RowSection as PlanCardRow } from './Sections'
 export { ExploreCollections, ExplorePackages, InterestsCard, PlanningCue, QuickPlan, RowSection, type ExploreCollectionsProps, type InterestsCardProps, type PlanningCueProps, type QuickPlanProps, type RowSectionProps } from './Sections'
 
 // Hooks

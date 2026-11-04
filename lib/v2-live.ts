@@ -1,11 +1,13 @@
-// Every page is on the new design (components/v2, PD-53 update 2). middleware.ts rewrites
+import { GAMIFICATION } from './features'
+
+// Every page is on the new design (components/v2). middleware.ts rewrites
 // /[locale]<path> to the v2 screen at /[locale]/v2<path> (the address stays the same; an unknown
 // path gets the v2 Page not found) and redirects the old preview address /[locale]/v2<path> to
 // /[locale]<path>. The pre-v2 screens and their styles are gone.
 
 // Old addresses without a v2 screen of their own that now land on one (307, query kept).
 export const V2_LIVE_ALIASES: Readonly<Record<string, string>> = {
-  '/plan': '/profile', // the empty "My plans" page; own plans are on the profile
+  '/plan': '/map?plan=new', // Start a plan: the map with a new Plan cart pulled up
   '/profile/trips': '/profile',
   '/profile/saved': '/saved',
   '/profile/badges': '/badges',
@@ -26,9 +28,12 @@ export function isV2Live(path: string): boolean {
   return !V2_LIVE_EXCEPT.includes(p) && !(p in V2_LIVE_ALIASES)
 }
 
-/** Where an aliased live path (see V2_LIVE_ALIASES) now lives, or null. */
+/** Where an aliased live path (see V2_LIVE_ALIASES) now lives, or null. Badges are off with the
+ * gamification switch, so the old badges address lands on Saved then. */
 export function v2LiveAlias(path: string): string | null {
-  return V2_LIVE_ALIASES[norm(path)] ?? null
+  const p = norm(path)
+  if (p === '/profile/badges' && !GAMIFICATION) return '/saved'
+  return V2_LIVE_ALIASES[p] ?? null
 }
 
 /**

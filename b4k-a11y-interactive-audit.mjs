@@ -2,10 +2,10 @@ import { chromium } from 'playwright';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { BASE } from './qa-routes.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const BASE = 'http://localhost:3001';
 const AXE_PATH = join(__dirname, 'node_modules/axe-core/axe.min.js');
 const REPORT_DATE = new Date().toISOString().split('T')[0];
 const OUT_DIR = join(__dirname, 'reports/a11y-interactive');
@@ -36,77 +36,46 @@ async function dismissCookieBanner(page) {
 const STATES = [
   {
     id: 'map-poi-selected',
-    label: 'MP_10-13 Map POI selected',
+    label: 'Map, place selected',
     viewports: ['mobile', 'desktop'],
-    // MapView.tsx reads ?poi=<id> on mount and sets selectedPoiId directly —
-    // no click/SDK interaction needed. id=1 may not resolve to a real POI
-    // depending on backend data, but the selected-state UI shell (LeftPanel/
-    // POIBottomSheet) renders regardless, which is what needs auditing.
+    // ?poi=<id> opens the place on the map; set QA_POI_ID to a place that exists on the server.
     async goto(page, locale) {
-      await page.goto(`${BASE}/${locale}/map?poi=1`, { waitUntil: 'networkidle', timeout: 15000 });
+      await page.goto(`${BASE}/${locale}/map?poi=${process.env.QA_POI_ID || 106018}`, { waitUntil: 'networkidle', timeout: 15000 });
       await dismissCookieBanner(page);
     },
   },
   {
     id: 'map-plan-active',
-    label: 'MP_20-23 Map plan active',
+    label: 'Map, plan open',
     viewports: ['mobile', 'desktop'],
-    // ?plan=<id> triggers a GET /api/plans/:id and loads it into edit mode.
+    // ?plan=<id> loads that plan into the plan editor (needs a plan the visitor may open).
     async goto(page, locale) {
       await page.goto(`${BASE}/${locale}/map?plan=1`, { waitUntil: 'networkidle', timeout: 15000 });
       await dismissCookieBanner(page);
     },
   },
   {
-    id: 'map-ai-overlay',
-    label: 'MP_30-35 Map AI overlay',
-    viewports: ['mobile', 'desktop'],
-    // ?ai=open sets aiOverlayOpen(true) directly (MapView.tsx ~line 118).
-    async goto(page, locale) {
-      await page.goto(`${BASE}/${locale}/map?ai=open`, { waitUntil: 'networkidle', timeout: 15000 });
-      await dismissCookieBanner(page);
-    },
-  },
-  {
     id: 'mobile-drawer-open',
-    label: 'HD_01-08 Mobile nav drawer open',
+    label: 'Phone menu drawer open',
     viewports: ['mobile'],
-    // TopNav hamburger (Menu icon) toggles MobileDrawer's `open` state, which
-    // slides the <aside> from -translate-x-full to translate-x-0 over
-    // --dur-reveal (250ms). Click the real trigger rather than assuming the
-    // off-screen drawer is safely clickable pre-open.
+    // The Home top bar's menu button opens the drawer.
     async goto(page, locale) {
       await page.goto(`${BASE}/${locale}`, { waitUntil: 'networkidle', timeout: 15000 });
       await dismissCookieBanner(page);
-      await page.locator('header button:has(svg.lucide-menu)').click();
+      await page.locator('button:has(svg.lucide-menu):visible').first().click();
       await page.waitForTimeout(400);
     },
   },
   {
-    id: 'auth-gate-desktop',
-    label: 'AG_01-04 Auth Gate modal (desktop sidebar trigger)',
-    viewports: ['desktop'],
-    // Sidebar.tsx guest branch: button with User icon calls open('profile_nav').
-    // Sidebar itself is `hidden lg:flex` so only visible/actionable at desktop.
+    id: 'sign-in-gate',
+    label: 'Sign-in gate',
+    viewports: ['mobile', 'desktop'],
+    // A guest's Save on an Explore card opens the gate (centered dialog on desktop, sheet on phones).
     async goto(page, locale) {
-      await page.goto(`${BASE}/${locale}`, { waitUntil: 'networkidle', timeout: 15000 });
+      await page.goto(`${BASE}/${locale}/explore/k-pop`, { waitUntil: 'networkidle', timeout: 15000 });
       await dismissCookieBanner(page);
-      await page.locator('aside.hidden.lg\\:flex button:has(svg.lucide-user)').first().click();
-      await page.waitForTimeout(300);
-    },
-  },
-  {
-    id: 'auth-gate-mobile',
-    label: 'AG_01-04 Auth Gate modal (mobile drawer trigger)',
-    viewports: ['mobile'],
-    // Open the drawer first (real trigger), then click its guest profile row.
-    async goto(page, locale) {
-      await page.goto(`${BASE}/${locale}`, { waitUntil: 'networkidle', timeout: 15000 });
-      await dismissCookieBanner(page);
-      await page.locator('header button:has(svg.lucide-menu)').click();
+      await page.locator('button[aria-pressed]:has(svg.lucide-bookmark):visible').first().click();
       await page.waitForTimeout(400);
-      await page.locator('aside[role="dialog"].translate-x-0 button:has(svg.lucide-user)').first().click();
-      await page.waitForTimeout(300);
     },
   },
 ];
@@ -136,7 +105,7 @@ async function run() {
           await page.waitForTimeout(500);
 
           await page.evaluate(axeScriptContent);
-          const results = await page.evaluate(async () => await window.axe.run());
+          const results = await page.evaluate(async () => await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } }));
 
           allResults.push({
             state, locale, viewport: vpName,

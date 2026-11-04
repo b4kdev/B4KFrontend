@@ -1,42 +1,54 @@
 'use client'
 
 import { useMemo } from 'react'
-import { useTranslations } from 'next-intl'
+import { useCd } from './cd'
 
-// Texts the v2 screens need that the Copy Deck (DOC-197) does not have yet. They live in the `gap`
-// namespace of messages/v2/supplement/{locale}.json (English source plus translations); each one
-// becomes a new design-only row in the deck (2nd review), then the screen switches to
-// t('CDxxxx') and the entry here goes.
+// Texts with parameters or shared by several screens, read from the Copy Deck rows (cd namespace);
+// screens may call t('CDxxxx') directly instead.
 export function useGap() {
-  const t = useTranslations('gap')
+  const t = useCd()
   return useMemo(
     () => ({
-      breadcrumb: t('breadcrumb'),
-      lastUpdated: (date: string) => t('lastUpdated', { date }),
-      newTab: t('newTab'),
-      // Transport mode Estimate label (Figma "About · 15 min"; CD has no row).
-      about: t('about'),
-      mapError: t('mapError'),
-      // Parameterized versions of design rows that carry sample values in the deck:
-      addedToDay: (day: number) => t('addedToDay', { day }), // CD-1579 "Added to Day 1"
-      discardBody: (count: number) => t('discardBody', { count }), // CD-1537
-      viewOnPartner: (partner: string) => t('viewOnPartner', { partner }), // CD-1342 "View on Klook"
-      noCategoryTrending: (category: string) => (category ? t('noCategoryTrending', { category }) : t('noTrending')), // CD-1569
-      editing: (title: string) => t('editing', { title }), // SCR-008 panel title (Figma, no CD row)
-      editDraftBody: (count: number, title: string) => t('editDraftBody', { count, title }), // CD-1526
-      createdBy: (name: string) => t('createdBy', { name }), // CD-1483 "Created by Minji"
-      deletePlanTitle: (title: string) => t('deletePlanTitle', { title }), // CD-1545
-      planStats: (parts: string[]) => parts.join(' · '), // CD-1484 sample "5 stops · 2 days · 6h 30m · 6.2 km"
-      days: (count: number) => t('days', { count }), // CD-1484 part
-      legLabel: (mode: string, time: string) => `${mode} · ${time}`, // CD-1538 to CD-1540
-      lastAddedMore: (count: number) => t('lastAddedMore', { count }), // CD-1478 "Last added · 2 more"
-      // Delete a day of the plan in progress (no Figma or CD row yet).
-      deleteDay: (n: number) => t('deleteDay', { n }),
-      deleteDayTitle: (n: number) => t('deleteDayTitle', { n }),
-      deleteDayBody: (count: number) => t('deleteDayBody', { count }),
-      deleteDayConfirm: t('deleteDayConfirm'),
-      previousDays: t('previousDays'),
-      nextDays: t('nextDays'),
+      breadcrumb: t('CD1640'),
+      lastUpdated: (date: string) => t('CD1521', { date }),
+      newTab: t('CD1641'),
+      // Transport mode Estimate label (Figma "About · 15 min").
+      about: t('CD1642'),
+      mapError: t('CD0627'),
+      discardBody: (count: number) => t('CD0657', { count }),
+      editing: (title: string) => t('CD1644', { title }),
+      editDraftBody: (count: number, title: string) => t('CD1526', { count, title }),
+      createdBy: (name: string) => t('CD1483', { name }),
+      deletePlanTitle: (title: string) => t('CD1545', { title }),
+      planStats: (parts: string[]) => parts.join(' · '), // "5 stops · 2 days · 6h 30m · 6.2 km"
+      days: (count: number) => t('CD1232', { count }),
+      legLabel: (mode: string, time: string) => `${mode} · ${time}`,
+      lastAddedMore: (count: number) => (count > 0 ? t('CD1478', { count }) : t('CD1816')),
+      // Delete a day of the plan in progress.
+      deleteDay: (n: number) => t('CD0664', { n }),
+      deleteDayTitle: (n: number) => t('CD0666', { n }),
+      deleteDayBody: (count: number) => t('CD0667', { count }),
+      deleteDayConfirm: t('CD0665'),
+      // Settings: the data and privacy group label and the Delete account row note.
+      settingsData: t('CD1762'),
+      deleteAccountNote: t('CD1768'),
+      // Own profile: the Plans section subtitle and the link to Saved under the grid.
+      profilePlansNote: t('CD1676'),
+      openSaved: t('CD1677'),
+      // Reset password: the page bar title and the Link expired card title.
+      resetPassword: t('CD1823'),
+      linkExpired: t('CD1690'),
+      // Settings Your interests row: the count picked and what they are for.
+      interestsPicked: (count: number) => t('CD1817', { count }),
+      // Map: refetch the filter results for the area in view after a pan.
+      searchArea: t('CD1686'),
+      // Map list header: the area at the map center and how many places the list holds.
+      areaName: (district: string, city: string) => t('CD1900', { district, city }),
+      placesInArea: (count: number) => (count ? t('CD1855', { count }) : t('CD0626')),
+      dayTotal: (n: number, time: string, count: number, max: number) => t('CD1481', { n, time, count, max }),
+      allDaysTotal: (time: string, count: number) => t('CD1549', { time, count }),
+      // A new plan with no stops: the line without a time (All days · 0 stops).
+      allDaysEmpty: t('CD1902', { count: 0 }),
     }),
     [t],
   )

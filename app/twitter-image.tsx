@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'B4K — Korea Travel & Culture';
+export const alt = 'B4K';
 export const size = { width: 800, height: 418 };
 export const contentType = 'image/png';
 
@@ -15,7 +15,7 @@ export default function TwitterImage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#080610', // allow-hex — ImageResponse requires literal colours
+          backgroundColor: '#0a0a0a', // allow-hex — color-bg (dark); ImageResponse requires literal colours
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse (edge OG renderer) can't use next/image */}

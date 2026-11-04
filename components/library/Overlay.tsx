@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactElement, type ReactNode } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactElement, type ReactNode } from 'react'
 import { cloneElement } from 'react'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -10,14 +10,14 @@ import { Separator } from './Separator'
 import { Spinner } from './Spinner'
 import { FOCUS_RING } from './styles'
 
-// Overlay molecules (UI-66; Figma Molecules): Dropdown menu, Popover, Combobox.
-// Elevated surface, radius/2xl, 1px color/border, no shadow (UI-05), 8 from the trigger.
+// Overlay molecules (Figma Molecules): Dropdown menu, Popover, Combobox.
+// Elevated surface, radius/2xl, 1px color/border, no shadow, 8 from the trigger.
 // Esc and an outside click close. Placement is CSS (below, start-aligned); a collision-aware
 // version can replace it without changing props.
 
 const SURFACE = 'absolute z-50 mt-[var(--space-2)] rounded-2xl border border-ui-border bg-ui-bg-elevated text-ui-fg'
 
-function useDismiss(open: boolean, close: () => void, ref: React.RefObject<HTMLElement>) {
+function useDismiss(open: boolean, close: () => void, ref: React.RefObject<HTMLElement | null>) {
   useEffect(() => {
     if (!open) return
     const onKey = (e: globalThis.KeyboardEvent) => e.key === 'Escape' && close()
@@ -33,18 +33,23 @@ function useDismiss(open: boolean, close: () => void, ref: React.RefObject<HTMLE
 
 export type DropdownMenuProps = {
   /** The trigger button; it gets aria-haspopup, aria-expanded and the click. */
-  trigger: ReactElement
+  trigger: ReactElement<React.HTMLAttributes<HTMLElement>>
   /** Accessible name of the menu. */
   label: string
-  /** Menu items; groups are separated by space (UI-95), Danger last. */
+  /** Menu items; groups are separated by space, Danger last. */
   children: ReactNode
   align?: 'start' | 'end'
   className?: string
+  /** Wrapper around trigger and menu, e.g. w-full for a list row trigger. */
+  rootClassName?: string
+  /** Placed against the viewport under the trigger, for a trigger inside a scrolling list (the list would clip it). */
+  fixed?: boolean
 }
 
-/** Dropdown menu (CMP-005): role menu of Menu items; arrow keys move, Enter selects. */
-export function DropdownMenu({ trigger, label, children, align = 'start', className }: DropdownMenuProps) {
+/** Dropdown menu: role menu of Menu items; arrow keys move, Enter selects. */
+export function DropdownMenu({ trigger, label, children, align = 'start', className, rootClassName, fixed }: DropdownMenuProps) {
   const [open, setOpen] = useState(false)
+  const [at, setAt] = useState<{ top: number; above: number; left?: number; right?: number } | null>(null)
   const root = useRef<HTMLDivElement>(null)
   const menu = useRef<HTMLDivElement>(null)
   const id = useId()
@@ -52,6 +57,15 @@ export function DropdownMenu({ trigger, label, children, align = 'start', classN
   useEffect(() => {
     if (open) menu.current?.querySelector<HTMLElement>('[role^=menuitem]:not([disabled])')?.focus()
   }, [open])
+  // Fixed menus open upward when the space below the trigger (above a phone's Navigation bar) is too short, as drawn.
+  useLayoutEffect(() => {
+    if (!open || !fixed || !at || !menu.current) return
+    const h = menu.current.offsetHeight
+    const room = window.innerHeight - (window.innerWidth < 1024 ? 56 : 0)
+    if (at.top + 8 + h <= room || at.above - 8 - h < 0) return
+    menu.current.style.top = `${at.above - 8 - h}px`
+    menu.current.style.marginTop = '0'
+  }, [open, fixed, at])
   const onKey = (e: KeyboardEvent) => {
     const items = Array.from(menu.current?.querySelectorAll<HTMLElement>('[role^=menuitem]:not([disabled])') ?? [])
     const i = items.indexOf(document.activeElement as HTMLElement)
@@ -63,12 +77,19 @@ export function DropdownMenu({ trigger, label, children, align = 'start', classN
     e.preventDefault()
   }
   return (
-    <div ref={root} className="relative inline-flex">
+    <div ref={root} className={cn('relative inline-flex', rootClassName)}>
       {cloneElement(trigger, {
         'aria-haspopup': 'menu',
         'aria-expanded': open,
         'aria-controls': open ? id : undefined,
-        onClick: () => setOpen((o) => !o),
+        onClick: (e: React.MouseEvent<HTMLElement>) => {
+          if (fixed) {
+            // Measured on the wrapper, so rootClassName can move the menu's edge off the trigger.
+            const r = (root.current ?? e.currentTarget).getBoundingClientRect()
+            setAt(align === 'end' ? { top: r.bottom, above: r.top, right: window.innerWidth - r.right } : { top: r.bottom, above: r.top, left: r.left })
+          }
+          setOpen((o) => !o)
+        },
       })}
       {open ? (
         <div
@@ -78,6 +99,7 @@ export function DropdownMenu({ trigger, label, children, align = 'start', classN
           aria-label={label}
           onKeyDown={onKey}
           onClick={(e) => (e.target as HTMLElement).closest('[role^=menuitem]') && setOpen(false)}
+          style={fixed && at ? { position: 'fixed', top: at.top, left: at.left, right: at.right } : undefined}
           className={cn(SURFACE, 'top-full min-w-[240px] py-[var(--space-1)]', align === 'end' ? 'right-0' : 'left-0', className)}
         >
           {children}
@@ -102,7 +124,7 @@ export function MenuGroup({ label, children }: { label?: string; children: React
 }
 
 export type PopoverProps = {
-  trigger: ReactElement
+  trigger: ReactElement<React.HTMLAttributes<HTMLElement>>
   /** Figma Title (Show title); also the dialog name. */
   title?: string
   /** Accessible name when there is no title. */
@@ -116,7 +138,7 @@ export type PopoverProps = {
   className?: string
 }
 
-/** Popover (CMP-030, build-ahead): rich content on a trigger; focus moves into it. */
+/** Popover (build-ahead): rich content on a trigger; focus moves into it. */
 export function Popover({ trigger, title, label, closeLabel, children, action, side = 'bottom', className }: PopoverProps) {
   const [open, setOpen] = useState(false)
   const root = useRef<HTMLDivElement>(null)
@@ -161,7 +183,7 @@ export function Popover({ trigger, title, label, closeLabel, children, action, s
   )
 }
 
-export type ComboboxItem = { id: string; node: ReactElement; onSelect: () => void; onRemove?: () => void }
+export type ComboboxItem = { id: string; node: ReactElement<{ active?: boolean }>; onSelect: () => void; onRemove?: () => void }
 
 export type ComboboxProps = {
   /** Search input label and placeholder. */
@@ -190,7 +212,7 @@ export type ComboboxProps = {
   className?: string
 }
 
-/** Combobox (CMP-010): WAI-ARIA combobox pattern; arrows move, Enter picks, Delete removes a recent, Esc closes. */
+/** Combobox: WAI-ARIA combobox pattern; arrows move, Enter picks, Delete removes a recent, Esc closes. */
 export function Combobox(props: ComboboxProps) {
   const { label, placeholder, value, onValueChange, state, items, recentLabel, resultsLabel, clearAllLabel, onClearAll, emptyTitle, emptyText, loadingLabel, clearLabel, onSubmit, className } = props
   const [open, setOpen] = useState(false)

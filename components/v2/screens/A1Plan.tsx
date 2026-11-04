@@ -2,7 +2,8 @@
 
 import { useMemo, useRef, useState } from 'react'
 import { useLocale } from 'next-intl'
-import { useSWRConfig } from 'swr'
+import { shareUrl, track } from '@/lib/analytics'
+import useSWR, { useSWRConfig } from 'swr'
 import { Bookmark, Heart, Share2, Trash2 } from 'lucide-react'
 import { useRouter } from '@/i18n/navigation'
 import {
@@ -15,7 +16,6 @@ import {
   ItineraryPanel,
   LeftPanel,
   MenuItem,
-  Modal,
   SearchPill,
   Skeleton,
   TopAppBar,
@@ -26,14 +26,19 @@ import { usePhone } from '@/components/library/hooks'
 import { useAuth } from '@/contexts/AuthContext'
 import { useItinerary, useItineraryMeta } from '@/hooks/useItinerary'
 import type { MapPoi } from '@/hooks/useMapPois'
+import type { SavedData } from '@/app/api/saved/route'
 import type { ItineraryStop } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
+import { jsonFetch } from './A2Home'
 import { useGap } from '../gaps'
+import { ABOVE_LEGAL_LINE, MapLegalLine } from '../map/MapLegalLine'
+import { useLocateMe } from '../map/LocateMe'
 import { useV2Shell } from '../V2Shell'
+import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
-import { formatMinutes } from '../map/usePlanDraft'
+import { discardDraftPlan, draftStopCount, formatMinutes } from '../map/usePlanDraft'
 
-// Published plan (A1 SCR-007; PD-28, PD-29; UI-77): the Itinerary panel beside the map (desktop)
+// Published plan (A1): the Itinerary panel beside the map (desktop)
 // or in the map Bottom sheet (phones). Owner: Edit plan, Share, Delete and leg modes; visitor:
 // Save, Like, Share. Same calls as the live ItineraryDetailView.
 
@@ -57,20 +62,27 @@ export function PlanScreen({ id }: { id: string }) {
   const router = useRouter()
   const phone = usePhone()
   const { user } = useAuth()
-  const { labels, openDrawer, toast } = useV2Shell()
+  const { labels, openDrawer, toast, requireSignIn } = useV2Shell()
   const { mutate: globalMutate } = useSWRConfig()
   const mapRef = useRef<V2MapHandle>(null)
+  const locate = useLocateMe(mapRef, { phone })
   const { itinerary: it, isLoading, isError, isPrivate, isNotFound, mutate } = useItinerary(id)
   const { isOwner } = useItineraryMeta(user ? id : null)
 
   const [activeDay, setActiveDay] = useState<'all' | Day>('all')
   const [selected, setSelected] = useState<string | undefined>()
   const [snap, setSnap] = useState<SheetSnap>('mid')
-  const [legFor, setLegFor] = useState<number | null>(null)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  // Edit plan with a plan in progress on the map: its stop count while the save-or-discard prompt is open.
+  const [draftPrompt, setDraftPrompt] = useState(0)
+  const [discardingDraft, setDiscardingDraft] = useState(false)
   const [liked, setLiked] = useState<boolean | null>(null)
   const [saved, setSaved] = useState<boolean | null>(null)
+  // Related plans: saved state from the person's saved plans, with taps applied on top.
+  const savedPlans = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
+  const [relatedTaps, setRelatedTaps] = useState<Map<string, boolean>>(new Map())
+  const isRelatedSaved = (rid: string) => relatedTaps.get(rid) ?? (savedPlans.data?.plans ?? []).some((p) => p.id === rid)
 
   const stops = useMemo(() => [...(it?.stops ?? [])].sort((a, b) => a.stop_order - b.stop_order), [it])
   const dayOf = (s: ItineraryStop) => Math.min(Math.max(s.day ?? 1, 1), 8) as Day
@@ -85,44 +97,58 @@ export function PlanScreen({ id }: { id: string }) {
 
   const isLiked = liked ?? it?.viewer.is_liked ?? false
   const isSaved = saved ?? it?.viewer.is_saved ?? false
-  const toLogin = () => router.push(`/login?next=/plan/${id}`)
-
-  const like = () => {
-    if (!user) return toLogin()
-    const next = !isLiked
+  // A guest gets the sign-in gate; after the sign-in the action only ever turns it on.
+  const like = (force?: boolean) => {
+    if (!user && !force) return requireSignIn({ title: t('CD0054'), pending: { type: 'like_plan', id }, run: () => like(true) })
+    const next = force ? true : !isLiked
     setLiked(next)
     toast({ type: 'success', message: next ? k('itinerary.actions.likedToast') : k('itinerary.actions.unlikedToast') })
-    send('/api/likes/plan', next ? 'POST' : 'DELETE', { plan_id: id }).then(() => mutate()).catch(() => setLiked(!next))
+    send('/api/likes/plan', next ? 'POST' : 'DELETE', { plan_id: id }).then(() => mutate()).catch(() => { setLiked(!next); toast({ type: 'critical', message: t('CD0061') }) })
   }
-  const save = () => {
-    if (!user) return toLogin()
-    const next = !isSaved
+  const save = (force?: boolean) => {
+    if (!user && !force) return requireSignIn({ title: t('CD1541'), pending: { type: 'save_plan', id }, run: () => save(true) })
+    const next = force ? true : !isSaved
     setSaved(next)
     toast({ type: 'success', message: next ? k('itinerary.actions.savedToast') : k('itinerary.actions.unsavedToast') })
-    send('/api/saved/plan', next ? 'POST' : 'DELETE', { plan_id: id }).then(() => mutate()).catch(() => setSaved(!next))
+    send('/api/saved/plan', next ? 'POST' : 'DELETE', { plan_id: id }).then(() => mutate()).catch(() => { setSaved(!next); toast({ type: 'critical', message: t('CD0061') }) })
   }
+  usePendingAction('like_plan', !!user, () => like(true))
+  usePendingAction('save_plan', !!user, (pid) => (pid && pid !== id ? saveRelated(pid, true) : save(true)))
   const share = async () => {
     const url = new URL(it?.share_url ?? window.location.href, window.location.origin)
     url.searchParams.set('ref', 'share')
+    const link = shareUrl(url.toString(), 'plan')
+    track('share_click', { target: typeof navigator.share === 'function' ? 'native' : 'link', content_type: 'plan', locale, screen_id: 'plan' })
     if (typeof navigator.share === 'function') {
       try {
-        await navigator.share({ title: it?.title, url: url.toString() })
+        await navigator.share({ title: it?.title || k('profile.untitledPlan'), url: link })
         return
       } catch (e) {
         if ((e as DOMException)?.name === 'AbortError') return
       }
     }
-    await navigator.clipboard?.writeText(url.toString()).catch(() => {})
+    await navigator.clipboard?.writeText(link).catch(() => {})
     toast({ type: 'success', message: k('itinerary.copiedToast') })
   }
   const setLegMode = async (from: number, mode: Mode) => {
-    setLegFor(null)
     try {
       await send(`/api/plans/${id}`, 'PATCH', { from_stop_order: from, transport_mode: mode })
       mutate()
     } catch {
       toast({ type: 'critical', message: k('map.plan.saveError') })
     }
+  }
+  // Edit opens the plan on the map; a plan in progress there is saved or discarded first, asked here.
+  const editHref = `/map?plan=edit&id=${id}`
+  const edit = async () => {
+    const count = await draftStopCount()
+    if (count) setDraftPrompt(count)
+    else router.push(editHref)
+  }
+  const discardDraftAndEdit = async () => {
+    setDiscardingDraft(true)
+    await discardDraftPlan()
+    router.push(editHref)
   }
   const remove = async () => {
     setDeleting(true)
@@ -140,21 +166,48 @@ export function PlanScreen({ id }: { id: string }) {
   // ── Panel ──────────────────────────────────────────────────────────────────
   const modeLabel = (m: Mode) => k(`itinerary.transport.${m}`)
   const legOf = (s: ItineraryStop) => it?.legs.find((l) => l.from_stop_order === s.stop_order)
+  // Start times as drawn: each day starts at 09:00 and every stop adds its time there and the leg after it.
+  const startTimes = useMemo(() => {
+    const at = new Map<number, string>()
+    const clock: Record<number, number> = {}
+    for (const s of stops) {
+      const d = dayOf(s)
+      const min = clock[d] ?? 9 * 60
+      at.set(s.stop_order, `${String(Math.floor(min / 60) % 24).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`)
+      const leg = legOf(s)
+      clock[d] = min + s.duration_min + (leg ? Math.max(1, Math.round(leg.estimated_duration_s / 60)) : 0)
+    }
+    return at
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [it])
+  function saveRelated(rid: string, force?: boolean) {
+    if (!user && !force) return requireSignIn({ title: t('CD1541'), pending: { type: 'save_plan', id: rid }, run: () => saveRelated(rid, true) })
+    const next = force ? true : !isRelatedSaved(rid)
+    const tap = (on: boolean) => setRelatedTaps((x) => new Map(x).set(rid, on))
+    tap(next)
+    toast({ type: 'success', message: next ? k('itinerary.actions.savedToast') : k('itinerary.actions.unsavedToast') })
+    send('/api/saved/plan', next ? 'POST' : 'DELETE', { plan_id: rid }).then(() => savedPlans.mutate()).catch(() => {
+      tap(!next)
+      toast({ type: 'critical', message: t('CD0061') })
+    })
+  }
   const author = it ? it.author.name_preferred ?? (locale === 'ko' ? it.author.name_ko : it.author.name_en) ?? it.author.name_ko ?? '' : ''
 
   let panel: React.ReactNode
   if (isLoading) {
     panel = (
-      <div aria-busy="true" aria-label={k('itinerary.loading')} className="flex flex-col gap-[var(--space-3)] p-[var(--space-4)]">
-        <Skeleton className="h-[40px] w-3/4" />
-        <Skeleton className="h-[20px] w-1/2" />
-        {Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-[64px]" />)}
+      // As drawn: title, owner and stats lines, then three stop blocks, 16 apart.
+      <div aria-busy="true" aria-label={k('itinerary.loading')} className="flex flex-col gap-[var(--space-4)] p-[var(--space-4)]">
+        <Skeleton shape="line" className="h-[var(--space-3)] w-4/5" />
+        <Skeleton shape="line" className="h-[var(--space-3)] w-2/5" />
+        <Skeleton shape="line" className="h-[var(--space-3)] w-full" />
+        {Array.from({ length: 3 }, (_, i) => <Skeleton key={i} className="h-[72px]" />)}
       </div>
     )
   } else if (isPrivate || isNotFound) {
     panel = (
       <div className="p-[var(--space-4)]">
-        <EmptyState title={t('CD1542')} action={<Button size="md" variant="secondary" onClick={() => router.push('/')}>{t('CD1544')}</Button>}>{t('CD1543')}</EmptyState>
+        <EmptyState type="no-results" title={t('CD1542')} action={<Button size="md" variant="secondary" onClick={() => router.push('/explore/popular-plans')}>{t('CD1544')}</Button>}>{t('CD1543')}</EmptyState>
       </div>
     )
   } else if (isError || !it) {
@@ -167,8 +220,11 @@ export function PlanScreen({ id }: { id: string }) {
     const km = it.distance_m ? Math.round(it.distance_m / 100) / 10 : null
     panel = (
       <ItineraryPanel
-        title={it.title}
+        title={it.title || k('profile.untitledPlan')}
         owner={GAP.createdBy(author)}
+        ownerAvatarSrc={it.author.avatar_url ?? null}
+        ownerName={author}
+        ownerHref={it.author.id ? `/profile/${it.author.id}` : undefined}
         privateLabel={isOwner && !it.is_published ? t('CD1002') : undefined}
         stats={[k('itinerary.stats.stops', { count: stops.length }), GAP.days(days), formatMinutes(it.total_duration_min, k), ...(km ? [k('itinerary.stats.km', { km })] : [])]}
         days={days}
@@ -180,7 +236,7 @@ export function PlanScreen({ id }: { id: string }) {
             id: String(s.poi.poi_id),
             name: stopName(s, locale),
             day: dayOf(s),
-            meta: formatMinutes(s.duration_min, k),
+            meta: `${formatMinutes(s.duration_min, k)} · ${startTimes.get(s.stop_order)}`,
             note: s.notes ?? undefined,
             imageSrc: s.poi.primary_image_url,
             leg: leg ? { mode: leg.transport_mode, label: modeLabel(leg.transport_mode), time: k('itinerary.stats.min', { min: Math.max(1, Math.round(leg.estimated_duration_s / 60)) }) } : undefined,
@@ -192,13 +248,18 @@ export function PlanScreen({ id }: { id: string }) {
           const s = stops.find((x) => String(x.poi.poi_id) === sid)
           if (s) mapRef.current?.panTo(s.poi.coords_lat, s.poi.coords_lng)
         }}
-        onLeg={isOwner ? (sid) => setLegFor(stops.find((x) => String(x.poi.poi_id) === sid)?.stop_order ?? null) : undefined}
+        legMenu={isOwner ? (sid) => {
+          const order = stops.find((x) => String(x.poi.poi_id) === sid)?.stop_order
+          const current = it.legs.find((l) => l.from_stop_order === order)?.transport_mode
+          return MODES.map((m) => <MenuItem key={m} checked={current === m} onClick={() => order !== undefined && setLegMode(order, m)}>{modeLabel(m)}</MenuItem>)
+        } : undefined}
+        legMenuLabel={(sid) => k('itinerary.transport.changeMode', { mode: modeLabel(it.legs.find((l) => l.from_stop_order === stops.find((x) => String(x.poi.poi_id) === sid)?.stop_order)?.transport_mode ?? 'walk') })}
         related={
           it.related.length ? (
             <ul className="flex flex-col gap-[var(--space-3)]">
               {it.related.map((r) => (
                 <li key={r.id}>
-                  <Card type="compact" href={`/plan/${r.id}`} title={r.title} imageSrc={r.thumbnail_url} meta={`${k('itinerary.related.stops', { count: r.stop_count })} · ${k('itinerary.related.likes', { count: r.like_count })}`} />
+                  <Card type="compact" href={`/plan/${r.id}`} title={r.title} imageSrc={r.thumbnail_url} meta={`${k('itinerary.related.stops', { count: r.stop_count })} · ${k('itinerary.related.likes', { count: r.like_count })}`} save={{ saved: isRelatedSaved(r.id), onSave: () => saveRelated(r.id), label: k('itinerary.actions.saveAria') }} />
                 </li>
               ))}
             </ul>
@@ -207,14 +268,14 @@ export function PlanScreen({ id }: { id: string }) {
         footer={
           isOwner ? (
             <>
-              <Button variant="secondary" className="flex-1" onClick={() => router.push(`/map?plan=edit&id=${id}`)}>{t('CD1487')}</Button>
+              <Button variant="secondary" className="flex-1" onClick={edit}>{t('CD1487')}</Button>
               <IconButton variant="secondary" label={k('itinerary.actions.shareAria')} icon={<Share2 />} onClick={share} />
               <IconButton variant="ghost" label={t('CD1454')} icon={<Trash2 />} onClick={() => setDeleteOpen(true)} />
             </>
           ) : (
             <>
-              <Button className="flex-1" leadingIcon={<Bookmark className={isSaved ? 'fill-current' : undefined} />} aria-pressed={isSaved} onClick={save}>{isSaved ? k('itinerary.actions.saved') : k('itinerary.actions.save')}</Button>
-              <IconButton variant="secondary" label={k('itinerary.actions.likeAria')} aria-pressed={isLiked} icon={<Heart className={isLiked ? 'fill-current' : undefined} />} onClick={like} />
+              <Button className="flex-1" leadingIcon={<Bookmark className={isSaved ? 'fill-current' : undefined} />} aria-pressed={isSaved} onClick={() => save()}>{isSaved ? k('itinerary.actions.saved') : k('itinerary.actions.save')}</Button>
+              <IconButton variant="secondary" label={k('itinerary.actions.likeAria')} aria-pressed={isLiked} icon={<Heart className={isLiked ? 'fill-current' : undefined} />} onClick={() => like()} />
               <IconButton variant="secondary" label={k('itinerary.actions.shareAria')} icon={<Share2 />} onClick={share} />
             </>
           )
@@ -235,6 +296,9 @@ export function PlanScreen({ id }: { id: string }) {
       routeLegs={routeLegs}
       center={center}
       fitStops
+      // Phones: the sheet (half the screen at mid) covers the map's lower part; fit the route above it.
+      fitBottom={phone && snap !== 'peek' && typeof window !== 'undefined' ? Math.round(window.innerHeight / 2) : 0}
+      userLocation={locate.location}
       label={k('itinerary.mapAriaLabel')}
       errorText={GAP.mapError}
     />
@@ -245,30 +309,33 @@ export function PlanScreen({ id }: { id: string }) {
       <Dialog
         open={deleteOpen}
         onCancel={() => setDeleteOpen(false)}
-        title={GAP.deletePlanTitle(it.title)}
+        title={GAP.deletePlanTitle(it.title || k('profile.untitledPlan'))}
         body={t('CD1546')}
-        cancel={<Button variant="ghost" data-autofocus onClick={() => setDeleteOpen(false)}>{k('itinerary.actions.deleteCancel')}</Button>}
+        cancel={<Button variant="secondary" data-autofocus onClick={() => setDeleteOpen(false)}>{k('itinerary.actions.deleteCancel')}</Button>}
         confirm={<Button variant="danger" loading={deleting} onClick={remove}>{k('itinerary.actions.deleteConfirm')}</Button>}
       />
-      <Modal open={legFor !== null} onClose={() => setLegFor(null)} size="sm" title={k('itinerary.transport.changeMode', { mode: modeLabel(it.legs.find((l) => l.from_stop_order === legFor)?.transport_mode ?? 'walk') })} closeLabel={k('badges.detail.close')}>
-        <div role="menu" className="-mx-[var(--space-6)]">
-          {MODES.map((m) => (
-            <MenuItem key={m} checked={it.legs.find((l) => l.from_stop_order === legFor)?.transport_mode === m} onClick={() => legFor !== null && setLegMode(legFor, m)}>{modeLabel(m)}</MenuItem>
-          ))}
-        </div>
-      </Modal>
+      <Dialog
+        open={draftPrompt > 0}
+        onCancel={() => setDraftPrompt(0)}
+        title={t('CD1525')}
+        body={GAP.editDraftBody(draftPrompt, it.title || k('profile.untitledPlan'))}
+        cancel={<Button variant="secondary" data-autofocus onClick={() => setDraftPrompt(0)}>{k('map.plan.discardCancel')}</Button>}
+        third={<Button variant="ghost" loading={discardingDraft} onClick={discardDraftAndEdit}>{t('CD1527')}</Button>}
+        confirm={<Button onClick={() => router.push(`${editHref}&draft=save`)}>{k('map.plan.save')}</Button>}
+      />
     </>
   ) : null
 
   if (phone) {
     return (
       <div className="relative h-[calc(100dvh)] w-full overflow-hidden">
-        <main id="main" className="absolute inset-0">{map}</main>
-        <div className="absolute inset-x-0 top-0 z-20">
+        {/* The map and the sheet end at the navigation bar. */}
+        <main id="main" className="absolute inset-x-0 top-0 bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))]">{map}</main>
+        <div className="absolute inset-x-0 top-0 z-20 pt-[var(--space-2)]">
           <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} />
         </div>
-        <BottomSheet type="map" open label={k('itinerary.sheet.ariaLabel')} snap={snap} onSnapChange={setSnap} onClose={() => setSnap('peek')} resizeLabel={k('itinerary.sheet.handle')}>
-          <div className="-mx-[var(--space-4)] h-[calc(100dvh-160px)]">{panel}</div>
+        <BottomSheet type="map" open label={k('itinerary.sheet.ariaLabel')} aboveEnd={locate.control} snap={snap} onSnapChange={setSnap} onClose={() => setSnap('peek')} resizeLabel={k('itinerary.sheet.handle')} className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0">
+          <div className="-mx-[var(--space-4)] -mt-[var(--space-2)] h-[calc(100dvh-160px)]">{panel}</div>
         </BottomSheet>
         {dialogs}
       </div>
@@ -281,7 +348,11 @@ export function PlanScreen({ id }: { id: string }) {
       </LeftPanel>
       <main id="main" className="relative min-w-0 flex-1">
         {map}
-        <ZoomControl className="absolute bottom-[var(--space-6)] right-[var(--space-6)]" onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} />
+        <MapLegalLine />
+        <div className={`absolute right-[var(--space-4)] flex flex-col gap-[var(--space-2)] ${ABOVE_LEGAL_LINE}`}>
+          {locate.control}
+          <ZoomControl onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} />
+        </div>
       </main>
       {dialogs}
     </div>

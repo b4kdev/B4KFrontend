@@ -6,7 +6,7 @@ name: CI
 #   2. typecheck       — tsc --noEmit
 #   3. build           — next build (no deploy)
 #   4. i18n-keys       — every t() key exists in every locale file
-#   5. token-compliance — no hardcoded hex / arbitrary Tailwind / forbidden tokens
+#   5. token-compliance — no hardcoded hex / arbitrary Tailwind / forbidden tokens / hard-coded colors and spacing
 #   6. storybook       — storybook build (components/library)
 
 on:
@@ -29,7 +29,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: lts/jod
+          node-version: '24'
           cache: npm
 
       - name: Install dependencies
@@ -47,7 +47,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: lts/jod
+          node-version: '24'
           cache: npm
 
       - name: Install dependencies
@@ -65,7 +65,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: lts/jod
+          node-version: '24'
           cache: npm
 
       - name: Install dependencies
@@ -87,7 +87,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: lts/jod
+          node-version: '24'
           cache: npm
 
       - name: Install dependencies
@@ -136,6 +136,7 @@ jobs:
           # v2 preview: useCd() (components/v2/cd.ts) is useTranslations('cd'), the Copy Deck
           # namespace that app/[locale]/v2/layout.tsx loads from messages/v2/{locale}.json.
           cd_hook_re = re.compile(r"""\buseCd\(\s*\)""")
+          cd_id_re = re.compile(r"""^CD\d{4}$""")
           comment_line_re = re.compile(r"""^\s*(?://|/\*|\*)""")
 
           key_candidates = []
@@ -170,6 +171,10 @@ jobs:
                           candidates.append(f"{ns}.{k}")
                   if k not in candidates:
                       candidates.append(k)
+                  # A Copy Deck id lives only in the `cd` namespace, whatever loaded the translator
+                  # (useCd, the page-metadata helpers, or a `t` passed in as an argument).
+                  if cd_id_re.match(k) and f"cd.{k}" not in candidates:
+                      candidates.append(f"cd.{k}")
                   key_candidates.append(candidates)
 
           for root in ("app", "components"):
@@ -243,7 +248,7 @@ jobs:
           python3 .ci/i18n-completeness.py .
 
   token-compliance:
-    name: Token compliance (no hex / arbitrary tw / forbidden tokens)
+    name: Token compliance (no hex / arbitrary tw / forbidden tokens / px spacing / token drift / token lint)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -327,6 +332,43 @@ jobs:
             VIOLATIONS=$((VIOLATIONS + COUNT))
           else
             echo "PASS"
+          fi
+          echo ""
+
+          echo "--- Rule 4: arbitrary px in spacing and position classes (p-[12px], gap-[8px], top-[72px]) ---"
+          : > "$TMP"
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            grep -nE '(^|[^a-zA-Z0-9_-])-?(p[trblxyse]?|m[trblxyse]?|gap(-[xy])?|space-[xy]|inset(-[xy])?|top|right|bottom|left)-\[-?[0-9.]+px\]' "$f" 2>/dev/null \
+              | grep -vE '^\s*[0-9]+:\s*//' \
+              | grep -vE '^\s*[0-9]+:\s*\*' \
+              | sed "s|^|$f:|" || true
+          done <<< "$FILE_LIST" >> "$TMP"
+          if [ -s "$TMP" ]; then
+            COUNT=$(wc -l < "$TMP" | tr -d ' ')
+            echo "FAIL ($COUNT hits): use a space token, e.g. p-[var(--space-3)] or calc() of tokens"
+            cat "$TMP"
+            VIOLATIONS=$((VIOLATIONS + COUNT))
+          else
+            echo "PASS"
+          fi
+          echo ""
+
+          echo "--- Rule 5: generated token files match tokens/tokens.json ---"
+          if node scripts/build-tokens.mjs >/dev/null && git diff --quiet -- app/tokens.css tokens/tailwind-preset.ts tokens/colors.ts; then
+            echo "PASS"
+          else
+            echo "FAIL: app/tokens.css, tokens/tailwind-preset.ts or tokens/colors.ts was edited by hand or not rebuilt; run npm run tokens:build"
+            git diff --stat -- app/tokens.css tokens/tailwind-preset.ts tokens/colors.ts
+            VIOLATIONS=$((VIOLATIONS + 1))
+          fi
+          echo ""
+
+          echo "--- Rule 6: token lint (hard-coded colors and spacing, scripts/lint-tokens.mjs) ---"
+          if node scripts/lint-tokens.mjs; then
+            :
+          else
+            VIOLATIONS=$((VIOLATIONS + 1))
           fi
           echo ""
 

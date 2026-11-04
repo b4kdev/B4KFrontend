@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
 import { fetchDbDraft, groupPlacesIntoDays, type BffItinerary } from '@/lib/itinerary'
+import { PLACE_SOURCES, PLAN_FLOWS, type PlaceSource, type PlanFlow } from '@/lib/place-source'
 
 export interface PlanStop {
   poi_id:      string
@@ -69,14 +70,14 @@ export async function GET(req: Request) {
   }
 }
 
-// POST /api/plans — create a plan from the map builder (MapView DEC-29 body:
+// POST /api/plans — create a plan from the map builder (MapView body:
 // { title, stops: [{ poi_id, stop_order, duration_min, day }], is_published }).
 // Maps to BFF POST /itineraries — stops are grouped by their day tab (missing
 // day → day 1) via groupPlacesIntoDays.
 // status 'confirmed': this is an explicit user save, and only confirmed plans
 // can be published by the follow-up PATCH { is_published: true }.
 //
-// BLK-08: the autosave path (POST /api/plans/draft) already has a status:'draft'
+// the autosave path (POST /api/plans/draft) already has a status:'draft'
 // row for this account by the time the user hits "Save Plan" — check for it
 // first and PUT-convert that same row to status:'confirmed' instead of always
 // POSTing a fresh one, or every confirmed save orphans its own draft row.
@@ -86,7 +87,9 @@ export async function POST(req: Request) {
 
   const body = await req.json().catch(() => ({})) as {
     title?: string
-    stops?: Array<{ poi_id?: string | number; stop_order?: number; duration_min?: number; day?: number }>
+    stops?: Array<{ poi_id?: string | number; stop_order?: number; duration_min?: number; day?: number; source?: string }>
+    /** How the plan was made: manual (editor), quick_plan or from_saved. */
+    source?: string
     is_published?: boolean
   }
 
@@ -99,12 +102,15 @@ export async function POST(req: Request) {
       poi_id:       Number(s.poi_id),
       duration_min: typeof s.duration_min === 'number' && s.duration_min > 0 ? s.duration_min : null,
       day:          s.day,
+      // Where the place was found; an unknown value is left out.
+      ...(PLACE_SOURCES.includes(s.source as PlaceSource) ? { source: s.source } : {}),
     }))
   if (places.length === 0) {
     return NextResponse.json({ error: 'stops required' }, { status: 400 })
   }
 
   const title = typeof body.title === 'string' && body.title.trim() ? body.title : null
+  const flow = PLAN_FLOWS.includes(body.source as PlanFlow) ? { source: body.source } : {}
 
   try {
     const existingDraft = await fetchDbDraft(auth.token)
@@ -114,17 +120,19 @@ export async function POST(req: Request) {
     let createdAt: string
 
     if (existingDraft) {
-      await bffFetch(`/itineraries/${existingDraft.itinerary_id}`, {
+      const saved = await bffFetch<BffItinerary>(`/itineraries/${existingDraft.itinerary_id}`, {
         method: 'PUT',
         body: JSON.stringify({
           days:   groupPlacesIntoDays(places),
           title,
           status: 'confirmed',
+          ...flow,
         }),
         token: auth.token,
       })
       planId    = existingDraft.itinerary_id
-      planTitle = title ?? existingDraft.title
+      // A confirmed plan saved without a name gets the backend's default name.
+      planTitle = saved.title ?? title ?? existingDraft.title ?? ''
       createdAt = existingDraft.created_at ?? existingDraft.updated_at ?? new Date().toISOString()
     } else {
       const created = await bffFetch<BffItinerary>('/itineraries', {
@@ -133,11 +141,12 @@ export async function POST(req: Request) {
           days:   groupPlacesIntoDays(places),
           title,
           status: 'confirmed',
+          ...flow,
         }),
         token: auth.token,
       })
       planId    = created.itinerary_id
-      planTitle = created.title
+      planTitle = created.title ?? title ?? ''
       createdAt = created.created_at ?? new Date().toISOString()
     }
 

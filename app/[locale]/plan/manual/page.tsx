@@ -1,7 +1,7 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 import { getLocale } from 'next-intl/server';
 
 export default async function Page() {
   const locale = await getLocale();
-  redirect(`/${locale}/map?plan=new`);
+  permanentRedirect(`/${locale}/map?plan=new`);
 }

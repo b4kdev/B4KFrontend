@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { bffFetch, bffErrorResponse, getSessionAuth } from '@/lib/bff'
+import { seoText } from '@/lib/seo'
 
 export interface SavedPoi {
   poi_id: string
@@ -10,7 +11,7 @@ export interface SavedPoi {
   primary_image_url: string | null
   quality_score: number
   saved_at: string
-  // SC-31 — pin sync needs coords; poi_id reuses the same BFF `places` universe
+  // pin sync needs coords; poi_id reuses the same BFF `places` universe
   // the map draws from (a save is a join row against that POI table, never a separate list).
   coords_lat: number
   coords_lng: number
@@ -21,7 +22,7 @@ export interface SavedFolder {
   name: string
   pois: SavedPoi[]
   created_at: string
-  is_default?: boolean // "All Saved" — not renamable/deletable (DEC-24)
+  is_default?: boolean // All saved places: every save; not renamable/deletable
 }
 
 /** Plans saved from other users — social.plan_saves */
@@ -32,6 +33,8 @@ export interface SavedPlan {
   duration_days: number
   cover_image_url: string | null
   author_name: string
+  /** The author's user id, for the link to their profile; null when the BFF sends none. */
+  author_id: string | null
   author_avatar_url: string | null
   likes_count: number
   saves_count: number
@@ -46,6 +49,8 @@ export interface MyPlan {
   duration_days: number
   cover_image_url: string | null
   is_draft: boolean
+  /** Published plan visible to others (the itinerary header's is_public). */
+  is_public: boolean
   likes_count: number
   saves_count: number
   updated_at: string
@@ -58,16 +63,16 @@ export interface SavedData {
   myPlans:  MyPlan[]
 }
 
-// Signed-out shape — "All Saved" (folder-000) always exists per DEC-24, even with
-// zero saves. The signed-in shape is built from the BFF (real Default folder UUID).
-const EMPTY: SavedData = {
+// Signed-out shape — All saved places (folder-000) always exists, even with zero saves. The
+// signed-in shape is built from the BFF (real Default folder UUID).
+const empty = (allSaved: string): SavedData => ({
   pois: [],
   folders: [
-    { id: 'folder-000', name: 'All Saved', created_at: new Date(0).toISOString(), is_default: true, pois: [] },
+    { id: 'folder-000', name: allSaved, created_at: new Date(0).toISOString(), is_default: true, pois: [] },
   ],
   plans: [],
   myPlans: [],
-}
+})
 
 // ── BFF response shapes (B4KBackend/API_FRONTEND.md) ──
 interface BffBookmark {
@@ -110,6 +115,7 @@ interface BffMyItinerary {
   itinerary_id: number
   title: string | null
   status: 'draft' | 'confirmed'
+  is_public?: boolean
   total_days: number
   total_places: number
   like_count: number
@@ -137,16 +143,29 @@ function toSavedPoi(b: BffBookmark, locale: string): SavedPoi {
   }
 }
 
+// Every bookmark, a page at a time (the BFF list takes limit/offset and may cap a page): pages
+// are read until one comes back empty, up to 5,000 saves.
+async function fetchAllBookmarks(token: string): Promise<BffBookmark[]> {
+  const all: BffBookmark[] = []
+  for (let page = 0; page < 50; page++) {
+    const rows = await bffFetch<BffBookmark[]>(`/me/bookmarks?limit=100&offset=${all.length}`, { token })
+    if (!rows.length) break
+    all.push(...rows)
+  }
+  return all
+}
+
 export async function GET() {
   const auth = await getSessionAuth()
+  const locale = (await cookies()).get('NEXT_LOCALE')?.value ?? 'en'
+  // The fixed list's name in the reader's language (the BFF calls it Default).
+  const allSaved = (await seoText(locale)).t('CD1872')
   // Signed out — same shape the stub returned; the page's auth gate handles prompting.
-  if (!auth) return NextResponse.json(EMPTY)
-
-  const locale = cookies().get('NEXT_LOCALE')?.value ?? 'en'
+  if (!auth) return NextResponse.json(empty(allSaved))
 
   try {
     const [bookmarks, folders, savedItins, myItins] = await Promise.all([
-      bffFetch<BffBookmark[]>('/me/bookmarks?limit=100',       { token: auth.token }),
+      fetchAllBookmarks(auth.token),
       bffFetch<BffFolder[]>('/me/bookmark-folders',            { token: auth.token }),
       bffFetch<BffSavedItinerary[]>('/me/saved-itineraries',   { token: auth.token }),
       bffFetch<BffMyItinerary[]>('/me/itineraries',            { token: auth.token }),
@@ -161,17 +180,21 @@ export async function GET() {
       poisByFolder.set(b.folder_id, list)
     }
 
+    const lists: SavedFolder[] = folders.map(f => ({
+      id:         f.folder_id,
+      name:       f.is_default ? allSaved : f.name,
+      // All saved places holds every save; the other lists hold their own.
+      pois:       f.is_default ? pois : poisByFolder.get(f.folder_id) ?? [],
+      created_at: f.created_at,
+      is_default: f.is_default,
+    }))
+    // All saved places comes first, as drawn, and is there even before the BFF has made it.
+    if (!lists.some(f => f.is_default)) lists.unshift({ ...empty(allSaved).folders[0], pois })
+    lists.sort((a, b) => Number(!!b.is_default) - Number(!!a.is_default))
+
     const data: SavedData = {
       pois,
-      folders: folders.map(f => ({
-        id:         f.folder_id,
-        // BFF names the default folder "Default" — keep the frontend's fixed
-        // "All Saved" label (DEC-24).
-        name:       f.is_default ? 'All Saved' : f.name,
-        pois:       poisByFolder.get(f.folder_id) ?? [],
-        created_at: f.created_at,
-        is_default: f.is_default,
-      })),
+      folders: lists,
       plans: savedItins.map(p => ({
         id:                String(p.itinerary_id),
         title:             p.title ?? '',
@@ -179,6 +202,7 @@ export async function GET() {
         duration_days:     p.total_days,
         cover_image_url:   p.cover_image_url,
         author_name:       p.author?.name ?? '',
+        author_id:         p.author?.user_id != null ? String(p.author.user_id) : null,
         author_avatar_url: p.author?.avatar_url ?? null,
         likes_count:       p.like_count,
         saves_count:       p.save_count,
@@ -191,6 +215,7 @@ export async function GET() {
         duration_days:   p.total_days,
         cover_image_url: p.cover_image_url,
         is_draft:        p.status === 'draft',
+        is_public:       p.is_public ?? false,
         likes_count:     p.like_count,
         saves_count:     p.save_count,
         updated_at:      p.updated_at,

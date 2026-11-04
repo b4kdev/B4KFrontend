@@ -1,7 +1,7 @@
 'use client'
 
 import { useId, useState, type FormEvent, type ReactNode } from 'react'
-import { ArrowLeft, ArrowRight, Check, Clock, Compass, Mail, MapPin, Route, Search, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Clock, Compass, Mail, Route, Search, X } from 'lucide-react'
 import { Link as IntlLink } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
 import { Avatar } from './Avatar'
@@ -17,9 +17,9 @@ import { Breadcrumbs, Tabs } from './NavGroups'
 import { Select } from './Select'
 import { Separator } from './Separator'
 import { TextInput } from './TextInput'
-import { FOCUS_RING_INSET } from './styles'
+import { FOCUS_RING_INSET, HIT_AREA } from './styles'
 
-// Account, consent and search organisms (UI-82, UI-99, PD-37 to PD-43; Figma Organisms).
+// Account, consent and search organisms (Figma Organisms).
 
 export type CookieBannerProps = {
   /** Figma Type. Banner: bottom bar on first visit. Preferences: card on the Cookie Policy page. */
@@ -34,12 +34,14 @@ export type CookieBannerProps = {
   /** Preferences: Figma Show status, e.g. "Accepted". */
   status?: string
   title?: string
+  className?: string
 }
 
-/** Cookie banner (UI-82, ADD-57): Decline and Accept with equal weight; no close X; nothing on until a choice. */
-export function CookieBanner({ type = 'banner', label, message, learnMore, acceptLabel, declineLabel, onAccept, onDecline, status, title }: CookieBannerProps) {
+/** Cookie banner: Decline and Accept with equal weight; no close X; nothing on until a choice. */
+export function CookieBanner({ type = 'banner', label, message, learnMore, acceptLabel, declineLabel, onAccept, onDecline, status, title, className }: CookieBannerProps) {
+  // Phones: the bottom banner's buttons fill the row; the preferences card's buttons hug, as drawn.
   const buttons = (
-    <div className="flex gap-[var(--gap-sm)] max-md:[&>*]:flex-1">
+    <div className={cn('flex gap-[var(--gap-sm)]', type === 'banner' && 'max-md:[&>*]:flex-1')}>
       <Button variant="secondary" size="md" onClick={onDecline}>{declineLabel}</Button>
       <Button size="md" onClick={onAccept}>{acceptLabel}</Button>
     </div>
@@ -57,19 +59,20 @@ export function CookieBanner({ type = 'banner', label, message, learnMore, accep
     )
   }
   return (
-    <section role="region" aria-label={label} tabIndex={-1} className="fixed inset-x-0 bottom-0 z-40 border-t border-ui-border bg-ui-bg-raised px-[var(--space-4)] py-[var(--space-4)] pb-[calc(var(--space-4)+env(safe-area-inset-bottom))] text-ui-fg outline-none">
+    <section role="region" aria-label={label} tabIndex={-1} className={cn('fixed inset-x-0 bottom-0 z-40 border-t border-ui-border bg-ui-bg-raised px-[var(--space-4)] py-[var(--space-4)] pb-[calc(var(--space-4)+env(safe-area-inset-bottom))] text-ui-fg outline-none', className)}>
       <div className="mx-auto flex max-w-[960px] items-center gap-[var(--space-4)] max-md:flex-col max-md:items-stretch max-md:gap-[var(--space-3)]">
-        <p className="flex-1 type-body-base">
-          {message}{' '}
-          <IntlLink href={learnMore.href} className="underline underline-offset-2 hover:text-ui-link-hover">{learnMore.label}</IntlLink>
-        </p>
+        {/* Message: the body and the Learn more link wrap as two items, so the link never splits. */}
+        <div className="flex flex-1 flex-wrap items-center gap-x-[var(--space-1-5)] type-body-base">
+          <p>{message}</p>
+          <IntlLink href={learnMore.href} className={cn('relative whitespace-nowrap underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{learnMore.label}</IntlLink>
+        </div>
         {buttons}
       </div>
     </section>
   )
 }
 
-export type SignInView = 'providers' | 'sign-in' | 'sign-up' | 'forgot' | 'check-email' | 'new-password'
+export type SignInView = 'providers' | 'sign-in' | 'sign-up' | 'forgot' | 'check-email' | 'new-password' | 'link-expired' | 'pending-deletion'
 
 export type SignInCardProps = {
   view: SignInView
@@ -90,6 +93,8 @@ export type SignInCardProps = {
   error?: string
   /** Check email: the address. */
   email?: string
+  /** New password: the error under Confirm password (Passwords don't match). */
+  confirmError?: string
   labels: {
     close: string
     google: string
@@ -100,6 +105,8 @@ export type SignInCardProps = {
     newPassword: string
     confirmPassword: string
     passwordHint: string
+    /** New password: the password rule under the field; left out, `passwordHint`. */
+    newPasswordHint?: string
     forgot: string
     sendLink: string
     checkEmailTitle: string
@@ -114,11 +121,30 @@ export type SignInCardProps = {
     guest: string
     or: string
     tabs: string
+    /** Figma per-view Title and Subtitle; left out, Sign in and Sign up use `title` and no subtitle. */
+    signInTitle?: string
+    signInBody?: string
+    signUpTitle?: string
+    signUpBody?: string
+    forgotTitle?: string
+    forgotBody?: string
+    /** The Email field label; left out, `email`. */
+    emailField?: string
+    /** Figma placeholders: Password on Sign in, Confirm password; Password on Sign up and New password have none. */
+    /** Figma email field placeholder, e.g. you@example.com. */
+    emailPlaceholder?: string
+    passwordPlaceholder?: string
+    confirmPlaceholder?: string
+    /** Pending deletion (an account set to be deleted signs in): title, body with the date, Keep, Continue. */
+    pendingTitle?: string
+    pendingBody?: string
+    keepAccount?: string
+    continueDeletion?: string
   }
 }
 
-/** Sign-in card (UI-82, ADD-63): providers, sign in / sign up, forgot, check email, new password. */
-export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGuest, draftNotice, onGoogle, onSubmit, busy, error, email = '', labels }: SignInCardProps) {
+/** Sign-in card: providers, sign in / sign up, forgot, check email, new password. */
+export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGuest, draftNotice, onGoogle, onSubmit, busy, error, email = '', confirmError, labels }: SignInCardProps) {
   const id = useId()
   const [values, setValues] = useState<Record<string, string>>({ email })
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => setValues((v) => ({ ...v, [k]: e.target.value }))
@@ -130,23 +156,45 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
   const back: { label: string; to: SignInView } | null =
     view === 'sign-in' || view === 'sign-up'
       ? { label: labels.back, to: 'providers' }
-      : (view === 'forgot' || view === 'check-email') && labels.backToSignIn
+      : (view === 'forgot' || view === 'check-email' || view === 'link-expired') && labels.backToSignIn
         ? { label: labels.backToSignIn, to: 'sign-in' }
         : view === 'forgot'
           ? { label: labels.back, to: 'providers' }
           : null
-  const guest = onGuest && view !== 'new-password'
+  const guest = onGuest && view !== 'new-password' && view !== 'link-expired' && view !== 'pending-deletion'
+  // Figma Title and Subtitle per view; New password takes `title` with its body as the subtitle.
+  const heading =
+    view === 'check-email' ? labels.checkEmailTitle
+      : view === 'pending-deletion' ? labels.pendingTitle ?? title
+      : view === 'sign-in' ? labels.signInTitle ?? title
+        : view === 'sign-up' ? labels.signUpTitle ?? title
+          : view === 'forgot' ? labels.forgotTitle ?? title
+            : title
+  const sub =
+    view === 'providers' || view === 'link-expired' ? subtitle
+      : view === 'sign-in' ? labels.signInBody
+        : view === 'sign-up' ? labels.signUpBody
+          : view === 'forgot' ? labels.forgotBody
+            : view === 'new-password' ? labels.newPasswordBody
+              : view === 'check-email' ? labels.checkEmailBody(email)
+                : view === 'pending-deletion' ? labels.pendingBody
+                : undefined
+  const emailField = labels.emailField ?? labels.email
   return (
     <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg">
       {/* Figma Top row: Logo wordmark 24 + Close Ghost 40 (no Close on New password). */}
       <div className="flex items-center justify-between gap-[var(--space-2)]">
         <Logo />
-        {onClose && view !== 'new-password' ? <IconButton label={labels.close} icon={<X />} onClick={onClose} /> : null}
+        {onClose && view !== 'new-password' && view !== 'link-expired' && view !== 'pending-deletion' ? <IconButton label={labels.close} icon={<X />} onClick={onClose} /> : null}
       </div>
-      {view === 'check-email' ? <Mail aria-hidden className="size-[var(--icon-size-2xl)]" /> : null}
-      <div className="flex flex-col gap-[var(--space-2)]">
-        <h2 id={id} className="type-display-h4">{view === 'check-email' ? labels.checkEmailTitle : view === 'new-password' ? labels.newPassword : title}</h2>
-        {subtitle && (view === 'providers' || view === 'sign-in' || view === 'sign-up') ? <p className="type-body-base text-ui-fg-muted">{subtitle}</p> : null}
+      {/* Figma Heading row: Check email and Pending deletion put their 40 icon left of the heading. */}
+      <div className="flex items-start gap-[var(--space-3)]">
+        {view === 'check-email' ? <Mail aria-hidden className="size-[var(--icon-size-2xl)] shrink-0" /> : null}
+        {view === 'pending-deletion' ? <Clock aria-hidden className="size-[var(--icon-size-2xl)] shrink-0" /> : null}
+        <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-2)]">
+          <h2 id={id} className="type-display-h4">{heading}</h2>
+          {sub ? <p className="type-body-base text-ui-fg-muted">{sub}</p> : null}
+        </div>
       </div>
       {draftNotice && view === 'providers' ? (
         <p className="flex items-start gap-[var(--space-2)] bg-ui-bg-sunken p-[var(--space-3)] type-body-caption text-ui-fg-muted">
@@ -163,32 +211,37 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
       ) : view === 'sign-in' || view === 'sign-up' ? (
         <form noValidate onSubmit={submit} aria-labelledby={id} className="flex flex-col gap-[var(--space-4)]">
           <Tabs label={labels.tabs} width="equal" baseline={false} value={view} onValueChange={(v) => onViewChange(v as SignInView)} tabs={[{ id: 'sign-in', label: labels.signIn }, { id: 'sign-up', label: labels.signUp }]} />
-          <TextInput label={labels.email} showLabel type="email" autoComplete="email" required value={values.email ?? ''} onChange={set('email')} />
-          <TextInput label={labels.password} showLabel type="password" autoComplete={view === 'sign-in' ? 'current-password' : 'new-password'} required value={values.password ?? ''} onChange={set('password')} help={view === 'sign-up' ? labels.passwordHint : undefined} />
-          {view === 'sign-in' ? <button type="button" onClick={() => onViewChange('forgot')} className="self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover">{labels.forgot}</button> : null}
+          <TextInput label={emailField} showLabel type="email" autoComplete="email" required placeholder={labels.emailPlaceholder} value={values.email ?? ''} onChange={set('email')} />
+          <TextInput label={labels.password} showLabel type="password" autoComplete={view === 'sign-in' ? 'current-password' : 'new-password'} required placeholder={view === 'sign-in' ? labels.passwordPlaceholder : undefined} value={values.password ?? ''} onChange={set('password')} help={view === 'sign-up' ? labels.passwordHint : undefined} />
+          {view === 'sign-in' ? <button type="button" onClick={() => onViewChange('forgot')} className={cn('relative self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{labels.forgot}</button> : null}
           <Button type="submit" loading={busy} className="w-full">{view === 'sign-in' ? labels.signIn : labels.signUp}</Button>
         </form>
       ) : view === 'forgot' ? (
         <form noValidate onSubmit={submit} className="flex flex-col gap-[var(--space-4)]">
-          <TextInput label={labels.email} showLabel type="email" autoComplete="email" required value={values.email ?? ''} onChange={set('email')} />
+          <TextInput label={emailField} showLabel type="email" autoComplete="email" required placeholder={labels.emailPlaceholder} value={values.email ?? ''} onChange={set('email')} />
           <Button type="submit" loading={busy} className="w-full">{labels.sendLink}</Button>
         </form>
+      ) : view === 'link-expired' ? (
+        // Figma New password card with its fields hidden: the title and subtitle say why, one button asks again.
+        <Button onClick={() => onSubmit('link-expired', values)} loading={busy} className="w-full">{labels.sendLink}</Button>
       ) : view === 'check-email' ? (
-        <div className="flex flex-col gap-[var(--space-4)]">
-          <p className="type-body-base text-ui-fg-muted">{labels.checkEmailBody(email)}</p>
-          <Button variant="secondary" onClick={() => onSubmit('forgot', values)} loading={busy} className="w-full">{labels.resend}</Button>
+        <Button variant="secondary" onClick={() => onSubmit('forgot', values)} loading={busy} className="w-full">{labels.resend}</Button>
+      ) : view === 'pending-deletion' ? (
+        // Keep cancels the deletion; Continue keeps it and signs out.
+        <div className="flex flex-col items-start gap-[var(--space-4)]">
+          <Button onClick={() => onSubmit('pending-deletion', { action: 'keep' })} loading={busy} className="w-full">{labels.keepAccount}</Button>
+          <Button variant="ghost" size="md" onClick={() => onSubmit('pending-deletion', { action: 'continue' })}>{labels.continueDeletion}</Button>
         </div>
       ) : (
         <form noValidate onSubmit={submit} className="flex flex-col gap-[var(--space-4)]">
-          <p className="type-body-base text-ui-fg-muted">{labels.newPasswordBody}</p>
-          <TextInput label={labels.newPassword} showLabel type="password" autoComplete="new-password" required value={values.password ?? ''} onChange={set('password')} help={labels.passwordHint} />
-          <TextInput label={labels.confirmPassword} showLabel type="password" autoComplete="new-password" required value={values.confirm ?? ''} onChange={set('confirm')} />
+          <TextInput label={labels.newPassword} showLabel type="password" autoComplete="new-password" required value={values.password ?? ''} onChange={set('password')} help={labels.newPasswordHint ?? labels.passwordHint} />
+          <TextInput label={labels.confirmPassword} showLabel type="password" autoComplete="new-password" required placeholder={labels.confirmPlaceholder} value={values.confirm ?? ''} onChange={set('confirm')} error={confirmError} />
           <Button type="submit" loading={busy} className="w-full">{labels.savePassword}</Button>
         </form>
       )}
-      {/* Figma Back and Guest: Ghost md 40, hugging; Guest in every view but New password. */}
+      {/* Figma Back and Guest: Ghost md 40, hugging at the start; Guest in every view but New password. */}
       {back || guest ? (
-        <div className="flex flex-col items-center gap-[var(--space-2)]">
+        <div className="flex flex-col items-start gap-[var(--space-2)]">
           {back ? <Button variant="ghost" size="md" leadingIcon={<ArrowLeft />} onClick={() => onViewChange(back.to)}>{back.label}</Button> : null}
           {guest ? <Button variant="ghost" size="md" onClick={onGuest}>{labels.guest}</Button> : null}
         </div>
@@ -214,7 +267,7 @@ export type ConsentStepProps = {
   labels: { agreeAll: string; required: string; optional: string; view: string; continue: string; cancel: string; back: string; legend: string }
 }
 
-/** Consent step (UI-82, ADD-74): agree to all, required and optional items; Continue waits for every required one. */
+/** Consent step: agree to all, required and optional items; Continue waits for every required one. */
 export function ConsentStep({ title, subtitle, footnote, items, checked, onCheckedChange, onView, onContinue, onCancel, labels }: ConsentStepProps) {
   const all = items.every((i) => checked[i.id])
   const some = items.some((i) => checked[i.id])
@@ -242,7 +295,7 @@ export function ConsentStep({ title, subtitle, footnote, items, checked, onCheck
                 label={<span className="inline-flex flex-wrap items-center gap-[var(--space-2)]">{i.label}<span className="type-body-caption text-ui-fg-muted">{i.required ? labels.required : labels.optional}</span></span>}
               />
               {i.viewHref ? (
-                <button type="button" onClick={() => onView(i)} className="inline-flex shrink-0 items-center gap-[var(--space-1-5)] type-label-button text-ui-link hover:text-ui-link-hover">
+                <button type="button" onClick={() => onView(i)} className={cn('relative inline-flex shrink-0 items-center gap-[var(--space-1-5)] type-label-button text-ui-link hover:text-ui-link-hover', HIT_AREA)}>
                   {labels.view}
                   <ArrowRight aria-hidden className="size-[var(--icon-size-sm)]" />
                 </button>
@@ -273,7 +326,7 @@ export type SearchFiltersProps = {
   onClose?: () => void
 }
 
-/** Search filters (UI-82, PD-42): chip groups; desktop applies as tapped, mobile has Show N results. */
+/** Search filters: chip groups; desktop applies as tapped, mobile has Show N results. */
 export function SearchFilters({ viewport, groups, value, onValueChange, sort, labels, onShowResults, onClose }: SearchFiltersProps) {
   const mobile = viewport === 'mobile'
   const toggle = (g: FilterGroup, id: string) => {
@@ -282,9 +335,9 @@ export function SearchFilters({ viewport, groups, value, onValueChange, sort, la
     onValueChange({ ...value, [g.id]: next })
   }
   const legend = 'mb-[var(--space-2)] type-eyebrow-category text-ui-fg-muted'
-  // Mobile sits in a Bottom sheet, which draws the surface, top radius and Grabber.
+  // Mobile sits in a flush Bottom sheet, which draws the surface, top radius and Grabber: 24 under the Grabber.
   return (
-    <div className={cn('flex flex-col gap-[var(--space-6)] text-ui-fg', mobile ? 'px-[var(--space-4)] pb-[var(--space-6)]' : 'p-[var(--space-6)]')}>
+    <div className={cn('flex flex-col gap-[var(--space-6)] text-ui-fg', mobile ? 'px-[var(--space-4)] pb-[var(--space-6)] pt-[var(--space-6)]' : 'p-[var(--space-6)]')}>
       <div className="flex items-center justify-between gap-[var(--space-2)]">
         <h2 className="type-display-h3">{labels.title}</h2>
         {!mobile ? (
@@ -334,7 +387,7 @@ export type ProfileHeaderProps = {
   tabs?: ReactNode
 }
 
-/** Profile header (UI-82, ADD-67): avatar, name (the page h1), stats, pinned badges, action. */
+/** Profile header: avatar, name (the page h1), stats, pinned badges, action. */
 export function ProfileHeader({ viewport, name, avatarSrc, stats, badges, action, actionInRow, tabs }: ProfileHeaderProps) {
   const desktop = viewport === 'desktop'
   const inRow = desktop || actionInRow
@@ -362,14 +415,17 @@ export type LegalDocumentProps = {
   breadcrumbs: { label: string; href?: string }[]
   title: string
   updated: string
-  contact?: ReactNode
+  /** Meta: the label after the updated date ("Contact") and the address link beside it. */
+  contact?: { label: string; link: ReactNode }
   sections: { id: string; title: string; body: ReactNode }[]
   currentSection?: string
+  /** A block under the title and updated line, before the sections (Cookie Policy: the preferences card). */
+  intro?: ReactNode
   labels: { breadcrumb: string; contents: string; onThisPage: string }
 }
 
-/** Legal document (UI-82, ADD-73): title, updated, numbered sections; contents list (desktop) or a Select (phones). */
-export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, sections, currentSection, labels }: LegalDocumentProps) {
+/** Legal document: title, updated, numbered sections; contents list (desktop) or a Select (phones). */
+export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, sections, currentSection, intro, labels }: LegalDocumentProps) {
   const contentsId = useId()
   // Figma: 16 between every element of the document column; breadcrumbs and title sit in that column.
   const doc = (
@@ -377,14 +433,15 @@ export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, 
       <Breadcrumbs label={labels.breadcrumb} items={breadcrumbs} />
       <header className="flex flex-col gap-[var(--space-4)]">
         <h1 className="type-display-h1">{title}</h1>
-        <p className="flex flex-wrap items-baseline gap-[var(--space-1-5)] type-body-caption text-ui-fg-muted">
-          <span>{updated}</span>
-          {contact ? <span>{contact}</span> : null}
-        </p>
+        {/* Figma Meta: a wrap row of the caption ("Last updated … · Contact") and the address link, 6 apart. */}
+        <div className="flex flex-wrap items-start gap-x-[var(--space-1-5)]">
+          <p className="type-body-caption text-ui-fg-muted">{updated}{contact ? <> · {contact.label}</> : null}</p>
+          {contact?.link}
+        </div>
       </header>
+      {intro}
       {viewport === 'mobile' ? (
-        <Select label={labels.onThisPage} showLabel size="md" defaultValue="" onChange={(e) => document.getElementById(e.target.value)?.scrollIntoView({ behavior: 'smooth' })}>
-          <option value="" disabled hidden>{labels.onThisPage}</option>
+        <Select label={labels.onThisPage} showLabel size="md" value={currentSection ?? sections[0]?.id ?? ''} onChange={(e) => document.getElementById(e.target.value)?.scrollIntoView({ behavior: 'smooth' })}>
           {sections.map((s, i) => <option key={s.id} value={s.id}>{i + 1}. {s.title}</option>)}
         </Select>
       ) : null}
@@ -400,13 +457,13 @@ export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, 
   if (viewport === 'mobile') return <article className="text-ui-fg">{doc}</article>
   return (
     <article className="flex gap-[var(--space-12)] text-ui-fg">
-      {/* Figma Contents: "ON THIS PAGE" eyebrow, items 12 apart; current in body/label fg. */}
+      {/* Figma Contents: "ON THIS PAGE" eyebrow, items 12 apart; current in body/label fg (the first until one is read). */}
       <nav aria-labelledby={contentsId} className="sticky top-[var(--space-6)] flex w-[240px] shrink-0 flex-col gap-[var(--space-3)] self-start">
         <p id={contentsId} className="type-eyebrow-category text-ui-fg-muted">{labels.contents}</p>
         <ol className="flex flex-col gap-[var(--space-3)]">
           {sections.map((s, i) => (
             <li key={s.id}>
-              <a href={`#${s.id}`} aria-current={currentSection === s.id ? 'location' : undefined} className={cn('hover:text-ui-fg', currentSection === s.id ? 'type-body-label text-ui-fg' : 'type-body-base text-ui-fg-muted')}>{i + 1}. {s.title}</a>
+              <a href={`#${s.id}`} aria-current={currentSection === s.id ? 'location' : undefined} className={cn('block hover:text-ui-fg', (currentSection ?? sections[0]?.id) === s.id ? 'type-body-label text-ui-fg' : 'type-body-base text-ui-fg-muted')}>{i + 1}. {s.title}</a>
             </li>
           ))}
         </ol>
@@ -441,7 +498,7 @@ function bold(text: string, q: string) {
   return <>{text.slice(0, i)}<strong className="font-[var(--font-weight-bold)]">{text.slice(i, i + q.length)}</strong>{text.slice(i + q.length)}</>
 }
 
-/** Search suggestions (PD-43, UI-99): Typing = search for, places, plans, explore; Empty = recent, trending, browse. */
+/** Search suggestions: Typing = search for, places, plans, explore; Empty = recent, trending, browse. */
 export function SearchSuggestions({ viewport, state, query, places = [], plans = [], explore = [], recent = [], trending = [], categories = [], onSearch, onRemoveRecent, onClearRecent, labels }: SearchSuggestionsProps) {
   const row = cn('flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left hover:bg-ui-state-hover', FOCUS_RING_INSET)
   const heading = 'type-eyebrow-category text-ui-fg-muted'
@@ -449,7 +506,8 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
   const icon = 'size-[var(--icon-size-md)] shrink-0 text-ui-fg-muted'
   const thumb = 'w-[var(--space-12)] shrink-0'
   const twoLine = (name: string, meta?: string) => (
-    <span className="flex min-w-0 flex-col"><span className="truncate type-body-base">{bold(name, query)}</span>{meta ? <span className="truncate type-body-caption text-ui-fg-muted">{meta}</span> : null}</span>
+    // Figma: title and secondary line 2 apart.
+    <span className="flex min-w-0 flex-col gap-[var(--space-0-5)]"><span className="truncate type-body-base">{bold(name, query)}</span>{meta ? <span className="truncate type-body-caption text-ui-fg-muted">{meta}</span> : null}</span>
   )
   // Figma: the same card on desktop and phones (bg-raised, 1px border, radius 2xl, p12, gap 12).
   return (
@@ -465,7 +523,7 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
               <p className={heading}>{labels.places}</p>
               {places.slice(0, 3).map((p) => (
                 <IntlLink key={p.id} href={p.href} className={row}>
-                  <Image ratio="1:1" src={p.imageSrc} alt="" sizes="48px" className={thumb} />
+                  <Image ratio="1:1" src={p.imageSrc} alt="" sizes="80px" className={thumb} />
                   {twoLine(p.name, p.meta)}
                 </IntlLink>
               ))}
@@ -476,7 +534,7 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
               <p className={heading}>{labels.plans}</p>
               {plans.map((p) => (
                 <IntlLink key={p.id} href={p.href} className={row}>
-                  {p.imageSrc !== undefined ? <Image ratio="1:1" src={p.imageSrc} alt="" sizes="48px" className={thumb} /> : <Route aria-hidden className={icon} />}
+                  {p.imageSrc !== undefined ? <Image ratio="1:1" src={p.imageSrc} alt="" sizes="80px" className={thumb} /> : <Route aria-hidden className={icon} />}
                   {twoLine(p.name, p.meta)}
                 </IntlLink>
               ))}
@@ -498,17 +556,20 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
         <>
           {recent.length ? (
             <div className={group}>
+              {/* Figma: the row is the heading's height; the taller Clear all text is centred on it without growing it. */}
               <div className="flex items-center justify-between gap-[var(--space-2)]">
                 <p className={heading}>{labels.recent}</p>
-                {onClearRecent ? <button type="button" onClick={onClearRecent} className="type-body-caption text-ui-fg-muted underline-offset-2 hover:text-ui-fg hover:underline">{labels.clearAll}</button> : null}
+                {onClearRecent ? <button type="button" onClick={onClearRecent} className="-my-[var(--space-1)] type-body-caption text-ui-fg-muted underline-offset-2 hover:text-ui-fg hover:underline">{labels.clearAll}</button> : null}
               </div>
+              {/* Figma List item: 16 and 12 padding, clock icon, the search, and the 40 Ghost remove button
+                  (64 high, above the 44 tap minimum); the search text is the button that runs it, the remove button sits beside it. */}
               {recent.map((r) => (
-                <div key={r.id} className="flex items-center hover:bg-ui-state-hover">
-                  <button type="button" className={cn(row, 'hover:bg-transparent')} onClick={() => onSearch(r.text)}>
+                <div key={r.id} className="flex items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] hover:bg-ui-state-hover">
+                  <button type="button" className={cn('flex min-w-0 flex-1 items-center gap-[var(--space-3)] self-stretch text-left', FOCUS_RING_INSET)} onClick={() => onSearch(r.text)}>
                     <Clock aria-hidden className={icon} />
-                    <span className="type-body-base">{r.text}</span>
+                    <span className="truncate type-body-base">{r.text}</span>
                   </button>
-                  {onRemoveRecent ? <IconButton label={labels.remove(r.text)} icon={<X />} onClick={() => onRemoveRecent(r.id)} className="mr-[var(--space-2)]" /> : null}
+                  {onRemoveRecent ? <IconButton label={labels.remove(r.text)} icon={<X />} onClick={() => onRemoveRecent(r.id)} /> : null}
                 </div>
               ))}
             </div>
@@ -524,12 +585,14 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
           {categories.length ? (
             <div className={group}>
               <p className={heading}>{labels.browse}</p>
-              {categories.map((c) => (
-                <IntlLink key={c.id} href={c.href} className={row}>
-                  <MapPin aria-hidden className={icon} />
-                  <span className="type-body-base">{c.name}</span>
-                </IntlLink>
-              ))}
+              {/* Figma Browse: category chips, like Trending now. */}
+              <div className="flex flex-wrap gap-[var(--space-2)] py-[var(--space-1)]">
+                {categories.map((c) => (
+                  <IntlLink key={c.id} href={c.href} className="inline-flex h-[var(--control-height-sm)] items-center rounded-full border border-ui-border-strong px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+                    {c.name}
+                  </IntlLink>
+                ))}
+              </div>
             </div>
           ) : null}
         </>

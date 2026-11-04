@@ -1,4 +1,4 @@
-// DEC-61 — 유네스코 유산 (UNESCO heritage) detail page data, "Gyeongbuk" example
+// 유네스코 유산 (UNESCO heritage) detail page data, "Gyeongbuk" example
 // (경북 유네스코 유산 15곳 — Gyeongbuk has the most UNESCO sites nationally per the
 // deck, 53 total, but only 1 is publish-ready today). Self-contained, mirrors
 // lib/kpop-footsteps.ts's pattern.
@@ -39,7 +39,7 @@ export interface HeritageDetail {
 // Andong) — high real-world confidence in its coordinates, same judgment call as
 // K-Drama's Hwahongmun Gate. Every other named site here is a real UNESCO
 // heritage site too, but the deck itself flags them "검수 대기" (pending review)
-// — ships placeholder pending BLK-37, not because their existence is in doubt,
+// — ships placeholder pending, not because their existence is in doubt,
 // but because this codebase has no confirmed core.poi row for them yet.
 const SEED_HERITAGE: Record<string, HeritageDetail> = {
   gyeongbuk: {

@@ -78,7 +78,6 @@
     "CD1335": "Todos · 12",
     "CD1336": "Rota",
     "CD1338": "História",
-    "CD1339": "Desafio",
     "CD1340": "12 lugares · Atualizado hoje",
     "CD1341": "Pacotes",
     "CD1342": "Ver no Klook",
@@ -398,6 +397,16 @@
     "deleteDayBody": "{count, plural, one {# lugar} other {# lugares}} deste dia {count, plural, one {será removido} other {serão removidos}} do seu plano.",
     "deleteDayConfirm": "Excluir",
     "previousDays": "Dias anteriores",
-    "nextDays": "Próximos dias"
+    "nextDays": "Próximos dias",
+    "settingsData": "Seus dados e privacidade",
+    "deleteAccountNote": "Excluída após 30 dias; entre antes disso para restaurar",
+    "profilePlansNote": "Planos públicos, como os outros os veem. Rascunhos e planos privados ficam em Salvos.",
+    "openSaved": "Abrir Salvos",
+    "linkExpired": "Link expirado",
+    "interestsPicked": "{count, plural, one {# escolhido} other {# escolhidos}} · usado no Início e no Plano rápido",
+    "searchArea": "Buscar nesta área",
+    "dayTotal": "Dia {n} · {time} · {count} de {max} paradas",
+    "allDaysTotal": "Todos os dias · {time} · {count, plural, one {# parada} other {# paradas}}",
+    "areaName": "{district}, {city}"
   }
 }

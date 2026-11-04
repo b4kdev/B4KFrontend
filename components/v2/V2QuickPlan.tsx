@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
@@ -9,24 +9,30 @@ import { usePhone } from '@/components/library/hooks'
 import { useAuth } from '@/contexts/AuthContext'
 import { useInterests } from '@/hooks/useInterests'
 import { apiFetch } from '@/lib/api'
-import { cityToApiRegion, labelOf, placeName, RESULT_LIMIT, saveCourseHandoff, saveDraftTags, toISODate, type QuickPlanCity, type QuickPlanPlace } from '@/lib/quickplan'
+import { track } from '@/lib/analytics'
+import { cityToApiRegion, labelOf, placeName, readDraftTags, RESULT_LIMIT, saveCourseHandoff, saveDraftAnswers, saveDraftTags, toISODate, type QuickPlanAnswers, type QuickPlanCity, type QuickPlanPlace } from '@/lib/quickplan'
 import { buildCourse, courseDayCount } from '@/lib/quickplan-course'
 import { COURSE_HANDOFF_EVENT } from './map/usePlanDraft'
 import { useCd } from './cd'
 import { useV2Shell } from './V2Shell'
 
-// Quick plan (planning flow 4, PD-33, PD-45; SCR-009): Where, who and when; Interests (up to 10);
+// Quick plan (planning flow 4): Where, who and when; Interests (up to 10);
 // Review. Make my plan builds the course the same way as live (/places + buildCourse) and opens
 // it in the Plan editor unsaved (/v2/map?from=quickplan).
 
-const CITIES = ['Seoul', 'Busan', 'Jeju', 'Gyeongju', 'Incheon', 'Gangwon', 'Daegu', 'Gwangju', 'Daejeon', 'Ulsan', 'Sejong', 'Gyeonggi', 'Chungbuk', 'Chungnam', 'Jeonbuk', 'Jeonnam', 'Gyeongnam'] as const
+// Destinations as drawn (in its order). A city inside a province searches its province and the
+// city itself (district, as the place data writes it).
+const CITIES = ['Seoul', 'Busan', 'Jeju', 'Gyeongju', 'Incheon', 'Jeonju', 'Gangneung', 'Sokcho', 'Yeosu'] as const
 const CITY_CD: Record<string, string> = {
-  Busan: 'CD0741', Chungbuk: 'CD0742', Chungnam: 'CD0743', Daegu: 'CD0744', Daejeon: 'CD0745', Gangwon: 'CD0746', Gwangju: 'CD0747',
-  Gyeonggi: 'CD0748', Gyeongju: 'CD0749', Gyeongnam: 'CD0750', Incheon: 'CD0751', Jeju: 'CD0752', Jeonbuk: 'CD0753', Jeonnam: 'CD0754',
-  Sejong: 'CD0755', Seoul: 'CD0756', Ulsan: 'CD0757',
+  Seoul: 'CD0756', Busan: 'CD0741', Jeju: 'CD0752', Gyeongju: 'CD0749', Incheon: 'CD0751', Jeonju: 'CD0211',
+  Gangneung: 'CD1809', Sokcho: 'CD1810', Yeosu: 'CD1811',
 }
+const CITY_REGION: Record<string, string> = { Jeonju: 'Jeonbuk', Gangneung: 'Gangwon', Sokcho: 'Gangwon', Yeosu: 'Jeonnam' }
+const CITY_DISTRICT: Record<string, string> = { Gyeongju: '경주시', Jeonju: '전주시', Gangneung: '강릉시', Sokcho: '속초시', Yeosu: '여수시' }
 const WHO = [['solo', 'CD0798'], ['couple', 'CD0794'], ['friends', 'CD0796'], ['family', 'CD0795']] as const
 const MAX = 10
+
+const WHO_KEY = 'b4k_quickplan_who'
 
 export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose: () => void }) {
   const t = useCd()
@@ -43,6 +49,37 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
   const { user } = useAuth()
   const { toast } = useV2Shell()
   const { categories, isLoading, isError, retry } = useInterests(open)
+  // Prefill from the last answers: interests and the Quick plan answers from the account (or this
+  // device for guests), who with also from this device; dates only while they are still ahead.
+  // Who with is kept as an answer only; the course does not use it.
+  useEffect(() => {
+    if (!open) return
+    try {
+      const w = localStorage.getItem(WHO_KEY)
+      if (w && WHO.some(([id]) => id === w)) setWho((cur) => cur ?? w)
+    } catch {}
+    if (user) {
+      apiFetch<{ interest_tags?: string[] }>('/me/interests')
+        .then((r) => { if (r?.interest_tags?.length) setPicked((cur) => (cur.length ? cur : r.interest_tags!.slice(0, MAX))) })
+        .catch(() => {})
+      apiFetch<{ quick_plan?: QuickPlanAnswers | null }>('/me')
+        .then((r) => {
+          const a = r?.quick_plan
+          if (!a) return
+          const c = CITIES.find((x) => x.toLowerCase() === a.destination)
+          if (c) setCity(c)
+          if (a.who_with && WHO.some(([id]) => id === a.who_with)) setWho((cur) => cur ?? a.who_with!)
+          if (a.start_date && a.start_date >= toISODate(new Date())) {
+            const at = (d: string) => new Date(`${d}T00:00:00`)
+            setRange((cur) => (cur.start ? cur : { start: at(a.start_date!), end: a.end_date ? at(a.end_date) : null }))
+          }
+        })
+        .catch(() => {})
+    } else {
+      const tags = readDraftTags()
+      if (tags?.length) setPicked((cur) => (cur.length ? cur : tags.slice(0, MAX)))
+    }
+  }, [open, user])
   const close = () => {
     onClose()
     setStep(1)
@@ -56,7 +93,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
   const group = categories.find((g) => g.slug === activeGroup) ?? categories[0]
   const toggle = (slug: string) => setPicked((p) => (p.includes(slug) ? p.filter((x) => x !== slug) : p.length < MAX ? [...p, slug] : p))
 
-  // Figma A1 / Quick plan / Step 1 to 3 (SCR-009).
+  // Figma A1 / Quick plan / Step 1 to 3.
   const body =
     step === 1 ? (
       <div className={phone ? 'flex flex-col gap-[var(--space-6)]' : 'flex flex-col gap-[var(--space-5)]'}>
@@ -76,7 +113,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
     ) : step === 2 ? (
       <div className="flex flex-col gap-[var(--space-5)]">
         <div className="flex flex-col gap-[var(--space-2)]">
-          <p aria-live="polite" className={lbl}>{t('CD0785')} · {picked.length} / {MAX}</p>
+          <p aria-live="polite" className={lbl}>{t('CD1348', { count: picked.length, max: MAX })}</p>
           {picked.length ? (
             <div className="flex flex-wrap gap-[var(--space-2)]">
               {picked.map((slug) => <Chip key={slug} type="dismissible" dismissLabel={t('CD0783', { label: chipLabel.get(slug) ?? slug })} onClick={() => toggle(slug)}>{chipLabel.get(slug) ?? slug}</Chip>)}
@@ -152,9 +189,40 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
   const make = async () => {
     setBuilding(true)
     try {
-      if (user) await apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) }).catch(() => {})
-      else saveDraftTags(picked)
-      const params = new URLSearchParams({ limit: String(RESULT_LIMIT), region: cityToApiRegion(city as QuickPlanCity) })
+      try {
+        if (who) localStorage.setItem(WHO_KEY, who)
+      } catch {}
+      // The answers, once per submit: city slug, day count, days to the start and its month (with
+      // dates only), who with, the picked interests (slugs, up to 10).
+      const start = range.start ? toISODate(range.start) : null
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      track('quick_plan_submit', {
+        destination: city.toLowerCase(),
+        trip_days: courseDayCount(start, range.end ? toISODate(range.end) : null),
+        ...(range.start ? { days_until_trip: Math.max(0, Math.round((range.start.getTime() - today.getTime()) / 86400000)), trip_month: start!.slice(0, 7) } : {}),
+        ...(who ? { who_with: who } : {}),
+        interests: picked.slice(0, MAX).join(','),
+        interest_count: picked.length,
+        is_guest: !user,
+        locale: lang,
+        screen_id: 'quick_plan',
+      })
+      // The answers on the account (a guest's after the sign-in, as the interests).
+      const answers: QuickPlanAnswers = {
+        destination: city.toLowerCase(),
+        ...(start ? { start_date: start, ...(range.end ? { end_date: toISODate(range.end) } : {}) } : {}),
+        ...(who ? { who_with: who } : {}),
+      }
+      if (user) {
+        await apiFetch('/me/interests', { method: 'PUT', body: JSON.stringify({ tags: picked, completed: true }) }).catch(() => {})
+        await apiFetch('/me/quick-plan', { method: 'PUT', body: JSON.stringify(answers) }).catch(() => {})
+      } else {
+        saveDraftTags(picked)
+        saveDraftAnswers(answers)
+      }
+      const params = new URLSearchParams({ limit: String(RESULT_LIMIT), region: cityToApiRegion((CITY_REGION[city] ?? city) as QuickPlanCity) })
+      if (CITY_DISTRICT[city]) params.set('district', CITY_DISTRICT[city])
       if (picked.length) {
         params.set('tags', picked.join(','))
         params.set('sort', 'match')
@@ -168,7 +236,8 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
         toast({ type: 'warning', message: t('CD0770') })
         return
       }
-      saveCourseHandoff(stops)
+      // Named from the city and day count, e.g. "Seoul in 3 days".
+      saveCourseHandoff(stops, t('CD1637', { Region: t(CITY_CD[city]), n: course.length }))
       // Already on the map: it does not remount on the same address, so it listens for this.
       window.dispatchEvent(new Event(COURSE_HANDOFF_EVENT))
       close()
@@ -199,7 +268,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
       next={
         step < 3
           ? { label: t('CD0768'), onClick: () => setStep((s) => (s + 1) as 2 | 3) }
-          : { label: building ? t('CD0774') : t('CD0763'), onClick: make, disabled: building }
+          : { label: t('CD0763'), onClick: make, loading: building }
       }
     >
       {body}

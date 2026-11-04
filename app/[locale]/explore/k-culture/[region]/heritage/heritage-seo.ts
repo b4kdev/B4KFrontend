@@ -1,22 +1,12 @@
 import type { Metadata } from 'next'
-import { hreflangAlternates, localizedUrl } from '@/lib/site-url'
-import { routing } from '@/i18n/routing'
+import { localizedUrl } from '@/lib/site-url'
+import { namedPageMeta, seoText } from '@/lib/seo'
 import type { HeritageDetail } from '@/lib/kculture-heritage'
 
-export function buildHeritageMetadata(detail: HeritageDetail, locale: string): Metadata {
-  const title = `${detail.regionNameEn} UNESCO Heritage | B4K`
-  const description = `${detail.totalCount} UNESCO heritage sites in ${detail.regionNameEn}, curated by B4K.`
-  const path = `/explore/k-culture/${detail.region}/heritage`
-  const url = localizedUrl(locale, path)
-  const otherLocales = routing.locales.filter(l => l !== locale)
-
-  return {
-    title,
-    description,
-    alternates: { canonical: url, languages: hreflangAlternates(path) },
-    openGraph: { title, description, url, siteName: 'B4K', locale, alternateLocale: otherLocales, type: 'website' },
-    twitter: { card: 'summary_large_image', title, description },
-  }
+// The page heading as on the screen, "{page} | B4K"; the place count as the description.
+export async function buildHeritageMetadata(detail: HeritageDetail, locale: string): Promise<Metadata> {
+  const { t } = await seoText(locale)
+  return namedPageMeta(locale, `/explore/k-culture/${detail.region}/heritage`, locale === 'ko' ? detail.regionNameKo : detail.regionNameEn, { description: t('CD1835', { count: detail.totalCount }) })
 }
 
 export function buildHeritageJsonLd(detail: HeritageDetail, locale: string) {

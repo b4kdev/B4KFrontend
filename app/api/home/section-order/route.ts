@@ -1,32 +1,24 @@
 import { NextResponse } from 'next/server'
+import { HOME_SECTION_ORDER, type HomeSectionOrder } from './order'
 
 /**
- * Home content-section ordering (UF-8 · DEC-32 G2.2).
+ * Home content-section ordering.
  *
  * MOCK STUB. Real impl weights this order by the user's behavioral signals —
  * category/tag weights derived from search history (raw queries never stored,
- * DEC-32 Model A), saves, and interests — to rank the personalizable Home
- * sections. Guests (no signals) receive DEFAULT_ORDER unchanged.
+ * Model A), saves, and interests — to rank the personalizable Home
+ * sections. Guests (no signals) receive HOME_SECTION_ORDER unchanged.
  *
  * Only the CONTENT sections are ordered here. Fixed sections (hero carousel,
  * weather widget) stay pinned client-side and are NOT included in this list.
  * Unknown keys returned here are ignored by the client; missing keys fall back
  * to their default position, so the payload can never break the page.
  */
-export interface HomeSectionOrder {
-  order: string[]
-}
-
-const DEFAULT_ORDER: string[] = [
-  'exploreHub',
-  'trending',
-  'planTrip',
-  'challenge',
-  'leaderboardBadge',
-]
+// Same answer for everyone, built once (Next 15 no longer makes such GET handlers static by default).
+export const dynamic = 'force-static'
 
 export async function GET() {
   // Real impl: resolve session → load behavioral weights → reorder.
-  // Guests / no signals → DEFAULT_ORDER.
-  return NextResponse.json<HomeSectionOrder>({ order: DEFAULT_ORDER })
+  // Guests / no signals → HOME_SECTION_ORDER.
+  return NextResponse.json<HomeSectionOrder>({ order: HOME_SECTION_ORDER })
 }

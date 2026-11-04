@@ -1,7 +1,7 @@
 import { CircleAlert } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
-// Label (UI-59) and the help / error row shared by Text input, Select and Textarea (UI-51).
+// Label and the help / error row shared by Text input, Select and Textarea.
 
 export type LabelProps = {
   htmlFor?: string
@@ -9,7 +9,7 @@ export type LabelProps = {
   children: React.ReactNode
   /** Figma Required: muted asterisk. */
   required?: boolean
-  /** Figma State=Disabled. */
+  /** Figma State=disabled. */
   disabled?: boolean
   /** Placeholder-only fields still render the label for screen readers. */
   srOnly?: boolean
@@ -37,7 +37,7 @@ export type FieldMessageProps = {
   id: string
   help?: React.ReactNode
   error?: React.ReactNode
-  /** Figma State=Disabled: help in fg-disabled. */
+  /** Figma State=disabled: help in fg-disabled. */
   disabled?: boolean
   /** Fieldset (Figma Molecules › Fieldset): the hint stays and the error shows below it. */
   stacked?: boolean
@@ -63,7 +63,7 @@ export function FieldMessage({ id, help, error, disabled, stacked }: FieldMessag
   if (error) {
     return (
       <p id={id} className="flex items-start gap-[var(--space-1-5)] type-body-caption text-ui-danger">
-        <CircleAlert aria-hidden className="mt-[2px] size-[var(--icon-size-xs)] shrink-0" />
+        <CircleAlert aria-hidden className="mt-[var(--space-0-5)] size-[var(--icon-size-xs)] shrink-0" />
         {error}
       </p>
     )

@@ -1,11 +1,11 @@
 // Theme = what is applied to <html data-theme>. ThemeChoice = what the user picked; 'system'
-// (Match device) follows prefers-color-scheme and its changes (PD-03).
+// (Match device) follows prefers-color-scheme and its changes.
 export type Theme = 'dark' | 'light'
 export type ThemeChoice = Theme | 'system'
 
 export const THEME_STORAGE_KEY = 'b4k-theme'
 
-// Used when nothing is stored (first visit). PD-03: a first visit follows the device.
+// Used when nothing is stored (first visit). A first visit follows the device.
 export const DEFAULT_THEME_CHOICE: ThemeChoice = 'system'
 
 // Inlined verbatim as a blocking <script> in app/layout.tsx so data-theme is set before first

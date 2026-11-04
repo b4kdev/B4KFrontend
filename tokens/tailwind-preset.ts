@@ -77,7 +77,7 @@ const b4kTokens: Partial<Config> = {
       backgroundImage: {
         'overlay-fade': 'var(--gradient-overlay-fade)',
       },
-      // Motion patterns from the Motion spec (UI-20, UI-56): skeleton pulse, indeterminate progress.
+      // Motion patterns from the Motion spec: skeleton pulse, indeterminate progress.
       keyframes: {
         'b4k-pulse': { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0.5' } },
         'b4k-indeterminate': { '0%': { left: '-40%' }, '100%': { left: '100%' } },
@@ -118,6 +118,20 @@ const b4kTokens: Partial<Config> = {
         "emphasized": "var(--easing-emphasized)",
         "emphasized-accelerate": "var(--easing-emphasized-accelerate)",
         "emphasized-decelerate": "var(--easing-emphasized-decelerate)"
+      },
+      zIndex: {
+        "base": "var(--z-base)",
+        "map-controls": "var(--z-map-controls)",
+        "dropdown": "var(--z-dropdown)",
+        "sticky": "var(--z-sticky)",
+        "fixed": "var(--z-fixed)",
+        "drawer-backdrop": "var(--z-drawer-backdrop)",
+        "drawer": "var(--z-drawer)",
+        "modal-backdrop": "var(--z-modal-backdrop)",
+        "modal": "var(--z-modal)",
+        "popover": "var(--z-popover)",
+        "tooltip": "var(--z-tooltip)",
+        "toast": "var(--z-toast)"
       },
     },
   },
@@ -300,6 +314,20 @@ const b4kTokens: Partial<Config> = {
           "fontSize": "var(--font-size-3xl)",
           "fontWeight": "var(--font-weight-bold)",
           "lineHeight": "var(--leading-none)",
+          "letterSpacing": "0"
+        },
+        ".type-body-legal, .type-body-legal:lang(ko), .type-body-legal:lang(ja), .type-body-legal:lang(zh-TW)": {
+          "fontFamily": "var(--font-family-body)",
+          "fontSize": "var(--font-size-2xs)",
+          "fontWeight": "var(--font-weight-regular)",
+          "lineHeight": "var(--leading-normal)",
+          "letterSpacing": "0"
+        },
+        ".type-body-legal-strong, .type-body-legal-strong:lang(ko), .type-body-legal-strong:lang(ja), .type-body-legal-strong:lang(zh-TW)": {
+          "fontFamily": "var(--font-family-body)",
+          "fontSize": "var(--font-size-2xs)",
+          "fontWeight": "var(--font-weight-semibold)",
+          "lineHeight": "var(--leading-normal)",
           "letterSpacing": "0"
         }
       })

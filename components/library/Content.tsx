@@ -1,19 +1,20 @@
-import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { forwardRef, type ButtonHTMLAttributes, type ElementType, type ReactNode } from 'react'
+import { BedDouble, Camera, Frame, Info, Landmark, MapPin, ShoppingBag, Sparkles, Star, Ticket, Trees, Utensils } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { FOCUS_RING, HIT_AREA } from './styles'
 
-// Content atoms (Figma Atoms): Stat counter, Image action, Forecast day, Chat bubble, Scrim, Calendar day.
+// Content atoms (Figma Atoms): Stat counter, Credit line, Image action, Forecast day, Chat bubble, Scrim, Calendar day.
 
 export type StatCounterProps = {
   /** Figma Number. */
   number: ReactNode
   /** Figma Label, e.g. "Trips". */
   label: string
-  /** Figma Separator=On: a middle dot before (all stats but the first). */
+  /** Figma Separator=true: a middle dot before (all stats but the first). */
   separator?: boolean
 }
 
-/** Stat counter (UI-73): number then label on one line; read as one text ("12 Trips"). */
+/** Stat counter: number then label on one line; read as one text ("12 Trips"). */
 export function StatCounter({ number, label, separator }: StatCounterProps) {
   return (
     <span className="inline-flex items-baseline gap-[var(--space-2)]">
@@ -26,8 +27,67 @@ export function StatCounter({ number, label, separator }: StatCounterProps) {
   )
 }
 
+/** Credit line: photo credit under a place photo, info icon and caption, muted. */
+export function CreditLine({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <p className={cn('flex items-center gap-[var(--space-1)] type-body-caption text-ui-fg-muted', className)}>
+      <Info aria-hidden className="size-[var(--icon-size-xs)] shrink-0" />
+      <span>{children}</span>
+    </p>
+  )
+}
+
+/** Figma Place type icon › Type: the place's interest category (the API's interest_category). */
+export const PLACE_TYPE_ICON = {
+  food: Utensils,
+  shopping: ShoppingBag,
+  activity: Ticket,
+  nature: Trees,
+  exhibition: Frame,
+  heritage: Landmark,
+  sightseeing: Camera,
+  stay: BedDouble,
+  beauty: Sparkles,
+  hallyu: Star,
+  place: MapPin,
+} as const
+
+export type PlaceType = keyof typeof PLACE_TYPE_ICON
+
+/** The Place type of an interest category; Place when it is missing or unknown. */
+export const placeTypeOf = (category: string | null | undefined): PlaceType =>
+  category && category in PLACE_TYPE_ICON ? (category as PlaceType) : 'place'
+
+/** Place type icon (Figma atom): the icon for a place's type, at the size the parent sets. Decorative. */
+export function PlaceTypeIcon({ type = 'place', className }: { type?: PlaceType; className?: string }) {
+  const Icon = PLACE_TYPE_ICON[type]
+  return <Icon aria-hidden className={className} />
+}
+
+export type LegalLineProps = {
+  /** Leading text, e.g. the copyright line. */
+  lead?: ReactNode
+  /** The links in order; strong = type-body-legal-strong (Privacy Policy, as drawn). */
+  links: { href: string; label: string; strong?: boolean }[]
+  /** Link component of the app (locale-aware); a plain anchor by default. */
+  linkAs?: ElementType
+  className?: string
+}
+
+/** Legal line (Figma): legal type, muted, items 12 apart, wraps. */
+export function LegalLine({ lead, links, linkAs: LinkTag = 'a', className }: LegalLineProps) {
+  return (
+    <p className={cn('flex flex-wrap items-center gap-x-[var(--space-3)] type-body-legal text-ui-fg-muted', className)}>
+      {lead ? <span>{lead}</span> : null}
+      {links.map((l) => (
+        <LinkTag key={l.href} href={l.href} className={cn('hover:text-ui-fg hover:underline', l.strong && 'type-body-legal-strong')}>{l.label}</LinkTag>
+      ))}
+    </p>
+  )
+}
+
 export type ImageActionProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
-  /** Figma State=On: filled icon, aria-pressed. */
+  /** Figma State=on: filled icon, aria-pressed. */
   on?: boolean
   /** Outline icon (Off) and filled icon (On), e.g. two Lucide bookmarks with fill. */
   icon: ReactNode
@@ -35,7 +95,7 @@ export type ImageActionProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'ty
   label: string
 }
 
-/** Image action (UI-75): round 32 button on a photo, scrim behind a 16 icon in fg-on-media. */
+/** Image action: round 32 button on a photo, scrim behind a 16 icon in fg-on-media. */
 export const ImageAction = forwardRef<HTMLButtonElement, ImageActionProps>(function ImageAction(
   { on = false, icon, label, className, ...props },
   ref,
@@ -72,7 +132,7 @@ export type ForecastDayProps = {
   label: string
 }
 
-/** Forecast day (UI-75): one day of the forecast in the Now Seoul card. */
+/** Forecast day: one day of the forecast in the Now Seoul card. */
 export function ForecastDay({ day, icon, range, label }: ForecastDayProps) {
   return (
     <div role="group" aria-label={label} className="flex flex-col items-center gap-[var(--space-1)]">
@@ -91,7 +151,7 @@ export type ChatBubbleProps = {
   typingLabel?: string
 }
 
-/** Chat bubble (UI-76): radius/2xl, body/base; user = inverse, right; assistant = sunken, left. */
+/** Chat bubble: radius/2xl, body/base; user = inverse, right; assistant = sunken, left. */
 export function ChatBubble({ role, children, typingLabel }: ChatBubbleProps) {
   return (
     <div className={cn('flex w-full', role === 'user' ? 'justify-end' : 'justify-start')}>
@@ -121,7 +181,7 @@ export function ChatBubble({ role, children, typingLabel }: ChatBubbleProps) {
   )
 }
 
-/** Scrim (UI-73): dimming layer behind Modal, Dialog and Bottom sheet. Blocking never closes on click. */
+/** Scrim: dimming layer behind Modal, Dialog and Bottom sheet. Blocking never closes on click. */
 export function Scrim({ kind = 'default', onClick, className }: { kind?: 'default' | 'blocking'; onClick?: () => void; className?: string }) {
   return (
     <div
@@ -138,11 +198,11 @@ export type CalendarDayProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'ty
   /** Full date, e.g. "Monday, 20 October 2026". */
   label: string
   today?: boolean
-  /** Figma State=Start / End / In range. */
+  /** Figma State=start / end / in-range. */
   position?: 'start' | 'end' | 'in-range'
 }
 
-/** Calendar day (UI-84): 40 square; start and end = bg-inverse; in range = state-selected; today = ring. */
+/** Calendar day: 40 square; start and end = bg-inverse; in range = state-selected; today = ring. */
 export const CalendarDay = forwardRef<HTMLButtonElement, CalendarDayProps>(function CalendarDay(
   { day, label, today, position, className, ...props },
   ref,

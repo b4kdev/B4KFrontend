@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
 import { HIT_AREA } from './styles'
 
-// Icon button (UI-50; Figma Atoms › Icon button): round 40 (radius/full, control/height-md), icon
+// Icon button (Figma Atoms › Icon button): round 40 (radius/full, control/height-md), icon
 // 20. Primary, Secondary, Ghost; states as Button. 44 tap area. Always needs an accessible name.
 
 export const iconButtonVariants = cva(

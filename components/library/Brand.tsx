@@ -1,7 +1,7 @@
 import { cn } from '@/lib/cn'
 import { LOGO_PATHS } from './logo-paths'
 
-// Logo (UI-73; Figma Atoms › Logo): the B4K brand files (DOC-146) in currentColor (color/fg), so
+// Logo (Figma Atoms › Logo): the B4K brand files in currentColor (color/fg), so
 // dark and light follow the theme. Wordmark for headers and the drawer; Mark for the desktop rail
 // and small spaces. Never recolor or stretch; scale by height only. Wrap it in a link to Home with
 // the label B4K; decorative copies are hidden.
@@ -9,7 +9,7 @@ import { LOGO_PATHS } from './logo-paths'
 export type LogoProps = {
   /** Figma Type. */
   type?: 'wordmark' | 'mark'
-  /** Height via className; default 24 for both (Figma Wordmark 24, Mark 24). The rail and header pass h-9 (Mark 36, UI-93). */
+  /** Height via className; default 24 for both (Figma Wordmark 24, Mark 24). The rail and header pass h-9 (Mark 36). */
   className?: string
   /** Accessible name; leave out when the logo is decorative or the link is labelled. */
   label?: string
@@ -33,7 +33,7 @@ export function Logo({ type = 'wordmark', className, label }: LogoProps) {
 }
 
 /**
- * Provider logo (UI-82): the official four-color Google G, kept as Google's branding rules require
+ * Provider logo: the official four-color Google G, kept as Google's branding rules require
  * (the one place B4K shows brand colors). 20 in buttons; hidden from screen readers, the button
  * text names the provider.
  */

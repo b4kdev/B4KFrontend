@@ -1,13 +1,15 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { BedDouble, Coffee, Crown, Flower2, Landmark, Search, ShoppingBag, Trees, Utensils } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
-import { ArrowLeft } from 'lucide-react'
 import { useRouter } from '@/i18n/navigation'
+import { cn } from '@/lib/cn'
 import {
   BottomSheet,
+  Scrim,
   Button,
   Card,
   Chip,
@@ -27,26 +29,35 @@ import {
   TopAppBar,
   ZoomControl,
   type SheetSnap,
+  placeTypeOf,
 } from '@/components/library'
 import { usePhone } from '@/components/library/hooks'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMapPois, type MapBounds, type MapPoi } from '@/hooks/useMapPois'
 import { usePlaceDetail } from '@/hooks/usePlaceDetail'
-import { getDraftPlan } from '@/lib/draft-plan'
 import { takeCourseHandoff } from '@/lib/quickplan'
+import { placeSourceFrom, shareUrl, track } from '@/lib/analytics'
 import type { SavedData } from '@/app/api/saved/route'
 import type { ItineraryDetail } from '@/lib/itinerary'
 import { useCd, useCdKey } from '../cd'
 import { useGap } from '../gaps'
+import { useAreaName, regionName } from '../map/areaName'
+import { ABOVE_LEGAL_LINE, MapLegalLine } from '../map/MapLegalLine'
+import { useLocateMe } from '../map/LocateMe'
+import { useBadgeUnlock } from '../badges'
 import { useV2Shell } from '../V2Shell'
+import { usePendingAction } from '../V2SignInGate'
+import { useLikedPlaces } from '../usePlaceActions'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
-import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_STOPS, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
+import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_DAYS, MAX_STOPS, PER_DAY, draftStopCount, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
+import { useRoutedLegs } from '../map/useRoutedLegs'
 import { CATEGORIES, jsonFetch } from './A2Home'
+import { previousScreenSource, type PlaceSource, type PlanFlow } from '@/lib/place-source'
 
-// The map (A1; PD-20, PD-24 to PD-31, PD-45, PD-48; UI-74, UI-77, UI-89, UI-90): Map browse
-// (SCR-004), Place selected (SCR-003), Plan in progress / Plan editor (SCR-005, SCR-013), Save plan
-// (SCR-006), Quick plan and Plan from Saved results (SCR-009, SCR-035), Saved on the map (SCR-011).
-// Desktop: Left panel Type=Map (Nearby / Saved switch, content, Plan cart) beside the map; phones:
+// The map (A1): Map browse
+//, Place selected, Plan in progress / Plan editor, Save plan
+//, Quick plan and Plan from Saved results, Saved on the map.
+// Desktop: Left panel Type=map (Nearby / Saved switch, content, Plan cart) beside the map; phones:
 // Top app bar Map, chips, a map Bottom sheet and the Plan pill. Live POIs, place detail, saves.
 
 const send = (url: string, method: string, body?: unknown) =>
@@ -56,6 +67,19 @@ const send = (url: string, method: string, body?: unknown) =>
   })
 
 const nameOf = (p: { name_ko: string; name_en?: string; name_preferred?: string }, locale: string) => p.name_preferred ?? (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
+
+// The map chips: place types, one at a time, as BFF place filters (tags = any of these chips),
+// each with its drawn leading icon.
+const PLACE_TYPES = [
+  { id: 'restaurants', label: 'CD0633', query: 'tags=restaurant', icon: Utensils },
+  { id: 'cafes', label: 'CD0628', query: 'tags=cafe', icon: Coffee },
+  { id: 'stays', label: 'CD0629', query: 'tags=hotel,resort,pension,guesthouse,hanok-stay,motel', icon: BedDouble },
+  { id: 'shopping', label: 'CD1282', query: 'interest=shopping', icon: ShoppingBag },
+  { id: 'palaces', label: 'CD0631', query: 'tags=palace', icon: Crown },
+  { id: 'temples', label: 'CD0635', query: 'tags=temple', icon: Flower2 },
+  { id: 'museums', label: 'CD0630', query: 'tags=museum', icon: Landmark },
+  { id: 'parks', label: 'CD0632', query: 'tags=park', icon: Trees },
+] as const
 
 /** `poiId`: the place to open (the /place/[poiId] page); otherwise ?poi= in the address. */
 export function MapScreen({ poiId }: { poiId?: string } = {}) {
@@ -67,30 +91,114 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const phone = usePhone()
   const params = useSearchParams()
   const { user } = useAuth()
-  const { labels, openDrawer, toast } = useV2Shell()
+  const { labels, openDrawer, toast, requireSignIn } = useV2Shell()
   const mapRef = useRef<V2MapHandle>(null)
+  const locate = useLocateMe(mapRef, { phone })
+  const unlock = useBadgeUnlock()
   const draft = usePlanDraft()
+  // Toast actions run later (Undo): they call the draft as it is then, not as it was.
+  const latestDraft = useRef(draft)
+  latestDraft.current = draft
 
   const [bounds, setBounds] = useState<MapBounds | null>(null)
+  // Filter results stay where they were fetched; after a pan the map offers Search this area.
+  const [areaBounds, setAreaBounds] = useState<MapBounds | null>(null)
+  const [areaMoved, setAreaMoved] = useState(false)
+  // Places refresh 300 ms after the map stops, not on every idle in a row.
+  const boundsTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [zoom, setZoom] = useState(13)
   const [filter, setFilter] = useState<string | null>(null)
+  // The map keeps the first onBounds it gets, so it reads the filter through a ref.
+  const filterOn = useRef(false)
+  filterOn.current = !!filter
   const [mode, setMode] = useState<'nearby' | 'saved'>(params?.get('saved') ? 'saved' : 'nearby')
   const [selectedId, setSelectedId] = useState<string | null>(poiId ?? params?.get('poi') ?? null)
+  // A place opened from another screen (/map?poi=…) was found there; anything picked on the map, on the map.
+  const entry = useRef<{ id: string | null; source: PlaceSource }>({ id: null, source: 'map' })
+  useEffect(() => { entry.current = { id: poiId ?? params?.get('poi') ?? null, source: previousScreenSource() } }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  const [openedWith] = useState(selectedId)
+  const viewedOnce = useRef(false)
+  // Escape goes back from a selected place to the list (no dialog open); a map tap does the same.
+  useEffect(() => {
+    if (!selectedId) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !document.querySelector('[role="dialog"]')) setSelectedId(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [selectedId])
   const [cart, setCart] = useState<'collapsed' | 'open'>(params?.get('plan') ? 'open' : 'collapsed')
+  // The open plan starts on All days; each day is one tab away.
   const [activeDay, setActiveDay] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>('all')
   const [snap, setSnap] = useState<SheetSnap>('mid')
   const [planSheet, setPlanSheet] = useState(!!params?.get('plan') && phone)
+  // /plan and ?plan= open the plan on phones too (the phone check settles after the first render).
+  const openedFromAddress = useRef(false)
+  useEffect(() => {
+    if (openedFromAddress.current || !phone || !params?.get('plan') || params.get('plan') === 'edit') return
+    openedFromAddress.current = true
+    setPlanSheet(true)
+  }, [phone, params])
   const [saveOpen, setSaveOpen] = useState(false)
+  // Phones: what covers the map, measured from the parts themselves: the floating bars and chips at
+  // the top, the map sheet (its real top edge, through its height transition) at the bottom.
+  const mapArea = useRef<HTMLElement>(null)
+  const topBars = useRef<HTMLDivElement>(null)
+  const [covered, setCovered] = useState({ top: 0, bottom: 0, height: 0 })
+  useEffect(() => {
+    if (!phone) return
+    let frame = 0
+    const measure = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        const area = mapArea.current?.getBoundingClientRect()
+        if (!area) return
+        const sheet = document.querySelector('[role="region"][data-toast-floor]')?.getBoundingClientRect()
+        const bars = topBars.current?.getBoundingClientRect()
+        const next = {
+          top: bars ? Math.max(0, Math.round(bars.bottom - area.top)) : 0,
+          bottom: sheet ? Math.max(0, Math.round(area.bottom - sheet.top)) : 0,
+          height: Math.round(area.height),
+        }
+        // Same numbers keep the same state, so the page does not render again: a render rewrites the
+        // map's markers, which the watcher below would see and measure again, without end.
+        setCovered((c) => (c.top === next.top && c.bottom === next.bottom && c.height === next.height ? c : next))
+      })
+    }
+    const sizes = new ResizeObserver(measure)
+    // Watched again only when one of the parts is swapped (the sheet comes and goes), not on every change in the page.
+    let watched: (Element | null)[] = []
+    const watch = () => {
+      const els = [mapArea.current, topBars.current, document.querySelector('[role="region"][data-toast-floor]')]
+      if (els.every((e, i) => e === watched[i])) return
+      watched = els
+      sizes.disconnect()
+      els.forEach((e) => e && sizes.observe(e))
+      measure()
+    }
+    const parts = new MutationObserver(watch)
+    parts.observe(document.body, { childList: true, subtree: true })
+    window.addEventListener('resize', measure)
+    watch()
+    return () => {
+      cancelAnimationFrame(frame)
+      sizes.disconnect()
+      parts.disconnect()
+      window.removeEventListener('resize', measure)
+    }
+  }, [phone])
   const [planName, setPlanName] = useState('')
+  const [nameError, setNameError] = useState(false)
   const [saving, setSaving] = useState(false)
   const [discardOpen, setDiscardOpen] = useState(false)
-  const [deleteDay, setDeleteDay] = useState<number | null>(null)
-  const [durationFor, setDurationFor] = useState<string | null>(null)
   const [folderId, setFolderId] = useState<string | null>(params?.get('folder'))
   const [editing, setEditing] = useState<{ id: string; title: string } | null>(null)
   const [pendingEdit, setPendingEdit] = useState<ItineraryDetail | null>(null)
+  // Save plan picked on the plan page's save-or-discard prompt: the name sheet opens once the plan in
+  // progress has loaded, and the published plan opens for editing after the save.
+  const [saveFirst, setSaveFirst] = useState(params?.get('draft') === 'save')
 
-  const { pois, isLoading } = useMapPois(null, filter ? [filter] : [], bounds, zoom)
+  const { pois, isLoading } = useMapPois(null, [], filter ? areaBounds ?? bounds : bounds, zoom, PLACE_TYPES.find((c) => c.id === filter)?.query)
   // View on map from a category special page (?collection=/api/explore/...): that page's places
   // only, on the map and in the list, until a category is picked.
   const collectionApi = params?.get('collection')
@@ -104,22 +212,40 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     [collection.data],
   )
   const listPois = collectionOn && collectionPois ? collectionPois : pois
-  const { detail } = usePlaceDetail(selectedId)
+  // List header: the district and city at the center of the map in view (on phones the part above
+  // the sheet; none for a category page's places).
+  const area = useAreaName(collectionOn ? null : bounds, zoom, locale, phone ? (snap === 'peek' ? 0.45 : 0.25) : 0.5)
+  const areaLine = area ? (area.district ? GAP.areaName(area.district, area.city) : area.city) : null
+  // An area name can come at this zoom (the geocoder names nothing past a province): hold its line.
+  const areaHeld = !collectionOn && zoom >= 9
+  const { detail, isError: placeMissing } = usePlaceDetail(selectedId)
   const detailName = detail ? nameOf(detail, locale) : ''
+  // A link to a place opens the map already on it (no pan or zoom after the first paint).
+  const openAt = useMemo(
+    () => (detail && detail.poi_id === openedWith ? { lat: detail.coords_lat, lng: detail.coords_lng, bottom: phone ? Math.round(window.innerHeight / 2) : 0 } : null),
+    [detail?.poi_id, phone], // eslint-disable-line react-hooks/exhaustive-deps
+  )
   const saved = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
   const savedIds = useMemo(() => new Set((saved.data?.pois ?? []).map((p) => p.poi_id)), [saved.data])
-  const [liked, setLiked] = useState<Set<string>>(new Set())
+  const likes = useLikedPlaces(!!user)
 
   const fitPlan = (stops: { coords_lat: number; coords_lng: number }[]) => mapRef.current?.fitTo(stops.map((s) => ({ lat: s.coords_lat, lng: s.coords_lng })))
   const loadForEdit = (it: ItineraryDetail) => {
     const { stops, days: dayMap, durations } = itineraryToDraft(it)
-    draft.replace(stops, dayMap, it.title, durations, { editing: true })
-    setEditing({ id: it.id, title: it.title })
+    // An unnamed plan opens with an empty name field.
+    draft.replace(stops, dayMap, it.title ?? undefined, durations, { editing: true })
+    setEditing({ id: it.id, title: it.title ?? '' })
+    // Every plan opens on All days; a place added there goes to the last day.
+    setActiveDay('all')
     setPendingEdit(null)
     setCart('open')
     if (phone) setPlanSheet(true)
     fitPlan(stops)
   }
+  // Editing a published plan opens it in the plan sheet on phones (the phone check settles after the first render).
+  useEffect(() => {
+    if (editing && phone) setPlanSheet(true)
+  }, [editing, phone])
   const stopEditing = () => {
     const id = editing?.id
     draft.discard()
@@ -127,14 +253,18 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     if (id) router.push(`/plan/${id}`)
   }
 
-  // Hand-offs: Quick plan (PD-45) and Plan from Saved (SCR-035) open the plan unsaved; ?plan=edit
-  // loads a published plan for editing (PD-28).
+  // Hand-offs: Quick plan and Plan from Saved open the plan unsaved; ?plan=edit
+  // loads a published plan for editing.
+  // How the plan in the editor started, for plan_create: a hand-off, or places added by hand.
+  const planFlow = useRef<PlanFlow>('manual')
   const takeHandoff = () => {
-    const stops = takeCourseHandoff()
-    if (!stops) return
+    const handoff = takeCourseHandoff()
+    if (!handoff) return
+    const { stops, name, source } = handoff
+    planFlow.current = source
     const had = draft.plan.stops.length > 0
     const asPois: MapPoi[] = stops.map((s) => ({ poi_id: s.poi_id, name_ko: s.name_ko, name_preferred: s.name_preferred, coords_lat: s.coords_lat, coords_lng: s.coords_lng, display_region: s.display_region ?? null, primary_image_url: s.primary_image_url }))
-    draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])))
+    draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])), name, undefined, { source: source === 'from_saved' ? 'saved' : source === 'quick_plan' ? 'quick_plan' : undefined })
     setActiveDay('all')
     setSelectedId(null)
     setCollectionOn(false)
@@ -155,14 +285,14 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     if (params?.get('from')) takeHandoff()
     const editId = params?.get('plan') === 'edit' ? params.get('id') : null
     if (editId) {
-      // A plan in progress: on this device, or in the account (signed in; 401 for guests).
-      const inProgress = async () =>
-        !!getDraftPlan()?.stops.length ||
-        (await fetch('/api/plans/draft').then((r) => (r.ok ? r.json() : null)).then((d: { stop_count?: number } | null) => (d?.stop_count ?? 0) > 0).catch(() => false))
       fetch(`/api/plans/${editId}`).then((r) => (r.ok ? r.json() : Promise.reject())).then(async (it: ItineraryDetail) => {
-        // SCR-008: a plan in progress is saved or discarded before the published plan loads.
-        if (await inProgress()) setPendingEdit(it)
-        else loadForEdit(it)
+        // The plan page asks first; a direct link still has a plan in progress saved or discarded
+        // before the published plan loads.
+        if ((await draftStopCount()) > 0) setPendingEdit(it)
+        else {
+          setSaveFirst(false)
+          loadForEdit(it)
+        }
       }).catch(() => toast({ type: 'critical', message: k('itinerary.error.title') }))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -181,66 +311,166 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   }, [draft.plan.stops]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (detail) mapRef.current?.panTo(detail.coords_lat, detail.coords_lng)
+    if (!detail) return
+    // The place the map opened with came from the page before; later picks are made on the map
+    // (or its Saved tab).
+    const first = !viewedOnce.current && detail.poi_id === openedWith
+    // Phones: the place opens in the sheet at mid (half the screen), so centre it in the map above.
+    // The place a link opened on needs no move: the map was made centred on it (openAt).
+    if (!first) mapRef.current?.focus(detail.coords_lat, detail.coords_lng, phone ? Math.round(window.innerHeight / 2) : 0)
+    viewedOnce.current = true
+    const source = first ? placeSourceFrom() : mode === 'saved' ? 'saved' : 'map'
+    track('poi_view', { category: detail.display_domain ?? undefined, area: detail.display_region ?? undefined, source, locale, screen_id: 'map' })
   }, [detail?.poi_id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const order = draft.plan.stops
-  const planStops = order.map((poi, i) => ({ poi, day: draft.dayOf(poi.poi_id), order: i + 1 }))
+  // Routed leg minutes from the route engine; the straight-line estimate until they come.
+  const routedLeg = useRoutedLegs(order, draft.dayOf)
+  // Phones: when the map opens with a plan draft, the browse sheet starts at peek with the Plan pill
+  // 12 above it; dragging it up or tapping Saved brings the list back. Stops added here keep the sheet
+  // where it is (adding from the Saved hub keeps it open). A place open in the sheet stays until closed.
+  const hasStops = order.length > 0
+  const dropped = useRef(false)
+  const addedHere = useRef(false)
+  useEffect(() => {
+    if (!hasStops) dropped.current = false
+    else if (phone && !selectedId && !dropped.current && !addedHere.current) {
+      dropped.current = true
+      setSnap('peek')
+    }
+  }, [hasStops, phone, selectedId])
+  const planStops = order.map((poi) => ({ poi, day: draft.dayOf(poi.poi_id), order: order.filter((p) => draft.dayOf(p.poi_id) === draft.dayOf(poi.poi_id)).indexOf(poi) + 1 }))
   // The plan's stops and route show on the map only while the plan is open (desktop: the Plan
   // cart opened from the bottom of the Left panel; phones: the plan sheet).
   const planVisible = phone ? planSheet : cart === 'open'
   // Any plan (Quick plan, Plan from Saved, built by hand, opened for editing) works the same: while
   // it is open the map shows its stops only; a category chip folds it and goes back to browsing.
   const showPlanOnly = planVisible && order.length > 0
+  // Phones: with the browse sheet down at peek, the plan's stops and route stay drawn among the places, as drawn.
+  const stopsVisible = planVisible || (phone && snap === 'peek' && !selectedId && mode === 'nearby')
+  // Phones: fitted stops land in the map between the bars and the open sheet, as drawn: each edge
+  // keeps half a stop marker (12) and 8 clear. The canvas adds its usual 80 below, so 80 less is passed.
+  // Where that leaves less than 40 of map, the top gives way.
+  const FIT_CLEAR = 20
+  const fitBottomPx = phone && !saveOpen ? covered.bottom + FIT_CLEAR : 0
+  const fitTopPx = phone ? Math.max(0, Math.min(covered.top + FIT_CLEAR, covered.height - fitBottomPx - 40)) : undefined
+  const fitBottom = Math.max(0, fitBottomPx - 80)
   // Plan only: no other places on the map, except the one opened from the list.
-  const mapPois = showPlanOnly ? (detail && !order.some((p) => p.poi_id === detail.poi_id) ? [detail] : []) : listPois
-  const addToPlan = (poi: MapPoi) => {
-    const day = draft.add(poi, typeof activeDay === 'number' ? activeDay : undefined)
+  // Saved on the map: while Saved is on, the map shows the saved places only,
+  // or the open list's places, and fits them.
+  const savedPois = useMemo<MapPoi[] | null>(() => {
+    if (mode !== 'saved' || !saved.data) return null
+    const src = folderId ? saved.data.folders.find((f) => f.id === folderId)?.pois ?? [] : saved.data.pois
+    return src.filter((p) => Number.isFinite(p.coords_lat) && Number.isFinite(p.coords_lng)).map((p) => ({ ...p, primary_image_url: p.primary_image_url ?? undefined }))
+  }, [mode, folderId, saved.data])
+  useEffect(() => {
+    if (savedPois?.length) mapRef.current?.fitTo(savedPois.map((p) => ({ lat: p.coords_lat, lng: p.coords_lng })))
+  }, [savedPois])
+  const mapPois = showPlanOnly ? (detail && !order.some((p) => p.poi_id === detail.poi_id) ? [detail] : []) : savedPois ?? listPois
+  const addToPlan = (poi: MapPoi, toDay?: number, from?: PlaceSource) => {
+    const source = from ?? (poi.poi_id === entry.current.id ? entry.current.source : 'map')
+    // Read through the ref: the toast's action runs later, on the plan as it is then.
+    const draft = latestDraft.current
+    // The open day, or the last day on All days. A full day is not skipped silently: the toast
+    // offers the next day with room.
+    const target = toDay ?? (typeof activeDay === 'number' ? activeDay : draft.days)
+    const inPlan = draft.plan.stops.some((s) => s.poi_id === poi.poi_id)
+    if (!inPlan && draft.plan.stops.length < MAX_STOPS && draft.countOn(target) >= PER_DAY) {
+      let next = target + 1
+      while (next <= MAX_DAYS && draft.countOn(next) >= PER_DAY) next++
+      if (next <= MAX_DAYS) {
+        toast({ type: 'warning', message: t('CD1533', { day: target }), action: { label: t('CD1534', { next }), onClick: () => addToPlan(poi, next, source) } })
+        return
+      }
+    }
+    addedHere.current = true
+    const day = draft.add(poi, target, source)
     if (day === null) toast({ type: 'warning', message: k('map.plan.maxStopsToast', { max: MAX_STOPS }) })
-    else toast({ type: 'success', message: GAP.addedToDay(day) })
+    else toast({ type: 'success', message: t('CD0689'), action: { label: t('CD1428'), onClick: () => latestDraft.current.remove(poi.poi_id) } })
   }
-  const toggleSave = async (poi: { poi_id: string }) => {
-    if (!user) return router.push(`/login?next=/map?poi=${poi.poi_id}`)
-    const on = savedIds.has(poi.poi_id)
-    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: poi.poi_id }).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: t('CD1426') }))
+  // `on` = currently saved / liked; after a sign-in the action only ever turns it on.
+  // signedIn: the save a guest started, finished after the sign-in (its own toast).
+  const setSave = async (id: string, on: boolean, signedIn = false) => {
+    const category = detail?.poi_id === id ? detail.display_domain ?? undefined : undefined
+    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => track('poi_save', { action: on ? 'unsave' : 'save', category, locale, screen_id: 'map' })).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: navigator.onLine === false ? t('CD1426') : t('CD0061') }))
     saved.mutate()
   }
-  const toggleLike = async (id: string) => {
-    if (!user) return router.push(`/login?next=/map?poi=${id}`)
-    const on = liked.has(id)
-    await send('/api/likes/poi', on ? 'DELETE' : 'POST', { poi_id: id }).catch(() => {})
-    setLiked((s) => { const n = new Set(s); if (on) n.delete(id); else n.add(id); return n })
+  // Optimistic: the heart changes at once and goes back with a toast if the server refuses.
+  const setLike = async (id: string, on: boolean) => {
+    likes.set(id, !on)
+    await send('/api/likes/poi', on ? 'DELETE' : 'POST', { poi_id: id }).catch(() => {
+      likes.set(id, on)
+      toast({ type: 'critical', message: t('CD0061') })
+    })
   }
-  const removeDay = (d: number) => {
-    const left = draft.days - 1
-    draft.removeDay(d)
-    // Later days move up one: keep the selection on the same day, or on the day now in its place.
-    setActiveDay((a) => (a === 'all' ? 'all' : a > d ? ((a - 1) as 1) : a === d ? (Math.min(d, left) as 1) : a))
-    setDeleteDay(null)
-  }
+  const toggleSave = (poi: { poi_id: string }) =>
+    user ? setSave(poi.poi_id, savedIds.has(poi.poi_id)) : requireSignIn({ title: t('CD0027'), pending: { type: 'save_poi', id: poi.poi_id }, run: () => setSave(poi.poi_id, false, true) })
+  const toggleLike = (id: string) =>
+    user ? setLike(id, likes.isLiked(id)) : requireSignIn({ title: t('CD0054'), pending: { type: 'like_poi', id }, run: () => setLike(id, false) })
+  const openSaveSheet = () => { setPlanName(draft.plan.name ?? ''); setNameError(false); setSaveOpen(true) }
+  usePendingAction('save_poi', !!user, (id) => { if (id) setSave(id, false, true) })
+  usePendingAction('like_poi', !!user, (id) => { if (id) setLike(id, false) })
+  usePendingAction('save_own_plan', !!user, () => { setCart('open'); openSaveSheet() })
+  useEffect(() => {
+    if (!saveFirst || !pendingEdit || !order.length) return
+    setSaveFirst(false)
+    setCart('open')
+    openSaveSheet()
+  }, [saveFirst, pendingEdit, order.length]) // eslint-disable-line react-hooks/exhaustive-deps
   const totalMin = order.reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0)
+  const dayStops = typeof activeDay === 'number' ? order.filter((p) => draft.dayOf(p.poi_id) === activeDay).length : 0
+  // A published plan open for editing: the day line ends with "keeps the same link".
+  const withEditNote = (line?: string) => (line && editing ? `${line} · ${t('CD1808')}` : line)
   const dayTotal = typeof activeDay === 'number' ? order.filter((p) => draft.dayOf(p.poi_id) === activeDay).reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0) : null
 
   const savePlan = async () => {
-    if (!user) return router.push('/login?next=/map?plan=open')
+    if (!user) return requireSignIn({ title: t('CD0025'), draftNotice: t('CD1489'), pending: { type: 'save_own_plan' }, run: openSaveSheet })
+    // Offline: the plan stays on the device; say so instead of a failed save.
+    if (typeof navigator !== 'undefined' && !navigator.onLine) return toast({ type: 'warning', message: t('CD1208') })
+    // Save stays enabled; an empty name is said on the field (an edit keeps its old name).
+    if (!editing && !planName.trim()) return setNameError(true)
     setSaving(true)
+    const stops = order.map((p, i) => ({ poi_id: p.poi_id, stop_order: i + 1, duration_min: draft.plan.durations[p.poi_id] ?? 60, day: draft.dayOf(p.poi_id), source: draft.plan.sources?.[p.poi_id] }))
+    // Save changes on a plan opened for editing updates that plan in place (same link).
+    if (editing) {
+      try {
+        await send(`/api/plans/${editing.id}`, 'PUT', { title: planName.trim() || editing.title, stops })
+        track('plan_save', { days: draft.days, stops: stops.length, is_public: true, locale, screen_id: 'map' })
+        const id = editing.id
+        draft.discard()
+        setEditing(null)
+        setSaveOpen(false)
+        toast({ type: 'success', message: t('CD1636') })
+        router.push(`/plan/${id}`)
+      } catch {
+        toast({ type: 'critical', message: t('CD0949') })
+      } finally {
+        setSaving(false)
+      }
+      return
+    }
     try {
       const res = await send('/api/plans', 'POST', {
         title: planName.trim(),
-        stops: order.map((p, i) => ({ poi_id: p.poi_id, stop_order: i + 1, duration_min: draft.plan.durations[p.poi_id] ?? 60, day: draft.dayOf(p.poi_id) })),
+        stops,
+        source: planFlow.current,
         is_published: false,
       })
       const id: string | undefined = res?.plan?.id
-      // Saving publishes it, as on the live map (DEC-29).
+      // Saving publishes it, as on the live map.
       if (id) await send(`/api/plans/${id}`, 'PATCH', { is_published: true })
+      track('plan_create', { flow: planFlow.current, days: draft.days, stops: stops.length, locale, screen_id: 'map' })
+      track('plan_save', { days: draft.days, stops: stops.length, is_public: !!id, locale, screen_id: 'map' })
+      planFlow.current = 'manual'
       draft.discard()
       setSaveOpen(false)
       toast({ type: 'success', message: t('CD1636') })
-      // SCR-008 Save plan: the plan in progress is saved, then the published plan opens for editing.
+      unlock()
+      // Save plan: the plan in progress is saved, then the published plan opens for editing.
       if (pendingEdit) loadForEdit(pendingEdit)
       else if (id) router.push(`/plan/${id}`)
     } catch {
-      toast({ type: 'critical', message: k('map.plan.saveError') })
+      toast({ type: 'critical', message: t('CD0949') })
     } finally {
       setSaving(false)
     }
@@ -248,38 +478,90 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   // ── Panel content ──────────────────────────────────────────────────────────
   const switcher = (
-    <Tabs label={t('CD0815')} width="equal" value={mode} onValueChange={(v) => { setMode(v as 'nearby' | 'saved'); setSelectedId(null) }} tabs={[{ id: 'nearby', label: t('CD1576') }, { id: 'saved', label: k('saved.title') }]} />
+    <Tabs label={t('CD0815')} width="equal" className={phone ? undefined : 'mx-[var(--space-4)]'} value={mode} onValueChange={(v) => { setMode(v as 'nearby' | 'saved'); setSelectedId(null); if (v === 'saved' && phone && snap === 'peek') setSnap('mid') }} tabs={[{ id: 'nearby', label: t('CD1576') }, { id: 'saved', label: k('saved.title') }]} />
   )
   const placeView = detail ? (
-    <div className="flex flex-col gap-[var(--space-2)] pb-[var(--space-4)]">
-      <Button variant="ghost" size="sm" leadingIcon={<ArrowLeft />} className="self-start" onClick={() => setSelectedId(null)}>{k('map.aiOverlay.back')}</Button>
+    <div className={cn('flex flex-col gap-[var(--space-2)] pb-[var(--space-4)]', phone && '-mx-[var(--space-4)] -mt-[var(--space-2)]')}>
       <PlaceDetail
         viewport={phone ? 'mobile' : 'desktop'}
         name={detailName}
-        meta={[detail.display_domain && t(CATEGORIES.find((c) => c.slug === detail.display_domain)?.label ?? 'CD0804'), detail.display_region].filter(Boolean).join(' · ')}
+        meta={[detail.display_domain && t(CATEGORIES.find((c) => c.slug === detail.display_domain)?.label ?? 'CD0804'), detail.display_region && regionName(detail.display_region, locale)].filter(Boolean).join(' · ')}
         imageSrc={detail.primary_image_url}
         imageAlt={detailName}
         description={detail.description}
-        details={detail.address ? [{ icon: 'address', title: detail.address }] : []}
+        // Hours (as the source writes them) and address, in the drawn order; open status and the website wait on data.
+        details={[
+          ...(detail.hours_text ? [{ icon: 'hours' as const, title: detail.hours_text }] : []),
+          ...(detail.address ? [{ icon: 'address' as const, title: detail.address }] : []),
+        ]}
         saved={savedIds.has(detail.poi_id)}
-        liked={liked.has(detail.poi_id)}
+        liked={likes.isLiked(detail.poi_id)}
         onAdd={() => addToPlan(detail)}
         onSave={() => toggleSave(detail)}
         onLike={() => toggleLike(detail.poi_id)}
         onShare={() => {
-          if (navigator.share) navigator.share({ title: detailName, url: location.href }).catch(() => {})
-          else navigator.clipboard?.writeText(location.href)
+          // The shared link is the place page, not the map address.
+          const url = shareUrl(`${location.origin}/${locale}/place/${detail.poi_id}`, 'place')
+          track('share_click', { target: typeof navigator.share === 'function' ? 'native' : 'link', content_type: 'place', locale, screen_id: 'map' })
+          if (navigator.share) navigator.share({ title: detailName, url }).catch(() => {})
+          else navigator.clipboard?.writeText(url).then(() => toast({ type: 'success', message: k('itinerary.copiedToast') }), () => {})
         }}
-        labels={{ add: k('map.poiDetail.addToPlan'), save: k('map.poiDetail.save'), like: k('map.poiDetail.like'), share: k('map.poiDetail.share') }}
+        labels={{ add: k('map.poiDetail.addToPlan'), save: k('map.poiDetail.save'), like: k('map.poiDetail.like'), share: k('map.poiDetail.share'), noPhoto: t('CD1678') }}
       />
     </div>
-  ) : selectedId ? <Skeleton className="m-[var(--space-4)] h-[320px]" /> : null
+  ) : selectedId && placeMissing ? (
+    <EmptyState
+      type="no-results"
+      title={t('CD1529')}
+      action={<Button size="md" variant="secondary" onClick={() => setSelectedId(null)}>{t('CD0594')}</Button>}
+      className={phone ? '-mx-[var(--space-4)] mt-[var(--space-2)]' : undefined}
+    >
+      {t('CD1530')}
+    </EmptyState>
+  ) : selectedId ? (
+    // As drawn: the photo, name and meta lines, then three description lines.
+    <div className={cn('flex flex-col gap-[var(--space-4)]', phone ? 'mt-[var(--space-2)]' : 'p-[var(--space-4)]')}>
+      <Skeleton className={phone ? 'h-[225px]' : 'h-[252px]'} />
+      <Skeleton shape="line" className="h-[var(--space-3)] w-[70%]" />
+      <Skeleton shape="line" className="h-[var(--space-3)] w-[45%]" />
+      <Skeleton shape="line" className="h-[var(--space-3)] w-full" />
+      <Skeleton shape="line" className="h-[var(--space-3)] w-full" />
+      <Skeleton shape="line" className="h-[var(--space-3)] w-[80%]" />
+    </div>
+  ) : null
 
   const nearbyList = (
-    <div className="flex flex-col gap-[var(--space-3)] p-[var(--space-4)]">
-      {(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-[80px]" />) : null}
-      {!(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? <EmptyState title={k('map.empty.title')} action={<Button size="md" variant="secondary" onClick={() => mapRef.current?.zoomOut()}>{k('map.zoomOut')}</Button>}>{t('CD1531')}</EmptyState> : null}
-      <ul className="flex flex-col gap-[var(--space-3)]">
+    <div className={cn('flex flex-col gap-[var(--space-3)]', !phone && 'p-[var(--space-4)]')}>
+      {(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? (
+        // As drawn: the area name and count, then each card's photo (4:3) and title.
+        <div className="flex flex-col gap-[var(--space-4)]">
+          <Skeleton shape="line" className="h-[var(--space-3)] w-1/2" />
+          <Skeleton shape="line" className="h-[var(--space-3)] w-[30%]" />
+          {Array.from({ length: 2 }, (_, i) => (
+            <Fragment key={i}>
+              <Skeleton className="aspect-[4/3] w-full" />
+              <Skeleton shape="line" className="h-[var(--space-3)] w-[60%]" />
+            </Fragment>
+          ))}
+        </div>
+      ) : null}
+      {/* The area name and the place count, 16 above the cards; with no places the name only. The name
+          comes later from the geocoder, so its line is held from the first paint (blank until then) and
+          the list does not move down when it arrives. The header goes only on the first load: while
+          the list reloads for a new map area it stays, and the count changes when the answer lands. */}
+      {!((collectionOn ? collection.isLoading : isLoading) && !listPois.length) && (areaLine || areaHeld || (listPois.length && !collectionOn)) ? (
+        <div className="mb-[var(--space-1)] flex flex-col">
+          {areaLine ? <h2 className="type-title-card text-ui-fg">{areaLine}</h2> : areaHeld ? <div aria-hidden className="type-title-card">{'\u00a0'}</div> : null}
+          {listPois.length && !collectionOn ? <p className="type-body-caption text-ui-fg-muted">{GAP.placesInArea(listPois.length)}</p> : null}
+        </div>
+      ) : null}
+      {/* No places: the empty state titled No places in this area, Zoom out under it. */}
+      {!(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? (
+        <div className="flex flex-col gap-[var(--space-4)]">
+          <EmptyState type="no-results" title={t('CD0626')} action={<Button size="md" variant="secondary" onClick={() => mapRef.current?.zoomOut()}>{t('CD0737')}</Button>}>{t('CD1531')}</EmptyState>
+        </div>
+      ) : null}
+      <ul className="flex flex-col gap-[var(--space-4)]">
         {listPois.slice(0, 40).map((p) => (
           <li key={p.poi_id}>
             <Card
@@ -287,33 +569,45 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
               href={`/map?poi=${p.poi_id}`}
               title={nameOf(p, locale)}
               imageSrc={p.primary_image_url}
-              meta={p.display_region ?? ''}
+              placeType={placeTypeOf(p.interest_category)}
+              meta={regionName(p.display_region ?? '', locale)}
               description={p.description}
               addToPlan={{ onAdd: () => addToPlan(p), label: `${k('map.poiDetail.addToPlan')}: ${nameOf(p, locale)}` }}
               save={{ saved: savedIds.has(p.poi_id), onSave: () => toggleSave(p), label: `${k('map.poiDetail.save')} ${nameOf(p, locale)}` }}
+              like={{ liked: likes.isLiked(p.poi_id), onLike: () => toggleLike(p.poi_id), label: likes.isLiked(p.poi_id) ? k('explore.card.unlikeAria', { name: nameOf(p, locale) }) : k('explore.card.likeAria', { name: nameOf(p, locale) }) }}
             />
           </li>
         ))}
       </ul>
+      {phone && listPois.length ? <MapLegalLine placement="list" /> : null}
     </div>
   )
   const savedView = !user ? (
-    <EmptyState title={t('CD1577')} action={<Button size="md" onClick={() => router.push('/login?next=/map?saved=1')}>{t('CD0050')}</Button>}>{t('CD1578')}</EmptyState>
+    // Signed out: the Saved hub's empty view (bordered, bookmark), as drawn.
+    <SavedHub
+      view="empty"
+      onOpenFolder={() => {}}
+      onBack={() => {}}
+      onAdd={() => {}}
+      emptyAction={<Button size="md" onClick={() => requireSignIn({ title: t('CD1577'), run: () => {} })}>{t('CD0050')}</Button>}
+      labels={{ back: k('saved.folder.back'), add: (n) => n, emptyTitle: t('CD1577'), emptyBody: t('CD1578') }}
+    />
   ) : (
     <SavedHub
       view={!saved.data?.pois.length ? 'empty' : folderId ? 'folder' : 'places'}
-      folders={(saved.data?.folders ?? []).map((f) => ({ id: f.id, name: f.name, count: k('saved.folder.poiCount', { count: f.pois.length }) }))}
+      // The lists the person made; All Saved is the map itself (the design draws no All Saved row).
+      folders={(saved.data?.folders ?? []).filter((f) => !f.is_default).map((f) => ({ id: f.id, name: f.name, count: k('saved.folder.poiCount', { count: f.pois.length }) }))}
       folder={(() => {
         const f = saved.data?.folders.find((x) => x.id === folderId)
-        return f ? { name: f.name, places: f.pois.map((p) => ({ id: p.poi_id, name: nameOf(p, locale), meta: p.display_region, imageSrc: p.primary_image_url })) } : undefined
+        return f ? { name: f.name, places: f.pois.map((p) => ({ id: p.poi_id, name: nameOf(p, locale), meta: regionName(p.display_region ?? '', locale), imageSrc: p.primary_image_url })) } : undefined
       })()}
       onOpenFolder={setFolderId}
       onBack={() => setFolderId(null)}
       onAdd={(id) => {
         const p = saved.data?.pois.find((x) => x.poi_id === id)
-        if (p) addToPlan({ poi_id: p.poi_id, name_ko: p.name_ko, name_en: p.name_en, coords_lat: p.coords_lat, coords_lng: p.coords_lng, display_region: p.display_region, primary_image_url: p.primary_image_url ?? undefined })
+        if (p) addToPlan({ poi_id: p.poi_id, name_ko: p.name_ko, name_en: p.name_en, coords_lat: p.coords_lat, coords_lng: p.coords_lng, display_region: p.display_region, primary_image_url: p.primary_image_url ?? undefined }, undefined, 'saved')
       }}
-      emptyAction={<Button size="md" variant="secondary" onClick={() => setMode('nearby')}>{t('CD1430')}</Button>}
+      emptyAction={<Button size="md" onClick={() => setMode('nearby')}>{t('CD1430')}</Button>}
       labels={{ back: k('saved.folder.back'), add: (n) => `${k('map.poiDetail.addToPlan')}: ${n}`, emptyTitle: k('saved.empty.places.title'), emptyBody: t('CD1429') }}
     />
   )
@@ -330,55 +624,81 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       stops={order.map((p, i) => ({
         id: p.poi_id,
         name: nameOf(p, locale),
-        imageSrc: p.primary_image_url ?? null,
         day: Math.min(draft.dayOf(p.poi_id), 8) as 1,
         duration: formatMinutes(draft.plan.durations[p.poi_id] ?? 60, k),
         durationLabel: k('map.plan.durationAriaLabel', { name: nameOf(p, locale) }),
-        leg: order[i + 1] && draft.dayOf(order[i + 1].poi_id) === draft.dayOf(p.poi_id) ? k('itinerary.stats.min', { min: legMinutes(p, order[i + 1]) }) : undefined,
+        leg: order[i + 1] && draft.dayOf(order[i + 1].poi_id) === draft.dayOf(p.poi_id) ? k('itinerary.stats.min', { min: routedLeg(p.poi_id, order[i + 1].poi_id) ?? legMinutes(p, order[i + 1]) }) : undefined,
       }))}
       days={draft.days}
       activeDay={activeDay}
       onDayChange={(d) => setActiveDay(d)}
       onAddDay={draft.addDay}
-      onRemoveDay={(d) => (draft.countOn(d) ? setDeleteDay(d) : removeDay(d))}
-      summary={editing ? GAP.editing(editing.title) : order.length ? `${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })} · ${formatMinutes(totalMin, k)}` : t('CD1359')}
+      summary={editing ? GAP.editing(editing.title) : order.length ? t('CD1858', { count: order.length, time: formatMinutes(totalMin, k) }) : t('CD1359')}
       lastAdded={order.length ? nameOf(order[order.length - 1], locale) : undefined}
       lastAddedImage={order.length ? order[order.length - 1].primary_image_url ?? null : undefined}
       lastAddedMeta={order.length ? GAP.lastAddedMore(order.length - 1) : undefined}
-      dayTotal={dayTotal !== null ? `${k('map.plan.dayTab', { n: activeDay })} · ${formatMinutes(dayTotal, k)}` : undefined}
-      onDuration={setDurationFor}
+      dayTotal={withEditNote(dayTotal !== null ? (dayStops && typeof activeDay === 'number' ? GAP.dayTotal(activeDay, formatMinutes(dayTotal, k), dayStops, PER_DAY) : [k('map.plan.dayTab', { n: activeDay }), k('itinerary.stats.stops', { count: dayStops })].join(' · ')) : order.length ? GAP.allDaysTotal(formatMinutes(totalMin, k), order.length) : GAP.allDaysEmpty)}
+      durationMenu={(id) => DURATIONS.map((m) => (
+        <MenuItem key={m} checked={draft.plan.durations[id] === m} onClick={() => draft.setDuration(id, m)}>{formatMinutes(m, k)}</MenuItem>
+      ))}
       onRemove={draft.remove}
-      onSave={() => { setPlanName(draft.plan.name ?? ''); setSaveOpen(true) }}
+      onMove={draft.move}
+      onSelect={(id) => {
+        setSelectedId(id)
+        const p = order.find((x) => x.poi_id === id)
+        if (p) mapRef.current?.panTo(p.coords_lat, p.coords_lng)
+      }}
+      onSave={() => (user || editing ? openSaveSheet() : requireSignIn({ title: t('CD0025'), draftNotice: t('CD1489'), pending: { type: 'save_own_plan' }, run: openSaveSheet }))}
       onDiscard={() => (editing ? stopEditing() : setDiscardOpen(true))}
       labels={{
-        region: k('map.plan.title'), emptyTitle: t('CD1359'), emptyBody: t('CD1607'), all: k('map.plan.allDays'),
-        day: (n) => k('map.plan.dayTab', { n }), addDay: k('map.plan.addDay'), removeDay: GAP.deleteDay, previousDays: GAP.previousDays, nextDays: GAP.nextDays, save: editing ? t('CD0993') : k('map.plan.save'), discard: editing ? t('CD1528') : k('map.plan.discardDraft'),
-        remove: (n) => `${k('saved.poi.removeLabel')} ${n}`, reorder: (n) => k('map.plan.dragHandle', { n }),
+        region: t('CD0679'), emptyTitle: t('CD1359'), emptyBody: t('CD1607'), all: k('map.plan.allDays'),
+        day: (n) => k('map.plan.dayTab', { n }), addDay: t('CD1480'), addDayAria: t('CD0649'), save: editing ? t('CD0993') : k('map.plan.save'), discard: editing ? t('CD1528') : t('CD0655'),
+        remove: (n) => `${k('saved.poi.removeLabel')} ${n}`, reorder: (n) => k('map.plan.dragHandle', { n }), moved: (name, position, total) => t('CD1807', { name, position, total }),
         open: k('map.plan.stripExpand'), close: k('map.plan.stripCollapse'), about: GAP.about,
       }}
     />
   )
 
-  const chips = (
+  // Chips belong to browsing: an open place hides them (phone and desktop), as drawn.
+  const chips = selectedId ? null : (
     <div className="flex gap-[var(--space-2)] overflow-x-auto [scrollbar-width:none]">
-      {CATEGORIES.map((c) => (
-        <Chip key={c.slug} type="map" selected={filter === c.slug} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setFilter((f) => (f === c.slug ? null : c.slug)) }}>{t(c.label)}</Chip>
+      {PLACE_TYPES.map((c) => (
+        <Chip key={c.id} type="map" selected={filter === c.id} leadingIcon={<c.icon />} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setAreaBounds(bounds); setAreaMoved(false); setFilter((f) => (f === c.id ? null : c.id)) }}>{t(c.label)}</Chip>
       ))}
     </div>
   )
 
+  const searchArea = filter && areaMoved && !selectedId ? (
+    <div className="flex justify-center">
+      <Chip type="map" selected aria-pressed={undefined} leadingIcon={<Search />} onClick={() => { setAreaBounds(bounds); setAreaMoved(false) }}>
+        {GAP.searchArea}
+      </Chip>
+    </div>
+  ) : null
+
+  // One h1 per page: an open place's name (Place detail) while it shows, else a hidden Map heading.
+  const placeShown = !!(selectedId && detail) && !(phone && planSheet)
   const map = (
-    <V2MapCanvas
-      ref={mapRef}
-      pois={mapPois}
-      selectedId={selectedId}
-      onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
-      planStops={planVisible ? planStops : []}
-      activeDay={activeDay}
-      onBounds={(b, z) => { setBounds(b); setZoom(z) }}
-      label={k('itinerary.mapAriaLabel')}
-      errorText={GAP.mapError}
-    />
+    <>
+      {placeShown ? null : <h1 className="sr-only">{labels.map}</h1>}
+      <V2MapCanvas
+        ref={mapRef}
+        openAt={openAt}
+        holdOpen={!!openedWith && !placeMissing}
+        pois={mapPois}
+        selectedId={selectedId}
+        onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
+        planStops={stopsVisible ? planStops : []}
+        fitBottom={fitBottom}
+        fitTop={fitTopPx}
+        activeDay={activeDay}
+        savedIds={savedIds}
+        onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => { setBounds(b); if (filterOn.current) setAreaMoved(true) }, 300) }}
+        userLocation={locate.location}
+        label={k('itinerary.mapAriaLabel')}
+        errorText={GAP.mapError}
+      />
+    </>
   )
 
   const dialogs = (
@@ -386,16 +706,15 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       <Modal
         open={saveOpen}
         onClose={() => setSaveOpen(false)}
-        size="sm"
-        title={k('map.plan.save')}
+        size="md"
+        title={t('CD0642')}
         closeLabel={k('badges.detail.close')}
-        secondaryAction={<Button variant="ghost" onClick={() => setSaveOpen(false)}>{k('map.plan.discardCancel')}</Button>}
-        primaryAction={<Button loading={saving} disabled={!planName.trim()} onClick={savePlan}>{k('map.plan.save')}</Button>}
+        secondaryAction={<Button variant="secondary" onClick={() => setSaveOpen(false)}>{k('map.plan.discardCancel')}</Button>}
+        primaryAction={<Button loading={saving} onClick={savePlan}>{k('map.plan.save')}</Button>}
       >
         <div className="flex flex-col gap-[var(--space-4)]">
           <p className="type-body-base text-ui-fg-muted">{t('CD1458')}</p>
-          <TextInput label={t('CD1459')} showLabel value={planName} maxLength={80} onChange={(e) => setPlanName(e.target.value)} help={`${planName.length}/80`} data-autofocus />
-          {!user ? <p className="type-body-caption text-ui-fg-muted">{t('CD1489')}</p> : null}
+          <TextInput label={t('CD1459')} showLabel required placeholder={t('CD0645')} value={planName} maxLength={80} onChange={(e) => { setPlanName(e.target.value); setNameError(false) }} help={`${planName.length}/80`} error={nameError ? t('CD1799') : undefined} data-autofocus />
         </div>
       </Modal>
       <Dialog
@@ -403,69 +722,79 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         onCancel={() => setDiscardOpen(false)}
         title={t('CD1536')}
         body={GAP.discardBody(order.length)}
-        cancel={<Button variant="ghost" data-autofocus onClick={() => setDiscardOpen(false)}>{k('map.plan.discardCancel')}</Button>}
-        confirm={<Button variant="danger" onClick={() => { draft.discard(); setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
+        cancel={<Button variant="secondary" data-autofocus onClick={() => setDiscardOpen(false)}>{k('map.plan.discardCancel')}</Button>}
+        confirm={<Button variant="danger" onClick={() => { draft.discard(); planFlow.current = 'manual'; setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
       />
       <Dialog
-        open={deleteDay !== null}
-        onCancel={() => setDeleteDay(null)}
-        title={deleteDay !== null ? GAP.deleteDayTitle(deleteDay) : ''}
-        body={deleteDay !== null ? GAP.deleteDayBody(draft.countOn(deleteDay)) : ''}
-        cancel={<Button variant="ghost" data-autofocus onClick={() => setDeleteDay(null)}>{k('map.plan.discardCancel')}</Button>}
-        confirm={<Button variant="danger" onClick={() => deleteDay !== null && removeDay(deleteDay)}>{GAP.deleteDayConfirm}</Button>}
-      />
-      <Dialog
-        open={!!pendingEdit}
+        open={!!pendingEdit && !saveFirst && !saveOpen}
         onCancel={() => { setPendingEdit(null); if (pendingEdit) router.push(`/plan/${pendingEdit.id}`) }}
         title={t('CD1525')}
-        body={pendingEdit ? GAP.editDraftBody(order.length, pendingEdit.title) : ''}
-        cancel={<Button variant="ghost" data-autofocus onClick={() => { const id = pendingEdit?.id; setPendingEdit(null); if (id) router.push(`/plan/${id}`) }}>{k('map.plan.discardCancel')}</Button>}
+        body={pendingEdit ? GAP.editDraftBody(order.length, pendingEdit.title || k('profile.untitledPlan')) : ''}
+        cancel={<Button variant="secondary" data-autofocus onClick={() => { const id = pendingEdit?.id; setPendingEdit(null); if (id) router.push(`/plan/${id}`) }}>{k('map.plan.discardCancel')}</Button>}
         third={<Button variant="ghost" onClick={() => { if (pendingEdit) { draft.discard(); loadForEdit(pendingEdit) } }}>{t('CD1527')}</Button>}
-        confirm={<Button onClick={() => { setPlanName(draft.plan.name ?? ''); setSaveOpen(true) }}>{k('map.plan.save')}</Button>}
+        confirm={<Button onClick={openSaveSheet}>{k('map.plan.save')}</Button>}
       />
-      <Modal open={!!durationFor} onClose={() => setDurationFor(null)} size="sm" title={k('map.plan.durationAriaLabel', { name: order.find((p) => p.poi_id === durationFor) ? nameOf(order.find((p) => p.poi_id === durationFor)!, locale) : '' })} closeLabel={k('badges.detail.close')}>
-        <div role="menu" className="-mx-[var(--space-6)]">
-          {DURATIONS.map((m) => (
-            <MenuItem key={m} checked={durationFor ? draft.plan.durations[durationFor] === m : false} onClick={() => { if (durationFor) draft.setDuration(durationFor, m); setDurationFor(null) }}>{formatMinutes(m, k)}</MenuItem>
-          ))}
-        </div>
-      </Modal>
     </>
   )
 
   if (phone) {
     return (
       <div className="relative h-[calc(100dvh)] w-full overflow-hidden">
-        <main id="main" className="absolute inset-0">{map}</main>
-        <div className="absolute inset-x-0 top-0 z-20 flex flex-col gap-[var(--space-2)]">
+        {/* The map ends at the navigation bar, so Naver's logo stays in view. */}
+        <main id="main" ref={mapArea} className="absolute inset-x-0 top-0 bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))]">{map}</main>
+        {/* With the browse sheet full, the bar and chips stay drawn over the sheet's top edge. */}
+        <div ref={topBars} className={cn('absolute inset-x-0 top-0 flex flex-col pt-[var(--space-2)]', !planSheet && snap === 'full' ? 'z-50' : 'z-20')}>
           <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} />
-          <div className="px-[var(--space-2)]">{chips}</div>
+          <div className="px-[var(--space-4)]">{chips}</div>
+          {searchArea ? <div className="mt-[var(--space-4)]">{searchArea}</div> : null}
         </div>
-        {order.length ? (
-          <div className="absolute bottom-[calc(76px+var(--space-3))] left-[var(--space-3)] z-30">
-            <PlanPill label={`${k('map.plan.title')} · ${k('itinerary.stats.stops', { count: order.length })}`} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} />
-          </div>
-        ) : null}
-        <BottomSheet type="map" open label={k('map.plan.title')} snap={snap} onSnapChange={setSnap} onClose={() => setSnap('peek')} resizeLabel={k('itinerary.sheet.handle')} header={selectedId ? undefined : switcher}>
-          {content}
+        {/* The open plan dims the map and the bar above it, as drawn; a tap there closes it. */}
+        {planSheet ? <Scrim onClick={() => setPlanSheet(false)} className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] z-30" /> : null}
+        {/* Naming the plan shows the map behind its sheet, as drawn; Cancel brings the map sheet back as it was. */}
+        {/* The plan sheet is its own sheet, shown at its full height at once: a plan made by Quick plan arrives
+            well after the tap, and the map sheet growing into it then moved the page under the reader. */}
+        <BottomSheet
+          key={planSheet ? 'plan' : 'browse'}
+          type="map"
+          open={!saveOpen}
+          label={t('CD0679')}
+          snap={planSheet ? 'full' : snap}
+          onSnapChange={(s) => (planSheet ? s !== 'full' && setPlanSheet(false) : setSnap(s))}
+          onClose={() => (planSheet ? setPlanSheet(false) : setSnap('peek'))}
+          resizeLabel={k('itinerary.sheet.handle')}
+          heights={planSheet ? { full: '70dvh' } : undefined}
+          header={selectedId || planSheet ? undefined : <div className="pt-[var(--space-4)]">{switcher}</div>}
+          aboveEnd={planSheet || snap === 'full' ? undefined : locate.control}
+          above={order.length && !planSheet ? <PlanPill label={t('CD0686', { count: order.length })} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /> : undefined}
+          className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0"
+        >
+          {planSheet ? <div className="-mx-[var(--space-4)] -mb-[var(--space-6)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div> : content}
         </BottomSheet>
-        <BottomSheet type="modal" open={planSheet} onClose={() => setPlanSheet(false)} label={k('map.plan.title')}>
-          <div className="-mx-[var(--space-6)] h-[70dvh]">{cartNode}</div>
-        </BottomSheet>
+        {/* While the plan is named, Locate me stays on the map where it sits above the half sheet, under the dimmed layer, as drawn. */}
+        {/* The toast then sits above the name sheet, not on this line, so the control does not lift. */}
+        {saveOpen && locate.still ? <div className="absolute right-[var(--space-4)] bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom)+50dvh+var(--space-3))] z-20">{locate.still}</div> : null}
         {dialogs}
       </div>
     )
   }
   return (
     <div className="flex min-h-0 flex-1">
-      <LeftPanel type="map" label={k('map.plan.title')} cart={cartNode} cartOpen={cart === 'open'}>
-        {selectedId ? null : <div className="sticky top-0 z-10 bg-ui-bg">{switcher}</div>}
-        {content}
+      <LeftPanel type="map" label={t('CD0679')} cart={cartNode} cartOpen={cart === 'open'}>
+        {selectedId ? null : <div className="sticky top-0 z-10 bg-ui-bg pt-[var(--space-4)]">{switcher}</div>}
+        {/* The Saved hub's raised background sits 16 under the tabs and 16 above the Plan cart, as drawn. */}
+        {!selectedId && mode === 'saved' ? <div className="my-[var(--space-4)] flex-1 bg-ui-bg-raised">{content}</div> : content}
       </LeftPanel>
       <main id="main" className="relative min-w-0 flex-1">
         {map}
-        <div className="pointer-events-none absolute inset-x-0 top-0 p-[var(--space-3)] [&>*]:pointer-events-auto">{chips}</div>
-        <ZoomControl className="absolute bottom-[var(--space-6)] right-[var(--space-6)]" onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} atMax={zoom >= 18} atMin={zoom <= 6} />
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-col gap-[var(--space-4)] p-[var(--space-4)] [&>*]:pointer-events-auto">
+          {chips}
+          {searchArea}
+        </div>
+        <MapLegalLine />
+        <div className={cn('absolute right-[var(--space-4)] flex flex-col gap-[var(--space-2)]', ABOVE_LEGAL_LINE)}>
+          {locate.control}
+          <ZoomControl onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} zoomInLabel={k('map.zoomIn')} zoomOutLabel={k('map.zoomOut')} atMax={zoom >= 18} atMin={zoom <= 6} />
+        </div>
       </main>
       {dialogs}
     </div>

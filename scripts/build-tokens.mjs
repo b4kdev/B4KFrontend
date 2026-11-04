@@ -12,7 +12,7 @@
 //   Color, Component   Light = :root and [data-theme="light"], Dark = [data-theme="dark"]
 //   Typography         en = :root, other locales = :root:lang(<locale>)
 //   Responsive         Mobile = :root, Tablet = min-width 768px, Desktop = min-width 1024px
-//   everything else    one value on :root
+//   everything else    one value on :root (Code: code-only tokens with no Figma variable, by decision)
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -132,9 +132,9 @@ writeFileSync(join(root, 'app/tokens.css'), css)
 
 // ── Tailwind preset ──────────────────────────────────────────────────────────
 // Semantic tokens only (primitives stay hidden, as in Figma). Font sizes, spacing and radius
-// already equal the Tailwind defaults (UI-12), so only the extra keys are added.
+// already equal the Tailwind defaults, so only the extra keys are added.
 // Colors sit under `ui-` while the old theme keys (bg, fg, danger …) still exist; the prefix is
-// dropped in the clean-up phase (DOC-211, phase 7).
+// dropped in the clean-up phase (phase 7).
 const v = (path) => `var(${byPath[path].css})`
 const group = (prefix) =>
   Object.fromEntries(
@@ -153,6 +153,9 @@ const durations = Object.fromEntries(
 const easings = Object.fromEntries(
   tokens.filter((t) => t.type === 'cubicBezier').map((t) => [t.path.slice('easing.'.length), v(t.path)]),
 )
+
+// Code-only stacking order: z-dropdown, z-modal, z-toast … next to the Tailwind numbers.
+const zIndex = group('z')
 
 const LEADING = { 1: 'none', 1.1: 'display', 1.25: 'tight', 1.375: 'snug', 1.5: 'normal' }
 const textStyles = Object.fromEntries(
@@ -196,7 +199,7 @@ const b4kTokens: Partial<Config> = {
       backgroundImage: {
         'overlay-fade': 'var(--gradient-overlay-fade)',
       },
-      // Motion patterns from the Motion spec (UI-20, UI-56): skeleton pulse, indeterminate progress.
+      // Motion patterns from the Motion spec: skeleton pulse, indeterminate progress.
       keyframes: {
         'b4k-pulse': { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0.5' } },
         'b4k-indeterminate': { '0%': { left: '-40%' }, '100%': { left: '100%' } },
@@ -213,6 +216,7 @@ const b4kTokens: Partial<Config> = {
       },
       transitionDuration: ${JSON.stringify(durations, null, 2).replace(/\n/g, '\n      ')},
       transitionTimingFunction: ${JSON.stringify(easings, null, 2).replace(/\n/g, '\n      ')},
+      zIndex: ${JSON.stringify(zIndex, null, 2).replace(/\n/g, '\n      ')},
     },
   },
   plugins: [

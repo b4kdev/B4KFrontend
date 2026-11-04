@@ -1,4 +1,4 @@
-// DEC-61 — 향수 플래그십 10곳 (perfume flagships), the one K-Beauty collection the
+// 향수 플래그십 10곳 (perfume flagships), the one K-Beauty collection the
 // content plan flags as fully complete (no blank cards). Fixed slug, not a dynamic
 // [id] segment — this section's detail-page axis is "목적" (purpose), not a
 // per-entity id like K-Drama's work or K-Pop's team.

@@ -6,8 +6,9 @@ import { Link as IntlLink } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
 import { IconButton } from './IconButton'
 import { PageItem, Segment, StepItem, Tab } from './Nav'
+import { HIT_AREA } from './styles'
 
-// Navigation molecules (UI-67; Figma Molecules): Tabs, Segmented control, Breadcrumbs, Pagination,
+// Navigation molecules (Figma Molecules): Tabs, Segmented control, Breadcrumbs, Pagination,
 // Progress indicator, Step list.
 
 export type TabsProps = {
@@ -26,7 +27,7 @@ export type TabsProps = {
   className?: string
 }
 
-/** Tabs (CMP-044): switches views in a page or panel, never filters. Arrow keys move. */
+/** Tabs: switches views in a page or panel, never filters. Arrow keys move. */
 export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollLabels, baseline = true, className }: TabsProps) {
   const list = useRef<HTMLDivElement>(null)
   const [edges, setEdges] = useState({ start: false, end: false })
@@ -116,7 +117,7 @@ export type SegmentedControlProps = {
   className?: string
 }
 
-/** Segmented control (CMP-006): 2 to 4 equal segments on a pill track; one is always selected. */
+/** Segmented control: 2 to 4 equal segments on a pill track; one is always selected. */
 export function SegmentedControl({ label, options, value, onValueChange, className }: SegmentedControlProps) {
   const onKey = (e: KeyboardEvent) => {
     const i = options.findIndex((o) => o.id === value)
@@ -141,12 +142,12 @@ export type BreadcrumbsProps = {
   label: string
   /** Earlier levels link; the last item is the current page. */
   items: { label: string; href?: string }[]
-  /** Figma Levels=Collapsed: middle levels behind … on narrow screens. */
+  /** Figma Levels=collapsed: middle levels behind … on narrow screens. */
   collapseLabel?: string
   className?: string
 }
 
-/** Breadcrumbs (CMP-043): eyebrow/category; earlier levels are fg-muted links, current is fg. */
+/** Breadcrumbs: eyebrow/category; earlier levels are fg-muted links, current is fg. */
 export function Breadcrumbs({ label, items, collapseLabel, className }: BreadcrumbsProps) {
   const last = items.length - 1
   return (
@@ -164,7 +165,7 @@ export function Breadcrumbs({ label, items, collapseLabel, className }: Breadcru
               {i === last || !it.href ? (
                 <span aria-current={i === last ? 'page' : undefined} className="text-ui-fg">{it.label}</span>
               ) : (
-                <IntlLink href={it.href} className="text-ui-fg-muted underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus">
+                <IntlLink href={it.href} className={cn('relative text-ui-fg-muted underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus', HIT_AREA)}>
                   {it.label}
                 </IntlLink>
               )}
@@ -195,7 +196,7 @@ const pagesAround = (page: number, count: number) => {
   return Array.from(set).sort((a, b) => a - b)
 }
 
-/** Pagination (CMP-045): numbered with previous/next, or dots for carousels. */
+/** Pagination: numbered with previous/next, or dots for carousels. */
 export function Pagination({ label, type = 'numbered', page, pageCount, onPageChange, previousLabel = '', nextLabel = '', statusText, className }: PaginationProps) {
   if (type === 'dots') {
     return (
@@ -231,7 +232,7 @@ export type ProgressIndicatorProps = {
   className?: string
 }
 
-/** Progress indicator (CMP-032; Quick plan): label above equal segments. */
+/** Progress indicator (Quick plan): label above equal segments. */
 export function ProgressIndicator({ step, steps, label, className }: ProgressIndicatorProps) {
   return (
     <div className={cn('flex flex-col gap-[var(--space-2)]', className)}>

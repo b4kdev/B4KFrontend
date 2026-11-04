@@ -1,4 +1,4 @@
-// CT_KP_EXT (DEC-60) — 멤버 발자취 (member footsteps) detail page data. Self-contained:
+// 멤버 발자취 (member footsteps) detail page data. Self-contained:
 // deliberately doesn't import from app/api/explore/[category]/route.ts — different
 // response shape (poi_type classification, relationship text, doc-given total/type
 // counts independent of how many item rows actually exist), not worth forcing into
@@ -26,7 +26,7 @@ export interface FootstepsPoi {
   relationship_en: string
   coords_lat: number
   coords_lng: number
-  /** false = no confirmed core.poi row (BLK-36) — stripped from real responses. */
+  /** false = no confirmed core.poi row — stripped from real responses. */
   verified?: boolean
 }
 
@@ -119,7 +119,7 @@ async function fetchRealFootsteps(teamId: string, includeUnverified: boolean): P
 
 // 5 reused verbatim from `memberFootsteps` in app/api/explore/[category]/route.ts (same
 // real place, don't fork the record) + 4 new — the 9 named places in the content plan's
-// source doc. Only Leeum has a confirmed core.poi row; the other 8 are BLK-36 placeholders.
+// source doc. Only Leeum has a confirmed core.poi row; the other 8 are placeholders.
 const SEED_FOOTSTEPS: Record<string, FootstepsDetail> = {
   bts: {
     teamId: 'bts',

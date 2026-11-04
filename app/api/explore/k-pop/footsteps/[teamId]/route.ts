@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { withDbPoiIds } from '@/lib/db-poi-mapping'
 import { resolveFootstepsDetail } from '@/lib/kpop-footsteps'
 
-export async function GET(req: NextRequest, { params }: { params: { teamId: string } }) {
+export async function GET(req: NextRequest, props: { params: Promise<{ teamId: string }> }) {
+  const params = await props.params;
   // Same dev-only preview gate as app/api/explore/[category]/route.ts — a no-op
   // outside development even if the query param is present.
   const includeUnverified =

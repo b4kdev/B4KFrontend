@@ -1,6 +1,6 @@
 import { cn } from '@/lib/cn'
 
-// Separator (UI-60; Figma B4K UI Components › Atoms › Separator): 1px color/border, dividers only.
+// Separator (Figma B4K UI Components › Atoms › Separator): 1px color/border, dividers only.
 // Horizontal stretches to its container, Vertical takes the height of its row, With text is the
 // "or" divider (eyebrow/category). Decorative by default (hidden from screen readers); pass
 // decorative={false} for a real section break (hr).

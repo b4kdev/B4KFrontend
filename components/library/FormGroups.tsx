@@ -8,14 +8,14 @@ import { FieldMessage } from './Field'
 import { IconButton } from './IconButton'
 import { ProgressBar } from './Progress'
 
-// Form molecules (UI-63; Figma Molecules): Fieldset, Stepper, File upload.
+// Form molecules (Figma Molecules): Fieldset, Stepper, File upload.
 
 export type FieldsetProps = {
   /** Legend (Label style). */
   legend: string
   /** Figma Hint (Show hint). */
   hint?: ReactNode
-  /** Figma Error text (State=Error): once for the group. */
+  /** Figma Error text (State=error): once for the group. */
   error?: ReactNode
   disabled?: boolean
   /** Legend for screen readers only (e.g. Consent step, where the heading above names the group). */
@@ -65,7 +65,7 @@ export type StepperProps = {
   className?: string
 }
 
-/** Stepper (CMP-015, Backpack Nudger): label and hint left, − value + right. */
+/** Stepper (Backpack Nudger): label and hint left, − value + right. */
 export function Stepper({ label, hint, value, min = 0, max = Infinity, onValueChange, decreaseLabel, increaseLabel, format, disabled, className }: StepperProps) {
   const id = useId()
   return (
@@ -92,13 +92,13 @@ export type FileUploadProps = {
   error?: ReactNode
   accept?: string
   onFile: (file: File) => void
-  /** Figma State=Uploading: 0 to 100. */
+  /** Figma State=uploading: 0 to 100. */
   progress?: number
   progressLabel?: string
   className?: string
 }
 
-/** File upload (CMP-020): a hidden file input opened by the button; the zone also takes drops. */
+/** File upload: a hidden file input opened by the button; the zone also takes drops. */
 export function FileUpload({ type = 'button', label, hint, error, accept, onFile, progress, progressLabel, className }: FileUploadProps) {
   const input = useRef<HTMLInputElement>(null)
   const id = useId()

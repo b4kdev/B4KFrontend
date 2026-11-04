@@ -13,7 +13,7 @@
 // child-of-a-hub (e.g. "에버랜드 처음이라면"). One dynamic route + one client component
 // dispatches on these two real fields instead of 16 hand-built page types.
 import 'server-only'
-import { bffFetch } from './bff'
+import { BffError, bffFetch } from './bff'
 import { pickEntityTitle } from './entity-i18n'
 
 export type CollectionPrimaryType = 'FAN_THEME' | 'STORY' | 'EXPERIENCE' | 'ROUTE' | 'CHALLENGE' | 'SHOPPING'
@@ -101,70 +101,79 @@ interface ContextItem {
   base_translations?: Record<string, { name?: string; description?: string }>
 }
 
+// Only the BFF's 404 means the collection does not exist; a refused or failed call (429, 5xx,
+// timeout, network) is a load error and must not read as Page not found.
+const isNotFound = (e: unknown) => e instanceof BffError && e.status === 404
+
+/** A hub child or sibling; null when that collection does not exist. Throws when the call fails. */
 async function fetchSummary(slug: string, locale: string): Promise<CollectionSummary | null> {
   try {
     const p = await bffFetch<EntityProfile>(`/entities/${slug}`, { token: null })
     return { slug, title: pickEntityTitle(p, locale), primary_image_url: p.primary_image_url }
-  } catch {
-    return null
+  } catch (e) {
+    if (isNotFound(e)) return null
+    throw e
   }
 }
 
+/** The collection; null when it does not exist or has nothing to show. Throws when the BFF call fails. */
 export async function fetchCollectionDetail(slug: string, locale: string): Promise<CollectionDetail | null> {
+  let profile: EntityProfile
   try {
-    const profile = await bffFetch<EntityProfile>(`/entities/${slug}`, { token: null })
-    const runtimeKind = (profile.metadata?.runtime_kind as CollectionRuntimeKind | undefined) ?? 'LEAF'
-    const primaryType = (profile.metadata?.primary_type as CollectionPrimaryType | undefined) ?? null
-    const isOrdered = profile.metadata?.is_ordered === 'TRUE'
+    profile = await bffFetch<EntityProfile>(`/entities/${slug}`, { token: null })
+  } catch (e) {
+    if (isNotFound(e)) return null
+    throw e
+  }
+  const runtimeKind = (profile.metadata?.runtime_kind as CollectionRuntimeKind | undefined) ?? 'LEAF'
+  const primaryType = (profile.metadata?.primary_type as CollectionPrimaryType | undefined) ?? null
+  const isOrdered = profile.metadata?.is_ordered === 'TRUE'
 
-    let items: CollectionItem[] = []
-    if (runtimeKind !== 'HUB') {
-      const context = await bffFetch<ContextItem[]>(`/context/entity:${profile.entity_id}?limit=50`, { token: null })
-      items = context.map(c => ({
-        poi_id: String(c.poi_id),
-        name_ko: c.name_ko,
-        name_en: pickEntityTitle(
-          { name_ko: c.name_ko, translations: { ...c.base_translations, ...c.translations } },
-          locale,
-        ),
-        primary_image_url: c.primary_image_url,
-        display_region: c.display_region ?? '',
-        relation: c.relation,
-        coords_lat: c.coords_lat,
-        coords_lng: c.coords_lng,
-      }))
-      if (!items.length) return null
-    }
+  let items: CollectionItem[] = []
+  if (runtimeKind !== 'HUB') {
+    const context = await bffFetch<ContextItem[]>(`/context/entity:${profile.entity_id}?limit=50`, { token: null })
+    items = context.map(c => ({
+      poi_id: String(c.poi_id),
+      name_ko: c.name_ko,
+      name_en: pickEntityTitle(
+        { name_ko: c.name_ko, translations: { ...c.base_translations, ...c.translations } },
+        locale,
+      ),
+      primary_image_url: c.primary_image_url,
+      display_region: c.display_region ?? '',
+      relation: c.relation,
+      coords_lat: c.coords_lat,
+      coords_lng: c.coords_lng,
+    }))
+    if (!items.length) return null
+  }
 
-    let children: CollectionSummary[] | undefined
-    if (runtimeKind === 'HUB') {
-      const childSlugs = HUB_CHILDREN[slug] ?? []
-      const fetched = await Promise.all(childSlugs.map(s => fetchSummary(s, locale)))
-      children = fetched.filter((c): c is CollectionSummary => c !== null)
-      if (!children.length) return null
-    }
+  let children: CollectionSummary[] | undefined
+  if (runtimeKind === 'HUB') {
+    const childSlugs = HUB_CHILDREN[slug] ?? []
+    const fetched = await Promise.all(childSlugs.map(s => fetchSummary(s, locale)))
+    children = fetched.filter((c): c is CollectionSummary => c !== null)
+    if (!children.length) return null
+  }
 
-    let siblings: CollectionSummary[] | undefined
-    if (runtimeKind === 'CHILD') {
-      const siblingSlugs = findSiblingSlugs(slug)
-      const fetched = await Promise.all(siblingSlugs.map(s => fetchSummary(s, locale)))
-      siblings = fetched.filter((c): c is CollectionSummary => c !== null)
-    }
+  let siblings: CollectionSummary[] | undefined
+  if (runtimeKind === 'CHILD') {
+    const siblingSlugs = findSiblingSlugs(slug)
+    const fetched = await Promise.all(siblingSlugs.map(s => fetchSummary(s, locale)))
+    siblings = fetched.filter((c): c is CollectionSummary => c !== null)
+  }
 
-    return {
-      slug,
-      entityId: profile.entity_id,
-      title: pickEntityTitle(profile, locale),
-      section: profile.metadata?.section ?? '',
-      isOrdered,
-      totalCount: items.length,
-      runtimeKind,
-      primaryType,
-      items,
-      children,
-      siblings,
-    }
-  } catch {
-    return null
+  return {
+    slug,
+    entityId: profile.entity_id,
+    title: pickEntityTitle(profile, locale),
+    section: profile.metadata?.section ?? '',
+    isOrdered,
+    totalCount: items.length,
+    runtimeKind,
+    primaryType,
+    items,
+    children,
+    siblings,
   }
 }

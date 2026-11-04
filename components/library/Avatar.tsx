@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { User } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
-// Avatar (UI-61, UI-83; Figma Atoms › Avatar): a person, always round. Sizes avatar/size-xs 24 to
+// Avatar (Figma Atoms › Avatar): a person, always round. Sizes avatar/size-xs 24 to
 // xl 80. Photo, else initials (1 to 2 letters) on state-selected, else the user icon.
 
 const SIZE = {
@@ -20,7 +20,7 @@ const PX = { xs: 24, sm: 32, md: 40, lg: 64, xl: 80 } as const
 
 export type AvatarProps = {
   size?: keyof typeof SIZE
-  /** Photo URL (Type=Photo). */
+  /** Photo URL (Type=photo). */
   src?: string | null
   /** The person's name: alt text and the source of the initials. */
   name?: string

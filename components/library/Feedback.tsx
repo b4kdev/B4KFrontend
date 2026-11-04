@@ -3,7 +3,7 @@ import { CircleAlert, CircleCheck, Info, SearchX, TriangleAlert, X } from 'lucid
 import { cn } from '@/lib/cn'
 import { FOCUS_RING, HIT_AREA } from './styles'
 
-// Feedback molecules (UI-68; Figma Molecules): Alert, Empty state. (Toast: Toast.tsx.)
+// Feedback molecules (Figma Molecules): Alert, Empty state. (Toast: Toast.tsx.)
 
 const ALERT_ICON = { info: Info, success: CircleCheck, warning: TriangleAlert, critical: CircleAlert } as const
 
@@ -22,8 +22,8 @@ export type AlertProps = {
 }
 
 /**
- * Alert (CMP-027): persistent inline message, square. Info, Success, Warning: bg-raised, 1px border,
- * told apart by icon (UI-10). Critical: danger-bg, danger-border, danger icon (UI-08), role alert.
+ * Alert: persistent inline message, square. Info, Success, Warning: bg-raised, 1px border,
+ * told apart by icon. Critical: danger-bg, danger-border, danger icon, role alert.
  */
 export function Alert({ type = 'info', title, children, action, onDismiss, dismissLabel, className }: AlertProps) {
   const Icon = ALERT_ICON[type]
@@ -74,17 +74,19 @@ export type EmptyStateProps = {
   children?: ReactNode
   /** Figma Show action: a Button. */
   action?: ReactNode
+  /** The title element: a heading when the state is the whole page (Page not found). */
+  titleAs?: 'p' | 'h1' | 'h2'
   className?: string
 }
 
-/** Empty state (CMP-035): icon, title/empty-state, one line, optional Button. Error uses role alert. */
-export function EmptyState({ type = 'empty', container = 'plain', icon, title, children, action, className }: EmptyStateProps) {
+/** Empty state: icon, title/empty-state, one line, optional Button. Error uses role alert. */
+export function EmptyState({ type = 'empty', container = 'plain', icon, title, children, action, titleAs: Title = 'p', className }: EmptyStateProps) {
   const Icon = EMPTY_ICON[type]
   return (
     <div
       role={type === 'error' ? 'alert' : undefined}
       className={cn(
-        'flex flex-col items-center gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-12)] text-center',
+        'flex flex-col items-center justify-center gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-12)] text-center',
         container === 'bordered' && 'border border-ui-border bg-ui-bg-raised',
         className,
       )}
@@ -92,9 +94,9 @@ export function EmptyState({ type = 'empty', container = 'plain', icon, title, c
       <span aria-hidden className={cn('mb-[var(--space-4)] inline-flex size-[var(--icon-size-2xl)] [&>svg]:size-full', type === 'error' ? 'text-ui-danger' : 'text-ui-fg-muted')}>
         {icon ?? <Icon />}
       </span>
-      <p className="type-title-empty-state text-ui-fg">{title}</p>
-      {/* Figma body: 320 fixed, never wider than the container. */}
-      {children ? <p className="w-[320px] max-w-full type-body-base text-ui-fg-muted">{children}</p> : null}
+      <Title className="type-title-empty-state text-ui-fg">{title}</Title>
+      {/* Figma body: fills the state's width inside its 24 side padding. */}
+      {children ? <p className="w-full type-body-base text-ui-fg-muted">{children}</p> : null}
       {action ? <div className="mt-[var(--space-4)]">{action}</div> : null}
     </div>
   )

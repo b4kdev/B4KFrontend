@@ -2,10 +2,10 @@ import { chromium } from 'playwright';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { BASE, ROUTES } from './qa-routes.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const BASE = process.env.A11Y_BASE_URL || 'http://localhost:3001';
 const AXE_PATH = join(__dirname, 'node_modules/axe-core/axe.min.js');
 const REPORT_DATE = new Date().toISOString().split('T')[0];
 const OUT_DIR = join(__dirname, 'reports/a11y');
@@ -14,34 +14,6 @@ const OUT_REPORT = join(OUT_DIR, `${REPORT_DATE}-wcag-audit.md`);
 // CLAUDE.md Section 1 — supported languages
 const LOCALES = ['ko', 'en', 'ja', 'zh-TW', 'pt-BR'];
 
-// path is relative to the locale root, e.g. '' -> /en, '/map' -> /en/map
-const ROUTES = [
-  { id: '01-home',               path: '',                       label: 'HM_01 Home' },
-  { id: '02-map',                path: '/map',                   label: 'MP_01-08 Map default' },
-  { id: '09-itinerary',          path: '/plan/1',                label: 'IT_01 Itinerary detail' },
-  { id: '10-explore-kpop',       path: '/explore/k-pop',         label: 'CT_KP Explore K-Pop' },
-  { id: '11-explore-kdrama',     path: '/explore/k-drama',       label: 'CT_KD Explore K-Drama' },
-  { id: '12-explore-kbeauty',    path: '/explore/k-beauty',      label: 'CT_KB Explore K-Beauty' },
-  { id: '13-explore-kculture',   path: '/explore/k-culture',     label: 'CT_KC Explore K-Culture' },
-  { id: '14-profile',            path: '/profile',               label: 'PR_01-08 Profile header' },
-  { id: '15-profile-trips',      path: '/profile/trips',         label: 'PR_10-16 Profile trips' },
-  { id: '16-profile-saved',      path: '/profile/saved',         label: 'PR_20-22 Profile saved' },
-  { id: '17-profile-badges',     path: '/profile/badges',        label: 'PR_30-32 Profile badges' },
-  { id: '18-profile-settings',   path: '/profile/settings',      label: 'PR_50-53 Profile settings' },
-  { id: '19-badges',             path: '/badges',                label: 'BD_01-12 Badges catalog' },
-  { id: '20-leaderboard',        path: '/leaderboard',           label: 'LB_01-04 Leaderboard' },
-  { id: '21-saved',              path: '/saved',                 label: 'SV_01 Saved (POI + Plans)' },
-  { id: '22-search',             path: '/search',                label: 'SR_01 Search results' },
-  { id: '23-notifications',      path: '/notifications',         label: 'NTF_01-06 Notifications' },
-  { id: '24-help',               path: '/help',                  label: 'HLP_01-05 Help' },
-  { id: '25-legal-privacy',      path: '/legal/privacy',         label: 'LGL Privacy policy' },
-  { id: '26-legal-terms',        path: '/legal/terms',           label: 'LGL Terms' },
-  { id: '27-legal-cookies',      path: '/legal/cookies',         label: 'LGL_05 Cookie preferences' },
-  { id: '28-offline',            path: '/offline',               label: 'OFF_01-04 Offline state' },
-  { id: '06-plan-manual',        path: '/plan/manual',           label: 'FL1 Manual plan (stub)' },
-  { id: '07-plan-auto',          path: '/plan/auto',             label: 'FL2 Auto-gen plan (stub)' },
-  { id: '08-plan-ai',            path: '/plan/ai',               label: 'FL3 AI chat plan (stub)' },
-];
 
 // Cold page loads only — does NOT cover interaction-triggered states (Auth
 // Gate modal, Map POI/Plan/AI-overlay states, bottom sheets). Needs a
@@ -77,7 +49,7 @@ async function run() {
           await page.evaluate(axeScriptContent);
 
           const results = await page.evaluate(async () => {
-            return await window.axe.run();
+            return await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } });
           });
 
           allResults.push({

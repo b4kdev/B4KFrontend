@@ -11,7 +11,7 @@ import localFont from 'next/font/local';
 
 
 // Display face (--font-family-display). next/font/local generates the ascent/descent/
-// size-adjust fallback override (BLK-30: CLS on the hero heading).
+// size-adjust fallback override (CLS on the hero heading).
 const moderniz = localFont({
   src: '../public/fonts/moderniz.woff2',
   weight: '900',
@@ -20,7 +20,7 @@ const moderniz = localFont({
   display: 'swap',
 });
 
-// New design fonts (UI-36), read by --font-family-display / --font-family-body in
+// New design fonts, read by --font-family-display / --font-family-body in
 // app/tokens.css. preload: false — a browser fetches a face only when text uses it (the CJK
 // faces only for their locales). CJK faces load per unicode-range.
 const uiInter = Inter({

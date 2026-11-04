@@ -46,7 +46,8 @@ export interface ItineraryRelated {
 
 export interface ItineraryDetail {
   id: string
-  title: string
+  /** Null for a draft nobody has named yet; screens show the Untitled plan text. */
+  title: string | null
   is_partner: boolean
   is_published: boolean
   share_url: string | null
@@ -91,6 +92,10 @@ export interface BffPlace {
   visit_order: number
   travel_mode?: string | null            // walking | transit | driving
   duration_min?: number | null
+  /** The usual visit length for this kind of place; the stop's length when it has none. */
+  default_visit_min?: number | null
+  /** Where the place was found when it was added to the plan. */
+  source?: string | null
   note?: string | null
   name_ko?: string | null
   address_ko?: string | null
@@ -110,7 +115,8 @@ export interface BffDay {
 
 export interface BffItinerary {
   itinerary_id: number
-  title: string
+  /** Null for a draft nobody has named yet. */
+  title: string | null
   status?: string                        // draft | confirmed (owner GET only)
   is_public?: boolean
   is_partner?: boolean
@@ -147,11 +153,12 @@ export const isNumericId = (id: string) => /^\d+$/.test(id)
 
 // list_my_itineraries item (GET /me/itineraries?status=draft) — the account's
 // single working draft, if any. Shared by app/api/plans/draft (autosave) and
-// app/api/plans (Save Plan confirm, BLK-08) so both check the same row before
+// app/api/plans (Save Plan confirm) so both check the same row before
 // deciding create-vs-reuse.
 export interface DbDraftSummary {
   itinerary_id: number
-  title: string
+  /** A draft has no name until the person gives it one (the backend no longer makes one up). */
+  title: string | null
   total_places: number
   created_at?: string
   updated_at?: string
@@ -208,6 +215,7 @@ export function daysToPutPayload(days: BffDay[] | null) {
       travel_mode:  p.travel_mode ?? 'walking',
       note:         p.note ?? null,
       duration_min: p.duration_min ?? null,
+      ...(p.source ? { source: p.source } : {}),
     })),
   }))
 }
@@ -220,7 +228,7 @@ export function mapBffToDetail(bff: BffItinerary): ItineraryDetail {
   const stops: ItineraryStop[] = flat.map(({ place, day, order }) => ({
     stop_order:     order,
     day,
-    duration_min:   place.duration_min ?? DEFAULT_DURATION_MIN,
+    duration_min:   place.duration_min ?? place.default_visit_min ?? DEFAULT_DURATION_MIN,
     transport_mode: toFrontMode(place.travel_mode),
     notes:          place.note ?? null,
     poi: {
@@ -257,7 +265,6 @@ export function mapBffToDetail(bff: BffItinerary): ItineraryDetail {
     })
   }
 
-  const legMinutes  = legs.reduce((sum, l) => sum + Math.round(l.estimated_duration_s / 60), 0)
   const stayMinutes = stops.reduce((sum, s) => sum + s.duration_min, 0)
   const distance    = legs.reduce((sum, l) => sum + l.distance_m, 0)
 
@@ -269,7 +276,8 @@ export function mapBffToDetail(bff: BffItinerary): ItineraryDetail {
     share_url:          null,
     like_count:         bff.like_count ?? 0,
     save_count:         bff.save_count ?? 0,
-    total_duration_min: stayMinutes + legMinutes,
+    // Plan totals count the stop times only, as on the map while building (legs are shown per leg).
+    total_duration_min: stayMinutes,
     distance_m:         legs.length > 0 ? distance : null,
     author: {
       id:             bff.author ? String(bff.author.user_id) : '',
@@ -280,7 +288,7 @@ export function mapBffToDetail(bff: BffItinerary): ItineraryDetail {
     },
     stops,
     legs,
-    related: [],   // no BFF source yet — honest empty list (contract keeps the field)
+    related: [],   // filled by app/api/plans/[id] from GET /itineraries/public/:id/related
     viewer: {
       is_liked: bff.viewer?.is_liked ?? false,
       is_saved: bff.viewer?.is_saved ?? false,

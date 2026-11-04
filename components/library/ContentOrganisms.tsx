@@ -11,8 +11,9 @@ import { Alert } from './Feedback'
 import { IconButton } from './IconButton'
 import { Image } from './Image'
 import { Pagination } from './NavGroups'
+import { HIT_AREA } from './styles'
 
-// Content organisms (UI-72, UI-75; Figma Organisms): Hero, Carousel, Footer, Form, Tree view,
+// Content organisms (Figma Organisms): Hero, Carousel, Footer, Form, Tree view,
 // Accordion, Now Seoul card.
 
 export type HeroProps = {
@@ -26,18 +27,20 @@ export type HeroProps = {
   action?: ReactNode
   /** Home: the page h1. */
   as?: 'h1' | 'h2'
+  /** Load the photo early (the first hero on a page; later carousel slides load lazily). */
+  priority?: boolean
   className?: string
 }
 
-/** Hero (CMP-057): full-width photo with gradient/overlay-fade, text bottom left; always in the Dark color mode. */
-export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action, as: H = 'h1', className }: HeroProps) {
+/** Hero: full-width photo with gradient/overlay-fade, text bottom left; always in the Dark color mode. */
+export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action, as: H = 'h1', priority = true, className }: HeroProps) {
   return (
     <section data-theme="dark" className={cn('relative w-full overflow-hidden bg-ui-bg-media text-ui-fg', size === 'home' ? 'h-[var(--hero-height-home)]' : 'h-[var(--hero-height-section)]', className)}>
-      <Image ratio="16:9" src={imageSrc} alt="" priority sizes="100vw" className="!absolute inset-0 h-full !aspect-auto" />
+      <Image ratio="16:9" src={imageSrc} alt="" priority={priority} sizes="100vw" className="!absolute inset-0 h-full !aspect-auto" />
       <div aria-hidden className="absolute inset-0 bg-overlay-fade" />
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-[var(--space-3)] p-[var(--space-11)] max-md:px-[var(--space-6)] max-md:pb-[var(--space-10)] max-md:pt-[var(--space-6)]">
         {eyebrow ? <Badge variant="on-image">{eyebrow}</Badge> : null}
-        <H className={cn(size === 'home' ? 'type-display-hero' : 'type-display-hub', 'max-w-[960px] break-words hyphens-auto [text-wrap:balance] [&:lang(ko)]:break-keep')}>{title}</H>
+        <H className={cn(size === 'home' ? 'type-display-hero' : 'type-display-hub', 'min-w-0 max-w-[min(960px,100%)] hyphens-auto [overflow-wrap:anywhere] [text-wrap:balance] [&:lang(ko)]:break-keep')}>{title}</H>
         {subtitle ? <p className="max-w-[400px] type-body-long text-ui-fg-muted max-md:hidden">{subtitle}</p> : null}
         {action ? <div className="pt-[var(--space-3)]">{action}</div> : null}
       </div>
@@ -61,7 +64,7 @@ export type CarouselProps = {
   className?: string
 }
 
-/** Carousel (CMP-053): no autoplay; slides change only when the user acts; crossfade (none with reduced motion). */
+/** Carousel: no autoplay; slides change only when the user acts; crossfade (none with reduced motion). */
 export function Carousel({ type, label, children, seeAll, subtitle, previousLabel, nextLabel, slideLabel, className }: CarouselProps) {
   const items = Children.toArray(children)
   const [i, setI] = useState(0)
@@ -90,8 +93,8 @@ export function Carousel({ type, label, children, seeAll, subtitle, previousLabe
     )
   }
   const onKey = (e: KeyboardEvent) => {
-    if (e.key === 'ArrowRight') setI((x) => Math.min(items.length - 1, x + 1))
-    else if (e.key === 'ArrowLeft') setI((x) => Math.max(0, x - 1))
+    if (e.key === 'ArrowRight') setI((x) => (x + 1) % items.length)
+    else if (e.key === 'ArrowLeft') setI((x) => (x - 1 + items.length) % items.length)
   }
   return (
     <section aria-roledescription="carousel" aria-label={label} onKeyDown={onKey} className={cn('relative', className)}>
@@ -104,22 +107,22 @@ export function Carousel({ type, label, children, seeAll, subtitle, previousLabe
         <Pagination type="dots" label={label} page={i + 1} pageCount={items.length} statusText={slideLabel(i + 1, items.length)} />
       </div>
       <div className="absolute bottom-[var(--space-5)] right-[var(--space-6)] flex gap-[var(--space-2)] max-lg:hidden" data-theme="dark">
-        <IconButton variant="secondary" label={previousLabel} icon={<ChevronLeft />} disabled={i === 0} onClick={() => setI(i - 1)} />
-        <IconButton variant="secondary" label={nextLabel} icon={<ChevronRight />} disabled={i === items.length - 1} onClick={() => setI(i + 1)} />
+        <IconButton variant="secondary" label={previousLabel} icon={<ChevronLeft />} onClick={() => setI((i - 1 + items.length) % items.length)} />
+        <IconButton variant="secondary" label={nextLabel} icon={<ChevronRight />} onClick={() => setI((i + 1) % items.length)} />
       </div>
     </section>
   )
 }
 
 export type FooterProps = {
-  /** Legal links: Help, Privacy, Terms, Cookies. */
-  links: { label: string; href: string }[]
+  /** Legal links in order: About B4K, Help, Terms, Privacy Policy (strong), Cookies. */
+  links: { label: string; href: string; strong?: boolean }[]
   copyright: string
   navLabel: string
   className?: string
 }
 
-/** Footer (CMP-048): one row of legal links and the copyright; content pages only. */
+/** Footer: one row of legal links and the copyright; content pages only. */
 export function Footer({ links, copyright, navLabel, className }: FooterProps) {
   return (
     <footer className={cn('flex flex-wrap items-center gap-[var(--space-4)] border-t border-ui-border bg-ui-bg px-[var(--space-8)] py-[var(--space-6)] type-body-caption text-ui-fg-muted max-md:flex-col max-md:items-start max-md:gap-[var(--space-3)] max-md:px-[var(--space-4)]', className)}>
@@ -127,7 +130,7 @@ export function Footer({ links, copyright, navLabel, className }: FooterProps) {
         <ul className="flex flex-wrap gap-x-[var(--space-4)] gap-y-[var(--space-2)]">
           {links.map((l) => (
             <li key={l.href}>
-              <IntlLink href={l.href} className="hover:text-ui-link-hover focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus">{l.label}</IntlLink>
+              <IntlLink href={l.href} className={cn(l.strong && 'type-body-label', 'relative', HIT_AREA, 'hover:text-ui-link-hover focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus')}>{l.label}</IntlLink>
             </li>
           ))}
         </ul>
@@ -148,7 +151,7 @@ export type FormProps = {
   className?: string
 }
 
-/** Form (CMP-025): one column, visible labels, errors on submit with a summary at the top (GOV.UK). */
+/** Form: one column, visible labels, errors on submit with a summary at the top (GOV.UK). */
 export function Form({ onSubmit, errorSummary, children, actions, className }: FormProps) {
   const summary = useRef<HTMLDivElement>(null)
   const count = errorSummary?.items.length ?? 0
@@ -174,14 +177,14 @@ export function Form({ onSubmit, errorSummary, children, actions, className }: F
   )
 }
 
-/** Tree view (CMP-046): Tree items nested 16 per level; role tree. */
+/** Tree view: Tree items nested 16 per level; role tree. */
 export function TreeView({ label, children, className }: { label: string; children: ReactNode; className?: string }) {
   return <ul role="tree" aria-label={label} className={className}>{children}</ul>
 }
 
-/** Accordion (CMP-052): Accordion items under a 1px top border; several can be open. */
+/** Accordion: a stack of Accordion items, each with its divider inside; several can be open. */
 export function Accordion({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn('border-t border-ui-border', className)}>{children}</div>
+  return <div className={className}>{children}</div>
 }
 
 export type NowSeoulCardProps = {
@@ -199,7 +202,7 @@ export type NowSeoulCardProps = {
   className?: string
 }
 
-/** Now Seoul card (UI-75): local time, weather, three forecast days, one live tip. */
+/** Now Seoul card: local time, weather, three forecast days, one live tip. */
 export function NowSeoulCard({ label, eyebrow, time, date, temperature, condition, weatherIcon, forecast, tip, className }: NowSeoulCardProps) {
   return (
     <section aria-label={label} className={cn('flex flex-col gap-[var(--space-4)] border border-ui-border bg-ui-bg-raised p-[var(--space-4)] text-ui-fg', className)}>
@@ -223,7 +226,7 @@ export function NowSeoulCard({ label, eyebrow, time, date, temperature, conditio
       {tip ? (
         <div className="flex flex-col gap-[var(--space-4)]">
           <span aria-hidden className="h-px bg-ui-border-subtle" />
-          <p className="flex gap-[var(--space-2)] type-body-base"><Sparkles aria-hidden className="mt-[2px] size-[var(--icon-size-sm)] shrink-0" />{tip}</p>
+          <p className="flex gap-[var(--space-2)] type-body-base"><Sparkles aria-hidden className="mt-[var(--space-0-5)] size-[var(--icon-size-sm)] shrink-0" />{tip}</p>
         </div>
       ) : null}
     </section>

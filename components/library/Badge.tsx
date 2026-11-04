@@ -2,9 +2,9 @@ import type { ReactNode } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
 
-// Badge (UI-54; Figma Atoms › Badge): a short non-interactive label, uppercase, badge/height,
+// Badge (Figma Atoms › Badge): a short non-interactive label, uppercase, badge/height,
 // badge/padding-x. Strong = square, eyebrow/badge (featured, D-day). The others are pills with
-// eyebrow/category. Critical uses the danger tokens, for errors only (UI-08).
+// eyebrow/category. Critical uses the danger tokens, for errors only.
 
 export const badgeVariants = cva(
   'inline-flex h-[var(--badge-height)] shrink-0 items-center gap-[var(--space-1)] whitespace-nowrap px-[var(--badge-padding-x)] [&>svg]:size-[var(--icon-size-xs)]',
@@ -41,13 +41,13 @@ export function Badge({ variant, children, leadingIcon, className }: BadgeProps)
 }
 
 export type CountBadgeProps = {
-  /** Figma Type=Dot when left out. Shows 99+ above 99. */
+  /** Figma Type=dot when left out. Shows 99+ above 99. */
   count?: number
   className?: string
 }
 
 /**
- * Count badge (UI-54): unread count or dot on an icon. Monochrome with a 2px color/bg outline.
+ * Count badge: unread count or dot on an icon. Monochrome with a 2px color/bg outline.
  * Decorative: put the meaning on the parent (aria-label "Notifications, 3 unread").
  */
 export function CountBadge({ count, className }: CountBadgeProps) {

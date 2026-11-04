@@ -18,7 +18,7 @@ export const RESULT_LIMIT = 100
 
 /** 코스 생성 규칙 — 하루 방문 수 / 최대 일수(날짜 범위가 이보다 길어도 자른다). */
 export const STOPS_PER_DAY = 4
-export const MAX_COURSE_DAYS = 7
+export const MAX_COURSE_DAYS = 8
 /** 코스 후보 풀 크기 — /places 매칭 상위 N개 안에서만 고른다. */
 export const COURSE_POOL_SIZE = 40
 
@@ -116,6 +116,31 @@ export function clearDraftTags(): void {
   try { localStorage.removeItem(DRAFT_KEY) } catch { /* storage unavailable */ }
 }
 
+// Quick plan 답변(목적지·날짜·동행) — 로그인 유저는 PUT /me/quick-plan, 게스트는 로컬에 두었다가 로그인 후 전송.
+export type QuickPlanAnswers = { destination?: string; start_date?: string; end_date?: string; who_with?: string }
+const ANSWERS_KEY = 'b4k_quickplan_answers'
+
+export function saveDraftAnswers(a: QuickPlanAnswers): void {
+  try { localStorage.setItem(ANSWERS_KEY, JSON.stringify({ a, ts: Date.now() })) } catch { /* storage unavailable */ }
+}
+
+export function readDraftAnswers(): QuickPlanAnswers | null {
+  try {
+    const raw = localStorage.getItem(ANSWERS_KEY)
+    if (!raw) return null
+    const d = JSON.parse(raw) as { a?: QuickPlanAnswers; ts?: unknown }
+    if (!d.a || typeof d.ts !== 'number' || Date.now() - d.ts > DRAFT_TTL_MS) {
+      localStorage.removeItem(ANSWERS_KEY)
+      return null
+    }
+    return d.a
+  } catch { return null }
+}
+
+export function clearDraftAnswers(): void {
+  try { localStorage.removeItem(ANSWERS_KEY) } catch { /* storage unavailable */ }
+}
+
 // ── 날짜 ────────────────────────────────────────────────────────────────────
 export function toISODate(d: Date): string {
   const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -139,18 +164,32 @@ export interface CourseHandoffStop {
 }
 
 const COURSE_HANDOFF_KEY = 'b4k_quickplan_course'
+const COURSE_HANDOFF_NAME_KEY = 'b4k_quickplan_course_name'
+const COURSE_HANDOFF_SOURCE_KEY = 'b4k_quickplan_course_source'
+/** Where a handed-off plan came from (the plan_create flow in analytics). */
+export type CourseHandoffSource = 'quick_plan' | 'from_saved'
 
-export function saveCourseHandoff(stops: CourseHandoffStop[]): void {
-  try { sessionStorage.setItem(COURSE_HANDOFF_KEY, JSON.stringify(stops)) } catch { /* storage unavailable */ }
+/** name: 플랜 이름 미리 채우기 (퀵플랜: "서울 3일 일정"). 없으면 빈칸. */
+export function saveCourseHandoff(stops: CourseHandoffStop[], name?: string, source: CourseHandoffSource = 'quick_plan'): void {
+  try {
+    sessionStorage.setItem(COURSE_HANDOFF_KEY, JSON.stringify(stops))
+    sessionStorage.setItem(COURSE_HANDOFF_SOURCE_KEY, source)
+    if (name) sessionStorage.setItem(COURSE_HANDOFF_NAME_KEY, name)
+    else sessionStorage.removeItem(COURSE_HANDOFF_NAME_KEY)
+  } catch { /* storage unavailable */ }
 }
 
 /** 꺼내면서 지운다 — 새로고침으로 다시 덮어쓰지 않게. */
-export function takeCourseHandoff(): CourseHandoffStop[] | null {
+export function takeCourseHandoff(): { stops: CourseHandoffStop[]; name?: string; source: CourseHandoffSource } | null {
   try {
     const raw = sessionStorage.getItem(COURSE_HANDOFF_KEY)
+    const name = sessionStorage.getItem(COURSE_HANDOFF_NAME_KEY) ?? undefined
+    const source: CourseHandoffSource = sessionStorage.getItem(COURSE_HANDOFF_SOURCE_KEY) === 'from_saved' ? 'from_saved' : 'quick_plan'
     sessionStorage.removeItem(COURSE_HANDOFF_KEY)
+    sessionStorage.removeItem(COURSE_HANDOFF_NAME_KEY)
+    sessionStorage.removeItem(COURSE_HANDOFF_SOURCE_KEY)
     const stops = raw ? JSON.parse(raw) as CourseHandoffStop[] : null
-    return Array.isArray(stops) && stops.length > 0 ? stops : null
+    return Array.isArray(stops) && stops.length > 0 ? { stops, name, source } : null
   } catch {
     return null
   }

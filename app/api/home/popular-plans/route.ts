@@ -5,7 +5,11 @@ export interface HomePopularPlan {
   id: string
   title: string
   author_name: string
+  /** The author's user id, for the link to their profile; null when the BFF sends none. */
+  author_id: string | null
   stop_count: number
+  /** Days in the plan; 0 when the BFF sends none. */
+  duration_days: number
   save_count: number
   cover_image_url: string | null
   is_partner: boolean
@@ -26,14 +30,20 @@ interface BffPublicItinerary {
   published_at: string | null
 }
 
-export async function GET() {
+// ?sort=newest: the most recently published first (BFF sort=recent); default popular this week
+// (likes and saves in the last 7 days first, then all-time).
+export async function GET(req: Request) {
+  const sort = new URL(req.url).searchParams.get('sort') === 'newest' ? 'recent' : 'popular'
+  const period = sort === 'popular' ? '&period=week' : ''
   try {
-    const plans = await bffFetch<BffPublicItinerary[]>('/itineraries/public?sort=popular&limit=20')
+    const plans = await bffFetch<BffPublicItinerary[]>(`/itineraries/public?sort=${sort}${period}&limit=20`)
     const out: HomePopularPlan[] = (plans ?? []).map(p => ({
       id: String(p.itinerary_id),
       title: p.title,
       author_name: p.author?.name ?? '',
+      author_id: p.author?.user_id != null ? String(p.author.user_id) : null,
       stop_count: p.total_places ?? 0,
+      duration_days: p.total_days ?? 0,
       save_count: p.save_count ?? 0,
       cover_image_url: p.cover_image_url,
       is_partner: !!p.is_partner,

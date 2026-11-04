@@ -3,11 +3,11 @@ import { ChevronDown, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { HIT_AREA } from './styles'
 
-// Chip (UI-53; Figma Atoms › Chip). Types (Skyscanner Backpack): Selectable (filter chip, toggles),
+// Chip (Figma Atoms › Chip). Types (Skyscanner Backpack): Selectable (filter chip, toggles),
 // Dismissible (applied filter with ×, always selected), Dropdown (opens a menu or sheet, ▾),
-// Icon only (32 square), Map (filled chip floating over the map, UI-90).
+// Icon only (32 square), Map (filled chip floating over the map).
 // 32 high, 44 tap area; pill, chip/padding-x, body/chip. Unselected: outline border-strong,
-// fg-muted. Selected: bg-inverse, fg-inverse (monochrome, UI-04).
+// fg-muted. Selected: bg-inverse, fg-inverse (monochrome).
 
 export type ChipProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
   /** Figma Type. */

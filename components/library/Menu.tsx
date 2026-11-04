@@ -3,10 +3,10 @@ import { Check, Clock, MapPin, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { FOCUS_RING_INSET } from './styles'
 
-// Menu item (part of Dropdown menu, CMP-005) and Combobox option (part of Combobox, CMP-010).
+// Menu item (part of Dropdown menu) and Combobox option (part of Combobox).
 
 export type MenuItemProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
-  /** Figma Variant=Danger: destructive action in the danger color. */
+  /** Figma Variant=danger: destructive action in the danger color. */
   variant?: 'default' | 'danger'
   /** Figma Show icon + Icon. */
   icon?: ReactNode
@@ -54,7 +54,7 @@ export type ComboboxOptionProps = {
   /** Figma Secondary (area, category). */
   secondary?: string
   icon?: ReactNode
-  /** Figma State=Active (aria-activedescendant). */
+  /** Figma State=active (aria-activedescendant). */
   active?: boolean
   onSelect: () => void
   /** Recent: remove the entry (mouse; the Combobox maps Delete to it for keyboards). */
@@ -106,7 +106,7 @@ export function ComboboxOption({ id, type, title, match, secondary, icon, active
           title={removeLabel}
           onMouseDown={(e) => e.preventDefault()}
           onClick={onRemove}
-          className="relative ml-[var(--space-3)] inline-flex size-[var(--icon-size-sm)] shrink-0 cursor-pointer items-center justify-center text-ui-fg-muted hover:text-ui-fg before:absolute before:-inset-[14px] before:content-['']"
+          className="relative ml-[var(--space-3)] inline-flex size-[var(--icon-size-sm)] shrink-0 cursor-pointer items-center justify-center text-ui-fg-muted hover:text-ui-fg before:absolute before:-inset-[var(--space-3-5)] before:content-['']"
         >
           <X className="size-full" />
         </span>

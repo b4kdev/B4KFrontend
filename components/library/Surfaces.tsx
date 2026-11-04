@@ -9,8 +9,8 @@ import { DragHandle } from './Plan'
 import { IconButton } from './IconButton'
 import { useFocusTrap, useMounted, usePhone } from './hooks'
 
-// Surfaces (UI-71; Figma Organisms): Modal, Dialog, Bottom sheet. No shadows (UI-05), no lines
-// between header, body and footer (UI-95); the 1px outline stays. Modal and Dialog become a
+// Surfaces (Figma Organisms): Modal, Dialog, Bottom sheet. No shadows, no lines
+// between header, body and footer; the 1px outline stays. Modal and Dialog become a
 // Modal bottom sheet on phones (adaptive).
 
 const Portal = ({ children }: { children: ReactNode }) => (useMounted() ? createPortal(children, document.body) : null)
@@ -37,7 +37,7 @@ export type ModalProps = {
   /** Up to two actions; desktop puts the primary last (right), phones stack it first. */
   primaryAction?: ReactNode
   secondaryAction?: ReactNode
-  /** Blocking backdrop for gates (sign-in, terms; UI-16): no close on scrim click. */
+  /** Blocking backdrop for gates (sign-in, terms): no close on scrim click. */
   blocking?: boolean
   /** Hide the close button (gates without a way out). */
   hideClose?: boolean
@@ -68,6 +68,8 @@ export function Modal({ open, onClose, title, closeLabel, size = 'md', children,
         aria-modal="true"
         aria-labelledby={id}
         tabIndex={-1}
+        // Phones: the modal is a sheet at the bottom, so toasts sit 12 above its top (V2Shell).
+        data-toast-floor={phone || undefined}
         className={cn(
           'outline-none',
           phone
@@ -93,7 +95,7 @@ export type DialogProps = {
   title: string
   /** One or two sentences. */
   body: ReactNode
-  /** Primary (right on desktop); a Danger Button for Type=Destructive. */
+  /** Primary (right on desktop); a Danger Button for Type=destructive. */
   confirm: ReactNode
   /** The safe action; give it data-autofocus so focus starts there. */
   cancel: ReactNode
@@ -101,7 +103,7 @@ export type DialogProps = {
   third?: ReactNode
 }
 
-/** Dialog (part of CMP-050): short decision, role alertdialog, focus on the safest action, Esc cancels. */
+/** Dialog (part of the Modal component): short decision, role alertdialog, focus on the safest action, Esc cancels. */
 export function Dialog({ open, onCancel, title, body, confirm, cancel, third }: DialogProps) {
   const phone = usePhone()
   const ref = useFocusTrap<HTMLDivElement>(open, onCancel)
@@ -153,10 +155,18 @@ export type BottomSheetProps = {
   snap?: SheetSnap
   onSnapChange?: (s: SheetSnap) => void
   resizeLabel?: string
+  /** Map sheets: a height per snap instead of the defaults (e.g. a shorter full state). */
+  heights?: Partial<Record<SheetSnap, string>>
   /** Header shown at peek (map sheets). */
   header?: ReactNode
+  /** Map sheets: a control 12 above the sheet's top edge, left aligned at 16; it follows the sheet as it moves (Plan pill). */
+  above?: ReactNode
+  /** Map sheets: a control 12 above the sheet's top edge at the right, 16 in (Locate me); it follows the sheet. */
+  aboveEnd?: ReactNode
   /** Modal: stacked actions under the content (Figma: primary, secondary, optional third Ghost). */
   actions?: ReactNode
+  /** Modal: the content draws its own padding and gaps (Search filters is drawn as the whole sheet). */
+  flush?: boolean
   children: ReactNode
   className?: string
 }
@@ -164,8 +174,8 @@ export type BottomSheetProps = {
 const SNAP_VH: Record<SheetSnap, string> = { peek: '76px', mid: '50dvh', full: '85dvh' }
 const ORDER: SheetSnap[] = ['peek', 'mid', 'full']
 
-/** Bottom sheet (CMP-051): radius/3xl top, bg-raised, grabber 32 by 4; map sheets drag between snaps. */
-export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', header, actions, children, className }: BottomSheetProps) {
+/** Bottom sheet: radius/3xl top, bg-raised, grabber 32 by 4; map sheets drag between snaps. */
+export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', heights, header, above, aboveEnd, actions, flush, children, className }: BottomSheetProps) {
   const modal = type === 'modal'
   const ref = useFocusTrap<HTMLDivElement>(open && modal, onClose)
   const [drag, setDrag] = useState<number | null>(null)
@@ -186,9 +196,14 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
         aria-modal={modal || undefined}
         aria-label={label}
         tabIndex={-1}
+        // Map sheets: toasts sit 12 above the sheet's top edge as it moves (V2Shell).
+        data-toast-floor={!modal || undefined}
         className={cn(SHEET, 'outline-none', !modal && 'z-40 transition-[height] duration-medium2 ease-emphasized-decelerate motion-reduce:transition-none', className)}
-        style={!modal ? { height: drag !== null ? `calc(${SNAP_VH[snap]} + ${drag}px)` : SNAP_VH[snap], maxHeight: '85dvh' } : undefined}
+        style={!modal ? { height: drag !== null ? `calc(${heights?.[snap] ?? SNAP_VH[snap]} + ${drag}px)` : heights?.[snap] ?? SNAP_VH[snap], maxHeight: '85dvh' } : undefined}
       >
+        {/* The control above the sheet (Plan pill) is the toast floor while it shows: toasts sit 12 above it. */}
+        {!modal && above ? <div data-toast-floor className="absolute bottom-[calc(100%+var(--space-3))] left-[var(--space-4)]">{above}</div> : null}
+        {!modal && aboveEnd ? <div className="absolute bottom-[calc(100%+var(--space-3))] right-[var(--space-4)]">{aboveEnd}</div> : null}
         <div
           className="flex shrink-0 touch-none justify-center py-[var(--space-2)]"
           onPointerDown={(e) => {
@@ -215,11 +230,11 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
             }}
           />
         </div>
-        {header ? <div className="shrink-0 pb-[var(--space-2)] pl-[var(--space-4)] pr-[var(--space-1)]">{header}</div> : null}
+        {header ? <div className="shrink-0 px-[var(--space-4)] pb-[var(--space-2)]">{header}</div> : null}
         <div
           className={cn(
             'flex min-h-0 flex-1 flex-col overflow-y-auto',
-            modal ? 'gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-2)]' : 'gap-[var(--space-4)] px-[var(--space-4)] pb-[var(--space-6)] pt-[var(--space-2)]',
+            flush ? null : modal ? 'gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-2)]' : 'gap-[var(--space-4)] px-[var(--space-4)] pb-[var(--space-6)] pt-[var(--space-2)]',
           )}
         >
           {children}

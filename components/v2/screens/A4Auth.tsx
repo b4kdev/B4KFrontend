@@ -4,126 +4,102 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
-import { Button, ConsentStep, EmptyState, SignInCard, Spinner, TextInput, type SignInView } from '@/components/library'
+import { ConsentStep, EmptyState, Modal, Scrim, SignInCard, Spinner, usePhone, type SignInView } from '@/components/library'
+import { termsSections } from '@/content/legal/terms-content'
+import { privacyPolicySections } from '@/content/legal/privacy-policy-content'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { acceptTerms } from '@/lib/terms-consent'
+import { afterSignIn, fetchAccountStatus } from '@/lib/terms-consent'
+import { safePath } from '@/lib/safe-path'
+import { useGap } from '../gaps'
 import { track } from '@/lib/analytics'
 import { useCd, useCdKey } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
+import { useSignInFlow } from '../V2SignInGate'
+import { WEAK_PASSWORD, passwordProblem } from '@/lib/password'
 
-// A4 auth screens (UI-82, PD-04, PD-12, PD-37): Sign in (SCR-023), Reset password (SCR-024),
-// Consent step (SCR-025). Same auth calls as the live AuthForm.
+// A4 auth screens: Sign in, Reset password,
+// Consent step. Same auth calls as the live AuthForm.
 
 const post = (url: string, body: unknown) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+
 
 export function LoginScreen() {
   const t = useCd()
   const router = useRouter()
-  const next = useSearchParams()?.get('next') ?? '/'
-  const [view, setView] = useState<SignInView>('providers')
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | undefined>()
-  const [email, setEmail] = useState('')
-  const [kind, setKind] = useState<'signup' | 'reset'>('signup')
-
-  const submit = async (v: SignInView, values: Record<string, string>) => {
-    setError(undefined)
-    setEmail(values.email ?? '')
-    setBusy(true)
-    try {
-      if (v === 'sign-in') {
-        const { error: e } = await createSupabaseBrowserClient().auth.signInWithPassword({ email: values.email ?? '', password: values.password ?? '' })
-        if (e) setError(t('CD0034'))
-        else router.push(next)
-      } else if (v === 'sign-up') {
-        if ((values.password ?? '').length < 8) return setError(t('CD0037'))
-        const res = await post('/api/auth/signup', { email: values.email, password: values.password })
-        if (res.ok) {
-          setKind('signup')
-          setView('check-email')
-        } else setError(t('CD0036'))
-      } else if (v === 'forgot') {
-        const res = await post(kind === 'signup' && view === 'check-email' ? '/api/auth/signup/resend' : '/api/auth/forgot-password', { email: values.email ?? email })
-        if (res.ok) {
-          if (view !== 'check-email') setKind('reset')
-          setView('check-email')
-        } else setError(t('CD0035'))
-      }
-    } catch {
-      setError(t('CD0033'))
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const google = async () => {
-    setBusy(true)
-    await createSupabaseBrowserClient().auth.signInWithOAuth({ provider: 'google', options: { scopes: 'email profile', redirectTo: `${window.location.origin}/auth/callback` } })
-  }
-
+  const next = safePath(useSearchParams()?.get('next'))
+  const flow = useSignInFlow(next, (_user, consent) => router.push(consent ? `/consent?next=${encodeURIComponent(next)}` : next))
+  // Back from Google with an account set to be deleted: show the Pending deletion view.
+  const deletion = useSearchParams()?.get('deletion') === '1'
+  useEffect(() => {
+    if (!deletion) return
+    createSupabaseBrowserClient().auth.getUser().then(({ data }) => { if (data.user) flow.check(data.user) })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deletion])
   return (
-    <V2Page bar={{ type: 'page', title: t('CD0050') }} className="flex items-center justify-center">
-      <SignInCard
-        view={view}
-        onViewChange={(v) => { setError(undefined); setView(v) }}
-        title={t('CD0054')}
-        onGoogle={google}
-        onSubmit={submit}
-        busy={busy}
-        error={error}
-        email={email}
-        labels={{
-          close: t('CD0021'), google: t('CD0043'), email: t('CD0031'), signIn: t('CD0051'), signUp: t('CD0053'),
-          password: t('CD0046'), newPassword: t('CD0066'), confirmPassword: t('CD0058'), passwordHint: t('CD1468'),
-          forgot: t('CD0039'), sendLink: t('CD0040'), checkEmailTitle: t('CD0020'),
-          checkEmailBody: (e) => (kind === 'signup' ? t('CD0019', { email: e }) : t('CD0018', { email: e })),
-          resend: t('CD0048'), savePassword: t('CD1503'), newPasswordBody: t('CD1501'), back: t('CD1493'), guest: t('CD0029'),
-          or: t('CD1376'), tabs: t('CD0054'),
-        }}
-      />
+    <V2Page bar={{ type: 'page', title: t('CD0050'), h1: 'always' }} noFooter="phone" className="flex items-center justify-center">
+      <SignInCard {...flow} title={t('CD0054')} subtitle={t('CD0056')} />
     </V2Page>
   )
 }
 
 export function ResetPasswordScreen() {
   const t = useCd()
+  const gap = useGap()
   const router = useRouter()
   const { toast } = useV2Shell()
-  const [token, setToken] = useState<string | null>(null)
-  const [pw, setPw] = useState('')
-  const [confirm, setConfirm] = useState('')
-  const [error, setError] = useState<{ field: 'pw' | 'confirm' | 'form'; text: string } | null>(null)
+  // The reset link carries the page the person asked from (same site only).
+  const next = safePath(useSearchParams()?.get('next'))
+  // An expired or missing link: the card asks for the email to send a new one (Forgot view).
+  const flow = useSignInFlow(next, () => {})
+  // A PKCE code, or a token_hash link (type=recovery) that opens in any browser.
+  const [token, setToken] = useState<{ token?: string; token_hash?: string } | null | undefined>(undefined)
+  const [expired, setExpired] = useState(false)
+  const [error, setError] = useState<string | undefined>()
+  const [confirmError, setConfirmError] = useState<string | undefined>()
   const [busy, setBusy] = useState(false)
   useEffect(() => {
     const p = new URLSearchParams(window.location.hash.slice(1) || window.location.search)
-    setToken(p.get('access_token') ?? p.get('code'))
+    const hash = p.get('type') === 'recovery' ? p.get('token_hash') : null
+    const code = p.get('access_token') ?? p.get('code')
+    const tk = hash ? { token_hash: hash } : code ? { token: code } : null
+    setToken(tk)
+    if (!tk) setExpired(true)
   }, [])
-  const save = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (pw.length < 8) return setError({ field: 'pw', text: t('CD0063') })
-    if (pw !== confirm) return setError({ field: 'confirm', text: t('CD0062') })
-    if (!token) return setError({ field: 'form', text: t('CD0060') })
+  const save = async (_v: SignInView, values: Record<string, string>) => {
+    const pw = values.password ?? ''
+    setError(undefined)
+    setConfirmError(undefined)
+    const problem = passwordProblem(pw)
+    if (problem) return setError(t(problem === 'short' ? 'CD0063' : 'CD1866'))
+    if (pw !== (values.confirm ?? '')) return setConfirmError(t('CD0062'))
+    if (!token) return setExpired(true)
     setBusy(true)
-    const res = await post('/api/auth/reset-password', { token, password: pw }).catch(() => null)
+    const res = await post('/api/auth/reset-password', { ...token, password: pw }).catch(() => null)
     setBusy(false)
     if (!res?.ok) {
       const body = await res?.json().catch(() => ({}))
-      return setError({ field: 'form', text: body?.code === 'expired' ? t('CD0060') : t('CD0061') })
+      return body?.code === 'expired' ? setExpired(true) : setError(t(body?.code === WEAK_PASSWORD ? 'CD1866' : 'CD0061'))
     }
-    toast({ type: 'success', message: t('CD0072') })
-    router.push('/')
+    toast({ type: 'success', message: t('CD1860') })
+    router.push(next)
   }
+  const toSignIn = () => router.push(next === '/' ? '/login' : `/login?next=${encodeURIComponent(next)}`)
   return (
-    <V2Page bar={{ type: 'page', title: t('CD1500') }} className="flex items-center justify-center">
-      <form noValidate onSubmit={save} className="flex w-full max-w-[400px] flex-col gap-[var(--space-5)] rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)]">
-        <h1 className="type-display-h4">{t('CD1500')}</h1>
-        <p className="type-body-base text-ui-fg-muted">{t('CD1501')}</p>
-        {error?.field === 'form' ? <p role="alert" className="type-body-caption text-ui-danger">{error.text}</p> : null}
-        <TextInput label={t('CD0066')} showLabel type="password" autoComplete="new-password" value={pw} onChange={(e) => setPw(e.target.value)} help={t('CD1468')} error={error?.field === 'pw' ? error.text : undefined} />
-        <TextInput label={t('CD0058')} showLabel type="password" autoComplete="new-password" placeholder={t('CD1502')} value={confirm} onChange={(e) => setConfirm(e.target.value)} error={error?.field === 'confirm' ? error.text : undefined} />
-        <Button type="submit" loading={busy} className="w-full">{t('CD1503')}</Button>
-      </form>
+    <V2Page bar={{ type: 'page', title: gap.resetPassword, h1: 'always' }} noFooter="phone" className="flex items-center justify-center">
+      {expired ? (
+        <SignInCard
+          {...flow}
+          view={flow.view === 'providers' ? 'link-expired' : flow.view}
+          title={flow.view === 'providers' ? gap.linkExpired : t('CD0042')}
+          subtitle={t('CD0060')}
+          // The link does not say whose it was: Send reset link asks for the email (Forgot view) and sends from there.
+          onSubmit={(v, values) => (v === 'link-expired' ? flow.onViewChange('forgot') : flow.onSubmit(v, values))}
+          onViewChange={(v) => (v === 'sign-in' || v === 'providers' ? toSignIn() : flow.onViewChange(v))}
+        />
+      ) : token === undefined ? null : (
+        <SignInCard view="new-password" onViewChange={() => {}} title={t('CD1500')} onGoogle={() => {}} onSubmit={save} busy={busy} error={error} confirmError={confirmError} labels={flow.labels} />
+      )}
     </V2Page>
   )
 }
@@ -131,33 +107,50 @@ export function ResetPasswordScreen() {
 export function ConsentScreen() {
   const t = useCd()
   const router = useRouter()
-  const next = useSearchParams()?.get('next') ?? '/'
+  const next = safePath(useSearchParams()?.get('next'))
+  const { toast } = useV2Shell()
   const [checked, setChecked] = useState<Record<string, boolean>>({})
+  // View opens the document over the step (sheet on phones) so the person never leaves it.
+  const [doc, setDoc] = useState<'terms' | 'privacy' | null>(null)
+  const phone = usePhone()
   const cancel = async () => {
     await createSupabaseBrowserClient().auth.signOut()
     router.push(next)
   }
   return (
     <V2Page bar={{ type: 'none' }} noFooter className="flex items-center justify-center">
+      {/* The step sits over the screen: centered over the scrim on desktop, a sheet from the bottom on phones. */}
+      <Scrim kind="blocking" className="z-40" />
+      <div className={phone ? 'fixed inset-x-0 bottom-0 z-40 max-h-[90dvh] overflow-y-auto rounded-t-3xl bg-ui-bg-elevated pb-[env(safe-area-inset-bottom)]' : 'fixed left-1/2 top-1/2 z-40 max-h-[90dvh] w-[calc(100%-var(--space-8))] max-w-[420px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto'}>
       <ConsentStep
         title={t('CD1504')}
         items={[
           { id: 'age', label: t('CD1464'), required: true },
           { id: 'terms', label: t('CD0812'), required: true, viewHref: '/legal/terms' },
           { id: 'privacy', label: t('CD0811'), required: true, viewHref: '/legal/privacy' },
-          { id: 'marketing', label: t('CD1508'), required: false },
         ]}
         checked={checked}
         onCheckedChange={setChecked}
-        onView={(i) => window.open(`/${document.documentElement.lang}${i.viewHref}`, '_blank', 'noopener')}
-        onContinue={() => {
-          acceptTerms()
+        onView={(i) => setDoc(i.id === 'terms' ? 'terms' : 'privacy')}
+        onContinue={async () => {
+          const res = await post('/api/account/consent', { age: !!checked.age }).catch(() => null)
+          if (!res?.ok) return toast({ type: 'critical', message: t('CD0061') })
           router.push(next)
         }}
         onCancel={cancel}
-        labels={{ agreeAll: t('CD1506'), required: t('CD1507'), optional: t('CD1509'), view: t('CD0760'), continue: t('CD0768'), cancel: t('CD1510'), back: t('CD0121'), legend: t('CD1505') }}
+        subtitle={t('CD1505')}
+        labels={{ agreeAll: t('CD1506'), required: t('CD1507'), optional: t('CD1509'), view: t('CD0271'), continue: t('CD0409'), cancel: t('CD0505'), back: t('CD0121'), legend: t('CD1505') }}
         footnote={t('CD1511')}
       />
+      </div>
+      <Modal open={!!doc} onClose={() => setDoc(null)} size="lg" title={doc === 'terms' ? t('CD0812') : t('CD0811')} closeLabel={t('CD0758')}>
+        {(doc === 'terms' ? termsSections : privacyPolicySections).map((sec) => (
+          <section key={sec.id} className="flex flex-col gap-[var(--space-2)] [&_a]:underline [&_li]:ml-[var(--space-4)] [&_li]:list-disc [&_table]:w-full">
+            <h2 className="type-title-card">{sec.heading}</h2>
+            <div className="type-body-base text-ui-fg-muted">{sec.body}</div>
+          </section>
+        ))}
+      </Modal>
     </V2Page>
   )
 }
@@ -173,9 +166,7 @@ export function AuthCallbackScreen() {
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
-    // Only honour a same-origin relative path (guards against open redirect).
-    const returnTo = searchParams.get('returnTo')
-    const safe = returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/'
+    const safe = safePath(searchParams.get('returnTo'))
 
     async function completeAuth() {
       const supabase = createSupabaseBrowserClient()
@@ -202,20 +193,23 @@ export function AuthCallbackScreen() {
         return
       }
 
-      // 'recovery' only verifies password-reset ownership, not a sign-in. is_new_user is a
-      // created_at / last_sign_in_at proximity heuristic (Supabase has no "just created" flag).
+      // 'recovery' only verifies password-reset ownership, not a sign-in. A new account signs in
+      // for the first time when its email is confirmed (email) or when it is created (providers);
+      // Supabase has no "just created" flag, so the two times are compared.
       if (user && otpType !== 'recovery') {
-        const createdAt = new Date(user.created_at).getTime()
-        const lastSignIn = user.last_sign_in_at ? new Date(user.last_sign_in_at).getTime() : createdAt
-        track('sign_in', {
-          method: user.app_metadata?.provider ?? 'email',
-          is_new_user: lastSignIn - createdAt < 10_000,
-          locale,
-          screen_id: 'AG_01',
-        })
+        const firstAt = new Date(user.email_confirmed_at ?? user.created_at).getTime()
+        const lastSignIn = user.last_sign_in_at ? new Date(user.last_sign_in_at).getTime() : firstAt
+        const isNew = Math.abs(lastSignIn - firstAt) < 10_000
+        const method = user.app_metadata?.provider ?? 'email'
+        if (isNew) track('sign_up', { method, locale, screen_id: 'sign_in' })
+        track('sign_in', { method, is_new_user: isNew, locale, screen_id: 'sign_in' })
       }
 
-      router.replace(safe)
+      // An account set to be deleted goes to the sign-in page's Pending deletion view first.
+      if (!user || otpType === 'recovery') return router.replace(safe)
+      const d = await fetchAccountStatus()
+      if (d?.deleted_at) return router.replace(`/login?deletion=1&next=${encodeURIComponent(safe)}`)
+      router.replace(afterSignIn(d, safe))
     }
 
     completeAuth()

@@ -6,7 +6,7 @@ import { cn } from '@/lib/cn'
 import { IconButton } from './IconButton'
 import { MapControl } from './Map'
 
-// Button group, Rating (UI-69), Zoom control (UI-74), Route map preview (UI-74).
+// Button group, Rating, Zoom control, Route map preview.
 
 export type ButtonGroupProps = {
   /** Figma Type. Actions: primary last on the right. Stacked: full width, primary first (mobile). */
@@ -39,7 +39,7 @@ export type SelectionBarProps = {
   className?: string
 }
 
-/** Button group Type=Selection bar: shows while items are selected; sticks to the bottom of the list. */
+/** Button group Type=selection-bar: shows while items are selected; sticks to the bottom of the list. */
 export function SelectionBar({ countText, children, onClear, clearLabel, label, className }: SelectionBarProps) {
   return (
     <div
@@ -58,7 +58,7 @@ export type RatingProps =
   | { type?: 'display'; value: number; countText?: string; label: string; className?: string }
   | { type: 'input'; value: number; onValueChange: (v: number) => void; label: string; valueText?: string; starLabels: string[]; className?: string }
 
-/** Rating (CMP-022, build-ahead): monochrome stars. Display = text with sr-only label; Input = radiogroup. */
+/** Rating (build-ahead): monochrome stars. Display = text with sr-only label; Input = radiogroup. */
 export function Rating(props: RatingProps) {
   const id = useId()
   if (props.type === 'input') {
@@ -123,7 +123,7 @@ export type ZoomControlProps = {
 /** Zoom control: two Map controls sharing one border, bottom right on desktop and tablet. */
 export function ZoomControl({ onZoomIn, onZoomOut, zoomInLabel, zoomOutLabel, atMax, atMin, className }: ZoomControlProps) {
   return (
-    <div className={cn('flex flex-col [&>button+button]:-mt-px', className)}>
+    <div className={cn('flex flex-col [&>button+button]:-mt-[var(--border-width-1)]', className)}>
       <MapControl icon={<Plus />} label={zoomInLabel} onClick={onZoomIn} disabled={atMax} aria-disabled={atMax} />
       <MapControl icon={<Minus />} label={zoomOutLabel} onClick={onZoomOut} disabled={atMin} aria-disabled={atMin} />
     </div>
@@ -131,7 +131,7 @@ export function ZoomControl({ onZoomIn, onZoomOut, zoomInLabel, zoomOutLabel, at
 }
 
 export type RouteMapPreviewProps = {
-  /** Static map image in the B4K Naver style (UI-40); a neutral surface until it exists. */
+  /** Static map image in the B4K Naver style; a neutral surface until it exists. */
   src?: string
   /** Stop positions in percent of the box, in order; days color the badges. */
   stops: { x: number; y: number; day?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 }[]

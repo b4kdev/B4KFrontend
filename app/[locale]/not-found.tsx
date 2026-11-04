@@ -3,7 +3,7 @@ import { Link } from '@/i18n/navigation';
 import { EmptyState } from '@/components/library/Feedback';
 
 // Fallback outside the v2 shell (every address is served by components/v2, whose own
-// not-found is the Page not found screen, SCR-031). Same texts and Empty state.
+// not-found is the Page not found screen). Same texts and Empty state.
 export default function NotFound() {
   const t = useTranslations('boundary.notFound');
 

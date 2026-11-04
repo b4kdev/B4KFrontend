@@ -14,6 +14,13 @@ body {
   color: var(--color-fg);
 }
 
+/* Map pins and plan stops are focusable buttons inside the Naver map (V2MapCanvas). */
+/* Map pins are inverse to the map, not to the page theme: dark pins on the light map tiles. */
+[data-map-tone="light"] { --map-pin-fill: var(--neutral-950); --map-pin-stroke: var(--neutral-50); }
+[data-map-tone="dark"] { --map-pin-fill: var(--neutral-50); --map-pin-stroke: var(--neutral-950); }
+.b4k-map-marker:focus { outline: none; }
+.b4k-map-marker:focus-visible > span { box-shadow: var(--focus-ring); }
+
 /* ─── Reduced motion ────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   html:focus-within { scroll-behavior: auto; }
@@ -22,5 +29,14 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Phones: anchors and focused fields stop below the 56 px top app bar and above the 56 px
+   Navigation bar (WCAG 2.4.11). */
+@media (max-width: 1023.98px) {
+  html {
+    scroll-padding-top: calc(var(--fab-size) + env(safe-area-inset-top));
+    scroll-padding-bottom: calc(var(--fab-size) + env(safe-area-inset-bottom));
   }
 }

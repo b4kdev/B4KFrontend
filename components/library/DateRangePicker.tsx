@@ -7,7 +7,7 @@ import { cn } from '@/lib/cn'
 import { CalendarDay } from './Content'
 import { IconButton } from './IconButton'
 
-// Date range picker (UI-84; live RangeCalendar in Quick plan): one month at a time, 280 wide,
+// Date range picker (live RangeCalendar in Quick plan): one month at a time, 280 wide,
 // previous / next month (previous disabled on the current month), weekday row, 7-column grid of
 // Calendar day; past days disabled. First tap sets Start, second End. Clear resets.
 // Month and weekday names come from Intl in the page locale; weeks start on Sunday in all five.
@@ -20,7 +20,7 @@ export type DateRangePickerProps = {
   previousLabel: string
   nextLabel: string
   clearLabel: string
-  /** Latest selectable end (e.g. 8 days after the start, PD-30), optional. */
+  /** Latest selectable end (e.g. 8 days after the start), optional. */
   maxDays?: number
   className?: string
 }

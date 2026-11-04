@@ -13,11 +13,11 @@ import { useFocusTrap, usePhone } from './hooks'
 import { Scrim } from './Content'
 import { Separator } from './Separator'
 
-// Sections (UI-81, UI-82, UI-97; Figma Sections): Explore section row, Explore collections,
+// Sections (Figma Sections): Explore section row, Explore collections,
 // Explore packages, Plan card row, Quick plan, Planning cue, Interests card. Built from cards and
 // molecules; data as props, texts as labels.
 
-const RAIL = '-mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:px-0'
+const RAIL = '-mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory scroll-px-[var(--grid-gutter-mobile)] gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] -mb-[var(--space-1)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:scroll-px-0 lg:px-0'
 
 export type RowSectionProps = {
   title: string
@@ -32,7 +32,7 @@ export type RowSectionProps = {
   className?: string
 }
 
-/** Explore section row (ADD-69) and Plan card row (ADD-72): header, optional featured card, a sideways row. */
+/** Explore section row and Plan card row: header, optional featured card, a sideways row. */
 export function RowSection({ title, subtitle, seeAll, featured, cards, arrowLabels, className }: RowSectionProps) {
   const id = useId()
   const track = useRef<HTMLUListElement>(null)
@@ -68,7 +68,7 @@ export type ExploreCollectionsProps = {
   cards: ReactNode[]
 }
 
-/** Explore collections (ADD-70): header, filter chips, grid of Card Collection (4 across, 2 on phones). */
+/** Explore collections: header, filter chips, grid of Card Collection (4 across, 2 on phones). */
 export function ExploreCollections({ title, filters, active, onFilter, cards }: ExploreCollectionsProps) {
   const id = useId()
   return (
@@ -82,7 +82,7 @@ export function ExploreCollections({ title, filters, active, onFilter, cards }: 
   )
 }
 
-/** Explore packages (ADD-71): header and up to 3 Card Package, 3 across from 768, stacked on phones. */
+/** Explore packages: header and up to 3 Card Package, 3 across from 768, stacked on phones. */
 export function ExplorePackages({ title, cards }: { title: string; cards: ReactNode[] }) {
   const id = useId()
   return (
@@ -94,7 +94,7 @@ export function ExplorePackages({ title, cards }: { title: string; cards: ReactN
 }
 
 export type PlanningCueProps = {
-  /** Figma State: Continue when a plan is in progress (PD-28). */
+  /** Figma State: Continue when a plan is in progress. */
   state: 'start' | 'continue'
   label: string
   tiles: {
@@ -105,9 +105,9 @@ export type PlanningCueProps = {
   }
 }
 
-/** Planning cue (PD-36, UI-97): three tiles between content rows; side by side on desktop, stacked on phones. */
+/** Planning cue: three tiles between content rows; side by side on desktop, stacked below it. */
 export function PlanningCue({ state, label, tiles }: PlanningCueProps) {
-  const tile = 'flex min-h-[var(--target-touch-min)] flex-1 items-center gap-[var(--space-4)] rounded-2xl bg-ui-bg-raised p-[var(--space-4)] md:py-[var(--space-6)] text-left text-ui-fg hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] focus-visible:shadow-focus-ring focus-visible:outline-none'
+  const tile = 'flex min-h-[var(--target-touch-min)] min-w-0 flex-1 items-center gap-[var(--space-4)] rounded-2xl bg-ui-bg-raised p-[var(--space-4)] md:py-[var(--space-6)] text-left text-ui-fg hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] focus-visible:shadow-focus-ring focus-visible:outline-none'
   const body = (icon: ReactNode, t: { title: string; text: string }) => (
     <>
       <span aria-hidden className="inline-flex size-[var(--icon-size-lg)] shrink-0 [&>svg]:size-full">{icon}</span>
@@ -120,7 +120,7 @@ export function PlanningCue({ state, label, tiles }: PlanningCueProps) {
   )
   const first = state === 'continue' && tiles.continue ? tiles.continue : tiles.newPlan
   return (
-    <section aria-label={label} className="flex gap-[var(--space-3)] max-md:flex-col">
+    <section aria-label={label} className="flex gap-[var(--space-3)] max-lg:flex-col">
       <IntlLink href={first.href} className={tile}>{body(state === 'continue' ? <Route /> : <Plus />, first)}</IntlLink>
       <button type="button" onClick={tiles.quickPlan.onOpen} className={tile}>{body(<Zap />, tiles.quickPlan)}</button>
       <IntlLink href={tiles.fromSaved.href} className={tile}>{body(<Bookmark />, tiles.fromSaved)}</IntlLink>
@@ -139,7 +139,7 @@ export type InterestsCardProps = {
   labels: { save: string; dismiss: string }
 }
 
-/** Interests card (PD-40, SCR-036): optional, once per account; Selectable chips, Save, Dismiss. */
+/** Interests card: optional, once per account; Selectable chips, Save, Dismiss. */
 export function InterestsCard({ title, text, tags, selected, onToggle, onSave, onDismiss, labels }: InterestsCardProps) {
   const id = useId()
   return (
@@ -152,7 +152,7 @@ export function InterestsCard({ title, text, tags, selected, onToggle, onSave, o
       <div className="flex flex-wrap gap-[var(--space-2)]">
         {tags.map((t) => <Chip key={t.id} selected={selected.includes(t.id)} onClick={() => onToggle(t.id)}>{t.label}</Chip>)}
       </div>
-      <Button variant="secondary" size="lg" disabled={!selected.length} onClick={onSave} className="max-md:w-full md:self-start">{labels.save}</Button>
+      <Button variant="secondary" size="lg" onClick={onSave} className="max-md:w-full md:self-start">{labels.save}</Button>
     </section>
   )
 }
@@ -166,8 +166,9 @@ export type QuickPlanProps = {
   stepTitle: string
   /** Line under the heading, e.g. "Pick a city, your dates and who you're traveling with." */
   stepSubtitle?: string
-  /** Progress text, e.g. "Step 2 of 3". */
-  progressLabel: string
+  /** Progress text, e.g. "Step 2 of 3". With no progressLabel and no stepList the bar shows no
+   * indicator and Close sits at the left (one-step sheets such as Your interests). */
+  progressLabel?: string
   /** Figma Show step list (option B spare) instead of the progress bar. */
   stepList?: string[]
   /** Step body (destination and who-with chips; interest chips; review rows). */
@@ -176,14 +177,14 @@ export type QuickPlanProps = {
   aside?: ReactNode
   /** Footer: Back (steps 2, 3) and Next / Make my plan. */
   back?: { label: string; onClick: () => void }
-  next: { label: string; onClick: () => void; disabled?: boolean }
+  next: { label: string; onClick: () => void; disabled?: boolean; loading?: boolean }
   /** Accessible name of the dialog, e.g. "Quick plan". */
   title: string
   closeLabel: string
 }
 
 /**
- * Quick plan (planning flow 4, PD-33, PD-45; Figma Quick plan): a 3-step dialog, Modal 864 on
+ * Quick plan (planning flow 4; Figma Quick plan): a 3-step dialog, Modal 864 on
  * desktop, sheet on phones. Top bar (progress, Close), separator, body (heading, subtitle, step
  * content), separator, footer (Back ghost, Next primary; right on desktop, Next fills on phones).
  */
@@ -206,15 +207,21 @@ export function QuickPlan({ open, onClose, step, stepTitle, stepSubtitle, progre
         aria-label={title}
         className={cn(
           'fixed z-50 flex flex-col overflow-hidden bg-ui-bg-elevated text-ui-fg',
-          phone ? 'inset-x-0 bottom-0 max-h-[min(768px,92dvh)] rounded-t-3xl border border-ui-border motion-safe:animate-b4k-sheet-in' : 'left-1/2 top-1/2 max-h-[90dvh] w-[min(864px,calc(100%-var(--space-8)))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ui-border',
+          phone ? 'inset-x-0 bottom-0 max-h-[min(768px,calc(100dvh-44px))] rounded-t-3xl border border-ui-border motion-safe:animate-b4k-sheet-in' : 'left-1/2 top-1/2 max-h-[90dvh] w-[min(864px,calc(100%-var(--space-8)))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ui-border',
         )}
       >
         {phone ? <div className="flex justify-center py-[var(--space-2)]"><span aria-hidden className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" /></div> : null}
         <div className={cn('flex items-center gap-[var(--space-4)] pr-[var(--space-3)]', phone ? 'pb-[var(--space-4)] pl-[var(--space-4)] pt-[var(--space-2)]' : 'py-[var(--space-4)] pl-[var(--space-6)]')}>
-          <div className="min-w-0 flex-1">
-            {stepList ? <StepList label={progressLabel} steps={stepList} current={step} /> : <ProgressIndicator step={step} steps={3} label={progressLabel} className="max-w-[320px]" />}
-          </div>
-          <IconButton label={closeLabel} icon={<X />} onClick={onClose} />
+          {stepList || progressLabel ? (
+            <>
+              <div className="min-w-0 flex-1">
+                {stepList ? <StepList label={progressLabel ?? title} steps={stepList} current={step} /> : <ProgressIndicator step={step} steps={3} label={progressLabel ?? title} className="max-w-[320px]" />}
+              </div>
+              <IconButton label={closeLabel} icon={<X />} onClick={onClose} />
+            </>
+          ) : (
+            <IconButton label={closeLabel} icon={<X />} onClick={onClose} />
+          )}
         </div>
         <Separator className="shrink-0" />
         <div className={cn('flex min-h-0 flex-1 flex-col gap-[var(--space-5)] overflow-y-auto py-[var(--space-6)]', padX)}>
@@ -237,7 +244,7 @@ export function QuickPlan({ open, onClose, step, stepTitle, stepSubtitle, progre
         <Separator className="shrink-0" />
         <div className={cn('flex gap-[var(--gap-sm)] py-[var(--space-4)]', padX, phone ? 'pb-[calc(var(--space-4)+env(safe-area-inset-bottom))] [&>:last-child]:flex-1' : 'justify-end')}>
           {back ? <Button variant="ghost" size="lg" onClick={back.onClick}>{back.label}</Button> : null}
-          <Button size="lg" onClick={next.onClick} disabled={next.disabled}>{next.label}</Button>
+          <Button size="lg" onClick={next.onClick} disabled={next.disabled} loading={next.loading}>{next.label}</Button>
         </div>
       </div>
     </>

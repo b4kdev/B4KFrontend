@@ -187,7 +187,6 @@
     "CD1336": "ルート",
     "CD1337": "ファンダム",
     "CD1338": "ストーリー",
-    "CD1339": "チャレンジ",
     "CD1340": "12か所 · 今日更新",
     "CD1341": "パッケージ",
     "CD1342": "Klookで見る",
@@ -508,6 +507,16 @@
     "deleteDayBody": "この日の{count}件のスポットがプランから削除されます。",
     "deleteDayConfirm": "削除",
     "previousDays": "前の日",
-    "nextDays": "次の日"
+    "nextDays": "次の日",
+    "settingsData": "データとプライバシー",
+    "deleteAccountNote": "30日後に削除されます。それまでにサインインすると復元できます",
+    "profilePlansNote": "ほかの人に見える公開プランです。下書きと非公開のプランは保存済みにあります。",
+    "openSaved": "保存済みを開く",
+    "linkExpired": "リンクの有効期限切れ",
+    "interestsPicked": "{count}件選択 · ホームとクイックプランに使用",
+    "searchArea": "このエリアを検索",
+    "dayTotal": "{n}日目 · {time} · {max}か所中{count}か所",
+    "allDaysTotal": "全日程 · {time} · {count}か所",
+    "areaName": "{city} {district}"
   }
 }

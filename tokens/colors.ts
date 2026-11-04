@@ -13,7 +13,7 @@ export const TOKEN_HEX = {
       { fill: '#cd3f9b', fg: '#0a0a0a' }, // day 7
       { fill: '#0a8287', fg: '#ffffff' }, // day 8
     ],
-    mapPin: { fill: '#0a0a0a', stroke: '#0a0a0a', selected: '#ff0000' },
+    mapPin: { fill: '#0a0a0a', stroke: '#f7f6f3', selected: '#ff0000' },
   },
   dark: {
     planDays: [
@@ -26,6 +26,6 @@ export const TOKEN_HEX = {
       { fill: '#cd3f9b', fg: '#0a0a0a' }, // day 7
       { fill: '#14a3a8', fg: '#0a0a0a' }, // day 8
     ],
-    mapPin: { fill: '#0a0a0a', stroke: '#f7f6f3', selected: '#ff0000' },
+    mapPin: { fill: '#f7f6f3', stroke: '#0a0a0a', selected: '#ff0000' },
   },
 } as const

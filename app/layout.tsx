@@ -1,34 +1,33 @@
 import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SITE_URL } from '@/lib/site-url';
+import { seoText } from '@/lib/seo';
 import { THEME_BOOT_SCRIPT } from '@/lib/theme';
 import './tokens.css';
 import './globals.css';
 import { fontVariables } from './fonts';
+import VercelTools from '@/components/analytics/VercelTools';
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: 'B4K | Korea Travel & Culture',
-  description: 'Discover K-culture experiences across Korea',
-  icons: {
-    icon: '/icon.svg',
-    apple: '/brand/B4K_BrandLogo_Square_White.svg',
-  },
-  openGraph: {
-    title: 'B4K | Korea Travel & Culture',
-    description: 'Discover K-culture experiences across Korea',
-    siteName: 'B4K',
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'B4K | Korea Travel & Culture',
-    description: 'Discover K-culture experiences across Korea',
-  },
-};
+// The site default (every page without its own title): the Home title and description of the
+// visitor's language from the Copy Deck.
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const { t } = await seoText(locale);
+  const title = t('CD0800');
+  const description = t('CD0799');
+  return {
+    metadataBase: new URL(SITE_URL),
+    title,
+    description,
+    icons: {
+      icon: '/icon.svg',
+      apple: '/apple-touch-icon.png',
+    },
+    manifest: `/${locale}/manifest.webmanifest`,
+    openGraph: { title, description, siteName: 'B4K', locale, type: 'website' },
+    twitter: { card: 'summary_large_image', title, description },
+  };
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
@@ -41,8 +40,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="antialiased">
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         {children}
-        <Analytics />
-        <SpeedInsights />
+        <VercelTools />
       </body>
     </html>
   );

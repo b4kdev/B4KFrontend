@@ -1,13 +1,13 @@
 'use client'
 
 import { useId, useState, type ReactNode } from 'react'
-import { ChevronDown, ChevronRight, Trophy, TrendingDown, TrendingUp } from 'lucide-react'
+import { ChevronDown, ChevronRight, TrendingDown, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Avatar } from './Avatar'
 import { CountBadge } from './Badge'
 import { FOCUS_RING_INSET } from './styles'
 
-// List molecules (UI-69, UI-100; Figma Molecules): List item, Accordion item, Tree item,
+// List molecules (Figma Molecules): List item, Accordion item, Tree item,
 // Leaderboard row, Notification item.
 
 export type ListItemProps = {
@@ -18,7 +18,7 @@ export type ListItemProps = {
   leading?: ReactNode
   /** Figma Trailing slot: chevron, Toggle, value text, Ghost icon button, Checkbox or Segmented control. */
   trailing?: ReactNode
-  /** Built-in chevron (Trailing=Chevron) for rows that open a page. */
+  /** Built-in chevron (Trailing=chevron) for rows that open a page. */
   chevron?: boolean
   /** Figma Show divider. */
   divider?: boolean
@@ -30,9 +30,12 @@ export type ListItemProps = {
   className?: string
 }
 
+// Figma draws the 1px divider inside the row (absolute at the bottom), so it adds no height.
+export const ROW_DIVIDER = "relative after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-ui-border after:content-['']"
+
 const ROW = 'flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left'
 
-/** List item (CMP-062): one row with slots, 44 high minimum, 1px divider, hover layer, inset focus ring. */
+/** List item: one row with slots, 44 high minimum, 1px divider, hover layer, inset focus ring. */
 export function ListItem({ title, secondary, leading, trailing, chevron, divider = true, onClick, href, renderLink, disabled, className }: ListItemProps) {
   const body = (
     <>
@@ -47,7 +50,7 @@ export function ListItem({ title, secondary, leading, trailing, chevron, divider
   )
   const interactive = cn(ROW, 'hover:bg-ui-state-hover disabled:cursor-not-allowed', FOCUS_RING_INSET)
   return (
-    <li className={cn(divider && 'border-b border-ui-border', className)}>
+    <li className={cn(divider && ROW_DIVIDER, className)}>
       {href && renderLink ? (
         renderLink({ href, className: interactive, children: body })
       ) : onClick ? (
@@ -67,13 +70,13 @@ export type AccordionItemProps = {
   headingLevel?: 2 | 3 | 4
 }
 
-/** Accordion item (part of Accordion, CMP-052): button in a heading, region below, 1px divider. */
+/** Accordion item (part of Accordion): button in a heading, region below, 1px divider. */
 export function AccordionItem({ title, children, defaultExpanded = false, headingLevel = 3 }: AccordionItemProps) {
   const [open, setOpen] = useState(defaultExpanded)
   const id = useId()
   const H = `h${headingLevel}` as 'h3'
   return (
-    <div className="border-b border-ui-border">
+    <div className={ROW_DIVIDER}>
       <H className="m-0">
         <button
           type="button"
@@ -109,7 +112,7 @@ export type TreeItemProps = {
   children?: ReactNode
 }
 
-/** Tree item (part of Tree view, CMP-046): chevron turns when expanded; leaf keeps the space. */
+/** Tree item (part of Tree view): chevron turns when expanded; leaf keeps the space. */
 export function TreeItem({ label, kind, level = 1, selected, count, checkbox, onToggle, onSelect, children }: TreeItemProps) {
   return (
     <li role="treeitem" aria-expanded={kind === 'leaf' ? undefined : kind === 'expanded'} aria-selected={selected} aria-level={level}>
@@ -147,26 +150,27 @@ export type LeaderboardRowProps = {
   name: string
   /** Figma Detail, e.g. "12 plans · 4 badges". */
   detail?: string
-  /** Figma Score, formatted. */
-  score: string
+  /** Figma Score, formatted; left out on Popular planners (no score there). */
+  score?: string
   avatarSrc?: string | null
   /** Figma Show trend: up / down with labels; left out when flat. */
   trend?: { direction: 'up' | 'down'; label: string }
-  /** Figma Viewer=You: the person's own row, title "You" from the messages. */
+  /** Figma Viewer=you: the person's own row, title "You" from the messages. */
   you?: string
-  /** Trophy label for the top 3, e.g. "Rank 1". */
+  /** Accessible name of the rank, e.g. "Rank 1". */
   rankLabel: string
   href?: string
   renderLink?: (props: { href: string; className: string; children: ReactNode }) => ReactNode
 }
 
-/** Leaderboard row (ADD-96): rank (trophy for top 3), avatar, name and detail, trend, score. */
+/** Leaderboard row: rank as a plain muted number (no trophies), avatar, name and detail,
+ * optional trend and score; 1px divider inside the row like List item. */
 export function LeaderboardRow({ rank, name, detail, score, avatarSrc, trend, you, rankLabel, href, renderLink }: LeaderboardRowProps) {
   const TrendIcon = trend?.direction === 'down' ? TrendingDown : TrendingUp
   const body = (
     <>
       <span className="inline-flex w-[var(--space-6)] shrink-0 justify-center text-ui-fg">
-        {rank <= 3 ? <Trophy role="img" aria-label={rankLabel} className="size-[var(--icon-size-lg)]" /> : <span aria-label={rankLabel} className="type-body-base text-ui-fg-muted">{rank}</span>}
+        <span aria-label={rankLabel} className="type-body-base text-ui-fg-muted">{rank}</span>
       </span>
       <Avatar size="md" src={avatarSrc} name={name} decorative />
       <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-0-5)]">
@@ -174,13 +178,13 @@ export function LeaderboardRow({ rank, name, detail, score, avatarSrc, trend, yo
         {detail ? <span className="truncate type-body-caption text-ui-fg-muted">{detail}</span> : null}
       </span>
       {trend ? <TrendIcon role="img" aria-label={trend.label} className="size-[var(--icon-size-lg)] shrink-0 text-ui-fg-muted" /> : null}
-      <span className="shrink-0 type-body-base tabular-nums text-ui-fg">{score}</span>
+      {score ? <span className="shrink-0 type-body-base tabular-nums text-ui-fg">{score}</span> : null}
     </>
   )
   // 64 high: Avatar md 40 + py 12.
   const cls = cn(ROW, href && 'hover:bg-ui-state-hover', href && FOCUS_RING_INSET)
   return (
-    <li className={cn('border-b border-ui-border', you && 'bg-ui-bg-raised')}>
+    <li className={cn(ROW_DIVIDER, you && 'bg-ui-bg-raised')}>
       {href && renderLink ? renderLink({ href, className: cls, children: body }) : <div className={cls}>{body}</div>}
     </li>
   )
@@ -198,7 +202,7 @@ export type NotificationItemProps = {
   renderLink: (props: { href: string; className: string; children: ReactNode }) => ReactNode
 }
 
-/** Notification item (ADD-97): icon by type, title, body, time; unread = Count badge dot. */
+/** Notification item: icon by type, title, body, time; unread = Count badge dot. */
 export function NotificationItem({ icon, title, body, time, read = false, unreadLabel, href, renderLink }: NotificationItemProps) {
   const children = (
     <>
@@ -212,5 +216,6 @@ export function NotificationItem({ icon, title, body, time, read = false, unread
       {!read ? <CountBadge className="shrink-0" /> : null}
     </>
   )
-  return <li className="border-b border-ui-border">{renderLink({ href, className: cn(ROW, 'hover:bg-ui-state-hover', FOCUS_RING_INSET), children })}</li>
+  // Divider drawn inside the row (as List item), so the row keeps its drawn height.
+  return <li className={ROW_DIVIDER}>{renderLink({ href, className: cn(ROW, 'hover:bg-ui-state-hover', FOCUS_RING_INSET), children })}</li>
 }
