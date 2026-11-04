@@ -58,8 +58,10 @@ export type CardProps = Common &
     | (Media & { type: 'featured' | 'featured-stacked'; eyebrow: string; meta: string; sponsored?: string; trending?: string })
   )
 
+// isolate: the card's own layers (stretched link, Save and Like over the photo) stack inside the
+// card, so a sticky bar above a scrolling list of cards stays on top.
 const SHELL =
-  'group relative flex overflow-hidden rounded-none bg-ui-bg-raised text-ui-fg focus-within:shadow-focus-ring has-[a:hover]:[&>.panel]:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]'
+  'group relative isolate flex overflow-hidden rounded-none bg-ui-bg-raised text-ui-fg focus-within:shadow-focus-ring has-[a:hover]:[&>.panel]:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]'
 const STRETCH = "outline-none after:absolute after:inset-0 after:z-0 after:content-['']"
 const TITLE2 = 'line-clamp-2 [text-wrap:pretty] type-title-card [&:lang(ko)]:break-keep'
 
