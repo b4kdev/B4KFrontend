@@ -4,28 +4,34 @@
 export const TOKEN_HEX = {
   light: {
     planDays: [
-      { fill: '#2776d3', fg: '#ffffff' }, // day 1
-      { fill: '#d87303', fg: '#0a0a0a' }, // day 2
-      { fill: '#04a26f', fg: '#0a0a0a' }, // day 3
-      { fill: '#be8103', fg: '#0a0a0a' }, // day 4
-      { fill: '#008300', fg: '#ffffff' }, // day 5
-      { fill: '#4a3aa7', fg: '#ffffff' }, // day 6
-      { fill: '#cd3f9b', fg: '#0a0a0a' }, // day 7
-      { fill: '#0a8287', fg: '#ffffff' }, // day 8
+      { fill: '#c9c3ff', fg: '#000000' }, // day 1
+      { fill: '#ff7548', fg: '#000000' }, // day 2
+      { fill: '#6fb08f', fg: '#000000' }, // day 3
+      { fill: '#f1e66b', fg: '#000000' }, // day 4
+      { fill: '#a9c5ec', fg: '#000000' }, // day 5
+      { fill: '#f2bfdc', fg: '#000000' }, // day 6
+      { fill: '#d6f26b', fg: '#000000' }, // day 7
+      { fill: '#c08a74', fg: '#000000' }, // day 8
     ],
-    mapPin: { fill: '#0a0a0a', stroke: '#f7f6f3', selected: '#ff0000' },
+    mapPin: { fill: '#ffffff', stroke: '#0a0a0a', selected: '#ff7548' },
+    mapType: { food: '#f1e66b', cafe: '#c08a74', stay: '#a9c5ec', shopping: '#f2bfdc', heritage: '#6fb08f', park: '#d6f26b', other: '#b4b1aa' },
+    cluster: { fill: '#0a0a0a', fg: '#ffffff', stroke: '#ffffff' },
+    routeCasing: '#0a0a0a',
   },
   dark: {
     planDays: [
-      { fill: '#2776d3', fg: '#ffffff' }, // day 1
-      { fill: '#eb7e05', fg: '#0a0a0a' }, // day 2
-      { fill: '#1baf7a', fg: '#0a0a0a' }, // day 3
-      { fill: '#eda100', fg: '#0a0a0a' }, // day 4
-      { fill: '#008300', fg: '#ffffff' }, // day 5
-      { fill: '#655aca', fg: '#ffffff' }, // day 6
-      { fill: '#cd3f9b', fg: '#0a0a0a' }, // day 7
-      { fill: '#14a3a8', fg: '#0a0a0a' }, // day 8
+      { fill: '#c9c3ff', fg: '#000000' }, // day 1
+      { fill: '#ff7548', fg: '#000000' }, // day 2
+      { fill: '#6fb08f', fg: '#000000' }, // day 3
+      { fill: '#f1e66b', fg: '#000000' }, // day 4
+      { fill: '#a9c5ec', fg: '#000000' }, // day 5
+      { fill: '#f2bfdc', fg: '#000000' }, // day 6
+      { fill: '#d6f26b', fg: '#000000' }, // day 7
+      { fill: '#c08a74', fg: '#000000' }, // day 8
     ],
-    mapPin: { fill: '#f7f6f3', stroke: '#0a0a0a', selected: '#ff0000' },
+    mapPin: { fill: '#ffffff', stroke: '#000000', selected: '#ff7548' },
+    mapType: { food: '#f1e66b', cafe: '#c08a74', stay: '#a9c5ec', shopping: '#f2bfdc', heritage: '#6fb08f', park: '#d6f26b', other: '#b4b1aa' },
+    cluster: { fill: '#ffffff', fg: '#000000', stroke: '#000000' },
+    routeCasing: null,
   },
 } as const
