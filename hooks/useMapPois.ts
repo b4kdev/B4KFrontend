@@ -34,6 +34,8 @@ export interface MapPoi {
   address?:          string
   website_url?:      string
   primary_image_url?: string
+  /** Where the primary photo comes from (place detail only); TourAPI photos carry a credit line. */
+  primary_image_source?: string
   /** The usual visit length for this kind of place (minutes): where the duration menu starts. Null for stays. */
   default_visit_min?: number | null
 }
