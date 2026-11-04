@@ -263,6 +263,7 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
     if (points.length === 1) return map.current.setCenter(new N.LatLng(points[0].lat, points[0].lng))
     const lats = points.map((p) => p.lat)
     const lngs = points.map((p) => p.lng)
+    if (GL_SDK) return fitAsRaster(lats, lngs, fitPadding(fitBottom, fitTop))
     map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), fitPadding(fitBottom, fitTop))
   }
 
@@ -276,6 +277,38 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
     lat: (Math.atan(Math.sinh(Math.PI * (1 - (2 * y) / 256))) * 180) / Math.PI,
     lng: (x / 256) * 360 - 180,
   })
+  // The raster map's fitBounds, by hand for the vector map (whose own fit lands on a fractional zoom
+  // with the points on the padding's edge), as the raster SDK does it: the closest whole zoom that
+  // holds the points without padding; the points' box grown by the padding at that zoom; then a
+  // zoom out at a time until the view holds the grown box. The first check is centred on the
+  // points, the later ones on the grown box, which is where the map ends up.
+  const fitAsRaster = (lats: number[], lngs: number[], pad: { top: number; right: number; bottom: number; left: number }) => {
+    const N = window.naver.maps
+    const size = map.current.getSize()
+    const xs = lngs.map(worldX)
+    const ys = lats.map(worldY)
+    const [minX, maxX, minY, maxY] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)]
+    const spanX = maxX - minX
+    const spanY = maxY - minY
+    const start = Math.min(21, Math.floor(Math.log2(Math.min(spanX ? size.width / spanX : Infinity, spanY ? size.height / spanY : Infinity))))
+    const k = 2 ** start
+    const box = { left: minX - pad.left / k, right: maxX + pad.right / k, top: minY - pad.top / k, bottom: maxY + pad.bottom / k }
+    const cx = (box.left + box.right) / 2
+    const cy = (box.top + box.bottom) / 2
+    const holds = (z: number, x: number, y: number) => {
+      const w = size.width / 2 / 2 ** z
+      const h = size.height / 2 / 2 ** z
+      return box.left >= x - w && box.right <= x + w && box.top >= y - h && box.bottom <= y + h
+    }
+    let zoom = start
+    if (!holds(zoom, (minX + maxX) / 2, (minY + maxY) / 2)) {
+      do zoom--
+      while (zoom > 0 && !holds(zoom, cx, cy))
+    }
+    const c = fromWorld(cx, cy)
+    setZ(zoom, false)
+    map.current.setCenter(new N.LatLng(c.lat, c.lng))
+  }
   const fitIntoBox = (points: { lat: number; lng: number }[]) => {
     const N = window.naver.maps
     const size = map.current.getSize()
@@ -471,6 +504,7 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
     if (fitTop !== undefined) return fitIntoBox(planStops.map((s) => ({ lat: s.poi.coords_lat, lng: s.poi.coords_lng })))
     const lats = planStops.map((s) => s.poi.coords_lat)
     const lngs = planStops.map((s) => s.poi.coords_lng)
+    if (GL_SDK) return fitAsRaster(lats, lngs, fitPadding(fitBottom, fitTop))
     map.current.fitBounds(new N.LatLngBounds(new N.LatLng(Math.min(...lats), Math.min(...lngs)), new N.LatLng(Math.max(...lats), Math.max(...lngs))), fitPadding(fitBottom, fitTop))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fitStops, planStops, mapReady, fitBottom, fitTop])
