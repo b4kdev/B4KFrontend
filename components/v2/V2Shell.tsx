@@ -116,6 +116,9 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname() ?? ''
   // The screen before the current one, for where a place in a plan was found.
   useEffect(() => { rememberPath(pathname) }, [pathname])
+  // The root layout sets <html lang> on the first load only; a language switch in the page keeps the
+  // same document, so the page language is set here too (screen readers read by it).
+  useEffect(() => { document.documentElement.lang = locale }, [locale])
   const { user: authUser } = useAuth()
   const [drawer, setDrawer] = useState(false)
   const [quick, setQuick] = useState(false)
