@@ -677,6 +677,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       ))}
       onRemove={draft.remove}
       onMove={draft.move}
+      onMoveToDay={draft.moveToDay}
+      dayFull={(d) => draft.countOn(d) >= PER_DAY}
       onSelect={(id) => {
         setSelectedId(id)
         const p = order.find((x) => x.poi_id === id)
