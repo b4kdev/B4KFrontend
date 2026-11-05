@@ -76,7 +76,9 @@ export function Image({ ratio = '1:1', src, alt, sizes = '100vw', priority, miss
           <span
             aria-hidden
             style={{ backgroundColor: PLACE_TYPE_COLOR[placeType] }}
-            className="flex aspect-square w-[min(40%,var(--empty-tile-size))] items-center justify-center rounded-sq-md text-field-fg"
+            // Corner radius scales with the mark (11 on a 40 mark, 22 on 80, as the pins and empty tiles), so a
+            // small mark in a stop thumbnail stays a squircle instead of turning into a circle.
+            className="flex aspect-square w-[min(40%,var(--empty-tile-size))] items-center justify-center rounded-[27.5%] text-field-fg"
           >
             <PlaceTypeIcon type={placeType} className="size-1/2 [stroke-width:2.6]" />
           </span>
