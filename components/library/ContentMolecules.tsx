@@ -249,11 +249,12 @@ export type ItineraryStopProps = {
   className?: string
 }
 
-/** Itinerary stop: Stop badge md on the route rail, name, meta, optional note and 40 thumbnail. */
+/** Itinerary stop: Stop badge md on the route rail, name, meta, optional note and 40 thumbnail. Selected:
+ * the selected fill with a 2px ring in the map's selected-pin colour, so it never reads as keyboard focus. */
 // Figma: the row is 80 high with 8 above; a name, meta and one-line note (66) leave 6 below.
 export function ItineraryStop({ name, number, day, meta, note, thumbnail, selected, onSelect, className }: ItineraryStopProps) {
   return (
-    <li aria-current={selected || undefined} className={cn('flex min-h-[var(--stop-row-min-height)] items-center gap-[var(--space-3)] rounded-tile-inner bg-tile-surface p-[var(--space-3)]', selected && 'shadow-[inset_0_0_0_var(--border-width-2)_var(--color-border-focus)]', onSelect && 'cursor-pointer [@media(hover:hover)_and_(pointer:fine)]:hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]', className)} onClick={onSelect}>
+    <li aria-current={selected || undefined} className={cn('flex min-h-[var(--stop-row-min-height)] items-center gap-[var(--space-3)] rounded-tile-inner bg-tile-surface p-[var(--space-3)]', selected && 'bg-ui-state-selected shadow-[inset_0_0_0_var(--border-width-2)_var(--map-pin-selected)]', onSelect && 'cursor-pointer [@media(hover:hover)_and_(pointer:fine)]:hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]', className)} onClick={onSelect}>
       <StopBadge number={number} day={day} size="md" />
       <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
         <span className="type-title-card text-[length:var(--font-size-base)] text-ui-fg">{name}</span>
