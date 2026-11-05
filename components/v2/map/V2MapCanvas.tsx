@@ -5,7 +5,8 @@ import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, us
 import Script from 'next/script'
 import { useLocale } from 'next-intl'
 import type { MapBounds, MapPoi } from '@/hooks/useMapPois'
-import { mapTypeOf } from './mapType'
+import { BedDouble, Coffee, Crown, Flower2, Landmark, ShoppingBag, Trees, Utensils, type LucideIcon } from 'lucide-react'
+import { mapKindOf, mapTypeOf, type MapKind } from './mapType'
 import { TOKEN_HEX } from '@/tokens/colors'
 import { useCd } from '@/components/v2/cd'
 import { PLACE_TYPE_ICON, categoryAttr, placeTypeOf } from '@/components/library'
@@ -119,8 +120,14 @@ const LABEL = 'margin-top:var(--space-0-5);max-width:120px;padding:var(--space-0
 // in black (the selected colour when selected). The SDK takes markup, so the icons are rendered
 // once, hidden, and their SVG reused.
 const TYPE_SVG: Record<string, string> = {}
-const typeIcon = (p: MapPoi) =>
-  `<span aria-hidden style="width:58%;height:58%;display:flex;color:var(--field-fg);stroke-width:2.6">${TYPE_SVG[placeTypeOf(p.interest_category)] ?? ''}</span>`
+// The icon of the map chip the place falls under (the Cafés coffee cup on a cafe pin), else the
+// place type icon of its interest.
+const KIND_ICON: Record<MapKind, LucideIcon> = { restaurant: Utensils, cafe: Coffee, stay: BedDouble, shopping: ShoppingBag, palace: Crown, temple: Flower2, museum: Landmark, park: Trees }
+const typeIcon = (p: MapPoi) => {
+  const kind = mapKindOf(p)
+  const svg = (kind && TYPE_SVG[`kind-${kind}`]) || TYPE_SVG[placeTypeOf(p.interest_category)] || ''
+  return `<span aria-hidden style="width:58%;height:58%;display:flex;color:var(--field-fg);stroke-width:2.6">${svg}</span>`
+}
 const categoryOf = (p: MapPoi) => categoryAttr(p.display_domain)
 
 const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
@@ -644,6 +651,7 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
       <div ref={el} role="application" aria-label={label} data-map-tone={toneFor(glOn ? styleId : '')} className="size-full" />
       <div ref={icons} hidden>
         {Object.entries(PLACE_TYPE_ICON).map(([type, Icon]) => <Icon key={type} data-type={type} width="100%" height="100%" aria-hidden />)}
+        {Object.entries(KIND_ICON).map(([kind, Icon]) => <Icon key={kind} data-type={`kind-${kind}`} width="100%" height="100%" aria-hidden />)}
       </div>
       {failed || !clientId ? (
         <p role="alert" className="absolute inset-0 flex items-center justify-center p-[var(--space-6)] text-center type-body-base text-ui-fg-muted">{errorText}</p>
