@@ -92,7 +92,11 @@ export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollL
               type="button"
               aria-label={t.closeLabel}
               onClick={t.onClose}
-              className="absolute right-[var(--space-2)] inline-flex size-[var(--space-5)] items-center justify-center rounded-sq-xs text-current opacity-70 hover:opacity-100 hover:bg-ui-state-hover hover:text-ui-fg focus-visible:shadow-focus-ring focus-visible:outline-none"
+              // The × takes the tab's own ink: black on a day or colour fill, the inverse ink on the inverse fill.
+              className={cn(
+                'absolute right-[var(--space-2)] inline-flex size-[var(--space-5)] items-center justify-center rounded-sq-xs opacity-70 hover:opacity-100 focus-visible:shadow-focus-ring focus-visible:outline-none',
+                t.id !== value ? 'text-ui-fg-muted hover:bg-ui-state-hover hover:text-ui-fg' : t.day || t.color ? 'text-field-fg' : 'text-ui-fg-inverse',
+              )}
             >
               <X aria-hidden className="size-[var(--icon-size-xs)]" />
             </button>
