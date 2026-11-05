@@ -436,7 +436,7 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
           breadcrumbs={[{ label: t('CD0807'), href: '/' }, { label: cfg.title }]}
           title={cfg.title}
           updated={GAP.lastUpdated(cfg.updated)}
-          contact={{ label: t('CD0345'), link: <a href={`mailto:${cfg.email}`} className={cn('relative type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{cfg.email}</a> }}
+          contact={{ label: t('CD0345'), link: <a href={`mailto:${cfg.email}`} className={cn('relative type-body-link text-ui-link underline decoration-[length:var(--border-width-1-5)] underline-offset-4 hover:text-ui-link-hover', HIT_AREA)}>{cfg.email}</a> }}
           sections={cfg.sections.map((s) => ({ id: s.id, title: s.heading.replace(/^\d+\.\s*/, ''), body: s.body }))}
           currentSection={current}
           intro={doc === 'cookies' ? (
@@ -515,7 +515,7 @@ export function AboutScreen() {
           <div className="flex flex-col gap-[var(--space-3)] rounded-tile-inner bg-tile-surface px-[calc(var(--space-5)+var(--space-0-5))] py-[var(--space-5)] tabular-nums">
             <h2 className="type-display-h4">{t('CD1688')}</h2>
             <p className="whitespace-pre-line type-body-base text-ui-fg-muted">{fillCompanyText(t.raw('CD1689') as string, companyValues(locale))}</p>
-            <a href={COMPANY.checkUrl} target="_blank" rel="noopener noreferrer" className={cn('relative self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{t('CD1685')}</a>
+            <a href={COMPANY.checkUrl} target="_blank" rel="noopener noreferrer" className={cn('relative self-start type-body-link text-ui-link underline decoration-[length:var(--border-width-1-5)] underline-offset-4 hover:text-ui-link-hover', HIT_AREA)}>{t('CD1685')}</a>
           </div>
         </div>
       </div>

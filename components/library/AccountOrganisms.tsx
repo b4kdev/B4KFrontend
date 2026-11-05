@@ -65,7 +65,7 @@ export function CookieBanner({ type = 'banner', label, message, learnMore, accep
         {/* Message: the body and the Learn more link wrap as two items, so the link never splits. */}
         <div className="flex flex-1 flex-wrap items-center gap-x-[var(--space-1-5)] type-body-base">
           <p>{message}</p>
-          <IntlLink href={learnMore.href} className={cn('relative whitespace-nowrap underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{learnMore.label}</IntlLink>
+          <IntlLink href={learnMore.href} className={cn('relative whitespace-nowrap underline decoration-[length:var(--border-width-1-5)] underline-offset-4 hover:text-ui-link-hover', HIT_AREA)}>{learnMore.label}</IntlLink>
         </div>
         {buttons}
       </div>
@@ -214,7 +214,7 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
           <Tabs label={labels.tabs} width="equal" baseline={false} value={view} onValueChange={(v) => onViewChange(v as SignInView)} tabs={[{ id: 'sign-in', label: labels.signIn }, { id: 'sign-up', label: labels.signUp }]} />
           <TextInput label={emailField} showLabel type="email" autoComplete="email" required placeholder={labels.emailPlaceholder} value={values.email ?? ''} onChange={set('email')} />
           <TextInput label={labels.password} showLabel type="password" autoComplete={view === 'sign-in' ? 'current-password' : 'new-password'} required placeholder={view === 'sign-in' ? labels.passwordPlaceholder : undefined} value={values.password ?? ''} onChange={set('password')} help={view === 'sign-up' ? labels.passwordHint : undefined} />
-          {view === 'sign-in' ? <button type="button" onClick={() => onViewChange('forgot')} className={cn('relative self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{labels.forgot}</button> : null}
+          {view === 'sign-in' ? <button type="button" onClick={() => onViewChange('forgot')} className={cn('relative self-start type-body-link text-ui-link underline decoration-[length:var(--border-width-1-5)] underline-offset-4 hover:text-ui-link-hover', HIT_AREA)}>{labels.forgot}</button> : null}
           <Button type="submit" loading={busy} className="w-full">{view === 'sign-in' ? labels.signIn : labels.signUp}</Button>
         </form>
       ) : view === 'forgot' ? (
@@ -342,7 +342,7 @@ export function SearchFilters({ viewport, groups, value, onValueChange, sort, la
       <div className="flex items-center justify-between gap-[var(--space-2)]">
         <h2 className="type-display-h3">{labels.title}</h2>
         {!mobile ? (
-          <button type="button" onClick={() => onValueChange({})} className="type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover">{labels.clearAll}</button>
+          <button type="button" onClick={() => onValueChange({})} className="type-body-link text-ui-link underline decoration-[length:var(--border-width-1-5)] underline-offset-4 hover:text-ui-link-hover">{labels.clearAll}</button>
         ) : onClose && labels.close ? (
           <IconButton label={labels.close} icon={<X />} onClick={onClose} />
         ) : null}
@@ -450,7 +450,7 @@ export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, 
         <section key={s.id} aria-labelledby={s.id} className="flex flex-col gap-[var(--space-4)]">
           <Separator />
           <h2 id={s.id} className="scroll-mt-[var(--space-6)] type-display-h3">{i + 1}. {s.title}</h2>
-          <div className="type-body-long text-ui-fg-muted [&_a]:underline [&_a]:underline-offset-2 [&_li]:mt-[var(--space-1)] [&_ol]:list-decimal [&_ol]:pl-[var(--space-5)] [&_p+p]:mt-[var(--space-3)] [&_ul]:list-disc [&_ul]:pl-[var(--space-5)]">{s.body}</div>
+          <div className="type-body-long text-ui-fg-muted [&_a]:underline [&_a]:decoration-[length:var(--border-width-1-5)] [&_a]:underline-offset-4 [&_li]:mt-[var(--space-1)] [&_ol]:list-decimal [&_ol]:pl-[var(--space-5)] [&_p+p]:mt-[var(--space-3)] [&_ul]:list-disc [&_ul]:pl-[var(--space-5)]">{s.body}</div>
         </section>
       ))}
     </div>

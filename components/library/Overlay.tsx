@@ -261,7 +261,7 @@ export function Combobox(props: ComboboxProps) {
               <span>{recentLabel}</span>
               {onClearAll ? (
                 // Figma Link Inline (body/link, underlined, color/link); a button because it acts.
-                <button type="button" onClick={onClearAll} className={cn('type-body-link text-ui-link underline underline-offset-2 transition-colors duration-short4 ease-standard hover:text-ui-link-hover', FOCUS_RING)}>
+                <button type="button" onClick={onClearAll} className={cn('type-body-link text-ui-link underline decoration-[length:var(--border-width-1-5)] underline-offset-4 transition-colors duration-short4 ease-standard hover:text-ui-link-hover', FOCUS_RING)}>
                   {clearAllLabel}
                 </button>
               ) : null}

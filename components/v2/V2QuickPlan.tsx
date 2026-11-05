@@ -123,7 +123,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
         {isLoading ? <Spinner label={t('CD0781')} /> : null}
         {isError ? (
           <p role="alert" className="type-body-base text-ui-danger">
-            {t('CD0780')} <button type="button" onClick={retry} className="underline underline-offset-2">{t('CD0784')}</button>
+            {t('CD0780')} <button type="button" onClick={retry} className="underline decoration-[length:var(--border-width-1-5)] underline-offset-4">{t('CD0784')}</button>
           </p>
         ) : null}
         {group ? (

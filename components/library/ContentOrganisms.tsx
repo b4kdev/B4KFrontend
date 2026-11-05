@@ -165,7 +165,7 @@ export type FooterProps = {
   className?: string
 }
 
-const FOOTER_LINK = 'relative text-ui-fg-muted hover:text-ui-fg focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus'
+const FOOTER_LINK = 'relative text-ui-fg-muted hover:text-ui-fg hover:underline focus-visible:underline decoration-[length:var(--border-width-1-5)] underline-offset-4 focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus'
 
 /** Footer: legal links and the copyright, then the company line; content pages only. */
 export function Footer({ links, copyright, navLabel, company, className }: FooterProps) {
@@ -179,7 +179,7 @@ export function Footer({ links, copyright, navLabel, company, className }: Foote
         <ul className="flex flex-wrap gap-x-[var(--space-4)] gap-y-[var(--space-2)]">
           {links.map((l) => (
             <li key={l.href}>
-              <IntlLink href={l.href} className={cn(l.strong && 'type-body-label', 'relative', HIT_AREA, 'text-ui-fg-muted hover:text-ui-fg focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus')}>{l.label}</IntlLink>
+              <IntlLink href={l.href} className={cn(l.strong && 'type-body-label', 'relative', HIT_AREA, 'text-ui-fg-muted hover:text-ui-fg hover:underline focus-visible:underline decoration-[length:var(--border-width-1-5)] underline-offset-4 focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus')}>{l.label}</IntlLink>
             </li>
           ))}
         </ul>
@@ -225,7 +225,7 @@ export function Form({ onSubmit, errorSummary, children, actions, className }: F
           <Alert type="critical" title={errorSummary!.title}>
             <ul className="list-disc pl-[var(--space-5)]">
               {errorSummary!.items.map((it) => (
-                <li key={it.fieldId}><a href={`#${it.fieldId}`} className="underline underline-offset-2">{it.message}</a></li>
+                <li key={it.fieldId}><a href={`#${it.fieldId}`} className="underline decoration-[length:var(--border-width-1-5)] underline-offset-4">{it.message}</a></li>
               ))}
             </ul>
           </Alert>
