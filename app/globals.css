@@ -71,7 +71,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
 
 /* Map pins and plan stops are focusable buttons inside the Naver map (V2MapCanvas). */
 .b4k-map-marker:focus { outline: none; }
-.b4k-map-marker:focus-visible > span { box-shadow: var(--focus-ring); }
+/* The marker's head (pin, dot, cluster, stop badge) carries its shadow in a class, so keyboard focus
+   can add the ring on top of it; a cluster sets --mark-shadow to its own shadow. */
+.b4k-mark { box-shadow: var(--mark-shadow, var(--shadow-pin)); }
+.b4k-map-marker:focus-visible > .b4k-mark { box-shadow: var(--focus-ring), var(--mark-shadow, var(--shadow-pin)); }
 
 /* ─── Entrances (one each; the reduced-motion block below turns them into a fade) ─── */
 @keyframes b4k-rise { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
