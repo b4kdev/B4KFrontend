@@ -268,8 +268,8 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           declineLabel={t('CD0127')}
           onAccept={() => choose('accepted')}
           onDecline={() => choose('declined')}
-          // Figma: above the Navigation bar on phones; full width over the Navigation rail on desktop.
-          className={cn(!inFlow && 'max-lg:bottom-[var(--fab-size)] max-lg:pb-[var(--space-4)]')}
+          // Phones: 12 above the Navigation bar; desktop: 12 above the page bottom, across the Navigation rail.
+          className={cn(!inFlow && 'max-lg:bottom-[calc(var(--fab-size)+var(--space-3))]')}
         />
       ) : null}
       {/* Phones: the offline notice and the toasts rise above the floor by a transform, so a sheet moving under them does not move the page. */}

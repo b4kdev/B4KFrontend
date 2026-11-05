@@ -42,13 +42,13 @@ export function CookieBanner({ type = 'banner', label, message, learnMore, accep
   // Phones: the bottom banner's buttons fill the row; the preferences card's buttons hug, as drawn.
   const buttons = (
     <div className={cn('flex gap-[var(--gap-sm)]', type === 'banner' && 'max-md:[&>*]:flex-1')}>
-      <Button variant="secondary" size="md" onClick={onDecline}>{declineLabel}</Button>
+      <Button variant="secondary" size="md" onClick={onDecline} className={type === 'banner' ? 'bg-nav-tile-hover' : undefined}>{declineLabel}</Button>
       <Button size="md" onClick={onAccept}>{acceptLabel}</Button>
     </div>
   )
   if (type === 'preferences') {
     return (
-      <section aria-label={label} className="flex flex-col gap-[var(--space-3)] border border-ui-border bg-ui-bg-raised p-[var(--space-5)] text-ui-fg">
+      <section aria-label={label} className="flex flex-col gap-[var(--space-3)] rounded-tile bg-tile-surface p-[var(--tile-padding)] text-ui-fg">
         <div className="flex items-center gap-[var(--space-3)]">
           <h2 className="flex-1 type-title-card">{title}</h2>
           {status ? <Badge leadingIcon={<Check aria-hidden />}>{status}</Badge> : null}
@@ -59,7 +59,8 @@ export function CookieBanner({ type = 'banner', label, message, learnMore, accep
     )
   }
   return (
-    <section role="region" aria-label={label} tabIndex={-1} className={cn('fixed inset-x-0 bottom-0 z-40 border-t border-ui-border bg-ui-bg-raised px-[var(--space-4)] py-[var(--space-4)] pb-[calc(var(--space-4)+env(safe-area-inset-bottom))] text-ui-fg outline-none', className)}>
+    // A floating card 12 in from the sides and the bottom (above the phone's home bar), elevated with its own shadow.
+    <section role="region" aria-label={label} tabIndex={-1} className={cn('fixed inset-x-[var(--space-3)] bottom-[calc(var(--space-3)+env(safe-area-inset-bottom))] z-40 rounded-tile bg-ui-bg-elevated p-[var(--tile-padding)] text-ui-fg shadow-notice outline-none', className)}>
       <div className="mx-auto flex max-w-[960px] items-center gap-[var(--space-4)] max-md:flex-col max-md:items-stretch max-md:gap-[var(--space-3)]">
         {/* Message: the body and the Learn more link wrap as two items, so the link never splits. */}
         <div className="flex flex-1 flex-wrap items-center gap-x-[var(--space-1-5)] type-body-base">

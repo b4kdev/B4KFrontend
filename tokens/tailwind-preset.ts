@@ -155,6 +155,7 @@ const b4kTokens: Partial<Config> = {
         'sheet': 'var(--shadow-sheet)',
         'cluster': 'var(--shadow-cluster)',
         'control': 'var(--shadow-control)',
+        'notice': 'var(--shadow-notice)',
       },
       backgroundImage: {
         'overlay-fade': 'var(--gradient-overlay-fade)',
