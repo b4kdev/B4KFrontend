@@ -5,12 +5,15 @@ import { useAuth } from '@/contexts/AuthContext'
 import type { MapPoi } from '@/hooks/useMapPois'
 import { clearDraftPlan, getDraftPlan, saveDraftPlan, type DraftPlan } from '@/lib/draft-plan'
 import type { ItineraryDetail } from '@/lib/itinerary'
+import { httpError } from '@/lib/session-expired'
 
 // The plan in progress, stored as on the live map: guests in
 // localStorage (b4k_draft_plan), signed-in users in their account draft (/api/plans/draft,
 // autosaved 800 ms after each change, loaded back on the next visit), so "Continue your plan"
 // works on both and across devices. A published plan open for editing is not autosaved (it has
-// its own Save changes). Plan limits: 8 days, 6 stops a day, 48 stops.
+// its own Save changes). An autosave that fails keeps the plan on this device as well (the
+// sign-in migration offers it on the next visit) and calls `onSaveFailed` once until one succeeds.
+// Plan limits: 8 days, 6 stops a day, 48 stops.
 
 export const MAX_DAYS = 8
 export const PER_DAY = 6
@@ -23,13 +26,15 @@ const AUTOSAVE_MS = 800
 export const COURSE_HANDOFF_EVENT = 'b4k:course-handoff'
 
 /** A saved plan as builder state (stops in order, day and duration per stop). */
-export function itineraryToDraft(it: ItineraryDetail): { stops: MapPoi[]; days: Record<string, number>; durations: Record<string, number> } {
+export function itineraryToDraft(it: ItineraryDetail): { stops: MapPoi[]; days: Record<string, number>; durations: Record<string, number>; sources: Record<string, string>; flow?: string } {
   const sorted = [...it.stops].sort((a, b) => a.stop_order - b.stop_order)
   const stops = sorted.map((s) => ({ poi_id: String(s.poi.poi_id), name_ko: s.poi.name_ko, name_en: s.poi.name_en, name_preferred: s.poi.name_preferred ?? undefined, coords_lat: s.poi.coords_lat, coords_lng: s.poi.coords_lng, display_region: null, primary_image_url: s.poi.primary_image_url ?? undefined })) as MapPoi[]
   return {
     stops,
     days: Object.fromEntries(sorted.map((s) => [String(s.poi.poi_id), s.day ?? 1])),
     durations: Object.fromEntries(sorted.map((s) => [String(s.poi.poi_id), s.duration_min])),
+    sources: Object.fromEntries(sorted.filter((s) => s.source).map((s) => [String(s.poi.poi_id), s.source as string])),
+    flow: it.source ?? undefined,
   }
 }
 
@@ -55,8 +60,12 @@ export async function discardDraftPlan() {
   await deleteAccountDraft().catch(() => {})
 }
 
-export function usePlanDraft() {
+export function usePlanDraft(opts?: { onSaveFailed?: () => void }) {
   const { user, loading } = useAuth()
+  const onSaveFailed = useRef(opts?.onSaveFailed)
+  onSaveFailed.current = opts?.onSaveFailed
+  // The last autosave failed: told once, until one succeeds.
+  const failing = useRef(false)
   const signedIn = !!user
   const [plan, setPlan] = useState<DraftPlan>({ stops: [], durations: {}, days: {} })
   const [days, setDays] = useState(1)
@@ -84,8 +93,8 @@ export function usePlanDraft() {
       .then((d) => (d?.id ? fetch(`/api/plans/${d.id}`).then((r) => (r.ok ? (r.json() as Promise<ItineraryDetail>) : null)) : null))
       .then((it) => {
         if (!it || gone || touched.current) return
-        const { stops, days: dayMap, durations } = itineraryToDraft(it)
-        show({ stops, days: dayMap, durations, name: it.title || undefined })
+        const { stops, days: dayMap, durations, sources, flow } = itineraryToDraft(it)
+        show({ stops, days: dayMap, durations, name: it.title || undefined, sources, flow })
       })
       .catch(() => {})
     return () => {
@@ -98,7 +107,24 @@ export function usePlanDraft() {
     if (!p) return
     clearTimeout(p.timer)
     pending.current = null
-    fetch('/api/plans/draft', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: p.body, keepalive: true }).catch(() => {})
+    const failed = () => {
+      // Keep the plan on this device, so a reload does not bring back an older account draft.
+      try { saveDraftPlan(JSON.parse(p.body) as DraftPlan) } catch {}
+      if (!failing.current) onSaveFailed.current?.()
+      failing.current = true
+    }
+    fetch('/api/plans/draft', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: p.body, keepalive: true })
+      .then((res) => {
+        if (!res.ok) {
+          // 401: the session ended; httpError opens sign-in over the map.
+          httpError(res.status)
+          return failed()
+        }
+        failing.current = false
+        // Saved to the account: a device copy from an earlier failure is no longer needed.
+        clearDraftPlan()
+      })
+      .catch(failed)
   }, [])
   // Leaving the page within the autosave delay still saves the last change.
   useEffect(() => flush, [flush])
@@ -115,6 +141,7 @@ export function usePlanDraft() {
     if (pending.current) clearTimeout(pending.current.timer)
     pending.current = null
     if (!next.stops.length) {
+      clearDraftPlan()
       deleteAccountDraft().catch(() => {})
       return
     }
@@ -165,11 +192,11 @@ export function usePlanDraft() {
     commit({ ...plan, stops, days: dayMap, durations })
   }
   /** Replaces the plan; `editing` marks a published plan open for editing (not autosaved). */
-  /** `source`: where every stop of the hand-off came from (Quick plan, saved places). */
-  const replace = (stops: MapPoi[], dayMap: Record<string, number>, name?: string, durations?: Record<string, number>, opts?: { editing?: boolean; source?: string }) => {
+  /** `source`: where every stop of the hand-off came from (Quick plan, saved places); `flow`: how the plan started. */
+  const replace = (stops: MapPoi[], dayMap: Record<string, number>, name?: string, durations?: Record<string, number>, opts?: { editing?: boolean; source?: string; flow?: string }) => {
     editing.current = !!opts?.editing
     setDays(Math.max(1, ...Object.values(dayMap)))
-    commit({ stops, durations: Object.fromEntries(stops.map((s) => [s.poi_id, durations?.[s.poi_id] ?? s.default_visit_min ?? 60])), days: dayMap, name, sources: opts?.source ? Object.fromEntries(stops.map((s) => [s.poi_id, opts.source as string])) : undefined })
+    commit({ stops, durations: Object.fromEntries(stops.map((s) => [s.poi_id, durations?.[s.poi_id] ?? s.default_visit_min ?? 60])), days: dayMap, name, sources: opts?.source ? Object.fromEntries(stops.map((s) => [s.poi_id, opts.source as string])) : undefined, flow: opts?.flow })
   }
   const discard = () => {
     touched.current = true

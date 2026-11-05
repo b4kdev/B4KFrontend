@@ -8,6 +8,8 @@ export interface DraftPlan {
   name?:     string
   /** poi_id → where the place was found (lib/place-source); kept with the stop when the plan is saved. */
   sources?:  Record<string, string>
+  /** How the plan started (manual, quick_plan, from_saved); kept so a reload saves it the same way. */
+  flow?:     string
 }
 
 const KEY = 'b4k_draft_plan'

@@ -67,6 +67,7 @@ import { jsonFetch } from './A2Home'
 import { SignedOutPrompt } from './A3Saved'
 import { passwordProblem } from '@/lib/password'
 import { regionName } from '../map/areaName'
+import { httpError } from '@/lib/session-expired'
 
 // A3 account screens and A5 language and theme: Profile own and visitor, Badges, Leaderboard,
 // Notifications, Settings. Live /api/profile, /api/badges, /api/leaderboard,
@@ -74,7 +75,7 @@ import { regionName } from '../map/areaName'
 
 const send = (url: string, method: string, body?: unknown) =>
   fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }).then((r) => {
-    if (!r.ok) throw new Error(String(r.status))
+    if (!r.ok) throw httpError(r.status)
     return r.json().catch(() => ({}))
   })
 

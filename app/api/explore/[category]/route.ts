@@ -695,7 +695,7 @@ export async function GET(req: NextRequest, props: { params: Promise<{ category:
   // read); one read per place across all rows.
   const themed = sections.map((s) => ({ ...s, items: withDbPoiIds(s.items) }))
   const read = new Map(
-    (await withDbPlaces(themed.flatMap((s) => s.items), locale)).map(
+    withDbPlaces(themed.flatMap((s) => s.items), locale).map(
       ({ poi_id, name_ko, name_en, primary_image_url, display_region, display_district }) =>
         [poi_id, { name_ko, name_en, primary_image_url, display_region, display_district }] as const,
     ),

@@ -1,0 +1,1640 @@
+{
+  "generated": "2026-11-05",
+  "places": {
+    "102297": {
+      "name_ko": "가나아트센터",
+      "names": {
+        "en": "Gana Art Center",
+        "ja": "ガナアートセンター",
+        "pt-BR": "Gana Art Center",
+        "th": "คานาอาร์ตเซนเตอร์",
+        "zh-CN": "卡纳艺术中心",
+        "zh-TW": "加納藝術中心"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/102297/8ba48ceb/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "103869": {
+      "name_ko": "경리단길",
+      "names": {
+        "en": "Gyeongridan-gil Street",
+        "ja": "経理団路（キョンリダンギル）",
+        "pt-BR": "Rua Gyeongnidan-gil",
+        "th": "ถนนคยองลีดันกิล",
+        "zh-CN": "经理团街",
+        "zh-TW": "經理團路"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/103869/277ebb5f/lg.webp",
+      "display_region": "서울",
+      "display_district": "용산구"
+    },
+    "103876": {
+      "name_ko": "경복궁",
+      "names": {
+        "en": "Gyeongbokgung Palace",
+        "ja": "景福宮（キョンボックン）",
+        "pt-BR": "Palácio Gyeongbokgung",
+        "th": "พระราชวังคยองบกกุง",
+        "zh-CN": "景福宫",
+        "zh-TW": "景福宮"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/103876/4276ed65/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "104165": {
+      "name_ko": "경희궁 숭정전",
+      "names": {
+        "en": "Sungjeongjeon Hall of Gyeonghuigung Palace",
+        "ja": "慶熙宮 崇政殿",
+        "pt-BR": "Sungjeongjeon do Palácio Gyeonghuigung",
+        "th": "พระที่นั่งซุงจ็องจอนแห่งพระราชวังคย็องฮีกุง",
+        "zh-CN": "庆熙宫崇政殿",
+        "zh-TW": "慶熙宮崇政殿"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/104165/d9439766/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "104688": {
+      "name_ko": "고척 스카이돔",
+      "names": {
+        "en": "Gocheok Sky Dome",
+        "ja": "高尺（コチョク）スカイドーム",
+        "pt-BR": "Gocheok Sky Dome",
+        "th": "โคช็อก 스카이돔",
+        "zh-CN": "高尺天空穹顶",
+        "zh-TW": "高尺天空巨蛋"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/104688/a951c3b2/lg.webp",
+      "display_region": "서울",
+      "display_district": "구로구"
+    },
+    "105362": {
+      "name_ko": "광장시장",
+      "names": {
+        "en": "Gwangjang Market",
+        "ja": "広蔵市場",
+        "pt-BR": "Mercado Gwangjang",
+        "th": "ตลาดกวางจัง",
+        "zh-CN": "广藏市场",
+        "zh-TW": "廣藏市場"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/105362/e594bdd9/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "105541": {
+      "name_ko": "교다이야",
+      "names": {
+        "en": "Kyodaiya",
+        "ja": "キョダイヤ",
+        "pt-BR": "Kyodaiya",
+        "th": "คโยไดนะ",
+        "zh-CN": "桥台屋",
+        "zh-TW": "橋台屋"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/105541/75034451/lg.webp",
+      "display_region": "서울",
+      "display_district": "마포구"
+    },
+    "106135": {
+      "name_ko": "국립현대미술관 서울관",
+      "names": {
+        "en": "MMCA Seoul",
+        "ja": "国立現代美術館 ソウル館",
+        "pt-BR": "Museu Nacional de Arte Moderna e Contemporânea, Seul",
+        "th": "พิพิธภัณฑ์ศิลปะสมัยใหม่และร่วมสมัยแห่งชาติ สาขาโซล",
+        "zh-CN": "国立现代美术馆首尔馆",
+        "zh-TW": "國立現代美術館首爾館"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/106135/aac8f664/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "108167": {
+      "name_ko": "남대문시장",
+      "names": {
+        "en": "Namdaemun Market",
+        "ja": "南大門市場",
+        "pt-BR": "Mercado Namdaemun",
+        "th": "ตลาดนัมแดมุน",
+        "zh-CN": "南大门市场",
+        "zh-TW": "南大門市場"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/108167/3b5930cb/lg.webp",
+      "display_region": "서울",
+      "display_district": "중구"
+    },
+    "108239": {
+      "name_ko": "남산골한옥마을",
+      "names": {
+        "en": "Namsangol Hanok (Korean Traditional House) Village",
+        "ja": "南山谷韓屋村",
+        "pt-BR": "Vila Hanok de Namsangol",
+        "th": "หมู่บ้านฮันอกนัมซานกล",
+        "zh-CN": "南山谷韩屋村",
+        "zh-TW": "南山谷韓屋村"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/108239/9ce6fc1a/lg.webp",
+      "display_region": "서울",
+      "display_district": "중구"
+    },
+    "108363": {
+      "name_ko": "남이섬",
+      "names": {
+        "en": "Nami Island",
+        "ja": "南怡島（ナミソム）",
+        "pt-BR": "Ilha Nami",
+        "th": "เกาะนามี",
+        "zh-CN": "南怡岛",
+        "zh-TW": "南怡島"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/108363/f7311079/lg.webp",
+      "display_region": "강원",
+      "display_district": "춘천시"
+    },
+    "108840": {
+      "name_ko": "노들섬",
+      "names": {
+        "en": "Nodeul Island (노들섬)",
+        "ja": "ノドゥル島（ノドゥルソム）",
+        "pt-BR": "Ilha Nodeul",
+        "th": "เกาะโหนดึล",
+        "zh-CN": "鹭得岛",
+        "zh-TW": "鷺得島"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/108840/dbabc034/lg.webp",
+      "display_region": "서울",
+      "display_district": "용산구"
+    },
+    "109197": {
+      "name_ko": "논픽션 성수",
+      "names": {
+        "en": "Nonfiction Seongsu",
+        "ja": "ノンフィクション 聖水（ソンス）",
+        "pt-BR": "NONFICTION Seongsu",
+        "th": "นอนฟิกชัน ซองซู",
+        "zh-CN": "NONFICTION 圣水",
+        "zh-TW": "NONFICTION 聖水"
+      },
+      "primary_image_url": null,
+      "display_region": "서울",
+      "display_district": "성동구"
+    },
+    "109200": {
+      "name_ko": "논픽션 한남",
+      "names": {
+        "en": "Nonfiction Hannam",
+        "ja": "ノンフィクション 漢南（ハンナム）",
+        "pt-BR": "NONFICTION Hannam",
+        "th": "นอนฟิกชัน ฮันนัม",
+        "zh-CN": "NONFICTION 汉南",
+        "zh-TW": "NONFICTION 漢南"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/109200/4bfa7514/lg.webp",
+      "display_region": "서울",
+      "display_district": "용산구"
+    },
+    "110635": {
+      "name_ko": "대림미술관",
+      "names": {
+        "en": "Daelim Art Gallery",
+        "ja": "大林（テリム）美術館",
+        "pt-BR": "Daelim Museum",
+        "th": "พิพิธภัณฑ์ศิลปะแดริม",
+        "zh-CN": "大林美术馆",
+        "zh-TW": "大林美術館"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/110635/420287c8/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "113333": {
+      "name_ko": "라인프렌즈 스퀘어 신사",
+      "names": {
+        "en": "LINE FRIENDS SQUARE Sinsa",
+        "ja": "LINE FRIENDS SQUARE 新沙",
+        "pt-BR": "LINE FRIENDS SQUARE Sinsa",
+        "th": "LINE FRIENDS SQUARE ชินซา",
+        "zh-CN": "LINE Friends Square 新沙",
+        "zh-TW": "Line Friends Square 新沙"
+      },
+      "primary_image_url": null,
+      "display_region": "서울",
+      "display_district": "강남구"
+    },
+    "113334": {
+      "name_ko": "라인프렌즈 스퀘어 인사동",
+      "names": {
+        "en": "LINE FRIENDS SQUARE Insadong",
+        "ja": "LINE FRIENDS SQUARE 仁寺洞",
+        "pt-BR": "LINE FRIENDS SQUARE Insadong",
+        "th": "LINE FRIENDS SQUARE อินซาดง",
+        "zh-CN": "LINE Friends Square 仁寺洞",
+        "zh-TW": "Line Friends Square 仁寺洞"
+      },
+      "primary_image_url": null,
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "113985": {
+      "name_ko": "롯데면세점 명동본점",
+      "names": {
+        "en": "Lotte Duty Free Myeongdong Main Store",
+        "ja": "ロッテ免税店 明洞（ミョンドン）本店",
+        "pt-BR": "Lotte Duty Free (Matriz Myeongdong)",
+        "th": "ร้านค้าปลอดภาษีล็อตเต้ สาขาหลักมยองดง",
+        "zh-CN": "乐天免税店明洞总店",
+        "zh-TW": "樂天免税店明洞本店"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/113985/343cb07e/lg.webp",
+      "display_region": "서울",
+      "display_district": "중구"
+    },
+    "114694": {
+      "name_ko": "리움미술관",
+      "names": {
+        "en": "Leeum Museum of Art",
+        "ja": "リウム美術館",
+        "pt-BR": "Museu de Arte Leeum",
+        "th": "พิพิธภัณฑ์ศิลปะลีอุม",
+        "zh-CN": "Leeum美术馆",
+        "zh-TW": "里美術館"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/114694/22990ffa/lg.webp",
+      "display_region": "서울",
+      "display_district": "용산구"
+    },
+    "116818": {
+      "name_ko": "문경새재 오픈세트장",
+      "names": {
+        "en": "Mungyeongsaejae Open Set",
+        "ja": "聞慶セジェ（ムンギョンセジェ）オープンセット場",
+        "pt-BR": "Estúdio de Filmagens ao Ar Livre de Mungyeongsaejae",
+        "th": "ฉากถ่ายทำภาพยนตร์กลางแจ้งมุนกยองแซแจ",
+        "zh-CN": "闻庆鸟岭开放摄影场",
+        "zh-TW": "聞慶鳥嶺露天片場"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/116818/a8c32664/lg.webp",
+      "display_region": "경북",
+      "display_district": "문경시"
+    },
+    "119656": {
+      "name_ko": "봉피양 방이점",
+      "names": {
+        "en": "Bongpiyang (Bangi Branch) (봉피양 방이점)",
+        "ja": "鳳皮本（ポンピヤン） 芳荑店",
+        "pt-BR": "Bongpiyang (Filial Bangi)",
+        "th": "พงพียัง สาขาบังอี",
+        "zh-CN": "凤皮养芳荑店",
+        "zh-TW": "奉皮壤 芳荑店"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/119656/361be1c2/lg.webp",
+      "display_region": "서울",
+      "display_district": "송파구"
+    },
+    "120161": {
+      "name_ko": "북촌한옥마을",
+      "names": {
+        "en": "Bukchon Hanok Village",
+        "ja": "北村韓屋村（プクチョン）",
+        "pt-BR": "Vila Hanok de Bukchon",
+        "th": "หมู่บ้านบุกชอนฮันอก",
+        "zh-CN": "北村韩屋村",
+        "zh-TW": "北村韓屋村"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/120161/3a0b5266/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "120499": {
+      "name_ko": "블루스퀘어",
+      "names": {
+        "en": "Blue Square",
+        "ja": "ブルースクエア（ブルースクエア）",
+        "pt-BR": "Blue Square",
+        "th": "บลูสแควร์",
+        "zh-CN": "Blue Square",
+        "zh-TW": "Blue Square"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/120499/22387938/lg.webp",
+      "display_region": "서울",
+      "display_district": "용산구"
+    },
+    "121964": {
+      "name_ko": "삼청동수제비",
+      "names": {
+        "en": "Samcheongdong Hand-pulled Dough Soup",
+        "ja": "三清洞すいとん（サムチョンドン・スジェビ）",
+        "pt-BR": "Samcheongdong Sujeobi",
+        "th": "ซัมชองดง ซูเจบี",
+        "zh-CN": "三清洞面片汤",
+        "zh-TW": "三清洞麵片湯"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/121964/5f8064ed/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "122695": {
+      "name_ko": "서울공예박물관",
+      "names": {
+        "en": "Seoul Museum of Craft Art",
+        "ja": "ソウル工芸博物館",
+        "pt-BR": "Museu de Artesanato de Seul",
+        "th": "พิพิธภัณฑ์งานหัตถกรรมโซล",
+        "zh-CN": "首尔工艺博物馆",
+        "zh-TW": "首爾工藝博物館"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/122695/1104db55/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "122759": {
+      "name_ko": "서울숲",
+      "names": {
+        "en": "Seoul Forest",
+        "ja": "ソウルの森",
+        "pt-BR": "Floresta de Seul",
+        "th": "สวนสาธารณะโซลฟอเรสต์",
+        "zh-CN": "首尔林",
+        "zh-TW": "首爾森林"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/122759/ebde1feb/lg.webp",
+      "display_region": "서울",
+      "display_district": "성동구"
+    },
+    "122769": {
+      "name_ko": "서울시립 북서울미술관",
+      "names": {
+        "en": "Buk-Seoul Museum of Art",
+        "ja": "ソウル市立 北ソウル美術館",
+        "pt-BR": "Museu de Arte de Seul - Buk-Seoul",
+        "th": "พิพิธภัณฑ์ศิลปะโซลฝั่งเหนือ",
+        "zh-CN": "首尔市立北首尔美术馆",
+        "zh-TW": "首爾市立北首爾美術館"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/122769/a7da555f/lg.webp",
+      "display_region": "서울",
+      "display_district": "노원구"
+    },
+    "123082": {
+      "name_ko": "석촌호수",
+      "names": {
+        "en": "Seokchonhosu Lake",
+        "ja": "石村（ソクチョン）湖",
+        "pt-BR": "Lago Seokchonhosu",
+        "th": "ทะเลสาบซอกชอน",
+        "zh-CN": "石村湖",
+        "zh-TW": "石村湖水"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/123082/965d4586/lg.webp",
+      "display_region": "서울",
+      "display_district": "송파구"
+    },
+    "123338": {
+      "name_ko": "설화수 도산 플래그십 스토어",
+      "names": {
+        "en": "Sulwhasoo Dosan Flagship Store",
+        "ja": "雪花秀 DOSAN フラッグシップストア",
+        "pt-BR": "Sulwhasoo Dosan Flagship Store",
+        "th": "ซอลวาซู โดซาน แฟล็กชิป สโตร์",
+        "zh-CN": "雪花秀岛山旗舰店",
+        "zh-TW": "雪花秀島山旗艦店"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/123338/b8c76be4/lg.webp",
+      "display_region": "서울",
+      "display_district": "강남구"
+    },
+    "123573": {
+      "name_ko": "성읍민속마을",
+      "names": {
+        "en": "Seongeup Folk Village",
+        "ja": "城邑（ソンウプ）民俗村",
+        "pt-BR": "Vila Folclórica de Seongeup",
+        "th": "หมู่บ้านพื้นเมืองซองอึบ",
+        "zh-CN": "城邑民俗村",
+        "zh-TW": "城邑民俗村"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/123573/c77450e6/lg.webp",
+      "display_region": "제주",
+      "display_district": "서귀포시"
+    },
+    "127917": {
+      "name_ko": "안동민속촌",
+      "names": {
+        "en": "Andong Folk Village",
+        "ja": "安東民俗村（アンドン・ミンソクチョン）",
+        "pt-BR": "Aldeia Folclórica de Andong",
+        "th": "หมู่บ้านพื้นเมืองอันดง",
+        "zh-CN": "安东民俗村",
+        "zh-TW": "安東民俗村"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/127917/684fb58a/lg.webp",
+      "display_region": "경북",
+      "display_district": "안동시"
+    },
+    "127975": {
+      "name_ko": "안목",
+      "names": {
+        "en": "Anmok",
+        "ja": "安木（アンモク）",
+        "pt-BR": "Anmok",
+        "th": "อันมก",
+        "zh-CN": "安木",
+        "zh-TW": "安木"
+      },
+      "primary_image_url": null,
+      "display_region": "부산",
+      "display_district": "수영구"
+    },
+    "131526": {
+      "name_ko": "온달관광지",
+      "names": {
+        "en": "Ondal Tourist Attraction",
+        "ja": "温達（オンダル）観光地",
+        "pt-BR": "Zona Turística de Ondal",
+        "th": "แหล่งท่องเที่ยวออนดัล",
+        "zh-CN": "温达旅游区",
+        "zh-TW": "溫達觀光地"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/131526/fdb8d286/lg.webp",
+      "display_region": "충북",
+      "display_district": "단양군"
+    },
+    "132938": {
+      "name_ko": "올림픽공원 올림픽홀",
+      "names": {
+        "en": "Olympic Park Olympic Hall",
+        "ja": "オリンピック公園 オリンピックホール",
+        "pt-BR": "Parque Olímpico - Olympic Hall",
+        "th": "สวนโอลิมปิก - โอลิมปิกฮอลล์",
+        "zh-CN": "奥林匹克公园奥林匹克厅",
+        "zh-TW": "奧林匹克公園 奧林匹克廳"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/132938/6d746236/lg.webp",
+      "display_region": "서울",
+      "display_district": "송파구"
+    },
+    "133740": {
+      "name_ko": "우래옥",
+      "names": {
+        "en": "Wooraeok",
+        "ja": "又來屋（ウレオク）",
+        "pt-BR": "Wooraeoak",
+        "th": "อูแรอก",
+        "zh-CN": "又来屋",
+        "zh-TW": "又來屋"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/133740/948d6b82/lg.webp",
+      "display_region": "서울",
+      "display_district": "중구"
+    },
+    "135873": {
+      "name_ko": "이솝 가로수길",
+      "names": {
+        "en": "Aesop Garosu-gil",
+        "ja": "イソップ カロスキル",
+        "pt-BR": "Aesop Garosu-gil",
+        "th": "อีสป กาโรซูกิล",
+        "zh-CN": "Aesop林荫道",
+        "zh-TW": "伊索林蔭道"
+      },
+      "primary_image_url": null,
+      "display_region": "서울",
+      "display_district": "강남구"
+    },
+    "135878": {
+      "name_ko": "이솝 성수",
+      "names": {
+        "en": "Aesop Seongsu",
+        "ja": "イソップ 聖水（ソンス）",
+        "pt-BR": "Aesop Seongsu",
+        "th": "อีสป ซองซู",
+        "zh-CN": "Aesop圣水",
+        "zh-TW": "伊索聖水"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/135878/856a7153/lg.webp",
+      "display_region": "서울",
+      "display_district": "성동구"
+    },
+    "135882": {
+      "name_ko": "이솝 한남",
+      "names": {
+        "en": "Aesop Hannam",
+        "ja": "イソップ 漢南（ハンナム）",
+        "pt-BR": "Aesop Hannam",
+        "th": "อีสป ฮันนัม",
+        "zh-CN": "Aesop汉南",
+        "zh-TW": "伊索漢南"
+      },
+      "primary_image_url": null,
+      "display_region": "서울",
+      "display_district": "용산구"
+    },
+    "136177": {
+      "name_ko": "익선동 한옥거리",
+      "names": {
+        "en": "Ikseon-dong Hanok (Korean Traditional House) Street (익선동 한옥거리)",
+        "ja": "益善洞（イクソンドン）韓屋（ハノク）通り",
+        "pt-BR": "Rua de Hanok de Ikseon-dong",
+        "th": "ถนนฮันอก อิกซ็อนดง",
+        "zh-CN": "益善洞韩屋街",
+        "zh-TW": "益善洞韓屋街"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/136177/a6cb9593/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "136510": {
+      "name_ko": "일산호수공원",
+      "names": {
+        "en": "Ilsan Lake Park",
+        "ja": "一山（イルサン）湖水公園",
+        "pt-BR": "Parque do Lago de Ilsan",
+        "th": "สวนสาธารณะทะเลสาบอิลซาน",
+        "zh-CN": "一山湖水公园",
+        "zh-TW": "一山湖公園"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/136510/1b61eab5/lg.webp",
+      "display_region": "경기",
+      "display_district": "고양시"
+    },
+    "137293": {
+      "name_ko": "장충체육관",
+      "names": {
+        "en": "Jangchung Arena",
+        "ja": "奨忠体育館（チャンチュンチェユックァン）",
+        "pt-BR": "Ginásio de Jangchung",
+        "th": "ยิมเนเซียมจางชุง",
+        "zh-CN": "奖忠体育馆",
+        "zh-TW": "獎忠體育館"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/137293/22761ddc/lg.webp",
+      "display_region": "서울",
+      "display_district": "중구"
+    },
+    "138211": {
+      "name_ko": "제물포구락부",
+      "names": {
+        "en": "Jemulpo Club (제물포구락부)",
+        "ja": "済物浦倶楽部（チェムルポ・クラブ）",
+        "pt-BR": "Clube Jemulpo",
+        "th": "สโมสรเชมุลโพ",
+        "zh-CN": "济物浦俱乐部",
+        "zh-TW": "濟物浦俱樂部"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138211/aeda5686/lg.webp",
+      "display_region": "인천",
+      "display_district": "중구"
+    },
+    "138403": {
+      "name_ko": "제주돌문화공원",
+      "names": {
+        "en": "Jeju Stone Park",
+        "ja": "済州石文化公園（チェジュ・トルムナコンウォン）",
+        "pt-BR": "Parque da Cultura de Pedra de Jeju",
+        "th": "อุทยานวัฒนธรรมหินเชจู",
+        "zh-CN": "济州石头文化公园",
+        "zh-TW": "濟州石文化公園"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138403/fc8afb6a/lg.webp",
+      "display_region": "제주",
+      "display_district": "제주시"
+    },
+    "138425": {
+      "name_ko": "제주목 관아",
+      "names": {
+        "en": "Jeju-mok Governance Office",
+        "ja": "済州牧官衙（チェジュモク・クァナ）",
+        "pt-BR": "Escritório Governamental de Jeju-mok",
+        "th": "ศาลาว่าการมณฑลเชจูโบราณ",
+        "zh-CN": "济州牧官衙",
+        "zh-TW": "濟州牧官衙"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138425/20df1fba/lg.webp",
+      "display_region": "제주",
+      "display_district": "제주시"
+    },
+    "138521": {
+      "name_ko": "제주해녀박물관",
+      "names": {
+        "en": "Jeju Haenyeo Museum",
+        "ja": "済州海女博物館",
+        "pt-BR": "Museu das Haenyeo de Jeju",
+        "th": "พิพิธภัณฑ์แฮนยอเชจู",
+        "zh-CN": "济州海女博物馆",
+        "zh-TW": "濟州海女博物館"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138521/2f0c2453/lg.webp",
+      "display_region": "제주",
+      "display_district": "제주시"
+    },
+    "138658": {
+      "name_ko": "조계사(서울)",
+      "names": {
+        "en": "Jogyesa Temple (Seoul)",
+        "ja": "曹渓寺（ソウル）",
+        "pt-BR": "Templo Jogyesa (Seul)",
+        "th": "วัดโจเกซา (โซล)",
+        "zh-CN": "曹溪寺（首尔）",
+        "zh-TW": "曹溪寺（首爾）"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138658/7c606c9c/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "138908": {
+      "name_ko": "주문진 방파제",
+      "names": {
+        "en": "Jumunjin Breakwater",
+        "ja": "注文津（チュムンジン）防波堤",
+        "pt-BR": "Quebra-mar de Jumunjin",
+        "th": "เขื่อนกันคลื่นจูมุนจิน",
+        "zh-CN": "注文津防波堤",
+        "zh-TW": "注文津防波堤"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138908/7a00e6fe/lg.webp",
+      "display_region": "강원",
+      "display_district": "강릉시"
+    },
+    "142466": {
+      "name_ko": "커먼그라운드",
+      "names": {
+        "en": "Common Ground (커먼그라운드)",
+        "ja": "コモングラウンド",
+        "pt-BR": "Common Ground",
+        "th": "คอมมอน กราวด์",
+        "zh-CN": "Common Ground 共同空间",
+        "zh-TW": "共同廣場"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/142466/627fd407/lg.webp",
+      "display_region": "서울",
+      "display_district": "광진구"
+    },
+    "144008": {
+      "name_ko": "통인시장",
+      "names": {
+        "en": "Tongin Market (통인시장)",
+        "ja": "通仁市場",
+        "pt-BR": "Mercado Tongin",
+        "th": "ตลาดทงอิน",
+        "zh-CN": "通仁市场",
+        "zh-TW": "通仁市場"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/144008/670e3776/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "145624": {
+      "name_ko": "필동면옥",
+      "names": {
+        "en": "Pildong Myeonok",
+        "ja": "ピルドンミョンオク",
+        "pt-BR": "Pildong Myeonok",
+        "th": "พิลดงมยอนอ๊ก",
+        "zh-CN": "菲东面屋",
+        "zh-TW": "筆洞麵屋"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/145624/3a81223e/lg.webp",
+      "display_region": "서울",
+      "display_district": "중구"
+    },
+    "145981": {
+      "name_ko": "하이브",
+      "names": {
+        "en": "HYBE",
+        "ja": "HYBE",
+        "pt-BR": "HYBE",
+        "th": "HYBE",
+        "zh-CN": "海布",
+        "zh-TW": "HYBE"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/145981/e55035e4/lg.webp",
+      "display_region": "대구",
+      "display_district": "동구"
+    },
+    "146227": {
+      "name_ko": "한국민속촌",
+      "names": {
+        "en": "Korean Folk Village",
+        "ja": "韓国民俗村",
+        "pt-BR": "Aldeia Folclórica Coreana",
+        "th": "หมู่บ้านวัฒนธรรมพื้นบ้านเกาหลี",
+        "zh-CN": "韩国民俗村",
+        "zh-TW": "韓國民俗村"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/146227/4b2ac714/lg.webp",
+      "display_region": "경기",
+      "display_district": "용인시"
+    },
+    "147851": {
+      "name_ko": "호암미술관",
+      "names": {
+        "en": "Hoam Art Gallery",
+        "ja": "湖岩美術館（ホアムミスルカン）",
+        "pt-BR": "Museu de Arte Hoam",
+        "th": "พิพิธภัณฑ์ศิลปะโฮอัม",
+        "zh-CN": "湖岩美术馆",
+        "zh-TW": "湖岩美術館"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/147851/af809b33/lg.webp",
+      "display_region": "경기",
+      "display_district": "용인시"
+    },
+    "148707": {
+      "name_ko": "화홍문(華虹門)",
+      "names": {
+        "en": "Hwahongmun Gate",
+        "ja": "華虹門（ファホンムン）",
+        "pt-BR": "Portão Hwahongmun",
+        "th": "ประตูฮวาฮงมุน",
+        "zh-CN": "华虹门",
+        "zh-TW": "華虹門"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/148707/277c5b9d/lg.webp",
+      "display_region": "경기",
+      "display_district": "수원시"
+    },
+    "148847": {
+      "name_ko": "황생가칼국수",
+      "names": {
+        "en": "Hwangsaengga Noodle Soup (Hwangsaengga Kalguksu)",
+        "ja": "黄生家カルグクス",
+        "pt-BR": "Hwangsaengga Kalguksu",
+        "th": "ฮวังแซงกา คัลกุกซู",
+        "zh-CN": "黄生家刀切面",
+        "zh-TW": "黃生家刀切麵"
+      },
+      "primary_image_url": null,
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "150585": {
+      "name_ko": "PKM갤러리",
+      "names": {
+        "en": "PKM Gallery",
+        "ja": "PKMギャラリー",
+        "pt-BR": "Galeria PKM",
+        "th": "PKM Gallery",
+        "zh-CN": "PKM画廊",
+        "zh-TW": "PKM畫廊"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/150585/9824887e/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "151305": {
+      "name_ko": "마포옥",
+      "names": {
+        "en": "Mapook",
+        "ja": "麻浦屋（マポオク）",
+        "pt-BR": "Mapo-ok",
+        "th": "มาโพอก",
+        "zh-CN": "麻浦玉",
+        "zh-TW": "麻浦屋"
+      },
+      "primary_image_url": null,
+      "display_region": "서울",
+      "display_district": "마포구"
+    },
+    "151489": {
+      "name_ko": "정면",
+      "names": {
+        "en": "Jeongmyeon",
+        "ja": "正面（ジョンミョン）",
+        "pt-BR": "Jeongmyeon",
+        "th": "จองมยอน",
+        "zh-CN": "正面",
+        "zh-TW": "正面"
+      },
+      "primary_image_url": null,
+      "display_region": "서울",
+      "display_district": "광진구"
+    },
+    "151805": {
+      "name_ko": "Muse Clinic Myeongdong",
+      "names": {
+        "en": "Muse Clinic Myeongdong",
+        "ja": "ミューズクリニック 明洞（ミョンドン）",
+        "pt-BR": "Clínica Muse Myeongdong",
+        "th": "มิวส์ คลินิก สาขามยองดง",
+        "zh-CN": "Muse Clinic Myeongdong",
+        "zh-TW": "Muse Clinic Myeongdong"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151805/05c8d9c1/lg.webp",
+      "display_region": "서울",
+      "display_district": "중구"
+    },
+    "151806": {
+      "name_ko": "Abijou Clinic Gangnam",
+      "names": {
+        "en": "Abijou Clinic Gangnam",
+        "ja": "アビジュークリニック 江南（カンナム）",
+        "pt-BR": "Clínica Abijou Gangnam",
+        "th": "อาบีจู คลินิก สาขากังนัม",
+        "zh-CN": "Abijou Clinic Gangnam",
+        "zh-TW": "Abijou Clinic Gangnam"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151806/eded3565/lg.webp",
+      "display_region": "서울",
+      "display_district": "서초구"
+    },
+    "151810": {
+      "name_ko": "Lienjang Clinic Myeongdong",
+      "names": {
+        "en": "Lienjang Clinic Myeongdong",
+        "ja": "リエンジャンクリニック 明洞（ミョンドン）",
+        "pt-BR": "Clínica Lienjang Myeongdong",
+        "th": "รีเอนจัง คลินิก สาขามยองดง",
+        "zh-CN": "Lienjang Clinic Myeongdong",
+        "zh-TW": "Lienjang Clinic Myeongdong"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151810/d59dd27e/lg.webp",
+      "display_region": "서울",
+      "display_district": "중구"
+    },
+    "151875": {
+      "name_ko": "JENNY HOUSE Cheongdam Hill",
+      "names": {
+        "en": "JENNY HOUSE Cheongdam Hill",
+        "ja": "JENNY HOUSE 清潭（チョンダム）ヒル",
+        "pt-BR": "JENNY HOUSE Cheongdam Hill",
+        "th": "เจนนี่เฮ้าส์ สาขาชองดัมฮิลล์",
+        "zh-CN": "JENNY HOUSE Cheongdam Hill",
+        "zh-TW": "JENNY HOUSE Cheongdam Hill"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151875/143782d9/lg.webp",
+      "display_region": "서울",
+      "display_district": "강남구"
+    },
+    "151877": {
+      "name_ko": "CHAHONG Room Gangnam",
+      "names": {
+        "en": "CHAHONG Room Gangnam",
+        "ja": "CHAHONG Room 江南（カンナム）店",
+        "pt-BR": "CHAHONG Room Gangnam",
+        "th": "ชาฮงรูม สาขากังนัม",
+        "zh-CN": "CHAHONG Room Gangnam",
+        "zh-TW": "CHAHONG Room Gangnam"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151877/db07fe87/lg.webp",
+      "display_region": "서울",
+      "display_district": "강남구"
+    },
+    "151881": {
+      "name_ko": "JUNO Hair Myeongdong",
+      "names": {
+        "en": "JUNO Hair Myeongdong",
+        "ja": "JUNO HAIR 明洞（ミョンドン）店",
+        "pt-BR": "JUNO Hair Myeongdong",
+        "th": "จูโน่แฮร์ สาขามยองดง",
+        "zh-CN": "JUNO Hair Myeongdong",
+        "zh-TW": "JUNO Hair Myeongdong"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151881/336593a9/lg.webp",
+      "display_region": "서울",
+      "display_district": "중구"
+    },
+    "151908": {
+      "name_ko": "Cocory Color Seoul",
+      "names": {
+        "en": "Cocory Color Seoul",
+        "ja": "ココリカラーソウル",
+        "pt-BR": "Cocory Color Seoul",
+        "th": "โคคอรี่ คัลเลอร์ โซล",
+        "zh-CN": "Cocory Color Seoul",
+        "zh-TW": "Cocory Color Seoul"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151908/242d676b/lg.webp",
+      "display_region": "서울",
+      "display_district": "중구"
+    },
+    "151911": {
+      "name_ko": "Jung Saem Mool Inspiration West",
+      "names": {
+        "en": "Jung Saem Mool Inspiration West",
+        "ja": "チョン・サムムル インスピレーション WEST店",
+        "pt-BR": "Jung Saem Mool Inspiration West",
+        "th": "จองเซมมุล อินสไพเรชัน สาขาเวสต์",
+        "zh-CN": "Jung Saem Mool Inspiration West",
+        "zh-TW": "Jung Saem Mool Inspiration West"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151911/0827b9e6/lg.webp",
+      "display_region": "서울",
+      "display_district": "강남구"
+    },
+    "151912": {
+      "name_ko": "Makeup House Myeongdong",
+      "names": {
+        "en": "Makeup House Myeongdong",
+        "ja": "メイクアップハウス 明洞（ミョンドン）",
+        "pt-BR": "Makeup House Myeongdong",
+        "th": "เมคอัพเฮ้าส์ สาขามยองดง",
+        "zh-CN": "Makeup House Myeongdong",
+        "zh-TW": "Makeup House Myeongdong"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151912/5000a6d7/lg.webp",
+      "display_region": "서울",
+      "display_district": "중구"
+    },
+    "151933": {
+      "name_ko": "Tamburins Hannam Store",
+      "names": {
+        "en": "Tamburins Hannam Store",
+        "ja": "TAMBURINS 漢南（ハンナム）店",
+        "pt-BR": "Loja Tamburins Hannam",
+        "th": "แทมบูรีนส์ สาขาฮันนัม",
+        "zh-CN": "Tamburins Hannam Store",
+        "zh-TW": "Tamburins Hannam Store"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151933/3371549f/lg.webp",
+      "display_region": "서울",
+      "display_district": "용산구"
+    },
+    "151935": {
+      "name_ko": "AMUSE Seongsu Flagship Store",
+      "names": {
+        "en": "AMUSE Seongsu Flagship Store",
+        "ja": "AMUSE 聖水（ソンス）フラッグシップストア",
+        "pt-BR": "Flagship Store AMUSE Seongsu",
+        "th": "แฟล็กชิปสโตร์ AMUSE สาขาซองซู",
+        "zh-CN": "AMUSE Seongsu Flagship Store",
+        "zh-TW": "AMUSE Seongsu Flagship Store"
+      },
+      "primary_image_url": null,
+      "display_region": "서울",
+      "display_district": "성동구"
+    },
+    "151937": {
+      "name_ko": "Amore Seongsu",
+      "names": {
+        "en": "Amore Seongsu",
+        "ja": "アモーレ聖水（ソンス）",
+        "pt-BR": "Amore Seongsu",
+        "th": "อาโมเร สาขาซองซู",
+        "zh-CN": "Amore Seongsu",
+        "zh-TW": "愛茉莉聖水"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151937/8cfc6d2d/lg.webp",
+      "display_region": "서울",
+      "display_district": "성동구"
+    },
+    "151976": {
+      "name_ko": "창덕궁",
+      "names": {
+        "en": "Changdeokgung Palace",
+        "ja": "昌徳宮（チャンドックン）",
+        "pt-BR": "Palácio Changdeokgung",
+        "th": "พระราชวังชางด็อกกุง",
+        "zh-CN": "昌德宫",
+        "zh-TW": "昌德宮"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151976/e2399074/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "151997": {
+      "name_ko": "종묘",
+      "names": {
+        "en": "Royal Ancestral Shrine",
+        "ja": "宗廟",
+        "pt-BR": "Santuário Jongmyo",
+        "th": "ศาลเจ้าจงมโย",
+        "zh-CN": "宗庙",
+        "zh-TW": "宗廟"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151997/cbaaba8e/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "152013": {
+      "name_ko": "경복궁 - 체험 예약 포인트",
+      "names": {
+        "en": "Gyeongbokgung Palace - Activity Reservation Point",
+        "ja": "景福宮（キョンボックン） - 体験予約ポイント",
+        "pt-BR": "Palácio Gyeongbokgung - Ponto de Reserva de Experiências",
+        "th": "พระราชวังคยองบกกุง - จุดจองกิจกรรมประสบการณ์",
+        "zh-CN": "景福宫 - 体验预约点",
+        "zh-TW": "景福宮 - 體驗預約點"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152013/30bd7dba/lg.webp",
+      "display_region": "서울",
+      "display_district": "광진구"
+    },
+    "152014": {
+      "name_ko": "청계천 - 체험 예약 포인트",
+      "names": {
+        "en": "Cheonggyecheon Stream - Activity Reservation Point",
+        "ja": "清渓川 - 体験予約ポイント",
+        "pt-BR": "Cheonggyecheon - Ponto de Reserva de Experiências",
+        "th": "คลองชองกเยชอน - จุดจองกิจกรรมประสบการณ์",
+        "zh-CN": "清溪川 - 体验预约点",
+        "zh-TW": "清溪川 - 體驗預約點"
+      },
+      "primary_image_url": null,
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "152060": {
+      "name_ko": "수원화성",
+      "names": {
+        "en": "Suwon Hwaseong Fortress",
+        "ja": "水原華城",
+        "pt-BR": "Fortaleza Hwaseong de Suwon",
+        "th": "ป้อมฮวาซ็องแห่งซูวอน",
+        "zh-CN": "水原华城",
+        "zh-TW": "水原華城"
+      },
+      "primary_image_url": null,
+      "display_region": "경기",
+      "display_district": "수원시"
+    },
+    "152080": {
+      "name_ko": "이천 도자예술마을 예스파크",
+      "names": {
+        "en": "Icheon Ceramic Art Village Ye's Park",
+        "ja": "利川陶芸村 YES PARK",
+        "pt-BR": "Vila de Arte Cerâmica Icheon Yes Park",
+        "th": "หมู่บ้านศิลปะเครื่องปั้นดินเผาอีช็อน เยสพาร์ค",
+        "zh-CN": "利川陶瓷艺术村Yes Park",
+        "zh-TW": "利川陶瓷藝術村YES Park"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152080/8ef505ce/lg.webp",
+      "display_region": "경기",
+      "display_district": "이천시"
+    },
+    "152101": {
+      "name_ko": "에버랜드 - 전통공예 체험",
+      "names": {
+        "en": "Everland - Traditional Craft Experience",
+        "ja": "エバーランド - 伝統工芸体験",
+        "pt-BR": "Everland - Experiência de Artesanato Tradicional",
+        "th": "เอเวอร์แลนด์ - กิจกรรมประสบการณ์หัตถกรรมพื้นบ้าน",
+        "zh-CN": "爱宝乐园 - 传统工艺体验",
+        "zh-TW": "愛寶樂園傳統工藝體驗"
+      },
+      "primary_image_url": null,
+      "display_region": "경기",
+      "display_district": "수원시"
+    },
+    "152319": {
+      "name_ko": "안동 하회마을",
+      "names": {
+        "en": "Andong Hahoe Folk Village",
+        "ja": "安東 河回村（アンドン・ハフェマウル）",
+        "pt-BR": "Vila Hahoe de Andong",
+        "th": "หมู่บ้านฮาฮเว เมืองอันดง",
+        "zh-CN": "安东 河回村",
+        "zh-TW": "安東河回村"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152319/bc1a88b8/lg.webp",
+      "display_region": "경북",
+      "display_district": "안동시"
+    },
+    "152326": {
+      "name_ko": "첨성대",
+      "names": {
+        "en": "Cheomseongdae Observatory",
+        "ja": "瞻星台（チョムソンデ）",
+        "pt-BR": "Cheomseongdae",
+        "th": "หอดูดาวชอมซองแด",
+        "zh-CN": "瞻星台",
+        "zh-TW": "瞻星臺"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152326/b1e7a4dc/lg.webp",
+      "display_region": "경북",
+      "display_district": "경주시"
+    },
+    "152343": {
+      "name_ko": "경주 불국사",
+      "names": {
+        "en": "Bulguksa Temple, Gyeongju",
+        "ja": "慶州 仏国寺（プルグクサ）",
+        "pt-BR": "Templo Bulguksa de Gyeongju",
+        "th": "วัดพุลกุกซา เมืองคยองจู",
+        "zh-CN": "庆州 佛国寺",
+        "zh-TW": "慶州佛國寺"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152343/7c00ff5a/lg.webp",
+      "display_region": "경북",
+      "display_district": "경주시"
+    },
+    "152344": {
+      "name_ko": "석굴암",
+      "names": {
+        "en": "Seokguram Grotto",
+        "ja": "石窟庵（ソックラム）",
+        "pt-BR": "Seokguram",
+        "th": "ถ้ำซ็อกกูรัม",
+        "zh-CN": "石窟庵",
+        "zh-TW": "石窟庵"
+      },
+      "primary_image_url": null,
+      "display_region": "경북",
+      "display_district": "경주시"
+    },
+    "152347": {
+      "name_ko": "병산서원",
+      "names": {
+        "en": "Byeongsanseowon private Confucian academy",
+        "ja": "屏山書院（ピョンサンソウォン）",
+        "pt-BR": "Academia Confuciana Byeongsanseowon",
+        "th": "สำนักศึกษาพยองซานซอวอน",
+        "zh-CN": "屏山书院",
+        "zh-TW": "屛山書院"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152347/aecc19ab/lg.webp",
+      "display_region": "경북",
+      "display_district": "안동시"
+    },
+    "152348": {
+      "name_ko": "도산서원",
+      "names": {
+        "en": "Dosanseowon private Confucian academy",
+        "ja": "陶山書院（トサンソウォン）",
+        "pt-BR": "Academia Confuciana Dosanseowon",
+        "th": "สำนักศึกษาโดซานซอวอน",
+        "zh-CN": "陶山书院",
+        "zh-TW": "陶山書院"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152348/b03ce23b/lg.webp",
+      "display_region": "경북",
+      "display_district": "안동시"
+    },
+    "152350": {
+      "name_ko": "영주 부석사",
+      "names": {
+        "en": "Buseoksa Temple, Yeongju",
+        "ja": "栄州 浮石寺（ヨンジュ・プソクサ）",
+        "pt-BR": "Templo Buseoksa de Yeongju",
+        "th": "วัดพูซ็อกซา เมืองยองจู",
+        "zh-CN": "荣州 浮石寺",
+        "zh-TW": "榮州浮石寺"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152350/e2d4e742/lg.webp",
+      "display_region": "경북",
+      "display_district": "영주시"
+    },
+    "152351": {
+      "name_ko": "소수서원",
+      "names": {
+        "en": "Sosuseowon private Confucian academy",
+        "ja": "紹修書院（ソスソウォン）",
+        "pt-BR": "Academia Confuciana Sosuseowon",
+        "th": "สำนักศึกษาโซซูซอวอน",
+        "zh-CN": "绍修书院",
+        "zh-TW": "紹修書院"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152351/2d6169e6/lg.webp",
+      "display_region": "경북",
+      "display_district": "영주시"
+    },
+    "152477": {
+      "name_ko": "관덕정",
+      "names": {
+        "en": "Gwandeokjeong Pavilion",
+        "ja": "観徳亭（クァンドクチョン）",
+        "pt-BR": "Gwandeokjeong",
+        "th": "ศาลาควันด็อกจ็อง",
+        "zh-CN": "观德亭",
+        "zh-TW": "觀德亭"
+      },
+      "primary_image_url": null,
+      "display_region": "제주",
+      "display_district": "제주시"
+    },
+    "152496": {
+      "name_ko": "한라산국립공원",
+      "names": {
+        "en": "Hallasan National Park",
+        "ja": "漢拏山（ハルラサン）国立公園",
+        "pt-BR": "Parque Nacional Hallasan",
+        "th": "อุทยานแห่งชาติฮัลลาซาน",
+        "zh-CN": "汉拿山国家公园",
+        "zh-TW": "漢拏山國立公園"
+      },
+      "primary_image_url": null,
+      "display_region": "제주",
+      "display_district": "제주시"
+    },
+    "152497": {
+      "name_ko": "만장굴",
+      "names": {
+        "en": "Manjanggul Cave",
+        "ja": "万丈窟（マンジャングル）",
+        "pt-BR": "Caverna Manjanggul",
+        "th": "ถ้ำมันจังกรุล",
+        "zh-CN": "万丈窟",
+        "zh-TW": "萬丈窟"
+      },
+      "primary_image_url": null,
+      "display_region": "제주",
+      "display_district": "제주시"
+    },
+    "152520": {
+      "name_ko": "성산일출봉",
+      "names": {
+        "en": "Seongsan Ilchulbong",
+        "ja": "城山日出峰（ソンサンイルチュルボン）",
+        "pt-BR": "Seongsan Ilchulbong",
+        "th": "ยอดเขาซ็องซาน อิลชุลบง",
+        "zh-CN": "城山日出峰",
+        "zh-TW": "城山日出峰"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152520/2fc764c1/lg.webp",
+      "display_region": "제주",
+      "display_district": "서귀포시"
+    },
+    "152644": {
+      "name_ko": "한벽터널",
+      "names": {
+        "en": "Hanbyeok Tunnel",
+        "ja": "寒碧（ハンビョク）トンネル",
+        "pt-BR": "Túnel Hanbyeok",
+        "th": "อุโมงค์ฮันบย็อก",
+        "zh-CN": "寒碧隧道",
+        "zh-TW": "寒碧隧道"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152644/c49af1fd/lg.webp",
+      "display_region": "전북",
+      "display_district": "전주시"
+    },
+    "152682": {
+      "name_ko": "운현궁",
+      "names": {
+        "en": "Unhyeongung Palace",
+        "ja": "雲峴宮",
+        "pt-BR": "Residência Real Unhyeongung",
+        "th": "พระตำหนักอุนฮย็อนกุง",
+        "zh-CN": "云岘宫",
+        "zh-TW": "雲峴宮"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152682/a66d6dbb/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "152693": {
+      "name_ko": "인스파이어 아레나",
+      "names": {
+        "en": "INSPIRE Arena",
+        "ja": "インスパイア・アリーナ（インスパイア アリナ）",
+        "pt-BR": "INSPIRE Arena",
+        "th": "อินสไปร์ อารีนา",
+        "zh-CN": "Inspire Arena",
+        "zh-TW": "Inspire Arena"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152693/abc9bf59/lg.webp",
+      "display_region": "인천",
+      "display_district": "중구"
+    },
+    "152695": {
+      "name_ko": "WORLD K POP CENTER",
+      "names": {
+        "en": "World K-Pop Center",
+        "ja": "WORLD K POP CENTER（ワールドK-POPセンター）",
+        "pt-BR": "World K-Pop Center",
+        "th": "WORLD K POP CENTER",
+        "zh-CN": "WORLD K POP CENTER",
+        "zh-TW": "WORLD K POP CENTER"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152695/cc0ea670/lg.webp",
+      "display_region": "서울",
+      "display_district": "용산구"
+    },
+    "152714": {
+      "name_ko": "강남 댄스 스튜디오",
+      "names": {
+        "en": "Gangnam Dance Studio",
+        "ja": "江南（カンナム）ダンススタジオ",
+        "pt-BR": "Estúdio de Dança de Gangnam",
+        "th": "คังนัม แดนซ์ สตูดิโอ",
+        "zh-CN": "江南舞蹈工作室",
+        "zh-TW": "江南舞蹈工作室"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152714/6f32d06a/lg.webp",
+      "display_region": "서울",
+      "display_district": "강남구"
+    },
+    "152716": {
+      "name_ko": "위드뮤 AK플라자 홍대",
+      "names": {
+        "en": "WITHMUU AK Plaza Hongdae",
+        "ja": "WITHMUU AKプラザ 弘大（ホンデ）",
+        "pt-BR": "WITHMUU AK Plaza Hongdae",
+        "th": "WITHMUU AK พลาซ่า ฮงแด",
+        "zh-CN": "Withmuu AK Plaza 弘大",
+        "zh-TW": "Withmuu AK Plaza 弘大"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152716/e8401a55/lg.webp",
+      "display_region": "서울",
+      "display_district": "마포구"
+    },
+    "152734": {
+      "name_ko": "케이타운포유 코엑스",
+      "names": {
+        "en": "Ktown4u COEX",
+        "ja": "Ktown4u COEX",
+        "pt-BR": "Ktown4u COEX",
+        "th": "Ktown4u โคเอ็กซ์",
+        "zh-CN": "Ktown4u COEX",
+        "zh-TW": "K-Town For You COEX"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152734/c18ca1c7/lg.webp",
+      "display_region": "서울",
+      "display_district": "강남구"
+    },
+    "152735": {
+      "name_ko": "케이타운포유 인사",
+      "names": {
+        "en": "Ktown4u Insa",
+        "ja": "Ktown4u 仁寺（インサ）",
+        "pt-BR": "Ktown4u Insa",
+        "th": "Ktown4u อินซา",
+        "zh-CN": "Ktown4u 仁寺",
+        "zh-TW": "K-Town For You 仁寺"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152735/28a6fe22/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "152761": {
+      "name_ko": "AK플라자 홍대",
+      "names": {
+        "en": "AK Plaza Hongdae",
+        "ja": "AKプラザ 弘大（ホンデ）",
+        "pt-BR": "AK Plaza Hongdae",
+        "th": "AK พลาซ่า ฮงแด",
+        "zh-CN": "AK Plaza弘大",
+        "zh-TW": "AK Plaza 弘大"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152761/3127eaf7/lg.webp",
+      "display_region": "서울",
+      "display_district": "마포구"
+    },
+    "152779": {
+      "name_ko": "올림픽공원 KSPO DOME",
+      "names": {
+        "en": "Olympic Park KSPO DOME",
+        "ja": "オリンピック公園 KSPO DOME",
+        "pt-BR": "KSPO DOME do Parque Olímpico",
+        "th": "KSPO DOME สวนโอลิมปิก",
+        "zh-CN": "奥林匹克公园KSPO巨蛋",
+        "zh-TW": "奧林匹克公園 KSPO Dome"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152779/bb2fb316/lg.webp",
+      "display_region": "서울",
+      "display_district": "송파구"
+    },
+    "152810": {
+      "name_ko": "비내섬",
+      "names": {
+        "en": "Binaeseom Island",
+        "ja": "ビネ島（ビネソム）",
+        "pt-BR": "Ilha Binaeseom",
+        "th": "เกาะบีแนซอม",
+        "zh-CN": "比内岛",
+        "zh-TW": "雨內島"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152810/76c041be/lg.webp",
+      "display_region": "충북",
+      "display_district": "충주시"
+    },
+    "152833": {
+      "name_ko": "학림다방",
+      "names": {
+        "en": "Hakrim Dabang",
+        "ja": "学林茶房（ハンニムタバン）",
+        "pt-BR": "Hakrim Dabang",
+        "th": "ฮักริมดาบัง",
+        "zh-CN": "学林茶坊",
+        "zh-TW": "學林茶房"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152833/4d39f7ab/lg.webp",
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "152847": {
+      "name_ko": "용인대장금테마파크",
+      "names": {
+        "en": "Yongin Dae Jang Geum Theme Park",
+        "ja": "龍仁大長今テーマパーク（ヨンインデジャングムテーマパーク）",
+        "pt-BR": "Parque Temático Yongin Dae Jang Geum",
+        "th": "อุทยานประวัติศาสตร์แดจังกึม ยงอิน",
+        "zh-CN": "龙仁大长今主题公园",
+        "zh-TW": "龍仁大長今主題公園"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152847/38816ef5/lg.webp",
+      "display_region": "경기",
+      "display_district": "용인시"
+    },
+    "152848": {
+      "name_ko": "청하공진시장",
+      "names": {
+        "en": "Cheongha Gongjin Market",
+        "ja": "清河拱津市場（チョンハコンジンシジャン）",
+        "pt-BR": "Mercado Cheongha Gongjin",
+        "th": "ตลาดชองฮากงจิน",
+        "zh-CN": "青荷贡津市场",
+        "zh-TW": "青河公津市場"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152848/6437df65/lg.webp",
+      "display_region": "경북",
+      "display_district": "포항시"
+    },
+    "152885": {
+      "name_ko": "올리브영 명동타운",
+      "names": {
+        "en": "Olive Young Myeongdong Town",
+        "ja": "オリーブヤング 明洞（ミョンドン）タウン店",
+        "pt-BR": "Olive Young - Myeongdong Town",
+        "th": "โอลีฟยัง สาขามยองดงทาวน์",
+        "zh-CN": "欧利芙洋明洞小镇",
+        "zh-TW": "歐利芙洋明洞城"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152885/5e3faf2d/lg.webp",
+      "display_region": "서울",
+      "display_district": "중구"
+    },
+    "152913": {
+      "name_ko": "논픽션 삼청",
+      "names": {
+        "en": "Nonfiction Samcheong",
+        "ja": "ノンフィクション 三清",
+        "pt-BR": "Nonfiction Samcheong",
+        "th": "นอนฟิกชัน ซัมชอง",
+        "zh-CN": "Nonfiction 三清",
+        "zh-TW": "Nonfiction 三清"
+      },
+      "primary_image_url": null,
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "152914": {
+      "name_ko": "그랑핸드 서촌",
+      "names": {
+        "en": "Granhand Seochon",
+        "ja": "グランハンド 西村",
+        "pt-BR": "GRANHAND Vila Seochon",
+        "th": "กรองด์แฮนด์ ซอชน",
+        "zh-CN": "Granhand 西村",
+        "zh-TW": "Granhand 西村"
+      },
+      "primary_image_url": null,
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "152916": {
+      "name_ko": "그랑핸드 북촌",
+      "names": {
+        "en": "Granhand Bukchon",
+        "ja": "グランハンド 北村",
+        "pt-BR": "GRANHAND Bukchon",
+        "th": "กรองด์แฮนด์ บุกชน",
+        "zh-CN": "Granhand 北村",
+        "zh-TW": "Granhand 北村"
+      },
+      "primary_image_url": null,
+      "display_region": "서울",
+      "display_district": "종로구"
+    },
+    "152938": {
+      "name_ko": "박승철헤어스투디오 압구정점",
+      "names": {
+        "en": "Park Seung Chol Hair Studio Apgujeong Branch",
+        "ja": "パク・スンチョルヘアスタジオ 狎鴎亭店",
+        "pt-BR": "Park Seung Chol Hair Studio - Apgujeong",
+        "th": "พัคซึงชอลแฮร์สตูดิโอ สาขาอับกูจอง",
+        "zh-CN": "Park Seung Cheol Hair Studio 狎鸥亭店",
+        "zh-TW": "Park Seung Chul Hair Studio 狎鷗亭店"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152938/5d08a219/lg.webp",
+      "display_region": "서울",
+      "display_district": "강남구"
+    },
+    "152939": {
+      "name_ko": "박승철헤어스투디오 청담점",
+      "names": {
+        "en": "Park Seung Chol Hair Studio Cheongdam Branch",
+        "ja": "パク・スンチョルヘアスタジオ 清潭店",
+        "pt-BR": "Park Seung Chol Hair Studio - Cheongdam",
+        "th": "พัคซึงชอลแฮร์สตูดิโอ สาขาช็องดัม",
+        "zh-CN": "Park Seung Cheol Hair Studio 清潭店",
+        "zh-TW": "Park Seung Chul Hair Studio 清潭店"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152939/d8b0cf49/lg.webp",
+      "display_region": "서울",
+      "display_district": "강남구"
+    },
+    "152965": {
+      "name_ko": "아이디병원",
+      "names": {
+        "en": "id Hospital",
+        "ja": "id病院",
+        "pt-BR": "Hospital id",
+        "th": "โรงพยาบาลไอดี",
+        "zh-CN": "ID Hospital",
+        "zh-TW": "ID 醫院"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152965/99d99da8/lg.webp",
+      "display_region": "서울",
+      "display_district": "강남구"
+    },
+    "153207": {
+      "name_ko": "코엑스몰",
+      "names": {
+        "en": "COEX Mall",
+        "ja": "COEXモール",
+        "pt-BR": "COEX Mall",
+        "th": "โคเอ็กซ์มอลล์",
+        "zh-CN": "COEX购物中心",
+        "zh-TW": "COEX Mall"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153207/b727cdb1/lg.webp",
+      "display_region": "서울",
+      "display_district": "강남구"
+    },
+    "153409": {
+      "name_ko": "YG엔터테인먼트 사옥",
+      "names": {
+        "en": "YG Entertainment Headquarters"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153409/dd67f846/lg.webp",
+      "display_region": "서울",
+      "display_district": "마포구"
+    },
+    "153421": {
+      "name_ko": "구 빅히트 사옥(청구빌딩)",
+      "names": {
+        "en": "Old Big Hit Entertainment Building (Cheonggu Building)"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153421/5e3e62c6/lg.webp",
+      "display_region": "서울",
+      "display_district": "강남구"
+    },
+    "153424": {
+      "name_ko": "국립중앙박물관",
+      "names": {
+        "en": "National Museum of Korea"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153424/599c8b44/lg.webp",
+      "display_region": "서울",
+      "display_district": "용산구"
+    },
+    "153446": {
+      "name_ko": "더현대 서울",
+      "names": {
+        "en": "The Hyundai Seoul"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153446/43f6eca8/lg.webp",
+      "display_region": "서울",
+      "display_district": null
+    },
+    "153474": {
+      "name_ko": "서울밤",
+      "names": {
+        "en": "SEOUL BAM"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153474/f5b69c8c/lg.webp",
+      "display_region": "서울",
+      "display_district": null
+    },
+    "153483": {
+      "name_ko": "동대문디자인플라자 DDP",
+      "names": {
+        "en": "Dongdaemun Design Plaza (DDP)"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153483/b4359962/lg.webp",
+      "display_region": "서울",
+      "display_district": "중구"
+    },
+    "153945": {
+      "name_ko": "봉산평양냉면",
+      "names": {
+        "en": "Bongsan Pyeongyang Naengmyeon"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153945/c982dfca/lg.webp",
+      "display_region": "서울",
+      "display_district": "강남구"
+    },
+    "153946": {
+      "name_ko": "을밀대 마포",
+      "names": {
+        "en": "Eulmildae Mapo"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153946/cd810689/lg.webp",
+      "display_region": "서울",
+      "display_district": "마포구"
+    },
+    "153947": {
+      "name_ko": "중인면옥 본점",
+      "names": {
+        "en": "Jungin Myeonok Main Store"
+      },
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153947/10762452/lg.webp",
+      "display_region": "서울",
+      "display_district": "영등포구"
+    }
+  }
+}

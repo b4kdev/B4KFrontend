@@ -44,13 +44,14 @@ import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { jsonFetch } from './A2Home'
 import { LeaderboardTab } from './A3Account'
 import { regionName } from '../map/areaName'
+import { httpError } from '@/lib/session-expired'
 
 // Saved and Plan from saved places.
 // Live /api/saved, /api/folders, /api/plans, /api/profile/trips.
 
 const send = (url: string, method: string, body?: unknown) =>
   fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }).then((r) => {
-    if (!r.ok) throw new Error(String(r.status))
+    if (!r.ok) throw httpError(r.status)
     return r.json().catch(() => ({}))
   })
 
@@ -320,7 +321,7 @@ export function SavedScreen() {
             setSheet(null)
             mutate()
           } catch {
-            toast({ type: 'critical', message: navigator.onLine === false ? t('CD1426') : t('CD0061') })
+            toast({ type: 'critical', message: navigator.onLine === false ? t('CD1208') : t('CD0061') })
           }
         }}
       />
