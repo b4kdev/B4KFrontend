@@ -138,7 +138,8 @@ export function TreeItem({ label, kind, level = 1, selected, count, checkbox, co
           open ? 'bg-[var(--tree-c)] pb-[var(--space-1-5)] text-field-fg' : 'bg-tile-surface-sunken text-ui-fg [@media(hover:hover)_and_(pointer:fine)]:hover:bg-control-fill',
         )}
       >
-        <div className="flex min-h-[var(--target-touch-min)] items-center gap-[var(--space-2)] px-[var(--space-2)] py-[var(--space-1-5)] [&:has(>button:first-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-border-focus)]">
+        {/* Focus ring: black ink on the open colour field (white would fall under 3:1 on pastels). */}
+        <div className={cn('flex min-h-[var(--target-touch-min)] items-center gap-[var(--space-2)] rounded-sq-lg px-[var(--space-2)] py-[var(--space-1-5)]', open ? '[&:has(>button:first-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--field-fg)]' : '[&:has(>button:first-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-border-focus)]')}>
           <button type="button" onClick={onSelect ?? onToggle} className="b4k-press flex min-w-0 flex-1 items-center gap-[var(--space-3)] text-left text-[length:var(--font-size-base)] font-[var(--font-weight-bold)] focus-visible:outline-none">
             <span aria-hidden className={cn('inline-flex size-[var(--glyph-tile-size)] shrink-0 items-center justify-center rounded-sq-sm', open ? 'bg-field-fg text-[var(--tree-c)]' : 'bg-[var(--tree-c)] text-field-fg')}>
               <Glyph name={glyph} size={20} />
@@ -170,8 +171,13 @@ export function TreeItem({ label, kind, level = 1, selected, count, checkbox, co
             field
               ? cn('mx-[var(--space-1-5)] rounded-sq-md px-[var(--space-1-5)] transition-colors duration-short3 ease-out-strong', selected ? 'bg-field-fg text-photo-action-fg' : 'text-field-fg [@media(hover:hover)_and_(pointer:fine)]:hover:bg-field-inset')
               : selected ? 'rounded-sq-md bg-ui-state-selected' : 'rounded-sq-md hover:bg-ui-state-hover',
-            // Focus ring around the whole row while the label button has keyboard focus.
-            '[&:has(>button:last-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-border-focus)]',
+            // Focus ring around the whole row while the label button has keyboard focus; inside a colour
+            // field it is black ink, on the selected black row white.
+            !field
+              ? '[&:has(>button:last-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-border-focus)]'
+              : selected
+                ? '[&:has(>button:last-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-fg-on-media)]'
+                : '[&:has(>button:last-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--field-fg)]',
           )}
         >
           {field ? (
