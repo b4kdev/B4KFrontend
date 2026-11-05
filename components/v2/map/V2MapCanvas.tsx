@@ -7,7 +7,7 @@ import { useLocale } from 'next-intl'
 import type { MapBounds, MapPoi } from '@/hooks/useMapPois'
 import { TOKEN_HEX } from '@/tokens/colors'
 import { useCd } from '@/components/v2/cd'
-import { PLACE_TYPE_ICON, placeTypeOf } from '@/components/library'
+import { PLACE_TYPE_COLOR, PLACE_TYPE_ICON, placeTypeOf } from '@/components/library'
 import { keepMapLook } from './mapLook'
 
 // Map canvas: the Naver map with the B4K markers. Map pin = the place photo in a circle with a
@@ -109,37 +109,40 @@ const markerAttrs = (id: string, label: string, selected: boolean) =>
 type PinTier = 'dot' | 'small' | 'large' | 'selected'
 const tierFor = (zoom: number, selected: boolean): PinTier => (selected ? 'selected' : zoom >= 17 ? 'large' : zoom >= 16 ? 'small' : 'dot')
 const PIN_SIZE: Record<Exclude<PinTier, 'dot'>, string> = { small: '--map-pin-size-sm', large: '--map-pin-size', selected: '--map-pin-size-selected' }
-const PIN_PX: Record<PinTier, number> = { dot: 12, small: 32, large: 40, selected: 56 }
+const PIN_PX: Record<PinTier, number> = { dot: 12, small: 36, large: 40, selected: 48 }
 const TAIL_PX = 6
-const LABEL = 'margin-top:var(--space-0-5);max-width:120px;padding:0 var(--space-1);border-radius:var(--radius-full);background:var(--map-pin-stroke);color:var(--map-pin-fill);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis'
-// A pin without a photo shows the place type icon in its disc (muted; on the red selected disc
-// fg-on-media). The SDK takes markup, so the icons are rendered once, hidden, and their SVG reused.
+const LABEL = 'margin-top:var(--space-0-5);max-width:120px;padding:var(--space-0-5) var(--space-1-5);border-radius:var(--radius-toast);background:var(--color-bg-elevated);color:var(--color-fg);box-shadow:var(--shadow-pin);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis'
+// A pin without a photo shows the place type icon on the glyph-pin head. Roles: head
+// var(--map-glyph-pin-bg), icon var(--map-glyph-pin-fg); a direction that leaves one unset falls
+// back to the type colour. The SDK takes markup, so the icons are rendered once, hidden, and reused.
 const TYPE_SVG: Record<string, string> = {}
-const typeIcon = (p: MapPoi, selected: boolean) =>
-  `<span aria-hidden style="width:${selected ? 43 : 50}%;height:${selected ? 43 : 50}%;display:flex;color:${selected ? 'var(--color-fg-on-media)' : 'var(--color-fg-muted)'}">${TYPE_SVG[placeTypeOf(p.interest_category)] ?? ''}</span>`
+const typeColor = (p: MapPoi) => PLACE_TYPE_COLOR[placeTypeOf(p.interest_category)]
+const typeIcon = (p: MapPoi) =>
+  `<span aria-hidden style="width:50%;height:50%;display:flex;color:var(--map-glyph-pin-fg, ${typeColor(p)})">${TYPE_SVG[placeTypeOf(p.interest_category)] ?? ''}</span>`
 
 const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
   const selected = tier === 'selected'
   if (tier === 'dot') {
-    return `<div style="${HIT}" ${markerAttrs(p.poi_id, poiLabel(p), false)}><span style="width:var(--map-pin-dot-size);height:var(--map-pin-dot-size);border-radius:var(--radius-full);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke)"></span></div>`
+    return `<div style="${HIT}" ${markerAttrs(p.poi_id, poiLabel(p), false)}><span style="box-sizing:border-box;width:var(--map-pin-dot-size);height:var(--map-pin-dot-size);border-radius:var(--radius-full);background:${typeColor(p)};border:var(--border-width-2) solid var(--map-pin-stroke);box-shadow:var(--shadow-pin)"></span></div>`
   }
   const size = `var(${PIN_SIZE[tier]})`
-  const ring = selected ? 'var(--border-width-3) solid var(--map-pin-selected)' : 'var(--border-width-2) solid var(--map-pin-fill)'
-  const tail = selected ? 'var(--map-pin-selected)' : 'var(--map-pin-fill)'
+  // Ring 3 in the pin stroke; selected: the selected ring and a larger pin (size and ring carry the state).
+  const ring = `var(--border-width-pin) solid ${selected ? 'var(--map-pin-selected)' : 'var(--map-pin-stroke)'}`
+  const tail = selected ? 'var(--map-pin-selected)' : 'var(--map-pin-stroke)'
   const photo = p.primary_image_url
-    ? `background:var(--map-pin-stroke) url('${esc(pinSrc(p.primary_image_url))}') center/cover no-repeat`
-    : `background:${selected ? 'var(--map-pin-selected)' : 'var(--map-pin-stroke)'};display:flex;align-items:center;justify-content:center`
+    ? `background:var(--map-pin-fill) url('${esc(pinSrc(p.primary_image_url))}') center/cover no-repeat`
+    : `background:var(--map-glyph-pin-bg, ${typeColor(p)});display:flex;align-items:center;justify-content:center`
   const name = showName || selected ? `<span style="${LABEL}">${poiLabel(p)}</span>` : ''
   // Fixed width so the anchor (half of it) stays on the place; a wider name overflows evenly on both sides.
-  return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;width:${Math.max(44, PIN_PX[tier])}px" ${markerAttrs(p.poi_id, poiLabel(p), selected)}><span style="box-sizing:border-box;width:${size};height:${size};border-radius:var(--radius-full);border:${ring};${photo};transition:all var(--duration-short4) var(--easing-standard)">${p.primary_image_url ? '' : typeIcon(p, selected)}</span><span aria-hidden style="width:0;height:0;border-left:${TAIL_PX}px solid transparent;border-right:${TAIL_PX}px solid transparent;border-top:${TAIL_PX}px solid ${tail}"></span>${name}</div>`
+  return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;width:${Math.max(44, PIN_PX[tier])}px" ${markerAttrs(p.poi_id, poiLabel(p), selected)}><span style="box-sizing:border-box;width:${size};height:${size};border-radius:var(--radius-pin);border:${ring};${photo};box-shadow:${selected ? 'var(--shadow-lift)' : 'var(--shadow-pin)'};transition:width 200ms var(--easing-out-strong),height 200ms var(--easing-out-strong),border-color 200ms var(--easing-out-strong)">${p.primary_image_url ? '' : typeIcon(p)}</span><span aria-hidden style="width:0;height:0;border-left:${TAIL_PX}px solid transparent;border-right:${TAIL_PX}px solid transparent;border-top:${TAIL_PX}px solid ${tail}"></span>${name}</div>`
 }
 // A cluster is a button named by its place count (not shown on screen); Enter or Space zooms in like a click.
 const clusterHtml = (n: number, key: string, name: string) => {
   const size = n < 10 ? '--map-cluster-size-sm' : n < 50 ? '--map-cluster-size-md' : '--map-cluster-size-lg'
-  return `<div style="${HIT};width:52px;height:52px" class="b4k-map-marker" role="button" tabindex="0" data-cluster="${esc(key)}" aria-label="${esc(name)}"><span aria-hidden="true" style="width:var(${size});height:var(${size});border-radius:var(--radius-full);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--map-pin-stroke);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${n}</span></div>`
+  return `<div style="${HIT};width:52px;height:52px" class="b4k-map-marker" role="button" tabindex="0" data-cluster="${esc(key)}" aria-label="${esc(name)}"><span aria-hidden="true" style="box-sizing:border-box;min-width:var(${size});height:var(${size});padding:0 var(--space-2);border-radius:var(--radius-cluster);background:var(--map-cluster-fill);border:var(--border-width-pin) solid var(--map-cluster-stroke);box-shadow:var(--shadow-pin);display:flex;align-items:center;justify-content:center;color:var(--map-cluster-fg);font:var(--font-weight-extrabold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);font-variant-numeric:tabular-nums">${n}</span></div>`
 }
 const stopHtml = (p: MapPoi, order: number, day: number, selected: boolean) =>
-  `<div style="${HIT}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected)}><span style="width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:var(--radius-full);background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${order}</span></div>`
+  `<div style="${HIT}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected)}><span style="box-sizing:border-box;width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:var(--radius-badge);background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);border:var(--border-width-pin) solid ${selected ? 'var(--map-pin-selected)' : 'var(--map-pin-stroke)'};box-shadow:var(--shadow-pin);display:flex;align-items:center;justify-content:center;font:var(--font-weight-extrabold) 13px/1 var(--font-family-body);font-variant-numeric:tabular-nums">${order}</span></div>`
 
 // Inset kept around fitted pins: space-20, read from the token so the map follows it.
 function fitPadding(bottom: number, top?: number) {
@@ -611,15 +614,19 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
       : Array.from(new Set(planStops.map((s) => s.day)))
           .filter((d) => activeDay === 'all' || d === activeDay)
           .map((day) => ({ day, path: planStops.filter((s) => s.day === day).sort((a, b) => a.order - b.order).map((s) => ({ lat: s.poi.coords_lat, lng: s.poi.coords_lng })) }))
+    // Each day: a casing line under the day line (left out where the direction has no casing), 5 wide, round ends.
+    const casing = TOKEN_HEX[theme].routeCasing as string | null
     for (const p of paths) {
       if (p.path.length < 2) continue
-      lines.current.push(new N.Polyline({ map: map.current, path: p.path.map((x) => new N.LatLng(x.lat, x.lng)), strokeColor: color(p.day), strokeWeight: 4, strokeOpacity: 0.9 }))
+      const path = p.path.map((x) => new N.LatLng(x.lat, x.lng))
+      if (casing) lines.current.push(new N.Polyline({ map: map.current, path, strokeColor: casing, strokeWeight: 8, strokeOpacity: 1, strokeLineCap: 'round', strokeLineJoin: 'round', zIndex: 1 }))
+      lines.current.push(new N.Polyline({ map: map.current, path, strokeColor: color(p.day), strokeWeight: 5, strokeOpacity: 1, strokeLineCap: 'round', strokeLineJoin: 'round', zIndex: 2 }))
     }
   }, [planStops, routeLegs, activeDay, ready])
 
   return (
     // isolate: the SDK gives its logo and controls a high z-index; keep them under sheets and dialogs.
-    <div className="relative isolate size-full bg-ui-bg-sunken">
+    <div className="relative isolate size-full bg-map-ui-ground">
       {clientId ? (
         <Script src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}&submodules=geocoder${GL_SDK ? ',gl' : ''}&language=${lang}`} strategy="afterInteractive" onReady={sdkReady} onError={() => setFailed(true)} />
       ) : null}

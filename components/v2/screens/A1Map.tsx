@@ -71,14 +71,14 @@ const nameOf = (p: { name_ko: string; name_en?: string; name_preferred?: string 
 // The map chips: place types, one at a time, as BFF place filters (tags = any of these chips),
 // each with its drawn leading icon.
 const PLACE_TYPES = [
-  { id: 'restaurants', label: 'CD0633', query: 'tags=restaurant', icon: Utensils },
-  { id: 'cafes', label: 'CD0628', query: 'tags=cafe', icon: Coffee },
-  { id: 'stays', label: 'CD0629', query: 'tags=hotel,resort,pension,guesthouse,hanok-stay,motel', icon: BedDouble },
-  { id: 'shopping', label: 'CD1282', query: 'interest=shopping', icon: ShoppingBag },
-  { id: 'palaces', label: 'CD0631', query: 'tags=palace', icon: Crown },
-  { id: 'temples', label: 'CD0635', query: 'tags=temple', icon: Flower2 },
-  { id: 'museums', label: 'CD0630', query: 'tags=museum', icon: Landmark },
-  { id: 'parks', label: 'CD0632', query: 'tags=park', icon: Trees },
+  { id: 'restaurants', color: 'var(--map-type-food)', label: 'CD0633', query: 'tags=restaurant', icon: Utensils },
+  { id: 'cafes', color: 'var(--map-type-cafe)', label: 'CD0628', query: 'tags=cafe', icon: Coffee },
+  { id: 'stays', color: 'var(--map-type-stay)', label: 'CD0629', query: 'tags=hotel,resort,pension,guesthouse,hanok-stay,motel', icon: BedDouble },
+  { id: 'shopping', color: 'var(--map-type-shopping)', label: 'CD1282', query: 'interest=shopping', icon: ShoppingBag },
+  { id: 'palaces', color: 'var(--map-type-heritage)', label: 'CD0631', query: 'tags=palace', icon: Crown },
+  { id: 'temples', color: 'var(--map-type-heritage)', label: 'CD0635', query: 'tags=temple', icon: Flower2 },
+  { id: 'museums', color: 'var(--map-type-heritage)', label: 'CD0630', query: 'tags=museum', icon: Landmark },
+  { id: 'parks', color: 'var(--map-type-park)', label: 'CD0632', query: 'tags=park', icon: Trees },
 ] as const
 
 /** `poiId`: the place to open (the /place/[poiId] page); otherwise ?poi= in the address. */
@@ -670,7 +670,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const chips = selectedId ? null : (
     <div className="flex gap-[var(--space-2)] overflow-x-auto [scrollbar-width:none]">
       {PLACE_TYPES.map((c) => (
-        <Chip key={c.id} type="map" selected={filter === c.id} leadingIcon={<c.icon />} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setAreaBounds(bounds); setAreaMoved(false); setFilter((f) => (f === c.id ? null : c.id)) }}>{t(c.label)}</Chip>
+        <Chip key={c.id} type="map" selected={filter === c.id} keyColor={c.color} leadingIcon={<c.icon />} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setAreaBounds(bounds); setAreaMoved(false); setFilter((f) => (f === c.id ? null : c.id)) }}>{t(c.label)}</Chip>
       ))}
     </div>
   )
