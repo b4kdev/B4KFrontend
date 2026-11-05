@@ -72,9 +72,11 @@ button, [role="button"], [role="tab"] {
   user-select: none;
 }
 
-/* Korean display type: words never break mid-syllable block. */
-:lang(ko) :is(.type-display-hero, .type-display-hub, .type-display-h1, .type-display-h2, .type-display-h3, .type-title-card) {
+/* Korean: every text style keeps words whole and breaks a word only when it alone overflows. */
+:lang(ko) [class*="type-"],
+[class*="type-"]:lang(ko) {
   word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 .type-title-card { overflow-wrap: anywhere; }
 
