@@ -139,7 +139,7 @@ export function SearchScreen() {
   const collections = data?.collections ?? []
   const noResults = !!data && !data.places.length && !data.plans.length && !collections.length
   const exploreChips = (data?.explore ?? []).map((e) => (
-    <IntlLink key={e.href} href={`${e.href}`} className="inline-flex h-[var(--control-height-sm)] items-center rounded-sq-sm bg-control-fill px-[var(--space-3)] hover:bg-control-fill-hover type-body-chip text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+    <IntlLink key={e.href} href={`${e.href}`} className="inline-flex h-[var(--control-height-sm)] items-center rounded-sq-sm bg-control-fill px-[var(--space-3)] hover:bg-control-fill-hover type-body-chip text-ui-fg focus-visible:shadow-focus-ring focus-visible:outline-none">
       {t(({ kpop: 'CD1247', kdrama: 'CD1246', kbeauty: 'CD1244', kculture: 'CD1245' } as Record<string, string>)[e.label_key] ?? 'CD1306')}
     </IntlLink>
   ))

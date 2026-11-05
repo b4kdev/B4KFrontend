@@ -591,7 +591,7 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
               {/* Figma Browse: category chips, like Trending now. */}
               <div className="flex flex-wrap gap-[var(--space-2)] py-[var(--space-1)]">
                 {categories.map((c) => (
-                  <IntlLink key={c.id} href={c.href} className="inline-flex h-[var(--control-height-sm)] items-center rounded-sq-sm bg-control-fill px-[var(--space-3)] hover:bg-control-fill-hover type-body-chip text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+                  <IntlLink key={c.id} href={c.href} className="inline-flex h-[var(--control-height-sm)] items-center rounded-sq-sm bg-control-fill px-[var(--space-3)] hover:bg-control-fill-hover type-body-chip text-ui-fg focus-visible:shadow-focus-ring focus-visible:outline-none">
                     {c.name}
                   </IntlLink>
                 ))}
