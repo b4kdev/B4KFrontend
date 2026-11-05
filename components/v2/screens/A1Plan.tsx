@@ -268,9 +268,9 @@ export function PlanScreen({ id }: { id: string }) {
         footer={
           isOwner ? (
             <>
-              <Button variant="secondary" className="flex-1" onClick={edit}>{t('CD1487')}</Button>
+              <Button size="xl" className="flex-1" onClick={edit}>{t('CD1487')}</Button>
               <IconButton variant="secondary" label={k('itinerary.actions.shareAria')} icon={<Share2 />} onClick={share} />
-              <IconButton variant="ghost" label={t('CD1454')} icon={<Trash2 />} onClick={() => setDeleteOpen(true)} />
+              <IconButton variant="secondary" label={t('CD1454')} icon={<Trash2 />} onClick={() => setDeleteOpen(true)} />
             </>
           ) : (
             <>
