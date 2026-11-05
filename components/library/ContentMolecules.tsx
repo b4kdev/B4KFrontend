@@ -212,8 +212,10 @@ export function PlanStopRow({ name, number, day, duration, durationLabel, onDura
     </button>
   )
   return (
-    <li data-stop-id={stopId} className={cn('group flex h-[var(--control-height-md)] items-center gap-[var(--space-2)]', dragging && 'bg-ui-state-dragged', className)}>
-      <DragHandle label={reorderLabel} {...handleProps} className="touch-none" />
+    // While dragged the row lifts (raised fill, shadow, slightly larger) so the finger or pointer
+    // visibly holds it; the other rows move into place under it.
+    <li data-stop-id={stopId} className={cn('group relative flex h-[var(--control-height-md)] items-center gap-[var(--space-2)] rounded-sq-md transition-[transform,box-shadow,background-color] duration-short4 ease-out-strong', dragging && 'z-10 scale-[1.02] bg-ui-bg-elevated shadow-menu', className)}>
+      <DragHandle label={reorderLabel} {...handleProps} className={cn('touch-none', dragging ? 'cursor-grabbing' : 'cursor-grab')} />
       <StopBadge number={number} day={day} />
       {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="80px" className="w-[var(--control-height-md)] shrink-0" /> : null}
       {onSelect ? (
