@@ -80,7 +80,8 @@ function mapPlace(row: RawPlace, locale: string): MapPoi {
     coords_lng:         row.coords_lng,
     display_domain:     row.domains?.[0] ?? null,
     interest_category:  row.interest_category ?? null,
-    interest_tags:      row.interest_tags ?? [],
+    // Left out when the source sends none, so the map colour falls back to the interest category.
+    interest_tags:      row.interest_tags ?? undefined,
     display_region:     row.display_region,
     save_count:         row.save_count,
     like_count:         row.like_count,
