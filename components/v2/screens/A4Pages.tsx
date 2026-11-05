@@ -506,12 +506,16 @@ export function AboutScreen() {
         <Logo type="wordmark" className="h-auto w-full" />
         <div aria-hidden className="h-[var(--space-4)] lg:hidden" />
         <div className="flex flex-col gap-[var(--space-4)] lg:max-w-[760px] lg:gap-[var(--space-6)] lg:pb-[var(--space-4)] lg:pt-[var(--space-12)]">
-          <h1 className="type-title-card">{t('CD1173')}</h1>
-          <p className="type-body-base text-ui-fg-muted">{t('CD1687')}</p>
-          {/* Company details as drawn under the about text: title, one line per detail, Check business info. */}
-          <h2 className="type-title-card">{t('CD1688')}</h2>
-          <p className="whitespace-pre-line type-body-base text-ui-fg-muted">{fillCompanyText(t.raw('CD1689') as string, companyValues(locale))}</p>
-          <a href={COMPANY.checkUrl} target="_blank" rel="noopener noreferrer" className={cn('relative self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{t('CD1685')}</a>
+          {/* Title 34 on phones growing to 56; the about text in the long-read size. */}
+          <h1 className="type-display-h1 [--display-size-h1:clamp(34px,3.5vw+20px,56px)]">{t('CD1173')}</h1>
+          <p className="type-body-long text-ui-fg-muted">{t('CD1687')}</p>
+          {/* Company details as drawn under the about text, on a tile: title, one line per detail
+              (figures tabular), Check business info. */}
+          <div className="flex flex-col gap-[var(--space-3)] rounded-tile-inner bg-tile-surface px-[calc(var(--space-5)+var(--space-0-5))] py-[var(--space-5)] tabular-nums">
+            <h2 className="type-display-h4">{t('CD1688')}</h2>
+            <p className="whitespace-pre-line type-body-base text-ui-fg-muted">{fillCompanyText(t.raw('CD1689') as string, companyValues(locale))}</p>
+            <a href={COMPANY.checkUrl} target="_blank" rel="noopener noreferrer" className={cn('relative self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{t('CD1685')}</a>
+          </div>
         </div>
       </div>
     </V2Page>
