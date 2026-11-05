@@ -52,7 +52,9 @@ import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
 import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_DAYS, MAX_STOPS, PER_DAY, draftStopCount, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
 import { useRoutedLegs } from '../map/useRoutedLegs'
 import { CATEGORIES, jsonFetch } from './A2Home'
-import { previousScreenSource, type PlaceSource, type PlanFlow } from '@/lib/place-source'
+import { PLAN_FLOWS, previousScreenSource, type PlaceSource, type PlanFlow } from '@/lib/place-source'
+import { fitDays } from '@/lib/plan-days'
+import { httpError } from '@/lib/session-expired'
 
 // The map (A1): Map browse
 //, Place selected, Plan in progress / Plan editor, Save plan
@@ -62,7 +64,7 @@ import { previousScreenSource, type PlaceSource, type PlanFlow } from '@/lib/pla
 
 const send = (url: string, method: string, body?: unknown) =>
   fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }).then((r) => {
-    if (!r.ok) throw new Error(String(r.status))
+    if (!r.ok) throw httpError(r.status)
     return r.json().catch(() => ({}))
   })
 
@@ -95,7 +97,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const mapRef = useRef<V2MapHandle>(null)
   const locate = useLocateMe(mapRef, { phone })
   const unlock = useBadgeUnlock()
-  const draft = usePlanDraft()
+  // A failed autosave is said (the plan is also kept on this device).
+  const draft = usePlanDraft({ onSaveFailed: () => toast({ type: 'critical', message: t('CD0673') }) })
   // Toast actions run later (Undo): they call the draft as it is then, not as it was.
   const latestDraft = useRef(draft)
   latestDraft.current = draft
@@ -257,14 +260,18 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // loads a published plan for editing.
   // How the plan in the editor started, for plan_create: a hand-off, or places added by hand.
   const planFlow = useRef<PlanFlow>('manual')
+  // A plan saved whose publish step failed: the next Save updates and publishes it, never a second plan.
+  const savedUnpublished = useRef<string | null>(null)
   const takeHandoff = () => {
     const handoff = takeCourseHandoff()
     if (!handoff) return
-    const { stops, name, source } = handoff
+    const { name, source } = handoff
+    // Plan from saved places can return more than 8 days (one per area): fit them to the plan limits.
+    const stops = fitDays(handoff.stops)
     planFlow.current = source
     const had = draft.plan.stops.length > 0
     const asPois: MapPoi[] = stops.map((s) => ({ poi_id: s.poi_id, name_ko: s.name_ko, name_preferred: s.name_preferred, coords_lat: s.coords_lat, coords_lng: s.coords_lng, display_region: s.display_region ?? null, primary_image_url: s.primary_image_url }))
-    draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])), name, undefined, { source: source === 'from_saved' ? 'saved' : source === 'quick_plan' ? 'quick_plan' : undefined })
+    draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])), name, undefined, { flow: source, source: source === 'from_saved' ? 'saved' : source === 'quick_plan' ? 'quick_plan' : undefined })
     setActiveDay('all')
     setSelectedId(null)
     setCollectionOn(false)
@@ -397,7 +404,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // signedIn: the save a guest started, finished after the sign-in (its own toast).
   const setSave = async (id: string, on: boolean, signedIn = false) => {
     const category = detail?.poi_id === id ? detail.display_domain ?? undefined : undefined
-    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => track('poi_save', { action: on ? 'unsave' : 'save', category, locale, screen_id: 'map' })).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: navigator.onLine === false ? t('CD1426') : t('CD0061') }))
+    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => track('poi_save', { action: on ? 'unsave' : 'save', category, locale, screen_id: 'map' })).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: navigator.onLine === false ? t('CD1208') : t('CD0061') }))
     saved.mutate()
   }
   // Optimistic: the heart changes at once and goes back with a toast if the server refuses.
@@ -454,17 +461,26 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       }
       return
     }
+    // After a reload the flow comes back with the draft; this session's hand-off otherwise.
+    const flow = PLAN_FLOWS.includes(draft.plan.flow as PlanFlow) ? (draft.plan.flow as PlanFlow) : planFlow.current
     try {
-      const res = await send('/api/plans', 'POST', {
-        title: planName.trim(),
-        stops,
-        source: planFlow.current,
-        is_published: false,
-      })
-      const id: string | undefined = res?.plan?.id
+      let id: string | undefined = savedUnpublished.current ?? undefined
+      if (id) {
+        await send(`/api/plans/${id}`, 'PUT', { title: planName.trim(), stops })
+      } else {
+        const res = await send('/api/plans', 'POST', {
+          title: planName.trim(),
+          stops,
+          source: flow,
+          is_published: false,
+        })
+        id = res?.plan?.id
+        savedUnpublished.current = id ?? null
+      }
       // Saving publishes it, as on the live map.
       if (id) await send(`/api/plans/${id}`, 'PATCH', { is_published: true })
-      track('plan_create', { flow: planFlow.current, days: draft.days, stops: stops.length, locale, screen_id: 'map' })
+      savedUnpublished.current = null
+      track('plan_create', { flow, days: draft.days, stops: stops.length, locale, screen_id: 'map' })
       track('plan_save', { days: draft.days, stops: stops.length, is_public: !!id, locale, screen_id: 'map' })
       planFlow.current = 'manual'
       draft.discard()
@@ -730,7 +746,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         title={t('CD1536')}
         body={GAP.discardBody(order.length)}
         cancel={<Button variant="secondary" data-autofocus onClick={() => setDiscardOpen(false)}>{k('map.plan.discardCancel')}</Button>}
-        confirm={<Button variant="danger" onClick={() => { draft.discard(); planFlow.current = 'manual'; setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
+        confirm={<Button variant="danger" onClick={() => { draft.discard(); planFlow.current = 'manual'; savedUnpublished.current = null; setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
       />
       <Dialog
         open={!!pendingEdit && !saveFirst && !saveOpen}

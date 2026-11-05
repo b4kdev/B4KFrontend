@@ -10,11 +10,12 @@ import { useCd, useCdKey } from './cd'
 import { useV2Shell } from './V2Shell'
 import { usePendingAction } from './V2SignInGate'
 import { useBadgeUnlock } from './badges'
+import { httpError } from '@/lib/session-expired'
 
 const jsonFetch = <T,>(url: string) => fetch(url).then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(r.status)))
 const send = (url: string, method: string, body: unknown) =>
   fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then((r) => {
-    if (!r.ok) throw new Error(String(r.status))
+    if (!r.ok) throw httpError(r.status)
   })
 
 /**
@@ -90,8 +91,8 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
       })
       .catch(() => {
         tap(on)
-        // Offline: the kept-on-this-device toast; a refused request: the general error (as Like).
-        toast({ type: 'critical', message: navigator.onLine === false ? t('CD1426') : t('CD0061') })
+        // Offline: nothing is kept, so the toast says to try again when connected; a refused request: the general error (as Like).
+        toast({ type: 'critical', message: navigator.onLine === false ? t('CD1208') : t('CD0061') })
       })
     saved.mutate()
   }
