@@ -100,7 +100,7 @@ export function DropdownMenu({ trigger, label, children, align = 'start', classN
           onKeyDown={onKey}
           onClick={(e) => (e.target as HTMLElement).closest('[role^=menuitem]') && setOpen(false)}
           style={fixed && at ? { position: 'fixed', top: at.top, left: at.left, right: at.right } : undefined}
-          className={cn(SURFACE, 'top-full min-w-[240px] py-[var(--space-1)]', align === 'end' ? 'right-0' : 'left-0', className)}
+          className={cn(SURFACE, 'top-full min-w-[240px]', align === 'end' ? 'right-0' : 'left-0', className)}
         >
           {children}
         </div>
