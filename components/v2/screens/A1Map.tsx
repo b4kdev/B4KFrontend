@@ -52,7 +52,7 @@ import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
 import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_DAYS, MAX_STOPS, PER_DAY, draftStopCount, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
 import { useRoutedLegs } from '../map/useRoutedLegs'
 import { CATEGORIES, jsonFetch } from './A2Home'
-import { previousScreenSource, type PlaceSource, type PlanFlow } from '@/lib/place-source'
+import { PLAN_FLOWS, previousScreenSource, type PlaceSource, type PlanFlow } from '@/lib/place-source'
 
 // The map (A1): Map browse
 //, Place selected, Plan in progress / Plan editor, Save plan
@@ -264,7 +264,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     planFlow.current = source
     const had = draft.plan.stops.length > 0
     const asPois: MapPoi[] = stops.map((s) => ({ poi_id: s.poi_id, name_ko: s.name_ko, name_preferred: s.name_preferred, coords_lat: s.coords_lat, coords_lng: s.coords_lng, display_region: s.display_region ?? null, primary_image_url: s.primary_image_url }))
-    draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])), name, undefined, { source: source === 'from_saved' ? 'saved' : source === 'quick_plan' ? 'quick_plan' : undefined })
+    draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])), name, undefined, { flow: source, source: source === 'from_saved' ? 'saved' : source === 'quick_plan' ? 'quick_plan' : undefined })
     setActiveDay('all')
     setSelectedId(null)
     setCollectionOn(false)
@@ -454,17 +454,19 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       }
       return
     }
+    // After a reload the flow comes back with the draft; this session's hand-off otherwise.
+    const flow = PLAN_FLOWS.includes(draft.plan.flow as PlanFlow) ? (draft.plan.flow as PlanFlow) : planFlow.current
     try {
       const res = await send('/api/plans', 'POST', {
         title: planName.trim(),
         stops,
-        source: planFlow.current,
+        source: flow,
         is_published: false,
       })
       const id: string | undefined = res?.plan?.id
       // Saving publishes it, as on the live map.
       if (id) await send(`/api/plans/${id}`, 'PATCH', { is_published: true })
-      track('plan_create', { flow: planFlow.current, days: draft.days, stops: stops.length, locale, screen_id: 'map' })
+      track('plan_create', { flow, days: draft.days, stops: stops.length, locale, screen_id: 'map' })
       track('plan_save', { days: draft.days, stops: stops.length, is_public: !!id, locale, screen_id: 'map' })
       planFlow.current = 'manual'
       draft.discard()

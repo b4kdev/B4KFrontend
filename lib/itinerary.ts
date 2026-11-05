@@ -11,6 +11,8 @@ export interface ItineraryStop {
   duration_min: number
   transport_mode: 'car' | 'public' | 'walk' | null
   notes: string | null
+  /** Where the place was found when it was added (owner reads). */
+  source?: string | null
   poi: {
     poi_id: string
     name_preferred: string | null
@@ -50,6 +52,8 @@ export interface ItineraryDetail {
   title: string | null
   is_partner: boolean
   is_published: boolean
+  /** How the plan was made: manual, quick_plan or from_saved (owner reads). */
+  source?: string | null
   share_url: string | null
   like_count: number
   save_count: number
@@ -245,6 +249,7 @@ export function mapBffToDetail(bff: BffItinerary): ItineraryDetail {
     duration_min:   place.duration_min ?? place.default_visit_min ?? DEFAULT_DURATION_MIN,
     transport_mode: toFrontMode(place.travel_mode),
     notes:          place.note ?? null,
+    source:         place.source ?? null,
     poi: {
       poi_id:            String(place.poi_id),
       name_preferred:    null,
@@ -287,6 +292,7 @@ export function mapBffToDetail(bff: BffItinerary): ItineraryDetail {
     title:              bff.title,
     is_partner:         bff.is_partner ?? false,
     is_published:       bff.is_public ?? false,
+    source:             bff.source ?? null,
     share_url:          null,
     like_count:         bff.like_count ?? 0,
     save_count:         bff.save_count ?? 0,

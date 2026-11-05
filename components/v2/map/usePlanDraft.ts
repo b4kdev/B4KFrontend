@@ -23,13 +23,15 @@ const AUTOSAVE_MS = 800
 export const COURSE_HANDOFF_EVENT = 'b4k:course-handoff'
 
 /** A saved plan as builder state (stops in order, day and duration per stop). */
-export function itineraryToDraft(it: ItineraryDetail): { stops: MapPoi[]; days: Record<string, number>; durations: Record<string, number> } {
+export function itineraryToDraft(it: ItineraryDetail): { stops: MapPoi[]; days: Record<string, number>; durations: Record<string, number>; sources: Record<string, string>; flow?: string } {
   const sorted = [...it.stops].sort((a, b) => a.stop_order - b.stop_order)
   const stops = sorted.map((s) => ({ poi_id: String(s.poi.poi_id), name_ko: s.poi.name_ko, name_en: s.poi.name_en, name_preferred: s.poi.name_preferred ?? undefined, coords_lat: s.poi.coords_lat, coords_lng: s.poi.coords_lng, display_region: null, primary_image_url: s.poi.primary_image_url ?? undefined })) as MapPoi[]
   return {
     stops,
     days: Object.fromEntries(sorted.map((s) => [String(s.poi.poi_id), s.day ?? 1])),
     durations: Object.fromEntries(sorted.map((s) => [String(s.poi.poi_id), s.duration_min])),
+    sources: Object.fromEntries(sorted.filter((s) => s.source).map((s) => [String(s.poi.poi_id), s.source as string])),
+    flow: it.source ?? undefined,
   }
 }
 
@@ -84,8 +86,8 @@ export function usePlanDraft() {
       .then((d) => (d?.id ? fetch(`/api/plans/${d.id}`).then((r) => (r.ok ? (r.json() as Promise<ItineraryDetail>) : null)) : null))
       .then((it) => {
         if (!it || gone || touched.current) return
-        const { stops, days: dayMap, durations } = itineraryToDraft(it)
-        show({ stops, days: dayMap, durations, name: it.title || undefined })
+        const { stops, days: dayMap, durations, sources, flow } = itineraryToDraft(it)
+        show({ stops, days: dayMap, durations, name: it.title || undefined, sources, flow })
       })
       .catch(() => {})
     return () => {
@@ -165,11 +167,11 @@ export function usePlanDraft() {
     commit({ ...plan, stops, days: dayMap, durations })
   }
   /** Replaces the plan; `editing` marks a published plan open for editing (not autosaved). */
-  /** `source`: where every stop of the hand-off came from (Quick plan, saved places). */
-  const replace = (stops: MapPoi[], dayMap: Record<string, number>, name?: string, durations?: Record<string, number>, opts?: { editing?: boolean; source?: string }) => {
+  /** `source`: where every stop of the hand-off came from (Quick plan, saved places); `flow`: how the plan started. */
+  const replace = (stops: MapPoi[], dayMap: Record<string, number>, name?: string, durations?: Record<string, number>, opts?: { editing?: boolean; source?: string; flow?: string }) => {
     editing.current = !!opts?.editing
     setDays(Math.max(1, ...Object.values(dayMap)))
-    commit({ stops, durations: Object.fromEntries(stops.map((s) => [s.poi_id, durations?.[s.poi_id] ?? s.default_visit_min ?? 60])), days: dayMap, name, sources: opts?.source ? Object.fromEntries(stops.map((s) => [s.poi_id, opts.source as string])) : undefined })
+    commit({ stops, durations: Object.fromEntries(stops.map((s) => [s.poi_id, durations?.[s.poi_id] ?? s.default_visit_min ?? 60])), days: dayMap, name, sources: opts?.source ? Object.fromEntries(stops.map((s) => [s.poi_id, opts.source as string])) : undefined, flow: opts?.flow })
   }
   const discard = () => {
     touched.current = true

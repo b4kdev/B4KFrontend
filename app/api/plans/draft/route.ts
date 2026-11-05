@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/bff'
 import { fetchDbDraft, groupPlacesIntoDays } from '@/lib/itinerary'
+import { PLACE_SOURCES, PLAN_FLOWS, type PlaceSource, type PlanFlow } from '@/lib/place-source'
 
 export interface PlanDraft {
   id: string
@@ -18,6 +19,10 @@ interface DraftBody {
   durations?: Record<string, number>
   days?:      Record<string, number>
   name?:      string
+  /** poi_id → where the place was found; kept on each stop. */
+  sources?:   Record<string, string>
+  /** How the plan started (manual, quick_plan, from_saved). */
+  flow?:      string
 }
 
 // GET /api/plans/draft — the account's single working draft (BFF
@@ -55,10 +60,13 @@ export async function POST(request: Request) {
     .filter(s => s?.poi_id !== undefined && Number.isFinite(Number(s.poi_id)))
     .map(s => {
       const duration = body.durations?.[String(s.poi_id)]
+      const source = body.sources?.[String(s.poi_id)]
       return {
         poi_id:       Number(s.poi_id),
         duration_min: typeof duration === 'number' && duration > 0 ? Math.round(duration) : null,
         day:          body.days?.[String(s.poi_id)],
+        // Where the place was found; an unknown value is left out.
+        ...(PLACE_SOURCES.includes(source as PlaceSource) ? { source } : {}),
       }
     })
   if (places.length === 0) {
@@ -71,6 +79,8 @@ export async function POST(request: Request) {
       days:   groupPlacesIntoDays(places),
       title:  typeof body.name === 'string' && body.name.trim() ? body.name : null,
       status: 'draft',
+      // Left out when unknown: the backend then keeps the draft's flow.
+      ...(PLAN_FLOWS.includes(body.flow as PlanFlow) ? { source: body.flow } : {}),
     })
 
     if (existing) {
