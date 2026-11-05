@@ -27,6 +27,7 @@ import {
   categoryAttr,
   categoryStyle,
   placeTypeOf,
+  linkButtonVariants,
 } from '@/components/library'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/cn'
@@ -623,7 +624,7 @@ export function SpecialScreen({ api, category }: { api: string; category: string
           <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-3)]">
             <span className="type-eyebrow-category text-ui-fg-muted">{[categoryLabel, typeof data?.broadcaster === 'string' ? data.broadcaster : null].filter(Boolean).join(' · ')}</span>
             <div className="flex flex-wrap gap-[var(--gap-sm)]">
-              <IntlLink href={`/map?collection=${encodeURIComponent(api)}`} className="inline-flex h-[var(--control-height-lg)] items-center justify-center gap-[var(--gap-sm)] max-md:w-full border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"><MapPin aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1573')}</IntlLink>
+              <IntlLink href={`/map?collection=${encodeURIComponent(api)}`} className={cn(linkButtonVariants({ variant: 'secondary' }), 'max-md:w-full')}><MapPin aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1573')}</IntlLink>
             </div>
           </div>
         </section>

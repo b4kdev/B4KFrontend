@@ -5,7 +5,7 @@
 export { Avatar, type AvatarProps } from './Avatar'
 export { Badge, CountBadge, badgeVariants, type BadgeProps, type CountBadgeProps } from './Badge'
 export { Logo, ProviderLogo, type LogoProps } from './Brand'
-export { Button, buttonVariants, type ButtonProps } from './Button'
+export { Button, buttonVariants, linkButtonVariants, type ButtonProps } from './Button'
 export { Checkbox, Radio, Toggle, type CheckboxProps, type RadioProps, type ToggleProps } from './Choice'
 export { Chip, type ChipProps } from './Chip'
 export { CalendarDay, ChatBubble, CreditLine, ForecastDay, ImageAction, LegalLine, PLACE_TYPE_COLOR, PLACE_TYPE_ICON, PlaceTypeIcon, placeTypeOf, Scrim, StatCounter, type CalendarDayProps, type LegalLineProps, type PlaceType, type ChatBubbleProps, type ForecastDayProps, type ImageActionProps, type StatCounterProps } from './Content'

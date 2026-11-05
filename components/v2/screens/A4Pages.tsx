@@ -31,6 +31,7 @@ import {
   type FilterGroup,
   categoryAttr,
   placeTypeOf,
+  linkButtonVariants,
 } from '@/components/library'
 import { usePhone } from '@/components/library/hooks'
 import { getConsent, setConsent } from '@/lib/consent'
@@ -471,8 +472,8 @@ export function NotFoundScreen() {
       <title>{t('CD1832', { page: t('CD0116') })}</title>
       <EmptyState type="no-results" titleAs="h1" title={t('CD0116')} className="w-full lg:w-[400px]">{t('CD0115')}</EmptyState>
       <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
-        <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0114')}</IntlLink>
-        <IntlLink href="/map" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0481')}</IntlLink>
+        <IntlLink href="/" className={linkButtonVariants()}>{t('CD0114')}</IntlLink>
+        <IntlLink href="/map" className={linkButtonVariants({ variant: 'secondary' })}>{t('CD0481')}</IntlLink>
       </div>
     </V2Page>
   )
@@ -486,7 +487,7 @@ export function ErrorScreen({ reset }: { reset: () => void }) {
       <EmptyState type="error" titleAs="h1" title={t('CD0113')} className="w-full lg:w-[400px]">{t('CD0111')}</EmptyState>
       <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
         <Button onClick={reset}>{t('CD0110')}</Button>
-        <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0112')}</IntlLink>
+        <IntlLink href="/" className={linkButtonVariants({ variant: 'secondary' })}>{t('CD0112')}</IntlLink>
       </div>
     </V2Page>
   )

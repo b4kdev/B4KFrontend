@@ -59,6 +59,19 @@ export const buttonVariants = cva(
   },
 )
 
+/** The hover and press fills of a Button variant for a link styled as a button (`enabled:` never
+ * matches an <a>, so the button's own hover classes do not fire on links). */
+const LINK_STATES: Record<'primary' | 'secondary' | 'ghost', string> = {
+  primary: 'hover:bg-[image:linear-gradient(var(--button-overlay-filled-hover),var(--button-overlay-filled-hover))] active:bg-[image:linear-gradient(var(--button-overlay-filled-pressed),var(--button-overlay-filled-pressed))] active:scale-[var(--press-scale)] motion-reduce:active:scale-100',
+  secondary: 'hover:bg-control-fill-hover active:scale-[var(--press-scale)] motion-reduce:active:scale-100',
+  ghost: 'hover:bg-ui-state-hover active:bg-ui-state-pressed active:scale-[var(--press-scale)] motion-reduce:active:scale-100',
+}
+
+/** Classes for a link that looks like a Button: same shape, fill and label, with link hover and press. */
+export function linkButtonVariants({ variant = 'primary', size = 'lg' }: { variant?: 'primary' | 'secondary' | 'ghost'; size?: VariantProps<typeof buttonVariants>['size'] } = {}) {
+  return cn(buttonVariants({ variant, size }), LINK_STATES[variant])
+}
+
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof buttonVariants> & {
     /** Figma "Show leading icon" + "Icon": a Lucide icon element, e.g. <Plus />. */

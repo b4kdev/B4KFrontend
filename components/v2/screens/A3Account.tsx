@@ -34,6 +34,7 @@ import {
   TextInput,
   Toggle,
   placeTypeOf,
+  linkButtonVariants,
 } from '@/components/library'
 import { usePhone } from '@/components/library/hooks'
 import { FOCUS_RING } from '@/components/library/styles'
@@ -135,10 +136,10 @@ export function ProfileOwnScreen() {
             <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-3 lg:gap-[var(--space-4)]">
               {plans.slice(0, phone ? 2 : 3).map((tr) => <li key={tr.id}><Card type="plan" href={`/plan/${tr.id}`} title={tr.title} imageSrc={tr.thumbnail_url} author={p?.name ?? ''} saves={String(tr.save_count)} stops={`${k('saved.plan.stops', { count: tr.stop_count })} · ${k('saved.plan.days', { count: tr.day_count })}`} /></li>)}
             </ul>
-            <IntlLink href="/saved?tab=my-plans" className="inline-flex h-[var(--control-height-md)] items-center self-start px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover">{GAP.openSaved}</IntlLink>
+            <IntlLink href="/saved?tab=my-plans" className={cn(linkButtonVariants({ variant: 'ghost', size: 'md' }), 'self-start')}>{GAP.openSaved}</IntlLink>
           </section>
         ) : plans ? (
-          <EmptyState container="bordered" title={k('profile.trips.empty.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('profile.trips.empty.cta')}</IntlLink>}>{k('profile.trips.empty.desc')}</EmptyState>
+          <EmptyState container="bordered" title={k('profile.trips.empty.title')} action={<IntlLink href="/map?plan=new" className={linkButtonVariants({ size: 'md' })}>{k('profile.trips.empty.cta')}</IntlLink>}>{k('profile.trips.empty.desc')}</EmptyState>
         ) : null}
         {badges.data ? (
           <RowSection
@@ -350,7 +351,7 @@ function PlannersEmpty({ className }: { className?: string }) {
   const k = useCdKey()
   const t = useCd()
   return (
-    <EmptyState container="plain" icon={<Trophy />} className={className} title={k('leaderboard.empty.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{t('CD1594')}</IntlLink>}>{t('CD1593')}</EmptyState>
+    <EmptyState container="plain" icon={<Trophy />} className={className} title={k('leaderboard.empty.title')} action={<IntlLink href="/map?plan=new" className={linkButtonVariants({ size: 'md' })}>{t('CD1594')}</IntlLink>}>{t('CD1593')}</EmptyState>
   )
 }
 

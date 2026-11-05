@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import * as Sentry from '@sentry/nextjs';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { Button } from '@/components/library/Button';
+import { Button, linkButtonVariants } from '@/components/library/Button';
 import { EmptyState } from '@/components/library/Feedback';
 
 // Fallback outside the v2 shell (v2 pages have their own error screen).
@@ -31,7 +31,7 @@ export default function ErrorBoundary({
             <Button onClick={reset}>{t('cta')}</Button>
             <Link
               href="/"
-              className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"
+              className={linkButtonVariants({ variant: 'secondary' })}
             >
               {t('goHome')}
             </Link>
