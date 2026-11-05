@@ -82,10 +82,14 @@ const MAP_STYLE = { light: process.env.NEXT_PUBLIC_NAVER_MAP_STYLE_LIGHT ?? '', 
 const styleFor = (theme: string | undefined) => (theme === 'dark' ? MAP_STYLE.dark || MAP_STYLE.light : MAP_STYLE.light)
 // The pins are inverse to the map: dark pins on a light map, light pins only on the dark style.
 const toneFor = (styleId: string): 'light' | 'dark' => (styleId && styleId === MAP_STYLE.dark && styleId !== MAP_STYLE.light ? 'dark' : 'light')
-// A style loads the SDK's GL module. With it loaded, every map (the vector map and the raster map
+// A style, or the look alone, loads the SDK's GL module. With it loaded, every map (the vector map and the raster map
 // it falls back to) draws zoom z at the raster scale of z + 1; the canvas keeps raster zoom levels
 // (pin tiers, clusters, fits) and shifts them at the SDK calls.
-const GL_SDK = !!(MAP_STYLE.light || MAP_STYLE.dark)
+// The B4K map look (mapLook.ts): on only when set to 'on'. Without a style ID it draws over Naver's
+// default vector style, so the vector map is used and the look follows the site theme.
+const RESTYLE = process.env.NEXT_PUBLIC_NAVER_MAP_RESTYLE === 'on'
+const RESTYLE_ONLY = RESTYLE && !MAP_STYLE.light && !MAP_STYLE.dark
+const GL_SDK = !!(MAP_STYLE.light || MAP_STYLE.dark) || RESTYLE
 const ZOOM_SHIFT = GL_SDK ? 1 : 0
 // Map labels follow the site language: the name in that language with the Korean name below it.
 // NAVER has no Traditional Chinese, so zh-TW gets Simplified Chinese labels; pt-BR gets English.
@@ -95,8 +99,6 @@ let sdkLang: string | null = null
 // A style the SDK cannot load (a wrong ID, a server error) makes it tear the map down without an
 // event: the canvas checks for that this long and then makes the raster map instead.
 const GL_WATCH_MS = 20000
-// The B4K map look over the style (mapLook.ts): on only when set to 'on', apart from the style IDs.
-const RESTYLE = process.env.NEXT_PUBLIC_NAVER_MAP_RESTYLE === 'on'
 
 // window.naver and window.navermap_authFailure are declared in components/map/NaverMapCanvas.tsx.
 
@@ -175,8 +177,9 @@ const sdkAlive = () => typeof window !== 'undefined' && !!window.naver?.maps
 // The GL module runs after maps.js itself: a map made before it is a raster map.
 const sdkLoaded = (lang: string) => sdkAlive() && sdkLang === lang && (!GL_SDK || !!window.naver.maps.jsContentLoaded)
 
-// The theme only picks the style when a separate dark style is set; otherwise it is not watched.
-const THEMED = !!MAP_STYLE.dark && MAP_STYLE.dark !== MAP_STYLE.light
+// The theme picks the style when a separate dark style is set, and the look when only the look is on;
+// otherwise it is not watched.
+const THEMED = (!!MAP_STYLE.dark && MAP_STYLE.dark !== MAP_STYLE.light) || RESTYLE_ONLY
 const subscribeTheme = (onChange: () => void) => {
   if (!THEMED) return () => {}
   const o = new MutationObserver(onChange)
@@ -190,14 +193,17 @@ type MapView = { lat: number; lng: number; zoom: number }
 // loads), so a theme or language switch makes a new map (a new canvas, keyed by both) at the view
 // the old one had.
 export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(props, ref) {
-  const styleId = styleFor(useSyncExternalStore(subscribeTheme, themeNow, () => undefined))
+  const theme = useSyncExternalStore(subscribeTheme, themeNow, () => undefined)
+  const styleId = styleFor(theme)
+  // The map's tone: the style's, or with the look alone the site theme's.
+  const tone = RESTYLE_ONLY ? (theme === 'dark' ? 'dark' : 'light') : toneFor(styleId)
   const lang = NAVER_LANG[useLocale()] ?? 'en'
   const view = useRef<MapView | null>(null)
-  return <Canvas key={`${styleId}:${lang}`} ref={ref} {...props} styleId={styleId} lang={lang} view={view} />
+  return <Canvas key={`${styleId}:${tone}:${lang}`} ref={ref} {...props} styleId={styleId} tone={tone} lang={lang} view={view} />
 })
 
-const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; view: MutableRefObject<MapView | null> }>(function Canvas(
-  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', savedIds, routeLegs, onBounds, onZoom, center, openAt, holdOpen, fitStops, fitBottom = 0, fitTop, userLocation, label, errorText, styleId, lang, view },
+const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; tone: 'light' | 'dark'; lang: string; view: MutableRefObject<MapView | null> }>(function Canvas(
+  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', savedIds, routeLegs, onBounds, onZoom, center, openAt, holdOpen, fitStops, fitBottom = 0, fitTop, userLocation, label, errorText, styleId, tone, lang, view },
   ref,
 ) {
   const el = useRef<HTMLDivElement>(null)
@@ -225,7 +231,7 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
   const [failed, setFailed] = useState(false)
   // The style could not load: this canvas shows the raster map instead.
   const [glFailed, setGlFailed] = useState(false)
-  const gl = !!styleId && !glFailed
+  const gl = (!!styleId || RESTYLE_ONLY) && !glFailed
   // The vector map is on: without a GPU fit for it (or after a lost WebGL context) the SDK draws
   // the raster map with the Naver look, and the pins stay dark.
   const [glOn, setGlOn] = useState(false)
@@ -409,7 +415,7 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
       mapDataControl: false,
       scaleControl: false,
       logoControlOptions: { position: N.Position.BOTTOM_LEFT },
-      ...(gl ? { gl: true, customStyleId: styleId } : {}),
+      ...(gl ? { gl: true, ...(styleId ? { customStyleId: styleId } : {}) } : {}),
     })
     if (gl) {
       // The SDK empties the map element when it tears the map down; until the map's init, that
@@ -431,7 +437,7 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
     const glCheck = () => {
       const on = !!map.current.getOptions('gl')
       setGlOn(on)
-      if (on && RESTYLE) keepMapLook(map.current, toneFor(styleId))
+      if (on && RESTYLE) keepMapLook(map.current, tone)
     }
     const idle = () => {
       // The SDK can still fire events on a map it has torn down.
@@ -648,7 +654,7 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
       {clientId ? (
         <Script src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}&submodules=geocoder${GL_SDK ? ',gl' : ''}&language=${lang}`} strategy="afterInteractive" onReady={sdkReady} onError={() => setFailed(true)} />
       ) : null}
-      <div ref={el} role="application" aria-label={label} data-map-tone={toneFor(glOn ? styleId : '')} className="size-full" />
+      <div ref={el} role="application" aria-label={label} data-map-tone={glOn ? tone : 'light'} className="size-full" />
       <div ref={icons} hidden>
         {Object.entries(PLACE_TYPE_ICON).map(([type, Icon]) => <Icon key={type} data-type={type} width="100%" height="100%" aria-hidden />)}
         {Object.entries(KIND_ICON).map(([kind, Icon]) => <Icon key={kind} data-type={`kind-${kind}`} width="100%" height="100%" aria-hidden />)}
