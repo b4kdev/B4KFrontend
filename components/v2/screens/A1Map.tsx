@@ -258,6 +258,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // loads a published plan for editing.
   // How the plan in the editor started, for plan_create: a hand-off, or places added by hand.
   const planFlow = useRef<PlanFlow>('manual')
+  // A plan saved whose publish step failed: the next Save updates and publishes it, never a second plan.
+  const savedUnpublished = useRef<string | null>(null)
   const takeHandoff = () => {
     const handoff = takeCourseHandoff()
     if (!handoff) return
@@ -458,15 +460,22 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     // After a reload the flow comes back with the draft; this session's hand-off otherwise.
     const flow = PLAN_FLOWS.includes(draft.plan.flow as PlanFlow) ? (draft.plan.flow as PlanFlow) : planFlow.current
     try {
-      const res = await send('/api/plans', 'POST', {
-        title: planName.trim(),
-        stops,
-        source: flow,
-        is_published: false,
-      })
-      const id: string | undefined = res?.plan?.id
+      let id: string | undefined = savedUnpublished.current ?? undefined
+      if (id) {
+        await send(`/api/plans/${id}`, 'PUT', { title: planName.trim(), stops })
+      } else {
+        const res = await send('/api/plans', 'POST', {
+          title: planName.trim(),
+          stops,
+          source: flow,
+          is_published: false,
+        })
+        id = res?.plan?.id
+        savedUnpublished.current = id ?? null
+      }
       // Saving publishes it, as on the live map.
       if (id) await send(`/api/plans/${id}`, 'PATCH', { is_published: true })
+      savedUnpublished.current = null
       track('plan_create', { flow, days: draft.days, stops: stops.length, locale, screen_id: 'map' })
       track('plan_save', { days: draft.days, stops: stops.length, is_public: !!id, locale, screen_id: 'map' })
       planFlow.current = 'manual'
@@ -733,7 +742,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         title={t('CD1536')}
         body={GAP.discardBody(order.length)}
         cancel={<Button variant="secondary" data-autofocus onClick={() => setDiscardOpen(false)}>{k('map.plan.discardCancel')}</Button>}
-        confirm={<Button variant="danger" onClick={() => { draft.discard(); planFlow.current = 'manual'; setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
+        confirm={<Button variant="danger" onClick={() => { draft.discard(); planFlow.current = 'manual'; savedUnpublished.current = null; setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
       />
       <Dialog
         open={!!pendingEdit && !saveFirst && !saveOpen}
