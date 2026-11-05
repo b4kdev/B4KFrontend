@@ -56,7 +56,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
       <span
         aria-hidden
         className={cn(
-          'inline-flex size-[var(--control-box-size)] shrink-0 items-center justify-center rounded-none border-[length:var(--border-width-1-5)] border-ui-border-strong text-ui-fg-inverse',
+          'inline-flex size-[var(--control-box-size)] shrink-0 items-center justify-center rounded-[var(--radius-2xs)] border-[length:var(--border-width-1-5)] border-ui-border-strong text-ui-fg-inverse',
           'peer-checked:border-ui-bg-inverse peer-checked:bg-ui-bg-inverse',
           indeterminate ? 'border-ui-bg-inverse bg-ui-bg-inverse' : !invalid && BOX_HOVER_EMPTY,
           invalid && 'border-ui-danger-border',
@@ -139,8 +139,8 @@ export function Toggle({ label, hideLabel, checked, onCheckedChange, disabled, c
           '[&:enabled:hover:not(:focus-visible)]:shadow-[0_0_0_var(--space-1)_var(--color-state-hover)] [&:enabled:hover:focus-visible]:shadow-[shadow:var(--focus-ring),0_0_0_var(--space-1)_var(--color-state-hover)]',
           checked
             ? 'bg-ui-bg-inverse'
-            : 'border-[length:var(--border-width-1-5)] border-ui-border-strong enabled:hover:border-ui-border-focus enabled:hover:bg-ui-state-hover',
-          disabled && (checked ? 'bg-ui-bg-disabled' : 'border-ui-border-disabled bg-ui-bg-disabled'),
+            : 'bg-control-fill enabled:hover:bg-control-fill-hover',
+          disabled && 'bg-ui-bg-disabled',
           disabled && 'cursor-not-allowed',
         )}
       >
