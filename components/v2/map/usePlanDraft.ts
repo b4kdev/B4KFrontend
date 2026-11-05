@@ -180,6 +180,18 @@ export function usePlanDraft(opts?: { onSaveFailed?: () => void }) {
     let i = 0
     commit({ ...plan, stops: plan.stops.map((s) => (dayOf(s.poi_id) === day ? byId.get(ids[i++])! : s)) })
   }
+  /** Moves stop `id` to the end of day `day` (a drop on that day's tab); a full day takes nothing. */
+  const moveToDay = (id: string, day: number) => {
+    if (dayOf(id) === day || day < 1 || day > days || countOn(day) >= PER_DAY) return
+    const stop = plan.stops.find((s) => s.poi_id === id)
+    if (!stop) return
+    // Right after that day's last stop, so the list stays grouped by day.
+    const rest = plan.stops.filter((s) => s.poi_id !== id)
+    let at = rest.length
+    rest.forEach((s, i) => { if (dayOf(s.poi_id) <= day) at = i + 1 })
+    if (!rest.some((s) => dayOf(s.poi_id) <= day)) at = 0
+    commit({ ...plan, stops: [...rest.slice(0, at), stop, ...rest.slice(at)], days: { ...plan.days, [id]: day } })
+  }
   const setDuration = (id: string, min: number) => commit({ ...plan, durations: { ...plan.durations, [id]: min } })
   const addDay = () => setDays((d) => Math.min(MAX_DAYS, d + 1))
   /** Deletes day `n` with its stops; later days move up one. The first day of a one-day plan stays. */
@@ -208,7 +220,7 @@ export function usePlanDraft(opts?: { onSaveFailed?: () => void }) {
     setPlan({ stops: [], durations: {}, days: {} })
     setDays(1)
   }
-  return { plan, days, dayOf, countOn, add, remove, move, setDuration, addDay, removeDay, replace, discard }
+  return { plan, days, dayOf, countOn, add, remove, move, moveToDay, setDuration, addDay, removeDay, replace, discard }
 }
 
 export function formatMinutes(min: number, f: (key: string, v: Record<string, number>) => string) {

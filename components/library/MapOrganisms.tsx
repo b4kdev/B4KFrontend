@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
+import { useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
 import { ArrowLeft, Bookmark, ChevronDown, Clock, Folder, Globe, Heart, Lock, MapPin, Minus, Plus, Share2, Sparkles, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Avatar } from './Avatar'
@@ -15,7 +15,7 @@ import { IconButton } from './IconButton'
 import { Image } from './Image'
 import { ListItem } from './Lists'
 import { Tabs } from './NavGroups'
-import { TransportMode } from './Plan'
+import { StopBadge, TransportMode } from './Plan'
 import { FOCUS_RING_INSET, HIT_AREA } from './styles'
 import { Link as IntlLink } from '@/i18n/navigation'
 
@@ -113,6 +113,10 @@ export type PlanCartProps = {
   onSelect?: (id: string) => void
   /** Reorder within a day: put stop `id` in the slot of `toId` (drag the grip, or arrow keys on it). */
   onMove?: (id: string, toId: string) => void
+  /** Drop a dragged stop on a day tab: the stop moves to the end of that day. */
+  onMoveToDay?: (id: string, day: Day) => void
+  /** A day that takes no more stops (a drop on its tab is refused). */
+  dayFull?: (day: Day) => boolean
   onSave: () => void
   onDiscard: () => void
   labels: {
@@ -152,14 +156,55 @@ function TrayTile() {
   )
 }
 
-export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, durationMenu, onRemove, onSelect, onMove, onSave, onDiscard, labels, className }: PlanCartProps) {
+export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, durationMenu, onRemove, onSelect, onMove, onMoveToDay, dayFull, onSave, onDiscard, labels, className }: PlanCartProps) {
   const id = useId()
-  const [dragId, setDragId] = useState<string | null>(null)
+  // A drag in progress: the held stop follows the pointer freely; the other stops of its day slide
+  // out of the way to show where it will land; over a day tab the tab lights up and a drop moves the
+  // stop to that day (as dropping a file on a folder).
+  const [drag, setDrag] = useState<{ id: string; day: Day; from: number; to: number; dy: number; height: number; dropDay: Day | null; x: number; y: number; outside: boolean } | null>(null)
+  const dragId = drag?.id ?? null
+  const start = useRef<{ y: number; centers: number[]; ids: string[] } | null>(null)
+  const list = useRef<HTMLOListElement>(null)
+  // Where each row was on screen at the drop, so the rows glide from there into their new places.
+  const settle = useRef<Map<string, number> | null>(null)
+  const rowsOf = () => Array.from(list.current?.querySelectorAll<HTMLElement>('[data-drag-item]') ?? [])
+  useLayoutEffect(() => {
+    const before = settle.current
+    if (!before) return
+    settle.current = null
+    for (const el of rowsOf()) {
+      const top = before.get(el.dataset.dragItem ?? '')
+      if (top === undefined) continue
+      const shift = top - el.getBoundingClientRect().top
+      if (!shift) continue
+      el.style.transition = 'none'
+      el.style.transform = `translateY(${shift}px)`
+      void el.offsetHeight
+      el.style.transition = ''
+      el.style.transform = ''
+    }
+  })
   // Screen readers hear where a moved stop landed (keyboard move, or the end of a drag).
   const [announce, setAnnounce] = useState('')
   const say = (s: PlanStop, sameDay: PlanStop[], position: number) => labels.moved && setAnnounce(labels.moved(s.name, position, sameDay.length))
+  const endDrag = (s: PlanStop) => {
+    const d = drag
+    setDrag(null)
+    start.current = null
+    if (!d || d.id !== s.id) return
+    settle.current = new Map(rowsOf().map((el) => [el.dataset.dragItem ?? '', el.getBoundingClientRect().top]))
+    const sameDay = stops.filter((x) => x.day === s.day)
+    if (d.dropDay && onMoveToDay) {
+      onMoveToDay(s.id, d.dropDay)
+      return
+    }
+    if (d.to !== d.from && onMove) onMove(s.id, sameDay[d.to].id)
+    const order = sameDay.filter((x) => x.id !== s.id)
+    order.splice(d.to, 0, s)
+    say(s, order, d.to + 1)
+  }
   // Grip handlers: arrow keys swap with the next stop of the same day; a pointer drag (mouse or
-  // touch) moves the stop into the slot of the same-day row under the pointer as it passes.
+  // touch) moves the stop freely, and it lands where the pointer lets go.
   const handleProps = (s: PlanStop) =>
     onMove
       ? {
@@ -174,23 +219,44 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
           },
           onPointerDown: (e: PointerEvent<HTMLButtonElement>) => {
             e.currentTarget.setPointerCapture(e.pointerId)
-            setDragId(s.id)
+            const rows = rowsOf().filter((el) => stops.find((x) => x.id === el.dataset.dragItem)?.day === s.day)
+            const ids = rows.map((el) => el.dataset.dragItem ?? '')
+            const boxes = rows.map((el) => el.getBoundingClientRect())
+            const from = ids.indexOf(s.id)
+            start.current = { y: e.clientY, centers: boxes.map((b) => b.top + b.height / 2), ids }
+            setDrag({ id: s.id, day: s.day, from, to: from, dy: 0, height: boxes[from]?.height ?? 0, dropDay: null, x: e.clientX, y: e.clientY, outside: false })
           },
           onPointerMove: (e: PointerEvent<HTMLButtonElement>) => {
-            if (dragId !== s.id) return
-            const over = document.elementFromPoint(e.clientX, e.clientY)?.closest('[data-stop-id]')?.getAttribute('data-stop-id')
-            if (over && over !== s.id && stops.find((x) => x.id === over)?.day === s.day) onMove(s.id, over)
+            const st = start.current
+            if (!st || drag?.id !== s.id) return
+            const dy = e.clientY - st.y
+            const tab = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>('[role="tab"]')
+            const n = Number(tab?.id.replace(/^tab-/, ''))
+            const dropDay = tab && list.current?.parentElement?.contains(tab) && n && n !== s.day && !dayFull?.(n as Day) ? (n as Day) : null
+            // The landing slot: how many of the other stops sit above the held stop's middle.
+            const mid = st.centers[drag.from] + dy
+            const to = dropDay ? drag.from : st.centers.filter((c, i) => i !== drag.from && c < mid).length
+            // Out of the list (up at the day tabs) the list clips the row, so a copy follows the pointer.
+            const box = list.current?.getBoundingClientRect()
+            const outside = !!box && (e.clientY < box.top || e.clientY > box.bottom || e.clientX < box.left || e.clientX > box.right)
+            setDrag({ ...drag, dy, to, dropDay, x: e.clientX, y: e.clientY, outside })
           },
-          onPointerUp: () => {
-            if (dragId === s.id) {
-              const sameDay = stops.filter((x) => x.day === s.day)
-              say(s, sameDay, sameDay.findIndex((x) => x.id === s.id) + 1)
-            }
-            setDragId(null)
+          onPointerUp: () => endDrag(s),
+          onPointerCancel: () => {
+            setDrag(null)
+            start.current = null
           },
-          onPointerCancel: () => setDragId(null),
         }
       : undefined
+  // The slide of each row while a stop is held: the held row under the pointer, the rows between its
+  // old and new slot one row up or down.
+  const dragStyle = (s: PlanStop): CSSProperties | undefined => {
+    if (!drag || s.day !== drag.day) return undefined
+    if (s.id === drag.id) return { transform: `translateY(${drag.dy}px)`, transition: 'none', zIndex: 20, position: 'relative', opacity: drag.outside ? 0 : 1 }
+    const i = start.current?.ids.indexOf(s.id) ?? -1
+    const shift = drag.to > drag.from && i > drag.from && i <= drag.to ? -drag.height : drag.to < drag.from && i >= drag.to && i < drag.from ? drag.height : 0
+    return { transform: shift ? `translateY(${shift}px)` : undefined }
+  }
   if (state === 'empty') {
     return (
       <section aria-label={labels.region} className={cn('relative rounded-t-tile bg-ui-bg-raised py-[var(--space-4)] pl-[calc(var(--space-4)+var(--nav-tile-size)+var(--space-4))] pr-[var(--space-4)]', className)}>
@@ -202,11 +268,21 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
   }
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
-    <section aria-labelledby={id} className={cn('relative flex flex-col rounded-t-tile bg-ui-bg-raised text-ui-fg', state === 'open' ? 'h-full gap-[var(--space-3)] p-[var(--space-4)]' : 'pl-[calc(var(--nav-tile-size)+var(--space-4))]', className)}>
+    <section
+      aria-labelledby={id}
+      className={cn(
+        'relative flex flex-col rounded-t-tile bg-ui-bg-raised text-ui-fg',
+        state === 'open'
+          ? 'h-full gap-[var(--space-3)] p-[var(--space-4)]'
+          // Collapsed: hovering the bar tints the whole cart, inside its own rounded corners.
+          : 'pl-[calc(var(--nav-tile-size)+var(--space-4))] transition-[background-image] has-[>button:hover]:[background-image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]',
+        className,
+      )}
+    >
       {state === 'collapsed' ? <TrayTile /> : null}
       <p aria-live="polite" className="sr-only">{announce}</p>
       {/* Open: the Left panel's color/bg, everything inside the root's 16 padding; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
-      <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('relative flex w-full flex-col gap-[var(--space-3)] text-left hover:bg-ui-state-hover', HIT_AREA, state === 'collapsed' && 'p-[var(--space-4)]', FOCUS_RING_INSET)}>
+      <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('relative flex w-full flex-col gap-[var(--space-3)] text-left', HIT_AREA, state === 'collapsed' ? 'p-[var(--space-4)]' : 'rounded-sq-md hover:bg-ui-state-hover', FOCUS_RING_INSET)}>
         <span className="flex w-full items-center gap-[var(--space-2)]">
           <span id={id} aria-live="polite" className="min-w-0 flex-1 type-title-card font-[var(--font-weight-extrabold)]">{summary}</span>
           <span className="sr-only">{state === 'open' ? labels.close : labels.open}</span>
@@ -240,6 +316,8 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
                   day: (i + 1) as Day,
                   // The × shows on the selected day only.
                   onClose: onRemoveDay && days > 1 && activeDay === i + 1 ? () => onRemoveDay((i + 1) as Day) : undefined,
+                  // Lights up while a held stop is over it: letting go moves the stop to this day.
+                  dropTarget: drag?.dropDay === i + 1,
                   closeLabel: labels.removeDay?.(i + 1),
                 })),
               ]}
@@ -253,7 +331,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
               </button>
             ) : null}
           </div>
-          <ol className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
+          <ol ref={list} className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
             {/* No stops yet: the hint under the tabs, Save off and no Discard (nothing to discard). */}
             {/* In All days the hint sits under the Day 1 label, as drawn. */}
             {stops.length ? null : (
@@ -263,16 +341,25 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
               </li>
             )}
             {shown.map((s, i) => (
-              <li key={s.id} className="list-none">
+              <li key={s.id} data-drag-item={s.id} style={dragStyle(s)} className="list-none transition-transform duration-short4 ease-out-strong motion-reduce:transition-none">
                 {/* All days: each day's stops under its label, numbered from 1 in that day (Figma Day label). */}
                 {activeDay === 'all' && shown[i - 1]?.day !== s.day ? <p className="type-eyebrow-category uppercase text-ui-fg-muted">{labels.day(s.day)}</p> : null}
                 <ul>
                   <PlanStopRow name={s.name} thumbnail={s.imageSrc} number={stops.filter((x) => x.day === s.day).indexOf(s) + 1} day={s.day} duration={s.duration} durationLabel={s.durationLabel} onDuration={onDuration ? () => onDuration(s.id) : undefined} durationMenu={durationMenu?.(s.id)} onRemove={() => onRemove(s.id)} removeLabel={labels.remove(s.name)} reorderLabel={labels.reorder(s.name)} stopId={s.id} handleProps={handleProps(s)} dragging={dragId === s.id} onSelect={onSelect ? () => onSelect(s.id) : undefined} />
                 </ul>
-                {s.leg && i < shown.length - 1 ? <div className="ml-[calc(var(--space-12)+var(--space-2))]"><TransportMode mode="estimate" modeLabel={labels.about} time={s.leg} /></div> : null}
+                {s.leg && i < shown.length - 1 ? <div className={cn('ml-[calc(var(--space-12)+var(--space-2))]', dragId === s.id && 'invisible')}><TransportMode mode="estimate" modeLabel={labels.about} time={s.leg} /></div> : null}
               </li>
             ))}
           </ol>
+          {drag?.outside ? (() => {
+            const held = stops.find((x) => x.id === drag.id)
+            return held ? (
+              <div aria-hidden className="pointer-events-none fixed z-50 flex max-w-[240px] items-center gap-[var(--space-2)] rounded-sq-md bg-ui-bg-elevated px-[var(--space-3)] py-[var(--space-2)] shadow-menu" style={{ left: drag.x + 12, top: drag.y + 12 }}>
+                <StopBadge number={stops.filter((x) => x.day === held.day).indexOf(held) + 1} day={held.day} />
+                <span className="truncate type-body-base text-ui-fg">{held.name}</span>
+              </div>
+            ) : null
+          })() : null}
           {dayTotal ? (
             <p className="flex items-center gap-[var(--space-1)] type-body-caption text-ui-fg-muted">
               <Clock aria-hidden className="size-[var(--icon-size-xs)] shrink-0" />

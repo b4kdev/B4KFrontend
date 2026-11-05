@@ -41,6 +41,10 @@ import { regionName } from '../map/areaName'
 // Live data from /api/home/*; a row with no content hides; a row that fails shows an
 // Empty state Error with Try again.
 
+// Desktop: the hero sits in the content column; the poster keeps its own 12 margin, so the column's
+// side padding is 12 less, and the poster's edges meet the rows' edges.
+const HERO_COLUMN = 'lg:mx-auto lg:w-full lg:max-w-[calc(var(--container-xl)+var(--space-8)*2)] lg:px-[calc(var(--space-8)-var(--space-3))]'
+
 // The hero's action button look.
 const HERO_ACTION = 'b4k-press inline-flex h-[var(--control-height-2xl)] items-center rounded-sq-lg bg-field-fg px-[var(--space-7)] type-label-button text-base text-photo-action-fg focus-visible:shadow-focus-ring focus-visible:outline-none'
 
@@ -81,7 +85,9 @@ export function SectionSkeletons({ cardClassName }: { cardClassName?: string }) 
 function HomeSkeleton({ heroClassName }: { heroClassName: string }) {
   return (
     <div aria-busy className="pb-[var(--space-8)]">
-      <Skeleton className={`h-[var(--hero-height-home)] w-full ${heroClassName}`} />
+      <div className={HERO_COLUMN}>
+        <Skeleton className={`h-[var(--hero-height-home)] w-full ${heroClassName} lg:m-[var(--space-3)] lg:w-[calc(100%-var(--space-3)*2)] lg:rounded-tile`} />
+      </div>
       <div className="mx-auto w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] px-[var(--grid-gutter-mobile)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
         <SectionSkeletons />
       </div>
@@ -294,6 +300,8 @@ export function HomeScreen() {
       {/* Two slides: no autoplay, the arrows wrap around. Slide 1 is the brand slide (no photo, the
           media surface with the fade); its action opens Quick plan. The drawn K-Drama slide waits for
           its photo. */}
+      {/* Desktop: the hero keeps to the content column, the same edges as the rows under it. */}
+      <div className={HERO_COLUMN}>
       <Carousel type="hero" label={t('CD0388')} previousLabel={t('CD0390')} nextLabel={t('CD0389')} slideLabel={(n) => t('CD0391', { n })}>
         {[
           { id: 'plan', eyebrow: t('CD0463'), title: t('CD1781'), subtitle: t('CD1782'), image: null, action: <button type="button" onClick={openQuickPlan} className={HERO_ACTION}>{t('CD0738')}</button> },
@@ -302,6 +310,7 @@ export function HomeScreen() {
           <Hero key={s.id} className={heroPhone} as={i === 0 ? 'h1' : 'h2'} priority={i === 0} imageSrc={s.image} eyebrow={s.eyebrow} title={s.title} subtitle={s.subtitle} action={s.action} />
         ))}
       </Carousel>
+      </div>
 
       <div className="mx-auto flex w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] flex-col gap-[var(--space-12)] px-[var(--grid-gutter-mobile)] pb-[calc(var(--space-6)+var(--space-8))] pt-[var(--space-6)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
         {sectionOrder(order.data?.order).map((key) => (

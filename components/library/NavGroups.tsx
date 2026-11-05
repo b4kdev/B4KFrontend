@@ -16,7 +16,7 @@ export type TabsProps = {
   /** Accessible name of the tab list. */
   label: string
   /** `onClose` adds a × inside the tab (e.g. delete a plan day); `closeLabel` is its accessible name. */
-  tabs: { id: string; label: ReactNode; day?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8; color?: string; glyph?: GlyphName; disabled?: boolean; onClose?: () => void; closeLabel?: string }[]
+  tabs: { id: string; label: ReactNode; day?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8; color?: string; glyph?: GlyphName; disabled?: boolean; onClose?: () => void; closeLabel?: string; dropTarget?: boolean }[]
   value: string
   onValueChange: (id: string) => void
   /** Figma Width: Hug (scrolls sideways) or Equal (shares the width, mobile). */
@@ -29,6 +29,9 @@ export type TabsProps = {
 }
 
 /** Tabs: switches views in a page or panel, never filters. Arrow keys move. */
+// A tab a held item is over (e.g. a plan stop over a day tab): filled with its colour, a little larger.
+const DROP_TARGET = 'scale-[1.08] bg-[var(--tab-c,var(--color-bg-inverse))] text-field-fg shadow-menu'
+
 export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollLabels, className }: TabsProps) {
   const list = useRef<HTMLDivElement>(null)
   const [edges, setEdges] = useState({ start: false, end: false })
@@ -85,20 +88,24 @@ export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollL
       {tabs.map((t) =>
         t.onClose ? (
           <div key={t.id} role="presentation" className="relative flex shrink-0 items-center">
-            <Tab id={`tab-${t.id}`} selected={t.id === value} day={t.day} color={t.color} glyph={t.glyph} disabled={t.disabled} onClick={() => onValueChange(t.id)} className="shrink-0 pr-[var(--space-8)]">
+            <Tab id={`tab-${t.id}`} selected={t.id === value} day={t.day} color={t.color} glyph={t.glyph} disabled={t.disabled} onClick={() => onValueChange(t.id)} className={cn('shrink-0 pr-[var(--space-8)]', t.dropTarget && DROP_TARGET)}>
               {t.label}
             </Tab>
             <button
               type="button"
               aria-label={t.closeLabel}
               onClick={t.onClose}
-              className="absolute right-[var(--space-2)] inline-flex size-[var(--space-5)] items-center justify-center rounded-sq-xs text-current opacity-70 hover:opacity-100 hover:bg-ui-state-hover hover:text-ui-fg focus-visible:shadow-focus-ring focus-visible:outline-none"
+              // The × takes the tab's own ink: black on a day or colour fill, the inverse ink on the inverse fill.
+              className={cn(
+                'absolute right-[var(--space-2)] inline-flex size-[var(--space-5)] items-center justify-center rounded-sq-xs opacity-70 hover:opacity-100 focus-visible:shadow-focus-ring focus-visible:outline-none',
+                t.id !== value ? 'text-ui-fg-muted hover:bg-ui-state-hover hover:text-ui-fg' : t.day || t.color ? 'text-field-fg' : 'text-ui-fg-inverse',
+              )}
             >
               <X aria-hidden className="size-[var(--icon-size-xs)]" />
             </button>
           </div>
         ) : (
-          <Tab key={t.id} id={`tab-${t.id}`} selected={t.id === value} day={t.day} color={t.color} glyph={t.glyph} disabled={t.disabled} onClick={() => onValueChange(t.id)} className={width === 'equal' ? 'flex-1 justify-center' : 'shrink-0'}>
+          <Tab key={t.id} id={`tab-${t.id}`} selected={t.id === value} day={t.day} color={t.color} glyph={t.glyph} disabled={t.disabled} onClick={() => onValueChange(t.id)} className={cn(width === 'equal' ? 'flex-1 justify-center' : 'shrink-0', t.dropTarget && DROP_TARGET)}>
             {t.label}
           </Tab>
         ),
