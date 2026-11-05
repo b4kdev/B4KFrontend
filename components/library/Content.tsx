@@ -217,7 +217,8 @@ export type CalendarDayProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'ty
   position?: 'start' | 'end' | 'in-range'
 }
 
-/** Calendar day: 40 square; start and end = bg-inverse; in range = state-selected; today = ring. */
+/** Calendar day: 40 square; start and end = bg-inverse squircles; in range = state-selected (a flat band);
+ * today = a squircle ring. */
 export const CalendarDay = forwardRef<HTMLButtonElement, CalendarDayProps>(function CalendarDay(
   { day, label, today, position, className, ...props },
   ref,
@@ -231,7 +232,7 @@ export const CalendarDay = forwardRef<HTMLButtonElement, CalendarDayProps>(funct
       aria-pressed={end || undefined}
       className={cn(
         'relative inline-flex size-[var(--control-height-md)] items-center justify-center',
-        end ? 'bg-ui-bg-inverse type-body-label text-ui-fg-inverse' : position === 'in-range' ? 'bg-ui-state-selected type-body-base text-ui-fg' : 'type-body-base text-ui-fg enabled:hover:bg-ui-state-hover',
+        end ? 'rounded-sq-sm bg-ui-bg-inverse type-body-label text-ui-fg-inverse' : position === 'in-range' ? 'bg-ui-state-selected type-body-base text-ui-fg' : 'rounded-sq-sm type-body-base text-ui-fg enabled:hover:bg-ui-state-hover',
         'disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
         // Focus ring: 2px square, 2px in from the cell edge.
         'focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:-outline-offset-[calc(var(--focus-ring-offset)_+_var(--focus-ring-width))] focus-visible:outline-ui-border-focus',
@@ -240,7 +241,7 @@ export const CalendarDay = forwardRef<HTMLButtonElement, CalendarDayProps>(funct
       )}
       {...props}
     >
-      {today && !end ? <span aria-hidden className="absolute inset-0 rounded-full border border-ui-border-strong" /> : null}
+      {today && !end ? <span aria-hidden className="absolute inset-0 rounded-sq-sm border border-ui-border-strong" /> : null}
       <span className="relative">{day}</span>
     </button>
   )
