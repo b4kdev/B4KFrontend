@@ -40,9 +40,11 @@ button, [role="button"], [role="tab"] {
   user-select: none;
 }
 
-/* Korean display type: words never break mid-syllable block. */
-:lang(ko) :is(.type-display-hero, .type-display-hub, .type-display-h1, .type-display-h2, .type-display-h3, .type-title-card) {
+/* Korean text, every style (body included): lines break between words, never inside one; a string
+   with no break point (a long English word, a URL) still wraps inside its box. Both inherit. */
+:lang(ko) {
   word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 .type-title-card { overflow-wrap: anywhere; }
 
