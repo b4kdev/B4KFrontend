@@ -11,12 +11,12 @@ export const badgeVariants = cva(
   {
     variants: {
       variant: {
-        strong: 'rounded-sq-xs bg-ui-bg-inverse text-ui-fg-inverse type-eyebrow-badge',
-        normal: 'rounded-sq-xs bg-control-fill text-ui-fg type-eyebrow-category',
-        inverse: 'rounded-sq-xs bg-ui-bg-inverse text-ui-fg-inverse type-eyebrow-category',
-        outline: 'rounded-sq-xs border border-ui-border-strong text-ui-fg-muted type-eyebrow-category',
-        'on-image': 'rounded-sq-xs bg-photo-action-fill text-photo-action-fg type-eyebrow-category',
-        critical: 'rounded-sq-xs border border-ui-danger-border bg-ui-danger-bg text-ui-danger type-eyebrow-category',
+        strong: 'rounded-sq-sm bg-ui-bg-inverse text-ui-fg-inverse type-eyebrow-badge',
+        normal: 'rounded-sq-sm bg-control-fill text-ui-fg type-eyebrow-category',
+        inverse: 'rounded-sq-sm bg-ui-bg-inverse text-ui-fg-inverse type-eyebrow-category',
+        outline: 'rounded-sq-sm border border-ui-border-strong text-ui-fg-muted type-eyebrow-category',
+        'on-image': 'rounded-sq-sm bg-photo-action-fill text-photo-action-fg type-eyebrow-category',
+        critical: 'rounded-sq-sm border border-ui-danger-border bg-ui-danger-bg text-ui-danger type-eyebrow-category',
       },
     },
     defaultVariants: { variant: 'normal' },
