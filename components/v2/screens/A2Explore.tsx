@@ -24,6 +24,7 @@ import {
   Tabs,
   TreeItem,
   TreeView,
+  categoryAttr,
   categoryStyle,
   placeTypeOf,
 } from '@/components/library'
@@ -297,7 +298,7 @@ export function CategoryScreen({ category }: { category: string }) {
                 title={rowLabel(category, s.id)}
                 seeAll={{ href: rowHref(category, s.id), label: t('CD1309') }}
                 featured={featured ? <Card type="featured" href={`/map?poi=${featured.poi_id}`} title={poiName(featured, locale)} imageSrc={featured.primary_image_url} eyebrow={t('CD0151')} meta={placeArea(featured, locale)} trending={featured.is_trending ? t('CD0313') : undefined} /> : undefined}
-                cards={s.items.filter((p) => p !== featured).map((p) => <PoiCard key={p.poi_id} p={p} act={act} />)}
+                cards={s.items.filter((p) => p !== featured).map((p) => <PoiCard key={p.poi_id} p={p} act={act} category={category} />)}
               />
               {i === 0 ? cue : null}
             </div>
@@ -350,7 +351,8 @@ export function CategoryScreen({ category }: { category: string }) {
   )
 }
 
-function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceActions> }) {
+/** A place on an Explore row; `category` is the page's category slug, set as data-category on the card. */
+function PoiCard({ p, act, category }: { p: ExplorePoi; act: ReturnType<typeof usePlaceActions>; category?: string }) {
   const locale = useLocale()
   const t = useCd()
   const dDay = useDDay()
@@ -363,6 +365,7 @@ function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceAct
       imageSrc={p.primary_image_url}
       placeType={placeTypeOf(p.interest_category)}
       meta={placeArea(p, locale)}
+      category={categoryAttr(category)}
       trending={p.is_trending ? t('CD0313') : undefined}
       sponsored={p.is_partner ? t('CD0476') : undefined}
       dDay={p.event_date ? dDay(p.event_date) : undefined}
@@ -418,9 +421,9 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const subtitle = fromHome ? (row === 'trending' ? t('CD1566') : t('CD1568')) : undefined
   const places: { id: string; node: React.ReactNode; domain?: string }[] = fromHome
     ? row === 'trending'
-      ? (trending.data ?? []).map((p) => ({ id: p.poi_id, domain: p.display_domain, node: <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} meta={regionName(p.display_region ?? '', locale)} /> }))
+      ? (trending.data ?? []).map((p) => ({ id: p.poi_id, domain: p.display_domain, node: <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} category={categoryAttr(p.display_domain)} meta={regionName(p.display_region ?? '', locale)} /> }))
       : (plans.data ?? []).map((p) => ({ id: p.id, node: <Card type="plan" href={`/plan/${p.id}`} title={p.title} save={planAct(String(p.id), p.title)} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={[t('CD0473', { n: p.stop_count }), ...(p.duration_days ? [t('CD1232', { count: p.duration_days })] : [])].join(' · ')} /> }))
-    : (explore.data?.sections.find((s) => s.id === row)?.items ?? []).map((p) => ({ id: p.poi_id, node: <PoiCard p={p} act={act} /> }))
+    : (explore.data?.sections.find((s) => s.id === row)?.items ?? []).map((p) => ({ id: p.poi_id, node: <PoiCard p={p} act={act} category={category} /> }))
   const chipped = chip === 'all' ? places : places.filter((p) => p.domain === chip)
   // Newest: plans come sorted by the server; places by when B4K added them (a higher id is newer,
   // as the backend's own newest order), places without a numeric id keep their place at the end.

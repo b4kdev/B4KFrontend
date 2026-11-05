@@ -29,6 +29,7 @@ import {
   TopAppBar,
   buttonVariants,
   type FilterGroup,
+  categoryAttr,
   placeTypeOf,
 } from '@/components/library'
 import { usePhone } from '@/components/library/hooks'
@@ -194,7 +195,7 @@ export function SearchScreen() {
           <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-4)] lg:grid-cols-3 lg:gap-x-[var(--space-4)]">
             {(show === 'places' ? data.places : data.places.slice(0, phone ? 4 : 3)).map((p) => (
               <li key={p.poi_id}>
-                <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, placeName(p))} title={placeName(p)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} meta={p.display_region ? regionName(p.display_region, locale) : ''} />
+                <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, placeName(p))} title={placeName(p)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} category={categoryAttr(p.display_domain)} meta={p.display_region ? regionName(p.display_region, locale) : ''} />
               </li>
             ))}
           </ul>
