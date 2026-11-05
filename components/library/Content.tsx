@@ -63,7 +63,7 @@ export const PLACE_TYPE_COLOR: Record<PlaceType, string> = {
   heritage: 'var(--map-type-heritage)',
   exhibition: 'var(--map-type-heritage)',
   nature: 'var(--map-type-park)',
-  hallyu: 'var(--category-pop)',
+  hallyu: 'var(--map-type-other)',
   activity: 'var(--map-type-other)',
   sightseeing: 'var(--map-type-other)',
   place: 'var(--map-type-other)',
