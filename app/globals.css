@@ -93,7 +93,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
 
 /* Press feedback: tiles and buttons shrink a little on pointer-down. */
 .b4k-press { transition: transform var(--duration-short3) var(--easing-out-strong); }
-.b4k-press:active { transform: scale(var(--press-scale)); }
+/* A card does not shrink while one of its own buttons (Save, Like, Add) is pressed; the button has its own press. */
+.b4k-press:active:not(:has(button:active)) { transform: scale(var(--press-scale)); }
 
 /* Cards (fine pointer only): the photo zooms a little, the title underlines, a category glyph tilts. */
 .b4k-card-media img { transition: transform var(--duration-long4) var(--easing-out-strong); }
