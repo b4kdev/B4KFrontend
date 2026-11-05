@@ -124,7 +124,7 @@ export type ZoomControlProps = {
 export function ZoomControl({ onZoomIn, onZoomOut, zoomInLabel, zoomOutLabel, atMax, atMin, className }: ZoomControlProps) {
   return (
     // One squircle split in two: square inner corners, a 1px divider in the control hover fill.
-    <div className={cn('flex flex-col rounded-sq-md shadow-overlay', className)}>
+    <div className={cn('flex flex-col rounded-sq-md shadow-control', className)}>
       <MapControl icon={<Plus />} label={zoomInLabel} onClick={onZoomIn} disabled={atMax} aria-disabled={atMax} className="rounded-b-none border-b border-control-fill-hover shadow-none" />
       <MapControl icon={<Minus />} label={zoomOutLabel} onClick={onZoomOut} disabled={atMin} aria-disabled={atMin} className="rounded-t-none shadow-none" />
     </div>

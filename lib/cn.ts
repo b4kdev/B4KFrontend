@@ -8,7 +8,7 @@ const twMerge = extendTailwindMerge({
   extend: {
     classGroups: {
       'font-size': [{ text: ['2xs'] }],
-      shadow: [{ shadow: ['focus-ring', 'float', 'menu', 'overlay', 'pin', 'sheet'] }],
+      shadow: [{ shadow: ['focus-ring', 'float', 'menu', 'overlay', 'pin', 'sheet', 'cluster', 'control'] }],
       rounded: [{ rounded: ['sq-xs', 'sq-sm', 'sq-md', 'sq-lg', 'tile', 'tile-inner'] }],
       duration: [
         {

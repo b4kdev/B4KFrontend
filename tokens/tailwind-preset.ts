@@ -153,6 +153,8 @@ const b4kTokens: Partial<Config> = {
         'overlay': 'var(--shadow-overlay)',
         'pin': 'var(--shadow-pin)',
         'sheet': 'var(--shadow-sheet)',
+        'cluster': 'var(--shadow-cluster)',
+        'control': 'var(--shadow-control)',
       },
       backgroundImage: {
         'overlay-fade': 'var(--gradient-overlay-fade)',

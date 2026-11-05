@@ -74,7 +74,7 @@ export const ClusterBubble = forwardRef<HTMLButtonElement, ClusterBubbleProps>(f
       type="button"
       aria-label={label}
       className={cn(
-        'relative inline-flex shrink-0 items-center justify-center rounded-sq-md border-[length:var(--border-width-pin)] border-map-ui-cluster-stroke bg-map-ui-cluster-fill type-body-label font-[var(--font-weight-extrabold)] tabular-nums text-map-ui-cluster-fg shadow-float',
+        'relative inline-flex shrink-0 items-center justify-center rounded-sq-md border-[length:var(--border-width-pin)] border-map-ui-cluster-stroke bg-map-ui-cluster-fill type-body-label font-[var(--font-weight-extrabold)] tabular-nums text-map-ui-cluster-fg shadow-cluster',
         count < 10 ? 'size-[var(--map-cluster-size-sm)]' : count < 50 ? 'size-[var(--map-cluster-size-md)]' : 'size-[var(--map-cluster-size-lg)]',
         FOCUS_RING,
         HIT_AREA,
@@ -108,7 +108,7 @@ export const MapControl = forwardRef<HTMLButtonElement, MapControlProps>(functio
       type="button"
       aria-label={label}
       className={cn(
-        'inline-flex size-[var(--control-height-xl)] shrink-0 items-center justify-center rounded-sq-md bg-ui-bg-raised text-ui-fg shadow-overlay',
+        'inline-flex size-[var(--control-height-xl)] shrink-0 items-center justify-center rounded-sq-md bg-ui-bg-raised text-ui-fg shadow-control',
         'enabled:hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] enabled:active:bg-[image:linear-gradient(var(--color-state-pressed),var(--color-state-pressed))]',
         'disabled:cursor-not-allowed disabled:text-ui-fg-disabled [&>svg]:size-[var(--icon-size-md)]',
         CONTROL_FOCUS_RING,
