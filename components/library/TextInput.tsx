@@ -8,7 +8,7 @@ import { FIELD_FRAME } from './styles'
 
 // Text input (Figma Atoms › Text input). Placeholder only by default; showLabel for
 // longer forms (the label element is always there, sr-only when hidden). Sizes lg 44, md 40.
-// Square, border-strong; focus = 2px border-focus, no ring. Error = danger border, message below
+// Squircle field frame (FIELD_FRAME); focus = border-focus, no ring. Error = danger border, message below
 // (replaces help), aria-invalid. No success state.
 
 export type TextInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> & {
