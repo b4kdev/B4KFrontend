@@ -72,6 +72,8 @@ const CLUSTER_GRID_PX = 60
 // more saves sit higher, then the pin lower on screen.
 const Z_LAYER = 100000
 const Z = { other: 1, cluster: 2, saved: 3, stop: 4, selected: 5 }
+/** With one day chosen, the other days' stops and lines stay on the map, faded to this opacity. */
+const OTHER_DAY_OPACITY = 0.35
 // Custom map style: a My Style ID published in the Naver Style Editor, which only the vector (GL)
 // map shows. Unset, the map is the raster map with the Naver tiles. The dark theme uses the dark
 // style, or the light one while no dark style is set (as the raster tiles are light in both themes).
@@ -143,8 +145,8 @@ const clusterHtml = (n: number, key: string, name: string) => {
   return `<div style="${HIT};width:52px;height:52px" class="b4k-map-marker" role="button" tabindex="0" data-cluster="${esc(key)}" aria-label="${esc(name)}"><span aria-hidden="true" style="box-sizing:border-box;width:var(${size});height:var(${size});border-radius:var(--radius-md);background:var(--map-cluster-fill);border:var(--border-width-pin) solid var(--map-cluster-stroke);box-shadow:var(--shadow-cluster);display:flex;align-items:center;justify-content:center;color:var(--map-cluster-fg);font:var(--font-weight-extrabold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);font-variant-numeric:tabular-nums">${n}</span></div>`
 }
 // Numbered plan pin: a 34 squircle in the day colour, 3 px black ring in both themes, 14/800 black figures.
-const stopHtml = (p: MapPoi, order: number, day: number, selected: boolean) =>
-  `<div style="${HIT}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected, categoryOf(p))}><span style="box-sizing:border-box;width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:var(--radius-sm);background:${selected ? 'var(--map-pin-selected)' : `var(--plan-day-${day})`};color:var(--plan-day-${day}-fg);border:var(--border-width-pin) solid var(--field-fg);box-shadow:var(--shadow-pin);display:flex;align-items:center;justify-content:center;font:var(--font-weight-extrabold) var(--font-size-sm)/1 var(--font-family-body);font-variant-numeric:tabular-nums">${order}</span></div>`
+const stopHtml = (p: MapPoi, order: number, day: number, selected: boolean, dimmed = false) =>
+  `<div style="${HIT}${dimmed ? `;opacity:${OTHER_DAY_OPACITY}` : ''}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected, categoryOf(p))}><span style="box-sizing:border-box;width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:var(--radius-sm);background:${selected ? 'var(--map-pin-selected)' : `var(--plan-day-${day})`};color:var(--plan-day-${day}-fg);border:var(--border-width-pin) solid var(--field-fg);box-shadow:var(--shadow-pin);display:flex;align-items:center;justify-content:center;font:var(--font-weight-extrabold) var(--font-size-sm)/1 var(--font-family-body);font-variant-numeric:tabular-nums">${order}</span></div>`
 
 // Inset kept around fitted pins: space-20, read from the token so the map follows it.
 function fitPadding(bottom: number, top?: number) {
@@ -597,8 +599,8 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
     }
     if (sel) addPin(sel)
     for (const s of planStops) {
-      if (activeDay !== 'all' && s.day !== activeDay) continue
-      add(s.poi.coords_lat, s.poi.coords_lng, stopHtml(s.poi, s.order, s.day, s.poi.poi_id === selectedId), { x: 22, y: 22 }, () => select.current(s.poi.poi_id), (s.poi.poi_id === selectedId ? Z.selected : Z.stop) * Z_LAYER)
+      const dimmed = activeDay !== 'all' && s.day !== activeDay && s.poi.poi_id !== selectedId
+      add(s.poi.coords_lat, s.poi.coords_lng, stopHtml(s.poi, s.order, s.day, s.poi.poi_id === selectedId, dimmed), { x: 22, y: 22 }, () => select.current(s.poi.poi_id), (s.poi.poi_id === selectedId ? Z.selected : dimmed ? Z.saved : Z.stop) * Z_LAYER)
     }
     if (focusedId) requestAnimationFrame(() => el.current?.querySelector<HTMLElement>(`[data-poi-id="${CSS.escape(focusedId)}"]`)?.focus())
   }, [pois, planStops, selectedId, zoom, activeDay, mapReady, savedIds]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -612,21 +614,24 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
     const theme = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'
     const color = (day: number) => TOKEN_HEX[theme].planDays[Math.min(Math.max(day, 1), 8) - 1].fill
     const paths = routeLegs
-      ? routeLegs.filter((l) => activeDay === 'all' || l.day === activeDay).map((l) => ({ day: l.day, path: l.path }))
+      ? routeLegs.map((l) => ({ day: l.day, path: l.path }))
       : Array.from(new Set(planStops.map((s) => s.day)))
-          .filter((d) => activeDay === 'all' || d === activeDay)
           .map((day) => ({ day, path: planStops.filter((s) => s.day === day).sort((a, b) => a.order - b.order).map((s) => ({ lat: s.poi.coords_lat, lng: s.poi.coords_lng })) }))
     // One line per day in the day colour, 5 wide with round ends; light maps draw a 9 wide dark casing
     // under each line so the pastel colours hold on light ground.
     const casing = TOKEN_HEX[theme].routeCasing
     const width = (name: string, fallback: number) => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || fallback
+    // With one day chosen, the other days stay drawn under it at OTHER_DAY_OPACITY, casing included.
     for (const p of paths) {
       if (p.path.length < 2) continue
       const path = p.path.map((x) => new N.LatLng(x.lat, x.lng))
+      const other = activeDay !== 'all' && p.day !== activeDay
+      const opacity = other ? OTHER_DAY_OPACITY : 1
+      const z = other ? 0 : 2
       if (casing) {
-        lines.current.push(new N.Polyline({ map: map.current, path, strokeColor: casing, strokeWeight: width('--route-casing-width', 9), strokeOpacity: 1, strokeLineCap: 'round', strokeLineJoin: 'round', zIndex: 1 }))
+        lines.current.push(new N.Polyline({ map: map.current, path, strokeColor: casing, strokeWeight: width('--route-casing-width', 9), strokeOpacity: opacity, strokeLineCap: 'round', strokeLineJoin: 'round', zIndex: z + 1 }))
       }
-      lines.current.push(new N.Polyline({ map: map.current, path, strokeColor: color(p.day), strokeWeight: width('--route-width', 5), strokeOpacity: 1, strokeLineCap: 'round', strokeLineJoin: 'round', zIndex: 2 }))
+      lines.current.push(new N.Polyline({ map: map.current, path, strokeColor: color(p.day), strokeWeight: width('--route-width', 5), strokeOpacity: opacity, strokeLineCap: 'round', strokeLineJoin: 'round', zIndex: z + 2 }))
     }
   }, [planStops, routeLegs, activeDay, ready])
 
