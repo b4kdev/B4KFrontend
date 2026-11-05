@@ -83,7 +83,10 @@ export function useSearchBox({ viewport, initial = '', open: startOpen = false }
     if (!text.trim()) return
     recents.add(text.trim())
     setOpen(false)
-    router.push(`/search?q=${encodeURIComponent(text.trim())}`)
+    // A category name (a Trending chip, or the name typed as is) opens that category's page: the
+    // text search matches place names, not categories, so it would find nothing.
+    const category = CATEGORIES.find(([, cd]) => t(cd).toLowerCase() === text.trim().toLowerCase())
+    router.push(category ? `/explore/${category[0]}` : `/search?q=${encodeURIComponent(text.trim())}`)
   }
   const suggestions = (
     <SearchSuggestions
