@@ -9,6 +9,7 @@ import './tokens.css';
 import './globals.css';
 import { fontVariables } from './fonts';
 import VercelTools from '@/components/analytics/VercelTools';
+import FaviconTheme from '@/components/v2/FaviconTheme';
 
 // The site default (every page without its own title): the Home title and description of the
 // visitor's language from the Copy Deck.
@@ -45,6 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         {children}
         <VercelTools />
+        <FaviconTheme />
       </body>
     </html>
   );
