@@ -54,6 +54,7 @@ import { useRoutedLegs } from '../map/useRoutedLegs'
 import { CATEGORIES, jsonFetch } from './A2Home'
 import { PLAN_FLOWS, previousScreenSource, type PlaceSource, type PlanFlow } from '@/lib/place-source'
 import { fitDays } from '@/lib/plan-days'
+import { httpError } from '@/lib/session-expired'
 
 // The map (A1): Map browse
 //, Place selected, Plan in progress / Plan editor, Save plan
@@ -63,7 +64,7 @@ import { fitDays } from '@/lib/plan-days'
 
 const send = (url: string, method: string, body?: unknown) =>
   fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }).then((r) => {
-    if (!r.ok) throw new Error(String(r.status))
+    if (!r.ok) throw httpError(r.status)
     return r.json().catch(() => ({}))
   })
 

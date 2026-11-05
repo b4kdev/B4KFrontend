@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import type { MapPoi } from '@/hooks/useMapPois'
 import { clearDraftPlan, getDraftPlan, saveDraftPlan, type DraftPlan } from '@/lib/draft-plan'
 import type { ItineraryDetail } from '@/lib/itinerary'
+import { httpError } from '@/lib/session-expired'
 
 // The plan in progress, stored as on the live map: guests in
 // localStorage (b4k_draft_plan), signed-in users in their account draft (/api/plans/draft,
@@ -114,7 +115,11 @@ export function usePlanDraft(opts?: { onSaveFailed?: () => void }) {
     }
     fetch('/api/plans/draft', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: p.body, keepalive: true })
       .then((res) => {
-        if (!res.ok) return failed()
+        if (!res.ok) {
+          // 401: the session ended; httpError opens sign-in over the map.
+          httpError(res.status)
+          return failed()
+        }
         failing.current = false
         // Saved to the account: a device copy from an earlier failure is no longer needed.
         clearDraftPlan()

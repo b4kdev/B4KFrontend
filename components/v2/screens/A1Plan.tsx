@@ -37,6 +37,7 @@ import { useV2Shell } from '../V2Shell'
 import { usePendingAction } from '../V2SignInGate'
 import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
 import { discardDraftPlan, draftStopCount, formatMinutes } from '../map/usePlanDraft'
+import { httpError } from '@/lib/session-expired'
 
 // Published plan (A1): the Itinerary panel beside the map (desktop)
 // or in the map Bottom sheet (phones). Owner: Edit plan, Share, Delete and leg modes; visitor:
@@ -48,7 +49,7 @@ type Day = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
 
 const send = (url: string, method: string, body?: unknown) =>
   fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }).then((r) => {
-    if (!r.ok) throw new Error(String(r.status))
+    if (!r.ok) throw httpError(r.status)
     return r.json().catch(() => ({}))
   })
 

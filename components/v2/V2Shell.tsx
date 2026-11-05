@@ -33,6 +33,7 @@ import { LanguageMenu, LanguageSheet } from './V2Settings'
 import { SignInGate, type GateRequest } from './V2SignInGate'
 import { V2HeaderSearch } from './V2Search'
 import { rememberPath } from '@/lib/place-source'
+import { SESSION_EXPIRED_EVENT } from '@/lib/session-expired'
 
 // Shell of the preview (original layout with the Header, the shell layout still open): desktop Header + rail,
 // phones Top app bar (per page) + Navigation bar + Drawer. Quick plan, Drawer and the language
@@ -126,6 +127,13 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const [cookie, setCookie] = useState<string | null>('unknown')
   const [online, setOnline] = useState(true)
   const [gate, setGate] = useState<GateRequest | null>(null)
+  // The server answered a signed-in action with 401 (the session ended): sign in over the page, then
+  // carry on there (lib/session-expired). An open gate stays as it is.
+  useEffect(() => {
+    const onExpired = () => setGate((g) => g ?? { title: t('CD0054'), run: () => {} })
+    window.addEventListener(SESSION_EXPIRED_EVENT, onExpired)
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, onExpired)
+  }, [t])
   const [held, setHeld] = useState(false)
   const router = useRouter()
   const signOut = useV2SignOut()

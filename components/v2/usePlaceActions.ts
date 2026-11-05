@@ -10,11 +10,12 @@ import { useCd, useCdKey } from './cd'
 import { useV2Shell } from './V2Shell'
 import { usePendingAction } from './V2SignInGate'
 import { useBadgeUnlock } from './badges'
+import { httpError } from '@/lib/session-expired'
 
 const jsonFetch = <T,>(url: string) => fetch(url).then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(r.status)))
 const send = (url: string, method: string, body: unknown) =>
   fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then((r) => {
-    if (!r.ok) throw new Error(String(r.status))
+    if (!r.ok) throw httpError(r.status)
   })
 
 /**
