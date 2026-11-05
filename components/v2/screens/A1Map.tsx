@@ -53,6 +53,7 @@ import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_DAYS, MAX_STOPS, PER_DAY, draftSto
 import { useRoutedLegs } from '../map/useRoutedLegs'
 import { CATEGORIES, jsonFetch } from './A2Home'
 import { PLAN_FLOWS, previousScreenSource, type PlaceSource, type PlanFlow } from '@/lib/place-source'
+import { fitDays } from '@/lib/plan-days'
 
 // The map (A1): Map browse
 //, Place selected, Plan in progress / Plan editor, Save plan
@@ -263,7 +264,9 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const takeHandoff = () => {
     const handoff = takeCourseHandoff()
     if (!handoff) return
-    const { stops, name, source } = handoff
+    const { name, source } = handoff
+    // Plan from saved places can return more than 8 days (one per area): fit them to the plan limits.
+    const stops = fitDays(handoff.stops)
     planFlow.current = source
     const had = draft.plan.stops.length > 0
     const asPois: MapPoi[] = stops.map((s) => ({ poi_id: s.poi_id, name_ko: s.name_ko, name_preferred: s.name_preferred, coords_lat: s.coords_lat, coords_lng: s.coords_lng, display_region: s.display_region ?? null, primary_image_url: s.primary_image_url }))
