@@ -14,6 +14,9 @@ import { Spinner } from './Spinner'
 // Content and planning molecules (Figma Molecules): Section header, Save-like
 // overlay, Achievement badge, AI input, Plan stop row, Itinerary stop.
 
+
+/** Row arrows: a disabled arrow keeps its control fill and icon, faded to 40%. */
+const ROW_ARROW = 'disabled:bg-control-fill disabled:text-ui-fg disabled:opacity-40'
 export type SectionHeaderProps = {
   /** Figma Title: the h2 of the section (display/h3). */
   title: string
@@ -51,8 +54,8 @@ export function SectionHeader({ title, subtitle, seeAll, arrows, id, className }
       ) : null}
       {arrows ? (
         <div className={cn('flex gap-[var(--space-2)] max-lg:hidden', fits && 'hidden')}>
-          <IconButton variant="secondary" label={arrows.previousLabel} icon={<ChevronLeft />} disabled={arrows.atStart} onClick={arrows.onPrevious} />
-          <IconButton variant="secondary" label={arrows.nextLabel} icon={<ChevronRight />} disabled={arrows.atEnd} onClick={arrows.onNext} />
+          <IconButton variant="secondary" label={arrows.previousLabel} icon={<ChevronLeft />} disabled={arrows.atStart} onClick={arrows.onPrevious} className={ROW_ARROW} />
+          <IconButton variant="secondary" label={arrows.nextLabel} icon={<ChevronRight />} disabled={arrows.atEnd} onClick={arrows.onNext} className={ROW_ARROW} />
         </div>
       ) : null}
     </div>
