@@ -43,7 +43,7 @@ export function Avatar({ size = 'md', src, name, initials, decorative, className
   const [failed, setFailed] = useState(false)
   const letters = initials ?? initialsOf(name)
   const box = cn(
-    'relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-ui-state-selected text-ui-fg [&>svg]:text-ui-fg-muted',
+    'relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent-avatar text-avatar-fg [&>svg]:text-avatar-fg',
     SIZE[size],
     className,
   )

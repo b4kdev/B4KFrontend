@@ -15,20 +15,20 @@ export type TabsProps = {
   /** Accessible name of the tab list. */
   label: string
   /** `onClose` adds a × inside the tab (e.g. delete a plan day); `closeLabel` is its accessible name. */
-  tabs: { id: string; label: ReactNode; day?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8; disabled?: boolean; onClose?: () => void; closeLabel?: string }[]
+  tabs: { id: string; label: ReactNode; day?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8; color?: string; disabled?: boolean; onClose?: () => void; closeLabel?: string }[]
   value: string
   onValueChange: (id: string) => void
   /** Figma Width: Hug (scrolls sideways) or Equal (shares the width, mobile). */
   width?: 'hug' | 'equal'
   /** Hug: accessible names of the scroll arrows shown when the tabs overflow. */
   scrollLabels?: { previous: string; next: string }
-  /** 1px color/border line under the row (Figma: Profile header tabs); false in carts, panels and cards. */
+  /** Kept for callers; the tabs sit on a track in every place, so it draws nothing. */
   baseline?: boolean
   className?: string
 }
 
 /** Tabs: switches views in a page or panel, never filters. Arrow keys move. */
-export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollLabels, baseline = true, className }: TabsProps) {
+export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollLabels, className }: TabsProps) {
   const list = useRef<HTMLDivElement>(null)
   const [edges, setEdges] = useState({ start: false, end: false })
   const measure = useCallback(() => {
@@ -74,25 +74,31 @@ export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollL
       aria-label={label}
       onKeyDown={onKey}
       onScroll={measure}
-      className={cn('flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden', baseline && 'border-b border-ui-border', scrollLabels ? 'min-w-0 flex-1' : className)}
+      className={cn(
+        // The track: sunken, 4 inside, tabs 2 apart; it hugs its tabs unless they share the width.
+        // More tabs than fit: the track scrolls with proximity snapping.
+        'flex max-w-full snap-x snap-proximity gap-[var(--space-0-5)] overflow-x-auto rounded-tab-track bg-tile-surface-sunken p-[var(--space-1)] shadow-track-inset [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+        width === 'equal' ? 'w-full' : 'w-fit',
+        scrollLabels ? 'min-w-0 flex-1' : className,
+      )}
     >
       {tabs.map((t) =>
         t.onClose ? (
           <div key={t.id} role="presentation" className="relative flex shrink-0 items-center">
-            <Tab id={`tab-${t.id}`} selected={t.id === value} day={t.day} disabled={t.disabled} onClick={() => onValueChange(t.id)} className="shrink-0 pr-[var(--space-8)]">
+            <Tab id={`tab-${t.id}`} selected={t.id === value} day={t.day} color={t.color} disabled={t.disabled} onClick={() => onValueChange(t.id)} className="shrink-0 pr-[var(--space-8)]">
               {t.label}
             </Tab>
             <button
               type="button"
               aria-label={t.closeLabel}
               onClick={t.onClose}
-              className="absolute right-[var(--space-2)] inline-flex size-[var(--space-5)] items-center justify-center rounded-full text-ui-fg-muted hover:bg-ui-state-hover hover:text-ui-fg focus-visible:shadow-focus-ring focus-visible:outline-none"
+              className="absolute right-[var(--space-2)] inline-flex size-[var(--space-5)] items-center justify-center rounded-full text-current opacity-70 hover:bg-ui-state-hover hover:opacity-100 focus-visible:shadow-focus-ring focus-visible:outline-none"
             >
               <X aria-hidden className="size-[var(--icon-size-xs)]" />
             </button>
           </div>
         ) : (
-          <Tab key={t.id} id={`tab-${t.id}`} selected={t.id === value} day={t.day} disabled={t.disabled} onClick={() => onValueChange(t.id)} className={width === 'equal' ? 'flex-1 justify-center' : 'shrink-0'}>
+          <Tab key={t.id} id={`tab-${t.id}`} selected={t.id === value} day={t.day} color={t.color} disabled={t.disabled} onClick={() => onValueChange(t.id)} className={width === 'equal' ? 'flex-1 justify-center' : 'shrink-0'}>
             {t.label}
           </Tab>
         ),
@@ -127,7 +133,7 @@ export function SegmentedControl({ label, options, value, onValueChange, classNa
     e.preventDefault()
   }
   return (
-    <div role="radiogroup" aria-label={label} onKeyDown={onKey} className={cn('flex gap-[var(--space-1)] rounded-full bg-ui-state-selected p-[var(--space-1)]', className)}>
+    <div role="radiogroup" aria-label={label} onKeyDown={onKey} className={cn('flex gap-[var(--space-0-5)] rounded-tab-track bg-tile-surface-sunken p-[var(--space-1)] shadow-track-inset', className)}>
       {options.map((o) => (
         <Segment key={o.id} selected={o.id === value} tabIndex={o.id === value ? 0 : -1} onClick={() => onValueChange(o.id)}>
           {o.label}
@@ -239,7 +245,7 @@ export function ProgressIndicator({ step, steps, label, className }: ProgressInd
       <span className="type-body-caption text-ui-fg-muted">{label}</span>
       <div role="progressbar" aria-label={label} aria-valuemin={1} aria-valuemax={steps} aria-valuenow={step} aria-valuetext={label} className="flex gap-[var(--space-1)]">
         {Array.from({ length: steps }, (_, i) => (
-          <span key={i} className={cn('h-[var(--progress-height)] flex-1 rounded-full', i < step ? 'bg-ui-fg' : 'bg-ui-state-selected')} />
+          <span key={i} className={cn('h-[var(--progress-height)] flex-1 rounded-full', i < step ? 'bg-accent-progress' : 'bg-progress-track')} />
         ))}
       </div>
     </div>

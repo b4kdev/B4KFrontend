@@ -35,13 +35,27 @@ export type HeroProps = {
 /** Hero: full-width photo with gradient/overlay-fade, text bottom left; always in the Dark color mode. */
 export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action, as: H = 'h1', priority = true, className }: HeroProps) {
   return (
-    <section data-theme="dark" className={cn('relative w-full overflow-hidden bg-ui-bg-media text-ui-fg', size === 'home' ? 'h-[var(--hero-height-home)]' : 'h-[var(--hero-height-section)]', className)}>
-      <Image ratio="16:9" src={imageSrc} alt="" priority={priority} sizes="100vw" className="!absolute inset-0 h-full !aspect-auto" />
-      <div aria-hidden className="absolute inset-0 bg-overlay-fade" />
-      <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-[var(--space-3)] p-[var(--space-11)] max-md:px-[var(--space-6)] max-md:pb-[var(--space-10)] max-md:pt-[var(--space-6)]">
-        {eyebrow ? <Badge variant="on-image">{eyebrow}</Badge> : null}
-        <H className={cn(size === 'home' ? 'type-display-hero' : 'type-display-hub', 'min-w-0 max-w-[min(960px,100%)] hyphens-auto [overflow-wrap:anywhere] [text-wrap:balance] [&:lang(ko)]:break-keep')}>{title}</H>
-        {subtitle ? <p className="max-w-[400px] type-body-long text-ui-fg-muted max-md:hidden">{subtitle}</p> : null}
+    // A photo hero is scoped dark (white type over the photo's fade). Without a photo the hero is the
+    // accent field: the hero role colours, the same in both modes.
+    <section
+      data-theme={imageSrc ? 'dark' : undefined}
+      className={cn(
+        'relative w-full overflow-hidden rounded-panel',
+        imageSrc ? 'bg-ui-bg-media text-ui-fg' : 'bg-field-hero text-field-fg shadow-[var(--material-edge),var(--shadow-rest)]',
+        size === 'home' ? 'h-[var(--hero-height-home)]' : 'h-[var(--hero-height-section)]',
+        className,
+      )}
+    >
+      {imageSrc ? (
+        <>
+          <Image ratio="16:9" src={imageSrc} alt="" priority={priority} sizes="100vw" className="!absolute inset-0 h-full !aspect-auto" />
+          <div aria-hidden className="absolute inset-0 bg-overlay-fade" />
+        </>
+      ) : null}
+      <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-[var(--space-3)] p-[var(--space-11)] max-md:px-[var(--space-6)] max-md:pb-[var(--space-10)] max-md:pt-[var(--space-6)] motion-safe:animate-[b4k-hero-in_420ms_var(--easing-out-strong)_both]">
+        {eyebrow ? <Badge variant="on-image" className={imageSrc ? undefined : 'bg-field-inset text-field-fg'}>{eyebrow}</Badge> : null}
+        <H className={cn(size === 'home' ? 'type-display-hero' : 'type-display-hub', 'min-w-0 max-w-[min(1040px,100%)] hyphens-auto [overflow-wrap:anywhere] [text-wrap:balance] [&:lang(ko)]:break-keep')}>{title}</H>
+        {subtitle ? <p className={cn('max-w-[34ch] text-lg leading-[1.5] max-md:hidden', imageSrc ? 'text-ui-fg-muted' : 'text-field-fg')}>{subtitle}</p> : null}
         {action ? <div className="pt-[var(--space-3)]">{action}</div> : null}
       </div>
     </section>
@@ -113,8 +127,8 @@ export function Carousel({ type, label, children, seeAll, subtitle, previousLabe
         <Pagination type="dots" label={label} page={i + 1} pageCount={items.length} statusText={slideLabel(i + 1, items.length)} />
       </div>
       <div className="absolute bottom-[var(--space-5)] right-[var(--space-6)] flex gap-[var(--space-2)] max-lg:hidden" data-theme="dark">
-        <IconButton variant="secondary" label={previousLabel} icon={<ChevronLeft />} onClick={() => setI((i - 1 + items.length) % items.length)} />
-        <IconButton variant="secondary" label={nextLabel} icon={<ChevronRight />} onClick={() => setI((i + 1) % items.length)} />
+        <IconButton label={previousLabel} icon={<ChevronLeft />} onClick={() => setI((i - 1 + items.length) % items.length)} className="bg-field-inset text-field-fg backdrop-blur-[12px] hover:bg-field-inset" />
+        <IconButton label={nextLabel} icon={<ChevronRight />} onClick={() => setI((i + 1) % items.length)} className="bg-field-inset text-field-fg backdrop-blur-[12px] hover:bg-field-inset" />
       </div>
     </section>
   )
@@ -139,7 +153,7 @@ export function Footer({ links, copyright, navLabel, company, className }: Foote
   // Desktop: the links, Company details and the copyright in one row; the company line opens under
   // it (12 apart). Phones: the links, Company details (opens the company line), the copyright.
   return (
-    <footer className={cn('flex flex-wrap items-center gap-x-[var(--space-4)] gap-y-[var(--space-3)] border-t border-ui-border bg-ui-bg px-[var(--space-8)] py-[var(--space-6)] type-body-caption text-ui-fg-muted max-md:flex-col max-md:flex-nowrap max-md:items-start max-md:px-[var(--space-4)]', className)}>
+    <footer className={cn('flex flex-wrap items-center gap-x-[var(--space-4)] gap-y-[var(--space-3)] bg-ui-bg px-[var(--space-8)] py-[var(--space-6)] type-body-caption text-ui-fg-muted max-md:flex-col max-md:flex-nowrap max-md:items-start max-md:px-[var(--space-4)]', className)}>
       <nav aria-label={navLabel} className="flex-1">
         <ul className="flex flex-wrap gap-x-[var(--space-4)] gap-y-[var(--space-2)]">
           {links.map((l) => (
@@ -230,7 +244,7 @@ export type NowSeoulCardProps = {
 /** Now Seoul card: local time, weather, three forecast days, one live tip. */
 export function NowSeoulCard({ label, eyebrow, time, date, temperature, condition, weatherIcon, forecast, tip, className }: NowSeoulCardProps) {
   return (
-    <section aria-label={label} className={cn('flex flex-col gap-[var(--space-4)] border border-ui-border bg-ui-bg-raised p-[var(--space-4)] text-ui-fg', className)}>
+    <section aria-label={label} className={cn('flex flex-col gap-[var(--space-4)] rounded-sq-md bg-tile-surface shadow-rest p-[var(--space-4)] text-ui-fg', className)}>
       <span className="type-eyebrow-category text-ui-fg-muted">{eyebrow}</span>
       <div className="flex items-center gap-[var(--space-6)]">
         <div className="flex flex-col gap-[var(--space-0-5)]">

@@ -88,12 +88,12 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
           <Logo type="mark" className="h-9" />
         </IntlLink>
       ) : null}
-      <ul className={cn('flex w-full flex-col items-center gap-[var(--space-1)]', showLogo && 'pt-[var(--space-2)]')}>
+      <ul className={cn('flex w-[56px] flex-col items-center gap-[var(--space-1)] rounded-nav-item bg-nav-tile-idle py-[var(--space-1-5)] shadow-rest', showLogo && 'mt-[var(--space-2)]')}>
         {DESTS.map(({ id, href, Icon }) => (
           <li key={id} className={RAIL_CELL}>
             <Tooltip text={labels[id]} wrapperClassName="flex w-full">
               <IntlLink href={href} aria-current={active === id ? 'page' : undefined} className={NAV_ITEM_TARGET}>
-                <NavItem icon={<Icon />} label={labels[id]} active={active === id} />
+                <NavItem icon={<Icon />} label={labels[id]} active={active === id} color={`var(--nav-${id})`} />
               </IntlLink>
             </Tooltip>
           </li>
@@ -101,7 +101,7 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
         <li className={RAIL_CELL}>
           <Tooltip text={labels.quickPlan} wrapperClassName="flex w-full">
             <button type="button" onClick={onQuickPlan} className={NAV_ITEM_TARGET}>
-              <NavItem icon={<Zap />} label={labels.quickPlan} />
+              <NavItem icon={<Zap />} label={labels.quickPlan} color="var(--nav-quick-plan)" />
             </button>
           </Tooltip>
         </li>
@@ -115,7 +115,7 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
           </Tooltip>
         ) : null}
         {accountMenu ?? (
-          <IntlLink href={user ? profileHref : '/login'} aria-label={user ? labels.account : labels.signIn} className={cn('flex h-[var(--control-height-xl)] items-center justify-center hover:bg-ui-state-hover', RAIL_CELL, FOCUS_RING_INSET)}>
+          <IntlLink href={user ? profileHref : '/login'} aria-label={user ? labels.account : labels.signIn} className={cn('flex size-[var(--nav-tile-size)] items-center justify-center rounded-nav-item bg-nav-tile-idle shadow-rest transition-transform duration-short3 ease-out-strong active:scale-[0.92] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-nav-tile-hover', FOCUS_RING_INSET)}>
             {user ? <Avatar size="sm" src={user.avatarSrc} name={user.name} decorative /> : <User aria-hidden className="size-[var(--icon-size-md)] text-ui-fg-muted" />}
           </IntlLink>
         )}
@@ -131,16 +131,19 @@ export function NavigationBar({ active = null, labels, onQuickPlan, className }:
   const item = ({ id, href, Icon }: (typeof DESTS)[number]) => (
     <li key={id} className="flex-1">
       <IntlLink href={href} aria-label={labels[id]} aria-current={active === id ? 'page' : undefined} className={NAV_ITEM_TARGET}>
-        <NavItem icon={<Icon />} label="" active={active === id} />
+        <NavItem icon={<Icon />} label="" active={active === id} color={`var(--nav-${id})`} place="bar" />
       </IntlLink>
     </li>
   )
   return (
-    <nav aria-label={labels.main} className={cn('bg-ui-bg pb-[env(safe-area-inset-bottom)]', className)}>
-      <ul className="flex h-[var(--fab-size)] items-center px-[var(--space-2)] py-[var(--space-1)]">
+    // A floating glass pill: content scrolls under it; 10 above the safe area.
+    <nav aria-label={labels.main} className={cn('px-[var(--space-3)] pb-[calc(var(--space-2-5)+env(safe-area-inset-bottom))]', className)}>
+      <ul className="b4k-glass flex h-[var(--fab-size)] items-center rounded-nav-item bg-map-ui-overlay px-[var(--space-1-5)] py-[var(--space-1)] shadow-[var(--material-edge),var(--shadow-float)]">
         {DESTS.slice(0, 2).map(item)}
         <li className="flex flex-1 justify-center">
-          <IconButton variant="primary" label={labels.quickPlan} icon={<Zap />} onClick={onQuickPlan} />
+          <button type="button" aria-label={labels.quickPlan} onClick={onQuickPlan} className={NAV_ITEM_TARGET}>
+            <NavItem icon={<Zap />} label="" place="action" />
+          </button>
         </li>
         {DESTS.slice(2).map(item)}
       </ul>
@@ -163,20 +166,20 @@ export type HeaderProps = {
 /** Header: desktop original layout (kept until the shell layout is decided), 64 high. */
 export function Header({ labels, signedIn, search, onLanguage, languageMenu, helpHref = '/help', className }: HeaderProps) {
   return (
-    <header className={cn('flex h-[var(--layout-header-height)] items-center gap-[var(--space-6)] bg-ui-bg pr-[var(--space-6)]', className)}>
+    <header className={cn('flex h-[var(--layout-header-height)] items-center gap-[var(--space-5)] bg-ui-bg pr-[var(--space-5)]', className)}>
       <IntlLink href="/" aria-label={labels.homeLink} className={cn('flex h-full w-[var(--layout-nav-rail)] shrink-0 items-center justify-center', FOCUS_RING_INSET)}>
         <Logo type="mark" className="h-9" />
       </IntlLink>
-      <div role="search" className="w-[480px] min-w-0">{search}</div>
+      <div role="search" className="w-[520px] min-w-0">{search}</div>
       <div className="ml-auto flex items-center gap-[var(--space-1)]">
         {languageMenu ?? <Tooltip text={labels.language}><IconButton label={labels.language} icon={<Globe />} onClick={onLanguage} /></Tooltip>}
         <Tooltip text={labels.help}>
-          <IntlLink href={helpHref} aria-label={labels.help} className="relative inline-flex size-[var(--control-height-md)] items-center justify-center rounded-full text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+          <IntlLink href={helpHref} aria-label={labels.help} className="relative inline-flex size-[var(--control-height-md)] items-center justify-center rounded-nav-item text-ui-fg transition-transform duration-short3 ease-out-strong hover:bg-ui-state-hover active:scale-[var(--press-scale)] focus-visible:shadow-focus-ring focus-visible:outline-none">
             <CircleHelp aria-hidden className="size-[var(--icon-size-md)]" />
           </IntlLink>
         </Tooltip>
         {signedIn ? null : (
-          <IntlLink href="/login" className={cn(buttonVariants({ variant: 'secondary', size: 'sm' }), 'hover:bg-ui-state-hover active:bg-ui-state-pressed')}>
+          <IntlLink href="/login" className={buttonVariants({ variant: 'secondary', size: 'lg' })}>
             {labels.signIn}
           </IntlLink>
         )}
@@ -207,7 +210,7 @@ export type TopAppBarProps = {
  * no strip, a round Menu button and the Search pill over the content.
  */
 export function TopAppBar({ type, labels, onMenu, onBack, title, titleAs: Title = 'h1', action, search, className }: TopAppBarProps) {
-  const round = 'rounded-full bg-ui-bg'
+  const round = 'rounded-control bg-ui-bg-raised shadow-float'
   const floating = type === 'home' || type === 'map'
   return (
     <div className={cn('pt-[env(safe-area-inset-top)]', floating ? 'bg-transparent' : 'bg-ui-bg', className)}>
@@ -236,7 +239,7 @@ export function TopAppBar({ type, labels, onMenu, onBack, title, titleAs: Title 
           </>
         ) : (
           <>
-            <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onBack} />
+            <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onBack} className={round} />
             <Title className="min-w-0 flex-1 truncate type-title-card">{title}</Title>
             {action}
           </>
@@ -272,11 +275,11 @@ export function Drawer({ open, onClose, labels, user, onQuickPlan, language, lin
   const [legalOpen, setLegalOpen] = useState(false)
   if (!open) return null
   const L = { notifications: '/notifications', settings: '/settings', help: '/help', legal: '/legal', profile: '/profile', signIn: '/login', ...links }
-  const row = cn('flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left type-body-base text-ui-fg hover:bg-ui-state-hover', FOCUS_RING_INSET)
+  const row = cn('flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] rounded-sq-sm px-[var(--space-3)] py-[var(--space-3)] text-left type-body-base text-ui-fg hover:bg-ui-state-hover [&>svg]:text-ui-fg-muted', FOCUS_RING_INSET)
   return (
     <>
       <Scrim onClick={onClose} className="z-50" />
-      <div ref={ref} role="dialog" aria-modal="true" aria-labelledby={id} className="fixed inset-y-0 left-0 z-50 flex w-[300px] max-w-[85vw] flex-col bg-ui-bg-raised pt-[env(safe-area-inset-top)] text-ui-fg motion-safe:animate-b4k-drawer-in">
+      <div ref={ref} role="dialog" aria-modal="true" aria-labelledby={id} className="fixed inset-y-0 left-0 z-50 flex w-[300px] max-w-[85vw] flex-col overflow-y-auto overscroll-contain rounded-r-panel bg-ui-bg-elevated p-[var(--space-2)] pt-[calc(var(--space-2)+env(safe-area-inset-top))] text-ui-fg shadow-float motion-safe:animate-b4k-drawer-in">
         <div className="flex h-[var(--control-height-xl)] items-center justify-between pl-[var(--space-4)] pr-[var(--space-1)]">
           <span id={id}><Logo label="B4K" /></span>
           <IconButton label={labels.close} icon={<X />} onClick={onClose} />
@@ -346,7 +349,7 @@ export function AccountMenu({ labels, user, onSignOut, links = {}, showHelp = fa
     <DropdownMenu
       label={labels.account}
       trigger={
-        <button type="button" aria-label={labels.account} className={cn('flex h-[var(--control-height-xl)] items-center justify-center hover:bg-ui-state-hover', RAIL_CELL, FOCUS_RING_INSET)}>
+        <button type="button" aria-label={labels.account} className={cn('flex size-[var(--nav-tile-size)] items-center justify-center rounded-nav-item bg-nav-tile-idle shadow-rest transition-transform duration-short3 ease-out-strong active:scale-[0.92] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-nav-tile-hover', FOCUS_RING_INSET)}>
           {user ? <Avatar size="sm" src={user.avatarSrc} name={user.name} decorative /> : <User aria-hidden className="size-[var(--icon-size-md)] text-ui-fg-muted" />}
         </button>
       }
@@ -382,7 +385,7 @@ export type UniversalSearchProps = { children: ReactNode; className?: string }
 export function UniversalSearch({ children, className }: UniversalSearchProps) {
   return (
     <div role="search" className={cn('pointer-events-none fixed inset-x-0 top-[var(--space-3)] z-30 flex justify-center', className)}>
-      <div className="pointer-events-auto w-[560px] rounded-full bg-ui-bg-elevated">{children}</div>
+      <div className="pointer-events-auto w-[560px] rounded-field bg-ui-bg-elevated shadow-float">{children}</div>
     </div>
   )
 }
@@ -390,8 +393,8 @@ export function UniversalSearch({ children, className }: UniversalSearchProps) {
 /** A search pill that opens the full search (Top app bar Home and Map). */
 export function SearchPill({ label, href = '/search', className }: { label: string; href?: string; className?: string }) {
   return (
-    <IntlLink href={href} className={cn('flex h-[var(--control-height-md)] items-center gap-[var(--space-2)] rounded-full border border-ui-border-strong bg-ui-bg-raised px-[var(--space-4)] type-body-base text-ui-fg-placeholder focus-visible:shadow-focus-ring focus-visible:outline-none', className)}>
-      <Search aria-hidden className="size-[var(--icon-size-sm)] shrink-0" />
+    <IntlLink href={href} className={cn('b4k-glass flex h-[var(--control-height-lg)] items-center gap-[var(--space-2)] rounded-field bg-map-ui-overlay px-[var(--space-4)] type-body-base text-ui-fg-placeholder shadow-float focus-visible:shadow-focus-ring focus-visible:outline-none', className)}>
+      <span aria-hidden className="inline-flex shrink-0 items-center justify-center rounded-full bg-search-mark-bg text-search-mark-fg"><Search className="size-[var(--icon-size-sm)]" strokeWidth={2.4} /></span>
       <span className="truncate">{label}</span>
     </IntlLink>
   )

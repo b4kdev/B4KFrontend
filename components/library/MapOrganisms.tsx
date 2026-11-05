@@ -47,7 +47,7 @@ export function AiPanel({ viewport, title, greeting, suggestions, onSuggestion, 
     <section
       role={desktop ? 'complementary' : 'dialog'}
       aria-labelledby={id}
-      className={cn('flex flex-col bg-ui-bg-raised text-ui-fg', desktop ? 'h-[min(65vh,640px)] w-[380px] border border-ui-border' : 'h-full w-full', className)}
+      className={cn('flex flex-col bg-ui-bg-elevated text-ui-fg', desktop ? 'h-[min(65vh,640px)] w-[380px] overflow-hidden rounded-panel shadow-float' : 'h-full w-full', className)}
     >
       <div className={cn('flex items-center gap-[var(--space-2)] border-b border-ui-border', desktop ? 'py-[var(--space-1)] pl-[var(--space-4)] pr-[var(--space-1)]' : 'p-[var(--space-1)]')}>
         {desktop ? null : <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onMinimize} />}
@@ -183,7 +183,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
       : undefined
   if (state === 'empty') {
     return (
-      <section aria-label={labels.region} className={cn('rounded-t-3xl bg-ui-bg-sunken p-[var(--space-4)]', className)}>
+      <section aria-label={labels.region} className={cn('mx-[var(--space-2-5)] mb-[var(--space-2-5)] rounded-sq-md bg-ui-bg p-[var(--space-4)] shadow-[inset_0_0_0_1px_var(--color-border-subtle)]', className)}>
         <p className="type-title-card text-ui-fg">{labels.emptyTitle}</p>
         <p className="mt-[var(--space-3)] type-body-caption text-ui-fg-muted">{labels.emptyBody}</p>
       </section>
@@ -191,7 +191,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
   }
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
-    <section aria-labelledby={id} className={cn('flex flex-col rounded-t-3xl text-ui-fg', state === 'open' ? 'h-full gap-[var(--space-3)] bg-ui-bg-sunken p-[var(--space-4)]' : 'bg-ui-bg-sunken', className)}>
+    <section aria-labelledby={id} className={cn('mx-[var(--space-2-5)] mb-[var(--space-2-5)] flex flex-col overflow-hidden rounded-sq-md bg-ui-bg text-ui-fg shadow-[inset_0_0_0_1px_var(--color-border-subtle)]', state === 'open' ? 'h-[calc(100%-var(--space-2-5))] gap-[var(--space-3)] p-[var(--space-4)]' : '', className)}>
       <p aria-live="polite" className="sr-only">{announce}</p>
       {/* Open: the Left panel's color/bg, everything inside the root's 16 padding; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
       <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('relative flex w-full flex-col gap-[var(--space-3)] text-left hover:bg-ui-state-hover', HIT_AREA, state === 'collapsed' && 'p-[var(--space-4)]', FOCUS_RING_INSET)}>
@@ -294,7 +294,9 @@ export type LeftPanelProps = {
 /** Left panel: desktop panel next to the rail; complementary landmark. */
 export function LeftPanel({ type, label, children, cart, cartOpen, topClear, className }: LeftPanelProps) {
   return (
-    <aside aria-label={label} className={cn('relative flex h-full shrink-0 flex-col bg-ui-bg', type === 'index' ? 'w-[var(--layout-left-panel-index)]' : 'w-[var(--layout-left-panel)]', topClear && 'pt-[calc(var(--space-3)+var(--control-height-xl)+var(--space-3))]', className)}>
+    // Map and plan panels float on the map: the elevated surface, panel radius, float shadow. The Explore
+    // index stays transparent on the ground.
+    <aside aria-label={label} className={cn('relative flex shrink-0 flex-col', type === 'index' ? 'h-full w-[var(--layout-left-panel-index)] bg-ui-bg' : 'z-10 my-[var(--space-2)] ml-[var(--space-1)] mr-[var(--space-1)] h-[calc(100%-var(--space-4))] w-[var(--layout-left-panel)] overflow-hidden rounded-panel bg-ui-bg-elevated shadow-float', topClear && 'pt-[calc(var(--space-3)+var(--control-height-xl)+var(--space-3))]', className)}>
       <div className={cn('flex min-h-0 flex-1 flex-col overflow-y-auto', cartOpen && 'invisible')}>{children}</div>
       {type === 'map' && cart ? <div className={cn(cartOpen ? 'absolute inset-0 z-10' : 'shrink-0')}>{cart}</div> : null}
     </aside>

@@ -20,15 +20,15 @@ export function ProgressBar({ value, label, className }: ProgressBarProps) {
       aria-valuemin={determinate ? 0 : undefined}
       aria-valuemax={determinate ? 100 : undefined}
       aria-valuenow={determinate ? Math.round(value) : undefined}
-      className={cn('relative h-[var(--progress-height)] w-full overflow-hidden rounded-full bg-ui-state-selected', className)}
+      className={cn('relative h-[var(--progress-height)] w-full overflow-hidden rounded-full bg-progress-track', className)}
     >
       {determinate ? (
         <div
-          className="h-full rounded-full bg-ui-fg transition-[width] duration-medium2 ease-standard"
+          className="h-full rounded-full bg-accent-progress transition-[width] duration-medium2 ease-standard"
           style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
         />
       ) : (
-        <div className="absolute inset-y-0 w-[35%] rounded-full bg-ui-fg motion-safe:animate-b4k-indeterminate motion-reduce:left-0" />
+        <div className="absolute inset-y-0 w-[35%] rounded-full bg-accent-progress motion-safe:animate-b4k-indeterminate motion-reduce:left-0" />
       )}
     </div>
   )

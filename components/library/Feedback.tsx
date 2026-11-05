@@ -32,7 +32,7 @@ export function Alert({ type = 'info', title, children, action, onDismiss, dismi
     <div
       role={critical ? 'alert' : 'status'}
       className={cn(
-        'flex gap-[var(--space-3)] rounded-none border pb-[var(--space-4)] pl-[var(--space-4)] pr-[var(--space-3)] pt-[var(--space-3)]',
+        'flex gap-[var(--space-3)] rounded-sq-md border pb-[var(--space-4)] pl-[var(--space-4)] pr-[var(--space-3)] pt-[var(--space-3)]',
         critical ? 'border-ui-danger-border bg-ui-danger-bg' : 'border-ui-border bg-ui-bg-raised',
         className,
       )}
@@ -87,11 +87,11 @@ export function EmptyState({ type = 'empty', container = 'plain', icon, title, c
       role={type === 'error' ? 'alert' : undefined}
       className={cn(
         'flex flex-col items-center justify-center gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-12)] text-center',
-        container === 'bordered' && 'border border-ui-border bg-ui-bg-raised',
+        container === 'bordered' && 'rounded-sq-md bg-tile-surface shadow-rest',
         className,
       )}
     >
-      <span aria-hidden className={cn('mb-[var(--space-4)] inline-flex size-[var(--icon-size-2xl)] [&>svg]:size-full', type === 'error' ? 'text-ui-danger' : 'text-ui-fg-muted')}>
+      <span aria-hidden className={cn('mb-[var(--space-4)] inline-flex size-[var(--empty-tile-size)] items-center justify-center rounded-sq-lg [&>svg]:size-[var(--icon-size-2xl)] [&>svg]:max-w-full [&>svg]:[stroke-width:1.75]', type === 'error' ? 'text-ui-danger' : 'bg-empty-tile-bg text-empty-icon')}>
         {icon ?? <Icon />}
       </span>
       <Title className="type-title-empty-state text-ui-fg">{title}</Title>

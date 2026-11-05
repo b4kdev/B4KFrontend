@@ -15,7 +15,9 @@ import { FOCUS_RING } from './styles'
 // Esc and an outside click close. Placement is CSS (below, start-aligned); a collision-aware
 // version can replace it without changing props.
 
-const SURFACE = 'absolute z-50 mt-[var(--space-2)] rounded-2xl border border-ui-border bg-ui-bg-elevated text-ui-fg'
+// Menus, listboxes and popovers: the elevated surface, menu radius, float shadow; they grow from the
+// trigger's edge (scale 0.96 + fade, 180ms out-strong; a fade only under reduced motion).
+const SURFACE = 'absolute z-50 mt-[var(--space-2)] origin-top rounded-menu bg-ui-bg-elevated text-ui-fg shadow-float overscroll-contain motion-safe:animate-[b4k-menu-in_180ms_var(--easing-out-strong)]'
 
 function useDismiss(open: boolean, close: () => void, ref: React.RefObject<HTMLElement | null>) {
   useEffect(() => {
@@ -100,7 +102,7 @@ export function DropdownMenu({ trigger, label, children, align = 'start', classN
           onKeyDown={onKey}
           onClick={(e) => (e.target as HTMLElement).closest('[role^=menuitem]') && setOpen(false)}
           style={fixed && at ? { position: 'fixed', top: at.top, left: at.left, right: at.right } : undefined}
-          className={cn(SURFACE, 'top-full min-w-[240px] py-[var(--space-1)]', align === 'end' ? 'right-0' : 'left-0', className)}
+          className={cn(SURFACE, 'top-full min-w-[240px] p-[var(--space-1-5)]', align === 'end' ? 'right-0 origin-top-right' : 'left-0 origin-top-left', className)}
         >
           {children}
         </div>
@@ -255,7 +257,7 @@ export function Combobox(props: ComboboxProps) {
         aria-activedescendant={open && active >= 0 ? items[active]?.id : undefined}
       />
       {open ? (
-        <div className={cn(SURFACE, 'inset-x-0 top-full overflow-hidden py-[var(--space-1)]')}>
+        <div className={cn(SURFACE, 'inset-x-0 top-full overflow-hidden p-[var(--space-2)]')}>
           {state === 'recent' && items.length ? (
             <div className={cn(GROUP_LABEL, 'flex items-center justify-between')}>
               <span>{recentLabel}</span>

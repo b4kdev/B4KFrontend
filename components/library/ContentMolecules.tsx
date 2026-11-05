@@ -42,7 +42,7 @@ export function SectionHeader({ title, subtitle, seeAll, arrows, id, className }
       {seeAll ? (
         <IntlLink
           href={seeAll.href}
-          className="relative inline-flex items-center gap-[var(--space-1-5)] type-label-button text-ui-link hover:text-ui-link-hover focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus before:absolute before:inset-x-0 before:top-1/2 before:h-[var(--target-touch-min)] before:-translate-y-1/2 before:content-['']"
+          className="relative inline-flex h-[var(--chip-height-map)] shrink-0 items-center gap-[var(--space-1-5)] whitespace-nowrap rounded-control bg-control-fill px-[var(--space-4)] type-body-chip text-ui-fg shadow-rest transition-[box-shadow,transform] duration-short4 ease-out-strong active:scale-[var(--press-scale)] motion-reduce:active:scale-100 [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-lift focus-visible:shadow-focus-ring focus-visible:outline-none before:absolute before:inset-x-0 before:top-1/2 before:h-[var(--target-touch-min)] before:-translate-y-1/2 before:content-['']"
         >
           {seeAll.label}
           <span className="sr-only">: {title}</span>
@@ -250,14 +250,24 @@ export type ItineraryStopProps = {
 // Figma: the row is 80 high with 8 above; a name, meta and one-line note (66) leave 6 below.
 export function ItineraryStop({ name, number, day, meta, note, thumbnail, selected, onSelect, className }: ItineraryStopProps) {
   return (
-    <li aria-current={selected || undefined} className={cn('flex min-h-[var(--space-20)] items-start gap-[var(--space-3)] px-[var(--space-2)] pb-[var(--space-1-5)] pt-[var(--space-2)]', selected && 'bg-ui-state-selected', onSelect && 'cursor-pointer hover:bg-ui-state-hover', className)} onClick={onSelect}>
+    // A stop is a tile: the tile surface, 16 radius, the resting shadow; selected = the focus-colour ring.
+    <li
+      aria-current={selected || undefined}
+      className={cn(
+        'flex min-h-[var(--stop-row-min-height)] items-center gap-[var(--space-3)] rounded-[calc(var(--radius-md)-4px)] bg-tile-surface p-[var(--space-3)] shadow-rest [&_.b4k-media]:rounded-sq-sm',
+        selected && 'shadow-[0_0_0_var(--focus-ring-width)_var(--color-border-focus),var(--shadow-rest)]',
+        onSelect && 'cursor-pointer transition-[box-shadow,transform] duration-short4 ease-out-strong active:scale-[0.98] motion-reduce:active:scale-100 [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-lift',
+        className,
+      )}
+      onClick={onSelect}
+    >
       <StopBadge number={number} day={day} size="md" />
       <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
-        <span className="type-title-card text-ui-fg">{name}</span>
-        <span className="type-body-caption text-ui-fg-muted">{meta}</span>
+        <span className="line-clamp-2 [overflow-wrap:anywhere] type-title-card text-ui-fg [&:lang(ko)]:break-keep">{name}</span>
+        <span className="type-body-caption tabular-nums text-ui-fg-muted">{meta}</span>
         {note ? <span className="type-body-caption text-ui-fg">{note}</span> : null}
       </div>
-      {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="80px" className="w-[var(--control-height-md)] shrink-0" /> : null}
+      {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="80px" className="w-[var(--stop-thumb-size)] shrink-0" /> : null}
     </li>
   )
 }

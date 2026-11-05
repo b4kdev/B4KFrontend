@@ -118,23 +118,28 @@ export type PlanningCueProps = {
 
 /** Planning cue: three tiles between content rows; side by side on desktop, stacked below it. */
 export function PlanningCue({ state, label, tiles }: PlanningCueProps) {
-  const tile = 'flex min-h-[var(--target-touch-min)] min-w-0 flex-1 items-center gap-[var(--space-4)] rounded-2xl bg-ui-bg-raised p-[var(--space-4)] md:py-[var(--space-6)] text-left text-ui-fg hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] focus-visible:shadow-focus-ring focus-visible:outline-none'
+  // Action cards: the action fill (a card in one direction, a colour field in the other) with the
+  // action ink roles; the icon is the one place an icon carries the action colour.
+  const tile = cn(
+    'flex min-h-[var(--action-tile-min-height)] min-w-0 flex-1 items-center gap-[var(--space-3-5)] rounded-sq-md px-[var(--space-4)] py-[var(--space-3-5)] md:px-[var(--space-5)] md:py-[var(--space-4)] text-left text-action-fg shadow-rest',
+    'transition-[box-shadow,transform] duration-[220ms] ease-out-strong active:scale-[0.98] motion-reduce:active:scale-100 [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-lift focus-visible:shadow-focus-ring focus-visible:outline-none',
+  )
   const body = (icon: ReactNode, t: { title: string; text: string }) => (
     <>
-      <span aria-hidden className="inline-flex size-[var(--icon-size-lg)] shrink-0 [&>svg]:size-full">{icon}</span>
+      <span aria-hidden className="inline-flex size-[28px] shrink-0 text-action-icon [&>svg]:size-full">{icon}</span>
       <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
         <span className="type-title-card">{t.title}</span>
-        <span className="line-clamp-2 [text-wrap:pretty] type-body-base text-ui-fg-muted">{t.text}</span>
+        <span className="line-clamp-2 [text-wrap:pretty] type-body-base text-action-fg-muted">{t.text}</span>
       </span>
-      <ChevronRight aria-hidden className="size-[var(--icon-size-lg)] shrink-0 text-ui-fg" />
+      <ChevronRight aria-hidden className="size-[var(--icon-size-md)] shrink-0 text-action-fg" />
     </>
   )
   const first = state === 'continue' && tiles.continue ? tiles.continue : tiles.newPlan
   return (
     <section aria-label={label} className="flex gap-[var(--space-3)] max-lg:flex-col">
-      <IntlLink href={first.href} className={tile}>{body(state === 'continue' ? <Route /> : <Plus />, first)}</IntlLink>
-      <button type="button" onClick={tiles.quickPlan.onOpen} className={tile}>{body(<Zap />, tiles.quickPlan)}</button>
-      <IntlLink href={tiles.fromSaved.href} className={tile}>{body(<Bookmark />, tiles.fromSaved)}</IntlLink>
+      <IntlLink href={first.href} className={cn(tile, 'bg-action-new-plan')}>{body(state === 'continue' ? <Route /> : <Plus />, first)}</IntlLink>
+      <button type="button" onClick={tiles.quickPlan.onOpen} className={cn(tile, 'bg-action-quick-plan')}>{body(<Zap />, tiles.quickPlan)}</button>
+      <IntlLink href={tiles.fromSaved.href} className={cn(tile, 'bg-action-from-saved')}>{body(<Bookmark />, tiles.fromSaved)}</IntlLink>
     </section>
   )
 }
@@ -154,7 +159,7 @@ export type InterestsCardProps = {
 export function InterestsCard({ title, text, tags, selected, onToggle, onSave, onDismiss, labels }: InterestsCardProps) {
   const id = useId()
   return (
-    <section aria-labelledby={id} className="flex flex-col gap-[var(--space-3)] rounded-2xl bg-ui-bg-raised p-[var(--space-4)] text-ui-fg">
+    <section aria-labelledby={id} className="flex flex-col gap-[var(--space-3)] rounded-sq-md bg-tile-surface p-[var(--space-5)] text-ui-fg shadow-rest">
       <div className="flex items-center">
         <h2 id={id} className="min-w-0 flex-1 type-title-card">{title}</h2>
         <IconButton label={labels.dismiss} icon={<X />} onClick={onDismiss} />
@@ -218,10 +223,10 @@ export function QuickPlan({ open, onClose, step, stepTitle, stepSubtitle, progre
         aria-label={title}
         className={cn(
           'fixed z-50 flex flex-col overflow-hidden bg-ui-bg-elevated text-ui-fg',
-          phone ? 'inset-x-0 bottom-0 max-h-[min(768px,calc(100dvh-44px))] rounded-t-3xl border border-ui-border motion-safe:animate-b4k-sheet-in' : 'left-1/2 top-1/2 max-h-[90dvh] w-[min(864px,calc(100%-var(--space-8)))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ui-border',
+          phone ? 'inset-x-[var(--space-2)] bottom-[var(--space-2)] max-h-[min(768px,calc(100dvh-44px))] overscroll-contain rounded-panel shadow-sheet motion-safe:animate-b4k-sheet-in' : 'left-1/2 top-1/2 max-h-[90dvh] w-[min(864px,calc(100%-var(--space-8)))] -translate-x-1/2 -translate-y-1/2 rounded-panel shadow-float motion-safe:animate-[b4k-dialog-in_220ms_var(--easing-out-strong)]',
         )}
       >
-        {phone ? <div className="flex justify-center py-[var(--space-2)]"><span aria-hidden className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" /></div> : null}
+        {phone ? <div className="flex justify-center py-[var(--space-2)]"><span aria-hidden className="h-[5px] w-[var(--space-10)] rounded-full bg-sheet-handle" /></div> : null}
         <div className={cn('flex items-center gap-[var(--space-4)] pr-[var(--space-3)]', phone ? 'pb-[var(--space-4)] pl-[var(--space-4)] pt-[var(--space-2)]' : 'py-[var(--space-4)] pl-[var(--space-6)]')}>
           {stepList || progressLabel ? (
             <>

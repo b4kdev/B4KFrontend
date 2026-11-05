@@ -55,7 +55,7 @@ export function Image({ ratio = '1:1', src, alt, sizes = '100vw', priority, miss
     Sentry.addBreadcrumb({ category: 'image', level: 'warning', message: 'photo failed to load', data: { src } })
   }
   return (
-    <span className={cn('relative block w-full overflow-hidden rounded-none', state !== 'loading' && 'bg-ui-state-selected', RATIO[ratio], className)}>
+    <span className={cn('b4k-media relative block w-full overflow-hidden rounded-none', state !== 'loading' && 'bg-tile-surface-sunken', RATIO[ratio], className)}>
       {src && state !== 'missing' ? (
         <NextImage
           key={attempt}

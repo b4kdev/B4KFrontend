@@ -56,9 +56,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
       <span
         aria-hidden
         className={cn(
-          'inline-flex size-[var(--control-box-size)] shrink-0 items-center justify-center rounded-none border-[length:var(--border-width-1-5)] border-ui-border-strong text-ui-fg-inverse',
-          'peer-checked:border-ui-bg-inverse peer-checked:bg-ui-bg-inverse',
-          indeterminate ? 'border-ui-bg-inverse bg-ui-bg-inverse' : !invalid && BOX_HOVER_EMPTY,
+          'inline-flex size-[var(--control-box-size)] shrink-0 items-center justify-center rounded-[6px] border-[length:var(--border-width-1-5)] border-ui-border-strong text-chip-selected-fg',
+          'peer-checked:border-chip-selected-bg peer-checked:bg-chip-selected-bg',
+          indeterminate ? 'border-chip-selected-bg bg-chip-selected-bg' : !invalid && BOX_HOVER_EMPTY,
           invalid && 'border-ui-danger-border',
           'peer-disabled:border-ui-border-disabled peer-disabled:bg-ui-bg-disabled peer-disabled:text-ui-fg-disabled peer-checked:peer-disabled:bg-ui-bg-disabled',
           BOX_FOCUS,
@@ -90,7 +90,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
         className={cn(
           'inline-flex size-[var(--control-box-size)] shrink-0 items-center justify-center rounded-full border-[length:var(--border-width-1-5)] border-ui-border-strong',
           BOX_HOVER_EMPTY,
-          'peer-checked:border-ui-bg-inverse peer-checked:bg-ui-bg-inverse',
+          'peer-checked:border-chip-selected-bg peer-checked:bg-chip-selected-bg',
           'peer-disabled:border-ui-border-disabled peer-disabled:bg-ui-bg-disabled peer-checked:peer-disabled:bg-ui-bg-disabled',
           BOX_FOCUS,
           BOX_HOVER_LAYER,
@@ -138,7 +138,7 @@ export function Toggle({ label, hideLabel, checked, onCheckedChange, disabled, c
           // Hover state layer: state-hover 4px (space-1) around the track = the 52x32 Figma pill.
           '[&:enabled:hover:not(:focus-visible)]:shadow-[0_0_0_var(--space-1)_var(--color-state-hover)] [&:enabled:hover:focus-visible]:shadow-[shadow:var(--focus-ring),0_0_0_var(--space-1)_var(--color-state-hover)]',
           checked
-            ? 'bg-ui-bg-inverse'
+            ? 'bg-chip-selected-bg'
             : 'border-[length:var(--border-width-1-5)] border-ui-border-strong enabled:hover:border-ui-border-focus enabled:hover:bg-ui-state-hover',
           disabled && (checked ? 'bg-ui-bg-disabled' : 'border-ui-border-disabled bg-ui-bg-disabled'),
           disabled && 'cursor-not-allowed',

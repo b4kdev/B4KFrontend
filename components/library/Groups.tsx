@@ -45,7 +45,7 @@ export function SelectionBar({ countText, children, onClear, clearLabel, label, 
     <div
       role="toolbar"
       aria-label={label}
-      className={cn('sticky bottom-0 flex min-h-[var(--space-12)] items-center gap-[var(--space-2)] border border-ui-border bg-ui-bg-raised py-[var(--space-1)] pl-[var(--space-4)] pr-[var(--space-1)]', className)}
+      className={cn('sticky bottom-0 flex min-h-[var(--space-12)] items-center gap-[var(--space-2)] rounded-sq-md bg-tile-surface shadow-rest py-[var(--space-1)] pl-[var(--space-4)] pr-[var(--space-1)]', className)}
     >
       <span aria-live="polite" className="flex-1 type-title-card text-ui-fg">{countText}</span>
       <div className="flex items-center gap-[var(--gap-sm)]">{children}</div>
@@ -143,7 +143,7 @@ const DAY_BG = ['', 'bg-plan-day-1 text-plan-day-1-fg', 'bg-plan-day-2 text-plan
 /** Route map preview: small map with Stop badges md on a 2px fg route line, radius/2xl. Decorative. */
 export function RouteMapPreview({ src, stops, className }: RouteMapPreviewProps) {
   return (
-    <div aria-hidden className={cn('relative aspect-[320/140] w-full overflow-hidden rounded-2xl bg-ui-bg-sunken', className)}>
+    <div aria-hidden className={cn('relative aspect-[320/140] w-full overflow-hidden rounded-sq-md bg-tile-surface-sunken', className)}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {src ? <img src={src} alt="" className="absolute inset-0 size-full object-cover" /> : null}
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full text-ui-fg">

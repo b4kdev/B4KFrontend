@@ -61,9 +61,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
       <div
         className={cn(
           FIELD_FRAME,
+          'rounded-sq-sm',
           'flex px-[var(--input-padding-x)] py-[var(--space-2-5)]',
-          error && 'border-ui-danger-border hover:border-ui-danger-border focus-within:border-ui-danger-border',
-          disabled && 'cursor-not-allowed border-ui-border-disabled bg-ui-bg-disabled text-ui-fg-disabled hover:border-ui-border-disabled',
+          error && 'shadow-[0_0_0_var(--focus-ring-width)_var(--color-danger-border)]',
+          disabled && 'cursor-not-allowed bg-ui-bg-disabled text-ui-fg-disabled shadow-none',
         )}
       >
         <textarea

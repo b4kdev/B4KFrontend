@@ -19,7 +19,7 @@ export function SkipLink({ targetId = 'main', children, className }: SkipLinkPro
       href={`#${targetId}`}
       className={cn(
         // sr-only and not-sr-only both reset padding, so the padding sits on the label span inside.
-        'sr-only bg-ui-bg-inverse type-body-label text-ui-fg-inverse',
+        'sr-only rounded-control bg-button-primary-bg type-body-label text-button-primary-fg',
         'focus-visible:not-sr-only focus-visible:fixed focus-visible:left-[var(--space-4)] focus-visible:top-[var(--space-4)] focus-visible:z-50',
         'focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus',
         className,

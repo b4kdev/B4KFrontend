@@ -48,7 +48,7 @@ export function CookieBanner({ type = 'banner', label, message, learnMore, accep
   )
   if (type === 'preferences') {
     return (
-      <section aria-label={label} className="flex flex-col gap-[var(--space-3)] border border-ui-border bg-ui-bg-raised p-[var(--space-5)] text-ui-fg">
+      <section aria-label={label} className="flex flex-col gap-[var(--space-3)] rounded-sq-md bg-tile-surface shadow-rest p-[var(--space-5)] text-ui-fg">
         <div className="flex items-center gap-[var(--space-3)]">
           <h2 className="flex-1 type-title-card">{title}</h2>
           {status ? <Badge leadingIcon={<Check aria-hidden />}>{status}</Badge> : null}
@@ -59,7 +59,7 @@ export function CookieBanner({ type = 'banner', label, message, learnMore, accep
     )
   }
   return (
-    <section role="region" aria-label={label} tabIndex={-1} className={cn('fixed inset-x-0 bottom-0 z-40 border-t border-ui-border bg-ui-bg-raised px-[var(--space-4)] py-[var(--space-4)] pb-[calc(var(--space-4)+env(safe-area-inset-bottom))] text-ui-fg outline-none', className)}>
+    <section role="region" aria-label={label} tabIndex={-1} className={cn('b4k-glass fixed inset-x-0 bottom-[calc(var(--space-4)+env(safe-area-inset-bottom))] z-40 mx-auto w-[calc(100%-var(--space-8))] max-w-[880px] rounded-sq-md bg-map-ui-overlay p-[var(--space-4)] text-ui-fg shadow-float outline-none max-md:w-[calc(100%-var(--space-4))]', className)}>
       <div className="mx-auto flex max-w-[960px] items-center gap-[var(--space-4)] max-md:flex-col max-md:items-stretch max-md:gap-[var(--space-3)]">
         {/* Message: the body and the Learn more link wrap as two items, so the link never splits. */}
         <div className="flex flex-1 flex-wrap items-center gap-x-[var(--space-1-5)] type-body-base">
@@ -181,7 +181,7 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
                 : undefined
   const emailField = labels.emailField ?? labels.email
   return (
-    <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg">
+    <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-panel bg-ui-bg-elevated shadow-float p-[var(--space-6)] text-ui-fg">
       {/* Figma Top row: Logo wordmark 24 + Close Ghost 40 (no Close on New password). */}
       <div className="flex items-center justify-between gap-[var(--space-2)]">
         <Logo />
@@ -273,7 +273,7 @@ export function ConsentStep({ title, subtitle, footnote, items, checked, onCheck
   const some = items.some((i) => checked[i.id])
   const ready = items.filter((i) => i.required).every((i) => checked[i.id])
   return (
-    <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg">
+    <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-panel bg-ui-bg-elevated shadow-float p-[var(--space-6)] text-ui-fg">
       <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onCancel} className="self-start" />
       <div className="flex flex-col gap-[var(--space-2)]">
         <h1 className="type-display-h3">{title}</h1>
@@ -392,11 +392,12 @@ export function ProfileHeader({ viewport, name, avatarSrc, stats, badges, action
   const desktop = viewport === 'desktop'
   const inRow = desktop || actionInRow
   return (
-    <header className={cn('flex flex-col gap-[var(--space-5)] pt-[var(--space-6)] text-ui-fg', desktop ? 'px-[var(--space-6)]' : 'px-[var(--space-4)]')}>
+    // A header card: the tile surface, panel radius, resting shadow.
+    <header className={cn('flex flex-col gap-[var(--space-5)] rounded-panel bg-tile-surface text-ui-fg shadow-rest', desktop ? 'mx-[var(--space-6)] mt-[var(--space-6)] p-[var(--space-6)]' : 'mx-[var(--space-4)] mt-[var(--space-4)] p-[var(--space-4)]')}>
       <div className={cn('flex items-center', desktop ? 'gap-[var(--space-5)]' : 'gap-[var(--space-4)]')}>
-        <Avatar size={desktop ? 'xl' : 'lg'} src={avatarSrc} name={name} decorative />
+        <Avatar size={desktop ? 'xl' : 'lg'} src={avatarSrc} name={name} decorative className="shadow-[0_0_0_4px_var(--tile-surface),0_0_0_5px_var(--color-border-subtle),var(--shadow-pin)]" />
         <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-2)]">
-          <h1 className={desktop ? 'type-display-h2' : 'type-display-h3'}>{name}</h1>
+          <h1 className="[overflow-wrap:anywhere] type-display-h1 [&:lang(ko)]:break-keep">{name}</h1>
           <div className="flex flex-wrap items-baseline gap-x-[var(--space-4)] gap-y-[var(--space-1)]">
             {stats.map((s, i) => <StatCounter key={s.label} number={s.number} label={s.label} separator={i > 0} />)}
           </div>
@@ -513,7 +514,7 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
   )
   // Figma: the same card on desktop and phones (bg-raised, 1px border, radius 2xl, p12, gap 12).
   return (
-    <div className={cn('flex flex-col gap-[var(--space-3)] rounded-2xl border border-ui-border bg-ui-bg-raised p-[var(--space-3)] text-ui-fg', viewport === 'desktop' ? 'w-[560px]' : 'w-full')}>
+    <div className={cn('flex flex-col gap-[var(--space-3)] rounded-sq-md bg-tile-surface shadow-rest p-[var(--space-3)] text-ui-fg', viewport === 'desktop' ? 'w-[560px]' : 'w-full')}>
       {state === 'typing' ? (
         <>
           <button type="button" className={row} onClick={() => onSearch(query)}>
@@ -590,7 +591,7 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
               {/* Figma Browse: category chips, like Trending now. */}
               <div className="flex flex-wrap gap-[var(--space-2)] py-[var(--space-1)]">
                 {categories.map((c) => (
-                  <IntlLink key={c.id} href={c.href} className="inline-flex h-[var(--control-height-sm)] items-center rounded-full border border-ui-border-strong px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+                  <IntlLink key={c.id} href={c.href} className="inline-flex h-[var(--control-height-sm)] items-center rounded-chip bg-control-fill shadow-rest px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
                     {c.name}
                   </IntlLink>
                 ))}

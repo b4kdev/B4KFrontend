@@ -16,12 +16,12 @@ import { useFocusTrap, useMounted, usePhone } from './hooks'
 const Portal = ({ children }: { children: ReactNode }) => (useMounted() ? createPortal(children, document.body) : null)
 
 const SHEET =
-  'fixed inset-x-0 bottom-0 z-50 flex max-h-[85dvh] flex-col rounded-t-3xl bg-ui-bg-raised pb-[env(safe-area-inset-bottom)] text-ui-fg motion-safe:animate-b4k-sheet-in'
+  'fixed inset-x-[var(--space-2)] bottom-[var(--space-2)] z-50 flex max-h-[85dvh] flex-col overscroll-contain rounded-panel bg-ui-bg-elevated pb-[env(safe-area-inset-bottom)] text-ui-fg shadow-sheet motion-safe:animate-b4k-sheet-in'
 
 /** Grabber on phone sheets: the 32x4 bar with py 8 (area 20). */
 const GRABBER = (
   <div aria-hidden className="flex shrink-0 justify-center py-[var(--space-2)]">
-    <span className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" />
+    <span className="h-[5px] w-[var(--space-10)] rounded-full bg-sheet-handle" />
   </div>
 )
 
@@ -75,7 +75,7 @@ export function Modal({ open, onClose, title, closeLabel, size = 'md', children,
           phone
             ? cn(SHEET, 'bg-ui-bg-elevated')
             : cn(
-                'fixed left-1/2 top-1/2 z-50 flex max-h-[90dvh] w-[calc(100%-var(--space-8))] -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl border border-ui-border bg-ui-bg-elevated text-ui-fg',
+                'fixed left-1/2 top-1/2 z-50 flex max-h-[90dvh] w-[calc(100%-var(--space-8))] -translate-x-1/2 -translate-y-1/2 flex-col rounded-panel bg-ui-bg-elevated text-ui-fg shadow-float motion-safe:animate-[b4k-dialog-in_220ms_var(--easing-out-strong)]',
                 size === 'sm' ? 'max-w-[400px]' : size === 'md' ? 'max-w-[560px]' : 'max-w-[720px]',
               ),
         )}
@@ -120,7 +120,7 @@ export function Dialog({ open, onCancel, title, body, confirm, cancel, third }: 
         aria-describedby={`${id}-b`}
         className={cn(
           'outline-none',
-          phone ? cn(SHEET, 'px-[var(--space-6)] pb-[var(--space-6)]') : 'fixed left-1/2 top-1/2 z-50 w-[calc(100%-var(--space-8))] max-w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg',
+          phone ? cn(SHEET, 'px-[var(--space-6)] pb-[var(--space-6)]') : 'fixed left-1/2 top-1/2 z-50 w-[calc(100%-var(--space-8))] max-w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-panel bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg shadow-float motion-safe:animate-[b4k-dialog-in_220ms_var(--easing-out-strong)]',
         )}
       >
         {phone ? <div className="mb-[var(--space-2)]">{GRABBER}</div> : null}

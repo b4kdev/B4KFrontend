@@ -2,19 +2,21 @@ import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
 import { Spinner } from './Spinner'
+import { LIFT, PRESS } from './styles'
 
 // Button (Figma B4K UI Components › Atoms › Button).
-// Variant: Primary (filled inverse), Secondary (outline), Ghost (text only), Danger (destructive).
-// Size: lg 44 (default), md 40, sm 32; md and sm keep a 44 tap area (target/touch-min).
+// Variant: Primary (the primary-button role), Secondary (control fill, resting shadow), Ghost
+// (link colour), Danger (destructive). Shape: the control radius role; sentence-case label.
+// Size: 2xl 52 (hero), xl 48 (panels), lg 44 (default), md 40, sm 32; md and sm keep a 44 tap area.
 // Focus: keyboard only, focus/ring. One primary action per view.
 // Loading: the label stays (transparent, still read out) so the width does not change, a Spinner sm is centered on
 // top, taps are ignored (aria-busy, aria-disabled, no pointer events) and the accessible name stays.
 
 export const buttonVariants = cva(
   [
-    'relative inline-flex select-none items-center justify-center whitespace-nowrap rounded-none',
-    'gap-[var(--gap-sm)] px-[var(--button-padding-x)] type-label-button',
-    'transition-[background-color,background-image,border-color,color] duration-short4 ease-standard',
+    'relative inline-flex select-none items-center justify-center whitespace-nowrap rounded-control',
+    'gap-[var(--gap-sm)] px-[var(--space-5)] type-label-button',
+    PRESS,
     'focus-visible:shadow-focus-ring focus-visible:outline-none',
     "before:absolute before:inset-x-0 before:top-1/2 before:h-[max(100%,var(--target-touch-min))] before:-translate-y-1/2 before:content-['']",
     'disabled:cursor-not-allowed aria-busy:pointer-events-none',
@@ -23,19 +25,19 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         primary: [
-          'bg-ui-bg-inverse text-ui-fg-inverse',
-          'enabled:hover:bg-[image:linear-gradient(var(--button-overlay-filled-hover),var(--button-overlay-filled-hover))]',
+          'bg-button-primary-bg text-button-primary-fg shadow-accent',
+          '[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-button-primary-hover',
           'enabled:active:bg-[image:linear-gradient(var(--button-overlay-filled-pressed),var(--button-overlay-filled-pressed))]',
-          'disabled:bg-ui-bg-disabled disabled:text-ui-fg-disabled',
+          'disabled:bg-ui-bg-disabled disabled:text-ui-fg-disabled disabled:shadow-none',
         ],
         secondary: [
-          'border border-ui-border-strong text-ui-fg',
-          'enabled:hover:bg-ui-state-hover',
-          'enabled:active:bg-ui-state-pressed',
-          'disabled:border-ui-border-disabled disabled:text-ui-fg-disabled',
+          'bg-control-fill text-ui-fg',
+          LIFT,
+          '[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-control-fill-hover',
+          'disabled:bg-ui-bg-disabled disabled:text-ui-fg-disabled disabled:shadow-none',
         ],
         ghost: [
-          'text-ui-fg',
+          'text-ui-link',
           'enabled:hover:bg-ui-state-hover',
           'enabled:active:bg-ui-state-pressed',
           'disabled:text-ui-fg-disabled',
@@ -48,6 +50,8 @@ export const buttonVariants = cva(
         ],
       },
       size: {
+        '2xl': 'h-[var(--control-height-2xl)] px-[var(--space-6)] text-base',
+        xl: 'h-[var(--control-height-xl)]',
         lg: 'h-[var(--control-height-lg)]',
         md: 'h-[var(--control-height-md)]',
         sm: 'h-[var(--control-height-sm)]',

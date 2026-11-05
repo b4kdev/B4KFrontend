@@ -11,8 +11,8 @@ export const badgeVariants = cva(
   {
     variants: {
       variant: {
-        strong: 'rounded-none bg-ui-bg-inverse text-ui-fg-inverse type-eyebrow-badge',
-        normal: 'rounded-full bg-ui-state-selected text-ui-fg type-eyebrow-category',
+        strong: 'rounded-full bg-button-primary-bg text-button-primary-fg type-eyebrow-badge',
+        normal: 'rounded-full bg-accent-add text-accent-add-fg type-eyebrow-category',
         inverse: 'rounded-full bg-ui-bg-inverse text-ui-fg-inverse type-eyebrow-category',
         outline: 'rounded-full border border-ui-border-strong text-ui-fg-muted type-eyebrow-category',
         'on-image': 'rounded-full bg-ui-scrim text-ui-fg-on-media type-eyebrow-category',

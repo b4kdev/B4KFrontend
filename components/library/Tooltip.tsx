@@ -43,7 +43,7 @@ export function Tooltip({ text, side = 'bottom', children, className, wrapperCla
         id={id}
         role="tooltip"
         className={cn(
-          'pointer-events-none absolute left-1/2 z-50 w-max max-w-[var(--tooltip-max-width)] -translate-x-1/2 bg-ui-bg-inverse px-[var(--space-3)] py-[var(--space-2)] type-body-caption text-ui-fg-inverse',
+          'pointer-events-none absolute left-1/2 z-50 w-max max-w-[var(--tooltip-max-width)] -translate-x-1/2 rounded-sq-xs bg-ui-bg-inverse px-[var(--space-2-5)] py-[var(--space-1-5)] text-xs font-semibold text-ui-fg-inverse shadow-float',
           side === 'bottom' ? 'top-[calc(100%+var(--space-2))]' : 'bottom-[calc(100%+var(--space-2))]',
           open ? 'visible opacity-100' : 'invisible opacity-0',
           'transition-opacity duration-short3 ease-standard',

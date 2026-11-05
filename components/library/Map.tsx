@@ -38,9 +38,10 @@ export const MapPin = forwardRef<HTMLButtonElement, MapPinProps>(function MapPin
       aria-label={label}
       aria-pressed={selected}
       className={cn(
-        'relative inline-flex shrink-0 items-center justify-center rounded-full border-[length:var(--border-width-2)] border-map-ui-pin-stroke text-ui-fg-on-media',
+        'relative inline-flex shrink-0 items-center justify-center rounded-pin border-[length:var(--border-width-pin)] text-[var(--map-glyph-pin-fg,var(--map-type-other))] shadow-pin',
         'transition-[width,height,background-color] duration-short4 ease-standard',
-        selected ? 'size-[var(--map-pin-size-selected)] bg-map-ui-pin-selected' : 'size-[var(--map-pin-size)] bg-map-ui-pin-fill',
+        'bg-[var(--map-glyph-pin-bg,var(--map-type-other))]',
+        selected ? 'size-[var(--map-pin-size-selected)] border-map-ui-pin-selected' : 'size-[var(--map-pin-size)] border-map-ui-pin-stroke',
         FOCUS_RING,
         HIT_AREA,
         className,
@@ -70,7 +71,7 @@ export const ClusterBubble = forwardRef<HTMLButtonElement, ClusterBubbleProps>(f
       type="button"
       aria-label={label}
       className={cn(
-        'relative inline-flex shrink-0 items-center justify-center rounded-full border-[length:var(--border-width-2)] border-map-ui-pin-stroke bg-map-ui-pin-fill type-body-label text-ui-fg-on-media',
+        'relative inline-flex shrink-0 items-center justify-center rounded-cluster border-[length:var(--border-width-pin)] border-map-ui-cluster-stroke bg-map-ui-cluster-fill font-extrabold tabular-nums text-map-ui-cluster-fg shadow-pin',
         count < 10 ? 'size-[var(--map-cluster-size-sm)]' : count < 50 ? 'size-[var(--map-cluster-size-md)]' : 'size-[var(--map-cluster-size-lg)]',
         FOCUS_RING,
         HIT_AREA,
@@ -104,9 +105,9 @@ export const MapControl = forwardRef<HTMLButtonElement, MapControlProps>(functio
       type="button"
       aria-label={label}
       className={cn(
-        'inline-flex size-[var(--target-touch-min)] shrink-0 items-center justify-center rounded-none border border-ui-border bg-ui-bg-raised text-ui-fg',
-        'enabled:hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] enabled:active:bg-[image:linear-gradient(var(--color-state-pressed),var(--color-state-pressed))]',
-        'disabled:cursor-not-allowed disabled:text-ui-fg-disabled [&>svg]:size-[var(--icon-size-sm)]',
+        'inline-flex size-[var(--target-touch-min)] shrink-0 items-center justify-center rounded-control bg-ui-bg-elevated text-ui-fg shadow-float',
+        'transition-[background-color,transform] duration-short3 ease-out-strong enabled:active:scale-[var(--press-scale)] motion-reduce:enabled:active:scale-100 [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-control-fill-hover',
+        'disabled:cursor-not-allowed disabled:text-ui-fg-disabled [&>svg]:size-[var(--icon-size-md)]',
         CONTROL_FOCUS_RING,
         className,
       )}

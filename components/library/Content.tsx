@@ -55,6 +55,21 @@ export const PLACE_TYPE_ICON = {
 export type PlaceType = keyof typeof PLACE_TYPE_ICON
 
 /** The Place type of an interest category; Place when it is missing or unknown. */
+/** The quiet cue colour per place type (map glyph pins, map chips): a CSS colour. */
+export const PLACE_TYPE_COLOR: Record<PlaceType, string> = {
+  food: 'var(--map-type-food)',
+  shopping: 'var(--map-type-shopping)',
+  beauty: 'var(--map-type-shopping)',
+  stay: 'var(--map-type-stay)',
+  heritage: 'var(--map-type-heritage)',
+  exhibition: 'var(--map-type-heritage)',
+  nature: 'var(--map-type-park)',
+  hallyu: 'var(--map-type-other)',
+  activity: 'var(--map-type-other)',
+  sightseeing: 'var(--map-type-other)',
+  place: 'var(--map-type-other)',
+}
+
 export const placeTypeOf = (category: string | null | undefined): PlaceType =>
   category && category in PLACE_TYPE_ICON ? (category as PlaceType) : 'place'
 
@@ -95,7 +110,7 @@ export type ImageActionProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'ty
   label: string
 }
 
-/** Image action: round 32 button on a photo, scrim behind a 16 icon in fg-on-media. */
+/** Image action: a 32 button on a photo (44 hit area) in the photo-action roles; on = filled icon. */
 export const ImageAction = forwardRef<HTMLButtonElement, ImageActionProps>(function ImageAction(
   { on = false, icon, label, className, ...props },
   ref,
@@ -107,9 +122,11 @@ export const ImageAction = forwardRef<HTMLButtonElement, ImageActionProps>(funct
       aria-label={label}
       aria-pressed={on}
       className={cn(
-        'relative inline-flex size-[var(--control-height-sm)] shrink-0 items-center justify-center rounded-full bg-ui-scrim text-ui-fg-on-media',
-        '[&>svg]:size-[var(--icon-size-sm)]',
-        on && '[&>svg]:fill-current',
+        'relative inline-flex size-[var(--control-height-sm)] shrink-0 items-center justify-center rounded-control',
+        'transition-[background-color,color,transform] duration-short3 ease-out-strong active:scale-[var(--press-scale)] motion-reduce:active:scale-100',
+        '[&>svg]:size-[var(--icon-size-sm)] [&>svg]:[stroke-width:2.2]',
+        on ? 'bg-photo-action-fill-on text-photo-action-fg-on [&>svg]:fill-current' : 'bg-photo-action-fill text-photo-action-fg',
+        'shadow-[0_1px_2px_rgba(22,22,26,.12)] backdrop-blur-[10px]',
         FOCUS_RING,
         HIT_AREA,
         className,
@@ -157,7 +174,7 @@ export function ChatBubble({ role, children, typingLabel }: ChatBubbleProps) {
     <div className={cn('flex w-full', role === 'user' ? 'justify-end' : 'justify-start')}>
       <div
         className={cn(
-          'max-w-[80%] rounded-2xl px-[var(--space-3)] py-[var(--space-2)] type-body-base',
+          'max-w-[80%] rounded-[18px] px-[var(--space-3)] py-[var(--space-2)] type-body-base',
           role === 'user' ? 'bg-ui-bg-inverse text-ui-fg-inverse' : 'bg-ui-bg-sunken text-ui-fg',
         )}
       >
@@ -187,7 +204,7 @@ export function Scrim({ kind = 'default', onClick, className }: { kind?: 'defaul
     <div
       aria-hidden
       onClick={kind === 'default' ? onClick : undefined}
-      className={cn('fixed inset-0', kind === 'default' ? 'bg-ui-scrim' : 'bg-ui-backdrop-blocking', className)}
+      className={cn('fixed inset-0', kind === 'default' ? 'bg-ui-scrim backdrop-blur-[2px] motion-safe:animate-b4k-fade-in' : 'bg-ui-backdrop-blocking', className)}
     />
   )
 }
@@ -216,7 +233,7 @@ export const CalendarDay = forwardRef<HTMLButtonElement, CalendarDayProps>(funct
       aria-pressed={end || undefined}
       className={cn(
         'relative inline-flex size-[var(--control-height-md)] items-center justify-center',
-        end ? 'bg-ui-bg-inverse type-body-label text-ui-fg-inverse' : position === 'in-range' ? 'bg-ui-state-selected type-body-base text-ui-fg' : 'type-body-base text-ui-fg enabled:hover:bg-ui-state-hover',
+        end ? 'bg-chip-selected-bg type-body-label text-chip-selected-fg' : position === 'in-range' ? 'bg-ui-state-selected type-body-base text-ui-fg' : 'type-body-base text-ui-fg enabled:hover:bg-ui-state-hover',
         'disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
         // Focus ring: 2px square, 2px in from the cell edge.
         'focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:-outline-offset-[calc(var(--focus-ring-offset)_+_var(--focus-ring-width))] focus-visible:outline-ui-border-focus',

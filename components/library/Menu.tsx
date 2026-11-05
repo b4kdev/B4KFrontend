@@ -27,11 +27,13 @@ export const MenuItem = forwardRef<HTMLButtonElement, MenuItemProps>(function Me
       role={checked === undefined ? 'menuitem' : 'menuitemradio'}
       aria-checked={checked}
       className={cn(
-        'flex h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] text-left type-body-base',
-        'disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
+        'flex h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] rounded-sq-sm px-[var(--space-3)] text-left type-body-base',
+        'disabled:cursor-not-allowed disabled:text-ui-fg-disabled [&>span:first-child]:text-ui-fg-muted',
         variant === 'danger'
           ? 'text-ui-danger enabled:hover:bg-ui-danger-bg focus-visible:bg-ui-danger-bg'
-          : 'text-ui-fg enabled:hover:bg-ui-state-hover focus-visible:bg-ui-state-hover',
+          : checked
+            ? 'bg-menu-checked-bg font-semibold text-menu-checked-fg [&>span:first-child]:!text-current'
+            : 'text-ui-fg enabled:hover:bg-ui-state-hover focus-visible:bg-ui-state-hover',
         FOCUS_RING_INSET,
         className,
       )}
@@ -80,7 +82,7 @@ export function ComboboxOption({ id, type, title, match, secondary, icon, active
   return (
     <li
       role="none"
-      className={cn('flex min-h-[var(--target-touch-min)] items-center pr-[var(--space-4)]', active ? 'bg-ui-state-hover' : 'hover:bg-ui-state-hover')}
+      className={cn('flex min-h-[var(--target-touch-min)] items-center rounded-sq-sm pr-[var(--space-3)]', active ? 'bg-ui-state-hover' : 'hover:bg-ui-state-hover')}
     >
       <div
         id={id}
@@ -88,7 +90,7 @@ export function ComboboxOption({ id, type, title, match, secondary, icon, active
         aria-selected={active}
         onMouseDown={(e) => e.preventDefault()}
         onClick={onSelect}
-        className="flex min-w-0 flex-1 cursor-pointer items-center gap-[var(--space-3)] py-[var(--space-2)] pl-[var(--space-4)]"
+        className="flex min-w-0 flex-1 cursor-pointer items-center gap-[var(--space-3)] py-[var(--space-1-5)] pl-[var(--space-1-5)] [&_.b4k-media]:rounded-[10px]"
       >
         <span aria-hidden className="inline-flex size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted [&>svg]:size-full">
           {icon ?? (type === 'recent' ? <Clock /> : <MapPin />)}

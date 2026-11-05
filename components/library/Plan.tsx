@@ -38,8 +38,8 @@ export function StopBadge({ number, size = 'sm', day = 0, label, className }: St
       aria-label={label}
       aria-hidden={label ? undefined : true}
       className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded-full',
-        size === 'sm' ? 'size-[var(--stop-badge-size-sm)] type-numeric-count' : 'size-[var(--stop-badge-size-md)] type-body-label',
+        'inline-flex shrink-0 items-center justify-center rounded-badge font-extrabold tabular-nums shadow-[0_0_0_3px_var(--tile-surface),var(--shadow-pin)]',
+        size === 'sm' ? 'size-[var(--stop-badge-size-sm)] text-xs' : 'size-[var(--stop-badge-size-md)] type-body-caption',
         DAY_FILL[day],
         className,
       )}
@@ -78,7 +78,7 @@ export const DragHandle = forwardRef<HTMLButtonElement, DragHandleProps>(functio
       {type === 'grip' ? (
         <GripVertical aria-hidden className="size-[var(--icon-size-xs)]" />
       ) : (
-        <span aria-hidden className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" />
+        <span aria-hidden className="h-[5px] w-[var(--space-10)] rounded-full bg-sheet-handle" />
       )}
     </button>
   )
@@ -119,14 +119,14 @@ export function TransportMode({ mode, modeLabel, time, onChange, menu, menuLabel
       type="button"
       onClick={onChange}
       aria-busy={loading || undefined}
-      className={cn('relative inline-flex items-center gap-[var(--space-1-5)] type-body-caption text-ui-fg-muted hover:text-ui-fg', FOCUS_RING, HIT_AREA)}
+      className={cn('relative inline-flex items-center gap-[var(--space-1-5)] rounded-full bg-tile-surface-sunken px-[var(--space-2-5)] py-[var(--space-0-5)] type-body-caption font-semibold text-ui-fg hover:bg-control-fill-hover', FOCUS_RING, HIT_AREA)}
     >
       {content}
     </button>
   )
   return (
     // Figma: the part hugs its content (the rail is as wide as mode and time), it does not fill the row.
-    <div className={cn('flex w-fit items-center py-[var(--space-1-5)]', mode !== 'estimate' && 'border-l border-ui-border-strong pl-[var(--space-3)]', className)}>
+    <div className={cn('flex w-fit items-center py-[var(--space-2)]', mode !== 'estimate' && 'border-l-2 border-dotted border-ui-border-strong pl-[var(--space-3-5)]', className)}>
       {(onChange || menu) && mode !== 'estimate' ? (
         menu ? (
           // Figma: the menu starts at the rail, 12 left of the mode.
@@ -137,7 +137,7 @@ export function TransportMode({ mode, modeLabel, time, onChange, menu, menuLabel
           button
         )
       ) : (
-        <span className="inline-flex items-center gap-[var(--space-1-5)] type-body-caption text-ui-fg-muted">{content}</span>
+        <span className="inline-flex items-center gap-[var(--space-1-5)] rounded-full bg-tile-surface-sunken px-[var(--space-2-5)] py-[var(--space-0-5)] type-body-caption font-semibold text-ui-fg">{content}</span>
       )}
     </div>
   )
@@ -167,8 +167,8 @@ export const PlanPill = forwardRef<HTMLButtonElement, PlanPillProps>(function Pl
       aria-label={accessibleLabel}
       aria-expanded={expanded}
       className={cn(
-        'inline-flex h-[var(--target-touch-min)] items-center gap-[var(--space-2)] rounded-full border border-ui-border-strong bg-ui-bg-raised px-[var(--space-4)] type-body-label text-ui-fg',
-        'hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]',
+        'b4k-glass inline-flex h-[var(--target-touch-min)] items-center gap-[var(--space-2)] rounded-control bg-map-ui-overlay px-[var(--space-4)] type-body-label text-ui-fg shadow-float',
+        'transition-transform duration-short3 ease-out-strong active:scale-[var(--press-scale)] motion-reduce:active:scale-100',
         PILL_FOCUS_RING,
         className,
       )}

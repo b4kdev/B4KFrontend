@@ -10,8 +10,9 @@ import { Image, ImageMissingLabel } from './Image'
 import type { PlaceType } from './Content'
 import { SaveLikeOverlay } from './ContentMolecules'
 
-// Card (Figma Organisms › Card). Filled and square, no shadow; the text panel on
-// bg-raised; hover adds the state layer; keyboard focus rings the whole card. The card is one link
+// Card (Figma Organisms › Card). The tile surface, tile radius, 6 inset, the resting shadow that
+// lifts on hover (fine pointer); the photo inside takes the inner radius (outer − inset). Press
+// scales 0.98; keyboard focus rings the whole card. The card is one link
 // (a stretched link); Save, Like and Add to plan are separate buttons above it.
 // Text fit: titles and meta two lines then an ellipsis; Place description one line.
 
@@ -61,9 +62,11 @@ export type CardProps = Common &
 // isolate: the card's own layers (stretched link, Save and Like over the photo) stack inside the
 // card, so a sticky bar above a scrolling list of cards stays on top.
 const SHELL =
-  'group relative isolate flex overflow-hidden rounded-none bg-ui-bg-raised text-ui-fg focus-within:shadow-focus-ring has-[a:hover]:[&>.panel]:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]'
+  'group relative isolate flex overflow-hidden rounded-tile bg-tile-surface p-[var(--space-1-5)] text-ui-fg shadow-rest [&_.b4k-media]:rounded-tile-inner ' +
+  'transition-[box-shadow,transform] duration-[220ms] ease-out-strong active:scale-[0.98] motion-reduce:active:scale-100 ' +
+  '[@media(hover:hover)_and_(pointer:fine)]:has-[a:hover]:shadow-lift focus-within:shadow-focus-ring'
 const STRETCH = "outline-none after:absolute after:inset-0 after:z-0 after:content-['']"
-const TITLE2 = 'line-clamp-2 [text-wrap:pretty] type-title-card [&:lang(ko)]:break-keep'
+const TITLE2 = 'line-clamp-2 [overflow-wrap:anywhere] [text-wrap:pretty] type-title-card [&:lang(ko)]:break-keep'
 
 function CardLink({ href, external, children, className }: { href: string; external?: { newTabLabel: string }; children: ReactNode; className?: string }) {
   if (external) {
@@ -106,20 +109,20 @@ export function Card(props: CardProps) {
             </div>
             {props.save ? <SaveLikeOverlay className="z-10" saved={props.save.saved} onSave={props.save.onSave} saveLabel={props.save.label} like={props.like} /> : null}
           </div>
-          <div className="panel flex items-center gap-[var(--space-2)] p-[var(--space-3)]">
+          <div className="panel flex items-center gap-[var(--space-2)] px-[var(--space-2-5)] pb-[var(--space-2-5)] pt-[var(--space-3)]">
             <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
               <CardLink href={href} external={external} className={TITLE2}>{title}</CardLink>
               {props.description ? <p className="truncate type-body-base text-ui-fg-muted">{props.description}</p> : null}
               <MetaRow meta={props.meta} trending={props.trending} external={!!external} />
             </div>
-            {props.addToPlan ? <IconButton variant="primary" label={props.addToPlan.label} icon={<Plus />} onClick={props.addToPlan.onAdd} className="relative z-10" /> : null}
+            {props.addToPlan ? <IconButton label={props.addToPlan.label} icon={<Plus />} onClick={props.addToPlan.onAdd} className="relative z-10 bg-accent-add text-accent-add-fg" /> : null}
           </div>
         </article>
       )
     case 'compact':
       return (
-        <article className={cn(SHELL, 'h-[80px] flex-row', className)}>
-          <Image ratio="1:1" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="80px" className="w-[80px] shrink-0" />
+        <article className={cn(SHELL, 'h-[84px] flex-row [&_.b4k-media]:rounded-sq-sm', className)}>
+          <Image ratio="1:1" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="80px" className="w-[72px] shrink-0" />
           <div className="panel flex min-w-0 flex-1 items-center gap-[var(--space-2)] py-[var(--space-2)] pl-[var(--space-3)] pr-[var(--space-1)]">
             <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
               <CardLink href={href} external={external} className={cn(TITLE2, 'line-clamp-1')}>{title}</CardLink>
@@ -128,7 +131,7 @@ export function Card(props: CardProps) {
                 <span className="truncate">{props.meta}</span>
               </div>
             </div>
-            {props.addToPlan ? <IconButton variant="primary" label={props.addToPlan.label} icon={<Plus />} onClick={props.addToPlan.onAdd} className="relative z-10" /> : null}
+            {props.addToPlan ? <IconButton label={props.addToPlan.label} icon={<Plus />} onClick={props.addToPlan.onAdd} className="relative z-10 bg-accent-add text-accent-add-fg" /> : null}
             {props.save ? (
               <IconButton label={props.save.label} icon={<Bookmark className={props.save.saved ? 'fill-current' : undefined} />} aria-pressed={props.save.saved} onClick={props.save.onSave} className="relative z-10" />
             ) : null}
@@ -138,12 +141,12 @@ export function Card(props: CardProps) {
     case 'collection':
       return (
         <article className={cn(SHELL, 'flex-col', className)}>
-          <div className="grid aspect-[2/1] grid-cols-2 grid-rows-2 gap-[var(--space-0-5)] bg-ui-bg">
+          <div className="grid aspect-[2/1] grid-cols-2 grid-rows-2 gap-[var(--space-0-5)] overflow-hidden rounded-tile-inner [&_.b4k-media]:!rounded-none">
             {[0, 1, 2, 3].map((i) => (
               <Image key={i} ratio="1:1" src={props.images[i] ?? null} alt="" sizes="280px" className="h-full !aspect-auto" />
             ))}
           </div>
-          <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
+          <div className="panel flex flex-col gap-[var(--space-1)] px-[var(--space-2-5)] pb-[var(--space-2-5)] pt-[var(--space-3)]">
             <CardLink href={href} className={TITLE2}>{title}</CardLink>
             {props.meta ? <div className="type-body-caption text-ui-fg-muted">{props.meta}</div> : null}
           </div>
@@ -153,7 +156,7 @@ export function Card(props: CardProps) {
       return (
         <article className={cn(SHELL, 'flex-col', className)}>
           <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="280px" />
-          <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
+          <div className="panel flex flex-col gap-[var(--space-1)] px-[var(--space-2-5)] pb-[var(--space-2-5)] pt-[var(--space-3)]">
             <CardLink href={href} className={TITLE2}>{title}</CardLink>
             {props.meta ? <div className="type-body-caption text-ui-fg-muted">{props.meta}</div> : null}
           </div>
@@ -167,7 +170,7 @@ export function Card(props: CardProps) {
             {props.sponsored ? <Badge variant="on-image" className="absolute left-[var(--space-2)] top-[var(--space-2)]">{props.sponsored}</Badge> : null}
             {props.save ? <SaveLikeOverlay className="z-10" saved={props.save.saved} onSave={props.save.onSave} saveLabel={props.save.label} /> : null}
           </div>
-          <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
+          <div className="panel flex flex-col gap-[var(--space-1)] px-[var(--space-2-5)] pb-[var(--space-2-5)] pt-[var(--space-3)]">
             <CardLink href={href} className={TITLE2}>{title}</CardLink>
             <div className="flex items-center justify-between gap-[var(--space-1)] type-body-caption text-ui-fg-muted">
               {props.authorHref ? (
@@ -190,7 +193,7 @@ export function Card(props: CardProps) {
             <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="280px" />
             <Badge variant="on-image" className="absolute left-[var(--space-2)] top-[var(--space-2)]">{props.sponsored}</Badge>
           </div>
-          <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
+          <div className="panel flex flex-col gap-[var(--space-1)] px-[var(--space-2-5)] pb-[var(--space-2-5)] pt-[var(--space-3)]">
             <CardLink href={href} external={external} className={TITLE2}>{title}</CardLink>
             <div className="type-body-caption text-ui-fg-muted">{props.partner}</div>
             <div aria-hidden className="inline-flex items-center gap-[var(--gap-xs)] type-body-label text-ui-fg">{props.cta}<ExternalLink className="size-[var(--icon-size-xs)]" /></div>

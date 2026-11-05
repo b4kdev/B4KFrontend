@@ -38,8 +38,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
           FIELD_FRAME,
           'relative flex items-center gap-[var(--gap-sm)] px-[var(--input-padding-x)]',
           size === 'lg' ? 'h-[var(--control-height-lg)]' : 'h-[var(--control-height-md)]',
-          error && 'border-ui-danger-border hover:border-ui-danger-border focus-within:border-ui-danger-border',
-          disabled && 'cursor-not-allowed border-ui-border-disabled bg-ui-bg-disabled text-ui-fg-disabled hover:border-ui-border-disabled',
+          error && 'shadow-[0_0_0_var(--focus-ring-width)_var(--color-danger-border)]',
+          disabled && 'cursor-not-allowed bg-ui-bg-disabled text-ui-fg-disabled shadow-none',
         )}
       >
         {leadingIcon ? (
@@ -54,7 +54,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
           disabled={disabled}
           aria-invalid={error ? true : undefined}
           aria-describedby={help || error ? msgId : undefined}
-          className="h-full min-w-0 flex-1 appearance-none bg-transparent pr-[var(--space-6)] outline-none disabled:cursor-not-allowed invalid:text-ui-fg-placeholder disabled:invalid:text-ui-fg-disabled"
+          className="h-full min-w-0 flex-1 appearance-none bg-control-fill text-ui-fg pr-[var(--space-6)] outline-none disabled:cursor-not-allowed invalid:text-ui-fg-placeholder disabled:invalid:text-ui-fg-disabled"
           {...props}
         >
           {placeholder ? (

@@ -47,8 +47,8 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
           FIELD_FRAME,
           'flex items-center gap-[var(--gap-sm)] px-[var(--input-padding-x)]',
           size === 'lg' ? 'h-[var(--control-height-lg)]' : 'h-[var(--control-height-md)]',
-          error && 'border-ui-danger-border hover:border-ui-danger-border focus-within:border-ui-danger-border',
-          disabled && 'cursor-not-allowed border-ui-border-disabled bg-ui-bg-disabled text-ui-fg-disabled hover:border-ui-border-disabled',
+          error && 'shadow-[0_0_0_var(--focus-ring-width)_var(--color-danger-border)]',
+          disabled && 'cursor-not-allowed bg-ui-bg-disabled text-ui-fg-disabled shadow-none',
         )}
       >
         {leadingIcon ? (

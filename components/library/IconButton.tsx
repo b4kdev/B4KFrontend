@@ -1,15 +1,15 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
-import { HIT_AREA } from './styles'
+import { HIT_AREA, LIFT, PRESS } from './styles'
 
-// Icon button (Figma Atoms › Icon button): round 40 (radius/full, control/height-md), icon
+// Icon button (Figma Atoms › Icon button): 40 (control radius role, control/height-md), icon
 // 20. Primary, Secondary, Ghost; states as Button. 44 tap area. Always needs an accessible name.
 
 export const iconButtonVariants = cva(
   [
-    'relative inline-flex size-[var(--control-height-md)] shrink-0 items-center justify-center rounded-full',
-    'transition-[background-color,background-image,border-color,color] duration-short4 ease-standard',
+    'relative inline-flex size-[var(--control-height-md)] shrink-0 items-center justify-center rounded-control',
+    PRESS,
     'focus-visible:shadow-focus-ring focus-visible:outline-none disabled:cursor-not-allowed',
     '[&>svg]:size-[var(--icon-size-md)]',
     HIT_AREA,
@@ -18,15 +18,21 @@ export const iconButtonVariants = cva(
     variants: {
       variant: {
         primary: [
-          'bg-ui-bg-inverse text-ui-fg-inverse',
-          'enabled:hover:bg-[image:linear-gradient(var(--button-overlay-filled-hover),var(--button-overlay-filled-hover))]',
-          'enabled:active:bg-[image:linear-gradient(var(--button-overlay-filled-pressed),var(--button-overlay-filled-pressed))]',
-          'disabled:bg-ui-bg-disabled disabled:text-ui-fg-disabled',
+          'bg-button-primary-bg text-button-primary-fg shadow-accent',
+          '[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-button-primary-hover',
+          'disabled:bg-ui-bg-disabled disabled:text-ui-fg-disabled disabled:shadow-none',
         ],
         secondary: [
-          'border border-ui-border-strong text-ui-fg',
-          'enabled:hover:bg-ui-state-hover enabled:active:bg-ui-state-pressed',
-          'disabled:border-ui-border-disabled disabled:text-ui-fg-disabled',
+          'bg-control-fill text-ui-fg',
+          LIFT,
+          '[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-control-fill-hover',
+          'aria-pressed:bg-accent-add aria-pressed:text-accent-add-fg',
+          'disabled:bg-tile-surface-sunken disabled:text-ui-fg-disabled disabled:shadow-none disabled:opacity-[0.55]',
+        ],
+        // Floating over the map or a photo: the elevated surface with the float shadow.
+        float: [
+          'bg-ui-bg-elevated text-ui-fg shadow-float',
+          '[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-control-fill-hover',
         ],
         ghost: ['text-ui-fg', 'enabled:hover:bg-ui-state-hover enabled:active:bg-ui-state-pressed', 'disabled:text-ui-fg-disabled'],
       },

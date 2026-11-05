@@ -107,21 +107,25 @@ export type TreeItemProps = {
   count?: number
   /** Figma Show checkbox: a Checkbox element (checklist tree). */
   checkbox?: ReactNode
+  /** A quiet cue before the label: an 8 dot in this colour (a CSS colour, e.g. a category colour). */
+  dot?: string
   onToggle?: () => void
   onSelect?: () => void
   children?: ReactNode
 }
 
 /** Tree item (part of Tree view): chevron turns when expanded; leaf keeps the space. */
-export function TreeItem({ label, kind, level = 1, selected, count, checkbox, onToggle, onSelect, children }: TreeItemProps) {
+export function TreeItem({ label, kind, level = 1, selected, count, checkbox, dot, onToggle, onSelect, children }: TreeItemProps) {
   return (
     <li role="treeitem" aria-expanded={kind === 'leaf' ? undefined : kind === 'expanded'} aria-selected={selected} aria-level={level}>
       {/* Indent (16 per level) sits outside the row, so the selected fill starts at it. */}
       <div style={{ paddingLeft: `calc(var(--space-4) * ${level - 1})` }}>
         <div
           className={cn(
-            'flex min-h-[var(--target-touch-min)] items-center gap-[var(--space-2)] pl-[var(--space-2)] pr-[var(--space-3)]',
-            selected ? 'bg-ui-state-selected' : 'hover:bg-ui-state-hover',
+            'flex min-h-[42px] items-center gap-[var(--space-2)] rounded-sq-sm pl-[var(--space-2)] pr-[var(--space-3)] transition-[background-color,box-shadow] duration-short4 ease-out-strong',
+            level > 1 && '[&>button:last-child]:text-[14.5px] [&>button:last-child]:font-medium [&>button:last-child]:text-ui-fg-muted',
+            level === 1 && '[&>button:last-child]:font-semibold',
+            selected ? 'bg-tile-surface shadow-rest [&>button:last-child]:!font-semibold [&>button:last-child]:!text-ui-link' : 'hover:bg-ui-state-hover',
             // Focus ring around the whole row while the label button has keyboard focus.
             '[&:has(>button:last-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-border-focus)]',
           )}
@@ -129,10 +133,12 @@ export function TreeItem({ label, kind, level = 1, selected, count, checkbox, on
           {kind === 'leaf' ? (
             <span aria-hidden className="size-[var(--icon-size-sm)] shrink-0" />
           ) : (
-            <button type="button" tabIndex={-1} aria-hidden onClick={onToggle} className="inline-flex shrink-0 text-ui-fg-muted">
-              <ChevronRight className={cn('size-[var(--icon-size-sm)] transition-transform duration-short4 ease-standard', kind === 'expanded' && 'rotate-90')} />
+            <button type="button" tabIndex={-1} aria-hidden onClick={onToggle} className="inline-flex size-[var(--space-6)] shrink-0 items-center justify-center rounded-sq-xs text-ui-fg-muted">
+              <ChevronRight className={cn('size-[var(--icon-size-sm)] transition-transform duration-[200ms] ease-out-strong motion-reduce:transition-none', kind === 'expanded' && 'rotate-90')} />
             </button>
           )}
+          {dot ? <span aria-hidden className="inline-flex size-[var(--space-6)] shrink-0 items-center justify-center"><span className="size-[var(--glyph-size-sm)] rounded-full" style={{ background: dot }} /></span> : null}
+          {selected && level > 1 ? <span aria-hidden className="size-[var(--space-1-5)] shrink-0 rounded-full bg-field-hero" /> : null}
           {checkbox}
           <button type="button" onClick={onSelect ?? onToggle} className="flex min-h-[var(--target-touch-min)] min-w-0 flex-1 items-center gap-[var(--space-2)] text-left type-body-base text-ui-fg focus-visible:outline-none">
             <span className="min-w-0 flex-1 truncate">{label}</span>

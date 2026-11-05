@@ -30,7 +30,7 @@ export function Toast({ type = 'info', message, action, onClose, closeLabel, cla
     <div
       role={type === 'critical' ? 'alert' : 'status'}
       className={cn(
-        'flex w-full max-w-[360px] items-center gap-[var(--space-3)] rounded-2xl bg-ui-bg-inverse text-ui-fg-inverse',
+        'flex w-full max-w-[360px] items-center gap-[var(--space-3)] rounded-toast bg-ui-bg-inverse text-ui-fg-inverse shadow-float [&_p]:font-semibold',
         'min-h-[var(--control-height-xl)] py-[var(--space-1)] pl-[var(--space-4)] pr-[var(--space-2)]',
         className,
       )}

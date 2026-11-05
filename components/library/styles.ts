@@ -16,4 +16,11 @@ export const STATE_LAYER = 'enabled:hover:bg-ui-state-hover enabled:active:bg-ui
 
 /** Field frame shared by Text input, Select, Textarea and Search input. */
 export const FIELD_FRAME =
-  'border border-ui-border-strong bg-transparent text-ui-fg type-body-base transition-colors duration-short4 ease-standard hover:border-ui-border-focus focus-within:border-[length:var(--border-width-2)] focus-within:border-ui-border-focus'
+  'rounded-field bg-control-fill shadow-rest text-ui-fg type-body-base transition-[box-shadow,background-color] duration-short4 ease-out-strong focus-within:shadow-[0_0_0_var(--focus-ring-width)_var(--color-border-focus),var(--shadow-float)]'
+
+/** Press feedback: every pressable shrinks a little on pointer-down (none under reduced motion). */
+export const PRESS =
+  'transition-[background-color,box-shadow,color,transform] duration-short3 ease-out-strong enabled:active:scale-[var(--press-scale)] motion-reduce:enabled:active:scale-100'
+
+/** Resting surface that lifts on hover under a fine pointer (shadow only, no movement). */
+export const LIFT = 'shadow-rest [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-lift'

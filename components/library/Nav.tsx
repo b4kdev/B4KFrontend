@@ -1,24 +1,27 @@
-import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { forwardRef, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from 'react'
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { FOCUS_RING, FOCUS_RING_INSET, HIT_AREA } from './styles'
 
 // Navigation atoms (Figma Atoms): Tab, Segment, Page item, Nav item, Step item.
 
-const DAY_DOT = {
-  1: 'bg-plan-day-1', 2: 'bg-plan-day-2', 3: 'bg-plan-day-3', 4: 'bg-plan-day-4',
-  5: 'bg-plan-day-5', 6: 'bg-plan-day-6', 7: 'bg-plan-day-7', 8: 'bg-plan-day-8',
-} as const
+type PlanDay = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
 
 export type TabProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
   selected?: boolean
-  /** Figma Show day dot: 8 dot in the plan day color. */
-  day?: keyof typeof DAY_DOT
+  /** Figma Show day dot: an 8 dot in the plan day colour before the label. */
+  day?: PlanDay
+  /** The tab's own colour (a CSS colour, e.g. var(--category-pop)): an 8 dot before the label; a
+   * direction that leaves the selected-tab role unset fills the selected tab with it. */
+  color?: string
   children: ReactNode
 }
 
-/** Tab (part of Tabs): 44 high; selected = fg label with a 2px fg underline. */
-export const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab({ selected = false, day, children, className, ...props }, ref) {
+/** Tab (part of Tabs): 36 on the tab track; idle = muted label; selected = the selected-tab role
+ * (fallback: the tab's own colour with black ink, or inverse). */
+export const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab({ selected = false, day, color, children, className, style, ...props }, ref) {
+  const own = color ?? (day ? `var(--plan-day-${day})` : undefined)
+  const vars = { '--tab-c': own ?? 'var(--color-bg-inverse)', '--tab-fg': own ? 'var(--field-fg)' : 'var(--color-fg-inverse)' } as CSSProperties
   return (
     <button
       ref={ref}
@@ -26,18 +29,20 @@ export const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab({ select
       role="tab"
       aria-selected={selected}
       tabIndex={selected ? 0 : -1}
+      style={{ ...vars, ...style }}
       className={cn(
-        'relative inline-flex h-[var(--target-touch-min)] shrink-0 items-center justify-center gap-[var(--space-1-5)] px-[var(--space-4)] type-body-base',
-        'transition-colors duration-short4 ease-standard disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
-        selected ? 'text-ui-fg' : 'text-ui-fg-muted enabled:hover:text-ui-fg',
-        "after:absolute after:inset-x-0 after:bottom-0 after:h-[var(--border-width-2)] after:content-['']",
-        selected && 'after:bg-ui-fg',
+        'relative inline-flex h-[var(--chip-height-map)] shrink-0 items-center justify-center gap-[var(--space-2)] whitespace-nowrap rounded-tab px-[var(--space-4)] type-body-chip',
+        'transition-[background-color,box-shadow,color,transform] duration-short4 ease-out-strong enabled:active:scale-[var(--press-scale)] motion-reduce:enabled:active:scale-100',
+        'disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
+        selected
+          ? 'bg-[var(--tab-selected-bg,var(--tab-c))] text-[var(--tab-selected-fg,var(--tab-fg))] shadow-tab-selected'
+          : 'text-ui-fg-muted enabled:hover:text-ui-fg',
         FOCUS_RING_INSET,
         className,
       )}
       {...props}
     >
-      {day ? <span aria-hidden className={cn('size-[var(--space-2)] shrink-0 rounded-full', DAY_DOT[day])} /> : null}
+      {own ? <span aria-hidden className="size-[var(--glyph-size-sm)] shrink-0 rounded-full bg-[var(--tab-c)]" /> : null}
       {children}
     </button>
   )
@@ -45,7 +50,7 @@ export const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab({ select
 
 export type SegmentProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & { selected?: boolean; children: ReactNode }
 
-/** Segment (part of Segmented control): pill; selected = bg-inverse, fg-inverse. */
+/** Segment (part of Segmented control): on the tab track; selected = the selected-tab role. */
 export const Segment = forwardRef<HTMLButtonElement, SegmentProps>(function Segment({ selected = false, children, className, ...props }, ref) {
   return (
     <button
@@ -54,9 +59,11 @@ export const Segment = forwardRef<HTMLButtonElement, SegmentProps>(function Segm
       role="radio"
       aria-checked={selected}
       className={cn(
-        'relative inline-flex h-[var(--control-height-sm)] flex-1 items-center justify-center whitespace-nowrap rounded-full px-[var(--space-3)] type-body-base',
-        'transition-colors duration-short4 ease-standard disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
-        selected ? 'bg-ui-bg-inverse text-ui-fg-inverse disabled:bg-ui-bg-disabled disabled:text-ui-fg-disabled' : 'text-ui-fg enabled:hover:bg-ui-state-hover',
+        'relative inline-flex h-[var(--control-height-sm)] flex-1 items-center justify-center whitespace-nowrap rounded-tab px-[var(--space-3)] type-body-chip',
+        'transition-[background-color,box-shadow,color] duration-short4 ease-out-strong disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
+        selected
+          ? 'bg-[var(--tab-selected-bg,var(--color-bg-inverse))] text-[var(--tab-selected-fg,var(--color-fg-inverse))] shadow-tab-selected'
+          : 'text-ui-fg-muted enabled:hover:text-ui-fg',
         FOCUS_RING,
         HIT_AREA,
         className,
@@ -78,8 +85,8 @@ export const PageItem = forwardRef<HTMLButtonElement, PageItemProps>(function Pa
       type="button"
       aria-current={current ? 'page' : undefined}
       className={cn(
-        'relative inline-flex size-[var(--control-height-md)] shrink-0 items-center justify-center rounded-full type-body-base',
-        current ? 'bg-ui-bg-inverse text-ui-fg-inverse' : 'text-ui-fg hover:bg-ui-state-hover',
+        'relative inline-flex size-[var(--control-height-md)] shrink-0 items-center justify-center rounded-control type-body-base',
+        current ? 'bg-chip-selected-bg text-chip-selected-fg' : 'bg-control-fill text-ui-fg shadow-rest hover:bg-control-fill-hover',
         FOCUS_RING,
         HIT_AREA,
         className,
@@ -99,43 +106,55 @@ export type NavItemProps = {
   active?: boolean
   /** Count badge or dot over the icon. */
   badge?: ReactNode
+  /** The item's own colour (a CSS colour, var(--nav-*)): the fallback for the current-item roles. */
+  color?: string
+  /** rail: desktop rail item; bar: phone bottom bar item; action: the phone Quick plan button. */
+  place?: 'rail' | 'bar' | 'action'
   className?: string
 }
 
 /**
- * Nav item (part of Navigation bar and rail): icon only, 48 high; active =
- * fg icon with a 4 fg dot below, inactive fg-muted. Render it inside a link (next-intl Link) or a
- * button; this is the visual.
+ * Nav item (part of Navigation bar and rail): a 44 item behind a 20 icon (24 on the phone bar).
+ * Idle: the idle icon colour; hover: the hover fill; current: the current-item role (rail) or the
+ * phone current role with a 4 dot (bar). The phone Quick plan is a 48 accent button. Render it
+ * inside a link (next-intl Link) or a button; this is the visual.
  */
-export function NavItem({ icon, label, active = false, badge, className }: NavItemProps) {
+export function NavItem({ icon, label, active = false, badge, color, place = 'rail', className }: NavItemProps) {
+  const action = place === 'action'
   return (
     <span
-      className={cn(
-        'relative flex h-[var(--control-height-xl)] w-full items-center justify-center',
-        active ? 'text-ui-fg' : 'text-ui-fg-muted group-hover:text-ui-fg',
-        className,
-      )}
+      style={color ? ({ '--nav-c': color } as CSSProperties) : undefined}
+      className={cn('relative flex w-full items-center justify-center', action ? 'h-[var(--nav-quick-plan-size)]' : 'h-[var(--nav-tile-size)]', className)}
     >
-      {/* The icon stays centered in the item; the dot hangs 4 below it, out of the flow, as drawn. */}
-      <span className="relative inline-flex size-[var(--icon-size-md)] [&>svg]:size-full">
-        {icon}
-        {/* Figma: the dot starts at the icon's center line, 6 above the icon. */}
-        {badge ? <span className="absolute left-1/2 -top-[var(--space-1-5)] flex">{badge}</span> : null}
-        <span
-          aria-hidden
-          className={cn(
-            'absolute left-1/2 top-[calc(100%+var(--space-1))] size-[var(--space-1)] -translate-x-1/2 rounded-full',
-            active ? 'bg-ui-fg' : 'bg-transparent',
-          )}
-        />
+      <span
+        className={cn(
+          'relative inline-flex items-center justify-center rounded-nav-item',
+          'transition-[background-color,box-shadow,color,transform] duration-short4 ease-out-strong group-active:scale-[0.92] motion-reduce:group-active:scale-100',
+          action ? 'size-[var(--nav-quick-plan-size)] bg-nav-quick-plan text-field-fg shadow-accent' : 'size-[var(--nav-tile-size)]',
+          !action &&
+            (active
+              ? place === 'bar'
+                ? 'bg-[var(--nav-current-phone-bg,var(--nav-c,var(--color-bg-inverse)))] text-[var(--nav-current-phone-fg,var(--field-fg))]'
+                : 'bg-[var(--nav-current-bg,var(--nav-c,var(--color-bg-inverse)))] text-[var(--nav-current-fg,var(--field-fg))] shadow-accent'
+              : 'text-nav-icon-idle [@media(hover:hover)_and_(pointer:fine)]:group-hover:bg-nav-tile-hover'),
+        )}
+      >
+        <span className={cn('relative inline-flex [&>svg]:size-full', place === 'bar' ? 'size-[var(--icon-size-lg)]' : 'size-[var(--icon-size-md)]')}>
+          {icon}
+          {/* Figma: the badge starts at the icon's center line, 6 above the icon. */}
+          {badge ? <span className="absolute left-1/2 -top-[var(--space-1-5)] flex">{badge}</span> : null}
+        </span>
+        {place === 'bar' && active ? (
+          <span aria-hidden className="absolute bottom-[var(--space-0-5)] left-1/2 size-[var(--space-1)] -translate-x-1/2 rounded-full bg-field-hero" />
+        ) : null}
       </span>
       <span className="sr-only">{label}</span>
     </span>
   )
 }
 
-/** Class for the link or button around a NavItem: hover layer, inset focus ring, 44 target. */
-export const NAV_ITEM_TARGET = cn('group block w-full hover:bg-ui-state-hover', FOCUS_RING_INSET)
+/** Class for the link or button around a NavItem: inset focus ring, 44 target (the item shows hover). */
+export const NAV_ITEM_TARGET = cn('group block w-full rounded-nav-item', FOCUS_RING_INSET)
 
 export type StepItemProps = {
   /** Figma Label. */
@@ -155,7 +174,7 @@ export function StepItem({ label, number, state = 'upcoming', className }: StepI
         aria-hidden
         className={cn(
           'inline-flex size-[var(--control-box-size)] shrink-0 items-center justify-center rounded-full type-body-caption',
-          state === 'upcoming' ? 'border border-ui-border-strong text-ui-fg-muted' : 'bg-ui-bg-inverse text-ui-fg-inverse',
+          state === 'upcoming' ? 'bg-tile-surface-sunken text-ui-fg-muted' : 'bg-accent-progress text-field-fg',
         )}
       >
         {state === 'done' ? <Check className="size-[var(--icon-size-xs)]" strokeWidth={3} /> : number}

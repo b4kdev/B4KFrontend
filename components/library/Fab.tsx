@@ -31,8 +31,8 @@ export const Fab = forwardRef<HTMLButtonElement, FabProps>(function Fab(
         'transition-[background-color,background-image] duration-short4 ease-standard focus-visible:shadow-focus-ring focus-visible:outline-none',
         type === 'icon' ? 'w-[var(--fab-size)]' : 'pl-[var(--space-5)] pr-[var(--space-6)] type-label-button',
         open
-          ? 'border border-ui-border-strong bg-ui-bg-raised text-ui-fg hover:bg-ui-state-hover'
-          : 'bg-ui-bg-inverse text-ui-fg-inverse hover:bg-[image:linear-gradient(var(--button-overlay-filled-hover),var(--button-overlay-filled-hover))] active:bg-[image:linear-gradient(var(--button-overlay-filled-pressed),var(--button-overlay-filled-pressed))]',
+          ? 'bg-ui-bg-elevated text-ui-fg shadow-float hover:bg-control-fill-hover'
+          : 'bg-button-primary-bg text-button-primary-fg shadow-accent hover:bg-[image:linear-gradient(var(--button-overlay-filled-hover),var(--button-overlay-filled-hover))] active:bg-[image:linear-gradient(var(--button-overlay-filled-pressed),var(--button-overlay-filled-pressed))]',
         '[&>svg]:size-[var(--icon-size-lg)]',
         className,
       )}
