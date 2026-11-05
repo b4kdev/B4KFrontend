@@ -8,6 +8,8 @@ import { Image } from './Image'
 import { ProgressBar, Skeleton } from './Progress'
 import { Tooltip } from './Tooltip'
 import { IconButton } from './IconButton'
+import { GLYPHS, Glyph, type GlyphName } from './Glyph'
+import { SearchGlyphTile } from './Shell'
 
 const meta = { title: 'Atoms/Display', tags: ['autodocs'] } satisfies Meta
 export default meta
@@ -58,6 +60,39 @@ export const Gallery: Story = {
         <StatCounter number={340} label="Saves" separator />
         <ForecastDay day="Mon" icon={<CloudSun />} range="21° / 13°" label="Monday, partly cloudy, 13 to 21 degrees" />
         <Tooltip text="Add to plan"><IconButton label="Notifications" icon={<Bell />} /></Tooltip>
+      </div>
+    </div>
+  ),
+}
+
+/** The seven glyphs on their colour fields, black ink in both modes, at 24 (small grid) and 48 (large grid). */
+const GLYPH_FIELD: Record<GlyphName, string> = {
+  spark: 'var(--category-pop)',
+  ring: 'var(--category-drama)',
+  flower: 'var(--category-beauty)',
+  arch: 'var(--category-culture)',
+  bowl: 'var(--category-food)',
+  plus: 'var(--action-new-plan)',
+  arrow: 'var(--field-hero)',
+}
+
+export const Glyphs: Story = {
+  render: () => (
+    <div className="grid max-w-[640px] gap-[var(--space-4)]">
+      <div className="flex flex-wrap gap-[var(--tile-gap)]">
+        {(Object.keys(GLYPHS) as GlyphName[]).map((g) => (
+          <div key={g} className="flex flex-col items-center gap-[var(--space-2)]">
+            <span className="inline-flex items-center gap-[var(--space-3)] rounded-sq-md p-[var(--space-3)] text-field-fg" style={{ backgroundColor: GLYPH_FIELD[g] }}>
+              <Glyph name={g} size={24} />
+              <Glyph name={g} size={48} />
+            </span>
+            <span className="type-body-caption text-ui-fg-muted">{g}</span>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center gap-[var(--space-3)]">
+        <SearchGlyphTile />
+        <span className="type-body-caption text-ui-fg-muted">Search glyph tile</span>
       </div>
     </div>
   ),
