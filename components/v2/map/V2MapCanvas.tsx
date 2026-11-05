@@ -5,9 +5,10 @@ import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, us
 import Script from 'next/script'
 import { useLocale } from 'next-intl'
 import type { MapBounds, MapPoi } from '@/hooks/useMapPois'
+import { mapTypeOf } from './mapType'
 import { TOKEN_HEX } from '@/tokens/colors'
 import { useCd } from '@/components/v2/cd'
-import { PLACE_TYPE_COLOR, PLACE_TYPE_ICON, categoryAttr, placeTypeOf } from '@/components/library'
+import { PLACE_TYPE_ICON, categoryAttr, placeTypeOf } from '@/components/library'
 import { keepMapLook } from './mapLook'
 
 // Map canvas: the Naver map with the B4K markers. Map pin = the place photo in a squircle with a
@@ -131,7 +132,7 @@ const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
   const tail = selected ? 'var(--map-pin-selected)' : 'var(--map-pin-stroke)'
   const head = p.primary_image_url
     ? `background:var(--map-pin-fill) url('${esc(pinSrc(p.primary_image_url))}') center/cover no-repeat`
-    : `background:${selected ? 'var(--map-pin-selected)' : PLACE_TYPE_COLOR[placeTypeOf(p.interest_category)]};display:flex;align-items:center;justify-content:center`
+    : `background:${selected ? 'var(--map-pin-selected)' : `var(--map-type-${mapTypeOf(p)})`};display:flex;align-items:center;justify-content:center`
   const name = showName || selected ? `<span style="${LABEL}">${poiLabel(p)}</span>` : ''
   // Fixed width so the anchor (half of it) stays on the place; a wider name overflows evenly on both sides.
   return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;width:${Math.max(44, PIN_PX[tier])}px" ${markerAttrs(p.poi_id, poiLabel(p), selected, categoryOf(p))}><span style="box-sizing:border-box;flex-shrink:0;width:${size};height:${size};border-radius:var(--radius-sm);border:${ring};${head};box-shadow:var(--shadow-pin);transition:all 160ms var(--easing-out-strong)">${p.primary_image_url ? '' : typeIcon(p)}</span><span aria-hidden style="width:0;height:0;margin-top:-1px;border-left:${TAIL_PX}px solid transparent;border-right:${TAIL_PX}px solid transparent;border-top:${TAIL_PX}px solid ${tail}"></span>${name}</div>`
