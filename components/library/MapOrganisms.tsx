@@ -404,7 +404,7 @@ export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, ownerH
   return (
     <div className="flex h-full flex-col gap-[var(--space-4)] bg-ui-bg p-[var(--space-4)] text-ui-fg">
       <div className="flex flex-col gap-[var(--space-2)]">
-        <h1 className="type-display-h2 [overflow-wrap:anywhere] [&:lang(ko)]:break-keep">{title}</h1>
+        <h1 className="type-display-h1 [overflow-wrap:anywhere] [&:lang(ko)]:break-keep">{title}</h1>
         <p className="flex items-center gap-[var(--space-2)] type-body-caption text-ui-fg-muted">
           {ownerAvatarSrc !== undefined ? <Avatar size="xs" src={ownerAvatarSrc} name={ownerName ?? owner} decorative /> : null}
           {/* The owner link takes 24 to tap; padding grows the box, the same negative margin keeps the line. */}
