@@ -43,7 +43,10 @@ export const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab({ select
             : 'bg-ui-bg-inverse text-ui-fg-inverse'
           : 'text-ui-fg-muted enabled:hover:text-ui-fg',
         glyph && 'pl-[var(--space-2)] pr-[var(--space-3)]',
+        // Focus ring inside the tab in an ink that holds on its fill: black on a colour, the inverse
+        // ink on the inverse fill, the focus colour on the track.
         FOCUS_RING_INSET,
+        selected && (fill ? 'focus-visible:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--field-fg)]' : 'focus-visible:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-fg-inverse)]'),
         className,
       )}
       {...props}
