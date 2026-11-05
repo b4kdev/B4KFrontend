@@ -69,6 +69,30 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
 }
 @media (pointer: fine) { html { overscroll-behavior: none; } }
 
+/* Keyboard focus: plain links and buttons (text links, prose links, text buttons) get the site's
+   ring instead of the browser's thin outline. Parts that draw their own focus (a focus-visible or
+   outline-none class, or a ring on a parent) keep it. */
+:where(a[href], button, summary, [tabindex]:not([tabindex="-1"])):focus-visible:not([class*="outline-none"]):not([class*="focus-visible:shadow"]):not(.b4k-map-marker) {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+/* A sideways-scrolling row clips anything outside its box, so the ring of a focused tile in it was
+   cut. The row gets the ring's room as padding, taken back with a negative margin so the layout
+   stays where it was; at desktop width (no side gutter) on the sides too. */
+.b4k-focus-room.b4k-focus-room {
+  --focus-room: calc(var(--focus-ring-offset) + var(--focus-ring-width));
+  padding-block: var(--focus-room);
+  margin-block: calc(var(--focus-room) * -1);
+}
+/* Doubled class: the compiled utilities (lg:px-0, lg:mx-0) come after this file. */
+@media (min-width: 1024px) {
+  .b4k-focus-room.b4k-focus-room {
+    padding-inline: var(--focus-room);
+    margin-inline: calc(var(--focus-room) * -1);
+    scroll-padding-inline: var(--focus-room);
+  }
+}
+
 /* Map pins and plan stops are focusable buttons inside the Naver map (V2MapCanvas). */
 .b4k-map-marker:focus { outline: none; }
 /* The marker's head (pin, dot, cluster, stop badge) carries its shadow in a class, so keyboard focus

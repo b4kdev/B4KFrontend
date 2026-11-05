@@ -428,7 +428,7 @@ export function LeaderboardTab() {
           seeAll={user ? { href: '/badges', label: t('CD1309') } : undefined}
         />
         {user ? (
-          <ul className="-mx-[var(--grid-gutter-mobile)] flex gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:gap-[var(--space-6)] lg:px-0">
+          <ul className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:gap-[var(--space-6)] lg:px-0">
             {/* relative: keeps the locked tiles' screen-reader label inside the scrolling track. */}
             {next.map((b) => (
               <li key={b.id} className="relative shrink-0">
