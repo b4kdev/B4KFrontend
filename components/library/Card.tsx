@@ -180,12 +180,14 @@ export function Card(props: CardProps) {
             className,
           )}
         >
-          <div className="relative z-10 flex flex-col gap-[var(--space-1)] px-[var(--tile-padding)] pt-[var(--tile-padding)]">
+          {/* No positioning on the label block: the title link's stretched area then covers the whole
+              tile; the glyph and the photo let taps through to it. */}
+          <div className="flex flex-col gap-[var(--space-1)] px-[var(--tile-padding)] pt-[var(--tile-padding)]">
             <CardLink href={href} className="text-[length:var(--title-size-tile)] font-[var(--font-weight-extrabold)] leading-[1.05] tracking-[-0.03em] [overflow-wrap:anywhere] [&:lang(ko)]:break-keep">{title}</CardLink>
             {props.meta ? <div className="text-[length:calc(var(--font-size-sm)*13/14)] leading-[1.3] text-field-fg-muted sm:text-sm sm:leading-[1.3]">{props.meta}</div> : null}
           </div>
-          <Glyph name={props.glyph} size="26%" className="b4k-card-glyph absolute bottom-[var(--tile-padding)] left-[var(--tile-padding)] !h-auto" />
-          <span className="b4k-card-media absolute bottom-[var(--space-3-5)] right-[var(--space-3-5)] w-1/2 overflow-hidden rounded-tile-inner bg-field-inset">
+          <Glyph name={props.glyph} size="26%" className="b4k-card-glyph pointer-events-none absolute bottom-[var(--tile-padding)] left-[var(--tile-padding)] !h-auto" />
+          <span className="b4k-card-media pointer-events-none absolute bottom-[var(--space-3-5)] right-[var(--space-3-5)] w-1/2 overflow-hidden rounded-tile-inner bg-field-inset">
             <Image ratio="1:1" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="160px" className="bg-transparent" />
           </span>
         </article>
