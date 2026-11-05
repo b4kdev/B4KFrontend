@@ -111,6 +111,11 @@ const b4kTokens: Partial<Config> = {
           "saved": "var(--nav-saved)",
           "quick-plan": "var(--nav-quick-plan)",
           "icon-idle": "var(--nav-icon-idle)",
+          "icon-home": "var(--nav-icon-home)",
+          "icon-map": "var(--nav-icon-map)",
+          "icon-explore": "var(--nav-icon-explore)",
+          "icon-saved": "var(--nav-icon-saved)",
+          "icon-quick-plan": "var(--nav-icon-quick-plan)",
           "tile-idle": "var(--nav-tile-idle)",
           "tile-hover": "var(--nav-tile-hover)"
         },

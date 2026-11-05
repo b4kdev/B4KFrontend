@@ -205,9 +205,13 @@ export function QuickPlan({ open, onClose, step, stepTitle, stepSubtitle, progre
   const phone = usePhone()
   const ref = useFocusTrap<HTMLDivElement>(open, onClose)
   const heading = useRef<HTMLHeadingElement>(null)
+  // Phones: the grabber drags the sheet down; past 80 px (or a tap) it closes.
+  const [drag, setDrag] = useState<number | null>(null)
+  const start = useRef(0)
   useEffect(() => {
     if (open) heading.current?.focus()
   }, [step, open])
+  useEffect(() => { if (!open) setDrag(null) }, [open])
   if (!open) return null
   const padX = phone ? 'px-[var(--space-4)]' : 'px-[var(--space-6)]'
   return (
@@ -218,12 +222,30 @@ export function QuickPlan({ open, onClose, step, stepTitle, stepSubtitle, progre
         role="dialog"
         aria-modal="true"
         aria-label={title}
+        style={phone && drag ? { transform: `translateY(${drag}px)` } : undefined}
         className={cn(
           'fixed z-50 flex flex-col overflow-hidden bg-ui-bg-raised text-ui-fg dark:bg-ui-bg-media',
           phone ? 'inset-x-0 bottom-0 max-h-[min(768px,calc(100dvh-44px))] rounded-t-tile shadow-sheet motion-safe:animate-b4k-sheet-in' : 'left-1/2 top-1/2 max-h-[90dvh] w-[min(864px,calc(100%-var(--space-8)))] -translate-x-1/2 -translate-y-1/2 rounded-tile shadow-menu',
         )}
       >
-        {phone ? <div className="flex justify-center py-[var(--space-2)]"><span aria-hidden className="h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-11)] rounded-[3px] bg-sheet-handle" /></div> : null}
+        {phone ? (
+          <div
+            aria-hidden
+            className="relative z-10 -my-[var(--space-3)] flex touch-none justify-center py-[var(--space-5)]"
+            onPointerDown={(e) => {
+              start.current = e.clientY
+              setDrag(0)
+              ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+            }}
+            onPointerMove={(e) => drag !== null && setDrag(Math.max(0, e.clientY - start.current))}
+            onPointerUp={() => {
+              if (drag !== null && (drag > 80 || drag < 8)) onClose()
+              setDrag(null)
+            }}
+          >
+            <span className="h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-11)] rounded-[3px] bg-sheet-handle" />
+          </div>
+        ) : null}
         <div className={cn('flex items-center gap-[var(--space-4)] pr-[var(--space-3)]', phone ? 'pb-[var(--space-4)] pl-[var(--space-4)] pt-[var(--space-2)]' : 'py-[var(--space-4)] pl-[var(--space-6)]')}>
           {stepList || progressLabel ? (
             <>
