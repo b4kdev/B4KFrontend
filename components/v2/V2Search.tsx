@@ -85,7 +85,9 @@ export function useSearchBox({ viewport, initial = '', open: startOpen = false }
     setOpen(false)
     // A category name (a Trending chip, or the name typed as is) opens that category's page: the
     // text search matches place names, not categories, so it would find nothing.
-    const category = CATEGORIES.find(([, cd]) => t(cd).toLowerCase() === text.trim().toLowerCase())
+    // Labels carry word joiners around the hyphen (K-Pop never breaks); compare without them.
+    const plain = (s: string) => s.replace(/⁠/g, '').trim().toLowerCase()
+    const category = CATEGORIES.find(([, cd]) => plain(t(cd)) === plain(text))
     router.push(category ? `/explore/${category[0]}` : `/search?q=${encodeURIComponent(text.trim())}`)
   }
   const suggestions = (
