@@ -26,7 +26,7 @@ export function V2DraftMigration() {
   const { conflict, resolveKeepDevice, resolveKeepAccount } = useDraftMigration()
   if (!conflict) return null
   const side = (title: string, d: { stopCount: number; lastModified: string }, keep: () => void) => (
-    <div className="flex flex-col gap-[var(--space-2)] rounded-xl border border-ui-border p-[var(--space-4)]">
+    <div className="flex flex-col gap-[var(--space-2)] rounded-sq-md bg-tile-surface p-[var(--space-4)] shadow-rest">
       <p className="type-title-card">{title}</p>
       <p className="type-body-base">{t('CD0011', { count: d.stopCount })}</p>
       <p className="type-body-caption text-ui-fg-muted">{t('CD0010', { time: ago(d.lastModified) })}</p>

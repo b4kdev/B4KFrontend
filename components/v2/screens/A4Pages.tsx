@@ -137,7 +137,7 @@ export function SearchScreen() {
   const collections = data?.collections ?? []
   const noResults = !!data && !data.places.length && !data.plans.length && !collections.length
   const exploreChips = (data?.explore ?? []).map((e) => (
-    <IntlLink key={e.href} href={`${e.href}`} className="inline-flex h-[var(--control-height-sm)] items-center rounded-full border border-ui-border-strong px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+    <IntlLink key={e.href} href={`${e.href}`} className="inline-flex h-[var(--control-height-sm)] items-center rounded-chip bg-control-fill shadow-rest px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
       {t(({ kpop: 'CD1247', kdrama: 'CD1246', kbeauty: 'CD1244', kculture: 'CD1245' } as Record<string, string>)[e.label_key] ?? 'CD1306')}
     </IntlLink>
   ))
@@ -470,8 +470,8 @@ export function NotFoundScreen() {
       <title>{t('CD1832', { page: t('CD0116') })}</title>
       <EmptyState type="no-results" titleAs="h1" title={t('CD0116')} className="w-full lg:w-[400px]">{t('CD0115')}</EmptyState>
       <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
-        <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0114')}</IntlLink>
-        <IntlLink href="/map" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0481')}</IntlLink>
+        <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center rounded-control bg-button-primary-bg shadow-accent px-[var(--space-5)] type-label-button text-button-primary-fg focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0114')}</IntlLink>
+        <IntlLink href="/map" className="inline-flex h-[var(--control-height-lg)] items-center rounded-control bg-control-fill px-[var(--space-5)] shadow-rest type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0481')}</IntlLink>
       </div>
     </V2Page>
   )
@@ -485,7 +485,7 @@ export function ErrorScreen({ reset }: { reset: () => void }) {
       <EmptyState type="error" titleAs="h1" title={t('CD0113')} className="w-full lg:w-[400px]">{t('CD0111')}</EmptyState>
       <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
         <Button onClick={reset}>{t('CD0110')}</Button>
-        <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0112')}</IntlLink>
+        <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center rounded-control bg-control-fill px-[var(--space-5)] shadow-rest type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0112')}</IntlLink>
       </div>
     </V2Page>
   )
@@ -505,12 +505,12 @@ export function AboutScreen() {
         <Logo type="wordmark" className="h-auto w-full" />
         <div aria-hidden className="h-[var(--space-4)] lg:hidden" />
         <div className="flex flex-col gap-[var(--space-4)] lg:max-w-[760px] lg:gap-[var(--space-6)] lg:pb-[var(--space-4)] lg:pt-[var(--space-12)]">
-          <h1 className="type-title-card">{t('CD1173')}</h1>
-          <p className="type-body-base text-ui-fg-muted">{t('CD1687')}</p>
+          <h1 className="type-display-h1">{t('CD1173')}</h1>
+          <p className="rounded-sq-md bg-tile-surface px-[var(--space-5)] py-[var(--space-4)] type-body-long leading-[1.7] text-ui-fg shadow-rest">{t('CD1687')}</p>
           {/* Company details as drawn under the about text: title, one line per detail, Check business info. */}
-          <h2 className="type-title-card">{t('CD1688')}</h2>
-          <p className="whitespace-pre-line type-body-base text-ui-fg-muted">{fillCompanyText(t.raw('CD1689') as string, companyValues(locale))}</p>
-          <a href={COMPANY.checkUrl} target="_blank" rel="noopener noreferrer" className={cn('relative self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{t('CD1685')}</a>
+          <h2 className="type-display-h4">{t('CD1688')}</h2>
+          <p className="whitespace-pre-line rounded-sq-md bg-tile-surface px-[var(--space-5)] py-[var(--space-4)] type-body-base tabular-nums text-ui-fg-muted shadow-rest">{fillCompanyText(t.raw('CD1689') as string, companyValues(locale))}</p>
+          <a href={COMPANY.checkUrl} target="_blank" rel="noopener noreferrer" className={cn('b4k-link relative self-start type-body-link', HIT_AREA)}>{t('CD1685')}</a>
         </div>
       </div>
     </V2Page>

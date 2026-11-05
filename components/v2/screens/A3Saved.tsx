@@ -162,7 +162,7 @@ export function SavedScreen() {
   const toolbar = (
     <div className="flex items-center justify-between gap-[var(--space-4)]">
       <Button variant="ghost" size="md" onClick={() => setSheet({ mode: 'new' })}>{t('CD1206')}</Button>
-      <IntlLink href="/saved/plan" aria-disabled={!!data && !data.pois.length} className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse aria-disabled:pointer-events-none aria-disabled:bg-ui-bg-disabled aria-disabled:text-ui-fg-disabled">
+      <IntlLink href="/saved/plan" aria-disabled={!!data && !data.pois.length} className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] rounded-control bg-button-primary-bg shadow-accent px-[var(--space-5)] type-label-button text-button-primary-fg aria-disabled:pointer-events-none aria-disabled:bg-ui-bg-disabled aria-disabled:text-ui-fg-disabled">
         {t('CD1363')}
       </IntlLink>
     </div>
@@ -212,7 +212,7 @@ export function SavedScreen() {
       </ul>
     </div>
   ) : data && !data.pois.length ? (
-    <EmptyState icon={<Bookmark />} title={k('saved.empty.places.title')} className="flex-1" action={<IntlLink href="/map" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{t('CD1430')}</IntlLink>}>{t('CD1429')}</EmptyState>
+    <EmptyState icon={<Bookmark />} title={k('saved.empty.places.title')} className="flex-1" action={<IntlLink href="/map" className="inline-flex h-[var(--control-height-md)] items-center rounded-control bg-button-primary-bg shadow-accent px-[var(--space-5)] type-label-button text-button-primary-fg">{t('CD1430')}</IntlLink>}>{t('CD1429')}</EmptyState>
   ) : (
     <div className="flex flex-col gap-[var(--space-4)]">
       <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4 lg:gap-[var(--space-4)]">
@@ -277,7 +277,7 @@ export function SavedScreen() {
       ) })}
     </ul>
   ) : (
-    <EmptyState container="bordered" title={k('saved.empty.myPlans.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('saved.empty.myPlans.cta')}</IntlLink>}>{k('saved.empty.myPlans.desc')}</EmptyState>
+    <EmptyState container="bordered" title={k('saved.empty.myPlans.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center rounded-control bg-button-primary-bg shadow-accent px-[var(--space-5)] type-label-button text-button-primary-fg">{k('saved.empty.myPlans.cta')}</IntlLink>}>{k('saved.empty.myPlans.desc')}</EmptyState>
   )
 
   const savedPlans = data?.plans.length ? (

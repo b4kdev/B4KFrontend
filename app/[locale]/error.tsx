@@ -31,7 +31,7 @@ export default function ErrorBoundary({
             <Button onClick={reset}>{t('cta')}</Button>
             <Link
               href="/"
-              className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"
+              className="inline-flex h-[var(--control-height-lg)] items-center rounded-control bg-control-fill px-[var(--space-5)] shadow-rest type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"
             >
               {t('goHome')}
             </Link>

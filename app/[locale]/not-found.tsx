@@ -14,7 +14,7 @@ export default function NotFound() {
         action={
           <Link
             href="/"
-            className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none"
+            className="inline-flex h-[var(--control-height-lg)] items-center rounded-control bg-button-primary-bg px-[var(--space-5)] shadow-accent type-label-button text-button-primary-fg focus-visible:shadow-focus-ring focus-visible:outline-none"
           >
             {t('cta')}
           </Link>

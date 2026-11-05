@@ -138,7 +138,7 @@ export function ProfileOwnScreen() {
             <IntlLink href="/saved?tab=my-plans" className="inline-flex h-[var(--control-height-md)] items-center self-start px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover">{GAP.openSaved}</IntlLink>
           </section>
         ) : plans ? (
-          <EmptyState container="bordered" title={k('profile.trips.empty.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('profile.trips.empty.cta')}</IntlLink>}>{k('profile.trips.empty.desc')}</EmptyState>
+          <EmptyState container="bordered" title={k('profile.trips.empty.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center rounded-control bg-button-primary-bg shadow-accent px-[var(--space-5)] type-label-button text-button-primary-fg">{k('profile.trips.empty.cta')}</IntlLink>}>{k('profile.trips.empty.desc')}</EmptyState>
         ) : null}
         {badges.data ? (
           <RowSection
@@ -163,7 +163,7 @@ function BadgeTile({ b, onOpen }: { b: BadgeT; onOpen?: () => void }) {
     : b.unlock_criteria.description
   const tile = <AchievementBadge name={badgeName(b)} detail={detail} icon={BADGE_ICON(b.category)} rarity={b.rarity} locked={!b.earned} lockedLabel={k('badges.badge.locked')} />
   return onOpen ? (
-    <button type="button" onClick={onOpen} className="rounded-2xl p-[var(--space-2)] hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{tile}</button>
+    <button type="button" onClick={onOpen} className="rounded-sq-md p-[var(--space-2)] hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{tile}</button>
   ) : tile
 }
 
@@ -276,7 +276,7 @@ export function BadgesScreen() {
             <ul className="flex flex-wrap gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-6)]">
               {g.list.map((b) => (
                 <li key={b.id}>
-                  <button type="button" onClick={() => setOpen(b)} className={cn('flex rounded-xl text-left', FOCUS_RING)}>
+                  <button type="button" onClick={() => setOpen(b)} className={cn('flex rounded-sq-sm text-left', FOCUS_RING)}>
                     <AchievementBadge name={badgeName(b)} detail={b.earned && b.earned_at ? k('badges.badge.earnedOn', { date: day(b.earned_at) }) : how(b)} icon={<Trophy />} rarity={b.rarity} locked={!b.earned} lockedLabel={k('badges.badge.locked')} />
                   </button>
                 </li>
@@ -350,7 +350,7 @@ function PlannersEmpty({ className }: { className?: string }) {
   const k = useCdKey()
   const t = useCd()
   return (
-    <EmptyState container="plain" icon={<Trophy />} className={className} title={k('leaderboard.empty.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{t('CD1594')}</IntlLink>}>{t('CD1593')}</EmptyState>
+    <EmptyState container="plain" icon={<Trophy />} className={className} title={k('leaderboard.empty.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center rounded-control bg-button-primary-bg shadow-accent px-[var(--space-5)] type-label-button text-button-primary-fg">{t('CD1594')}</IntlLink>}>{t('CD1593')}</EmptyState>
   )
 }
 
@@ -430,7 +430,7 @@ export function LeaderboardTab() {
             {/* relative: keeps the locked tiles' screen-reader label inside the scrolling track. */}
             {next.map((b) => (
               <li key={b.id} className="relative shrink-0">
-                <button type="button" onClick={() => router.push('/badges')} className={cn('flex rounded-xl text-left', FOCUS_RING)}>
+                <button type="button" onClick={() => router.push('/badges')} className={cn('flex rounded-sq-sm text-left', FOCUS_RING)}>
                   <AchievementBadge name={badgeName(b)} detail={b.earned && b.earned_at ? k('badges.badge.earnedOn', { date: day(b.earned_at) }) : b.unlock_criteria.description} icon={<Trophy />} rarity={b.rarity} locked={!b.earned} lockedLabel={k('badges.badge.locked')} />
                 </button>
               </li>

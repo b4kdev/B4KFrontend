@@ -160,7 +160,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
         ) : null}
       </div>
     ) : (
-      <ul className="border border-ui-border">
+      <ul className="overflow-hidden rounded-sq-md bg-tile-surface shadow-rest">
         {[
           { key: t('CD0762'), value: t(CITY_CD[city]), to: 1 as const },
           { key: t('CD0759'), value: who ? t(WHO.find((w) => w[0] === who)![1]) : t('CD0767'), to: 1 as const },

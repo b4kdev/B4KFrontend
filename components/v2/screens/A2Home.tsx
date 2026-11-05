@@ -41,7 +41,7 @@ import { regionName } from '../map/areaName'
 // Empty state Error with Try again.
 
 // The hero's action button look.
-const HERO_ACTION = 'inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none'
+const HERO_ACTION = 'inline-flex h-[var(--control-height-2xl)] items-center rounded-control bg-hero-cta-bg px-[var(--space-6)] type-label-button text-base text-hero-cta-fg shadow-float transition-transform duration-short3 ease-out-strong active:scale-[var(--press-scale)] motion-reduce:active:scale-100 focus-visible:shadow-focus-ring focus-visible:outline-none'
 
 export const jsonFetch = <T,>(url: string) => fetch(url).then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(r.status)))
 
@@ -288,7 +288,7 @@ export function HomeScreen() {
       {/* Two slides: no autoplay, the arrows wrap around. Slide 1 is the brand slide (no photo, the
           media surface with the fade); its action opens Quick plan. The drawn K-Drama slide waits for
           its photo. */}
-      <Carousel type="hero" label={t('CD0388')} previousLabel={t('CD0390')} nextLabel={t('CD0389')} slideLabel={(n) => t('CD0391', { n })}>
+      <Carousel type="hero" className="lg:mb-[var(--space-2)] lg:mr-[var(--space-6)] lg:mt-[var(--space-2)] max-lg:[&_section]:rounded-t-none" label={t('CD0388')} previousLabel={t('CD0390')} nextLabel={t('CD0389')} slideLabel={(n) => t('CD0391', { n })}>
         {[
           { id: 'plan', eyebrow: t('CD0463'), title: t('CD1781'), subtitle: t('CD1782'), image: null, action: <button type="button" onClick={openQuickPlan} className={HERO_ACTION}>{t('CD0738')}</button> },
           { id: 'food', eyebrow: t('CD0251'), title: t('CD1786'), subtitle: t('CD1787'), image: foodTheme.data?.items[0]?.primary_image_url ?? null, action: <IntlLink href="/explore/k-food/michelin-noodles" className={HERO_ACTION}>{t('CD1785')}</IntlLink> },

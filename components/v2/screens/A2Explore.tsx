@@ -143,6 +143,7 @@ function CategoryIndex({ category, sections, active, rowsKey }: { category: stri
             label={t(c.label)}
             kind={c.slug === category ? 'expanded' : 'collapsed'}
             selected={false}
+            dot={`var(--category-${c.slug.replace(/^k-/, '')})`}
             onToggle={() => router.push(`/explore/${c.slug}`)}
             onSelect={() => router.push(`/explore/${c.slug}`)}
           >
@@ -184,7 +185,7 @@ function ExploreFrame({ category, sections, active, pageTitle, rowsKey, children
               label={t('CD0804')}
               value={category}
               onValueChange={(v) => router.push(`/explore/${v}`)}
-              tabs={CATEGORIES.map((c) => ({ id: c.slug, label: t(c.label) }))}
+              tabs={CATEGORIES.map((c) => ({ id: c.slug, label: t(c.label), color: `var(--category-${c.slug.replace(/^k-/, '')})` }))}
               className="-mx-[var(--grid-gutter-mobile)] -mt-[var(--space-6)] mb-[var(--space-6)] px-[var(--grid-gutter-mobile)]"
             />
           ) : null}
@@ -277,9 +278,9 @@ export function CategoryScreen({ category }: { category: string }) {
             eyebrow={hero.badge}
             title={hero.title}
             // No subtitle line: the category hero is drawn with eyebrow, title and action only.
-            action={<IntlLink href={`${hero.cta_href}`} onClick={() => track('explore_card_open', { card_type: 'theme', position: 1, locale, screen_id: 'explore' })} className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{hero.cta_label}</IntlLink>}
+            action={<IntlLink href={`${hero.cta_href}`} onClick={() => track('explore_card_open', { card_type: 'theme', position: 1, locale, screen_id: 'explore' })} className="inline-flex h-[var(--control-height-xl)] items-center rounded-control bg-hero-cta-bg px-[var(--space-6)] type-label-button text-hero-cta-fg shadow-float transition-transform duration-short3 ease-out-strong active:scale-[var(--press-scale)]">{hero.cta_label}</IntlLink>}
             // Edge to edge in the content area: flush under the header on desktop, under the tabs on phones; 24 to the first row.
-            className="-mx-[var(--grid-gutter-mobile)] -mb-[var(--space-6)] -mt-[var(--space-6)] w-auto md:-mx-[var(--grid-gutter-tablet)] lg:-mx-[var(--space-8)]"
+            className="-mx-[var(--grid-gutter-mobile)] -mb-[var(--space-6)] -mt-[var(--space-6)] w-auto max-md:rounded-t-none md:-mx-[var(--grid-gutter-tablet)] lg:mx-0 lg:mt-[var(--space-3)]"
           />
         ) : null}
         {/* One request loads every row, so a failure is page-wide: the generic body, not 'the other rows still work'. */}
@@ -616,7 +617,7 @@ export function SpecialScreen({ api, category }: { api: string; category: string
           <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-3)]">
             <span className="type-eyebrow-category text-ui-fg-muted">{[categoryLabel, typeof data?.broadcaster === 'string' ? data.broadcaster : null].filter(Boolean).join(' · ')}</span>
             <div className="flex flex-wrap gap-[var(--gap-sm)]">
-              <IntlLink href={`/map?collection=${encodeURIComponent(api)}`} className="inline-flex h-[var(--control-height-lg)] items-center justify-center gap-[var(--gap-sm)] max-md:w-full border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"><MapPin aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1573')}</IntlLink>
+              <IntlLink href={`/map?collection=${encodeURIComponent(api)}`} className="inline-flex h-[var(--control-height-lg)] items-center justify-center gap-[var(--gap-sm)] max-md:w-full rounded-control bg-control-fill px-[var(--space-5)] shadow-rest type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"><MapPin aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1573')}</IntlLink>
             </div>
           </div>
         </section>
