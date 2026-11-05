@@ -226,7 +226,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           className={cn('max-lg:hidden', fullFlow && 'lg:hidden')}
           labels={labels}
           signedIn={!!user}
-          search={<Suspense fallback={<SearchPill label={labels.search} href="/search" />}><V2HeaderSearch label={labels.search} /></Suspense>}
+          search={<Suspense fallback={<SearchPill label={labels.search} href="/search" className="h-[var(--control-height-xl)] pl-[var(--space-2)]" />}><V2HeaderSearch label={labels.search} /></Suspense>}
           onLanguage={() => setLanguage(true)}
           languageMenu={<LanguageMenu />}
           helpHref="/help"

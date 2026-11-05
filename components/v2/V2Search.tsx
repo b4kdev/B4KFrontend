@@ -147,7 +147,6 @@ export function V2HeaderSearch({ label }: { label: string }) {
         }}
         onClear={() => box.setDraft('')}
         clearLabel={t('CD1248')}
-        size="md"
       />
       {box.open ? <div id={listId} className="absolute left-0 top-full z-50 mt-[var(--space-2)]">{box.suggestions}</div> : null}
     </div>
