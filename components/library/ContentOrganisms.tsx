@@ -61,7 +61,7 @@ export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action
           <div className="flex min-w-0 flex-col items-start gap-[var(--space-3)] md:max-w-[calc(100%-min(30vw,400px)-var(--space-6))]">
             {eyebrow ? <span className="type-eyebrow-category">{eyebrow}</span> : null}
             <H className="b4k-rise min-w-0 max-w-[min(980px,100%)] type-display-hero hyphens-auto [overflow-wrap:anywhere]">{title}</H>
-            {subtitle ? <p className="max-w-[440px] text-[length:var(--font-size-lg)] font-[500] leading-snug text-field-fg max-md:hidden">{subtitle}</p> : null}
+            {subtitle ? <p className="max-w-[440px] text-[length:calc(var(--font-size-lg)+var(--border-width-1))] font-[500] leading-snug text-field-fg max-md:hidden">{subtitle}</p> : null}
           </div>
           {action ? <div>{action}</div> : null}
         </div>
@@ -144,7 +144,7 @@ export function Carousel({ type, label, children, seeAll, subtitle, previousLabe
         </div>
       ))}
       {/* The controls sit on the poster: black dots (idle 35%) and black arrows with white icons. */}
-      <div className="absolute bottom-[var(--space-6)] left-1/2 -translate-x-1/2 [--color-border-strong:var(--field-fg-muted)] [--color-fg:var(--field-fg)] max-md:bottom-[var(--space-4)] [&_[aria-hidden]:not(.bg-ui-fg)]:opacity-50">
+      <div className="absolute bottom-[var(--space-6)] left-1/2 -translate-x-1/2 [--color-border-strong:var(--field-fg)] [--color-fg:var(--field-fg)] max-md:bottom-[var(--space-4)] [&_.bg-ui-border-strong]:opacity-[.35]">
         <Pagination type="dots" label={label} page={i + 1} pageCount={items.length} statusText={slideLabel(i + 1, items.length)} />
       </div>
       <div className="absolute bottom-[calc(var(--space-3)+var(--space-8))] right-[calc(var(--space-3)+var(--space-8))] flex gap-[var(--space-2)] [--color-bg-inverse:var(--field-fg)] [--color-fg-inverse:var(--photo-action-fg)] max-lg:hidden">

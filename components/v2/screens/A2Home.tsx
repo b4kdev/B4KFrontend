@@ -197,8 +197,9 @@ export function HomeScreen() {
 
   const name = (p: HomeTrendingPoi) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
 
-  // Phones: the hero runs up under the floating top bar, so it grows by the bar's height.
-  const heroPhone = 'max-lg:h-[calc(var(--hero-height-home)+var(--fab-size)+env(safe-area-inset-top))]'
+  // Phones: the hero runs up under the floating top bar inside its own height (the glyph sits below
+  // the bar); only the notch area is added.
+  const heroPhone = 'max-lg:h-[calc(var(--hero-height-home)+env(safe-area-inset-top))]'
   if (trending.isLoading && !trending.data) {
     return (
       <V2Page bleed underBar>
