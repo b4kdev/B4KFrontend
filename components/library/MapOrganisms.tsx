@@ -8,6 +8,7 @@ import { Badge } from './Badge'
 import { Button } from './Button'
 import { ChatBubble, CreditLine } from './Content'
 import { AiInput, ItineraryStop, PlanStopRow } from './ContentMolecules'
+import { Glyph } from './Glyph'
 import { Chip } from './Chip'
 import { EmptyState } from './Feedback'
 import { IconButton } from './IconButton'
@@ -47,7 +48,7 @@ export function AiPanel({ viewport, title, greeting, suggestions, onSuggestion, 
     <section
       role={desktop ? 'complementary' : 'dialog'}
       aria-labelledby={id}
-      className={cn('flex flex-col bg-ui-bg-raised text-ui-fg', desktop ? 'h-[min(65vh,640px)] w-[380px] border border-ui-border' : 'h-full w-full', className)}
+      className={cn('flex flex-col bg-ui-bg-raised text-ui-fg', desktop ? 'h-[min(65vh,640px)] w-[380px] overflow-hidden rounded-tile shadow-menu' : 'h-full w-full', className)}
     >
       <div className={cn('flex items-center gap-[var(--space-2)] border-b border-ui-border', desktop ? 'py-[var(--space-1)] pl-[var(--space-4)] pr-[var(--space-1)]' : 'p-[var(--space-1)]')}>
         {desktop ? null : <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onMinimize} />}
@@ -142,6 +143,15 @@ export type PlanCartProps = {
 }
 
 /** Plan cart: the plan as a shopping cart at the bottom of the Left panel. */
+/** The plan tray's leading tile: the add accent with the plus glyph. */
+function TrayTile() {
+  return (
+    <span aria-hidden className="absolute left-[var(--space-4)] top-[var(--space-4)] inline-flex size-[var(--nav-tile-size)] items-center justify-center rounded-sq-md bg-accent-add text-field-fg">
+      <Glyph name="plus" size={18} />
+    </span>
+  )
+}
+
 export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, durationMenu, onRemove, onSelect, onMove, onSave, onDiscard, labels, className }: PlanCartProps) {
   const id = useId()
   const [dragId, setDragId] = useState<string | null>(null)
@@ -183,27 +193,29 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
       : undefined
   if (state === 'empty') {
     return (
-      <section aria-label={labels.region} className={cn('rounded-t-3xl bg-ui-bg-sunken p-[var(--space-4)]', className)}>
-        <p className="type-title-card text-ui-fg">{labels.emptyTitle}</p>
+      <section aria-label={labels.region} className={cn('relative rounded-t-tile bg-ui-bg-raised py-[var(--space-4)] pl-[calc(var(--space-4)+var(--nav-tile-size)+var(--space-4))] pr-[var(--space-4)]', className)}>
+        <TrayTile />
+        <p className="type-title-card font-[var(--font-weight-extrabold)] text-ui-fg">{labels.emptyTitle}</p>
         <p className="mt-[var(--space-3)] type-body-caption text-ui-fg-muted">{labels.emptyBody}</p>
       </section>
     )
   }
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
-    <section aria-labelledby={id} className={cn('flex flex-col rounded-t-3xl text-ui-fg', state === 'open' ? 'h-full gap-[var(--space-3)] bg-ui-bg-sunken p-[var(--space-4)]' : 'bg-ui-bg-sunken', className)}>
+    <section aria-labelledby={id} className={cn('relative flex flex-col rounded-t-tile bg-ui-bg-raised text-ui-fg', state === 'open' ? 'h-full gap-[var(--space-3)] p-[var(--space-4)]' : 'pl-[calc(var(--nav-tile-size)+var(--space-4))]', className)}>
+      {state === 'collapsed' ? <TrayTile /> : null}
       <p aria-live="polite" className="sr-only">{announce}</p>
       {/* Open: the Left panel's color/bg, everything inside the root's 16 padding; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
       <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('relative flex w-full flex-col gap-[var(--space-3)] text-left hover:bg-ui-state-hover', HIT_AREA, state === 'collapsed' && 'p-[var(--space-4)]', FOCUS_RING_INSET)}>
         <span className="flex w-full items-center gap-[var(--space-2)]">
-          <span id={id} aria-live="polite" className="min-w-0 flex-1 type-title-card">{summary}</span>
+          <span id={id} aria-live="polite" className="min-w-0 flex-1 type-title-card font-[var(--font-weight-extrabold)]">{summary}</span>
           <span className="sr-only">{state === 'open' ? labels.close : labels.open}</span>
           <ChevronDown aria-hidden className={cn('size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted transition-transform', state === 'collapsed' && 'rotate-180')} />
         </span>
         {/* Figma Plan cart Collapsed › Last added: photo, place, "Last added · 2 more". */}
         {state === 'collapsed' && lastAdded ? (
           <span className="flex min-w-0 items-center gap-[var(--space-3)]">
-            {lastAddedImage !== undefined ? <Image ratio="1:1" src={lastAddedImage} alt="" sizes="80px" className="w-[var(--space-12)] shrink-0" /> : null}
+            {lastAddedImage !== undefined ? <Image ratio="1:1" src={lastAddedImage} alt="" sizes="80px" className="w-[var(--space-12)] shrink-0 rounded-sq-md" /> : null}
             <span className="flex min-w-0 flex-col gap-[var(--space-0-5)]">
               <span className="truncate type-body-base text-ui-fg">{lastAdded}</span>
               {lastAddedMeta ? <span className="truncate type-body-caption text-ui-fg-muted">{lastAddedMeta}</span> : null}
@@ -295,7 +307,7 @@ export type LeftPanelProps = {
 export function LeftPanel({ type, label, children, cart, cartOpen, topClear, className }: LeftPanelProps) {
   return (
     <aside aria-label={label} className={cn('relative flex h-full shrink-0 flex-col bg-ui-bg', type === 'index' ? 'w-[var(--layout-left-panel-index)]' : 'w-[var(--layout-left-panel)]', topClear && 'pt-[calc(var(--space-3)+var(--control-height-xl)+var(--space-3))]', className)}>
-      <div className={cn('flex min-h-0 flex-1 flex-col overflow-y-auto', cartOpen && 'invisible')}>{children}</div>
+      <div className={cn('flex min-h-0 flex-1 flex-col overflow-y-auto scroll-py-[calc(var(--focus-ring-offset)+var(--focus-ring-width))]', cartOpen && 'invisible')}>{children}</div>
       {type === 'map' && cart ? <div className={cn(cartOpen ? 'absolute inset-0 z-10' : 'shrink-0')}>{cart}</div> : null}
     </aside>
   )
@@ -390,9 +402,9 @@ export type ItineraryPanelProps = {
 export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, ownerHref, privateLabel, stats, days, activeDay, onDayChange, stops, selectedStop, onSelectStop, onLeg, legMenu, legMenuLabel, related, footer, labels }: ItineraryPanelProps) {
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
-    <div className="flex h-full flex-col gap-[var(--space-4)] bg-ui-bg-raised p-[var(--space-4)] text-ui-fg">
+    <div className="flex h-full flex-col gap-[var(--space-4)] bg-ui-bg p-[var(--space-4)] text-ui-fg">
       <div className="flex flex-col gap-[var(--space-2)]">
-        <h1 className="type-display-h3">{title}</h1>
+        <h1 className="type-display-h1 [overflow-wrap:anywhere] [&:lang(ko)]:break-keep">{title}</h1>
         <p className="flex items-center gap-[var(--space-2)] type-body-caption text-ui-fg-muted">
           {ownerAvatarSrc !== undefined ? <Avatar size="xs" src={ownerAvatarSrc} name={ownerName ?? owner} decorative /> : null}
           {/* The owner link takes 24 to tap; padding grows the box, the same negative margin keeps the line. */}
@@ -401,31 +413,31 @@ export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, ownerH
         </p>
       </div>
       {/* Figma Itinerary panel: Header, Stats, Day filter, Timeline and Related plans 16 apart. */}
-      <p className="bg-ui-bg-sunken p-[var(--space-3)] type-body-caption text-ui-fg">{stats.join(' · ')}</p>
+      <p className="rounded-sq-lg bg-accent-stats px-[var(--space-4)] py-[var(--space-3-5)] type-label-button tabular-nums text-field-fg">{stats.join(' · ')}</p>
       <Tabs baseline={false} label={labels.days} value={String(activeDay)} onValueChange={(v) => onDayChange(v === 'all' ? 'all' : (Number(v) as Day))} tabs={[{ id: 'all', label: labels.all }, ...Array.from({ length: days }, (_, i) => ({ id: String(i + 1), label: labels.day(i + 1), day: (i + 1) as Day }))]} />
       <div className="flex min-h-0 flex-1 flex-col gap-[var(--space-4)] overflow-y-auto">
-        <ol>
+        <ol className="b4k-stagger">
           {shown.map((s, i) => (
             <li key={s.id} className="list-none">
               {/* Figma Timeline: an eyebrow/category day heading ("DAY 1") where a day starts. */}
-              {i === 0 || shown[i - 1].day !== s.day ? <p className="type-eyebrow-category text-ui-fg-muted">{labels.day(s.day)}</p> : null}
+              {i === 0 || shown[i - 1].day !== s.day ? <p className="pb-[var(--space-2)] pt-[var(--space-1)] type-eyebrow-category text-ui-fg-muted">{labels.day(s.day)}</p> : null}
               <ul>
                 <ItineraryStop name={s.name} number={stops.indexOf(s) + 1} day={s.day} meta={s.meta} note={s.note} thumbnail={s.imageSrc} selected={selectedStop === s.id} onSelect={onSelectStop ? () => onSelectStop(s.id) : undefined} />
               </ul>
               {s.leg && i < shown.length - 1 ? (
-                <div className="pl-[var(--space-5)]"><TransportMode mode={s.leg.mode} modeLabel={s.leg.label} time={s.leg.time} onChange={onLeg ? () => onLeg(s.id) : undefined} menu={legMenu?.(s.id)} menuLabel={legMenuLabel?.(s.id)} /></div>
+                <div className="pl-[var(--space-7)]"><TransportMode mode={s.leg.mode} modeLabel={s.leg.label} time={s.leg.time} onChange={onLeg ? () => onLeg(s.id) : undefined} menu={legMenu?.(s.id)} menuLabel={legMenuLabel?.(s.id)} /></div>
               ) : null}
             </li>
           ))}
         </ol>
         {related ? (
           <section className="flex flex-col gap-[var(--space-2)]">
-            <h2 className="type-title-card">{labels.related}</h2>
+            <h2 className="mt-[var(--space-4)] type-display-h4">{labels.related}</h2>
             {related}
           </section>
         ) : null}
       </div>
-      <div className="flex gap-[var(--space-2)] border-t border-ui-border pt-[var(--space-4)]">{footer}</div>
+      <div className="flex gap-[var(--space-2)] pt-[var(--space-2)] [&_button]:h-[var(--control-height-xl)] [&_button[aria-label]]:w-[var(--control-height-xl)]">{footer}</div>
     </div>
   )
 }
@@ -458,28 +470,35 @@ export function PlaceDetail({ viewport, name, meta, imageSrc, imageAlt, credit, 
   const ICON = { hours: Clock, address: MapPin, website: Globe } as const
   return (
     <section aria-label={name} className="flex flex-col gap-[var(--space-4)] py-[var(--space-4)] text-ui-fg">
-      {imageSrc ? <Image ratio={viewport === 'desktop' ? '4:3' : '16:9'} src={imageSrc} alt={imageAlt ?? ''} sizes="420px" /> : null}
+      {imageSrc ? <Image ratio={viewport === 'desktop' ? '4:3' : '16:9'} src={imageSrc} alt={imageAlt ?? ''} sizes="420px" className="mx-[var(--space-3)] w-[calc(100%-var(--space-3)*2)] rounded-tile" /> : null}
       {imageSrc && credit ? <CreditLine className="px-[var(--space-4)]">{credit}</CreditLine> : null}
       <div className="flex flex-col gap-[var(--space-2)] px-[var(--space-4)]">
         {sponsored ? <Badge variant="normal" className="self-start">{sponsored}</Badge> : null}
-        <h1 className="type-display-h2">{name}</h1>
+        <h1 className="type-display-h2 text-[length:min(var(--display-size-h2),34px)] [overflow-wrap:anywhere] [&:lang(ko)]:break-keep">{name}</h1>
         <p className="type-body-base text-ui-fg-muted">{meta}</p>
         {!imageSrc && labels.noPhoto ? <p className="type-body-caption text-ui-fg-muted">{labels.noPhoto}</p> : null}
       </div>
       <div className="flex items-center gap-[var(--space-2)] px-[var(--space-4)]">
-        <Button size="md" onClick={onAdd} className="flex-1">{labels.add}</Button>
-        <IconButton variant="secondary" label={labels.save} aria-pressed={saved} icon={<Bookmark className={saved ? 'fill-current' : undefined} />} onClick={onSave} />
-        <IconButton variant="secondary" label={labels.like} aria-pressed={liked} icon={<Heart className={liked ? 'fill-current' : undefined} />} onClick={onLike} />
-        <IconButton variant="secondary" label={labels.share} icon={<Share2 />} onClick={onShare} />
+        <Button size="xl" onClick={onAdd} className="flex-1 bg-accent-add text-field-fg">{labels.add}</Button>
+        <IconButton variant="secondary" label={labels.save} aria-pressed={saved} icon={<Bookmark className={saved ? 'fill-current' : undefined} />} onClick={onSave} className="size-[var(--control-height-xl)]" />
+        <IconButton variant="secondary" label={labels.like} aria-pressed={liked} icon={<Heart className={liked ? 'fill-current' : undefined} />} onClick={onLike} className="size-[var(--control-height-xl)]" />
+        <IconButton variant="secondary" label={labels.share} icon={<Share2 />} onClick={onShare} className="size-[var(--control-height-xl)]" />
       </div>
       {description ? <p className="px-[var(--space-4)] type-body-base text-ui-fg">{description}</p> : null}
-      <ul>
+      {/* Info rows: sunken squircles, each with a 32 colour tile around its icon. */}
+      <ul className="flex flex-col gap-[var(--space-1-5)] px-[var(--space-3)]">
         {details.map((d) => {
           const Icon = ICON[d.icon]
+          const lead = (
+            <span className="inline-flex size-[var(--control-height-sm)] items-center justify-center rounded-sq-sm bg-accent-avatar text-field-fg [&>svg]:!size-[18px]">
+              <Icon />
+            </span>
+          )
+          const row = 'rounded-sq-lg bg-tile-surface-sunken px-[var(--space-1)] [&_svg]:text-field-fg'
           return d.href ? (
-            <ListItem key={d.title} title={d.title} leading={<Icon />} divider={false} onClick={() => window.open(d.href, '_blank', 'noopener')} />
+            <ListItem key={d.title} title={d.title} leading={lead} divider={false} className={row} onClick={() => window.open(d.href, '_blank', 'noopener')} />
           ) : (
-            <ListItem key={d.title} title={d.title} leading={<Icon />} divider={false} />
+            <ListItem key={d.title} title={d.title} leading={lead} divider={false} className={row} />
           )
         })}
       </ul>

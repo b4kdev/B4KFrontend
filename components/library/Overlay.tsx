@@ -11,11 +11,11 @@ import { Spinner } from './Spinner'
 import { FOCUS_RING } from './styles'
 
 // Overlay molecules (Figma Molecules): Dropdown menu, Popover, Combobox.
-// Elevated surface, radius/2xl, 1px color/border, no shadow, 8 from the trigger.
+// Raised surface, radius lg, 1px color/border, 6 inside, the menu shadow, 8 from the trigger.
 // Esc and an outside click close. Placement is CSS (below, start-aligned); a collision-aware
 // version can replace it without changing props.
 
-const SURFACE = 'absolute z-50 mt-[var(--space-2)] rounded-2xl border border-ui-border bg-ui-bg-elevated text-ui-fg'
+const SURFACE = 'absolute z-50 mt-[var(--space-2)] rounded-sq-lg border border-ui-border bg-ui-bg-raised p-[var(--space-1-5)] text-ui-fg shadow-menu'
 
 function useDismiss(open: boolean, close: () => void, ref: React.RefObject<HTMLElement | null>) {
   useEffect(() => {
@@ -100,7 +100,7 @@ export function DropdownMenu({ trigger, label, children, align = 'start', classN
           onKeyDown={onKey}
           onClick={(e) => (e.target as HTMLElement).closest('[role^=menuitem]') && setOpen(false)}
           style={fixed && at ? { position: 'fixed', top: at.top, left: at.left, right: at.right } : undefined}
-          className={cn(SURFACE, 'top-full min-w-[240px] py-[var(--space-1)]', align === 'end' ? 'right-0' : 'left-0', className)}
+          className={cn(SURFACE, 'top-full min-w-[240px]', align === 'end' ? 'right-0' : 'left-0', className)}
         >
           {children}
         </div>
@@ -261,7 +261,7 @@ export function Combobox(props: ComboboxProps) {
               <span>{recentLabel}</span>
               {onClearAll ? (
                 // Figma Link Inline (body/link, underlined, color/link); a button because it acts.
-                <button type="button" onClick={onClearAll} className={cn('type-body-link text-ui-link underline underline-offset-2 transition-colors duration-short4 ease-standard hover:text-ui-link-hover', FOCUS_RING)}>
+                <button type="button" onClick={onClearAll} className={cn('type-body-link text-ui-link underline decoration-[length:var(--border-width-1-5)] underline-offset-4 transition-colors duration-short4 ease-standard hover:text-ui-link-hover', FOCUS_RING)}>
                   {clearAllLabel}
                 </button>
               ) : null}

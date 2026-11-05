@@ -24,7 +24,10 @@ import {
   Tabs,
   TreeItem,
   TreeView,
+  categoryAttr,
+  categoryStyle,
   placeTypeOf,
+  linkButtonVariants,
 } from '@/components/library'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/cn'
@@ -136,10 +139,12 @@ function CategoryIndex({ category, sections, active, rowsKey }: { category: stri
   return (
     <div className="flex flex-col gap-[var(--space-4)] pt-[var(--space-4)]">
       <p aria-hidden className="px-[var(--space-4)] type-eyebrow-category text-ui-fg-muted">{t('CD0804')}</p>
-      <TreeView label={t('CD0804')}>
+      <TreeView label={t('CD0804')} className="b4k-stagger flex flex-col gap-[var(--space-1-5)] pl-[var(--space-2)] pr-[var(--space-2-5)]">
         {CATEGORIES.map((c) => (
           <TreeItem
             key={c.slug}
+            color={categoryStyle(c.slug)?.color}
+            glyph={categoryStyle(c.slug)?.glyph}
             label={t(c.label)}
             kind={c.slug === category ? 'expanded' : 'collapsed'}
             selected={false}
@@ -184,8 +189,9 @@ function ExploreFrame({ category, sections, active, pageTitle, rowsKey, children
               label={t('CD0804')}
               value={category}
               onValueChange={(v) => router.push(`/explore/${v}`)}
-              tabs={CATEGORIES.map((c) => ({ id: c.slug, label: t(c.label) }))}
-              className="-mx-[var(--grid-gutter-mobile)] -mt-[var(--space-6)] mb-[var(--space-6)] px-[var(--grid-gutter-mobile)]"
+              tabs={CATEGORIES.map((c) => ({ id: c.slug, label: t(c.label), color: categoryStyle(c.slug)?.color, glyph: categoryStyle(c.slug)?.glyph }))}
+              width="equal"
+              className="-mt-[var(--space-4)] mb-[var(--space-6)] w-full justify-start"
             />
           ) : null}
           {children}
@@ -277,9 +283,9 @@ export function CategoryScreen({ category }: { category: string }) {
             eyebrow={hero.badge}
             title={hero.title}
             // No subtitle line: the category hero is drawn with eyebrow, title and action only.
-            action={<IntlLink href={`${hero.cta_href}`} onClick={() => track('explore_card_open', { card_type: 'theme', position: 1, locale, screen_id: 'explore' })} className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{hero.cta_label}</IntlLink>}
+            action={<IntlLink href={`${hero.cta_href}`} onClick={() => track('explore_card_open', { card_type: 'theme', position: 1, locale, screen_id: 'explore' })} className="b4k-press inline-flex h-[var(--control-height-2xl)] items-center rounded-sq-lg bg-ui-bg-inverse px-[var(--space-7)] type-label-button text-base text-ui-fg-inverse">{hero.cta_label}</IntlLink>}
             // Edge to edge in the content area: flush under the header on desktop, under the tabs on phones; 24 to the first row.
-            className="-mx-[var(--grid-gutter-mobile)] -mb-[var(--space-6)] -mt-[var(--space-6)] w-auto md:-mx-[var(--grid-gutter-tablet)] lg:-mx-[var(--space-8)]"
+            className="m-0 -mb-[var(--space-6)] w-full max-md:m-0 max-md:-mb-[var(--space-6)] max-md:w-full"
           />
         ) : null}
         {/* One request loads every row, so a failure is page-wide: the generic body, not 'the other rows still work'. */}
@@ -293,7 +299,7 @@ export function CategoryScreen({ category }: { category: string }) {
                 title={rowLabel(category, s.id)}
                 seeAll={{ href: rowHref(category, s.id), label: t('CD1309') }}
                 featured={featured ? <Card type="featured" href={`/map?poi=${featured.poi_id}`} title={poiName(featured, locale)} imageSrc={featured.primary_image_url} eyebrow={t('CD0151')} meta={placeArea(featured, locale)} trending={featured.is_trending ? t('CD0313') : undefined} /> : undefined}
-                cards={s.items.filter((p) => p !== featured).map((p) => <PoiCard key={p.poi_id} p={p} act={act} />)}
+                cards={s.items.filter((p) => p !== featured).map((p) => <PoiCard key={p.poi_id} p={p} act={act} category={category} />)}
               />
               {i === 0 ? cue : null}
             </div>
@@ -346,7 +352,8 @@ export function CategoryScreen({ category }: { category: string }) {
   )
 }
 
-function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceActions> }) {
+/** A place on an Explore row; `category` is the page's category slug, set as data-category on the card. */
+function PoiCard({ p, act, category }: { p: ExplorePoi; act: ReturnType<typeof usePlaceActions>; category?: string }) {
   const locale = useLocale()
   const t = useCd()
   const dDay = useDDay()
@@ -359,6 +366,7 @@ function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceAct
       imageSrc={p.primary_image_url}
       placeType={placeTypeOf(p.interest_category)}
       meta={placeArea(p, locale)}
+      category={categoryAttr(category)}
       trending={p.is_trending ? t('CD0313') : undefined}
       sponsored={p.is_partner ? t('CD0476') : undefined}
       dDay={p.event_date ? dDay(p.event_date) : undefined}
@@ -414,9 +422,9 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const subtitle = fromHome ? (row === 'trending' ? t('CD1566') : t('CD1568')) : undefined
   const places: { id: string; node: React.ReactNode; domain?: string }[] = fromHome
     ? row === 'trending'
-      ? (trending.data ?? []).map((p) => ({ id: p.poi_id, domain: p.display_domain, node: <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} meta={regionName(p.display_region ?? '', locale)} /> }))
+      ? (trending.data ?? []).map((p) => ({ id: p.poi_id, domain: p.display_domain, node: <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} category={categoryAttr(p.display_domain)} meta={regionName(p.display_region ?? '', locale)} /> }))
       : (plans.data ?? []).map((p) => ({ id: p.id, node: <Card type="plan" href={`/plan/${p.id}`} title={p.title} save={planAct(String(p.id), p.title)} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={[t('CD0473', { n: p.stop_count }), ...(p.duration_days ? [t('CD1232', { count: p.duration_days })] : [])].join(' · ')} /> }))
-    : (explore.data?.sections.find((s) => s.id === row)?.items ?? []).map((p) => ({ id: p.poi_id, node: <PoiCard p={p} act={act} /> }))
+    : (explore.data?.sections.find((s) => s.id === row)?.items ?? []).map((p) => ({ id: p.poi_id, node: <PoiCard p={p} act={act} category={category} /> }))
   const chipped = chip === 'all' ? places : places.filter((p) => p.domain === chip)
   // Newest: plans come sorted by the server; places by when B4K added them (a higher id is newer,
   // as the backend's own newest order), places without a numeric id keep their place at the end.
@@ -612,11 +620,11 @@ export function SpecialScreen({ api, category }: { api: string; category: string
         </header>
         {/* Media: a photo on the left, the facts and actions on the right. */}
         <section className="flex flex-col gap-[var(--space-6)] md:flex-row">
-          <Image ratio="16:9" src={data?.items[0]?.primary_image_url} alt="" sizes="(min-width: 768px) 480px, 100vw" className="w-full shrink-0 md:w-[480px]" />
+          <Image ratio="16:9" src={data?.items[0]?.primary_image_url} alt="" sizes="(min-width: 768px) 480px, 100vw" className="w-full shrink-0 rounded-tile-inner md:w-[480px]" />
           <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-3)]">
             <span className="type-eyebrow-category text-ui-fg-muted">{[categoryLabel, typeof data?.broadcaster === 'string' ? data.broadcaster : null].filter(Boolean).join(' · ')}</span>
             <div className="flex flex-wrap gap-[var(--gap-sm)]">
-              <IntlLink href={`/map?collection=${encodeURIComponent(api)}`} className="inline-flex h-[var(--control-height-lg)] items-center justify-center gap-[var(--gap-sm)] max-md:w-full border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"><MapPin aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1573')}</IntlLink>
+              <IntlLink href={`/map?collection=${encodeURIComponent(api)}`} className={cn(linkButtonVariants({ variant: 'secondary' }), 'max-md:w-full')}><MapPin aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1573')}</IntlLink>
             </div>
           </div>
         </section>

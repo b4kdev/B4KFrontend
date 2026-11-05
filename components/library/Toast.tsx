@@ -2,7 +2,7 @@ import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
 // Toast (Figma B4K UI Components › Molecules › Toast): a short message after an action,
-// inverse surface (bg-inverse, fg-inverse), radius/2xl, no shadow. A monochrome icon per
+// inverse surface (bg-inverse, fg-inverse), radius lg, no shadow. A monochrome icon per
 // type; Critical is told apart by its icon and uses role alert. One optional action
 // (Undo, Retry) and a close button.
 // Placement, one-at-a-time, the 4 s timer (none with an action or for Critical) and pause on hover
@@ -30,7 +30,7 @@ export function Toast({ type = 'info', message, action, onClose, closeLabel, cla
     <div
       role={type === 'critical' ? 'alert' : 'status'}
       className={cn(
-        'flex w-full max-w-[360px] items-center gap-[var(--space-3)] rounded-2xl bg-ui-bg-inverse text-ui-fg-inverse',
+        'flex min-h-[var(--control-height-xl)] w-full max-w-[360px] items-center gap-[var(--space-3)] rounded-sq-lg bg-ui-bg-inverse text-ui-fg-inverse [&>span]:font-[var(--font-weight-semibold)]',
         'min-h-[var(--control-height-xl)] py-[var(--space-1)] pl-[var(--space-4)] pr-[var(--space-2)]',
         className,
       )}
@@ -51,7 +51,7 @@ export function Toast({ type = 'info', message, action, onClose, closeLabel, cla
           type="button"
           onClick={onClose}
           aria-label={closeLabel}
-          className="inline-flex size-[var(--control-height-md)] shrink-0 items-center justify-center rounded-full hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"
+          className="inline-flex size-[var(--control-height-md)] shrink-0 items-center justify-center rounded-sq-md hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"
         >
           <X aria-hidden className="size-[var(--icon-size-sm)]" />
         </button>

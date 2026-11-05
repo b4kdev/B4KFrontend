@@ -102,7 +102,7 @@ export function LanguageMenu() {
   const t = useCd()
   return (
     <Tooltip text={t('CD0808')}>
-      <DropdownMenu label={t('CD0808')} align="end" trigger={<IconButton label={t('CD0808')} icon={<Globe />} />}>
+      <DropdownMenu label={t('CD0808')} align="end" trigger={<IconButton variant="tile" label={t('CD0808')} icon={<Globe />} />}>
         <LanguageItems />
       </DropdownMenu>
     </Tooltip>

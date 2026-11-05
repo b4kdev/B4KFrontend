@@ -32,6 +32,7 @@ import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { CATEGORIES } from '../categories'
+import { categoryAttr, categoryStyle } from '@/components/library/category'
 import { useDDay } from '../useDDay'
 import { regionName } from '../map/areaName'
 
@@ -41,7 +42,7 @@ import { regionName } from '../map/areaName'
 // Empty state Error with Try again.
 
 // The hero's action button look.
-const HERO_ACTION = 'inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none'
+const HERO_ACTION = 'b4k-press inline-flex h-[var(--control-height-2xl)] items-center rounded-sq-lg bg-field-fg px-[var(--space-7)] type-label-button text-base text-photo-action-fg focus-visible:shadow-focus-ring focus-visible:outline-none'
 
 export const jsonFetch = <T,>(url: string) => fetch(url).then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(r.status)))
 
@@ -196,8 +197,9 @@ export function HomeScreen() {
 
   const name = (p: HomeTrendingPoi) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
 
-  // Phones: the hero runs up under the floating top bar, so it grows by the bar's height.
-  const heroPhone = 'max-lg:h-[calc(var(--hero-height-home)+var(--fab-size)+env(safe-area-inset-top))]'
+  // Phones: the hero runs up under the floating top bar inside its own height (the glyph sits below
+  // the bar); only the notch area is added.
+  const heroPhone = 'max-lg:h-[calc(var(--hero-height-home)+env(safe-area-inset-top))]'
   if (trending.isLoading && !trending.data) {
     return (
       <V2Page bleed underBar>
@@ -211,12 +213,16 @@ export function HomeScreen() {
   const blocks: Record<string, React.ReactNode> = {
     exploreHub: <section aria-labelledby="explore-cats" className="flex flex-col gap-[var(--space-4)]">
               <SectionHeader id="explore-cats" title={t('CD0426')} />
-              <ul className="-mx-[var(--grid-gutter-mobile)] flex gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
-                {CATEGORIES.map((c) => (
-                  <li key={c.slug} className="w-[160px] shrink-0 lg:w-auto">
-                    <Card type="collection-photo" href={`/explore/${c.slug}`} title={t(c.label)} imageSrc={c.image} meta={t(c.sub)} />
-                  </li>
-                ))}
+              <ul className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex gap-[var(--tile-gap)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
+                {CATEGORIES.map((c, i) => {
+                  const k = categoryStyle(c.slug)
+                  return (
+                    // The tiles arrive in a short stagger, 60 ms apart.
+                    <li key={c.slug} className="b4k-tile-in w-[150px] shrink-0 lg:w-auto" style={{ animationDelay: `${i * 60}ms` }}>
+                      <Card type="category" href={`/explore/${c.slug}`} title={t(c.label)} imageSrc={c.image} meta={t(c.sub)} color={k?.color ?? 'var(--tile-surface)'} glyph={k?.glyph ?? 'spark'} category={k?.key} />
+                    </li>
+                  )
+                })}
               </ul>
             </section>,
     trending: (trending.data?.length ? (
@@ -226,7 +232,7 @@ export function HomeScreen() {
                 seeAll={{ href: '/explore/trending', label: t('CD1309') }}
                 cards={trending.data.map((p) => (
                   // Every place in the Trending row is trending, so each card carries the badge, as drawn.
-                  <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, name(p))} title={name(p)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} meta={regionName(p.display_region ?? '', locale)} trending={t('CD0313')} />
+                  <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, name(p))} title={name(p)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} category={categoryAttr(p.display_domain)} meta={regionName(p.display_region ?? '', locale)} trending={t('CD0313')} />
                 ))}
               />
             ) : (

@@ -3,20 +3,20 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
 
 // Badge (Figma Atoms › Badge): a short non-interactive label, uppercase, badge/height,
-// badge/padding-x. Strong = square, eyebrow/badge (featured, D-day). The others are pills with
-// eyebrow/category. Critical uses the danger tokens, for errors only.
+// badge/padding-x. Strong = eyebrow/badge (featured, D-day). The others use eyebrow/category.
+// All are small squircles (radius xs). Critical uses the danger tokens, for errors only.
 
 export const badgeVariants = cva(
   'inline-flex h-[var(--badge-height)] shrink-0 items-center gap-[var(--space-1)] whitespace-nowrap px-[var(--badge-padding-x)] [&>svg]:size-[var(--icon-size-xs)]',
   {
     variants: {
       variant: {
-        strong: 'rounded-none bg-ui-bg-inverse text-ui-fg-inverse type-eyebrow-badge',
-        normal: 'rounded-full bg-ui-state-selected text-ui-fg type-eyebrow-category',
-        inverse: 'rounded-full bg-ui-bg-inverse text-ui-fg-inverse type-eyebrow-category',
-        outline: 'rounded-full border border-ui-border-strong text-ui-fg-muted type-eyebrow-category',
-        'on-image': 'rounded-full bg-ui-scrim text-ui-fg-on-media type-eyebrow-category',
-        critical: 'rounded-full border border-ui-danger-border bg-ui-danger-bg text-ui-danger type-eyebrow-category',
+        strong: 'rounded-sq-sm bg-ui-bg-inverse text-ui-fg-inverse type-eyebrow-badge',
+        normal: 'rounded-sq-sm bg-control-fill text-ui-fg type-eyebrow-category',
+        inverse: 'rounded-sq-sm bg-ui-bg-inverse text-ui-fg-inverse type-eyebrow-category',
+        outline: 'rounded-sq-sm border border-ui-border-strong text-ui-fg-muted type-eyebrow-category',
+        'on-image': 'rounded-sq-sm bg-photo-action-fill text-photo-action-fg type-eyebrow-category',
+        critical: 'rounded-sq-sm border border-ui-danger-border bg-ui-danger-bg text-ui-danger type-eyebrow-category',
       },
     },
     defaultVariants: { variant: 'normal' },

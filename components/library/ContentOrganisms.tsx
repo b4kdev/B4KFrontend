@@ -9,6 +9,7 @@ import { ForecastDay } from './Content'
 import { SectionHeader } from './ContentMolecules'
 import { Alert } from './Feedback'
 import { IconButton } from './IconButton'
+import { Glyph } from './Glyph'
 import { Image } from './Image'
 import { Pagination } from './NavGroups'
 import { HIT_AREA } from './styles'
@@ -32,15 +33,48 @@ export type HeroProps = {
   className?: string
 }
 
-/** Hero: full-width photo with gradient/overlay-fade, text bottom left; always in the Dark color mode. */
+/** Hero. Home: a poster, a colour field (field-hero) with black ink, the title top-left and the
+ * arrow glyph top-right (a slide with a picture shows it there as an inner squircle instead); the
+ * action is a black 52 button. Section (Explore hub, categories): the photo with gradient/overlay-fade,
+ * text bottom-left, always in the Dark colour mode; both are tiles (tile radius, 12 margin). */
 export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action, as: H = 'h1', priority = true, className }: HeroProps) {
+  if (size === 'home') {
+    return (
+      <section
+        data-hero="poster"
+        className={cn(
+          'relative m-[var(--space-3)] h-[var(--hero-height-home)] w-[calc(100%-var(--space-3)*2)] overflow-hidden rounded-tile bg-field-hero text-field-fg max-md:m-[var(--space-2)] max-md:w-[calc(100%-var(--space-2)*2)]',
+          className,
+        )}
+      >
+        <span
+          aria-hidden
+          className="absolute right-[var(--space-11)] top-[var(--space-11)] size-[min(30vw,400px)] overflow-hidden rounded-tile-inner max-md:right-[var(--space-5)] max-md:top-[calc(var(--fab-size)+env(safe-area-inset-top)+var(--space-1-5))] max-md:size-[100px]"
+        >
+          {imageSrc ? (
+            <Image ratio="1:1" src={imageSrc} alt="" priority={priority} sizes="(min-width: 768px) 400px, 100px" className="h-full !aspect-auto" />
+          ) : (
+            <Glyph name="arrow" size="100%" className="b4k-glyph-in" />
+          )}
+        </span>
+        <div className="absolute inset-0 flex flex-col items-start justify-between gap-[var(--space-4)] p-[var(--space-11)] max-md:justify-end max-md:p-[var(--space-5)] max-md:pb-[var(--space-10)]">
+          <div className="flex min-w-0 flex-col items-start gap-[var(--space-3)] md:max-w-[calc(100%-min(30vw,400px)-var(--space-6))]">
+            {eyebrow ? <span className="type-eyebrow-category">{eyebrow}</span> : null}
+            <H className="b4k-rise min-w-0 max-w-[min(980px,100%)] type-display-hero hyphens-auto [overflow-wrap:anywhere]">{title}</H>
+            {subtitle ? <p className="max-w-[440px] text-[length:calc(var(--font-size-lg)+var(--border-width-1))] font-[500] leading-snug text-field-fg max-md:hidden">{subtitle}</p> : null}
+          </div>
+          {action ? <div>{action}</div> : null}
+        </div>
+      </section>
+    )
+  }
   return (
-    <section data-theme="dark" className={cn('relative w-full overflow-hidden bg-ui-bg-media text-ui-fg', size === 'home' ? 'h-[var(--hero-height-home)]' : 'h-[var(--hero-height-section)]', className)}>
-      <Image ratio="16:9" src={imageSrc} alt="" priority={priority} sizes="100vw" className="!absolute inset-0 h-full !aspect-auto" />
+    <section data-theme="dark" className={cn('relative m-[var(--space-3)] h-[var(--hero-height-section)] w-[calc(100%-var(--space-3)*2)] overflow-hidden rounded-tile bg-ui-bg-media text-ui-fg max-md:m-[var(--space-2)] max-md:w-[calc(100%-var(--space-2)*2)]', className)}>
+      {imageSrc ? <Image ratio="16:9" src={imageSrc} alt="" priority={priority} sizes="100vw" className="!absolute inset-0 h-full !aspect-auto" /> : null}
       <div aria-hidden className="absolute inset-0 bg-overlay-fade" />
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-[var(--space-3)] p-[var(--space-11)] max-md:px-[var(--space-6)] max-md:pb-[var(--space-10)] max-md:pt-[var(--space-6)]">
         {eyebrow ? <Badge variant="on-image">{eyebrow}</Badge> : null}
-        <H className={cn(size === 'home' ? 'type-display-hero' : 'type-display-hub', 'min-w-0 max-w-[min(960px,100%)] hyphens-auto [overflow-wrap:anywhere] [text-wrap:balance] [&:lang(ko)]:break-keep')}>{title}</H>
+        <H className="type-display-hub min-w-0 max-w-[min(960px,100%)] hyphens-auto [overflow-wrap:anywhere]">{title}</H>
         {subtitle ? <p className="max-w-[400px] type-body-long text-ui-fg-muted max-md:hidden">{subtitle}</p> : null}
         {action ? <div className="pt-[var(--space-3)]">{action}</div> : null}
       </div>
@@ -90,7 +124,7 @@ export function Carousel({ type, label, children, seeAll, subtitle, previousLabe
     return (
       <section aria-labelledby={titleId} className={cn('flex flex-col gap-[var(--space-4)]', className)}>
         <SectionHeader id={titleId} title={label} subtitle={subtitle} seeAll={seeAll} arrows={{ onPrevious: () => scroll(-1), onNext: () => scroll(1), previousLabel, nextLabel, atStart: edges.start, atEnd: edges.end }} />
-        <ul ref={rail} className="-mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory gap-[var(--space-3)] overflow-x-auto scroll-px-[var(--grid-gutter-mobile)] px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] [scrollbar-width:none] lg:mx-0 lg:px-0">
+        <ul ref={rail} className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory gap-[var(--space-3)] overflow-x-auto scroll-px-[var(--grid-gutter-mobile)] px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] [scrollbar-width:none] lg:mx-0 lg:px-0">
           {items.map((c, n) => (
             <li key={n} className="w-[280px] shrink-0 snap-start">{c}</li>
           ))}
@@ -109,12 +143,13 @@ export function Carousel({ type, label, children, seeAll, subtitle, previousLabe
           {c}
         </div>
       ))}
-      <div className="absolute bottom-[var(--space-4)] left-[var(--space-11)] max-md:left-[var(--space-6)]" data-theme="dark">
+      {/* The controls sit on the poster: black dots (idle 35%) and black arrows with white icons. */}
+      <div className="absolute bottom-[var(--space-6)] left-1/2 -translate-x-1/2 [--color-border-strong:var(--field-fg)] [--color-fg:var(--field-fg)] max-md:bottom-[var(--space-4)] [&_.bg-ui-border-strong]:opacity-[.35]">
         <Pagination type="dots" label={label} page={i + 1} pageCount={items.length} statusText={slideLabel(i + 1, items.length)} />
       </div>
-      <div className="absolute bottom-[var(--space-5)] right-[var(--space-6)] flex gap-[var(--space-2)] max-lg:hidden" data-theme="dark">
-        <IconButton variant="secondary" label={previousLabel} icon={<ChevronLeft />} onClick={() => setI((i - 1 + items.length) % items.length)} />
-        <IconButton variant="secondary" label={nextLabel} icon={<ChevronRight />} onClick={() => setI((i + 1) % items.length)} />
+      <div className="absolute bottom-[calc(var(--space-3)+var(--space-8))] right-[calc(var(--space-3)+var(--space-8))] flex gap-[var(--space-2)] [--color-bg-inverse:var(--field-fg)] [--color-fg-inverse:var(--photo-action-fg)] max-lg:hidden">
+        <IconButton variant="primary" label={previousLabel} icon={<ChevronLeft />} onClick={() => setI((i - 1 + items.length) % items.length)} />
+        <IconButton variant="primary" label={nextLabel} icon={<ChevronRight />} onClick={() => setI((i + 1) % items.length)} />
       </div>
     </section>
   )
@@ -130,7 +165,7 @@ export type FooterProps = {
   className?: string
 }
 
-const FOOTER_LINK = 'relative hover:text-ui-link-hover focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus'
+const FOOTER_LINK = 'relative text-ui-fg-muted hover:text-ui-fg hover:underline focus-visible:underline decoration-[length:var(--border-width-1-5)] underline-offset-4 focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus'
 
 /** Footer: legal links and the copyright, then the company line; content pages only. */
 export function Footer({ links, copyright, navLabel, company, className }: FooterProps) {
@@ -139,12 +174,12 @@ export function Footer({ links, copyright, navLabel, company, className }: Foote
   // Desktop: the links, Company details and the copyright in one row; the company line opens under
   // it (12 apart). Phones: the links, Company details (opens the company line), the copyright.
   return (
-    <footer className={cn('flex flex-wrap items-center gap-x-[var(--space-4)] gap-y-[var(--space-3)] border-t border-ui-border bg-ui-bg px-[var(--space-8)] py-[var(--space-6)] type-body-caption text-ui-fg-muted max-md:flex-col max-md:flex-nowrap max-md:items-start max-md:px-[var(--space-4)]', className)}>
+    <footer className={cn('flex flex-wrap items-center gap-x-[var(--space-4)] gap-y-[var(--space-3)] border-t border-ui-border-subtle bg-ui-bg px-[var(--space-8)] py-[var(--space-6)] type-body-caption text-ui-fg-placeholder max-md:flex-col max-md:flex-nowrap max-md:items-start max-md:px-[var(--space-4)]', className)}>
       <nav aria-label={navLabel} className="flex-1">
         <ul className="flex flex-wrap gap-x-[var(--space-4)] gap-y-[var(--space-2)]">
           {links.map((l) => (
             <li key={l.href}>
-              <IntlLink href={l.href} className={cn(l.strong && 'type-body-label', 'relative', HIT_AREA, 'hover:text-ui-link-hover focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus')}>{l.label}</IntlLink>
+              <IntlLink href={l.href} className={cn(l.strong && 'type-body-label', 'relative', HIT_AREA, 'text-ui-fg-muted hover:text-ui-fg hover:underline focus-visible:underline decoration-[length:var(--border-width-1-5)] underline-offset-4 focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus')}>{l.label}</IntlLink>
             </li>
           ))}
         </ul>
@@ -190,7 +225,7 @@ export function Form({ onSubmit, errorSummary, children, actions, className }: F
           <Alert type="critical" title={errorSummary!.title}>
             <ul className="list-disc pl-[var(--space-5)]">
               {errorSummary!.items.map((it) => (
-                <li key={it.fieldId}><a href={`#${it.fieldId}`} className="underline underline-offset-2">{it.message}</a></li>
+                <li key={it.fieldId}><a href={`#${it.fieldId}`} className="underline decoration-[length:var(--border-width-1-5)] underline-offset-4">{it.message}</a></li>
               ))}
             </ul>
           </Alert>

@@ -32,8 +32,8 @@ export function Alert({ type = 'info', title, children, action, onDismiss, dismi
     <div
       role={critical ? 'alert' : 'status'}
       className={cn(
-        'flex gap-[var(--space-3)] rounded-none border pb-[var(--space-4)] pl-[var(--space-4)] pr-[var(--space-3)] pt-[var(--space-3)]',
-        critical ? 'border-ui-danger-border bg-ui-danger-bg' : 'border-ui-border bg-ui-bg-raised',
+        'flex gap-[var(--space-3)] rounded-sq-lg border pb-[var(--space-4)] pl-[var(--space-4)] pr-[var(--space-3)] pt-[var(--space-3)]',
+        critical ? 'border-ui-danger-border bg-ui-danger-bg' : 'border-transparent bg-tile-surface',
         className,
       )}
     >
@@ -79,7 +79,8 @@ export type EmptyStateProps = {
   className?: string
 }
 
-/** Empty state: icon, title/empty-state, one line, optional Button. Error uses role alert. */
+/** Empty state: the icon in an 80 squircle tile (the empty accent, black icon, both themes), title/empty-state,
+ * one line, optional Button. Error uses role alert. */
 export function EmptyState({ type = 'empty', container = 'plain', icon, title, children, action, titleAs: Title = 'p', className }: EmptyStateProps) {
   const Icon = EMPTY_ICON[type]
   return (
@@ -87,11 +88,11 @@ export function EmptyState({ type = 'empty', container = 'plain', icon, title, c
       role={type === 'error' ? 'alert' : undefined}
       className={cn(
         'flex flex-col items-center justify-center gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-12)] text-center',
-        container === 'bordered' && 'border border-ui-border bg-ui-bg-raised',
+        container === 'bordered' && 'rounded-tile bg-tile-surface',
         className,
       )}
     >
-      <span aria-hidden className={cn('mb-[var(--space-4)] inline-flex size-[var(--icon-size-2xl)] [&>svg]:size-full', type === 'error' ? 'text-ui-danger' : 'text-ui-fg-muted')}>
+      <span aria-hidden className="mb-[var(--space-4)] inline-flex size-[var(--empty-tile-size)] items-center justify-center rounded-tile-inner bg-accent-empty p-[var(--space-5)] text-field-fg [&>svg]:size-full [&>svg]:[stroke-width:2.2]">
         {icon ?? <Icon />}
       </span>
       <Title className="type-title-empty-state text-ui-fg">{title}</Title>

@@ -5,19 +5,21 @@ import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, us
 import Script from 'next/script'
 import { useLocale } from 'next-intl'
 import type { MapBounds, MapPoi } from '@/hooks/useMapPois'
+import { BedDouble, Coffee, Crown, Flower2, Landmark, ShoppingBag, Trees, Utensils, type LucideIcon } from 'lucide-react'
+import { mapKindOf, mapTypeOf, type MapKind } from './mapType'
 import { TOKEN_HEX } from '@/tokens/colors'
 import { useCd } from '@/components/v2/cd'
-import { PLACE_TYPE_ICON, placeTypeOf } from '@/components/library'
+import { PLACE_TYPE_ICON, categoryAttr, placeTypeOf } from '@/components/library'
 import { keepMapLook } from './mapLook'
 
-// Map canvas: the Naver map with the B4K markers. Map pin = the place photo in a circle with a
-// tail, no icon, by zoom tier: zoom 15 a dot, zoom 16 a small photo pin, zoom 17 and closer the
-// photo pin with the name below where it does not overlap another name. The selected place is the
-// large photo pin with a map/pin-selected ring and its name at every zoom, drawn on top. Below
-// zoom 15 places cluster on a 60 px screen grid; a cluster tap fits its places (zoom 17 at most).
-// Colors are monochrome and inverse to the map (map/pin-fill and map/pin-stroke). Plan stops are
-// Stop badges in plan/day-N, never clustered; the route is a line per day in the day color (the
-// SDK needs hex: tokens/colors.ts). Markers are DOM, so they read the token CSS variables.
+// Map canvas: the Naver map with the B4K markers. Map pin = the place photo in a squircle with a
+// 3 px ring and a pointer (no photo: the place type's colour with its icon in black), by zoom tier:
+// zoom 15 a dot, zoom 16 a small pin, zoom 17 and closer the pin with the name below where it does
+// not overlap another name. The selected place is the 48 pin in map/pin-selected with its name at
+// every zoom, drawn on top. Below zoom 15 places cluster on a 60 px screen grid; a cluster tap fits
+// its places (zoom 17 at most). Pins carry data-category (the place's K domain) when it has one.
+// Plan stops are numbered squircles in plan/day-N, never clustered; the route is a line per day in
+// the day colour, with a dark casing on light maps (the SDK needs hex: tokens/colors.ts). Markers are DOM, so they read the token CSS variables.
 // Zoom buttons are the library Zoom control (outside), so the SDK controls are off.
 
 export type PlanStopOnMap = { poi: MapPoi; day: number; order: number }
@@ -71,6 +73,8 @@ const CLUSTER_GRID_PX = 60
 // more saves sit higher, then the pin lower on screen.
 const Z_LAYER = 100000
 const Z = { other: 1, cluster: 2, saved: 3, stop: 4, selected: 5 }
+/** With one day chosen, the other days' stops and lines stay on the map, faded to this opacity. */
+const OTHER_DAY_OPACITY = 0.35
 // Custom map style: a My Style ID published in the Naver Style Editor, which only the vector (GL)
 // map shows. Unset, the map is the raster map with the Naver tiles. The dark theme uses the dark
 // style, or the light one while no dark style is set (as the raster tiles are light in both themes).
@@ -78,10 +82,14 @@ const MAP_STYLE = { light: process.env.NEXT_PUBLIC_NAVER_MAP_STYLE_LIGHT ?? '', 
 const styleFor = (theme: string | undefined) => (theme === 'dark' ? MAP_STYLE.dark || MAP_STYLE.light : MAP_STYLE.light)
 // The pins are inverse to the map: dark pins on a light map, light pins only on the dark style.
 const toneFor = (styleId: string): 'light' | 'dark' => (styleId && styleId === MAP_STYLE.dark && styleId !== MAP_STYLE.light ? 'dark' : 'light')
-// A style loads the SDK's GL module. With it loaded, every map (the vector map and the raster map
+// A style, or the look alone, loads the SDK's GL module. With it loaded, every map (the vector map and the raster map
 // it falls back to) draws zoom z at the raster scale of z + 1; the canvas keeps raster zoom levels
 // (pin tiers, clusters, fits) and shifts them at the SDK calls.
-const GL_SDK = !!(MAP_STYLE.light || MAP_STYLE.dark)
+// The B4K map look (mapLook.ts): on only when set to 'on'. Without a style ID it draws over Naver's
+// default vector style, so the vector map is used and the look follows the site theme.
+const RESTYLE = process.env.NEXT_PUBLIC_NAVER_MAP_RESTYLE === 'on'
+const RESTYLE_ONLY = RESTYLE && !MAP_STYLE.light && !MAP_STYLE.dark
+const GL_SDK = !!(MAP_STYLE.light || MAP_STYLE.dark) || RESTYLE
 const ZOOM_SHIFT = GL_SDK ? 1 : 0
 // Map labels follow the site language: the name in that language with the Korean name below it.
 // NAVER has no Traditional Chinese, so zh-TW gets Simplified Chinese labels; pt-BR gets English.
@@ -91,8 +99,6 @@ let sdkLang: string | null = null
 // A style the SDK cannot load (a wrong ID, a server error) makes it tear the map down without an
 // event: the canvas checks for that this long and then makes the raster map instead.
 const GL_WATCH_MS = 20000
-// The B4K map look over the style (mapLook.ts): on only when set to 'on', apart from the style IDs.
-const RESTYLE = process.env.NEXT_PUBLIC_NAVER_MAP_RESTYLE === 'on'
 
 // window.naver and window.navermap_authFailure are declared in components/map/NaverMapCanvas.tsx.
 
@@ -104,42 +110,52 @@ const pinSrc = (src: string) => `/_next/image?url=${encodeURIComponent(src)}&w=1
 const poiLabel = (p: MapPoi) => esc(p.name_preferred ?? p.name_en ?? p.name_ko)
 // Pins and plan stops are buttons (Tab reaches them, Enter or Space selects); the focus ring is in
 // globals.css (.b4k-map-marker). Clusters stay pointer-only: zoom in with the Zoom control instead.
-const markerAttrs = (id: string, label: string, selected: boolean) =>
-  `class="b4k-map-marker" role="button" tabindex="0" data-poi-id="${esc(id)}" aria-pressed="${selected}" aria-label="${label}"`
+const markerAttrs = (id: string, label: string, selected: boolean, category?: string) =>
+  `class="b4k-map-marker" role="button" tabindex="0" data-poi-id="${esc(id)}"${category ? ` data-category="${esc(category)}"` : ''} aria-pressed="${selected}" aria-label="${label}"`
 type PinTier = 'dot' | 'small' | 'large' | 'selected'
 const tierFor = (zoom: number, selected: boolean): PinTier => (selected ? 'selected' : zoom >= 17 ? 'large' : zoom >= 16 ? 'small' : 'dot')
 const PIN_SIZE: Record<Exclude<PinTier, 'dot'>, string> = { small: '--map-pin-size-sm', large: '--map-pin-size', selected: '--map-pin-size-selected' }
-const PIN_PX: Record<PinTier, number> = { dot: 12, small: 32, large: 40, selected: 56 }
-const TAIL_PX = 6
-const LABEL = 'margin-top:var(--space-0-5);max-width:120px;padding:0 var(--space-1);border-radius:var(--radius-full);background:var(--map-pin-stroke);color:var(--map-pin-fill);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis'
-// A pin without a photo shows the place type icon in its disc (muted; on the red selected disc
-// fg-on-media). The SDK takes markup, so the icons are rendered once, hidden, and their SVG reused.
+const PIN_PX: Record<PinTier, number> = { dot: 12, small: 32, large: 40, selected: 48 }
+const TAIL_PX = 7
+const LABEL = 'margin-top:var(--space-0-5);max-width:120px;padding:var(--space-0-5) var(--space-1-5);border-radius:var(--radius-xs);background:var(--map-overlay);color:var(--color-fg);box-shadow:var(--shadow-overlay);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis'
+// A pin without a photo is a glyph pin: its head takes the place type's colour with the type icon
+// in black (the selected colour when selected). The SDK takes markup, so the icons are rendered
+// once, hidden, and their SVG reused.
 const TYPE_SVG: Record<string, string> = {}
-const typeIcon = (p: MapPoi, selected: boolean) =>
-  `<span aria-hidden style="width:${selected ? 43 : 50}%;height:${selected ? 43 : 50}%;display:flex;color:${selected ? 'var(--color-fg-on-media)' : 'var(--color-fg-muted)'}">${TYPE_SVG[placeTypeOf(p.interest_category)] ?? ''}</span>`
+// The icon of the map chip the place falls under (the Cafés coffee cup on a cafe pin), else the
+// place type icon of its interest.
+const KIND_ICON: Record<MapKind, LucideIcon> = { restaurant: Utensils, cafe: Coffee, stay: BedDouble, shopping: ShoppingBag, palace: Crown, temple: Flower2, museum: Landmark, park: Trees }
+const typeIcon = (p: MapPoi) => {
+  const kind = mapKindOf(p)
+  const svg = (kind && TYPE_SVG[`kind-${kind}`]) || TYPE_SVG[placeTypeOf(p.interest_category)] || ''
+  return `<span aria-hidden style="width:58%;height:58%;display:flex;color:var(--field-fg);stroke-width:2.6">${svg}</span>`
+}
+const categoryOf = (p: MapPoi) => categoryAttr(p.display_domain)
 
 const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
   const selected = tier === 'selected'
   if (tier === 'dot') {
-    return `<div style="${HIT}" ${markerAttrs(p.poi_id, poiLabel(p), false)}><span style="width:var(--map-pin-dot-size);height:var(--map-pin-dot-size);border-radius:var(--radius-full);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke)"></span></div>`
+    return `<div style="${HIT}" ${markerAttrs(p.poi_id, poiLabel(p), false, categoryOf(p))}><span class="b4k-mark" style="width:var(--map-pin-dot-size);height:var(--map-pin-dot-size);border-radius:calc(var(--map-pin-dot-size) / 3);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke)"></span></div>`
   }
   const size = `var(${PIN_SIZE[tier]})`
-  const ring = selected ? 'var(--border-width-3) solid var(--map-pin-selected)' : 'var(--border-width-2) solid var(--map-pin-fill)'
-  const tail = selected ? 'var(--map-pin-selected)' : 'var(--map-pin-fill)'
-  const photo = p.primary_image_url
-    ? `background:var(--map-pin-stroke) url('${esc(pinSrc(p.primary_image_url))}') center/cover no-repeat`
-    : `background:${selected ? 'var(--map-pin-selected)' : 'var(--map-pin-stroke)'};display:flex;align-items:center;justify-content:center`
+  // Squircle head, 3 px ring in the pin stroke (the selected colour when selected), pointer below.
+  const ring = `var(--border-width-pin) solid ${selected ? 'var(--map-pin-selected)' : 'var(--map-pin-stroke)'}`
+  const tail = selected ? 'var(--map-pin-selected)' : 'var(--map-pin-stroke)'
+  const head = p.primary_image_url
+    ? `background:var(--map-pin-fill) url('${esc(pinSrc(p.primary_image_url))}') center/cover no-repeat`
+    : `background:${selected ? 'var(--map-pin-selected)' : `var(--map-type-${mapTypeOf(p)})`};display:flex;align-items:center;justify-content:center`
   const name = showName || selected ? `<span style="${LABEL}">${poiLabel(p)}</span>` : ''
   // Fixed width so the anchor (half of it) stays on the place; a wider name overflows evenly on both sides.
-  return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;width:${Math.max(44, PIN_PX[tier])}px" ${markerAttrs(p.poi_id, poiLabel(p), selected)}><span style="box-sizing:border-box;width:${size};height:${size};border-radius:var(--radius-full);border:${ring};${photo};transition:all var(--duration-short4) var(--easing-standard)">${p.primary_image_url ? '' : typeIcon(p, selected)}</span><span aria-hidden style="width:0;height:0;border-left:${TAIL_PX}px solid transparent;border-right:${TAIL_PX}px solid transparent;border-top:${TAIL_PX}px solid ${tail}"></span>${name}</div>`
+  return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;width:${Math.max(44, PIN_PX[tier])}px" ${markerAttrs(p.poi_id, poiLabel(p), selected, categoryOf(p))}><span class="b4k-mark" style="box-sizing:border-box;flex-shrink:0;width:${size};height:${size};border-radius:var(--radius-sm);border:${ring};${head};transition:all 160ms var(--easing-out-strong)">${p.primary_image_url ? '' : typeIcon(p)}</span><span aria-hidden style="width:0;height:0;margin-top:-1px;border-left:${TAIL_PX}px solid transparent;border-right:${TAIL_PX}px solid transparent;border-top:${TAIL_PX}px solid ${tail}"></span>${name}</div>`
 }
 // A cluster is a button named by its place count (not shown on screen); Enter or Space zooms in like a click.
 const clusterHtml = (n: number, key: string, name: string) => {
   const size = n < 10 ? '--map-cluster-size-sm' : n < 50 ? '--map-cluster-size-md' : '--map-cluster-size-lg'
-  return `<div style="${HIT};width:52px;height:52px" class="b4k-map-marker" role="button" tabindex="0" data-cluster="${esc(key)}" aria-label="${esc(name)}"><span aria-hidden="true" style="width:var(${size});height:var(${size});border-radius:var(--radius-full);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke);display:flex;align-items:center;justify-content:center;color:var(--map-pin-stroke);font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${n}</span></div>`
+  return `<div style="${HIT};width:52px;height:52px" class="b4k-map-marker" role="button" tabindex="0" data-cluster="${esc(key)}" aria-label="${esc(name)}"><span class="b4k-mark" aria-hidden="true" style="box-sizing:border-box;width:var(${size});height:var(${size});border-radius:var(--radius-md);background:var(--map-cluster-fill);border:var(--border-width-pin) solid var(--map-cluster-stroke);--mark-shadow:var(--shadow-cluster);display:flex;align-items:center;justify-content:center;color:var(--map-cluster-fg);font:var(--font-weight-extrabold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);font-variant-numeric:tabular-nums">${n}</span></div>`
 }
-const stopHtml = (p: MapPoi, order: number, day: number, selected: boolean) =>
-  `<div style="${HIT}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected)}><span style="width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:var(--radius-full);background:var(--plan-day-${day});color:var(--plan-day-${day}-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-semibold) var(--font-size-xs)/var(--leading-tight) var(--font-family-body);letter-spacing:var(--tracking-wider)">${order}</span></div>`
+// Numbered plan pin: a 34 squircle in the day colour, 3 px black ring in both themes, 14/800 black figures.
+const stopHtml = (p: MapPoi, order: number, day: number, selected: boolean, dimmed = false) =>
+  `<div style="${HIT}${dimmed ? `;opacity:${OTHER_DAY_OPACITY}` : ''}" ${markerAttrs(p.poi_id, `${order}. ${poiLabel(p)}`, selected, categoryOf(p))}><span class="b4k-mark" style="box-sizing:border-box;width:var(--stop-badge-size-md);height:var(--stop-badge-size-md);border-radius:var(--radius-sm);background:${selected ? 'var(--map-pin-selected)' : `var(--plan-day-${day})`};color:var(--plan-day-${day}-fg);border:var(--border-width-pin) solid var(--field-fg);display:flex;align-items:center;justify-content:center;font:var(--font-weight-extrabold) var(--font-size-sm)/1 var(--font-family-body);font-variant-numeric:tabular-nums">${order}</span></div>`
 
 // Inset kept around fitted pins: space-20, read from the token so the map follows it.
 function fitPadding(bottom: number, top?: number) {
@@ -161,8 +177,9 @@ const sdkAlive = () => typeof window !== 'undefined' && !!window.naver?.maps
 // The GL module runs after maps.js itself: a map made before it is a raster map.
 const sdkLoaded = (lang: string) => sdkAlive() && sdkLang === lang && (!GL_SDK || !!window.naver.maps.jsContentLoaded)
 
-// The theme only picks the style when a separate dark style is set; otherwise it is not watched.
-const THEMED = !!MAP_STYLE.dark && MAP_STYLE.dark !== MAP_STYLE.light
+// The theme picks the style when a separate dark style is set, and the look when only the look is on;
+// otherwise it is not watched.
+const THEMED = (!!MAP_STYLE.dark && MAP_STYLE.dark !== MAP_STYLE.light) || RESTYLE_ONLY
 const subscribeTheme = (onChange: () => void) => {
   if (!THEMED) return () => {}
   const o = new MutationObserver(onChange)
@@ -176,21 +193,24 @@ type MapView = { lat: number; lng: number; zoom: number }
 // loads), so a theme or language switch makes a new map (a new canvas, keyed by both) at the view
 // the old one had.
 export const V2MapCanvas = forwardRef<V2MapHandle, Props>(function V2MapCanvas(props, ref) {
-  const styleId = styleFor(useSyncExternalStore(subscribeTheme, themeNow, () => undefined))
+  const theme = useSyncExternalStore(subscribeTheme, themeNow, () => undefined)
+  const styleId = styleFor(theme)
+  // The map's tone: the style's, or with the look alone the site theme's.
+  const tone = RESTYLE_ONLY ? (theme === 'dark' ? 'dark' : 'light') : toneFor(styleId)
   const lang = NAVER_LANG[useLocale()] ?? 'en'
   const view = useRef<MapView | null>(null)
-  return <Canvas key={`${styleId}:${lang}`} ref={ref} {...props} styleId={styleId} lang={lang} view={view} />
+  return <Canvas key={`${styleId}:${tone}:${lang}`} ref={ref} {...props} styleId={styleId} tone={tone} lang={lang} view={view} />
 })
 
-const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; view: MutableRefObject<MapView | null> }>(function Canvas(
-  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', savedIds, routeLegs, onBounds, onZoom, center, openAt, holdOpen, fitStops, fitBottom = 0, fitTop, userLocation, label, errorText, styleId, lang, view },
+const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; tone: 'light' | 'dark'; lang: string; view: MutableRefObject<MapView | null> }>(function Canvas(
+  { pois, selectedId, onSelect, planStops = [], activeDay = 'all', savedIds, routeLegs, onBounds, onZoom, center, openAt, holdOpen, fitStops, fitBottom = 0, fitTop, userLocation, label, errorText, styleId, tone, lang, view },
   ref,
 ) {
   const el = useRef<HTMLDivElement>(null)
   const icons = useRef<HTMLDivElement>(null)
   // The hidden type icons' SVG for the pins without a photo, read before the markers draw.
   useLayoutEffect(() => {
-    icons.current?.querySelectorAll<SVGElement>('svg[data-type]').forEach((svg) => { TYPE_SVG[svg.dataset.type ?? ''] = svg.outerHTML })
+    icons.current?.querySelectorAll<SVGElement>('svg[data-type]').forEach((svg) => { TYPE_SVG[svg.dataset.type ?? ''] = svg.outerHTML.replace(/stroke-width="[\d.]+"/, 'stroke-width="2.6"') })
   }, [])
   const map = useRef<any>(null)
   const overlays = useRef<any[]>([])
@@ -211,7 +231,7 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
   const [failed, setFailed] = useState(false)
   // The style could not load: this canvas shows the raster map instead.
   const [glFailed, setGlFailed] = useState(false)
-  const gl = !!styleId && !glFailed
+  const gl = (!!styleId || RESTYLE_ONLY) && !glFailed
   // The vector map is on: without a GPU fit for it (or after a lost WebGL context) the SDK draws
   // the raster map with the Naver look, and the pins stay dark.
   const [glOn, setGlOn] = useState(false)
@@ -395,7 +415,7 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
       mapDataControl: false,
       scaleControl: false,
       logoControlOptions: { position: N.Position.BOTTOM_LEFT },
-      ...(gl ? { gl: true, customStyleId: styleId } : {}),
+      ...(gl ? { gl: true, ...(styleId ? { customStyleId: styleId } : {}) } : {}),
     })
     if (gl) {
       // The SDK empties the map element when it tears the map down; until the map's init, that
@@ -417,7 +437,7 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
     const glCheck = () => {
       const on = !!map.current.getOptions('gl')
       setGlOn(on)
-      if (on && RESTYLE) keepMapLook(map.current, toneFor(styleId))
+      if (on && RESTYLE) keepMapLook(map.current, tone)
     }
     const idle = () => {
       // The SDK can still fire events on a map it has torn down.
@@ -514,7 +534,7 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
   useEffect(() => {
     if (!live() || !mapReady || !userLocation) return
     const N = window.naver.maps
-    const html = `<div aria-hidden style="pointer-events:none;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-full);background:color-mix(in srgb, var(--map-pin-fill) 16%, transparent)"><span style="box-sizing:border-box;width:16px;height:16px;border-radius:var(--radius-full);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke)"></span></div>`
+    const html = `<div aria-hidden style="pointer-events:none;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-full);background:color-mix(in srgb, var(--accent-avatar) 30%, transparent)"><span style="box-sizing:border-box;width:16px;height:16px;border-radius:var(--radius-full);background:var(--accent-avatar);border:var(--border-width-pin) solid var(--map-pin-stroke)"></span></div>`
     const dot = new N.Marker({ map: map.current, position: new N.LatLng(userLocation.lat, userLocation.lng), icon: { content: html, anchor: new N.Point(20, 20) }, clickable: false, zIndex: Z_LAYER * Z.selected - 1 })
     return () => dot.setMap(null)
   }, [mapReady, userLocation?.lat, userLocation?.lng]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -592,8 +612,8 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
     }
     if (sel) addPin(sel)
     for (const s of planStops) {
-      if (activeDay !== 'all' && s.day !== activeDay) continue
-      add(s.poi.coords_lat, s.poi.coords_lng, stopHtml(s.poi, s.order, s.day, s.poi.poi_id === selectedId), { x: 22, y: 22 }, () => select.current(s.poi.poi_id), (s.poi.poi_id === selectedId ? Z.selected : Z.stop) * Z_LAYER)
+      const dimmed = activeDay !== 'all' && s.day !== activeDay && s.poi.poi_id !== selectedId
+      add(s.poi.coords_lat, s.poi.coords_lng, stopHtml(s.poi, s.order, s.day, s.poi.poi_id === selectedId, dimmed), { x: 22, y: 22 }, () => select.current(s.poi.poi_id), (s.poi.poi_id === selectedId ? Z.selected : dimmed ? Z.saved : Z.stop) * Z_LAYER)
     }
     if (focusedId) requestAnimationFrame(() => el.current?.querySelector<HTMLElement>(`[data-poi-id="${CSS.escape(focusedId)}"]`)?.focus())
   }, [pois, planStops, selectedId, zoom, activeDay, mapReady, savedIds]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -607,25 +627,37 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; lang: string; 
     const theme = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'
     const color = (day: number) => TOKEN_HEX[theme].planDays[Math.min(Math.max(day, 1), 8) - 1].fill
     const paths = routeLegs
-      ? routeLegs.filter((l) => activeDay === 'all' || l.day === activeDay).map((l) => ({ day: l.day, path: l.path }))
+      ? routeLegs.map((l) => ({ day: l.day, path: l.path }))
       : Array.from(new Set(planStops.map((s) => s.day)))
-          .filter((d) => activeDay === 'all' || d === activeDay)
           .map((day) => ({ day, path: planStops.filter((s) => s.day === day).sort((a, b) => a.order - b.order).map((s) => ({ lat: s.poi.coords_lat, lng: s.poi.coords_lng })) }))
+    // One line per day in the day colour, 5 wide with round ends; light maps draw a 9 wide dark casing
+    // under each line so the pastel colours hold on light ground.
+    const casing = TOKEN_HEX[theme].routeCasing
+    const width = (name: string, fallback: number) => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || fallback
+    // With one day chosen, the other days stay drawn under it at OTHER_DAY_OPACITY, casing included.
     for (const p of paths) {
       if (p.path.length < 2) continue
-      lines.current.push(new N.Polyline({ map: map.current, path: p.path.map((x) => new N.LatLng(x.lat, x.lng)), strokeColor: color(p.day), strokeWeight: 4, strokeOpacity: 0.9 }))
+      const path = p.path.map((x) => new N.LatLng(x.lat, x.lng))
+      const other = activeDay !== 'all' && p.day !== activeDay
+      const opacity = other ? OTHER_DAY_OPACITY : 1
+      const z = other ? 0 : 2
+      if (casing) {
+        lines.current.push(new N.Polyline({ map: map.current, path, strokeColor: casing, strokeWeight: width('--route-casing-width', 9), strokeOpacity: opacity, strokeLineCap: 'round', strokeLineJoin: 'round', zIndex: z + 1 }))
+      }
+      lines.current.push(new N.Polyline({ map: map.current, path, strokeColor: color(p.day), strokeWeight: width('--route-width', 5), strokeOpacity: opacity, strokeLineCap: 'round', strokeLineJoin: 'round', zIndex: z + 2 }))
     }
   }, [planStops, routeLegs, activeDay, ready])
 
   return (
     // isolate: the SDK gives its logo and controls a high z-index; keep them under sheets and dialogs.
-    <div className="relative isolate size-full bg-ui-bg-sunken">
+    <div className="relative isolate size-full bg-map-ui-ground">
       {clientId ? (
         <Script src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}&submodules=geocoder${GL_SDK ? ',gl' : ''}&language=${lang}`} strategy="afterInteractive" onReady={sdkReady} onError={() => setFailed(true)} />
       ) : null}
-      <div ref={el} role="application" aria-label={label} data-map-tone={toneFor(glOn ? styleId : '')} className="size-full" />
+      <div ref={el} role="application" aria-label={label} data-map-tone={glOn ? tone : 'light'} className="size-full" />
       <div ref={icons} hidden>
         {Object.entries(PLACE_TYPE_ICON).map(([type, Icon]) => <Icon key={type} data-type={type} width="100%" height="100%" aria-hidden />)}
+        {Object.entries(KIND_ICON).map(([kind, Icon]) => <Icon key={kind} data-type={`kind-${kind}`} width="100%" height="100%" aria-hidden />)}
       </div>
       {failed || !clientId ? (
         <p role="alert" className="absolute inset-0 flex items-center justify-center p-[var(--space-6)] text-center type-body-base text-ui-fg-muted">{errorText}</p>

@@ -42,13 +42,13 @@ export function CookieBanner({ type = 'banner', label, message, learnMore, accep
   // Phones: the bottom banner's buttons fill the row; the preferences card's buttons hug, as drawn.
   const buttons = (
     <div className={cn('flex gap-[var(--gap-sm)]', type === 'banner' && 'max-md:[&>*]:flex-1')}>
-      <Button variant="secondary" size="md" onClick={onDecline}>{declineLabel}</Button>
+      <Button variant="secondary" size="md" onClick={onDecline} className={type === 'banner' ? 'bg-nav-tile-hover' : undefined}>{declineLabel}</Button>
       <Button size="md" onClick={onAccept}>{acceptLabel}</Button>
     </div>
   )
   if (type === 'preferences') {
     return (
-      <section aria-label={label} className="flex flex-col gap-[var(--space-3)] border border-ui-border bg-ui-bg-raised p-[var(--space-5)] text-ui-fg">
+      <section aria-label={label} className="flex flex-col gap-[var(--space-3)] rounded-tile bg-tile-surface p-[var(--tile-padding)] text-ui-fg">
         <div className="flex items-center gap-[var(--space-3)]">
           <h2 className="flex-1 type-title-card">{title}</h2>
           {status ? <Badge leadingIcon={<Check aria-hidden />}>{status}</Badge> : null}
@@ -59,12 +59,13 @@ export function CookieBanner({ type = 'banner', label, message, learnMore, accep
     )
   }
   return (
-    <section role="region" aria-label={label} tabIndex={-1} className={cn('fixed inset-x-0 bottom-0 z-40 border-t border-ui-border bg-ui-bg-raised px-[var(--space-4)] py-[var(--space-4)] pb-[calc(var(--space-4)+env(safe-area-inset-bottom))] text-ui-fg outline-none', className)}>
+    // A floating card 12 in from the sides and the bottom (above the phone's home bar), elevated with its own shadow.
+    <section role="region" aria-label={label} tabIndex={-1} className={cn('fixed inset-x-[var(--space-3)] bottom-[calc(var(--space-3)+env(safe-area-inset-bottom))] z-40 rounded-tile bg-ui-bg-elevated p-[var(--tile-padding)] text-ui-fg shadow-notice outline-none', className)}>
       <div className="mx-auto flex max-w-[960px] items-center gap-[var(--space-4)] max-md:flex-col max-md:items-stretch max-md:gap-[var(--space-3)]">
         {/* Message: the body and the Learn more link wrap as two items, so the link never splits. */}
         <div className="flex flex-1 flex-wrap items-center gap-x-[var(--space-1-5)] type-body-base">
           <p>{message}</p>
-          <IntlLink href={learnMore.href} className={cn('relative whitespace-nowrap underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{learnMore.label}</IntlLink>
+          <IntlLink href={learnMore.href} className={cn('relative whitespace-nowrap underline decoration-[length:var(--border-width-1-5)] underline-offset-4 hover:text-ui-link-hover', HIT_AREA)}>{learnMore.label}</IntlLink>
         </div>
         {buttons}
       </div>
@@ -181,7 +182,7 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
                 : undefined
   const emailField = labels.emailField ?? labels.email
   return (
-    <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg">
+    <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-tile bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg">
       {/* Figma Top row: Logo wordmark 24 + Close Ghost 40 (no Close on New password). */}
       <div className="flex items-center justify-between gap-[var(--space-2)]">
         <Logo />
@@ -213,7 +214,7 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
           <Tabs label={labels.tabs} width="equal" baseline={false} value={view} onValueChange={(v) => onViewChange(v as SignInView)} tabs={[{ id: 'sign-in', label: labels.signIn }, { id: 'sign-up', label: labels.signUp }]} />
           <TextInput label={emailField} showLabel type="email" autoComplete="email" required placeholder={labels.emailPlaceholder} value={values.email ?? ''} onChange={set('email')} />
           <TextInput label={labels.password} showLabel type="password" autoComplete={view === 'sign-in' ? 'current-password' : 'new-password'} required placeholder={view === 'sign-in' ? labels.passwordPlaceholder : undefined} value={values.password ?? ''} onChange={set('password')} help={view === 'sign-up' ? labels.passwordHint : undefined} />
-          {view === 'sign-in' ? <button type="button" onClick={() => onViewChange('forgot')} className={cn('relative self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{labels.forgot}</button> : null}
+          {view === 'sign-in' ? <button type="button" onClick={() => onViewChange('forgot')} className={cn('relative self-start type-body-link text-ui-link underline decoration-[length:var(--border-width-1-5)] underline-offset-4 hover:text-ui-link-hover', HIT_AREA)}>{labels.forgot}</button> : null}
           <Button type="submit" loading={busy} className="w-full">{view === 'sign-in' ? labels.signIn : labels.signUp}</Button>
         </form>
       ) : view === 'forgot' ? (
@@ -273,7 +274,7 @@ export function ConsentStep({ title, subtitle, footnote, items, checked, onCheck
   const some = items.some((i) => checked[i.id])
   const ready = items.filter((i) => i.required).every((i) => checked[i.id])
   return (
-    <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg">
+    <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-tile bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg">
       <IconButton label={labels.back} icon={<ArrowLeft />} onClick={onCancel} className="self-start" />
       <div className="flex flex-col gap-[var(--space-2)]">
         <h1 className="type-display-h3">{title}</h1>
@@ -341,7 +342,7 @@ export function SearchFilters({ viewport, groups, value, onValueChange, sort, la
       <div className="flex items-center justify-between gap-[var(--space-2)]">
         <h2 className="type-display-h3">{labels.title}</h2>
         {!mobile ? (
-          <button type="button" onClick={() => onValueChange({})} className="type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover">{labels.clearAll}</button>
+          <button type="button" onClick={() => onValueChange({})} className="type-body-link text-ui-link underline decoration-[length:var(--border-width-1-5)] underline-offset-4 hover:text-ui-link-hover">{labels.clearAll}</button>
         ) : onClose && labels.close ? (
           <IconButton label={labels.close} icon={<X />} onClick={onClose} />
         ) : null}
@@ -449,7 +450,7 @@ export function LegalDocument({ viewport, breadcrumbs, title, updated, contact, 
         <section key={s.id} aria-labelledby={s.id} className="flex flex-col gap-[var(--space-4)]">
           <Separator />
           <h2 id={s.id} className="scroll-mt-[var(--space-6)] type-display-h3">{i + 1}. {s.title}</h2>
-          <div className="type-body-long text-ui-fg-muted [&_a]:underline [&_a]:underline-offset-2 [&_li]:mt-[var(--space-1)] [&_ol]:list-decimal [&_ol]:pl-[var(--space-5)] [&_p+p]:mt-[var(--space-3)] [&_ul]:list-disc [&_ul]:pl-[var(--space-5)]">{s.body}</div>
+          <div className="type-body-long text-ui-fg-muted [&_a]:underline [&_a]:decoration-[length:var(--border-width-1-5)] [&_a]:underline-offset-4 [&_li]:mt-[var(--space-1)] [&_ol]:list-decimal [&_ol]:pl-[var(--space-5)] [&_p+p]:mt-[var(--space-3)] [&_ul]:list-disc [&_ul]:pl-[var(--space-5)]">{s.body}</div>
         </section>
       ))}
     </div>
@@ -513,7 +514,7 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
   )
   // Figma: the same card on desktop and phones (bg-raised, 1px border, radius 2xl, p12, gap 12).
   return (
-    <div className={cn('flex flex-col gap-[var(--space-3)] rounded-2xl border border-ui-border bg-ui-bg-raised p-[var(--space-3)] text-ui-fg', viewport === 'desktop' ? 'w-[560px]' : 'w-full')}>
+    <div className={cn('flex flex-col gap-[var(--space-3)] rounded-sq-lg bg-ui-bg-raised p-[var(--space-3)] text-ui-fg shadow-float', viewport === 'desktop' ? 'w-[560px]' : 'w-full')}>
       {state === 'typing' ? (
         <>
           <button type="button" className={row} onClick={() => onSearch(query)}>
@@ -590,7 +591,7 @@ export function SearchSuggestions({ viewport, state, query, places = [], plans =
               {/* Figma Browse: category chips, like Trending now. */}
               <div className="flex flex-wrap gap-[var(--space-2)] py-[var(--space-1)]">
                 {categories.map((c) => (
-                  <IntlLink key={c.id} href={c.href} className="inline-flex h-[var(--control-height-sm)] items-center rounded-full border border-ui-border-strong px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+                  <IntlLink key={c.id} href={c.href} className="inline-flex h-[var(--control-height-sm)] items-center rounded-sq-sm bg-control-fill px-[var(--space-3)] hover:bg-control-fill-hover type-body-chip text-ui-fg focus-visible:shadow-focus-ring focus-visible:outline-none">
                     {c.name}
                   </IntlLink>
                 ))}

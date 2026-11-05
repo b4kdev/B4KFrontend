@@ -14,7 +14,7 @@ export function MapLegalLine({ placement = 'map' }: { placement?: 'map' | 'list'
   const t = useCd()
   return (
     <LegalLine
-      className={placement === 'map' ? 'absolute bottom-[var(--space-4)] left-[calc(var(--space-16)-var(--space-0-5))]' : 'pt-[var(--space-2)]'}
+      className={placement === 'map' ? 'absolute bottom-[var(--space-4)] left-[calc(var(--space-16)-var(--space-0-5))] rounded-sq-xs bg-map-ui-overlay px-[var(--space-2)] py-[var(--space-0-5)]' : 'pt-[var(--space-2)]'}
       lead={t('CD1462')}
       linkAs={IntlLink}
       links={[{ href: '/legal/terms', label: t('CD1460') }, { href: '/legal/privacy', label: t('CD0321'), strong: true }]}

@@ -4,8 +4,10 @@ import { forwardRef, type InputHTMLAttributes } from 'react'
 import { Search, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
-// Search input (Figma Atoms › Search input): pill with a leading search icon, a clear
-// button once there is text. Same states as Text input; focus = 2px border-focus. No visible label:
+// Search input (Figma Atoms › Search input): a 48 squircle (radius lg) on the raised fill with the
+// search glyph tile (the search accent, black icon) at its start, a clear button once there is text.
+// Input text 15, 16 on touch screens (under 16 iOS zooms the page on focus).
+// Focus = 1.5px border-focus and the elevated fill. No visible label:
 // type search with an aria-label. Suggestions open in a Combobox.
 
 export type SearchInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> & {
@@ -24,14 +26,16 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
   return (
     <div
       className={cn(
-        'flex items-center gap-[var(--gap-sm)] rounded-full border border-ui-border-strong bg-ui-bg-raised px-[var(--space-4)] text-ui-fg type-body-base',
-        'transition-colors duration-short4 ease-standard hover:border-ui-border-focus focus-within:border-[length:var(--border-width-2)] focus-within:border-ui-border-focus',
-        size === 'lg' ? 'h-[var(--control-height-lg)]' : 'h-[var(--control-height-md)]',
+        'flex items-center gap-[var(--gap-sm)] rounded-sq-lg border-[length:var(--border-width-1-5)] border-ui-border bg-ui-bg-raised dark:border-transparent pl-[var(--space-2)] pr-[var(--space-4)] text-ui-fg type-body-base [&_input]:text-[length:calc(var(--font-size-base)-var(--border-width-1))] [@media(pointer:coarse)]:[&_input]:text-base',
+        'transition-[border-color,background-color] duration-short4 ease-out-strong focus-within:border-ui-border-focus focus-within:bg-ui-bg-elevated',
+        size === 'lg' ? 'h-[var(--control-height-xl)]' : 'h-[var(--control-height-md)] pl-[var(--space-1)]',
         disabled && 'cursor-not-allowed border-ui-border-disabled bg-ui-bg-disabled text-ui-fg-disabled hover:border-ui-border-disabled',
         className,
       )}
     >
-      <Search aria-hidden className={cn('size-[var(--icon-size-sm)] shrink-0', disabled ? 'text-ui-fg-disabled' : 'text-ui-fg-muted')} />
+      <span aria-hidden className={cn('inline-flex shrink-0 items-center justify-center rounded-sq-sm p-[var(--space-1-5)]', size === 'lg' ? 'size-[var(--control-height-sm)]' : 'size-[var(--control-height-xs)]', disabled ? 'bg-control-fill text-ui-fg-disabled' : 'bg-accent-search text-field-fg')}>
+        <Search className="size-full [stroke-width:2.6]" />
+      </span>
       <input
         ref={ref}
         type="search"

@@ -83,7 +83,12 @@ export function useSearchBox({ viewport, initial = '', open: startOpen = false }
     if (!text.trim()) return
     recents.add(text.trim())
     setOpen(false)
-    router.push(`/search?q=${encodeURIComponent(text.trim())}`)
+    // A category name (a Trending chip, or the name typed as is) opens that category's page: the
+    // text search matches place names, not categories, so it would find nothing.
+    // Labels carry word joiners around the hyphen (K-Pop never breaks); compare without them.
+    const plain = (s: string) => s.replace(/⁠/g, '').trim().toLowerCase()
+    const category = CATEGORIES.find(([, cd]) => plain(t(cd)) === plain(text))
+    router.push(category ? `/explore/${category[0]}` : `/search?q=${encodeURIComponent(text.trim())}`)
   }
   const suggestions = (
     <SearchSuggestions
@@ -147,7 +152,6 @@ export function V2HeaderSearch({ label }: { label: string }) {
         }}
         onClear={() => box.setDraft('')}
         clearLabel={t('CD1248')}
-        size="md"
       />
       {box.open ? <div id={listId} className="absolute left-0 top-full z-50 mt-[var(--space-2)]">{box.suggestions}</div> : null}
     </div>

@@ -9,19 +9,20 @@ import { DragHandle } from './Plan'
 import { IconButton } from './IconButton'
 import { useFocusTrap, useMounted, usePhone } from './hooks'
 
-// Surfaces (Figma Organisms): Modal, Dialog, Bottom sheet. No shadows, no lines
+// Surfaces (Figma Organisms): Modal, Dialog, Bottom sheet. Sheets: tile radius on top, the sheet
+// shadow; dialogs: tile radius, no lines
 // between header, body and footer; the 1px outline stays. Modal and Dialog become a
 // Modal bottom sheet on phones (adaptive).
 
 const Portal = ({ children }: { children: ReactNode }) => (useMounted() ? createPortal(children, document.body) : null)
 
 const SHEET =
-  'fixed inset-x-0 bottom-0 z-50 flex max-h-[85dvh] flex-col rounded-t-3xl bg-ui-bg-raised pb-[env(safe-area-inset-bottom)] text-ui-fg motion-safe:animate-b4k-sheet-in'
+  'fixed inset-x-0 bottom-0 z-50 flex max-h-[85dvh] flex-col rounded-t-tile bg-ui-bg-raised pb-[env(safe-area-inset-bottom)] shadow-sheet dark:bg-ui-bg-media text-ui-fg motion-safe:animate-b4k-sheet-in'
 
 /** Grabber on phone sheets: the 32x4 bar with py 8 (area 20). */
 const GRABBER = (
   <div aria-hidden className="flex shrink-0 justify-center py-[var(--space-2)]">
-    <span className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" />
+    <span className="h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-11)] rounded-[3px] bg-sheet-handle" />
   </div>
 )
 
@@ -73,9 +74,9 @@ export function Modal({ open, onClose, title, closeLabel, size = 'md', children,
         className={cn(
           'outline-none',
           phone
-            ? cn(SHEET, 'bg-ui-bg-elevated')
+            ? SHEET
             : cn(
-                'fixed left-1/2 top-1/2 z-50 flex max-h-[90dvh] w-[calc(100%-var(--space-8))] -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl border border-ui-border bg-ui-bg-elevated text-ui-fg',
+                'fixed left-1/2 top-1/2 z-50 flex max-h-[90dvh] w-[calc(100%-var(--space-8))] -translate-x-1/2 -translate-y-1/2 flex-col rounded-tile bg-ui-bg-elevated text-ui-fg shadow-menu',
                 size === 'sm' ? 'max-w-[400px]' : size === 'md' ? 'max-w-[560px]' : 'max-w-[720px]',
               ),
         )}
@@ -120,7 +121,7 @@ export function Dialog({ open, onCancel, title, body, confirm, cancel, third }: 
         aria-describedby={`${id}-b`}
         className={cn(
           'outline-none',
-          phone ? cn(SHEET, 'px-[var(--space-6)] pb-[var(--space-6)]') : 'fixed left-1/2 top-1/2 z-50 w-[calc(100%-var(--space-8))] max-w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg',
+          phone ? cn(SHEET, 'px-[var(--space-6)] pb-[var(--space-6)]') : 'fixed left-1/2 top-1/2 z-50 w-[calc(100%-var(--space-8))] max-w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-tile bg-ui-bg-elevated shadow-menu p-[var(--space-6)] text-ui-fg',
         )}
       >
         {phone ? <div className="mb-[var(--space-2)]">{GRABBER}</div> : null}
@@ -204,8 +205,11 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
         {/* The control above the sheet (Plan pill) is the toast floor while it shows: toasts sit 12 above it. */}
         {!modal && above ? <div data-toast-floor className="absolute bottom-[calc(100%+var(--space-3))] left-[var(--space-4)]">{above}</div> : null}
         {!modal && aboveEnd ? <div className="absolute bottom-[calc(100%+var(--space-3))] right-[var(--space-4)]">{aboveEnd}</div> : null}
+        {/* Drag area: the grabber row plus 12 above and below it (taken back by margins, so the layout
+            stays), so a finger that lands near the bar drags the sheet instead of the page. A tap
+            lowers the sheet one step (from the lowest step it rises). */}
         <div
-          className="flex shrink-0 touch-none justify-center py-[var(--space-2)]"
+          className="relative z-10 -my-[var(--space-3)] flex shrink-0 touch-none justify-center py-[var(--space-5)]"
           onPointerDown={(e) => {
             if (modal) return
             start.current = e.clientY
@@ -217,6 +221,7 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
             if (drag === null) return
             if (drag > 60) step(1)
             else if (drag < -60) step(-1)
+            else if (Math.abs(drag) < 8) step(snap === ORDER[0] ? 1 : -1)
             setDrag(null)
           }}
         >
@@ -233,7 +238,8 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
         {header ? <div className="shrink-0 px-[var(--space-4)] pb-[var(--space-2)]">{header}</div> : null}
         <div
           className={cn(
-            'flex min-h-0 flex-1 flex-col overflow-y-auto',
+            // Scroll padding: a control focused by keyboard scrolls in with room for its focus ring.
+            'flex min-h-0 flex-1 flex-col overflow-y-auto scroll-py-[calc(var(--focus-ring-offset)+var(--focus-ring-width))]',
             flush ? null : modal ? 'gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-2)]' : 'gap-[var(--space-4)] px-[var(--space-4)] pb-[var(--space-6)] pt-[var(--space-2)]',
           )}
         >

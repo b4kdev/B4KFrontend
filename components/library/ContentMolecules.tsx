@@ -14,6 +14,9 @@ import { Spinner } from './Spinner'
 // Content and planning molecules (Figma Molecules): Section header, Save-like
 // overlay, Achievement badge, AI input, Plan stop row, Itinerary stop.
 
+
+/** Row arrows: a disabled arrow keeps its control fill and icon, faded to 40%. */
+const ROW_ARROW = 'disabled:bg-control-fill disabled:text-ui-fg disabled:opacity-40'
 export type SectionHeaderProps = {
   /** Figma Title: the h2 of the section (display/h3). */
   title: string
@@ -42,7 +45,7 @@ export function SectionHeader({ title, subtitle, seeAll, arrows, id, className }
       {seeAll ? (
         <IntlLink
           href={seeAll.href}
-          className="relative inline-flex items-center gap-[var(--space-1-5)] type-label-button text-ui-link hover:text-ui-link-hover focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus before:absolute before:inset-x-0 before:top-1/2 before:h-[var(--target-touch-min)] before:-translate-y-1/2 before:content-['']"
+          className="b4k-press relative inline-flex shrink-0 items-center gap-[var(--space-1-5)] rounded-sq-md bg-control-fill px-[var(--space-4)] py-[var(--space-2-5)] type-label-button text-ui-fg hover:bg-control-fill-hover focus-visible:shadow-focus-ring focus-visible:outline-none before:absolute before:inset-x-0 before:top-1/2 before:h-[var(--target-touch-min)] before:-translate-y-1/2 before:content-['']"
         >
           {seeAll.label}
           <span className="sr-only">: {title}</span>
@@ -51,8 +54,8 @@ export function SectionHeader({ title, subtitle, seeAll, arrows, id, className }
       ) : null}
       {arrows ? (
         <div className={cn('flex gap-[var(--space-2)] max-lg:hidden', fits && 'hidden')}>
-          <IconButton variant="secondary" label={arrows.previousLabel} icon={<ChevronLeft />} disabled={arrows.atStart} onClick={arrows.onPrevious} />
-          <IconButton variant="secondary" label={arrows.nextLabel} icon={<ChevronRight />} disabled={arrows.atEnd} onClick={arrows.onNext} />
+          <IconButton variant="secondary" label={arrows.previousLabel} icon={<ChevronLeft />} disabled={arrows.atStart} onClick={arrows.onPrevious} className={ROW_ARROW} />
+          <IconButton variant="secondary" label={arrows.nextLabel} icon={<ChevronRight />} disabled={arrows.atEnd} onClick={arrows.onNext} className={ROW_ARROW} />
         </div>
       ) : null}
     </div>
@@ -145,7 +148,7 @@ export function AiInput({ value, onValueChange, onSend, placeholder, sendLabel, 
   }
   return (
     <div className={cn('flex items-center gap-[var(--space-2)]', className)}>
-      <div className="flex min-h-[var(--control-height-md)] flex-1 items-center rounded-full bg-ui-bg-sunken px-[var(--input-padding-x)] focus-within:shadow-[inset_0_0_0_var(--border-width-2)_var(--color-border-focus)]">
+      <div className="flex min-h-[var(--control-height-md)] flex-1 items-center rounded-sq-lg bg-tile-surface-sunken px-[var(--input-padding-x)] focus-within:shadow-[inset_0_0_0_var(--border-width-2)_var(--color-border-focus)]">
         <textarea
           ref={ref}
           rows={1}
@@ -246,18 +249,19 @@ export type ItineraryStopProps = {
   className?: string
 }
 
-/** Itinerary stop: Stop badge md on the route rail, name, meta, optional note and 40 thumbnail. */
+/** Itinerary stop: Stop badge md on the route rail, name, meta, optional note and 40 thumbnail. Selected:
+ * the selected fill with a 2px ring in the map's selected-pin colour, so it never reads as keyboard focus. */
 // Figma: the row is 80 high with 8 above; a name, meta and one-line note (66) leave 6 below.
 export function ItineraryStop({ name, number, day, meta, note, thumbnail, selected, onSelect, className }: ItineraryStopProps) {
   return (
-    <li aria-current={selected || undefined} className={cn('flex min-h-[var(--space-20)] items-start gap-[var(--space-3)] px-[var(--space-2)] pb-[var(--space-1-5)] pt-[var(--space-2)]', selected && 'bg-ui-state-selected', onSelect && 'cursor-pointer hover:bg-ui-state-hover', className)} onClick={onSelect}>
+    <li aria-current={selected || undefined} className={cn('flex min-h-[var(--stop-row-min-height)] items-center gap-[var(--space-3)] rounded-tile-inner bg-tile-surface p-[var(--space-3)]', selected && 'bg-ui-state-selected shadow-[inset_0_0_0_var(--border-width-2)_var(--map-pin-selected)]', onSelect && 'cursor-pointer [@media(hover:hover)_and_(pointer:fine)]:hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]', className)} onClick={onSelect}>
       <StopBadge number={number} day={day} size="md" />
       <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
-        <span className="type-title-card text-ui-fg">{name}</span>
-        <span className="type-body-caption text-ui-fg-muted">{meta}</span>
+        <span className="type-title-card text-[length:var(--font-size-base)] text-ui-fg">{name}</span>
+        <span className="type-body-caption tabular-nums text-ui-fg-muted">{meta}</span>
         {note ? <span className="type-body-caption text-ui-fg">{note}</span> : null}
       </div>
-      {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="80px" className="w-[var(--control-height-md)] shrink-0" /> : null}
+      {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="80px" className="w-[var(--stop-thumb-size)] shrink-0 rounded-sq-md" /> : null}
     </li>
   )
 }

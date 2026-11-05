@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { bffFetch, bffErrorResponse } from '@/lib/bff'
 import { pickEntityTitle } from '@/lib/entity-i18n'
 import { collectionHasContent, collectionTypeCode } from '@/lib/collections'
+import { routing } from '@/i18n/routing'
 
 export interface SearchPoi {
   poi_id: string
@@ -159,7 +160,10 @@ export async function GET(request: Request) {
   const needle = q.trim().toLowerCase()
   // next-intl locales (i18n/routing.ts) — translations JSONB keys must match this
   // exact casing (e.g. 'zh-CN' not 'zh_CN') or the lookup below silently misses.
-  const locale = (await cookies()).get('NEXT_LOCALE')?.value ?? 'en'
+  // The page sends its language (?locale=); the cookie is only the fallback, as it can lag behind
+  // the page after a language change and names would come back in the other language.
+  const asked = searchParams.get('locale')
+  const locale = asked && (routing.locales as readonly string[]).includes(asked) ? asked : (await cookies()).get('NEXT_LOCALE')?.value ?? 'en'
 
   try {
     const base = `/places?q=${encodeURIComponent(q.trim())}&limit=20`

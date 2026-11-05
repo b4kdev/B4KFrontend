@@ -109,7 +109,7 @@ export function DateRangePicker({ value, onValueChange, previousLabel, nextLabel
         ))}
       </div>
       {value.start ? (
-        <button type="button" onClick={() => onValueChange({ start: null, end: null })} className="self-end type-body-link text-ui-link underline underline-offset-2 transition-colors duration-short4 ease-standard hover:text-ui-link-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+        <button type="button" onClick={() => onValueChange({ start: null, end: null })} className="self-end type-body-link text-ui-link underline decoration-[length:var(--border-width-1-5)] underline-offset-4 transition-colors duration-short4 ease-standard hover:text-ui-link-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
           {clearLabel}
         </button>
       ) : null}
