@@ -84,7 +84,7 @@ export function SearchScreen() {
   const show = filters.show?.[0] ?? 'all'
   // No results names the picked area: the district if one is picked, else the region.
   const noResultsArea = filters.district?.[0] ? districtName(filters.district[0], locale) : filters.region?.[0] ? regionName(filters.region[0], locale) : null
-  const qs = new URLSearchParams({ q, sort })
+  const qs = new URLSearchParams({ q, sort, locale })
   if (show !== 'all') qs.set('type', show)
   if (filters.region?.[0]) qs.set('area_lv1', filters.region[0])
   if (filters.district?.[0]) qs.set('area_lv2', filters.district[0])
