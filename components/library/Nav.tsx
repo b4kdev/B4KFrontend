@@ -58,7 +58,7 @@ export const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab({ select
           aria-hidden
           className={cn(
             'size-[10px] shrink-0 rounded-[3px]',
-            selected ? 'bg-field-fg' : cn(DAY_DOT[day], 'shadow-[inset_0_0_0_1px_var(--color-border)]'),
+            selected ? 'bg-field-fg' : cn(DAY_DOT[day], 'shadow-[inset_0_0_0_1px_var(--color-border)] dark:shadow-none'),
           )}
         />
       ) : null}

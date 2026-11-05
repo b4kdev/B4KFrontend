@@ -128,7 +128,7 @@ export function TransportMode({ mode, modeLabel, time, onChange, menu, menuLabel
   )
   return (
     // Figma: the part hugs its content (the rail is as wide as mode and time), it does not fill the row.
-    <div className={cn('flex w-fit items-center py-[var(--space-1-5)]', mode !== 'estimate' && 'border-l-2 border-dotted border-control-fill-hover pl-[var(--space-3-5)]', className)}>
+    <div className={cn('flex w-fit items-center py-[var(--space-1-5)]', mode !== 'estimate' && 'border-l-2 border-dotted border-plan-leg-line pl-[var(--space-3-5)]', className)}>
       {(onChange || menu) && mode !== 'estimate' ? (
         menu ? (
           // Figma: the menu starts at the rail, 12 left of the mode.

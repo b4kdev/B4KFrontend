@@ -56,7 +56,8 @@ const b4kTokens: Partial<Config> = {
           "day-7": "var(--plan-day-7)",
           "day-7-fg": "var(--plan-day-7-fg)",
           "day-8": "var(--plan-day-8)",
-          "day-8-fg": "var(--plan-day-8-fg)"
+          "day-8-fg": "var(--plan-day-8-fg)",
+          "leg-line": "var(--plan-leg-line)"
         },
         "map-ui": {
           "pin-fill": "var(--map-pin-fill)",
