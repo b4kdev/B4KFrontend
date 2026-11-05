@@ -2,6 +2,7 @@ import type { Decorator, Preview } from '@storybook/react'
 import { useEffect } from 'react'
 import { NextIntlClientProvider } from 'next-intl'
 import { fontVariables } from '../app/fonts'
+import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css'
 import '../app/tokens.css'
 import './preview.css'
 

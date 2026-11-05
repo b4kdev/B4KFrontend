@@ -3,6 +3,8 @@ import { getLocale } from 'next-intl/server';
 import { SITE_URL } from '@/lib/site-url';
 import { seoText } from '@/lib/seo';
 import { THEME_BOOT_SCRIPT } from '@/lib/theme';
+// Hangul face: Pretendard Variable, dynamic subset (only the unicode ranges a page uses load).
+import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
 import './tokens.css';
 import './globals.css';
 import { fontVariables } from './fonts';

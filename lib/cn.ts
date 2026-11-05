@@ -8,7 +8,15 @@ const twMerge = extendTailwindMerge({
   extend: {
     classGroups: {
       'font-size': [{ text: ['2xs'] }],
-      shadow: [{ shadow: ['focus-ring'] }],
+      shadow: [{ shadow: ['focus-ring', 'rest', 'lift', 'float', 'accent', 'sheet', 'pin', 'tab-selected', 'track-inset', 'menu', 'overlay'] }],
+      rounded: [
+        {
+          rounded: [
+            'sq-xs', 'sq-sm', 'sq-md', 'sq-lg', 'tile', 'tile-inner',
+            'control', 'field', 'chip', 'tab', 'tab-track', 'nav-item', 'badge', 'pin', 'cluster', 'toast', 'menu', 'panel',
+          ],
+        },
+      ],
       duration: [
         {
           duration: [
@@ -24,6 +32,7 @@ const twMerge = extendTailwindMerge({
           ease: [
             'standard', 'standard-accelerate', 'standard-decelerate',
             'emphasized', 'emphasized-accelerate', 'emphasized-decelerate',
+            'out-strong', 'in-out-strong',
           ],
         },
       ],

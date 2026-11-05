@@ -61,7 +61,127 @@ const b4kTokens: Partial<Config> = {
         "map-ui": {
           "pin-fill": "var(--map-pin-fill)",
           "pin-stroke": "var(--map-pin-stroke)",
-          "pin-selected": "var(--map-pin-selected)"
+          "pin-selected": "var(--map-pin-selected)",
+          "ground": "var(--map-ground)",
+          "overlay": "var(--map-overlay)",
+          "route-casing": "var(--map-route-casing)",
+          "cluster-fill": "var(--map-cluster-fill)",
+          "cluster-fg": "var(--map-cluster-fg)",
+          "cluster-stroke": "var(--map-cluster-stroke)",
+          "type-food": "var(--map-type-food)",
+          "type-cafe": "var(--map-type-cafe)",
+          "type-stay": "var(--map-type-stay)",
+          "type-shopping": "var(--map-type-shopping)",
+          "type-heritage": "var(--map-type-heritage)",
+          "type-park": "var(--map-type-park)",
+          "type-other": "var(--map-type-other)",
+          "chip-selected-bg": "var(--map-chip-selected-bg)",
+          "chip-selected-fg": "var(--map-chip-selected-fg)",
+          "glyph-pin-bg": "var(--map-glyph-pin-bg)",
+          "glyph-pin-fg": "var(--map-glyph-pin-fg)"
+        },
+        "category": {
+          "pop": "var(--category-pop)",
+          "drama": "var(--category-drama)",
+          "beauty": "var(--category-beauty)",
+          "culture": "var(--category-culture)",
+          "food": "var(--category-food)",
+          "tile-bg": "var(--category-tile-bg)",
+          "tile-fg": "var(--category-tile-fg)",
+          "tile-fg-muted": "var(--category-tile-fg-muted)"
+        },
+        "field": {
+          "hero": "var(--field-hero)",
+          "fg": "var(--field-fg)",
+          "fg-muted": "var(--field-fg-muted)",
+          "inset": "var(--field-inset)"
+        },
+        "action": {
+          "new-plan": "var(--action-new-plan)",
+          "quick-plan": "var(--action-quick-plan)",
+          "from-saved": "var(--action-from-saved)",
+          "fg": "var(--action-fg)",
+          "fg-muted": "var(--action-fg-muted)",
+          "icon": "var(--action-icon)"
+        },
+        "accent": {
+          "search": "var(--accent-search)",
+          "add": "var(--accent-add)",
+          "stats": "var(--accent-stats)",
+          "avatar": "var(--accent-avatar)",
+          "empty": "var(--accent-empty)",
+          "progress": "var(--accent-progress)",
+          "caret": "var(--accent-caret)",
+          "add-fg": "var(--accent-add-fg)",
+          "stats-fg": "var(--accent-stats-fg)"
+        },
+        "nav": {
+          "home": "var(--nav-home)",
+          "map": "var(--nav-map)",
+          "explore": "var(--nav-explore)",
+          "saved": "var(--nav-saved)",
+          "quick-plan": "var(--nav-quick-plan)",
+          "icon-idle": "var(--nav-icon-idle)",
+          "tile-idle": "var(--nav-tile-idle)",
+          "tile-hover": "var(--nav-tile-hover)",
+          "current-bg": "var(--nav-current-bg)",
+          "current-fg": "var(--nav-current-fg)",
+          "current-phone-bg": "var(--nav-current-phone-bg)",
+          "current-phone-fg": "var(--nav-current-phone-fg)"
+        },
+        "tile": {
+          "surface": "var(--tile-surface)",
+          "surface-sunken": "var(--tile-surface-sunken)"
+        },
+        "control": {
+          "fill": "var(--control-fill)",
+          "fill-hover": "var(--control-fill-hover)"
+        },
+        "sheet": {
+          "handle": "var(--sheet-handle)"
+        },
+        "photo": {
+          "action-fill": "var(--photo-action-fill)",
+          "action-fg": "var(--photo-action-fg)",
+          "action-fill-on": "var(--photo-action-fill-on)",
+          "action-fg-on": "var(--photo-action-fg-on)"
+        },
+        "button": {
+          "overlay-filled-hover": "var(--button-overlay-filled-hover)",
+          "overlay-filled-pressed": "var(--button-overlay-filled-pressed)",
+          "primary-bg": "var(--button-primary-bg)",
+          "primary-fg": "var(--button-primary-fg)",
+          "primary-hover": "var(--button-primary-hover)"
+        },
+        "chip": {
+          "selected-bg": "var(--chip-selected-bg)",
+          "selected-fg": "var(--chip-selected-fg)"
+        },
+        "tab": {
+          "selected-bg": "var(--tab-selected-bg)",
+          "selected-fg": "var(--tab-selected-fg)"
+        },
+        "menu": {
+          "checked-bg": "var(--menu-checked-bg)",
+          "checked-fg": "var(--menu-checked-fg)"
+        },
+        "search": {
+          "mark-bg": "var(--search-mark-bg)",
+          "mark-fg": "var(--search-mark-fg)"
+        },
+        "hero": {
+          "cta-bg": "var(--hero-cta-bg)",
+          "cta-fg": "var(--hero-cta-fg)"
+        },
+        "empty": {
+          "tile-bg": "var(--empty-tile-bg)",
+          "icon": "var(--empty-icon)"
+        },
+        "avatar": {
+          "fg": "var(--avatar-fg)"
+        },
+        "progress": {
+          "track": "var(--progress-track)"
         }
       },
       fontFamily: {
@@ -71,8 +191,38 @@ const b4kTokens: Partial<Config> = {
       fontSize: {
         '2xs': 'var(--font-size-2xs)',
       },
+      borderRadius: {
+        "sq-xs": "var(--radius-xs)",
+        "sq-sm": "var(--radius-sm)",
+        "sq-md": "var(--radius-md)",
+        "sq-lg": "var(--radius-lg)",
+        "tile": "var(--radius-tile)",
+        "tile-inner": "var(--radius-tile-inner)",
+        "control": "var(--radius-control)",
+        "field": "var(--radius-field)",
+        "chip": "var(--radius-chip)",
+        "tab": "var(--radius-tab)",
+        "tab-track": "var(--radius-tab-track)",
+        "nav-item": "var(--radius-nav-item)",
+        "badge": "var(--radius-badge)",
+        "pin": "var(--radius-pin)",
+        "cluster": "var(--radius-cluster)",
+        "toast": "var(--radius-toast)",
+        "menu": "var(--radius-menu)",
+        "panel": "var(--radius-panel)"
+      },
       boxShadow: {
         'focus-ring': 'var(--focus-ring)',
+        'float': 'var(--shadow-float)',
+        'menu': 'var(--shadow-menu)',
+        'overlay': 'var(--shadow-overlay)',
+        'pin': 'var(--shadow-pin)',
+        'sheet': 'var(--shadow-sheet)',
+        'rest': 'var(--shadow-rest)',
+        'lift': 'var(--shadow-lift)',
+        'accent': 'var(--shadow-accent)',
+        'tab-selected': 'var(--shadow-tab-selected)',
+        'track-inset': 'var(--shadow-track-inset)',
       },
       backgroundImage: {
         'overlay-fade': 'var(--gradient-overlay-fade)',
@@ -117,7 +267,9 @@ const b4kTokens: Partial<Config> = {
         "standard-decelerate": "var(--easing-standard-decelerate)",
         "emphasized": "var(--easing-emphasized)",
         "emphasized-accelerate": "var(--easing-emphasized-accelerate)",
-        "emphasized-decelerate": "var(--easing-emphasized-decelerate)"
+        "emphasized-decelerate": "var(--easing-emphasized-decelerate)",
+        "out-strong": "var(--easing-out-strong)",
+        "in-out-strong": "var(--easing-in-out-strong)"
       },
       zIndex: {
         "base": "var(--z-base)",
@@ -142,121 +294,120 @@ const b4kTokens: Partial<Config> = {
         ".type-display-hero, .type-display-hero:lang(ko), .type-display-hero:lang(ja), .type-display-hero:lang(zh-TW)": {
           "fontFamily": "var(--font-family-display)",
           "fontSize": "var(--display-size-hero)",
-          "fontWeight": "var(--font-weight-display)",
-          "lineHeight": "var(--leading-display)",
-          "letterSpacing": "0",
-          "textTransform": "uppercase"
+          "fontWeight": "800",
+          "lineHeight": "0.96",
+          "letterSpacing": "-0.03em",
+          "textWrap": "balance"
         },
         ".type-display-hub, .type-display-hub:lang(ko), .type-display-hub:lang(ja), .type-display-hub:lang(zh-TW)": {
           "fontFamily": "var(--font-family-display)",
           "fontSize": "var(--display-size-hub)",
           "fontWeight": "var(--font-weight-display)",
-          "lineHeight": "var(--leading-display)",
-          "letterSpacing": "0",
-          "textTransform": "uppercase"
+          "lineHeight": "1.05",
+          "letterSpacing": "-0.03em",
+          "textWrap": "balance"
         },
         ".type-display-h1, .type-display-h1:lang(ko), .type-display-h1:lang(ja), .type-display-h1:lang(zh-TW)": {
           "fontFamily": "var(--font-family-display)",
           "fontSize": "var(--display-size-h1)",
           "fontWeight": "var(--font-weight-display)",
-          "lineHeight": "var(--leading-display)",
-          "letterSpacing": "0",
-          "textTransform": "uppercase"
+          "lineHeight": "1.08",
+          "letterSpacing": "-0.025em",
+          "textWrap": "balance"
         },
         ".type-display-h2, .type-display-h2:lang(ko), .type-display-h2:lang(ja), .type-display-h2:lang(zh-TW)": {
           "fontFamily": "var(--font-family-display)",
           "fontSize": "var(--display-size-h2)",
           "fontWeight": "var(--font-weight-display)",
           "lineHeight": "var(--leading-display)",
-          "letterSpacing": "0",
-          "textTransform": "uppercase"
+          "letterSpacing": "-0.022em",
+          "textWrap": "balance"
         },
         ".type-display-h3, .type-display-h3:lang(ko), .type-display-h3:lang(ja), .type-display-h3:lang(zh-TW)": {
           "fontFamily": "var(--font-family-display)",
           "fontSize": "var(--display-size-h3)",
           "fontWeight": "var(--font-weight-display)",
           "lineHeight": "var(--leading-display)",
-          "letterSpacing": "0",
-          "textTransform": "uppercase"
+          "letterSpacing": "-0.022em",
+          "textWrap": "balance"
         },
         ".type-display-h4, .type-display-h4:lang(ko), .type-display-h4:lang(ja), .type-display-h4:lang(zh-TW)": {
           "fontFamily": "var(--font-family-display)",
           "fontSize": "var(--display-size-h4)",
           "fontWeight": "var(--font-weight-display)",
-          "lineHeight": "var(--leading-display)",
-          "letterSpacing": "0",
-          "textTransform": "uppercase"
+          "lineHeight": "1.2",
+          "letterSpacing": "-0.02em"
         },
         ".type-title-empty-state, .type-title-empty-state:lang(ko), .type-title-empty-state:lang(ja), .type-title-empty-state:lang(zh-TW)": {
-          "fontFamily": "var(--font-family-body)",
-          "fontSize": "var(--font-size-xl)",
+          "fontFamily": "var(--font-family-display)",
+          "fontSize": "22px",
           "fontWeight": "var(--font-weight-bold)",
-          "lineHeight": "var(--leading-snug)",
-          "letterSpacing": "0"
+          "lineHeight": "1.2",
+          "letterSpacing": "-0.02em",
+          "textWrap": "balance"
         },
         ".type-title-card, .type-title-card:lang(ko), .type-title-card:lang(ja), .type-title-card:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
-          "fontSize": "var(--font-size-base)",
+          "fontSize": "var(--title-size-card)",
           "fontWeight": "var(--font-weight-bold)",
-          "lineHeight": "var(--leading-snug)",
-          "letterSpacing": "0"
+          "lineHeight": "1.3",
+          "letterSpacing": "-0.012em"
         },
         ".type-body-long, .type-body-long:lang(ko), .type-body-long:lang(ja), .type-body-long:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
-          "fontSize": "var(--font-size-base)",
+          "fontSize": "17px",
           "fontWeight": "var(--font-weight-regular)",
-          "lineHeight": "var(--leading-normal)",
-          "letterSpacing": "0"
+          "lineHeight": "1.6",
+          "letterSpacing": "-0.003em"
         },
         ".type-body-base, .type-body-base:lang(ko), .type-body-base:lang(ja), .type-body-base:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
-          "fontSize": "var(--font-size-sm)",
+          "fontSize": "15px",
           "fontWeight": "var(--font-weight-regular)",
           "lineHeight": "var(--leading-normal)",
-          "letterSpacing": "0"
+          "letterSpacing": "-0.004em"
         },
         ".type-body-label, .type-body-label:lang(ko), .type-body-label:lang(ja), .type-body-label:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-xs)",
           "fontWeight": "var(--font-weight-semibold)",
-          "lineHeight": "var(--leading-tight)",
-          "letterSpacing": "0.05em"
+          "lineHeight": "1.3",
+          "letterSpacing": "0"
         },
         ".type-body-chip, .type-body-chip:lang(ko), .type-body-chip:lang(ja), .type-body-chip:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
-          "fontSize": "var(--font-size-xs)",
-          "fontWeight": "var(--font-weight-regular)",
+          "fontSize": "14px",
+          "fontWeight": "var(--font-weight-semibold)",
           "lineHeight": "var(--leading-tight)",
-          "letterSpacing": "0"
+          "letterSpacing": "-0.005em"
         },
         ".type-body-caption, .type-body-caption:lang(ko), .type-body-caption:lang(ja), .type-body-caption:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
-          "fontSize": "var(--font-size-xs)",
+          "fontSize": "13px",
           "fontWeight": "var(--font-weight-regular)",
-          "lineHeight": "var(--leading-normal)",
+          "lineHeight": "1.45",
           "letterSpacing": "0"
         },
         ".type-body-link, .type-body-link:lang(ko), .type-body-link:lang(ja), .type-body-link:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
-          "fontSize": "var(--font-size-sm)",
-          "fontWeight": "var(--font-weight-regular)",
+          "fontSize": "15px",
+          "fontWeight": "500",
           "lineHeight": "var(--leading-normal)",
           "letterSpacing": "0"
         },
         ".type-label-button, .type-label-button:lang(ko), .type-label-button:lang(ja), .type-label-button:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
-          "fontSize": "var(--font-size-xs)",
-          "fontWeight": "var(--font-weight-regular)",
+          "fontSize": "15px",
+          "fontWeight": "var(--font-weight-semibold)",
           "lineHeight": "var(--leading-tight)",
-          "letterSpacing": "0.05em",
-          "textTransform": "uppercase"
+          "letterSpacing": "-0.005em"
         },
         ".type-eyebrow-category, .type-eyebrow-category:lang(ko), .type-eyebrow-category:lang(ja), .type-eyebrow-category:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
-          "fontSize": "var(--font-size-2xs)",
-          "fontWeight": "var(--font-weight-semibold)",
+          "fontSize": "11px",
+          "fontWeight": "var(--font-weight-bold)",
           "lineHeight": "var(--leading-tight)",
-          "letterSpacing": "0.05em",
+          "letterSpacing": "0.06em",
           "textTransform": "uppercase"
         },
         ".type-eyebrow-badge, .type-eyebrow-badge:lang(ko), .type-eyebrow-badge:lang(ja), .type-eyebrow-badge:lang(zh-TW)": {
@@ -264,22 +415,24 @@ const b4kTokens: Partial<Config> = {
           "fontSize": "var(--font-size-2xs)",
           "fontWeight": "var(--font-weight-extrabold)",
           "lineHeight": "var(--leading-tight)",
-          "letterSpacing": "0.1em",
+          "letterSpacing": "0.08em",
           "textTransform": "uppercase"
         },
         ".type-numeric-rank, .type-numeric-rank:lang(ko), .type-numeric-rank:lang(ja), .type-numeric-rank:lang(zh-TW)": {
-          "fontFamily": "var(--font-family-body)",
+          "fontFamily": "var(--font-family-display)",
           "fontSize": "var(--font-size-lg)",
           "fontWeight": "var(--font-weight-bold)",
-          "lineHeight": "var(--leading-tight)",
-          "letterSpacing": "0"
+          "lineHeight": "1.2",
+          "letterSpacing": "0",
+          "fontVariantNumeric": "tabular-nums"
         },
         ".type-numeric-count, .type-numeric-count:lang(ko), .type-numeric-count:lang(ja), .type-numeric-count:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
           "fontSize": "var(--font-size-2xs)",
           "fontWeight": "var(--font-weight-bold)",
           "lineHeight": "var(--leading-none)",
-          "letterSpacing": "0"
+          "letterSpacing": "0",
+          "fontVariantNumeric": "tabular-nums"
         },
         ".type-avatar-initials-xs, .type-avatar-initials-xs:lang(ko), .type-avatar-initials-xs:lang(ja), .type-avatar-initials-xs:lang(zh-TW)": {
           "fontFamily": "var(--font-family-body)",
