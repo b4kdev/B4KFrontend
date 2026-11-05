@@ -219,10 +219,11 @@ export function SavedScreen() {
       <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4 lg:gap-[var(--space-4)]">
         {data?.folders.map((f) => (
           <li key={f.id}>
-            <button type="button" onClick={() => setFolderId(f.id)} aria-label={k('saved.folder.openAriaLabel', { name: f.name })} className="block w-full text-left focus-visible:shadow-focus-ring focus-visible:outline-none">
-              <span className="flex flex-col bg-ui-bg-raised hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]">
+            <button type="button" onClick={() => setFolderId(f.id)} aria-label={k('saved.folder.openAriaLabel', { name: f.name })} className="b4k-press block w-full rounded-tile text-left focus-visible:shadow-focus-ring focus-visible:outline-none">
+              {/* A list is a content tile: the tile surface, 8 inside, the cover as an inner squircle. */}
+              <span className="flex flex-col rounded-tile bg-tile-surface p-[var(--space-2)] hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]">
                 <ListCover name={f.name} photos={f.pois.map((p) => p.primary_image_url).filter((u): u is string => !!u)} />
-                <span className="flex flex-col gap-[var(--space-1)] bg-ui-bg-raised p-[var(--space-3)]">
+                <span className="flex flex-col gap-[var(--space-1)] px-[var(--space-3)] pb-[var(--space-3)] pt-[var(--space-3-5)]">
                   <span className="type-title-card text-ui-fg">{f.name}</span>
                   <span className="type-body-caption text-ui-fg-muted">{t('CD1340', { count: f.pois.length, when: updatedWhen(f, locale) })}</span>
                 </span>
@@ -501,9 +502,9 @@ export function PlanFromSavedScreen() {
 
 function ListCover({ name, photos }: { name: string; photos: string[] }) {
   return (
-    <span aria-hidden className={cn('relative block w-full overflow-hidden bg-ui-state-selected', photos.length >= 4 ? 'aspect-[2/1]' : 'aspect-[4/3]')}>
+    <span aria-hidden className={cn('relative block w-full overflow-hidden rounded-tile-inner bg-control-fill', photos.length >= 4 ? 'aspect-[2/1]' : 'aspect-[4/3]')}>
       {photos.length >= 4 ? (
-        <span className="grid size-full grid-cols-2 grid-rows-2 gap-[var(--space-0-5)] bg-ui-bg">
+        <span className="grid size-full grid-cols-2 grid-rows-2 gap-[var(--space-0-5)] bg-tile-surface">
           {photos.slice(0, 4).map((src) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img key={src} src={src} alt="" className="size-full object-cover" />
