@@ -182,7 +182,7 @@ const zIndex = group('z')
 
 const LEADING = { 1: 'none', 1.1: 'display', 1.25: 'tight', 1.375: 'snug', 1.5: 'normal' }
 const textStyles = Object.fromEntries(
-  ext.textStyles.map((s) => {
+  ext.textStyles.flatMap((s) => {
     // A leading token by name ('display') or by value; a value without a token is written as is.
     const lh = typeof s.lh === 'string' ? s.lh : LEADING[s.lh]
     const rule = {
@@ -198,7 +198,22 @@ const textStyles = Object.fromEntries(
     // The :lang copies outrank the live :lang(ko|ja|zh-TW) line-height in app/globals.css, so the
     // token leading applies in every language (B4K UI Foundations has one leading per style).
     const cls = `.type-${s.n.replace('/', '-')}`
-    return [[cls, ...['ko', 'ja', 'zh-TW'].map((l) => `${cls}:lang(${l})`)].join(', '), rule]
+    // Negative tracking and a leading under 1.1 are set for Latin headings: Hangul, kana and Han
+    // glyphs collide and stacked lines clip. A style with a fixed tracking or leading gets its own
+    // CJK copy: Korean keeps half the tracking (as the display tokens do) with a leading of at least
+    // 1.1; Japanese and Traditional Chinese no tracking and at least 1.15. The display tokens
+    // (--tracking-display, --leading-display) already have per-language modes and are left as they are.
+    const neg = typeof s.ls === 'number' && s.ls < 0
+    const fixedLh = typeof s.lh === 'number'
+    if (!neg && !(fixedLh && s.lh < 1.15)) {
+      return [[[cls, ...['ko', 'ja', 'zh-TW'].map((l) => `${cls}:lang(${l})`)].join(', '), rule]]
+    }
+    const lhAtLeast = (min) => (fixedLh && s.lh < min ? String(min) : rule.lineHeight)
+    return [
+      [cls, rule],
+      [`${cls}:lang(ko)`, { ...rule, lineHeight: lhAtLeast(1.1), letterSpacing: neg ? `${s.ls / 2}em` : rule.letterSpacing }],
+      [`${cls}:lang(ja), ${cls}:lang(zh-TW)`, { ...rule, lineHeight: lhAtLeast(1.15), letterSpacing: neg ? '0' : rule.letterSpacing }],
+    ]
   }),
 )
 
