@@ -70,7 +70,7 @@ export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action
   }
   return (
     <section data-theme="dark" className={cn('relative m-[var(--space-3)] h-[var(--hero-height-section)] w-[calc(100%-var(--space-3)*2)] overflow-hidden rounded-tile bg-ui-bg-media text-ui-fg max-md:m-[var(--space-2)] max-md:w-[calc(100%-var(--space-2)*2)]', className)}>
-      <Image ratio="16:9" src={imageSrc} alt="" priority={priority} sizes="100vw" className="!absolute inset-0 h-full !aspect-auto" />
+      {imageSrc ? <Image ratio="16:9" src={imageSrc} alt="" priority={priority} sizes="100vw" className="!absolute inset-0 h-full !aspect-auto" /> : null}
       <div aria-hidden className="absolute inset-0 bg-overlay-fade" />
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-[var(--space-3)] p-[var(--space-11)] max-md:px-[var(--space-6)] max-md:pb-[var(--space-10)] max-md:pt-[var(--space-6)]">
         {eyebrow ? <Badge variant="on-image">{eyebrow}</Badge> : null}
