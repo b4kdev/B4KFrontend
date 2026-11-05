@@ -11,5 +11,5 @@ export async function GET(req: NextRequest) {
 
   // Each place shows its own name and district (the typed values only when it cannot be read).
   const data = await resolveMichelinNoodles(includeUnverified)
-  return NextResponse.json({ ...data, items: await withDbPlaces(withDbPoiIds(data.items), locale) })
+  return NextResponse.json({ ...data, items: withDbPlaces(withDbPoiIds(data.items), locale) })
 }
