@@ -500,7 +500,7 @@ export function PlanFromSavedScreen() {
 
 function ListCover({ name, photos }: { name: string; photos: string[] }) {
   return (
-    <span aria-hidden className={cn('relative block w-full overflow-hidden bg-ui-state-selected', photos.length >= 4 ? 'aspect-[2/1]' : 'aspect-[4/3]')}>
+    <span aria-hidden className={cn('relative block w-full overflow-hidden bg-tile-surface-sunken', photos.length >= 4 ? 'aspect-[2/1]' : 'aspect-[4/3]')}>
       {photos.length >= 4 ? (
         <span className="grid size-full grid-cols-2 grid-rows-2 gap-[var(--space-0-5)] bg-ui-bg">
           {photos.slice(0, 4).map((src) => (

@@ -47,7 +47,7 @@ export function Slider(props: SliderProps) {
         <span aria-hidden className={cn('type-body-caption', disabled ? 'text-ui-fg-disabled' : 'text-ui-fg')}>{valueText}</span>
       </div>
       <div className="relative h-[var(--control-box-size)]">
-        <div className="absolute inset-x-0 top-1/2 h-[var(--progress-height)] -translate-y-1/2 rounded-full bg-ui-state-selected" />
+        <div className="absolute inset-x-0 top-1/2 h-[var(--progress-height)] -translate-y-1/2 rounded-full bg-progress-track" />
         <div
           className={cn('absolute top-1/2 h-[var(--progress-height)] -translate-y-1/2 rounded-full', disabled ? 'bg-ui-fg-disabled' : 'bg-ui-fg')}
           style={{ left: `${pct(lo)}%`, width: `${pct(hi) - pct(lo)}%` }}

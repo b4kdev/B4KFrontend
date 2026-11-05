@@ -46,7 +46,7 @@ export function Skeleton({ shape = 'rectangle', className }: SkeletonProps) {
     <span
       aria-hidden
       className={cn(
-        'block bg-ui-state-selected motion-safe:animate-b4k-pulse',
+        'block rounded-sq-sm bg-tile-surface-sunken motion-safe:animate-b4k-pulse',
         shape === 'circle' ? 'rounded-full' : 'rounded-none',
         shape === 'line' && 'h-[1em]',
         className,

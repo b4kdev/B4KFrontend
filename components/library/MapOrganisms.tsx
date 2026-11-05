@@ -392,7 +392,7 @@ export type ItineraryPanelProps = {
 export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, ownerHref, privateLabel, stats, days, activeDay, onDayChange, stops, selectedStop, onSelectStop, onLeg, legMenu, legMenuLabel, related, footer, labels }: ItineraryPanelProps) {
   const shown = activeDay === 'all' ? stops : stops.filter((s) => s.day === activeDay)
   return (
-    <div className="flex h-full flex-col gap-[var(--space-4)] bg-ui-bg-raised p-[var(--space-4)] text-ui-fg">
+    <div className="flex h-full flex-col gap-[var(--space-4)] p-[var(--space-4)] text-ui-fg">
       <div className="flex flex-col gap-[var(--space-2)]">
         <h1 className="type-display-h3">{title}</h1>
         <p className="flex items-center gap-[var(--space-2)] type-body-caption text-ui-fg-muted">
@@ -403,7 +403,7 @@ export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, ownerH
         </p>
       </div>
       {/* Figma Itinerary panel: Header, Stats, Day filter, Timeline and Related plans 16 apart. */}
-      <p className="bg-ui-bg-sunken p-[var(--space-3)] type-body-caption text-ui-fg">{stats.join(' · ')}</p>
+      <p className="w-fit rounded-[18px] bg-accent-stats px-[var(--space-4)] py-[var(--space-2)] text-sm font-semibold tabular-nums text-accent-stats-fg shadow-[inset_0_0_0_1px_var(--color-border-subtle)]">{stats.join(' · ')}</p>
       <Tabs baseline={false} label={labels.days} value={String(activeDay)} onValueChange={(v) => onDayChange(v === 'all' ? 'all' : (Number(v) as Day))} tabs={[{ id: 'all', label: labels.all }, ...Array.from({ length: days }, (_, i) => ({ id: String(i + 1), label: labels.day(i + 1), day: (i + 1) as Day }))]} />
       <div className="flex min-h-0 flex-1 flex-col gap-[var(--space-4)] overflow-y-auto">
         <ol>
@@ -427,7 +427,7 @@ export function ItineraryPanel({ title, owner, ownerAvatarSrc, ownerName, ownerH
           </section>
         ) : null}
       </div>
-      <div className="flex gap-[var(--space-2)] border-t border-ui-border pt-[var(--space-4)]">{footer}</div>
+      <div className="b4k-glass -mx-[var(--space-4)] -mb-[var(--space-4)] flex items-center gap-[var(--space-2)] bg-map-ui-overlay px-[var(--space-5)] pb-[var(--space-4)] pt-[var(--space-3-5)] shadow-sheet">{footer}</div>
     </div>
   )
 }

@@ -72,6 +72,8 @@ button, [role="button"], [role="tab"] {
   user-select: none;
 }
 
+/* Hangul inside any text (place names in English pages too) never breaks inside a word. */
+[class*="type-"] { word-break: keep-all; }
 /* Korean: every text style keeps words whole and breaks a word only when it alone overflows. */
 :lang(ko) [class*="type-"],
 [class*="type-"]:lang(ko) {

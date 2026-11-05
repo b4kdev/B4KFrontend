@@ -668,7 +668,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   // Chips belong to browsing: an open place hides them (phone and desktop), as drawn.
   const chips = selectedId ? null : (
-    <div className="flex gap-[var(--space-2)] overflow-x-auto [scrollbar-width:none]">
+    <div className="-m-[var(--space-3)] flex snap-x snap-proximity gap-[var(--space-2)] overflow-x-auto p-[var(--space-3)] [scrollbar-width:none]">
       {PLACE_TYPES.map((c) => (
         <Chip key={c.id} type="map" selected={filter === c.id} keyColor={c.color} leadingIcon={<c.icon />} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setAreaBounds(bounds); setAreaMoved(false); setFilter((f) => (f === c.id ? null : c.id)) }}>{t(c.label)}</Chip>
       ))}
@@ -787,7 +787,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   return (
     <div className="flex min-h-0 flex-1">
       <LeftPanel type="map" label={t('CD0679')} cart={cartNode} cartOpen={cart === 'open'}>
-        {selectedId ? null : <div className="sticky top-0 z-10 bg-ui-bg pt-[var(--space-4)]">{switcher}</div>}
+        {selectedId ? null : <div className="sticky top-0 z-10 bg-ui-bg-elevated pt-[var(--space-4)]">{switcher}</div>}
         {/* The Saved hub's raised background sits 16 under the tabs and 16 above the Plan cart, as drawn. */}
         {!selectedId && mode === 'saved' ? <div className="my-[var(--space-4)] flex-1 bg-ui-bg-raised">{content}</div> : content}
       </LeftPanel>

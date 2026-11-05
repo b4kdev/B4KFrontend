@@ -78,7 +78,7 @@ export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollL
         // The track: sunken, 4 inside, tabs 2 apart; it hugs its tabs unless they share the width.
         // More tabs than fit: the track scrolls with proximity snapping.
         'flex max-w-full snap-x snap-proximity gap-[var(--space-0-5)] overflow-x-auto rounded-tab-track bg-tile-surface-sunken p-[var(--space-1)] shadow-track-inset [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
-        width === 'equal' ? 'w-full' : 'w-fit',
+        width === 'equal' ? 'w-auto' : 'w-fit',
         scrollLabels ? 'min-w-0 flex-1' : className,
       )}
     >

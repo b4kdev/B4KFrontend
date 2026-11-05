@@ -197,7 +197,7 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
         </div>
       </div>
       {draftNotice && view === 'providers' ? (
-        <p className="flex items-start gap-[var(--space-2)] bg-ui-bg-sunken p-[var(--space-3)] type-body-caption text-ui-fg-muted">
+        <p className="flex items-start gap-[var(--space-2)] rounded-sq-sm bg-tile-surface-sunken p-[var(--space-3)] type-body-caption text-ui-fg-muted">
           <Route aria-hidden className="size-[var(--icon-size-sm)] shrink-0" />
           {draftNotice}
         </p>
