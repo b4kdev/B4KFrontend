@@ -133,7 +133,7 @@ const categoryOf = (p: MapPoi) => categoryAttr(p.display_domain)
 const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
   const selected = tier === 'selected'
   if (tier === 'dot') {
-    return `<div style="${HIT}" ${markerAttrs(p.poi_id, poiLabel(p), false, categoryOf(p))}><span class="b4k-mark" style="width:var(--map-pin-dot-size);height:var(--map-pin-dot-size);border-radius:var(--radius-xs);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke)"></span></div>`
+    return `<div style="${HIT}" ${markerAttrs(p.poi_id, poiLabel(p), false, categoryOf(p))}><span class="b4k-mark" style="width:var(--map-pin-dot-size);height:var(--map-pin-dot-size);border-radius:calc(var(--map-pin-dot-size) / 3);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke)"></span></div>`
   }
   const size = `var(${PIN_SIZE[tier]})`
   // Squircle head, 3 px ring in the pin stroke (the selected colour when selected), pointer below.
