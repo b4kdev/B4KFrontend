@@ -165,7 +165,7 @@ export type FooterProps = {
   className?: string
 }
 
-const FOOTER_LINK = 'relative hover:text-ui-link-hover focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus'
+const FOOTER_LINK = 'relative text-ui-fg-muted hover:text-ui-fg focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus'
 
 /** Footer: legal links and the copyright, then the company line; content pages only. */
 export function Footer({ links, copyright, navLabel, company, className }: FooterProps) {
@@ -174,12 +174,12 @@ export function Footer({ links, copyright, navLabel, company, className }: Foote
   // Desktop: the links, Company details and the copyright in one row; the company line opens under
   // it (12 apart). Phones: the links, Company details (opens the company line), the copyright.
   return (
-    <footer className={cn('flex flex-wrap items-center gap-x-[var(--space-4)] gap-y-[var(--space-3)] border-t border-ui-border bg-ui-bg px-[var(--space-8)] py-[var(--space-6)] type-body-caption text-ui-fg-muted max-md:flex-col max-md:flex-nowrap max-md:items-start max-md:px-[var(--space-4)]', className)}>
+    <footer className={cn('flex flex-wrap items-center gap-x-[var(--space-4)] gap-y-[var(--space-3)] border-t border-ui-border-subtle bg-ui-bg px-[var(--space-8)] py-[var(--space-6)] type-body-caption text-ui-fg-placeholder max-md:flex-col max-md:flex-nowrap max-md:items-start max-md:px-[var(--space-4)]', className)}>
       <nav aria-label={navLabel} className="flex-1">
         <ul className="flex flex-wrap gap-x-[var(--space-4)] gap-y-[var(--space-2)]">
           {links.map((l) => (
             <li key={l.href}>
-              <IntlLink href={l.href} className={cn(l.strong && 'type-body-label', 'relative', HIT_AREA, 'hover:text-ui-link-hover focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus')}>{l.label}</IntlLink>
+              <IntlLink href={l.href} className={cn(l.strong && 'type-body-label', 'relative', HIT_AREA, 'text-ui-fg-muted hover:text-ui-fg focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-[var(--focus-ring-offset)] focus-visible:outline-ui-border-focus')}>{l.label}</IntlLink>
             </li>
           ))}
         </ul>
