@@ -5,6 +5,17 @@
 // only the unicode ranges a page uses); Japanese and Traditional Chinese to their Noto faces.
 // The stacks live in app/tokens.css (--font-family-display / --font-family-body).
 import { Onest, Noto_Sans_JP, Noto_Sans_TC } from 'next/font/google';
+import localFont from 'next/font/local';
+
+// Moderniz: the brand face of the English hero and hub (--font-family-brand). next/font/local
+// generates the size-adjust fallback, so the hero heading does not jump when it swaps in.
+const moderniz = localFont({
+  src: '../public/fonts/moderniz.woff2',
+  weight: '900',
+  style: 'normal',
+  variable: '--font-moderniz',
+  display: 'swap',
+});
 
 const onest = Onest({
   subsets: ['latin', 'latin-ext'],
@@ -28,7 +39,7 @@ const uiNotoSansTC = Noto_Sans_TC({
   preload: false,
 });
 
-export const uiFontVariables = [onest, uiNotoSansJP, uiNotoSansTC].map((f) => f.variable).join(' ');
+export const uiFontVariables = [moderniz, onest, uiNotoSansJP, uiNotoSansTC].map((f) => f.variable).join(' ');
 
 // All font CSS variables, set on <html>.
 export const fontVariables = uiFontVariables;

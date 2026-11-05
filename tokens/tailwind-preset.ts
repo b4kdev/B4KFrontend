@@ -226,7 +226,7 @@ const b4kTokens: Partial<Config> = {
     plugin(({ addComponents }) => {
       addComponents({
         ".type-display-hero, .type-display-hero:lang(ko), .type-display-hero:lang(ja), .type-display-hero:lang(zh-TW)": {
-          "fontFamily": "var(--font-family-display)",
+          "fontFamily": "var(--font-family-brand)",
           "fontSize": "var(--display-size-hero)",
           "fontWeight": "var(--font-weight-display)",
           "lineHeight": "var(--leading-display)",
@@ -234,7 +234,7 @@ const b4kTokens: Partial<Config> = {
           "textWrap": "balance"
         },
         ".type-display-hub, .type-display-hub:lang(ko), .type-display-hub:lang(ja), .type-display-hub:lang(zh-TW)": {
-          "fontFamily": "var(--font-family-display)",
+          "fontFamily": "var(--font-family-brand)",
           "fontSize": "var(--display-size-hub)",
           "fontWeight": "var(--font-weight-display)",
           "lineHeight": "var(--leading-display)",

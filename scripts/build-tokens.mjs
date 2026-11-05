@@ -40,6 +40,9 @@ const byPath = Object.fromEntries(tokens.map((t) => [t.path, t]))
 // Onest carries Latin in every locale; Hangul falls through to Pretendard (self-hosted, dynamic
 // subset, app/layout.tsx), Japanese and Traditional Chinese to their Noto faces.
 const FONT_VARS = {
+  // Moderniz: the English hero and hub only (brand face, capitals; no accented capitals, so
+  // Portuguese keeps Onest).
+  Moderniz: "var(--font-moderniz), var(--font-onest), 'Pretendard Variable', 'Pretendard'",
   Onest: "var(--font-onest), 'Pretendard Variable', 'Pretendard'",
   Pretendard: "var(--font-onest), 'Pretendard Variable', 'Pretendard'",
   'Noto Sans JP': 'var(--font-onest), var(--font-ui-noto-sans-jp)',

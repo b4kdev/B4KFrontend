@@ -47,6 +47,9 @@ button, [role="button"], [role="tab"] {
   overflow-wrap: anywhere;
 }
 .type-title-card { overflow-wrap: anywhere; }
+/* Moderniz (the English hero and hub) is set in capitals; other languages keep sentence case. */
+.type-display-hero:lang(en),
+.type-display-hub:lang(en) { text-transform: uppercase; }
 
 /* Idle chips and tabs get an outline when the visitor asks for more contrast. */
 @media (prefers-contrast: more) {
