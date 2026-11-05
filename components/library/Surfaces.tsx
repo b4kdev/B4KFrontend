@@ -205,8 +205,11 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
         {/* The control above the sheet (Plan pill) is the toast floor while it shows: toasts sit 12 above it. */}
         {!modal && above ? <div data-toast-floor className="absolute bottom-[calc(100%+var(--space-3))] left-[var(--space-4)]">{above}</div> : null}
         {!modal && aboveEnd ? <div className="absolute bottom-[calc(100%+var(--space-3))] right-[var(--space-4)]">{aboveEnd}</div> : null}
+        {/* Drag area: the grabber row plus 12 above and below it (taken back by margins, so the layout
+            stays), so a finger that lands near the bar drags the sheet instead of the page. A tap
+            lowers the sheet one step (from the lowest step it rises). */}
         <div
-          className="flex shrink-0 touch-none justify-center py-[var(--space-2)]"
+          className="relative z-10 -my-[var(--space-3)] flex shrink-0 touch-none justify-center py-[var(--space-5)]"
           onPointerDown={(e) => {
             if (modal) return
             start.current = e.clientY
@@ -218,6 +221,7 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
             if (drag === null) return
             if (drag > 60) step(1)
             else if (drag < -60) step(-1)
+            else if (Math.abs(drag) < 8) step(snap === ORDER[0] ? 1 : -1)
             setDrag(null)
           }}
         >

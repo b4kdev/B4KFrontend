@@ -74,6 +74,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
   height: 0;
 }
 @media (pointer: fine) { html { overscroll-behavior: none; } }
+/* The map pages work like an app: a pull down moves the map or its sheet, never the browser's
+   pull-to-refresh. Other pages keep it. */
+html:has([role="application"]) { overscroll-behavior-y: none; }
 
 /* Keyboard focus: plain links and buttons (text links, prose links, text buttons) get the site's
    ring instead of the browser's thin outline. Parts that draw their own focus (a focus-visible or
