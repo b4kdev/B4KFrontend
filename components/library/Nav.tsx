@@ -126,8 +126,10 @@ export type NavItemProps = {
   active?: boolean
   /** Count badge or dot over the icon. */
   badge?: ReactNode
-  /** The item's colour (a CSS colour, var(--nav-*)): the current tile's fill and, in dark, the idle icon. */
+  /** The item's colour (a CSS colour, var(--nav-*)): the current tile's fill. */
   color?: string
+  /** The idle icon's colour (var(--nav-icon-*)): the item's colour in dark, a deeper shade of it in light (3:1 on the white tile). */
+  ink?: string
   /** lg: the 52 Quick plan tile on the phone bar, always filled. */
   size?: 'md' | 'lg'
   className?: string
@@ -135,14 +137,14 @@ export type NavItemProps = {
 
 /**
  * Nav item (part of Navigation bar and rail): a 44 squircle tile behind a 20 icon. Idle: the idle
- * tile with the icon in the item's colour (dark) or ink (light); hover: the hover tile; current:
+ * tile with the icon in the item's colour (dark) or a deeper shade of it (light); hover: the hover tile; current:
  * the tile fills with the item's colour, black icon, a little larger. Render it inside a link
  * (next-intl Link) or a button; this is the visual.
  */
-export function NavItem({ icon, label, active = false, badge, color, size = 'md', className }: NavItemProps) {
+export function NavItem({ icon, label, active = false, badge, color, ink, size = 'md', className }: NavItemProps) {
   return (
     <span
-      style={color ? ({ '--nav-c': color } as CSSProperties) : undefined}
+      style={color || ink ? ({ ...(color ? { '--nav-c': color } : {}), ...(ink ? { '--nav-i': ink } : {}) } as CSSProperties) : undefined}
       className={cn('relative flex h-[var(--control-height-xl)] w-full items-center justify-center', className)}
     >
       <span
@@ -151,8 +153,8 @@ export function NavItem({ icon, label, active = false, badge, color, size = 'md'
           size === 'lg' ? 'size-[var(--nav-quick-plan-size)] rounded-sq-lg' : 'size-[var(--nav-tile-size)]',
           active || size === 'lg'
             ? 'scale-[1.08] bg-[var(--nav-c,var(--color-bg-inverse))] text-field-fg group-active:scale-100'
-            : // Dark: the icon in the item's colour; light: ink (pastel icons on white fall under 3:1).
-            'bg-nav-tile-idle text-nav-icon-idle dark:text-[var(--nav-c,var(--color-fg))] [@media(hover:hover)_and_(pointer:fine)]:group-hover:bg-nav-tile-hover',
+            : // The icon in the item's own icon colour (a deeper shade in light: the pastels fall under 3:1 on white).
+            'bg-nav-tile-idle text-[var(--nav-i,var(--nav-icon-idle))] dark:text-[var(--nav-i,var(--nav-c,var(--color-fg)))] [@media(hover:hover)_and_(pointer:fine)]:group-hover:bg-nav-tile-hover',
           size === 'lg' && 'scale-100',
         )}
       >

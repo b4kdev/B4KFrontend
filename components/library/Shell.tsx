@@ -59,13 +59,14 @@ export type ShellUser = { name: string; avatarSrc?: string | null; unread?: numb
 /** Rail cell: 56 wide, centered in the 64 rail (no space token for 56). */
 const RAIL_CELL = 'w-[56px]'
 
-const DESTS: { id: Destination; href: string; Icon: typeof House; color: string }[] = [
-  { id: 'home', href: '/', Icon: House, color: 'var(--nav-home)' },
-  { id: 'map', href: '/map', Icon: MapPin, color: 'var(--nav-map)' },
-  { id: 'explore', href: '/explore', Icon: Compass, color: 'var(--nav-explore)' },
-  { id: 'saved', href: '/saved', Icon: Bookmark, color: 'var(--nav-saved)' },
+const DESTS: { id: Destination; href: string; Icon: typeof House; color: string; ink: string }[] = [
+  { id: 'home', href: '/', Icon: House, color: 'var(--nav-home)', ink: 'var(--nav-icon-home)' },
+  { id: 'map', href: '/map', Icon: MapPin, color: 'var(--nav-map)', ink: 'var(--nav-icon-map)' },
+  { id: 'explore', href: '/explore', Icon: Compass, color: 'var(--nav-explore)', ink: 'var(--nav-icon-explore)' },
+  { id: 'saved', href: '/saved', Icon: Bookmark, color: 'var(--nav-saved)', ink: 'var(--nav-icon-saved)' },
 ]
 const QUICK_PLAN_COLOR = 'var(--nav-quick-plan)'
+const QUICK_PLAN_INK = 'var(--nav-icon-quick-plan)'
 
 /** A 44 tile button on the ground (rail account, header and top bar icon buttons): idle tile, icon in fg. */
 const TILE_BUTTON =
@@ -95,11 +96,11 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
         </IntlLink>
       ) : null}
       <ul className={cn('flex w-full flex-col items-center gap-[var(--space-2-5)] pt-[var(--space-1-5)]', showLogo && 'pt-[var(--space-2)]')}>
-        {DESTS.map(({ id, href, Icon, color }) => (
+        {DESTS.map(({ id, href, Icon, color, ink }) => (
           <li key={id} className={RAIL_CELL}>
             <Tooltip text={labels[id]} wrapperClassName="flex w-full">
               <IntlLink href={href} aria-current={active === id ? 'page' : undefined} className={NAV_ITEM_TARGET}>
-                <NavItem icon={<Icon />} label={labels[id]} active={active === id} color={color} />
+                <NavItem icon={<Icon />} label={labels[id]} active={active === id} color={color} ink={ink} />
               </IntlLink>
             </Tooltip>
           </li>
@@ -107,7 +108,7 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
         <li className={RAIL_CELL}>
           <Tooltip text={labels.quickPlan} wrapperClassName="flex w-full">
             <button type="button" onClick={onQuickPlan} className={NAV_ITEM_TARGET}>
-              <NavItem icon={<Zap />} label={labels.quickPlan} color={QUICK_PLAN_COLOR} />
+              <NavItem icon={<Zap />} label={labels.quickPlan} color={QUICK_PLAN_COLOR} ink={QUICK_PLAN_INK} />
             </button>
           </Tooltip>
         </li>
@@ -134,10 +135,10 @@ export type NavigationBarProps = { active?: Destination | null; labels: ShellLab
 
 /** Navigation bar: below 1024, 56 high plus the safe area; Quick plan in the center. */
 export function NavigationBar({ active = null, labels, onQuickPlan, className }: NavigationBarProps) {
-  const item = ({ id, href, Icon, color }: (typeof DESTS)[number]) => (
+  const item = ({ id, href, Icon, color, ink }: (typeof DESTS)[number]) => (
     <li key={id} className="flex-1">
       <IntlLink href={href} aria-label={labels[id]} aria-current={active === id ? 'page' : undefined} className={NAV_ITEM_TARGET}>
-        <NavItem icon={<Icon />} label="" active={active === id} color={color} />
+        <NavItem icon={<Icon />} label="" active={active === id} color={color} ink={ink} />
       </IntlLink>
     </li>
   )
