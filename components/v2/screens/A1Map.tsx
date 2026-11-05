@@ -95,7 +95,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const mapRef = useRef<V2MapHandle>(null)
   const locate = useLocateMe(mapRef, { phone })
   const unlock = useBadgeUnlock()
-  const draft = usePlanDraft()
+  // A failed autosave is said (the plan is also kept on this device).
+  const draft = usePlanDraft({ onSaveFailed: () => toast({ type: 'critical', message: t('CD0673') }) })
   // Toast actions run later (Undo): they call the draft as it is then, not as it was.
   const latestDraft = useRef(draft)
   latestDraft.current = draft

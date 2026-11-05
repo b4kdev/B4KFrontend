@@ -10,7 +10,9 @@ import type { ItineraryDetail } from '@/lib/itinerary'
 // localStorage (b4k_draft_plan), signed-in users in their account draft (/api/plans/draft,
 // autosaved 800 ms after each change, loaded back on the next visit), so "Continue your plan"
 // works on both and across devices. A published plan open for editing is not autosaved (it has
-// its own Save changes). Plan limits: 8 days, 6 stops a day, 48 stops.
+// its own Save changes). An autosave that fails keeps the plan on this device as well (the
+// sign-in migration offers it on the next visit) and calls `onSaveFailed` once until one succeeds.
+// Plan limits: 8 days, 6 stops a day, 48 stops.
 
 export const MAX_DAYS = 8
 export const PER_DAY = 6
@@ -57,8 +59,12 @@ export async function discardDraftPlan() {
   await deleteAccountDraft().catch(() => {})
 }
 
-export function usePlanDraft() {
+export function usePlanDraft(opts?: { onSaveFailed?: () => void }) {
   const { user, loading } = useAuth()
+  const onSaveFailed = useRef(opts?.onSaveFailed)
+  onSaveFailed.current = opts?.onSaveFailed
+  // The last autosave failed: told once, until one succeeds.
+  const failing = useRef(false)
   const signedIn = !!user
   const [plan, setPlan] = useState<DraftPlan>({ stops: [], durations: {}, days: {} })
   const [days, setDays] = useState(1)
@@ -100,7 +106,20 @@ export function usePlanDraft() {
     if (!p) return
     clearTimeout(p.timer)
     pending.current = null
-    fetch('/api/plans/draft', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: p.body, keepalive: true }).catch(() => {})
+    const failed = () => {
+      // Keep the plan on this device, so a reload does not bring back an older account draft.
+      try { saveDraftPlan(JSON.parse(p.body) as DraftPlan) } catch {}
+      if (!failing.current) onSaveFailed.current?.()
+      failing.current = true
+    }
+    fetch('/api/plans/draft', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: p.body, keepalive: true })
+      .then((res) => {
+        if (!res.ok) return failed()
+        failing.current = false
+        // Saved to the account: a device copy from an earlier failure is no longer needed.
+        clearDraftPlan()
+      })
+      .catch(failed)
   }, [])
   // Leaving the page within the autosave delay still saves the last change.
   useEffect(() => flush, [flush])
@@ -117,6 +136,7 @@ export function usePlanDraft() {
     if (pending.current) clearTimeout(pending.current.timer)
     pending.current = null
     if (!next.stops.length) {
+      clearDraftPlan()
       deleteAccountDraft().catch(() => {})
       return
     }
