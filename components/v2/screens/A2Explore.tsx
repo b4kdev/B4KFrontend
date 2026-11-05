@@ -620,7 +620,7 @@ export function SpecialScreen({ api, category }: { api: string; category: string
         </header>
         {/* Media: a photo on the left, the facts and actions on the right. */}
         <section className="flex flex-col gap-[var(--space-6)] md:flex-row">
-          <Image ratio="16:9" src={data?.items[0]?.primary_image_url} alt="" sizes="(min-width: 768px) 480px, 100vw" className="w-full shrink-0 md:w-[480px]" />
+          <Image ratio="16:9" src={data?.items[0]?.primary_image_url} alt="" sizes="(min-width: 768px) 480px, 100vw" className="w-full shrink-0 rounded-tile-inner md:w-[480px]" />
           <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-3)]">
             <span className="type-eyebrow-category text-ui-fg-muted">{[categoryLabel, typeof data?.broadcaster === 'string' ? data.broadcaster : null].filter(Boolean).join(' · ')}</span>
             <div className="flex flex-wrap gap-[var(--gap-sm)]">
