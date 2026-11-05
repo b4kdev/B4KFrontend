@@ -234,7 +234,8 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
         {header ? <div className="shrink-0 px-[var(--space-4)] pb-[var(--space-2)]">{header}</div> : null}
         <div
           className={cn(
-            'flex min-h-0 flex-1 flex-col overflow-y-auto',
+            // Scroll padding: a control focused by keyboard scrolls in with room for its focus ring.
+            'flex min-h-0 flex-1 flex-col overflow-y-auto scroll-py-[calc(var(--focus-ring-offset)+var(--focus-ring-width))]',
             flush ? null : modal ? 'gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-2)]' : 'gap-[var(--space-4)] px-[var(--space-4)] pb-[var(--space-6)] pt-[var(--space-2)]',
           )}
         >
