@@ -157,8 +157,9 @@ export type BottomSheetProps = {
   onSnapChange?: (s: SheetSnap) => void
   resizeLabel?: string
   /** Map sheets whose handle is the only way to close them (Plan): the handle's class (e.g. a wider bar), its
-      aria-expanded, and what Enter or Space on it does (a pointer tap already goes through the drag). */
-  grabber?: { className?: string; expanded?: boolean; onActivate?: () => void }
+      aria-expanded, what Enter or Space on it does (a pointer tap already goes through the drag), and its accessible
+      name when it acts as a close button (e.g. "Collapse plan" instead of the resize label). */
+  grabber?: { className?: string; expanded?: boolean; onActivate?: () => void; label?: string }
   /** Map sheets: a height per snap instead of the defaults (e.g. a shorter full state). */
   heights?: Partial<Record<SheetSnap, string>>
   /** Header shown at peek (map sheets). */
@@ -240,7 +241,7 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
         >
           <DragHandle
             type="grabber"
-            label={resizeLabel}
+            label={grabber?.label ?? resizeLabel}
             aria-expanded={grabber?.expanded}
             className={cn('h-[var(--space-1)]', grabber?.className)}
             // Keyboard only (a click with no pointer): a tap is handled by the drag above.

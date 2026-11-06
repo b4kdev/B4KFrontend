@@ -1,19 +1,18 @@
 'use client'
 
 import { useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
-import { ArrowLeft, Bookmark, Clock, Folder, Globe, Heart, Lock, MapPin, Minus, Plus, Share2, Sparkles, X } from 'lucide-react'
+import { ArrowLeft, Bookmark, Clock, Folder, Globe, Heart, Lock, MapPin, Minus, Plus, Route, Share2, Sparkles, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Avatar } from './Avatar'
 import { Badge } from './Badge'
 import { Button } from './Button'
 import { ChatBubble, CreditLine } from './Content'
 import { AiInput, ItineraryStop, PlanStopRow } from './ContentMolecules'
-import { Glyph } from './Glyph'
 import { Chip } from './Chip'
 import { EmptyState } from './Feedback'
 import { IconButton } from './IconButton'
 import { Image } from './Image'
-import { ListItem } from './Lists'
+import { ListItem, ROW_DIVIDER } from './Lists'
 import { Tabs } from './NavGroups'
 import { StopBadge, TransportMode } from './Plan'
 import { FOCUS_RING_INSET } from './styles'
@@ -154,11 +153,20 @@ export type PlanCartProps = {
 }
 
 /** Plan cart: the plan as a shopping cart at the bottom of the Left panel. */
-/** The plan tray's leading tile: the add accent with the plus glyph. */
-function TrayTile() {
+/** The plan tray's leading tile: the add accent with the route icon, centred on the title's first
+ * line (`titleTop`: where that line starts in the cart), so tile and title read as one row. */
+function TrayTile({ titleTop }: { titleTop: 'space-4' | 'space-8' }) {
   return (
-    <span aria-hidden className="absolute left-[var(--space-4)] top-[var(--space-4)] inline-flex size-[var(--nav-tile-size)] items-center justify-center rounded-sq-md bg-accent-add text-field-fg">
-      <Glyph name="plus" size={18} />
+    <span
+      aria-hidden
+      className={cn(
+        'absolute left-[var(--space-4)] inline-flex size-[var(--nav-tile-size)] items-center justify-center rounded-sq-md bg-accent-add text-field-fg',
+        titleTop === 'space-8'
+          ? 'top-[calc(var(--space-8)+(var(--title-size-card)*var(--leading-tight)-var(--nav-tile-size))/2)]'
+          : 'top-[calc(var(--space-4)+(var(--title-size-card)*var(--leading-tight)-var(--nav-tile-size))/2)]',
+      )}
+    >
+      <Route size={18} />
     </span>
   )
 }
@@ -300,7 +308,7 @@ export function PlanCart({ state, onToggle, handle = true, stops, days, activeDa
   if (state === 'empty') {
     return (
       <section aria-label={labels.region} className={cn('relative rounded-t-tile bg-ui-bg-raised py-[var(--space-4)] pl-[calc(var(--space-4)+var(--nav-tile-size)+var(--space-4))] pr-[var(--space-4)]', className)}>
-        <TrayTile />
+        <TrayTile titleTop="space-4" />
         <p className="type-title-card font-[var(--font-weight-extrabold)] text-ui-fg">{labels.emptyTitle}</p>
         <p className="mt-[var(--space-3)] type-body-caption text-ui-fg-muted">{labels.emptyBody}</p>
       </section>
@@ -318,11 +326,11 @@ export function PlanCart({ state, onToggle, handle = true, stops, days, activeDa
         className,
       )}
     >
-      {state === 'collapsed' ? <TrayTile /> : null}
+      {state === 'collapsed' ? <TrayTile titleTop={handle ? 'space-8' : 'space-4'} /> : null}
       <p aria-live="polite" className="sr-only">{announce}</p>
       {/* Open: the Left panel's color/bg, everything inside the root's 16 padding; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
-      {/* The handle: the bar 12 from the cart's top, centred, in a grab zone 44 high across the cart (the 32 above the
-          title plus 12 over it, so the title stays where it was). Only the handle opens, closes and drags the cart. */}
+      {/* The handle: the bar 12 from the cart's top, centred, in a grab zone across the cart that ends where the title
+          starts (the 32 above it), so a click on the title does nothing. Only the handle opens, closes and drags the cart. */}
       {handle ? (
         <button
           type="button"
@@ -330,7 +338,7 @@ export function PlanCart({ state, onToggle, handle = true, stops, days, activeDa
           aria-expanded={state === 'open'}
           aria-label={state === 'open' ? labels.close : labels.open}
           onClick={onToggle}
-          className={cn('absolute inset-x-[var(--space-4)] top-0 z-10 flex h-[var(--space-11)] touch-none select-none cursor-grab justify-center rounded-sq-md pt-[var(--space-3)] active:cursor-grabbing', FOCUS_RING_INSET)}
+          className={cn('absolute inset-x-[var(--space-4)] top-0 z-10 flex h-[var(--space-8)] touch-none select-none cursor-grab justify-center rounded-sq-md pt-[var(--space-3)] active:cursor-grabbing', FOCUS_RING_INSET)}
         >
           <span aria-hidden className="h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-12)] rounded-[3px] bg-sheet-handle" />
         </button>
@@ -484,12 +492,14 @@ export type SavedHubProps = {
   onOpenFolder: (id: string) => void
   onBack: () => void
   onAdd: (placeId: string) => void
+  /** Folder view: a click or Enter on a place row opens that place (the whole row; its + still adds). */
+  onOpenPlace?: (placeId: string) => void
   emptyAction: ReactNode
   labels: { back: string; add: (name: string) => string; emptyTitle: string; emptyBody: string }
 }
 
 /** Saved hub: saved places inside the map, for adding them to a plan. */
-export function SavedHub({ view, folders = [], folder, onOpenFolder, onBack, onAdd, emptyAction, labels }: SavedHubProps) {
+export function SavedHub({ view, folders = [], folder, onOpenFolder, onBack, onAdd, onOpenPlace, emptyAction, labels }: SavedHubProps) {
   // Figma Saved hub root: color/bg-raised, padding 16, gap 16 in every view.
   const root = 'flex flex-col gap-[var(--space-4)] bg-ui-bg-raised p-[var(--space-4)] text-ui-fg'
   if (view === 'empty') {
@@ -518,7 +528,21 @@ export function SavedHub({ view, folders = [], folder, onOpenFolder, onBack, onA
         <p className="type-title-card">{folder?.name}</p>
       </div>
       <ul>
-        {folder?.places.map((p) => (
+        {folder?.places.map((p) =>
+          onOpenPlace ? (
+            // The whole row opens the place: the name is a button stretched over the row (a row-wide button
+            // cannot hold the + button), the + sits above it and keeps its own click.
+            <li key={p.id} className={cn(ROW_DIVIDER, 'hover:bg-ui-state-hover has-[[data-poi-id]:focus-visible]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-border-focus)]')}>
+              <div className="flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left">
+                <span className="inline-flex shrink-0 items-center text-ui-fg-muted"><Image ratio="1:1" src={p.imageSrc} alt="" sizes="80px" className="w-[48px]" /></span>
+                <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-0-5)]">
+                  <button type="button" data-poi-id={p.id} onClick={() => onOpenPlace(p.id)} className="truncate text-left type-body-base text-ui-fg outline-none after:absolute after:inset-0 after:content-['']">{p.name}</button>
+                  {p.meta ? <span className="truncate type-body-caption text-ui-fg-muted">{p.meta}</span> : null}
+                </span>
+                <span className="relative z-10 inline-flex shrink-0 items-center"><IconButton label={labels.add(p.name)} icon={<Plus />} onClick={() => onAdd(p.id)} /></span>
+              </div>
+            </li>
+          ) : (
           <ListItem
             key={p.id}
             title={p.name}
@@ -526,7 +550,8 @@ export function SavedHub({ view, folders = [], folder, onOpenFolder, onBack, onA
             leading={<Image ratio="1:1" src={p.imageSrc} alt="" sizes="80px" className="w-[48px]" />}
             trailing={<IconButton label={labels.add(p.name)} icon={<Plus />} onClick={() => onAdd(p.id)} />}
           />
-        ))}
+          ),
+        )}
       </ul>
     </div>
   )
