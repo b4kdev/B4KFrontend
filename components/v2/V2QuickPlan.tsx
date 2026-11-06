@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Check } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { Chip, DateRangePicker, QuickPlan, Spinner, type DateRange } from '@/components/library'
@@ -100,13 +100,13 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
         <fieldset className="flex flex-col gap-[var(--space-2)]">
           <legend className={`mb-[var(--space-2)] ${lbl}`}>{t('CD0791')}</legend>
           <div className="flex flex-wrap gap-[var(--space-2)]">
-            {CITIES.map((c) => <Chip key={c} selected={city === c} onClick={() => setCity(c)}>{t(CITY_CD[c])}</Chip>)}
+            {CITIES.map((c) => <Chip key={c} selected={city === c} leadingIcon={city === c ? <Check /> : undefined} onClick={() => setCity(c)}>{t(CITY_CD[c])}</Chip>)}
           </div>
         </fieldset>
         <fieldset className="flex flex-col gap-[var(--space-2)]">
           <legend className={`mb-[var(--space-2)] ${lbl}`}>{t('CD0797')}</legend>
           <div className="flex flex-wrap gap-[var(--space-2)]">
-            {WHO.map(([id, cd]) => <Chip key={id} selected={who === id} onClick={() => setWho(id)}>{t(cd)}</Chip>)}
+            {WHO.map(([id, cd]) => <Chip key={id} selected={who === id} leadingIcon={who === id ? <Check /> : undefined} onClick={() => setWho(id)}>{t(cd)}</Chip>)}
           </div>
         </fieldset>
       </div>
@@ -129,7 +129,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
         {group ? (
           <div className={phone ? 'flex flex-col gap-[var(--space-6)]' : 'flex gap-[var(--space-6)]'}>
             {/* Categories: a list on desktop, a row of chips on phones (Figma Step 2 Mobile). */}
-            <div role="group" aria-label={t('CD0778')} className={phone ? 'flex gap-[var(--space-2)] overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : 'flex w-[136px] shrink-0 flex-col items-start gap-[var(--space-3)]'}>
+            <div role="group" aria-label={t('CD0778')} className={phone ? 'b4k-focus-room flex gap-[var(--space-2)] overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : 'flex w-[136px] shrink-0 flex-col items-start gap-[var(--space-3)]'}>
               {categories.map((g) =>
                 phone ? (
                   <Chip key={g.slug} selected={g.slug === group.slug} onClick={() => setActiveGroup(g.slug)} className="shrink-0">{labelOf(g, lang)}</Chip>
@@ -150,7 +150,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
               {group.chips.map((c) => {
                 const on = picked.includes(c.slug)
                 return (
-                  <Chip key={c.slug} selected={on} disabled={!on && picked.length >= MAX} onClick={() => toggle(c.slug)}>
+                  <Chip key={c.slug} selected={on} leadingIcon={on ? <Check /> : undefined} disabled={!on && picked.length >= MAX} onClick={() => toggle(c.slug)}>
                     {labelOf(c, lang)}
                   </Chip>
                 )
