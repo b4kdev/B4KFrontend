@@ -117,9 +117,10 @@ export type PlanCartProps = {
   onSelect?: (id: string) => void
   /** Reorder within a day: put stop `id` in the slot of `toId` (drag the grip, or arrow keys on it). */
   onMove?: (id: string, toId: string) => void
-  /** Drop a dragged stop on a day tab: the stop moves to the end of that day. */
-  onMoveToDay?: (id: string, day: Day) => void
-  /** A day that takes no more stops (a drop on its tab is refused). */
+  /** Move a dragged stop to another day: dropped among that day's rows it takes the slot of
+   * `beforeId` (none = the end of the day); dropped on the day's tab it goes to the end. */
+  onMoveToDay?: (id: string, day: Day, beforeId?: string) => void
+  /** A day that takes no more stops (a drop on it is refused, and the held stop says why). */
   dayFull?: (day: Day) => boolean
   onSave: () => void
   onDiscard: () => void
@@ -134,6 +135,8 @@ export type PlanCartProps = {
     addDayAria?: string
     /** Accessible name of the delete-day button, e.g. "Delete Day 2". */
     removeDay?: (n: number) => string
+    /** Shown on a held stop over a full day, e.g. "Day 2 is full." */
+    dayFull?: (n: number) => string
     /** Day tabs scroll arrows. */
     previousDays?: string
     nextDays?: string
@@ -162,12 +165,14 @@ function TrayTile() {
 
 export function PlanCart({ state, onToggle, handle = true, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, durationMenu, onRemove, onSelect, onMove, onMoveToDay, dayFull, onSave, onDiscard, labels, className }: PlanCartProps) {
   const id = useId()
-  // A drag in progress: the held stop follows the pointer freely; the other stops of its day slide
-  // out of the way to show where it will land; over a day tab the tab lights up and a drop moves the
-  // stop to that day (as dropping a file on a folder).
-  const [drag, setDrag] = useState<{ id: string; day: Day; from: number; to: number; dy: number; height: number; dropDay: Day | null; x: number; y: number; outside: boolean } | null>(null)
+  // A drag in progress: the held stop follows the pointer freely; the other stops slide out of the
+  // way to show where it will land. In All days the landing slot can sit in another day's rows: the
+  // drop moves the stop to that day at that slot. Over a day tab the tab lights up and a drop moves
+  // the stop to the end of that day (as dropping a file on a folder). A full day takes nothing: the
+  // held stop says so and nothing slides. `from` and `at` count the rows shown, all days in All.
+  const [drag, setDrag] = useState<{ id: string; day: Day; from: number; at: number; toDay: Day; dy: number; height: number; dropDay: Day | null; full: Day | null; x: number; y: number; outside: boolean } | null>(null)
   const dragId = drag?.id ?? null
-  const start = useRef<{ y: number; centers: number[]; ids: string[] } | null>(null)
+  const start = useRef<{ y: number; centers: number[]; tops: number[]; bottoms: number[]; ids: string[]; days: Day[] } | null>(null)
   const list = useRef<HTMLOListElement>(null)
   // Where each row was on screen at the drop, so the rows glide from there into their new places.
   const settle = useRef<Map<string, number> | null>(null)
@@ -193,19 +198,31 @@ export function PlanCart({ state, onToggle, handle = true, stops, days, activeDa
   const say = (s: PlanStop, sameDay: PlanStop[], position: number) => labels.moved && setAnnounce(labels.moved(s.name, position, sameDay.length))
   const endDrag = (s: PlanStop) => {
     const d = drag
+    const st = start.current
     setDrag(null)
     start.current = null
-    if (!d || d.id !== s.id) return
+    if (!d || d.id !== s.id || !st) return
+    if (d.full && labels.dayFull) setAnnounce(labels.dayFull(d.full))
     settle.current = new Map(rowsOf().map((el) => [el.dataset.dragItem ?? '', el.getBoundingClientRect().top]))
-    const sameDay = stops.filter((x) => x.day === s.day)
     if (d.dropDay && onMoveToDay) {
       onMoveToDay(s.id, d.dropDay)
       return
     }
-    if (d.to !== d.from && onMove) onMove(s.id, sameDay[d.to].id)
+    // The other rows, in order, and the landing slot among them.
+    const others = st.ids.filter((x) => x !== s.id)
+    if (d.toDay !== s.day && onMoveToDay) {
+      const before = others[d.at]
+      onMoveToDay(s.id, d.toDay, before && st.days[st.ids.indexOf(before)] === d.toDay ? before : undefined)
+      const into = stops.filter((x) => x.day === d.toDay)
+      say(s, [...into, s], others.slice(0, d.at).filter((x) => st.days[st.ids.indexOf(x)] === d.toDay).length + 1)
+      return
+    }
+    const sameDay = stops.filter((x) => x.day === s.day)
+    const to = others.slice(0, d.at).filter((x) => st.days[st.ids.indexOf(x)] === s.day).length
+    if (to !== sameDay.indexOf(s) && onMove) onMove(s.id, sameDay[to].id)
     const order = sameDay.filter((x) => x.id !== s.id)
-    order.splice(d.to, 0, s)
-    say(s, order, d.to + 1)
+    order.splice(to, 0, s)
+    say(s, order, to + 1)
   }
   // Grip handlers: arrow keys swap with the next stop of the same day; a pointer drag (mouse or
   // touch) moves the stop freely, and it lands where the pointer lets go.
@@ -223,12 +240,14 @@ export function PlanCart({ state, onToggle, handle = true, stops, days, activeDa
           },
           onPointerDown: (e: PointerEvent<HTMLButtonElement>) => {
             e.currentTarget.setPointerCapture(e.pointerId)
-            const rows = rowsOf().filter((el) => stops.find((x) => x.id === el.dataset.dragItem)?.day === s.day)
+            const rows = rowsOf()
             const ids = rows.map((el) => el.dataset.dragItem ?? '')
             const boxes = rows.map((el) => el.getBoundingClientRect())
+            // A day's first row carries the day label: the label stays put, only the stop moves.
+            const label = (el: HTMLElement) => el.querySelector<HTMLElement>('[data-day-label]')?.getBoundingClientRect().height ?? 0
             const from = ids.indexOf(s.id)
-            start.current = { y: e.clientY, centers: boxes.map((b) => b.top + b.height / 2), ids }
-            setDrag({ id: s.id, day: s.day, from, to: from, dy: 0, height: boxes[from]?.height ?? 0, dropDay: null, x: e.clientX, y: e.clientY, outside: false })
+            start.current = { y: e.clientY, centers: boxes.map((b, i) => b.top + label(rows[i]) + (b.height - label(rows[i])) / 2), tops: boxes.map((b) => b.top), bottoms: boxes.map((b) => b.bottom), ids, days: ids.map((x) => stops.find((p) => p.id === x)?.day ?? s.day) }
+            setDrag({ id: s.id, day: s.day, from, at: from, toDay: s.day, dy: 0, height: (boxes[from]?.height ?? 0) - (rows[from] ? label(rows[from]) : 0), dropDay: null, full: null, x: e.clientX, y: e.clientY, outside: false })
           },
           onPointerMove: (e: PointerEvent<HTMLButtonElement>) => {
             const st = start.current
@@ -236,14 +255,22 @@ export function PlanCart({ state, onToggle, handle = true, stops, days, activeDa
             const dy = e.clientY - st.y
             const tab = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>('[role="tab"]')
             const n = Number(tab?.id.replace(/^tab-/, ''))
-            const dropDay = tab && list.current?.parentElement?.contains(tab) && n && n !== s.day && !dayFull?.(n as Day) ? (n as Day) : null
-            // The landing slot: how many of the other stops sit above the held stop's middle.
+            const onTab = tab && list.current?.parentElement?.contains(tab) && n && n !== s.day ? (n as Day) : null
+            // The landing slot: how many of the other rows sit above the held stop's middle. Its day is
+            // the day of the row under that middle, or (between days, over a day label) the next row's.
             const mid = st.centers[drag.from] + dy
-            const to = dropDay ? drag.from : st.centers.filter((c, i) => i !== drag.from && c < mid).length
+            const others = st.ids.map((_, i) => i).filter((i) => i !== drag.from)
+            const k = others.filter((i) => st.centers[i] < mid).length
+            const over = others.find((i) => st.tops[i] <= mid && mid < st.bottoms[i])
+            const rowDay = onTab ?? (over !== undefined ? st.days[over] : others[k] !== undefined ? st.days[others[k]] : others.length ? st.days[others[others.length - 1]] : s.day)
+            const full = rowDay !== s.day && dayFull?.(rowDay) ? rowDay : null
+            const dropDay = onTab && !full ? onTab : null
+            const toDay = full || onTab ? s.day : rowDay
+            const at = full || onTab ? drag.from : k
             // Out of the list (up at the day tabs) the list clips the row, so a copy follows the pointer.
             const box = list.current?.getBoundingClientRect()
             const outside = !!box && (e.clientY < box.top || e.clientY > box.bottom || e.clientX < box.left || e.clientX > box.right)
-            setDrag({ ...drag, dy, to, dropDay, x: e.clientX, y: e.clientY, outside })
+            setDrag({ ...drag, dy, at, toDay, dropDay, full, x: e.clientX, y: e.clientY, outside })
           },
           onPointerUp: () => endDrag(s),
           onPointerCancel: () => {
@@ -252,14 +279,23 @@ export function PlanCart({ state, onToggle, handle = true, stops, days, activeDa
           },
         }
       : undefined
-  // The slide of each row while a stop is held: the held row under the pointer, the rows between its
-  // old and new slot one row up or down.
-  const dragStyle = (s: PlanStop): CSSProperties | undefined => {
-    if (!drag || s.day !== drag.day) return undefined
-    if (s.id === drag.id) return { transform: `translateY(${drag.dy}px)`, transition: 'none', zIndex: 20, position: 'relative', opacity: drag.outside ? 0 : 1 }
-    const i = start.current?.ids.indexOf(s.id) ?? -1
-    const shift = drag.to > drag.from && i > drag.from && i <= drag.to ? -drag.height : drag.to < drag.from && i >= drag.to && i < drag.from ? drag.height : 0
-    return { transform: shift ? `translateY(${shift}px)` : undefined }
+  // The slide of each row while a stop is held: the held stop under the pointer, the rows after its
+  // old slot one row up, the rows from its new slot one row down. A day label stays put: on a day's
+  // first row only the stop slides, so the gap opens under the label.
+  const dragShift = (s: PlanStop): { row?: CSSProperties; stop?: CSSProperties } => {
+    if (!drag) return {}
+    const ids = start.current?.ids ?? []
+    const i = ids.indexOf(s.id)
+    if (i < 0) return {}
+    if (s.id === drag.id) return { row: { zIndex: 20, position: 'relative' }, stop: { transform: `translateY(${drag.dy}px)`, transition: 'none', opacity: drag.outside ? 0 : 1 } }
+    const j = i > drag.from ? i - 1 : i
+    const up = i > drag.from ? -drag.height : 0
+    const down = j >= drag.at ? drag.height : 0
+    const move = (y: number) => (y ? { transform: `translateY(${y}px)` } : undefined)
+    // Opening the gap at a day's top: the label slides with the rows above, its stop drops below it.
+    const firstOfDay = start.current?.days[i - 1] !== start.current?.days[i]
+    if (firstOfDay && activeDay === 'all' && j === drag.at && s.day === drag.toDay) return { row: move(up), stop: move(down) }
+    return { row: move(up + down) }
   }
   if (state === 'empty') {
     return (
@@ -328,9 +364,10 @@ export function PlanCart({ state, onToggle, handle = true, stops, days, activeDa
                   label: labels.day(i + 1),
                   day: (i + 1) as Day,
                   // The × shows on the selected day only.
-                  onClose: onRemoveDay && days > 1 && activeDay === i + 1 ? () => onRemoveDay((i + 1) as Day) : undefined,
-                  // Lights up while a held stop is over it: letting go moves the stop to this day.
-                  dropTarget: drag?.dropDay === i + 1,
+                  // The × shows on the selected day, and on any day tab under a mouse or keyboard focus.
+                  onClose: onRemoveDay && days > 1 ? () => onRemoveDay((i + 1) as Day) : undefined,
+                  // Lights up while a held stop is over it, or over its rows in All days: letting go moves the stop to this day.
+                  dropTarget: !!drag && (drag.dropDay === i + 1 || (drag.toDay !== drag.day && drag.toDay === i + 1)),
                   closeLabel: labels.removeDay?.(i + 1),
                 })),
               ]}
@@ -353,23 +390,35 @@ export function PlanCart({ state, onToggle, handle = true, stops, days, activeDa
                 <p className="type-body-base text-ui-fg-muted">{labels.emptyBody}</p>
               </li>
             )}
-            {shown.map((s, i) => (
-              <li key={s.id} data-drag-item={s.id} style={dragStyle(s)} className="list-none transition-transform duration-short4 ease-out-strong motion-reduce:transition-none">
+            {shown.map((s, i) => {
+              const shift = dragShift(s)
+              return (
+              <li key={s.id} data-drag-item={s.id} style={shift.row} className="list-none transition-transform duration-short4 ease-out-strong motion-reduce:transition-none">
                 {/* All days: each day's stops under its label, numbered from 1 in that day (Figma Day label). */}
-                {activeDay === 'all' && shown[i - 1]?.day !== s.day ? <p className="pb-[var(--space-1)] pt-[var(--space-3)] type-eyebrow-category uppercase text-ui-fg-muted">{labels.day(s.day)}</p> : null}
+                {activeDay === 'all' && shown[i - 1]?.day !== s.day ? <p data-day-label className="pb-[var(--space-1)] pt-[var(--space-3)] type-eyebrow-category uppercase text-ui-fg-muted">{labels.day(s.day)}</p> : null}
+                <div style={shift.stop} className="transition-transform duration-short4 ease-out-strong motion-reduce:transition-none">
                 <ul>
                   <PlanStopRow name={s.name} thumbnail={s.imageSrc} number={stops.filter((x) => x.day === s.day).indexOf(s) + 1} day={s.day} duration={s.duration} durationLabel={s.durationLabel} onDuration={onDuration ? () => onDuration(s.id) : undefined} durationMenu={durationMenu?.(s.id)} onRemove={() => onRemove(s.id)} removeLabel={labels.remove(s.name)} reorderLabel={labels.reorder(s.name)} stopId={s.id} handleProps={handleProps(s)} dragging={dragId === s.id} onSelect={onSelect ? () => onSelect(s.id) : undefined} />
                 </ul>
                 {s.leg && i < shown.length - 1 ? <div className={cn('ml-[calc(var(--space-12)+var(--space-2))]', dragId === s.id && 'invisible')}><TransportMode mode="estimate" modeLabel={labels.about} time={s.leg} /></div> : null}
+                </div>
               </li>
-            ))}
+              )
+            })}
           </ol>
-          {drag?.outside ? (() => {
+          {drag?.outside || (drag?.full && labels.dayFull) ? (() => {
             const held = stops.find((x) => x.id === drag.id)
+            // Over a full day the copy says why the drop will not take (in the list, only that line).
+            const note = drag.full && labels.dayFull ? <span className="type-body-caption text-ui-fg-muted">{labels.dayFull(drag.full)}</span> : null
             return held ? (
-              <div aria-hidden className="pointer-events-none fixed z-50 flex max-w-[240px] items-center gap-[var(--space-2)] rounded-sq-md bg-ui-bg-elevated px-[var(--space-3)] py-[var(--space-2)] shadow-menu" style={{ left: drag.x + 12, top: drag.y + 12 }}>
-                <StopBadge number={stops.filter((x) => x.day === held.day).indexOf(held) + 1} day={held.day} />
-                <span className="truncate type-body-base text-ui-fg">{held.name}</span>
+              <div aria-hidden className="pointer-events-none fixed z-50 flex max-w-[240px] flex-col gap-[var(--space-1)] rounded-sq-md bg-ui-bg-elevated px-[var(--space-3)] py-[var(--space-2)] shadow-menu" style={{ left: drag.x + 12, top: drag.y + 12 }}>
+                {drag.outside ? (
+                  <span className="flex min-w-0 items-center gap-[var(--space-2)]">
+                    <StopBadge number={stops.filter((x) => x.day === held.day).indexOf(held) + 1} day={held.day} />
+                    <span className="truncate type-body-base text-ui-fg">{held.name}</span>
+                  </span>
+                ) : null}
+                {note}
               </div>
             ) : null
           })() : null}
