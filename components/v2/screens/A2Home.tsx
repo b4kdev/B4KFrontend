@@ -4,7 +4,6 @@ import { Fragment, useEffect, useState } from 'react'
 import { useLocale } from 'next-intl'
 import useSWR from 'swr'
 import { RotateCw } from 'lucide-react'
-import { Link as IntlLink } from '@/i18n/navigation'
 import {
   Button,
   Card,
@@ -160,9 +159,6 @@ export function HomeScreen() {
   const locale = useLocale()
   const { openQuickPlan, toast } = useV2Shell()
   const { user } = useAuth()
-  // Hero slide 2 shows the photo its Theme page shows (its first place's photo), read from the same
-  // data as that page so the two stay in step.
-  const foodTheme = useSWR<{ items: { primary_image_url: string | null }[] }>('/api/explore/k-food/michelin-noodles', jsonFetch)
   const trending = useSWR<HomeTrendingPoi[]>(`/api/home/trending?locale=${locale}`, jsonFetch)
   const plans = useSWR<HomePopularPlan[]>('/api/home/popular-plans', jsonFetch)
   const events = useSWR<HomeEvent[]>('/api/home/events', jsonFetch)
@@ -295,21 +291,25 @@ export function HomeScreen() {
             )),
   }
 
+  const heroSlides: { id: string; eyebrow: string; title: string; subtitle: string; image: string | null; action: React.ReactNode }[] = [
+    { id: 'plan', eyebrow: t('CD0463'), title: t('CD1781'), subtitle: t('CD1782'), image: null, action: <button type="button" onClick={openQuickPlan} className={HERO_ACTION}>{t('CD0738')}</button> },
+  ]
+  const heroes = heroSlides.map((s, i) => (
+    <Hero key={s.id} className={heroPhone} as={i === 0 ? 'h1' : 'h2'} priority={i === 0} imageSrc={s.image} eyebrow={s.eyebrow} title={s.title} subtitle={s.subtitle} action={s.action} />
+  ))
+
   return (
     <V2Page bleed underBar>
-      {/* Two slides: no autoplay, the arrows wrap around. Slide 1 is the brand slide (no photo, the
-          media surface with the fade); its action opens Quick plan. The drawn K-Drama slide waits for
-          its photo. */}
+      {/* The hero slides. One slide shows as a plain hero; two or more bring back the carousel (no
+          autoplay, dots, the arrows wrap around). Slide 1 is the brand slide (no photo, the media
+          surface with the fade); its action opens Quick plan. More slides are added here later. */}
       {/* Desktop: the hero keeps to the content column, the same edges as the rows under it. */}
       <div className={HERO_COLUMN}>
-      <Carousel type="hero" label={t('CD0388')} previousLabel={t('CD0390')} nextLabel={t('CD0389')} slideLabel={(n) => t('CD0391', { n })}>
-        {[
-          { id: 'plan', eyebrow: t('CD0463'), title: t('CD1781'), subtitle: t('CD1782'), image: null, action: <button type="button" onClick={openQuickPlan} className={HERO_ACTION}>{t('CD0738')}</button> },
-          { id: 'food', eyebrow: t('CD0251'), title: t('CD1786'), subtitle: t('CD1787'), image: foodTheme.data?.items[0]?.primary_image_url ?? null, action: <IntlLink href="/explore/k-food/michelin-noodles" className={HERO_ACTION}>{t('CD1785')}</IntlLink> },
-        ].map((s, i) => (
-          <Hero key={s.id} className={heroPhone} as={i === 0 ? 'h1' : 'h2'} priority={i === 0} imageSrc={s.image} eyebrow={s.eyebrow} title={s.title} subtitle={s.subtitle} action={s.action} />
-        ))}
-      </Carousel>
+      {heroes.length > 1 ? (
+        <Carousel type="hero" label={t('CD0388')} previousLabel={t('CD0390')} nextLabel={t('CD0389')} slideLabel={(n) => t('CD0391', { n })}>
+          {heroes}
+        </Carousel>
+      ) : heroes}
       </div>
 
       <div className="mx-auto flex w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] flex-col gap-[var(--space-12)] px-[var(--grid-gutter-mobile)] pb-[calc(var(--space-6)+var(--space-8))] pt-[var(--space-6)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
