@@ -59,9 +59,10 @@ export function CookieBanner({ type = 'banner', label, message, learnMore, accep
     )
   }
   return (
-    // A floating card 12 in from the sides and the bottom (above the phone's home bar), elevated with its own shadow.
-    <section role="region" aria-label={label} tabIndex={-1} className={cn('fixed inset-x-[var(--space-3)] bottom-[calc(var(--space-3)+env(safe-area-inset-bottom))] z-40 rounded-tile bg-ui-bg-elevated p-[var(--tile-padding)] text-ui-fg shadow-notice outline-none', className)}>
-      <div className="mx-auto flex max-w-[960px] items-center gap-[var(--space-4)] max-md:flex-col max-md:items-stretch max-md:gap-[var(--space-3)]">
+    // A floating card 12 above the bottom (above the phone's home bar), elevated with its own shadow.
+    // Phones: 12 in from the sides. From 768 the card hugs its content, centred, at most --container-md wide.
+    <section role="region" aria-label={label} tabIndex={-1} className={cn('fixed inset-x-[var(--space-3)] bottom-[calc(var(--space-3)+env(safe-area-inset-bottom))] z-40 rounded-tile bg-ui-bg-elevated p-[var(--tile-padding)] text-ui-fg shadow-notice outline-none md:inset-x-auto md:left-1/2 md:w-max md:max-w-[min(var(--container-md),calc(100%-var(--space-3)*2))] md:-translate-x-1/2', className)}>
+      <div className="flex items-center gap-[var(--space-4)] max-md:flex-col max-md:items-stretch max-md:gap-[var(--space-3)]">
         {/* Message: the body and the Learn more link wrap as two items, so the link never splits. */}
         <div className="flex flex-1 flex-wrap items-center gap-x-[var(--space-1-5)] type-body-base">
           <p>{message}</p>

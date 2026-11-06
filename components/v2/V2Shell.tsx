@@ -314,8 +314,8 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           declineLabel={t('CD0127')}
           onAccept={() => choose('accepted')}
           onDecline={() => choose('declined')}
-          // Phones: 12 above the Navigation bar; desktop: 12 above the page bottom, across the Navigation rail.
-          className={cn(!inFlow && 'max-lg:bottom-[calc(var(--fab-size)+var(--space-3))]')}
+          // Phones: 12 above the Navigation bar; desktop: 12 above the page bottom, centred on the content beside the Navigation rail.
+          className={cn(!inFlow && 'max-lg:bottom-[calc(var(--fab-size)+var(--space-3))]', !fullFlow && 'lg:left-[calc(50%+var(--layout-nav-rail)/2)] lg:max-w-[min(var(--container-md),calc(100%-var(--layout-nav-rail)-var(--space-3)*2))]')}
         />
       ) : null}
       {/* Phones: the offline notice and the toasts rise above the floor by a transform, so a sheet moving under them does not move the page. */}
