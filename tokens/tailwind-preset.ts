@@ -89,7 +89,8 @@ const b4kTokens: Partial<Config> = {
           "hero": "var(--field-hero)",
           "fg": "var(--field-fg)",
           "fg-muted": "var(--field-fg-muted)",
-          "inset": "var(--field-inset)"
+          "inset": "var(--field-inset)",
+          "bullet": "var(--field-bullet)"
         },
         "action": {
           "new-plan": "var(--action-new-plan)",

@@ -184,7 +184,7 @@ export function TreeItem({ label, kind, level = 1, selected, count, checkbox, co
             // Selected row: black bullet in light, the category color in dark.
             <span
               aria-hidden
-              className={cn('size-[10px] shrink-0 rounded-[3px]', selected ? 'bg-[var(--neutral-black)] dark:bg-[var(--bullet-c)]' : 'bg-[var(--neutral-black-28)]')}
+              className={cn('size-[10px] shrink-0 rounded-[3px]', selected ? 'bg-field-fg dark:bg-[var(--bullet-c)]' : 'bg-field-bullet')}
               style={selected ? ({ '--bullet-c': field } as CSSProperties) : undefined}
             />
           ) : kind === 'leaf' ? (
