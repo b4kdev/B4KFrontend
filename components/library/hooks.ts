@@ -26,15 +26,15 @@ const FOCUSABLE =
 /**
  * While `active`: moves focus into the container (first [data-autofocus] or first focusable),
  * keeps Tab inside it, closes on Escape (when onEscape is given), returns focus on close, and
- * stops the page behind from scrolling.
+ * stops the page behind from scrolling. Returns a callback ref: a container that mounts after
+ * `active` turns on (a portal renders on its second pass) still gets the focus.
  */
 export function useFocusTrap<T extends HTMLElement>(active: boolean, onEscape?: () => void) {
-  const ref = useRef<T>(null)
+  const [el, setEl] = useState<T | null>(null)
   const escape = useRef(onEscape)
   escape.current = onEscape
   useEffect(() => {
-    if (!active) return
-    const el = ref.current
+    if (!active || !el) return
     const before = document.activeElement as HTMLElement | null
     const overflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -64,8 +64,8 @@ export function useFocusTrap<T extends HTMLElement>(active: boolean, onEscape?: 
       document.body.style.overflow = overflow
       before?.focus?.()
     }
-  }, [active])
-  return ref
+  }, [active, el])
+  return setEl
 }
 
 /** Mount after the first client render (portals, window sizes). */
