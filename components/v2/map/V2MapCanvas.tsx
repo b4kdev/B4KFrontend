@@ -657,7 +657,8 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; tone: 'light' 
       {clientId ? (
         <Script src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}&submodules=geocoder${GL_SDK ? ',gl' : ''}&language=${lang}`} strategy="afterInteractive" onReady={sdkReady} onError={() => setFailed(true)} />
       ) : null}
-      <div ref={el} role="application" aria-label={label} data-map-tone={glOn ? tone : 'light'} className="size-full" />
+      {/* touch-none: a pinch or drag on the map moves the map, never the page. */}
+      <div ref={el} role="application" aria-label={label} data-map-tone={glOn ? tone : 'light'} className="size-full touch-none" />
       <div ref={icons} hidden>
         {Object.entries(PLACE_TYPE_ICON).map(([type, Icon]) => <Icon key={type} data-type={type} width="100%" height="100%" aria-hidden />)}
         {Object.entries(KIND_ICON).map(([kind, Icon]) => <Icon key={kind} data-type={`kind-${kind}`} width="100%" height="100%" aria-hidden />)}
