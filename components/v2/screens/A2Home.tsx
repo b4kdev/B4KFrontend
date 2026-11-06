@@ -33,6 +33,8 @@ import { CATEGORIES } from '../categories'
 import { categoryAttr, categoryStyle } from '@/components/library/category'
 import { useDDay } from '../useDDay'
 import { regionName } from '../map/areaName'
+import type { RidePage } from '@/lib/explore-rides-types'
+import { HomeRideBlock } from '../rides/HomeBlock'
 
 // Home: hero, Explore by category, Trending now,
 // Planning cue (after Trending), Interests card, Upcoming events, Popular plans.
@@ -142,9 +144,10 @@ export function useContinueDraft() {
 
 // Home at launch: these sections only, in this order (the served order and the Interests card,
 // Upcoming events and Popular plans rows wait for after launch).
-const HOME_ORDER = ['exploreHub', 'trending', 'planningCue']
+const HOME_ORDER = ['exploreHub', 'trending', 'planningCue', 'kCulture', 'kFood']
 
-export function HomeScreen() {
+/** `rides`: the K-Culture and K-Food rides from the snapshot (server), for their two Home blocks. */
+export function HomeScreen({ rides }: { rides?: { culture: RidePage | null; food: RidePage | null } }) {
   const act = usePlaceActions({ resume: true })
   const planAct = usePlanActions({ resume: true })
   const dDay = useDDay()
@@ -206,6 +209,8 @@ export function HomeScreen() {
   // Home's content sections by key, in the order /api/home/section-order gives (the drawn order by
   // default; later the account's own). Unknown keys are ignored; a missing key keeps its default place.
   const blocks: Record<string, React.ReactNode> = {
+    kCulture: rides?.culture ? <HomeRideBlock page={rides.culture} flip /> : null,
+    kFood: rides?.food ? <HomeRideBlock page={rides.food} /> : null,
     exploreHub: <section aria-labelledby="explore-cats" className="flex flex-col gap-[var(--space-4)]">
               <SectionHeader id="explore-cats" title={t('CD0426')} />
               <ul className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex gap-[var(--tile-gap)] overflow-x-auto overscroll-x-contain overflow-y-hidden px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
