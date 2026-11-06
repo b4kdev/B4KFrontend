@@ -65,6 +65,16 @@ REGION_IMG = {
 }
 
 
+# Own photos for places and the Food trips by city tiles:
+# poi_id or city key -> file in public/images/explore/places/
+PLACE_IMG = json.load(open(Path(__file__).resolve().parent / 'explore-place-images.json'))
+
+
+def place_img(pid, url):
+    f = PLACE_IMG['place'].get(pid)
+    return '/images/explore/places/' + f if f else url
+
+
 def tile_images(P):
     for name, page in P.items():
         for r in page['rides']:
@@ -72,6 +82,10 @@ def tile_images(P):
                 for o in r['options']:
                     if o['slug'] in TILE_IMG:
                         o['img'] = '/images/explore/' + TILE_IMG[o['slug']]
+            elif name == 'k-food' and r['id'] == 'city':
+                for g in r['groups']:
+                    if g['label'].get('key') in PLACE_IMG['city']:
+                        g['img'] = '/images/explore/places/' + PLACE_IMG['city'][g['label']['key']]
             elif name == 'k-culture' and r['id'] == 'region':
                 for g in r['groups']:
                     if g['label'].get('region') in REGION_IMG:
@@ -102,7 +116,7 @@ def read_col(loc, slug, cover):
     if loc == 'en':
         head = re.sub(r'〈([^〉]+)〉', lambda m: '‘' + m.group(1).title() + '’', head)
     places = [dict(id=str(i['poi_id']), name=clean_name(i.get('name_en') or i['name_ko'], loc), ko=i['name_ko'],
-                   img=i.get('primary_image_url'), region=i.get('display_region') or '') for i in d['items']]
+                   img=place_img(str(i['poi_id']), i.get('primary_image_url')), region=i.get('display_region') or '') for i in d['items']]
     regions = [r for r, _ in collections.Counter(p['region'] for p in places if p['region']).most_common()]
     return dict(slug=slug, type=d['primaryType'], ordered=bool(d['isOrdered']), head=head, sub=sub,
                 hero=cover or (places[0]['img'] if places else None), count=len(places), regions=regions, places=places[:PLACES])
