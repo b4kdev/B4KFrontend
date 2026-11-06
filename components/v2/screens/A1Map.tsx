@@ -1,7 +1,7 @@
 'use client'
 
-import { Fragment, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import { BedDouble, ChevronRight, Coffee, Crown, Flower2, Landmark, LayoutGrid, Search, ShoppingBag, Trees, Utensils } from 'lucide-react'
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { BedDouble, ChevronLeft, ChevronRight, Coffee, Crown, Flower2, Landmark, LayoutGrid, Search, ShoppingBag, Trees, Utensils } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
@@ -15,6 +15,7 @@ import {
   Chip,
   Dialog,
   EmptyState,
+  IconButton,
   LeftPanel,
   MenuItem,
   Modal,
@@ -140,35 +141,49 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // (Back), the list returns. A place closed or another picked on the map drops ?poi=, so the same card opens again.
   const urlPoi = params?.get('poi') ?? null
   const lastUrlPoi = useRef(urlPoi)
+  // True while the address's ?poi= is a history step made on this page (a card link or a pick on the map), so Back
+  // in the place view steps back to the list instead of leaving a second /map entry.
+  const ownStep = useRef(false)
   useEffect(() => {
     const was = lastUrlPoi.current
     lastUrlPoi.current = urlPoi
     if (urlPoi === was) return
     if (urlPoi) {
+      ownStep.current = true
       setSelectedId(urlPoi)
       setMode('nearby')
       setSnap('mid')
     } else setSelectedId((id) => (id === was ? null : id))
   }, [urlPoi])
   useEffect(() => {
-    if (!urlPoi || selectedId === urlPoi) return
+    // The /place/[poiId] page keeps its own address.
+    if (poiId || selectedId === urlPoi || (!urlPoi && !selectedId)) return
     const rest = new URLSearchParams(params?.toString())
     rest.delete('poi')
+    // A place picked on the map is a history step too, so the browser's Back returns to the list.
+    if (selectedId) rest.set('poi', selectedId)
     const query = rest.toString()
-    lastUrlPoi.current = null
-    router.replace(query ? `/map?${query}` : '/map', { scroll: false })
+    lastUrlPoi.current = selectedId
+    ownStep.current = !!selectedId
+    if (selectedId) router.push(`/map?${query}`, { scroll: false })
+    else router.replace(query ? `/map?${query}` : '/map', { scroll: false })
   }, [selectedId]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Back to the list (the place view's back button, Escape, a map tap): a step made here goes back in history.
+  const closePlace = () => {
+    if (ownStep.current && lastUrlPoi.current) window.history.back()
+    else setSelectedId(null)
+  }
   const [openedWith] = useState(selectedId)
   const viewedOnce = useRef(false)
   // Escape goes back from a selected place to the list (no dialog open); a map tap does the same.
   useEffect(() => {
     if (!selectedId) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !document.querySelector('[role="dialog"]')) setSelectedId(null)
+      if (e.key === 'Escape' && !document.querySelector('[role="dialog"]')) closePlace()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [selectedId])
+  }, [selectedId]) // eslint-disable-line react-hooks/exhaustive-deps
   const [cart, setCart] = useState<'collapsed' | 'open'>(params?.get('plan') ? 'open' : 'collapsed')
   // The open plan starts on All days; each day is one tab away.
   const [activeDay, setActiveDay] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>('all')
@@ -290,11 +305,56 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     () => (collection.data ? collection.data.items.filter((p) => Number.isFinite(p.coords_lat) && Number.isFinite(p.coords_lng)).map((p) => ({ ...p, primary_image_url: p.primary_image_url ?? undefined })) : null),
     [collection.data],
   )
-  const listPois = collectionOn && collectionPois ? collectionPois : pois
+  const livePois = collectionOn && collectionPois ? collectionPois : pois
   // List header: the district and city at the center of the map in view (on phones the part above
   // the sheet; none for a category page's places).
   const area = useAreaName(collectionOn ? null : bounds, zoom, locale, phone ? (snap === 'peek' ? 0.45 : 0.25) : 0.5)
-  const areaLine = area ? (area.district ? GAP.areaName(area.district, area.city) : area.city) : null
+  const liveArea = area ? (area.district ? GAP.areaName(area.district, area.city) : area.city) : null
+  // Back from a place shows the list as it was left: opening a place moves the map (and so the area's list), so the
+  // list and its area line are held from the moment a place opens until the map is moved again after Back.
+  const [held, setHeld] = useState<{ pois: typeof livePois; area: string | null } | null>(null)
+  const listPois = held?.pois ?? livePois
+  const areaLine = held ? held.area : liveArea
+  const listRef = useRef<HTMLUListElement>(null)
+  const listScroll = useRef(0)
+  const listSnap = useRef<SheetSnap>('mid')
+  const openedCard = useRef<string | null>(null)
+  const backRow = useRef<HTMLDivElement>(null)
+  const placeOpen = useRef(selectedId)
+  placeOpen.current = selectedId
+  // The list's scroll, read while it shows (a scroll that comes from the list leaving is not kept).
+  useEffect(() => {
+    const onScroll = (e: Event) => {
+      if (placeOpen.current || !(e.target instanceof HTMLElement) || !listRef.current || !e.target.contains(listRef.current)) return
+      listScroll.current = e.target.scrollTop
+    }
+    document.addEventListener('scroll', onScroll, true)
+    return () => document.removeEventListener('scroll', onScroll, true)
+  }, [])
+  const scrollerOf = (el: Element | null) => {
+    for (let n = el?.parentElement; n; n = n.parentElement) if (/auto|scroll/.test(getComputedStyle(n).overflowY)) return n
+    return null
+  }
+  const wasOpen = useRef(selectedId)
+  useLayoutEffect(() => {
+    const was = wasOpen.current
+    wasOpen.current = selectedId
+    if (selectedId && !was) {
+      openedCard.current = selectedId
+      if (mode === 'nearby') setHeld({ pois: livePois, area: liveArea })
+    }
+    // A place opens at its top, wherever the list (or the place before) was scrolled.
+    const top = selectedId ? scrollerOf(backRow.current) : null
+    if (top) top.scrollTop = 0
+    if (selectedId || !was) return
+    // Back to the list: its scroll, its sheet height on phones, and focus on the card that was opened.
+    if (phone) setSnap(listSnap.current)
+    const list = listRef.current
+    const scroller = scrollerOf(list)
+    if (scroller) scroller.scrollTop = listScroll.current
+    list?.querySelector<HTMLElement>(`a[href$="poi=${openedCard.current}"]`)?.focus({ preventScroll: true })
+  }, [selectedId]) // eslint-disable-line react-hooks/exhaustive-deps
+  if (!selectedId) listSnap.current = snap
   // An area name can come at this zoom (the geocoder names nothing past a province): hold its line.
   const areaHeld = !collectionOn && zoom >= 9
   const { detail, isError: placeMissing } = usePlaceDetail(selectedId)
@@ -620,7 +680,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     <EmptyState
       type="no-results"
       title={t('CD1529')}
-      action={<Button size="md" variant="secondary" onClick={() => setSelectedId(null)}>{t('CD0594')}</Button>}
+      action={<Button size="md" variant="secondary" onClick={closePlace}>{t('CD0594')}</Button>}
       className={phone ? '-mx-[var(--space-4)] mt-[var(--space-2)]' : undefined}
     >
       {t('CD1530')}
@@ -639,7 +699,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   const nearbyList = (
     <div className={cn('flex flex-col gap-[var(--space-3)]', !phone && 'p-[var(--space-4)]')}>
-      {(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? (
+      {(!held && (collectionOn ? collection.isLoading : isLoading)) && !listPois.length ? (
         // As drawn: the area name and count, then each card's photo (4:3) and title.
         <div className="flex flex-col gap-[var(--space-4)]">
           <Skeleton shape="line" className="h-[var(--space-3)] w-1/2" />
@@ -656,20 +716,20 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           comes later from the geocoder, so its line is held from the first paint (blank until then) and
           the list does not move down when it arrives. The header goes only on the first load: while
           the list reloads for a new map area it stays, and the count changes when the answer lands. */}
-      {!((collectionOn ? collection.isLoading : isLoading) && !listPois.length) && (areaLine || areaHeld || (listPois.length && !collectionOn)) ? (
+      {!((!held && (collectionOn ? collection.isLoading : isLoading)) && !listPois.length) && (areaLine || areaHeld || (listPois.length && !collectionOn)) ? (
         <div className="mb-[var(--space-1)] flex flex-col">
           {areaLine ? <h2 className="type-title-card text-ui-fg">{areaLine}</h2> : areaHeld ? <div aria-hidden className="type-title-card">{'\u00a0'}</div> : null}
           {listPois.length && !collectionOn ? <p className="type-body-caption text-ui-fg-muted">{GAP.placesInArea(listPois.length)}</p> : null}
         </div>
       ) : null}
       {/* No places: the empty state titled No places in this area, Zoom out under it. */}
-      {!(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? (
+      {!(!held && (collectionOn ? collection.isLoading : isLoading)) && !listPois.length ? (
         <div className="flex flex-col gap-[var(--space-4)]">
           <EmptyState type="no-results" title={t('CD0626')} action={<Button size="md" variant="secondary" onClick={() => mapRef.current?.zoomOut()}>{t('CD0737')}</Button>}>{t('CD1531')}</EmptyState>
         </div>
       ) : null}
       {/* Nearby by default shows the full place cards; results (a place-type chip or a collection) are compact rows. */}
-      <ul className={cn('flex flex-col', filter || collectionOn ? 'gap-[var(--space-2)]' : 'gap-[var(--space-4)]')}>
+      <ul ref={listRef} className={cn('flex flex-col', filter || collectionOn ? 'gap-[var(--space-2)]' : 'gap-[var(--space-4)]')}>
         {listPois.slice(0, 40).map((p) => (
           <li key={p.poi_id}>
             {filter || collectionOn ? (
@@ -731,7 +791,16 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       labels={{ back: k('saved.folder.back'), add: (n) => `${k('map.poiDetail.addToPlan')}: ${n}`, emptyTitle: k('saved.empty.places.title'), emptyBody: t('CD1429') }}
     />
   )
-  const content = selectedId ? placeView : mode === 'nearby' ? nearbyList : savedView
+  // The place view's back control: the "‹" button at the top left, as Google Maps' place panel; it stays in view as
+  // the place scrolls (on phones it also covers the sheet's top padding, so nothing shows above it).
+  const placeBack = (
+    <div
+      ref={backRow}
+      className={cn('sticky top-0 z-10 flex', phone ? '-top-[var(--space-2)] -mx-[var(--space-4)] -mb-[var(--space-4)] -mt-[var(--space-2)] bg-ui-bg-raised px-[var(--space-2)] pt-[var(--space-2)] dark:bg-ui-bg-media' : 'bg-ui-bg px-[var(--space-2)] pt-[var(--space-2)]')}>
+      <IconButton label={t('CD0121')} icon={<ChevronLeft />} onClick={closePlace} />
+    </div>
+  )
+  const content = selectedId ? <>{placeBack}{placeView}</> : mode === 'nearby' ? nearbyList : savedView
 
   const cartNode = (
     <PlanCart
@@ -824,13 +893,13 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         holdOpen={!!openedWith && !placeMissing}
         pois={mapPois}
         selectedId={selectedId}
-        onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
+        onSelect={(id) => { if (!id) return closePlace(); setSelectedId(id); setMode('nearby'); setSnap('mid') }}
         planStops={stopsVisible ? planStops : []}
         fitBottom={fitBottom}
         fitTop={fitTopPx}
         activeDay={activeDay}
         savedIds={savedIds}
-        onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => { setBounds(b); if (filterOn.current) setAreaMoved(true) }, 300) }}
+        onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => { setBounds(b); if (!placeOpen.current) setHeld(null); if (filterOn.current) setAreaMoved(true) }, 300) }}
         userLocation={locate.location}
         label={k('itinerary.mapAriaLabel')}
         errorText={GAP.mapError}
