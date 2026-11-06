@@ -714,6 +714,9 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     <PlanCart
       // Desktop: the cart stays open while it slides back down.
       state={order.length || cart === 'open' ? (cartSlide.mounted ? 'open' : cart) : 'empty'}
+      // Phones: the plan sheet's own handle. The plan's handle bar is the Map's coral (Sun 2026-11-06).
+      handle={!phone}
+      className="[--sheet-handle:var(--nav-map)]"
       onToggle={() => {
         if (cart !== 'open' && order.length) fitPlan(order)
         setCart((c) => (c === 'open' ? 'collapsed' : 'open'))
@@ -883,8 +886,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
             onSnapChange={(s) => s !== 'full' && closePlanSheet()}
             onClose={closePlanSheet}
             resizeLabel={k('itinerary.sheet.handle')}
+            // Its handle is the one way to close it: a wider coral bar, and Enter or Space closes it too.
+            grabber={{ className: '[&>span]:w-[var(--space-12)]', expanded: true, onActivate: closePlanSheet }}
             heights={{ full: '70dvh' }}
-            className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0 touch-pan-x touch-pan-y [--accent-add:var(--nav-map)]"
+            className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0 touch-pan-x touch-pan-y [--accent-add:var(--nav-map)] [--sheet-handle:var(--nav-map)]"
           >
             <div className="-mx-[var(--space-4)] -mb-[var(--space-6)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div>
           </BottomSheet>

@@ -156,6 +156,9 @@ export type BottomSheetProps = {
   snap?: SheetSnap
   onSnapChange?: (s: SheetSnap) => void
   resizeLabel?: string
+  /** Map sheets whose handle is the only way to close them (Plan): the handle's class (e.g. a wider bar), its
+      aria-expanded, and what Enter or Space on it does (a pointer tap already goes through the drag). */
+  grabber?: { className?: string; expanded?: boolean; onActivate?: () => void }
   /** Map sheets: a height per snap instead of the defaults (e.g. a shorter full state). */
   heights?: Partial<Record<SheetSnap, string>>
   /** Header shown at peek (map sheets). */
@@ -180,7 +183,7 @@ const SNAP_VH: Record<SheetSnap, string> = { peek: '76px', mid: '50dvh', full: '
 const ORDER: SheetSnap[] = ['peek', 'mid', 'full']
 
 /** Bottom sheet: radius/3xl top, bg-raised, grabber 32 by 4; map sheets drag between snaps. */
-export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', heights, header, above, aboveEnd, actions, flush, floor = true, slide, children, className }: BottomSheetProps) {
+export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', grabber, heights, header, above, aboveEnd, actions, flush, floor = true, slide, children, className }: BottomSheetProps) {
   const modal = type === 'modal'
   const ref = useFocusTrap<HTMLDivElement>(open && modal, onClose)
   const [drag, setDrag] = useState<number | null>(null)
@@ -238,7 +241,10 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
           <DragHandle
             type="grabber"
             label={resizeLabel}
-            className="h-[var(--space-1)]"
+            aria-expanded={grabber?.expanded}
+            className={cn('h-[var(--space-1)]', grabber?.className)}
+            // Keyboard only (a click with no pointer): a tap is handled by the drag above.
+            onClick={grabber?.onActivate ? (e) => e.detail === 0 && grabber.onActivate?.() : undefined}
             onKeyDown={(e) => {
               if (e.key === 'ArrowUp') step(1)
               else if (e.key === 'ArrowDown') step(-1)

@@ -1,7 +1,7 @@
 'use client'
 
 import { useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
-import { ArrowLeft, Bookmark, ChevronDown, Clock, Folder, Globe, Heart, Lock, MapPin, Minus, Plus, Share2, Sparkles, X } from 'lucide-react'
+import { ArrowLeft, Bookmark, Clock, Folder, Globe, Heart, Lock, MapPin, Minus, Plus, Share2, Sparkles, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Avatar } from './Avatar'
 import { Badge } from './Badge'
@@ -16,7 +16,7 @@ import { Image } from './Image'
 import { ListItem } from './Lists'
 import { Tabs } from './NavGroups'
 import { StopBadge, TransportMode } from './Plan'
-import { FOCUS_RING_INSET, HIT_AREA } from './styles'
+import { FOCUS_RING_INSET } from './styles'
 import type { useSheetSlide } from './hooks'
 import { Link as IntlLink } from '@/i18n/navigation'
 
@@ -90,6 +90,9 @@ export type PlanCartProps = {
   /** Figma State. */
   state: 'empty' | 'collapsed' | 'open'
   onToggle: () => void
+  /** The cart's own handle bar, the one part that opens, closes and drags it (desktop). Phones leave it off: the plan
+      sheet around the cart has its own. */
+  handle?: boolean
   stops: PlanStop[]
   days: number
   activeDay: 'all' | Day
@@ -157,7 +160,7 @@ function TrayTile() {
   )
 }
 
-export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, durationMenu, onRemove, onSelect, onMove, onMoveToDay, dayFull, onSave, onDiscard, labels, className }: PlanCartProps) {
+export function PlanCart({ state, onToggle, handle = true, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, durationMenu, onRemove, onSelect, onMove, onMoveToDay, dayFull, onSave, onDiscard, labels, className }: PlanCartProps) {
   const id = useId()
   // A drag in progress: the held stop follows the pointer freely; the other stops of its day slide
   // out of the way to show where it will land; over a day tab the tab lights up and a drop moves the
@@ -274,25 +277,30 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
       className={cn(
         'relative flex flex-col rounded-t-tile bg-ui-bg-raised text-ui-fg',
         state === 'open'
-          ? 'h-full gap-[var(--space-3)] p-[var(--space-4)] lg:pt-[var(--space-8)]'
-          // Collapsed: hovering the bar tints the whole cart, inside its own rounded corners.
-          : 'pl-[calc(var(--nav-tile-size)+var(--space-4))] transition-[background-image] has-[>button:hover]:[background-image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]',
+          ? cn('h-full gap-[var(--space-3)] p-[var(--space-4)]', handle && 'pt-[var(--space-8)]')
+          : 'pl-[calc(var(--nav-tile-size)+var(--space-4))]',
         className,
       )}
     >
       {state === 'collapsed' ? <TrayTile /> : null}
       <p aria-live="polite" className="sr-only">{announce}</p>
       {/* Open: the Left panel's color/bg, everything inside the root's 16 padding; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
-      <button type="button" data-sheet-handle aria-expanded={state === 'open'} onClick={onToggle} className={cn('relative flex w-full flex-col gap-[var(--space-3)] text-left', HIT_AREA, state === 'collapsed' ? 'p-[var(--space-4)] lg:pt-[var(--space-8)]' : 'rounded-sq-md hover:bg-ui-state-hover', FOCUS_RING_INSET)}>
-        {/* Desktop: the phone sheet's grabber bar, 12 from the cart's top and centred over it, in place of the chevron, so the
-            bar reads as one that opens and closes (phones keep the chevron; the sheet shows its own bar). Inside the button,
-            so a click on it toggles too. */}
-        <span aria-hidden className={cn('absolute hidden h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-11)] -translate-x-1/2 rounded-[3px] bg-sheet-handle lg:block', state === 'open' ? 'left-1/2 -top-[var(--space-5)]' : 'left-[calc(50%-(var(--nav-tile-size)+var(--space-4))/2)] top-[var(--space-3)]')} />
-        <span className="flex w-full items-center gap-[var(--space-2)]">
-          <span id={id} aria-live="polite" className="min-w-0 flex-1 type-title-card font-[var(--font-weight-extrabold)]">{summary}</span>
-          <span className="sr-only">{state === 'open' ? labels.close : labels.open}</span>
-          <ChevronDown aria-hidden className={cn('size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted transition-transform lg:hidden', state === 'collapsed' && 'rotate-180')} />
-        </span>
+      {/* The handle: the bar 12 from the cart's top, centred, in a grab zone 44 high across the cart (the 32 above the
+          title plus 12 over it, so the title stays where it was). Only the handle opens, closes and drags the cart. */}
+      {handle ? (
+        <button
+          type="button"
+          data-sheet-handle
+          aria-expanded={state === 'open'}
+          aria-label={state === 'open' ? labels.close : labels.open}
+          onClick={onToggle}
+          className={cn('absolute inset-x-[var(--space-4)] top-0 z-10 flex h-[var(--space-11)] touch-none select-none cursor-grab justify-center rounded-sq-md pt-[var(--space-3)] active:cursor-grabbing', FOCUS_RING_INSET)}
+        >
+          <span aria-hidden className="h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-12)] rounded-[3px] bg-sheet-handle" />
+        </button>
+      ) : null}
+      <div className={cn('flex w-full flex-col gap-[var(--space-3)]', state === 'collapsed' && cn('p-[var(--space-4)]', handle && 'pt-[var(--space-8)]'))}>
+        <span id={id} aria-live="polite" className="min-w-0 type-title-card font-[var(--font-weight-extrabold)]">{summary}</span>
         {/* Figma Plan cart Collapsed › Last added: photo, place, "Last added · 2 more". */}
         {state === 'collapsed' && lastAdded ? (
           <span className="flex min-w-0 items-center gap-[var(--space-3)]">
@@ -303,7 +311,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
             </span>
           </span>
         ) : null}
-      </button>
+      </div>
       {state === 'open' ? (
         <>
           {/* "+ Day" follows the last day tab with no gap, as drawn. */}
