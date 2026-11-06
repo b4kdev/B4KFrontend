@@ -169,19 +169,24 @@ export function TreeItem({ label, kind, level = 1, selected, count, checkbox, co
           className={cn(
             'flex min-h-[var(--target-touch-min)] items-center gap-[var(--space-2)] pl-[var(--space-2)] pr-[var(--space-3)]',
             field
-              ? cn('mx-[var(--space-1-5)] rounded-sq-md px-[var(--space-1-5)] transition-colors duration-short3 ease-out-strong', selected ? 'bg-field-fg text-photo-action-fg' : 'text-field-fg [@media(hover:hover)_and_(pointer:fine)]:hover:bg-field-inset')
+              ? cn('mx-[var(--space-1-5)] rounded-sq-md px-[var(--space-1-5)] transition-colors duration-short3 ease-out-strong', selected ? 'bg-ui-bg text-ui-fg' : 'text-field-fg [@media(hover:hover)_and_(pointer:fine)]:hover:bg-field-inset')
               : selected ? 'rounded-sq-md bg-ui-state-selected' : 'rounded-sq-md hover:bg-ui-state-hover',
             // Focus ring around the whole row while the label button has keyboard focus; inside a colour
-            // field it is black ink, on the selected black row white.
+            // field it is black ink, on the selected row (page color) the page's focus color.
             !field
               ? '[&:has(>button:last-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-border-focus)]'
               : selected
-                ? '[&:has(>button:last-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-fg-on-media)]'
+                ? '[&:has(>button:last-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-border-focus)]'
                 : '[&:has(>button:last-child:focus-visible)]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--field-fg)]',
           )}
         >
           {field ? (
-            <span aria-hidden className="size-[10px] shrink-0 rounded-[3px]" style={{ backgroundColor: selected ? field : 'var(--neutral-black-28)' }} />
+            // Selected row: black bullet in light, the category color in dark.
+            <span
+              aria-hidden
+              className={cn('size-[10px] shrink-0 rounded-[3px]', selected ? 'bg-[var(--neutral-black)] dark:bg-[var(--bullet-c)]' : 'bg-[var(--neutral-black-28)]')}
+              style={selected ? ({ '--bullet-c': field } as CSSProperties) : undefined}
+            />
           ) : kind === 'leaf' ? (
             <span aria-hidden className="size-[var(--icon-size-sm)] shrink-0" />
           ) : (
