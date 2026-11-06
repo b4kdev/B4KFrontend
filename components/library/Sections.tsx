@@ -84,7 +84,7 @@ export function ExploreCollections({ title, filters, active, onFilter, cards, mo
   return (
     <section aria-labelledby={id} className="flex flex-col gap-[var(--space-4)]">
       <SectionHeader id={id} title={title} />
-      <div className="flex gap-[var(--space-2)] overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="b4k-focus-room flex gap-[var(--space-2)] overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {filters.map((f) => <Chip key={f.id} selected={f.id === active} onClick={() => onFilter(f.id)} className="shrink-0">{f.label}</Chip>)}
       </div>
       <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4">{cards.map((c, i) => <li key={i}>{c}</li>)}</ul>
@@ -124,8 +124,8 @@ export function PlanningCue({ state, label, tiles }: PlanningCueProps) {
   const body = (icon: ReactNode, t: { title: string; text: string }) => (
     <>
       <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-2)]">
-        {/* Icon beside the title, the pair on one line. */}
-        <span className="flex min-w-0 items-center gap-[var(--space-2-5)]">
+        {/* Icon beside the title, level with its first line when the title wraps. */}
+        <span className="flex min-w-0 items-start gap-[var(--space-2-5)]">
           <span aria-hidden className="inline-flex size-[var(--title-size-tile)] shrink-0 [&>svg]:size-full [&>svg]:[stroke-width:2.6]">{icon}</span>
           <span className="min-w-0 text-[length:var(--title-size-tile)] font-[var(--font-weight-extrabold)] leading-[1.05] tracking-[-0.03em] [overflow-wrap:anywhere] [&:lang(ko)]:break-keep">{t.title}</span>
         </span>

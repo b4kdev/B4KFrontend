@@ -714,7 +714,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   // Chips belong to browsing: an open place hides them (phone and desktop), as drawn.
   const chips = selectedId ? null : (
-    <div className="flex gap-[var(--space-2)] overflow-x-auto overflow-y-hidden [scrollbar-width:none]">
+    <div className="b4k-focus-room flex gap-[var(--space-2)] overflow-x-auto overflow-y-hidden [scrollbar-width:none]">
       {PLACE_TYPES.map((c) => (
         <Chip key={c.id} type="map" selected={filter === c.id} leadingIcon={<c.icon />} keyColor={c.color} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setAreaBounds(bounds); setAreaMoved(false); setFilter((f) => (f === c.id ? null : c.id)) }}>{t(c.label)}</Chip>
       ))}
@@ -827,7 +827,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           header={selectedId || planSheet ? undefined : <div className="relative pb-[var(--space-3)] pt-[var(--space-4)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:z-10 after:h-[var(--space-4)] after:bg-gradient-to-b after:from-[var(--color-bg-raised)] after:to-transparent after:content-[''] dark:after:from-[var(--color-bg-media)]">{switcher}</div>}
           aboveEnd={planSheet || snap === 'full' ? undefined : locate.control}
           above={order.length && !planSheet ? <PlanPill label={t('CD0686', { count: order.length })} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /> : undefined}
-          className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0"
+          className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0 [--accent-add:var(--nav-map)]"
         >
           {planSheet ? <div className="-mx-[var(--space-4)] -mb-[var(--space-6)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div> : content}
         </BottomSheet>

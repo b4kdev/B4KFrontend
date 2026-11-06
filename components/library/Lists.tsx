@@ -144,7 +144,7 @@ export function TreeItem({ label, kind, level = 1, selected, count, checkbox, co
             <span aria-hidden className={cn('inline-flex size-[var(--glyph-tile-size)] shrink-0 items-center justify-center rounded-sq-sm', open ? 'bg-field-fg text-[var(--tree-c)]' : 'bg-[var(--tree-c)] text-field-fg')}>
               <Glyph name={glyph} size={20} />
             </span>
-            <span className="min-w-0 flex-1 truncate">{label}</span>
+            <span title={typeof label === 'string' ? label : undefined} className="min-w-0 flex-1 truncate">{label}</span>
             {count !== undefined ? <span className="type-body-caption tabular-nums opacity-70">{count}</span> : null}
           </button>
           {kind === 'leaf' ? null : (
@@ -196,7 +196,7 @@ export function TreeItem({ label, kind, level = 1, selected, count, checkbox, co
           )}
           {checkbox}
           <button type="button" onClick={onSelect ?? onToggle} className={cn('flex min-h-[var(--target-touch-min)] min-w-0 flex-1 items-center gap-[var(--space-2)] text-left type-body-base focus-visible:outline-none', field ? 'text-[length:calc(var(--font-size-base)-var(--border-width-1))] font-[500] text-current' : 'text-ui-fg')}>
-            <span className="min-w-0 flex-1 truncate">{label}</span>
+            <span title={typeof label === 'string' ? label : undefined} className="min-w-0 flex-1 truncate">{label}</span>
             {count !== undefined ? <span className={cn('type-body-caption', field ? 'opacity-70' : 'text-ui-fg-muted')}>{count}</span> : null}
           </button>
         </div>
