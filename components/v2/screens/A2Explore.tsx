@@ -50,6 +50,7 @@ import { NotFoundScreen } from './A4Pages'
 import { districtName, regionName } from '../map/areaName'
 import type { RidePage } from '@/lib/explore-rides-types'
 import { RideChips, Rides, shownRides, useRideNames } from '../rides/Rides'
+import { RideHero } from '../rides/Hero'
 
 // Explore (A2): Category page, See all list, Collection page,
 // Category special pages. Live data from /api/explore/*. Desktop: Left panel Index (280)
@@ -239,7 +240,7 @@ export function CategoryScreen({ category, rides }: { category: string; rides?: 
   const locale = useLocale()
   const { openQuickPlan } = useV2Shell()
   const rowLabel = useRowLabel()
-  const { data, error, isLoading, mutate } = useSWR<ExploreData>(`/api/explore/${category}`, jsonFetch)
+  const { data, error, isLoading, mutate } = useSWR<ExploreData>(rides ? null : `/api/explore/${category}`, jsonFetch)
   const cols = useSWR<{ items: CollectionCard[] }>(rides ? null : `/api/explore/${category}/collections?locale=${locale}`, jsonFetch)
   const [colType, setColType] = useState('all')
   // The Collections grid shows 8 and Load more adds 8 while more remain under the chip; a chip
@@ -272,7 +273,7 @@ export function CategoryScreen({ category, rides }: { category: string; rides?: 
     />
   )
   const colTypes = useMemo(() => Object.keys(COLLECTION_TYPE).filter((type) => (cols.data?.items ?? []).some((c) => c.primaryType === type)), [cols.data])
-  if (isLoading) {
+  if (isLoading && !rides) {
     // As drawn: the hero block, then two loading sections (cards 260 wide on desktop).
     return (
       <ExploreFrame category={category} sections={rides ? shownRides(rides).map((r) => r.id) : []} rides={rides}>
@@ -291,8 +292,8 @@ export function CategoryScreen({ category, rides }: { category: string; rides?: 
       rowsKey={rides ? shownRides(rides).map((r) => r.id).join() : `${sections.map((s) => s.id).join()}|${cols.data?.items.length ? 'collections' : ''}`}
     >
       <div className="flex flex-col gap-[var(--space-12)]">
-        <h1 className="sr-only">{k(`explore.${CAT_KEY[category]}.title`)}</h1>
-        {hero ? (
+        {rides ? <RideHero page={rides} title={t(CATEGORIES.find((c) => c.slug === category)?.label ?? '')} /> : <h1 className="sr-only">{k(`explore.${CAT_KEY[category]}.title`)}</h1>}
+        {!rides && hero ? (
           <Hero
             size="section"
             as="h2"

@@ -165,3 +165,26 @@
   .pst { min-height: 220px; }
   .side .cc { grid-template-columns: 96px minmax(0, 1fr); }
 }
+
+/* category hero: the color field (glyph, page name, line) and the lead Collection (three photos, its
+   title and line in full, never clamped). 440 high on desktop; on phones it grows to fit. */
+.hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--tile-gap); min-height: 440px; }
+.field { background: var(--c); color: var(--field-fg); border-radius: var(--radius-tile); padding: var(--space-8); display: flex; flex-direction: column; justify-content: flex-end; gap: var(--space-3-5); }
+.fieldG { width: var(--control-height-2xl); height: var(--control-height-2xl); border-radius: var(--radius-sm); background: var(--field-fg); color: var(--c); display: grid; place-items: center; margin-bottom: auto; }
+.field h1 { margin: 0; font-family: var(--font-family-display); font-size: var(--display-size-hub); font-weight: 800; letter-spacing: -0.04em; line-height: .92; }
+.field p { margin: 0; font-size: var(--font-size-xl); font-weight: 500; max-width: 30ch; }
+.pick { position: relative; display: grid; grid-template-rows: minmax(0, 1fr) auto; border-radius: var(--radius-tile); overflow: hidden; background: var(--tile-surface); min-width: 0; }
+.imgs { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: var(--space-0-5); min-height: 240px; }
+.imgs > span { height: 100%; }
+.imgs > span:first-child { grid-row: 1 / 3; }
+.pickTxt { padding: var(--space-6) var(--space-7) var(--space-7); display: flex; flex-direction: column; gap: var(--space-1-5); }
+.pickTxt b { font-family: var(--font-family-display); font-size: var(--font-size-3xl); font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; overflow-wrap: anywhere; }
+.pickTxt > span:not(:last-child) { color: var(--color-fg-muted); font-size: var(--font-size-base); }
+@container hero (max-width: 880px) {
+  .hero { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .field { min-height: 240px; padding: var(--space-6); }
+  .imgs { min-height: 200px; }
+  .pickTxt { padding: var(--space-5); }
+  .pickTxt b { font-size: var(--font-size-2xl); }
+}
+.heroWrap { container: hero / inline-size; }
