@@ -1,6 +1,6 @@
 'use client'
 
-import { useContext, type ReactNode } from 'react'
+import { useContext, type MouseEvent, type ReactNode } from 'react'
 import { Bookmark, ExternalLink, MapPin, Plus, Route, TrendingUp } from 'lucide-react'
 import { Link as IntlLink } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
@@ -24,6 +24,8 @@ type Common = {
   title: string
   /** Partner links open in a new tab and say so. */
   external?: { newTabLabel: string }
+  /** Runs on the card link's click before it navigates (e.g. open in place and preventDefault). */
+  onClick?: (e: MouseEvent<HTMLAnchorElement>) => void
   className?: string
 }
 
@@ -86,16 +88,16 @@ const ADD = 'relative z-10 rounded-sq-md !bg-accent-add !text-field-fg [&>svg]:[
 const STRETCH = "outline-none after:absolute after:inset-0 after:z-0 after:content-['']"
 const TITLE2 = 'b4k-card-title line-clamp-2 [text-wrap:pretty] type-title-card [&:lang(ko)]:break-keep max-sm:line-clamp-3'
 
-function CardLink({ href, external, children, className }: { href: string; external?: { newTabLabel: string }; children: ReactNode; className?: string }) {
+function CardLink({ href, external, onClick, children, className }: { href: string; external?: { newTabLabel: string }; onClick?: (e: MouseEvent<HTMLAnchorElement>) => void; children: ReactNode; className?: string }) {
   if (external) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={cn(STRETCH, className)}>
+      <a href={href} target="_blank" rel="noopener noreferrer" onClick={onClick} className={cn(STRETCH, className)}>
         {children}
         <span className="sr-only"> {external.newTabLabel}</span>
       </a>
     )
   }
-  return <IntlLink href={href} className={cn(STRETCH, className)}>{children}</IntlLink>
+  return <IntlLink href={href} onClick={onClick} className={cn(STRETCH, className)}>{children}</IntlLink>
 }
 
 /** Figma Meta row: map-pin 14 + meta text, then the Trending badge, then external-link 14 for partner links. */
@@ -111,7 +113,7 @@ function MetaRow({ meta, trending, external, className }: { meta: ReactNode; tre
 }
 
 export function Card(props: CardProps) {
-  const { href, title, external, className } = props
+  const { href, title, external, onClick, className } = props
   const missingLabel = useContext(ImageMissingLabel)
   switch (props.type) {
     case 'place':
@@ -129,7 +131,7 @@ export function Card(props: CardProps) {
           </div>
           <div className={cn(PANEL, 'flex items-center gap-[var(--space-2)]')}>
             <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
-              <CardLink href={href} external={external} className={TITLE2}>{title}</CardLink>
+              <CardLink href={href} onClick={onClick} external={external} className={TITLE2}>{title}</CardLink>
               {props.description ? <p className="truncate type-body-base text-ui-fg-muted">{props.description}</p> : null}
               <MetaRow meta={props.meta} trending={props.trending} external={!!external} />
             </div>
@@ -144,7 +146,7 @@ export function Card(props: CardProps) {
           <div className="panel flex min-w-0 flex-1 items-center gap-[var(--space-2)] py-[var(--space-2)] pl-[var(--space-3)] pr-[var(--space-1)]">
             <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
               {/* Two lines at every width: one cut place names short, three overflowed the row. */}
-              <CardLink href={href} external={external} className={cn(TITLE2, 'line-clamp-2 max-sm:line-clamp-2')}>{title}</CardLink>
+              <CardLink href={href} onClick={onClick} external={external} className={cn(TITLE2, 'line-clamp-2 max-sm:line-clamp-2')}>{title}</CardLink>
               <div className="flex items-center gap-[var(--space-1)] type-body-caption text-ui-fg-muted">
                 <MapPin aria-hidden className="size-[var(--icon-size-xs)] shrink-0" />
                 <span className="truncate">{props.meta}</span>
@@ -166,7 +168,7 @@ export function Card(props: CardProps) {
             ))}
           </div>
           <div className={cn(PANEL, 'flex flex-col gap-[var(--space-1)]')}>
-            <CardLink href={href} className={TITLE2}>{title}</CardLink>
+            <CardLink href={href} onClick={onClick} className={TITLE2}>{title}</CardLink>
             {props.meta ? <div className="type-body-caption text-ui-fg-muted">{props.meta}</div> : null}
           </div>
         </article>
@@ -186,7 +188,7 @@ export function Card(props: CardProps) {
           {/* No positioning on the label block: the title link's stretched area then covers the whole
               tile; the glyph and the photo let taps through to it. */}
           <div className="flex flex-col gap-[var(--space-1)] px-[var(--tile-padding)] pt-[var(--tile-padding)]">
-            <CardLink href={href} className="text-[length:var(--title-size-tile)] font-[var(--font-weight-extrabold)] leading-[1.05] tracking-[-0.03em] [overflow-wrap:anywhere] [&:lang(ko)]:break-keep">{title}</CardLink>
+            <CardLink href={href} onClick={onClick} className="text-[length:var(--title-size-tile)] font-[var(--font-weight-extrabold)] leading-[1.05] tracking-[-0.03em] [overflow-wrap:anywhere] [&:lang(ko)]:break-keep">{title}</CardLink>
             {props.meta ? <div className="text-[length:calc(var(--font-size-sm)*13/14)] leading-[1.3] text-field-fg-muted sm:text-sm sm:leading-[1.3]">{props.meta}</div> : null}
           </div>
           <Glyph name={props.glyph} size="26%" className="b4k-card-glyph pointer-events-none absolute bottom-[var(--tile-padding)] left-[var(--tile-padding)] !h-auto" />
@@ -200,7 +202,7 @@ export function Card(props: CardProps) {
         <article className={cn(SHELL, 'flex-col', className)}>
           <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="280px" className={MEDIA} />
           <div className={cn(PANEL, 'flex flex-col gap-[var(--space-1)]')}>
-            <CardLink href={href} className={TITLE2}>{title}</CardLink>
+            <CardLink href={href} onClick={onClick} className={TITLE2}>{title}</CardLink>
             {props.meta ? <div className="type-body-caption text-ui-fg-muted">{props.meta}</div> : null}
           </div>
         </article>
@@ -214,7 +216,7 @@ export function Card(props: CardProps) {
             {props.save ? <SaveLikeOverlay className="z-10" saved={props.save.saved} onSave={props.save.onSave} saveLabel={props.save.label} /> : null}
           </div>
           <div className={cn(PANEL, 'flex flex-col gap-[var(--space-1)]')}>
-            <CardLink href={href} className={TITLE2}>{title}</CardLink>
+            <CardLink href={href} onClick={onClick} className={TITLE2}>{title}</CardLink>
             <div className="flex items-center justify-between gap-[var(--space-1)] type-body-caption text-ui-fg-muted">
               {props.authorHref ? (
                 // At least 24 x 24 to tap (it sits over the card's own link, so size is the only way): padding
@@ -237,7 +239,7 @@ export function Card(props: CardProps) {
             <Badge variant="on-image" className="absolute left-[var(--space-2)] top-[var(--space-2)]">{props.sponsored}</Badge>
           </div>
           <div className={cn(PANEL, 'flex flex-col gap-[var(--space-1)]')}>
-            <CardLink href={href} external={external} className={TITLE2}>{title}</CardLink>
+            <CardLink href={href} onClick={onClick} external={external} className={TITLE2}>{title}</CardLink>
             <div className="type-body-caption text-ui-fg-muted">{props.partner}</div>
             <div aria-hidden className="inline-flex items-center gap-[var(--gap-xs)] type-body-label text-ui-fg">{props.cta}<ExternalLink className="size-[var(--icon-size-xs)]" /></div>
           </div>
@@ -254,7 +256,7 @@ export function Card(props: CardProps) {
           </div>
           <div className={cn('panel flex min-w-0 flex-1 flex-col justify-center', stacked ? 'gap-[var(--space-1)] p-[var(--space-3)]' : 'gap-[var(--space-1)] p-[var(--space-3)] sm:gap-[var(--space-2)] sm:p-[var(--space-4)]')}>
             <span className="type-eyebrow-badge text-ui-fg">{props.eyebrow}</span>
-            <CardLink href={href} external={external} className="line-clamp-2 type-title-empty-state">{title}</CardLink>
+            <CardLink href={href} onClick={onClick} external={external} className="line-clamp-2 type-title-empty-state">{title}</CardLink>
             <MetaRow meta={props.meta} trending={props.trending} external={!!external} />
           </div>
         </article>
