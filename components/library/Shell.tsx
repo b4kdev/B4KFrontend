@@ -98,7 +98,7 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
       <ul className={cn('flex w-full flex-col items-center gap-[var(--space-2-5)] pt-[var(--space-1-5)]', showLogo && 'pt-[var(--space-2)]')}>
         {DESTS.map(({ id, href, Icon, color, ink }) => (
           <li key={id} className={RAIL_CELL}>
-            <Tooltip text={labels[id]} wrapperClassName="flex w-full">
+            <Tooltip text={labels[id]} side="right" wrapperClassName="flex w-full">
               <IntlLink href={href} aria-current={active === id ? 'page' : undefined} className={NAV_ITEM_TARGET}>
                 <NavItem icon={<Icon />} label={labels[id]} active={active === id} color={color} ink={ink} />
               </IntlLink>
@@ -106,7 +106,7 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
           </li>
         ))}
         <li className={RAIL_CELL}>
-          <Tooltip text={labels.quickPlan} wrapperClassName="flex w-full">
+          <Tooltip text={labels.quickPlan} side="right" wrapperClassName="flex w-full">
             <button type="button" onClick={onQuickPlan} className={NAV_ITEM_TARGET}>
               <NavItem icon={<Zap />} label={labels.quickPlan} color={QUICK_PLAN_COLOR} ink={QUICK_PLAN_INK} />
             </button>
@@ -115,7 +115,7 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
       </ul>
       <div className="mt-auto flex w-full flex-col items-center gap-[var(--space-1)]">
         {user ? (
-          <Tooltip text={labels.notifications} wrapperClassName={cn('flex', RAIL_CELL)}>
+          <Tooltip text={labels.notifications} side="right" wrapperClassName={cn('flex', RAIL_CELL)}>
             <IntlLink href={notificationsHref} aria-label={user.unread ? labels.notificationsUnread : labels.notifications} className={NAV_ITEM_TARGET}>
               <NavItem icon={<Bell />} label="" badge={user.unread ? <CountBadge /> : undefined} />
             </IntlLink>
