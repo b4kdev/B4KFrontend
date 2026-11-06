@@ -31,7 +31,7 @@ export type TableProps<T> = {
 
 export function Table<T>({ caption, captionHidden, columns, rows, rowKey, sort, onSort, select, className }: TableProps<T>) {
   return (
-    <div className={cn('w-full overflow-x-auto', className)}>
+    <div className={cn('w-full overflow-x-auto overscroll-x-contain', className)}>
       <table className="w-full border-collapse text-left">
         <caption className={cn('pb-[var(--space-2)] text-left type-title-card text-ui-fg', captionHidden && 'sr-only')}>{caption}</caption>
         <thead>

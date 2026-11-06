@@ -772,7 +772,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       </Chip>
     </div>
   ) : (
-    <div className="b4k-focus-room flex gap-[var(--space-2)] overflow-x-auto overflow-y-hidden [scrollbar-width:none]">
+    <div className="b4k-focus-room flex gap-[var(--space-2)] overflow-x-auto overscroll-x-contain overflow-y-hidden [scrollbar-width:none]">
       {PLACE_TYPES.map((c) => (
         <Chip key={c.id} type="map" selected={filter === c.id} leadingIcon={<c.icon />} keyColor={c.color} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setAreaBounds(bounds); setAreaMoved(false); setFilter((f) => (f === c.id ? null : c.id)) }}>{t(c.label)}</Chip>
       ))}
@@ -889,10 +889,11 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
             <div className="-mx-[var(--space-4)] -mb-[var(--space-6)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div>
           </BottomSheet>
         ) : null}
+        {/* The map sheet is named after what it shows: the open place, else the map's list. */}
         <BottomSheet
           type="map"
           open={!saveOpen}
-          label={t('CD0679')}
+          label={selectedId && detailName ? detailName : t('CD0815')}
           snap={snap}
           floor={!planSlide.mounted}
           onSnapChange={setSnap}

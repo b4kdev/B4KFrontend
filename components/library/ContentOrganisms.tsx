@@ -124,7 +124,7 @@ export function Carousel({ type, label, children, seeAll, subtitle, previousLabe
     return (
       <section aria-labelledby={titleId} className={cn('flex flex-col gap-[var(--space-4)]', className)}>
         <SectionHeader id={titleId} title={label} subtitle={subtitle} seeAll={seeAll} arrows={{ onPrevious: () => scroll(-1), onNext: () => scroll(1), previousLabel, nextLabel, atStart: edges.start, atEnd: edges.end }} />
-        <ul ref={rail} className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory gap-[var(--space-3)] overflow-x-auto overflow-y-hidden scroll-px-[var(--grid-gutter-mobile)] px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] [scrollbar-width:none] lg:mx-0 lg:px-0">
+        <ul ref={rail} className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory gap-[var(--space-3)] overflow-x-auto overscroll-x-contain overflow-y-hidden scroll-px-[var(--grid-gutter-mobile)] px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] [scrollbar-width:none] lg:mx-0 lg:px-0">
           {items.map((c, n) => (
             <li key={n} className="w-[280px] shrink-0 snap-start">{c}</li>
           ))}
