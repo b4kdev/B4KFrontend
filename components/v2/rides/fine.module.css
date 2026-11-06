@@ -1,0 +1,49 @@
+/* B4K Pick: a butter poster with the Collection's name, beside it the tables set as one run of
+   display type with small inline photos, like a printed menu. Hover or focus one: the rest step back. */
+.fc { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--space-12); align-items: stretch; }
+.poster { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); padding: var(--space-7); min-height: 360px; background: var(--category-food); color: var(--field-fg); border-radius: var(--radius-tile); }
+.glyph { margin-bottom: auto; }
+.h { margin: var(--space-6) 0 0; font-family: var(--font-family-display); font-weight: 800; font-size: 44px; line-height: 1; letter-spacing: -0.04em; overflow-wrap: anywhere; }
+.m { margin: 0 0 var(--space-4); font-size: var(--font-size-base); font-weight: 600; }
+.cta { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--control-height-xl); padding: 0 var(--space-5); border-radius: var(--radius-lg); background: var(--field-fg); color: var(--neutral-white); font-weight: 700; font-size: var(--font-size-base); }
+.cta svg { transition: transform 160ms var(--easing-out-strong); }
+.cta:focus-visible { outline: 3px solid var(--field-fg); outline-offset: 3px; }
+
+.list { list-style: none; margin: 0; padding: var(--space-1) 0; display: flex; flex-wrap: wrap; align-content: center; gap: var(--space-4) var(--space-7); }
+.list li { min-width: 0; max-width: 100%; }
+.n { display: inline-flex; align-items: center; gap: var(--space-3-5); max-width: 100%; border-radius: var(--radius-md); padding: var(--space-0-5); transition: opacity 200ms ease; }
+.ph { position: relative; flex: 0 0 88px; width: 88px; height: 64px; display: grid; place-items: center; overflow: hidden; border-radius: var(--radius-md); background: var(--category-food); color: var(--field-fg); transition: transform 200ms var(--easing-out-strong); }
+.ph > span:last-child { position: absolute; inset: 0; height: 100%; }
+.t { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 var(--space-2-5); min-width: 0; }
+.t b { font-family: var(--font-family-display); font-weight: 800; font-size: clamp(var(--font-size-3xl), 4.6cqi, 52px); line-height: 1.05; letter-spacing: -0.035em; overflow-wrap: break-word; }
+.t span { font-size: var(--font-size-base); font-weight: 500; color: var(--color-fg-muted); overflow-wrap: anywhere; }
+
+@media (hover: hover) and (pointer: fine) {
+  .list:has(.n:hover) .n:not(:hover) { opacity: .32; }
+  .n:hover .ph { transform: scale(1.06); }
+  .cta:hover svg { transform: translateX(3px); }
+}
+.list:has(.n:focus-visible) .n:not(:focus-visible) { opacity: .32; }
+.n:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 4px; }
+.n:active .ph { transform: scale(.96); }
+
+/* one entrance when the block first shows: names arrive in reading order (only when motion is allowed) */
+.pre .list li { opacity: 0; transform: translateY(14px); }
+.in .list li { opacity: 1; transform: none; transition: opacity 420ms var(--easing-out-strong), transform 420ms var(--easing-out-strong); transition-delay: calc(var(--i, 0) * 50ms); }
+@media (prefers-reduced-motion: reduce) { .n, .ph, .cta svg { transition: none; } .n:hover .ph, .n:active .ph { transform: none; } }
+
+@container rides (max-width: 880px) {
+  .fc { grid-template-columns: minmax(0, 1fr); gap: var(--space-7); }
+  .poster { min-height: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--space-4); align-items: center; padding: var(--space-5); }
+  .glyph { margin: 0; grid-row: span 2; }
+  .h { margin: 0; font-size: 34px; align-self: end; }
+  .m { margin: 0; align-self: start; }
+  .cta { grid-column: 1 / -1; margin-top: var(--space-4); justify-self: start; }
+}
+@container rides (max-width: 600px) {
+  .list { flex-direction: column; flex-wrap: nowrap; gap: var(--space-3-5); }
+  .ph { flex-basis: 64px; width: 64px; height: 48px; }
+  .n { align-items: flex-start; }
+  .t b { font-size: 28px; }
+  .t span { font-size: var(--font-size-sm); }
+}
