@@ -61,3 +61,22 @@
   .strip { padding: 0 var(--space-2); grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cardCta { margin: 0 var(--space-2); }
 }
+
+/* Trending now: five live places as photo tiles, each marked with its category's color square */
+.trend { container: trend / inline-size; display: flex; flex-direction: column; }
+.trendHead { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-6); margin-bottom: var(--space-7); }
+.trendHead h2 { margin: 0; font-family: var(--font-family-display); font-size: var(--display-size-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+.allL { display: inline-flex; align-items: center; gap: var(--space-1-5); min-height: var(--control-height-lg); font-weight: 700; font-size: var(--font-size-base); color: var(--color-fg); }
+.allL:focus-visible, .tp:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 3px; }
+.tps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--tile-gap); }
+.tp { position: relative; display: flex; flex-direction: column; gap: var(--space-0-5); padding: var(--space-2) var(--space-2) var(--space-3-5); border-radius: var(--radius-tile); background: var(--tile-surface); color: var(--color-fg); min-width: 0; height: 100%; -webkit-tap-highlight-color: transparent; }
+.tpImg { border-radius: var(--radius-tile-inner); margin-bottom: var(--space-2); }
+.tp b { padding: 0 var(--space-1-5); font-size: var(--font-size-base); font-weight: 700; line-height: 1.25; overflow-wrap: break-word; }
+.tp > span:last-child { padding: 0 var(--space-1-5); font-size: 13px; color: var(--color-fg-muted); }
+.tpDot { position: absolute; left: var(--space-4); top: var(--space-4); z-index: 1; width: var(--space-3); height: var(--space-3); border-radius: 3px; background: var(--c); }
+@container trend (max-width: 1040px) { .tps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container trend (max-width: 600px) {
+  .trendHead { margin-bottom: var(--space-4); }
+  .tps { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 150px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0 calc(-1 * var(--grid-gutter-mobile)); padding: var(--space-1) var(--grid-gutter-mobile); scroll-padding: 0 var(--grid-gutter-mobile); }
+  .tps li { scroll-snap-align: start; }
+}

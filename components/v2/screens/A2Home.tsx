@@ -15,7 +15,6 @@ import {
   RowSection,
   SectionHeader,
   Skeleton,
-  placeTypeOf,
 } from '@/components/library'
 import { useAuth } from '@/contexts/AuthContext'
 import { useInterests } from '@/hooks/useInterests'
@@ -30,11 +29,11 @@ import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { CATEGORIES } from '../categories'
-import { categoryAttr, categoryStyle } from '@/components/library/category'
+import { categoryStyle } from '@/components/library/category'
 import { useDDay } from '../useDDay'
-import { regionName } from '../map/areaName'
 import type { RidePage } from '@/lib/explore-rides-types'
 import { HomeRideBlock } from '../rides/HomeBlock'
+import { HomeTrending } from '../rides/HomeTrending'
 
 // Home: hero, Explore by category, Trending now,
 // Planning cue (after Trending), Interests card, Upcoming events, Popular plans.
@@ -148,7 +147,8 @@ const HOME_ORDER = ['exploreHub', 'trending', 'planningCue', 'kCulture', 'kFood'
 
 /** `rides`: the K-Culture and K-Food rides from the snapshot (server), for their two Home blocks. */
 export function HomeScreen({ rides }: { rides?: { culture: RidePage | null; food: RidePage | null } }) {
-  const act = usePlaceActions({ resume: true })
+  // Finishes a place save started here before sign-in.
+  usePlaceActions({ resume: true })
   const planAct = usePlanActions({ resume: true })
   const dDay = useDDay()
   const t = useCd()
@@ -226,15 +226,7 @@ export function HomeScreen({ rides }: { rides?: { culture: RidePage | null; food
               </ul>
             </section>,
     trending: (trending.data?.length ? (
-              <RowSection
-                arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
-                title={t('CD0313')}
-                seeAll={{ href: '/explore/trending', label: t('CD1309') }}
-                cards={trending.data.map((p) => (
-                  // Every place in the Trending row is trending, so each card carries the badge, as drawn.
-                  <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, name(p))} title={name(p)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} category={categoryAttr(p.display_domain)} meta={regionName(p.display_region ?? '', locale)} trending={t('CD0313')} />
-                ))}
-              />
+              <HomeTrending places={trending.data} name={name} />
             ) : (
               <RowState title={t('CD0313')} loading={trending.isLoading} error={trending.error} onRetry={() => trending.mutate()} />
             )),
