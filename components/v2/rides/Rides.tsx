@@ -6,14 +6,17 @@ import { track } from '@/lib/analytics'
 import { categoryStyle } from '@/components/library'
 import { cn } from '@/lib/cn'
 import type { Ride, RideKind, RidePage } from '@/lib/explore-rides-types'
+import { PairRide, PanelRide } from './Panel'
 import { ColsContext, s, useRideText } from './shared'
 
 // Explore rides (category page): every section below the hero. One ride = one section with its
 // title and line; the pick happens inside it. Renderers by kind; a kind not built yet renders
 // nothing, so a page shows the rides that are done.
 
-type Renderer = (props: { ride: Ride }) => React.ReactNode
+type Renderer = (props: { ride: Ride; category: string }) => React.ReactNode
 const RENDERERS: Partial<Record<RideKind, Renderer>> = {
+  panel: PanelRide,
+  pair: PairRide,
 }
 
 /** Rides drawn on a tinted ground (alternating rhythm, as in the samples). */
@@ -58,7 +61,7 @@ export function Rides({ page }: { page: RidePage }) {
                 <h2 id={`row-${ride.id}-h`}>{r(`${ride.id}.title`)}</h2>
                 <p>{r(`${ride.id}.line`)}</p>
               </header>
-              <Body ride={ride} />
+              <Body ride={ride} category={page.category} />
             </section>
           )
         })}
