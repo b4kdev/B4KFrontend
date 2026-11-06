@@ -33,6 +33,11 @@ export type HeroProps = {
   className?: string
 }
 
+// Hero titles break between words only: no hyphenation, a word splits only if it alone is wider than
+// the line; Korean keeps its words whole, Japanese and Chinese never start a line with small kana or
+// closing punctuation.
+const HERO_TITLE_WRAP = 'hyphens-manual [overflow-wrap:break-word] [line-break:strict] [&:lang(ko)]:[word-break:keep-all]'
+
 /** Hero. Home: a poster, a colour field (field-hero) with black ink, the title top-left and the
  * arrow glyph top-right (a slide with a picture shows it there as an inner squircle instead); the
  * action is a black 52 button. Section (Explore hub, categories): the photo with gradient/overlay-fade,
@@ -58,9 +63,11 @@ export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action
           )}
         </span>
         <div className="absolute inset-0 flex flex-col items-start justify-between gap-[var(--space-4)] p-[var(--space-11)] max-md:justify-end max-md:p-[var(--space-5)] max-md:pb-[var(--space-10)]">
-          <div className="flex min-w-0 flex-col items-start gap-[var(--space-3)] md:max-w-[calc(100%-min(30vw,400px)-var(--space-6))]">
+          {/* The text column is a size container: the title scales down with it so its longest word always fits
+              (a hero title never splits inside a word); at the token size from about 1180 up. */}
+          <div className="flex w-full min-w-0 flex-col items-start gap-[var(--space-3)] [container-type:inline-size] md:max-w-[calc(100%-min(30vw,400px)-var(--space-6))]">
             {eyebrow ? <span className="type-eyebrow-category">{eyebrow}</span> : null}
-            <H className="b4k-rise min-w-0 max-w-[min(980px,100%)] type-display-hero hyphens-auto [overflow-wrap:anywhere]">{title}</H>
+            <H className={cn('b4k-rise min-w-0 max-w-[min(980px,100%)] type-display-hero', HERO_TITLE_WRAP, '![font-size:min(var(--display-size-hero),100cqi/4.8)] [&:lang(en)]:![font-size:min(var(--display-size-hero-brand),100cqi/8.6)]')}>{title}</H>
             {subtitle ? <p className="max-w-[440px] text-[length:calc(var(--font-size-lg)+var(--border-width-1))] font-[500] leading-snug text-field-fg max-md:hidden">{subtitle}</p> : null}
           </div>
           {action ? <div>{action}</div> : null}
@@ -74,7 +81,7 @@ export function Hero({ size = 'home', imageSrc, eyebrow, title, subtitle, action
       <div aria-hidden className="absolute inset-0 bg-overlay-fade" />
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-[var(--space-3)] p-[var(--space-11)] max-md:px-[var(--space-6)] max-md:pb-[var(--space-10)] max-md:pt-[var(--space-6)]">
         {eyebrow ? <Badge variant="on-image">{eyebrow}</Badge> : null}
-        <H className="type-display-hub min-w-0 max-w-[min(960px,100%)] hyphens-auto [overflow-wrap:anywhere]">{title}</H>
+        <H className={cn('type-display-hub min-w-0 max-w-[min(960px,100%)]', HERO_TITLE_WRAP)}>{title}</H>
         {subtitle ? <p className="max-w-[400px] type-body-long text-ui-fg-muted max-md:hidden">{subtitle}</p> : null}
         {action ? <div className="pt-[var(--space-3)]">{action}</div> : null}
       </div>
@@ -124,7 +131,7 @@ export function Carousel({ type, label, children, seeAll, subtitle, previousLabe
     return (
       <section aria-labelledby={titleId} className={cn('flex flex-col gap-[var(--space-4)]', className)}>
         <SectionHeader id={titleId} title={label} subtitle={subtitle} seeAll={seeAll} arrows={{ onPrevious: () => scroll(-1), onNext: () => scroll(1), previousLabel, nextLabel, atStart: edges.start, atEnd: edges.end }} />
-        <ul ref={rail} className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory gap-[var(--space-3)] overflow-x-auto overflow-y-hidden scroll-px-[var(--grid-gutter-mobile)] px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] [scrollbar-width:none] lg:mx-0 lg:px-0">
+        <ul ref={rail} className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory gap-[var(--space-3)] overflow-x-auto overscroll-x-contain overflow-y-hidden scroll-px-[var(--grid-gutter-mobile)] px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] [scrollbar-width:none] lg:mx-0 lg:px-0">
           {items.map((c, n) => (
             <li key={n} className="w-[280px] shrink-0 snap-start">{c}</li>
           ))}
@@ -171,6 +178,14 @@ const FOOTER_LINK = 'relative text-ui-fg-muted hover:text-ui-fg hover:underline 
 export function Footer({ links, copyright, navLabel, company, className }: FooterProps) {
   const [companyOpen, setCompanyOpen] = useState(false)
   const companyId = useId()
+  // The company line opens under the last row of the page, below the fold when the page is already
+  // scrolled to its end: scroll it into view (the desktop shell scrolls its own column, not the window).
+  const companyLine = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!companyOpen) return
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    companyLine.current?.scrollIntoView({ block: 'nearest', behavior: still ? 'auto' : 'smooth' })
+  }, [companyOpen])
   // Desktop: the links, Company details and the copyright in one row; the company line opens under
   // it (12 apart). Phones: the links, Company details (opens the company line), the copyright.
   return (
@@ -191,7 +206,7 @@ export function Footer({ links, copyright, navLabel, company, className }: Foote
       ) : null}
       <p className="max-md:order-last">{copyright}</p>
       {company ? (
-        <div id={companyId} className={cn('flex w-full gap-[var(--space-3)] max-md:flex-col md:flex-wrap md:items-start', !companyOpen && 'hidden')}>
+        <div ref={companyLine} id={companyId} className={cn('flex w-full scroll-mb-[var(--space-6)] gap-[var(--space-3)] max-md:flex-col md:flex-wrap md:items-start', !companyOpen && 'hidden')}>
           <p className="md:min-w-0 md:max-w-max md:flex-1">{company.line}</p>
           <a href={company.check.href} target="_blank" rel="noopener noreferrer" className={cn(FOOTER_LINK, HIT_AREA, 'shrink-0 self-start')}>{company.check.label}</a>
         </div>

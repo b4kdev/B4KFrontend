@@ -17,7 +17,7 @@ import { Separator } from './Separator'
 // Explore packages, Plan card row, Quick plan, Planning cue, Interests card. Built from cards and
 // molecules; data as props, texts as labels.
 
-const RAIL = 'b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory scroll-px-[var(--grid-gutter-mobile)] gap-[var(--space-3)] overflow-x-auto overflow-y-hidden px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] -mb-[var(--space-1)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:scroll-px-0 lg:px-0'
+const RAIL = 'b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory scroll-px-[var(--grid-gutter-mobile)] gap-[var(--space-3)] overflow-x-auto overscroll-x-contain overflow-y-hidden px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] -mb-[var(--space-1)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:scroll-px-0 lg:px-0'
 
 export type RowSectionProps = {
   title: string
@@ -84,7 +84,7 @@ export function ExploreCollections({ title, filters, active, onFilter, cards, mo
   return (
     <section aria-labelledby={id} className="flex flex-col gap-[var(--space-4)]">
       <SectionHeader id={id} title={title} />
-      <div className="b4k-focus-room flex gap-[var(--space-2)] overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="b4k-focus-room flex gap-[var(--space-2)] overflow-x-auto overscroll-x-contain overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {filters.map((f) => <Chip key={f.id} selected={f.id === active} onClick={() => onFilter(f.id)} className="shrink-0">{f.label}</Chip>)}
       </div>
       <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4">{cards.map((c, i) => <li key={i}>{c}</li>)}</ul>
@@ -118,9 +118,10 @@ export type PlanningCueProps = {
 
 /** Planning cue: three tiles between content rows; side by side on desktop, stacked below it. */
 export function PlanningCue({ state, label, tiles }: PlanningCueProps) {
-  // Three colour fields (new plan powder, Quick plan lime, from Saved stone), black ink, content at
-  // the bottom; the chevron slides on hover.
-  const tile = 'b4k-press group/tile flex min-h-[var(--action-tile-min-height)] min-w-0 flex-1 items-end gap-[var(--space-4)] rounded-tile px-[var(--space-6)] py-[calc(var(--space-5)+var(--space-0-5))] text-left text-field-fg focus-visible:shadow-focus-ring focus-visible:outline-none max-md:px-[var(--space-5)] max-md:py-[calc(var(--space-4)+var(--space-0-5))]'
+  // Three colour fields (new plan powder, Quick plan lime, from Saved stone), black ink; each tile is
+  // as tall as its content with equal room above and below, and the tallest sets the row (content
+  // centred in the others). The chevron slides on hover.
+  const tile = 'b4k-press group/tile flex min-w-0 flex-1 items-center gap-[var(--space-4)] rounded-tile px-[var(--space-6)] py-[calc(var(--space-5)+var(--space-0-5))] text-left text-field-fg focus-visible:shadow-focus-ring focus-visible:outline-none max-md:px-[var(--space-5)] max-md:py-[calc(var(--space-4)+var(--space-0-5))]'
   const body = (icon: ReactNode, t: { title: string; text: string }) => (
     <>
       <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-2)]">

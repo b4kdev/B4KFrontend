@@ -80,14 +80,16 @@ export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollL
       onScroll={measure}
       className={cn(
         // The track: a sunken squircle, 4 inside, tabs 6 apart; it hugs its tabs unless they share the width.
-        'flex max-w-full gap-[var(--space-1-5)] overflow-x-auto overflow-y-hidden rounded-sq-lg bg-tile-surface-sunken p-[var(--space-1)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+        'flex max-w-full gap-[var(--space-1-5)] overflow-x-auto overscroll-x-contain overflow-y-hidden rounded-sq-lg bg-tile-surface-sunken p-[var(--space-1)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
         width === 'equal' ? 'w-full' : 'w-fit',
         scrollLabels ? 'min-w-0 flex-1' : className,
       )}
     >
       {tabs.map((t) =>
         t.onClose ? (
-          <div key={t.id} role="presentation" className="relative flex shrink-0 items-center">
+          // The × space is kept on every closable tab so nothing jumps; the × itself shows on the selected
+          // tab, and on another tab under a mouse (devices that hover) or while it has keyboard focus.
+          <div key={t.id} role="presentation" className="group/tab relative flex shrink-0 items-center">
             <Tab id={`tab-${t.id}`} selected={t.id === value} day={t.day} color={t.color} glyph={t.glyph} disabled={t.disabled} onClick={() => onValueChange(t.id)} className={cn('shrink-0 pr-[var(--space-8)]', t.dropTarget && DROP_TARGET)}>
               {t.label}
             </Tab>
@@ -95,11 +97,15 @@ export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollL
               type="button"
               aria-label={t.closeLabel}
               onClick={t.onClose}
+              // Only the selected tab's × is a Tab stop: arrow to a day, then Tab to its ×.
+              tabIndex={t.id === value ? undefined : -1}
               // The × takes the tab's own ink: black on a day or colour fill, the inverse ink on the inverse fill.
               // 24 drawn, its hit area padded out to the tab's height and right edge so a near miss still closes.
               className={cn(
                 'absolute right-[var(--space-1-5)] inline-flex size-[var(--space-6)] items-center justify-center rounded-sq-xs opacity-70 before:absolute before:-inset-y-[var(--space-2)] before:-left-[var(--space-1)] before:right-[calc(var(--space-1-5)*-1)] hover:opacity-100 focus-visible:shadow-focus-ring focus-visible:outline-none',
-                t.id !== value ? 'text-ui-fg-muted hover:bg-ui-state-hover hover:text-ui-fg' : t.day || t.color ? 'text-field-fg' : 'text-ui-fg-inverse',
+                t.id !== value
+                  ? 'pointer-events-none text-ui-fg-muted opacity-0 hover:bg-ui-state-hover hover:text-ui-fg group-focus-within/tab:pointer-events-auto group-focus-within/tab:opacity-70 [@media(hover:hover)]:group-hover/tab:pointer-events-auto [@media(hover:hover)]:group-hover/tab:opacity-70 [@media(hover:hover)]:hover:!opacity-100'
+                  : t.day || t.color ? 'text-field-fg' : 'text-ui-fg-inverse',
               )}
             >
               <X aria-hidden className="size-[var(--icon-size-xs)]" />

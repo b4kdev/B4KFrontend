@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, useState, type ReactNode } from 'react'
+import { useId, useState, type MouseEvent, type ReactNode } from 'react'
 import { ArrowLeft, Bell, Bookmark, ChevronDown, ChevronRight, CircleHelp, Compass, FileText, Globe, House, MapPin, Menu, Search, Settings, User, X, Zap } from 'lucide-react'
 import { Link as IntlLink } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
@@ -72,7 +72,13 @@ const QUICK_PLAN_INK = 'var(--nav-icon-quick-plan)'
 const TILE_BUTTON =
   'relative inline-flex shrink-0 items-center justify-center rounded-sq-md bg-nav-tile-idle text-ui-fg transition-[background-color,transform] duration-short4 ease-out-strong active:scale-[var(--press-scale)] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-nav-tile-hover focus-visible:shadow-focus-ring focus-visible:outline-none'
 
-export type NavigationRailProps = {
+/** Shell nav: a destination's address in place of its default, and a hook on a nav tap (e.g. preventDefault). */
+type NavOverrides = {
+  hrefs?: Partial<Record<Destination, string>>
+  onNavigate?: (id: Destination, e: MouseEvent<HTMLAnchorElement>) => void
+}
+
+export type NavigationRailProps = NavOverrides & {
   active?: Destination | null
   labels: ShellLabels
   user: ShellUser
@@ -87,7 +93,7 @@ export type NavigationRailProps = {
 }
 
 /** Navigation rail: desktop from 1024, 64 wide, icons with tooltips. */
-export function NavigationRail({ active = null, labels, user, onQuickPlan, showLogo, accountMenu, notificationsHref = '/notifications', profileHref = '/profile', className }: NavigationRailProps) {
+export function NavigationRail({ active = null, labels, user, onQuickPlan, showLogo, accountMenu, hrefs, onNavigate, notificationsHref = '/notifications', profileHref = '/profile', className }: NavigationRailProps) {
   return (
     <nav aria-label={labels.main} className={cn('flex h-full w-[var(--layout-nav-rail)] shrink-0 flex-col items-center bg-ui-bg pb-[var(--space-3)] pt-[var(--space-2)]', className)}>
       {showLogo ? (
@@ -99,7 +105,7 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
         {DESTS.map(({ id, href, Icon, color, ink }) => (
           <li key={id} className={RAIL_CELL}>
             <Tooltip text={labels[id]} side="right" wrapperClassName="flex w-full">
-              <IntlLink href={href} aria-current={active === id ? 'page' : undefined} className={NAV_ITEM_TARGET}>
+              <IntlLink href={hrefs?.[id] ?? href} onClick={(e) => onNavigate?.(id, e)} aria-current={active === id ? 'page' : undefined} className={NAV_ITEM_TARGET}>
                 <NavItem icon={<Icon />} label={labels[id]} active={active === id} color={color} ink={ink} />
               </IntlLink>
             </Tooltip>
@@ -131,13 +137,13 @@ export function NavigationRail({ active = null, labels, user, onQuickPlan, showL
   )
 }
 
-export type NavigationBarProps = { active?: Destination | null; labels: ShellLabels; onQuickPlan: () => void; className?: string }
+export type NavigationBarProps = NavOverrides & { active?: Destination | null; labels: ShellLabels; onQuickPlan: () => void; className?: string }
 
 /** Navigation bar: below 1024, 56 high plus the safe area; Quick plan in the center. */
-export function NavigationBar({ active = null, labels, onQuickPlan, className }: NavigationBarProps) {
+export function NavigationBar({ active = null, labels, onQuickPlan, hrefs, onNavigate, className }: NavigationBarProps) {
   const item = ({ id, href, Icon, color, ink }: (typeof DESTS)[number]) => (
     <li key={id} className="flex-1">
-      <IntlLink href={href} aria-label={labels[id]} aria-current={active === id ? 'page' : undefined} className={NAV_ITEM_TARGET}>
+      <IntlLink href={hrefs?.[id] ?? href} onClick={(e) => onNavigate?.(id, e)} aria-label={labels[id]} aria-current={active === id ? 'page' : undefined} className={NAV_ITEM_TARGET}>
         <NavItem icon={<Icon />} label="" active={active === id} color={color} ink={ink} />
       </IntlLink>
     </li>
@@ -236,8 +242,9 @@ export function TopAppBar({ type, labels, onMenu, onBack, title, titleAs: Title 
       >
         {floating ? (
           <>
-            <IconButton label={labels.menu} icon={<Menu />} onClick={onMenu} className={round} />
-            <div className="min-w-0 flex-1">{search}</div>
+            {/* Light: both float on the hero and the photos with a soft lift (none in dark, which keeps its own look). */}
+            <IconButton label={labels.menu} icon={<Menu />} onClick={onMenu} className={cn(round, 'shadow-lift')} />
+            <div className="min-w-0 flex-1 rounded-sq-md shadow-lift">{search}</div>
           </>
         ) : type === 'search' ? (
           <>
@@ -409,8 +416,10 @@ export function UniversalSearch({ children, className }: UniversalSearchProps) {
 /** A search field look-alike that opens the full search (Top app bar Home and Map): a squircle with the
  * search glyph tile at its start. */
 export function SearchPill({ label, href = '/search', className }: { label: string; href?: string; className?: string }) {
+  // Drawn like the desktop search field: its corner keeps the desktop's share of the height (18 on 48,
+  // so 14 on this 40 bar) and it has the same border (none in dark).
   return (
-    <IntlLink href={href} className={cn('flex h-[var(--control-height-md)] items-center gap-[var(--space-2)] rounded-sq-lg bg-ui-bg-raised pl-[var(--space-1)] pr-[var(--space-4)] type-body-base text-ui-fg-placeholder shadow-overlay focus-visible:shadow-focus-ring focus-visible:outline-none', className)}>
+    <IntlLink href={href} className={cn('flex h-[var(--control-height-md)] items-center gap-[var(--space-2)] rounded-sq-md border-[length:var(--border-width-1-5)] border-ui-border bg-ui-bg-raised pl-[var(--space-1)] pr-[var(--space-4)] type-body-base text-ui-fg-placeholder shadow-overlay focus-visible:shadow-focus-ring focus-visible:outline-none dark:border-transparent', className)}>
       <SearchGlyphTile className="size-[var(--control-height-sm)]" />
       <span className="truncate">{label}</span>
     </IntlLink>

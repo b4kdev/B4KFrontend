@@ -4,7 +4,6 @@ import { Fragment, useEffect, useState } from 'react'
 import { useLocale } from 'next-intl'
 import useSWR from 'swr'
 import { RotateCw } from 'lucide-react'
-import { Link as IntlLink } from '@/i18n/navigation'
 import {
   Button,
   Card,
@@ -16,7 +15,6 @@ import {
   RowSection,
   SectionHeader,
   Skeleton,
-  placeTypeOf,
 } from '@/components/library'
 import { useAuth } from '@/contexts/AuthContext'
 import { useInterests } from '@/hooks/useInterests'
@@ -26,15 +24,16 @@ import { labelOf } from '@/lib/quickplan'
 import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 import type { HomePopularPlan } from '@/app/api/home/popular-plans/route'
 import type { HomeEvent } from '@/app/api/home/events/route'
-import { HOME_SECTION_ORDER, type HomeSectionOrder } from '@/app/api/home/section-order/order'
 import { useCd } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { CATEGORIES } from '../categories'
-import { categoryAttr, categoryStyle } from '@/components/library/category'
+import { categoryStyle } from '@/components/library/category'
 import { useDDay } from '../useDDay'
-import { regionName } from '../map/areaName'
+import type { RidePage } from '@/lib/explore-rides-types'
+import { HomeRideBlock } from '../rides/HomeBlock'
+import { HomeTrending } from '../rides/HomeTrending'
 
 // Home: hero, Explore by category, Trending now,
 // Planning cue (after Trending), Interests card, Upcoming events, Popular plans.
@@ -142,31 +141,24 @@ export function useContinueDraft() {
     : null
 }
 
-/** The served order, cleaned: known keys only, then any default key it left out, in its default place. */
-function sectionOrder(served?: string[]) {
-  const known = (served ?? []).filter((k, i, all) => HOME_SECTION_ORDER.includes(k) && all.indexOf(k) === i)
-  const out = [...known]
-  HOME_SECTION_ORDER.forEach((k, i) => {
-    if (!out.includes(k)) out.splice(Math.min(i, out.length), 0, k)
-  })
-  return out
-}
+// Home at launch: these sections only, in this order (the served order and the Interests card,
+// Upcoming events and Popular plans rows wait for after launch).
+const HOME_ORDER = ['exploreHub', 'trending', 'planningCue', 'kCulture', 'kFood']
 
-export function HomeScreen() {
-  const act = usePlaceActions({ resume: true })
+/** `rides`: the K-Culture and K-Food rides from the snapshot (server), for their two Home blocks. */
+export function HomeScreen({ rides }: { rides?: { culture: RidePage | null; food: RidePage | null } }) {
+  // Finishes a place save started here before sign-in.
+  usePlaceActions({ resume: true })
   const planAct = usePlanActions({ resume: true })
   const dDay = useDDay()
   const t = useCd()
   const locale = useLocale()
   const { openQuickPlan, toast } = useV2Shell()
   const { user } = useAuth()
-  // Hero slide 2 shows the photo its Theme page shows (its first place's photo), read from the same
-  // data as that page so the two stay in step.
-  const foodTheme = useSWR<{ items: { primary_image_url: string | null }[] }>('/api/explore/k-food/michelin-noodles', jsonFetch)
   const trending = useSWR<HomeTrendingPoi[]>(`/api/home/trending?locale=${locale}`, jsonFetch)
-  const plans = useSWR<HomePopularPlan[]>('/api/home/popular-plans', jsonFetch)
-  const events = useSWR<HomeEvent[]>('/api/home/events', jsonFetch)
-  const order = useSWR<HomeSectionOrder>('/api/home/section-order', jsonFetch, { revalidateOnFocus: false })
+  // Rows left out at launch ask for nothing.
+  const plans = useSWR<HomePopularPlan[]>(HOME_ORDER.includes('popularPlans') ? '/api/home/popular-plans' : null, jsonFetch)
+  const events = useSWR<HomeEvent[]>(HOME_ORDER.includes('events') ? '/api/home/events' : null, jsonFetch)
   const draft = useContinueDraft()
 
   // Interests card: on a following visit (a later browser session than the one in which this device
@@ -217,9 +209,11 @@ export function HomeScreen() {
   // Home's content sections by key, in the order /api/home/section-order gives (the drawn order by
   // default; later the account's own). Unknown keys are ignored; a missing key keeps its default place.
   const blocks: Record<string, React.ReactNode> = {
+    kCulture: rides?.culture ? <HomeRideBlock page={rides.culture} flip /> : null,
+    kFood: rides?.food ? <HomeRideBlock page={rides.food} /> : null,
     exploreHub: <section aria-labelledby="explore-cats" className="flex flex-col gap-[var(--space-4)]">
               <SectionHeader id="explore-cats" title={t('CD0426')} />
-              <ul className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex gap-[var(--tile-gap)] overflow-x-auto overflow-y-hidden px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
+              <ul className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex gap-[var(--tile-gap)] overflow-x-auto overscroll-x-contain overflow-y-hidden px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
                 {CATEGORIES.map((c, i) => {
                   const k = categoryStyle(c.slug)
                   return (
@@ -232,15 +226,7 @@ export function HomeScreen() {
               </ul>
             </section>,
     trending: (trending.data?.length ? (
-              <RowSection
-                arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
-                title={t('CD0313')}
-                seeAll={{ href: '/explore/trending', label: t('CD1309') }}
-                cards={trending.data.map((p) => (
-                  // Every place in the Trending row is trending, so each card carries the badge, as drawn.
-                  <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, name(p))} title={name(p)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} category={categoryAttr(p.display_domain)} meta={regionName(p.display_region ?? '', locale)} trending={t('CD0313')} />
-                ))}
-              />
+              <HomeTrending places={trending.data} name={name} />
             ) : (
               <RowState title={t('CD0313')} loading={trending.isLoading} error={trending.error} onRetry={() => trending.mutate()} />
             )),
@@ -295,25 +281,29 @@ export function HomeScreen() {
             )),
   }
 
+  const heroSlides: { id: string; eyebrow: string; title: string; subtitle: string; image: string | null; action: React.ReactNode }[] = [
+    { id: 'plan', eyebrow: t('CD0463'), title: t('CD1781'), subtitle: t('CD1782'), image: null, action: <button type="button" onClick={openQuickPlan} className={HERO_ACTION}>{t('CD0738')}</button> },
+  ]
+  const heroes = heroSlides.map((s, i) => (
+    <Hero key={s.id} className={heroPhone} as={i === 0 ? 'h1' : 'h2'} priority={i === 0} imageSrc={s.image} eyebrow={s.eyebrow} title={s.title} subtitle={s.subtitle} action={s.action} />
+  ))
+
   return (
     <V2Page bleed underBar>
-      {/* Two slides: no autoplay, the arrows wrap around. Slide 1 is the brand slide (no photo, the
-          media surface with the fade); its action opens Quick plan. The drawn K-Drama slide waits for
-          its photo. */}
+      {/* The hero slides. One slide shows as a plain hero; two or more bring back the carousel (no
+          autoplay, dots, the arrows wrap around). Slide 1 is the brand slide (no photo, the media
+          surface with the fade); its action opens Quick plan. More slides are added here later. */}
       {/* Desktop: the hero keeps to the content column, the same edges as the rows under it. */}
       <div className={HERO_COLUMN}>
-      <Carousel type="hero" label={t('CD0388')} previousLabel={t('CD0390')} nextLabel={t('CD0389')} slideLabel={(n) => t('CD0391', { n })}>
-        {[
-          { id: 'plan', eyebrow: t('CD0463'), title: t('CD1781'), subtitle: t('CD1782'), image: null, action: <button type="button" onClick={openQuickPlan} className={HERO_ACTION}>{t('CD0738')}</button> },
-          { id: 'food', eyebrow: t('CD0251'), title: t('CD1786'), subtitle: t('CD1787'), image: foodTheme.data?.items[0]?.primary_image_url ?? null, action: <IntlLink href="/explore/k-food/michelin-noodles" className={HERO_ACTION}>{t('CD1785')}</IntlLink> },
-        ].map((s, i) => (
-          <Hero key={s.id} className={heroPhone} as={i === 0 ? 'h1' : 'h2'} priority={i === 0} imageSrc={s.image} eyebrow={s.eyebrow} title={s.title} subtitle={s.subtitle} action={s.action} />
-        ))}
-      </Carousel>
+      {heroes.length > 1 ? (
+        <Carousel type="hero" label={t('CD0388')} previousLabel={t('CD0390')} nextLabel={t('CD0389')} slideLabel={(n) => t('CD0391', { n })}>
+          {heroes}
+        </Carousel>
+      ) : heroes}
       </div>
 
       <div className="mx-auto flex w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] flex-col gap-[var(--space-12)] px-[var(--grid-gutter-mobile)] pb-[calc(var(--space-6)+var(--space-8))] pt-[var(--space-6)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
-        {sectionOrder(order.data?.order).map((key) => (
+        {HOME_ORDER.map((key) => (
           <Fragment key={key}>{blocks[key]}</Fragment>
         ))}
       </div>

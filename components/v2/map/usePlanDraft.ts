@@ -180,16 +180,20 @@ export function usePlanDraft(opts?: { onSaveFailed?: () => void }) {
     let i = 0
     commit({ ...plan, stops: plan.stops.map((s) => (dayOf(s.poi_id) === day ? byId.get(ids[i++])! : s)) })
   }
-  /** Moves stop `id` to the end of day `day` (a drop on that day's tab); a full day takes nothing. */
-  const moveToDay = (id: string, day: number) => {
+  /** Moves stop `id` to day `day`: into the slot of `beforeId` (a stop of that day; a drop among
+   * that day's rows), or to the end of the day (a drop on its tab). A full day takes nothing. */
+  const moveToDay = (id: string, day: number, beforeId?: string) => {
     if (dayOf(id) === day || day < 1 || day > days || countOn(day) >= PER_DAY) return
     const stop = plan.stops.find((s) => s.poi_id === id)
     if (!stop) return
-    // Right after that day's last stop, so the list stays grouped by day.
     const rest = plan.stops.filter((s) => s.poi_id !== id)
-    let at = rest.length
-    rest.forEach((s, i) => { if (dayOf(s.poi_id) <= day) at = i + 1 })
-    if (!rest.some((s) => dayOf(s.poi_id) <= day)) at = 0
+    let at = beforeId && dayOf(beforeId) === day ? rest.findIndex((s) => s.poi_id === beforeId) : -1
+    if (at < 0) {
+      // Right after that day's last stop, so the list stays grouped by day.
+      at = rest.length
+      rest.forEach((s, i) => { if (dayOf(s.poi_id) <= day) at = i + 1 })
+      if (!rest.some((s) => dayOf(s.poi_id) <= day)) at = 0
+    }
     commit({ ...plan, stops: [...rest.slice(0, at), stop, ...rest.slice(at)], days: { ...plan.days, [id]: day } })
   }
   const setDuration = (id: string, min: number) => commit({ ...plan, durations: { ...plan.durations, [id]: min } })

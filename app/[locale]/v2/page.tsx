@@ -3,6 +3,7 @@ import { HomeScreen } from '@/components/v2/screens/A2Home'
 import { JsonLd } from '@/components/v2/JsonLd'
 import { homeMetadata } from '@/app/[locale]/_seo/page-metadata'
 import { buildWebsiteJsonLd } from '@/app/[locale]/_components/home/home-seo'
+import { getRidePage } from '@/lib/explore-rides'
 
 export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const params = await props.params;
@@ -14,7 +15,7 @@ export default async function Page(props: { params: Promise<{ locale: string }> 
   return (
     <>
       <JsonLd data={buildWebsiteJsonLd(params.locale)} />
-      <HomeScreen />
+      <HomeScreen rides={{ culture: await getRidePage('k-culture', params.locale), food: await getRidePage('k-food', params.locale) }} />
     </>
   )
 }

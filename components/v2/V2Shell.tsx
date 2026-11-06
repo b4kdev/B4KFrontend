@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, Suspense, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { createContext, Suspense, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
 import { useLocale } from 'next-intl'
@@ -10,6 +10,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { getConsent, setConsent } from '@/lib/consent'
 import { v2Area } from '@/lib/v2-live'
 import { cn } from '@/lib/cn'
+import { barePath, lastExplore, markExploreReturn, scrollPageTop, useExploreReturnListener } from '@/lib/explore-return'
 import { applyTheme, getStoredTheme } from '@/lib/theme'
 import {
   AccountMenu,
@@ -189,6 +190,18 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   // so do accounts set to be deleted until they keep the account, as drawn.
   const user: ShellUser = authUser && !held && v2Area(pathname) !== 'consent' ? { name: meta?.full_name ?? meta?.name ?? authUser.email?.split('@')[0] ?? '', avatarSrc: meta?.avatar_url ?? null, unread: unreadCount } : null
   const active = activeFrom(pathname)
+  // Explore in the nav returns to the last Explore page and spot; tapped on that page, back to its top.
+  useExploreReturnListener()
+  const [exploreHref, setExploreHref] = useState('/explore')
+  useEffect(() => { setExploreHref(lastExplore()?.path ?? '/explore') }, [pathname])
+  const navHrefs = useMemo(() => ({ explore: exploreHref }), [exploreHref])
+  const onNavigate = (id: Destination, e: MouseEvent<HTMLAnchorElement>) => {
+    if (id !== 'explore') return
+    if (barePath(pathname) === exploreHref) {
+      e.preventDefault()
+      scrollPageTop()
+    } else markExploreReturn()
+  }
   const onMap = ['map', 'plan', 'place'].includes(v2Area(pathname))
   // Sign-in, reset and consent are full-screen flows on phones: no Navigation bar.
   const inFlow = ['login', 'auth', 'consent'].includes(v2Area(pathname))
@@ -210,6 +223,44 @@ export default function V2Shell({ children }: { children: ReactNode }) {
     const sizes = new ResizeObserver(() => setToastHeight(window.matchMedia('(min-width: 1024px)').matches ? 0 : el.offsetHeight))
     sizes.observe(el)
     return () => sizes.disconnect()
+  }, [])
+  // Desktop: the page scrolls in the content column beside the rail, not the window. A wheel over the
+  // header or the rail, and the scroll keys while nothing is focused, scroll that column too, as they
+  // would scroll a window.
+  const page = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const wide = window.matchMedia('(min-width: 1024px)')
+    // After a click in the column the browser scrolls it with the keys itself; only fill in otherwise.
+    let clickedIn = false
+    const onDown = (e: PointerEvent) => { clickedIn = !!page.current?.contains(e.target as Node) }
+    const onWheel = (e: WheelEvent) => {
+      const box = page.current
+      if (!wide.matches || !box || e.ctrlKey || box.contains(e.target as Node) || (e.target as Element).closest?.('[role="dialog"], [role="menu"]')) return
+      box.scrollBy({ top: e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * box.clientHeight : e.deltaY })
+    }
+    const onKey = (e: KeyboardEvent) => {
+      const box = page.current
+      const at = document.activeElement
+      if (!wide.matches || !box || clickedIn || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || (at && at !== document.body && !(at as HTMLElement).closest?.('header, nav'))) return
+      if (at && at !== document.body && (e.key === ' ' || e.key.startsWith('Arrow'))) return
+      if (document.querySelector('[role="dialog"]')) return
+      const step = box.clientHeight * 0.875
+      const by: Record<string, number> = { PageDown: step, PageUp: -step, ' ': e.shiftKey ? -step : step, ArrowDown: 40, ArrowUp: -40 }
+      const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+      if (e.key === 'Home') box.scrollTo({ top: 0, behavior })
+      else if (e.key === 'End') box.scrollTo({ top: box.scrollHeight, behavior })
+      else if (e.key in by) box.scrollBy({ top: by[e.key], behavior })
+      else return
+      e.preventDefault()
+    }
+    window.addEventListener('wheel', onWheel, { passive: true })
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('pointerdown', onDown, true)
+    return () => {
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('pointerdown', onDown, true)
+    }
   }, [])
   const ctx: ShellCtx = {
     openDrawer: () => setDrawer(true),
@@ -234,7 +285,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           className={cn('max-lg:hidden', fullFlow && 'lg:hidden')}
           labels={labels}
           signedIn={!!user}
-          search={<Suspense fallback={<SearchPill label={labels.search} href="/search" className="h-[var(--control-height-xl)] pl-[var(--space-2)]" />}><V2HeaderSearch label={labels.search} /></Suspense>}
+          search={<Suspense fallback={<SearchPill label={labels.search} href="/search" className="h-[var(--control-height-xl)] rounded-sq-lg pl-[var(--space-2)]" />}><V2HeaderSearch label={labels.search} /></Suspense>}
           onLanguage={() => setLanguage(true)}
           languageMenu={<LanguageMenu />}
           helpHref="/help"
@@ -246,11 +297,13 @@ export default function V2Shell({ children }: { children: ReactNode }) {
             labels={labels}
             user={user}
             onQuickPlan={() => setQuick(true)}
+            hrefs={navHrefs}
+            onNavigate={onNavigate}
             accountMenu={<AccountMenu labels={labels} user={user} onSignOut={signOut} links={{ profile: `/${locale}/profile`, settings: `/${locale}/settings`, signIn: `/${locale}/login` }} />}
           />
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto"><PageSlot>{children}</PageSlot></div>
+          <div ref={page} data-page-scroll className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto"><PageSlot>{children}</PageSlot></div>
         </div>
-        {inFlow || fullFlow ? null : <NavigationBar className={cn(onMap ? 'fixed inset-x-0 bottom-0 z-[45]' : 'sticky bottom-0 z-30', 'lg:hidden')} active={active} labels={labels} onQuickPlan={() => setQuick(true)} />}
+        {inFlow || fullFlow ? null : <NavigationBar className={cn(onMap ? 'fixed inset-x-0 bottom-0 z-[45]' : 'sticky bottom-0 z-30', 'lg:hidden')} active={active} labels={labels} hrefs={navHrefs} onNavigate={onNavigate} onQuickPlan={() => setQuick(true)} />}
       </div>
       <Drawer
         open={drawer}
@@ -276,8 +329,8 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           declineLabel={t('CD0127')}
           onAccept={() => choose('accepted')}
           onDecline={() => choose('declined')}
-          // Phones: 12 above the Navigation bar; desktop: 12 above the page bottom, across the Navigation rail.
-          className={cn(!inFlow && 'max-lg:bottom-[calc(var(--fab-size)+var(--space-3))]')}
+          // Phones: 12 above the Navigation bar; desktop: 12 above the page bottom, centred on the content beside the Navigation rail.
+          className={cn(!inFlow && 'max-lg:bottom-[calc(var(--fab-size)+var(--space-3))]', !fullFlow && 'lg:left-[calc(50%+var(--layout-nav-rail)/2)] lg:max-w-[min(var(--container-md),calc(100%-var(--layout-nav-rail)-var(--space-3)*2))]')}
         />
       ) : null}
       {/* Phones: the offline notice and the toasts rise above the floor by a transform, so a sheet moving under them does not move the page. */}
@@ -291,7 +344,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           left panel, so its plan bar and the zoom buttons stay clear), above the cookie banner and the
           offline notice while they show. A timed toast has no close button in the design: it leaves on
           its own after 4 s. */}
-      <div aria-live="polite" style={{ '--toast-floor': toastFloor } as CSSProperties} className={cn('pointer-events-none fixed inset-x-0 bottom-[var(--space-3)] -translate-y-[var(--toast-floor)] lg:translate-y-0 z-[60] flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-[var(--space-6)] lg:px-0', fullFlow || onMap ? null : 'lg:pl-[var(--layout-nav-rail)]', !online && 'max-lg:bottom-[calc(var(--space-3)+var(--space-16))] lg:bottom-[calc(var(--space-6)+var(--space-16))]', cookie === null && 'lg:bottom-[var(--space-24)]')}>
+      <div aria-live="polite" style={{ '--toast-floor': toastFloor } as CSSProperties} className={cn('pointer-events-none fixed inset-x-0 bottom-[var(--space-3)] -translate-y-[var(--toast-floor)] lg:translate-y-0 z-[60] flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-[var(--space-6)] lg:px-0', fullFlow ? null : onMap ? 'lg:pl-[calc(var(--layout-nav-rail)+var(--layout-left-panel))]' : 'lg:pl-[var(--layout-nav-rail)]', !online && 'max-lg:bottom-[calc(var(--space-3)+var(--space-16))] lg:bottom-[calc(var(--space-6)+var(--space-16))]', cookie === null && 'lg:bottom-[var(--space-24)]')}>
         <div ref={toastBox} className="flex w-full flex-col items-center">
         {toastMsg ? (
           <Toast

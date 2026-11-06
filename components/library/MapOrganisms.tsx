@@ -1,22 +1,22 @@
 'use client'
 
 import { useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
-import { ArrowLeft, Bookmark, ChevronDown, Clock, Folder, Globe, Heart, Lock, MapPin, Minus, Plus, Share2, Sparkles, X } from 'lucide-react'
+import { ArrowLeft, Bookmark, Clock, Folder, Globe, Heart, Lock, MapPin, Minus, Plus, Route, Share2, Sparkles, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Avatar } from './Avatar'
 import { Badge } from './Badge'
 import { Button } from './Button'
 import { ChatBubble, CreditLine } from './Content'
 import { AiInput, ItineraryStop, PlanStopRow } from './ContentMolecules'
-import { Glyph } from './Glyph'
 import { Chip } from './Chip'
 import { EmptyState } from './Feedback'
 import { IconButton } from './IconButton'
 import { Image } from './Image'
-import { ListItem } from './Lists'
+import { ListItem, ROW_DIVIDER } from './Lists'
 import { Tabs } from './NavGroups'
 import { StopBadge, TransportMode } from './Plan'
-import { FOCUS_RING_INSET, HIT_AREA } from './styles'
+import { FOCUS_RING_INSET } from './styles'
+import type { useSheetSlide } from './hooks'
 import { Link as IntlLink } from '@/i18n/navigation'
 
 // Map and planning organisms (Figma Organisms): AI panel, Plan cart,
@@ -89,6 +89,9 @@ export type PlanCartProps = {
   /** Figma State. */
   state: 'empty' | 'collapsed' | 'open'
   onToggle: () => void
+  /** The cart's own handle bar, the one part that opens, closes and drags it (desktop). Phones leave it off: the plan
+      sheet around the cart has its own. */
+  handle?: boolean
   stops: PlanStop[]
   days: number
   activeDay: 'all' | Day
@@ -113,9 +116,10 @@ export type PlanCartProps = {
   onSelect?: (id: string) => void
   /** Reorder within a day: put stop `id` in the slot of `toId` (drag the grip, or arrow keys on it). */
   onMove?: (id: string, toId: string) => void
-  /** Drop a dragged stop on a day tab: the stop moves to the end of that day. */
-  onMoveToDay?: (id: string, day: Day) => void
-  /** A day that takes no more stops (a drop on its tab is refused). */
+  /** Move a dragged stop to another day: dropped among that day's rows it takes the slot of
+   * `beforeId` (none = the end of the day); dropped on the day's tab it goes to the end. */
+  onMoveToDay?: (id: string, day: Day, beforeId?: string) => void
+  /** A day that takes no more stops (a drop on it is refused, and the held stop says why). */
   dayFull?: (day: Day) => boolean
   onSave: () => void
   onDiscard: () => void
@@ -130,6 +134,8 @@ export type PlanCartProps = {
     addDayAria?: string
     /** Accessible name of the delete-day button, e.g. "Delete Day 2". */
     removeDay?: (n: number) => string
+    /** Shown on a held stop over a full day, e.g. "Day 2 is full." */
+    dayFull?: (n: number) => string
     /** Day tabs scroll arrows. */
     previousDays?: string
     nextDays?: string
@@ -147,23 +153,34 @@ export type PlanCartProps = {
 }
 
 /** Plan cart: the plan as a shopping cart at the bottom of the Left panel. */
-/** The plan tray's leading tile: the add accent with the plus glyph. */
-function TrayTile() {
+/** The plan tray's leading tile: the add accent with the route icon, centred on the title's first
+ * line (`titleTop`: where that line starts in the cart), so tile and title read as one row. */
+function TrayTile({ titleTop }: { titleTop: 'space-4' | 'space-8' }) {
   return (
-    <span aria-hidden className="absolute left-[var(--space-4)] top-[var(--space-4)] inline-flex size-[var(--nav-tile-size)] items-center justify-center rounded-sq-md bg-accent-add text-field-fg">
-      <Glyph name="plus" size={18} />
+    <span
+      aria-hidden
+      className={cn(
+        'absolute left-[var(--space-4)] inline-flex size-[var(--nav-tile-size)] items-center justify-center rounded-sq-md bg-accent-add text-field-fg',
+        titleTop === 'space-8'
+          ? 'top-[calc(var(--space-8)+(var(--title-size-card)*var(--leading-tight)-var(--nav-tile-size))/2)]'
+          : 'top-[calc(var(--space-4)+(var(--title-size-card)*var(--leading-tight)-var(--nav-tile-size))/2)]',
+      )}
+    >
+      <Route size={18} />
     </span>
   )
 }
 
-export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, durationMenu, onRemove, onSelect, onMove, onMoveToDay, dayFull, onSave, onDiscard, labels, className }: PlanCartProps) {
+export function PlanCart({ state, onToggle, handle = true, stops, days, activeDay, onDayChange, onAddDay, onRemoveDay, summary, lastAdded, lastAddedImage, lastAddedMeta, dayTotal, onDuration, durationMenu, onRemove, onSelect, onMove, onMoveToDay, dayFull, onSave, onDiscard, labels, className }: PlanCartProps) {
   const id = useId()
-  // A drag in progress: the held stop follows the pointer freely; the other stops of its day slide
-  // out of the way to show where it will land; over a day tab the tab lights up and a drop moves the
-  // stop to that day (as dropping a file on a folder).
-  const [drag, setDrag] = useState<{ id: string; day: Day; from: number; to: number; dy: number; height: number; dropDay: Day | null; x: number; y: number; outside: boolean } | null>(null)
+  // A drag in progress: the held stop follows the pointer freely; the other stops slide out of the
+  // way to show where it will land. In All days the landing slot can sit in another day's rows: the
+  // drop moves the stop to that day at that slot. Over a day tab the tab lights up and a drop moves
+  // the stop to the end of that day (as dropping a file on a folder). A full day takes nothing: the
+  // held stop says so and nothing slides. `from` and `at` count the rows shown, all days in All.
+  const [drag, setDrag] = useState<{ id: string; day: Day; from: number; at: number; toDay: Day; dy: number; height: number; dropDay: Day | null; full: Day | null; x: number; y: number; outside: boolean } | null>(null)
   const dragId = drag?.id ?? null
-  const start = useRef<{ y: number; centers: number[]; ids: string[] } | null>(null)
+  const start = useRef<{ y: number; centers: number[]; tops: number[]; bottoms: number[]; ids: string[]; days: Day[] } | null>(null)
   const list = useRef<HTMLOListElement>(null)
   // Where each row was on screen at the drop, so the rows glide from there into their new places.
   const settle = useRef<Map<string, number> | null>(null)
@@ -189,19 +206,31 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
   const say = (s: PlanStop, sameDay: PlanStop[], position: number) => labels.moved && setAnnounce(labels.moved(s.name, position, sameDay.length))
   const endDrag = (s: PlanStop) => {
     const d = drag
+    const st = start.current
     setDrag(null)
     start.current = null
-    if (!d || d.id !== s.id) return
+    if (!d || d.id !== s.id || !st) return
+    if (d.full && labels.dayFull) setAnnounce(labels.dayFull(d.full))
     settle.current = new Map(rowsOf().map((el) => [el.dataset.dragItem ?? '', el.getBoundingClientRect().top]))
-    const sameDay = stops.filter((x) => x.day === s.day)
     if (d.dropDay && onMoveToDay) {
       onMoveToDay(s.id, d.dropDay)
       return
     }
-    if (d.to !== d.from && onMove) onMove(s.id, sameDay[d.to].id)
+    // The other rows, in order, and the landing slot among them.
+    const others = st.ids.filter((x) => x !== s.id)
+    if (d.toDay !== s.day && onMoveToDay) {
+      const before = others[d.at]
+      onMoveToDay(s.id, d.toDay, before && st.days[st.ids.indexOf(before)] === d.toDay ? before : undefined)
+      const into = stops.filter((x) => x.day === d.toDay)
+      say(s, [...into, s], others.slice(0, d.at).filter((x) => st.days[st.ids.indexOf(x)] === d.toDay).length + 1)
+      return
+    }
+    const sameDay = stops.filter((x) => x.day === s.day)
+    const to = others.slice(0, d.at).filter((x) => st.days[st.ids.indexOf(x)] === s.day).length
+    if (to !== sameDay.indexOf(s) && onMove) onMove(s.id, sameDay[to].id)
     const order = sameDay.filter((x) => x.id !== s.id)
-    order.splice(d.to, 0, s)
-    say(s, order, d.to + 1)
+    order.splice(to, 0, s)
+    say(s, order, to + 1)
   }
   // Grip handlers: arrow keys swap with the next stop of the same day; a pointer drag (mouse or
   // touch) moves the stop freely, and it lands where the pointer lets go.
@@ -219,12 +248,14 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
           },
           onPointerDown: (e: PointerEvent<HTMLButtonElement>) => {
             e.currentTarget.setPointerCapture(e.pointerId)
-            const rows = rowsOf().filter((el) => stops.find((x) => x.id === el.dataset.dragItem)?.day === s.day)
+            const rows = rowsOf()
             const ids = rows.map((el) => el.dataset.dragItem ?? '')
             const boxes = rows.map((el) => el.getBoundingClientRect())
+            // A day's first row carries the day label: the label stays put, only the stop moves.
+            const label = (el: HTMLElement) => el.querySelector<HTMLElement>('[data-day-label]')?.getBoundingClientRect().height ?? 0
             const from = ids.indexOf(s.id)
-            start.current = { y: e.clientY, centers: boxes.map((b) => b.top + b.height / 2), ids }
-            setDrag({ id: s.id, day: s.day, from, to: from, dy: 0, height: boxes[from]?.height ?? 0, dropDay: null, x: e.clientX, y: e.clientY, outside: false })
+            start.current = { y: e.clientY, centers: boxes.map((b, i) => b.top + label(rows[i]) + (b.height - label(rows[i])) / 2), tops: boxes.map((b) => b.top), bottoms: boxes.map((b) => b.bottom), ids, days: ids.map((x) => stops.find((p) => p.id === x)?.day ?? s.day) }
+            setDrag({ id: s.id, day: s.day, from, at: from, toDay: s.day, dy: 0, height: (boxes[from]?.height ?? 0) - (rows[from] ? label(rows[from]) : 0), dropDay: null, full: null, x: e.clientX, y: e.clientY, outside: false })
           },
           onPointerMove: (e: PointerEvent<HTMLButtonElement>) => {
             const st = start.current
@@ -232,14 +263,22 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
             const dy = e.clientY - st.y
             const tab = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>('[role="tab"]')
             const n = Number(tab?.id.replace(/^tab-/, ''))
-            const dropDay = tab && list.current?.parentElement?.contains(tab) && n && n !== s.day && !dayFull?.(n as Day) ? (n as Day) : null
-            // The landing slot: how many of the other stops sit above the held stop's middle.
+            const onTab = tab && list.current?.parentElement?.contains(tab) && n && n !== s.day ? (n as Day) : null
+            // The landing slot: how many of the other rows sit above the held stop's middle. Its day is
+            // the day of the row under that middle, or (between days, over a day label) the next row's.
             const mid = st.centers[drag.from] + dy
-            const to = dropDay ? drag.from : st.centers.filter((c, i) => i !== drag.from && c < mid).length
+            const others = st.ids.map((_, i) => i).filter((i) => i !== drag.from)
+            const k = others.filter((i) => st.centers[i] < mid).length
+            const over = others.find((i) => st.tops[i] <= mid && mid < st.bottoms[i])
+            const rowDay = onTab ?? (over !== undefined ? st.days[over] : others[k] !== undefined ? st.days[others[k]] : others.length ? st.days[others[others.length - 1]] : s.day)
+            const full = rowDay !== s.day && dayFull?.(rowDay) ? rowDay : null
+            const dropDay = onTab && !full ? onTab : null
+            const toDay = full || onTab ? s.day : rowDay
+            const at = full || onTab ? drag.from : k
             // Out of the list (up at the day tabs) the list clips the row, so a copy follows the pointer.
             const box = list.current?.getBoundingClientRect()
             const outside = !!box && (e.clientY < box.top || e.clientY > box.bottom || e.clientX < box.left || e.clientX > box.right)
-            setDrag({ ...drag, dy, to, dropDay, x: e.clientX, y: e.clientY, outside })
+            setDrag({ ...drag, dy, at, toDay, dropDay, full, x: e.clientX, y: e.clientY, outside })
           },
           onPointerUp: () => endDrag(s),
           onPointerCancel: () => {
@@ -248,19 +287,28 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
           },
         }
       : undefined
-  // The slide of each row while a stop is held: the held row under the pointer, the rows between its
-  // old and new slot one row up or down.
-  const dragStyle = (s: PlanStop): CSSProperties | undefined => {
-    if (!drag || s.day !== drag.day) return undefined
-    if (s.id === drag.id) return { transform: `translateY(${drag.dy}px)`, transition: 'none', zIndex: 20, position: 'relative', opacity: drag.outside ? 0 : 1 }
-    const i = start.current?.ids.indexOf(s.id) ?? -1
-    const shift = drag.to > drag.from && i > drag.from && i <= drag.to ? -drag.height : drag.to < drag.from && i >= drag.to && i < drag.from ? drag.height : 0
-    return { transform: shift ? `translateY(${shift}px)` : undefined }
+  // The slide of each row while a stop is held: the held stop under the pointer, the rows after its
+  // old slot one row up, the rows from its new slot one row down. A day label stays put: on a day's
+  // first row only the stop slides, so the gap opens under the label.
+  const dragShift = (s: PlanStop): { row?: CSSProperties; stop?: CSSProperties } => {
+    if (!drag) return {}
+    const ids = start.current?.ids ?? []
+    const i = ids.indexOf(s.id)
+    if (i < 0) return {}
+    if (s.id === drag.id) return { row: { zIndex: 20, position: 'relative' }, stop: { transform: `translateY(${drag.dy}px)`, transition: 'none', opacity: drag.outside ? 0 : 1 } }
+    const j = i > drag.from ? i - 1 : i
+    const up = i > drag.from ? -drag.height : 0
+    const down = j >= drag.at ? drag.height : 0
+    const move = (y: number) => (y ? { transform: `translateY(${y}px)` } : undefined)
+    // Opening the gap at a day's top: the label slides with the rows above, its stop drops below it.
+    const firstOfDay = start.current?.days[i - 1] !== start.current?.days[i]
+    if (firstOfDay && activeDay === 'all' && j === drag.at && s.day === drag.toDay) return { row: move(up), stop: move(down) }
+    return { row: move(up + down) }
   }
   if (state === 'empty') {
     return (
       <section aria-label={labels.region} className={cn('relative rounded-t-tile bg-ui-bg-raised py-[var(--space-4)] pl-[calc(var(--space-4)+var(--nav-tile-size)+var(--space-4))] pr-[var(--space-4)]', className)}>
-        <TrayTile />
+        <TrayTile titleTop="space-4" />
         <p className="type-title-card font-[var(--font-weight-extrabold)] text-ui-fg">{labels.emptyTitle}</p>
         <p className="mt-[var(--space-3)] type-body-caption text-ui-fg-muted">{labels.emptyBody}</p>
       </section>
@@ -273,25 +321,30 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
       className={cn(
         'relative flex flex-col rounded-t-tile bg-ui-bg-raised text-ui-fg',
         state === 'open'
-          ? 'h-full gap-[var(--space-3)] p-[var(--space-4)] lg:pt-[var(--space-8)]'
-          // Collapsed: hovering the bar tints the whole cart, inside its own rounded corners.
-          : 'pl-[calc(var(--nav-tile-size)+var(--space-4))] transition-[background-image] has-[>button:hover]:[background-image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]',
+          ? cn('h-full gap-[var(--space-3)] p-[var(--space-4)]', handle && 'pt-[var(--space-8)]')
+          : 'pl-[calc(var(--nav-tile-size)+var(--space-4))]',
         className,
       )}
     >
-      {state === 'collapsed' ? <TrayTile /> : null}
+      {state === 'collapsed' ? <TrayTile titleTop={handle ? 'space-8' : 'space-4'} /> : null}
       <p aria-live="polite" className="sr-only">{announce}</p>
       {/* Open: the Left panel's color/bg, everything inside the root's 16 padding; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
-      <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('relative flex w-full flex-col gap-[var(--space-3)] text-left', HIT_AREA, state === 'collapsed' ? 'p-[var(--space-4)] lg:pt-[var(--space-8)]' : 'rounded-sq-md hover:bg-ui-state-hover', FOCUS_RING_INSET)}>
-        {/* Desktop: the phone sheet's grabber bar, 12 from the cart's top and centred over it, in place of the chevron, so the
-            bar reads as one that opens and closes (phones keep the chevron; the sheet shows its own bar). Inside the button,
-            so a click on it toggles too. */}
-        <span aria-hidden className={cn('absolute hidden h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-11)] -translate-x-1/2 rounded-[3px] bg-sheet-handle lg:block', state === 'open' ? 'left-1/2 -top-[var(--space-5)]' : 'left-[calc(50%-(var(--nav-tile-size)+var(--space-4))/2)] top-[var(--space-3)]')} />
-        <span className="flex w-full items-center gap-[var(--space-2)]">
-          <span id={id} aria-live="polite" className="min-w-0 flex-1 type-title-card font-[var(--font-weight-extrabold)]">{summary}</span>
-          <span className="sr-only">{state === 'open' ? labels.close : labels.open}</span>
-          <ChevronDown aria-hidden className={cn('size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted transition-transform lg:hidden', state === 'collapsed' && 'rotate-180')} />
-        </span>
+      {/* The handle: the bar 12 from the cart's top, centred, in a grab zone across the cart that ends where the title
+          starts (the 32 above it), so a click on the title does nothing. Only the handle opens, closes and drags the cart. */}
+      {handle ? (
+        <button
+          type="button"
+          data-sheet-handle
+          aria-expanded={state === 'open'}
+          aria-label={state === 'open' ? labels.close : labels.open}
+          onClick={onToggle}
+          className={cn('absolute inset-x-[var(--space-4)] top-0 z-10 flex h-[var(--space-8)] touch-none select-none cursor-grab justify-center rounded-sq-md pt-[var(--space-3)] active:cursor-grabbing', FOCUS_RING_INSET)}
+        >
+          <span aria-hidden className="h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-12)] rounded-[3px] bg-sheet-handle" />
+        </button>
+      ) : null}
+      <div className={cn('flex w-full flex-col gap-[var(--space-3)]', state === 'collapsed' && cn('p-[var(--space-4)]', handle && 'pt-[var(--space-8)]'))}>
+        <span id={id} aria-live="polite" className="min-w-0 type-title-card font-[var(--font-weight-extrabold)]">{summary}</span>
         {/* Figma Plan cart Collapsed › Last added: photo, place, "Last added · 2 more". */}
         {state === 'collapsed' && lastAdded ? (
           <span className="flex min-w-0 items-center gap-[var(--space-3)]">
@@ -302,7 +355,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
             </span>
           </span>
         ) : null}
-      </button>
+      </div>
       {state === 'open' ? (
         <>
           {/* "+ Day" follows the last day tab with no gap, as drawn. */}
@@ -319,9 +372,10 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
                   label: labels.day(i + 1),
                   day: (i + 1) as Day,
                   // The × shows on the selected day only.
-                  onClose: onRemoveDay && days > 1 && activeDay === i + 1 ? () => onRemoveDay((i + 1) as Day) : undefined,
-                  // Lights up while a held stop is over it: letting go moves the stop to this day.
-                  dropTarget: drag?.dropDay === i + 1,
+                  // The × shows on the selected day, and on any day tab under a mouse or keyboard focus.
+                  onClose: onRemoveDay && days > 1 ? () => onRemoveDay((i + 1) as Day) : undefined,
+                  // Lights up while a held stop is over it, or over its rows in All days: letting go moves the stop to this day.
+                  dropTarget: !!drag && (drag.dropDay === i + 1 || (drag.toDay !== drag.day && drag.toDay === i + 1)),
                   closeLabel: labels.removeDay?.(i + 1),
                 })),
               ]}
@@ -335,7 +389,8 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
               </button>
             ) : null}
           </div>
-          <ol ref={list} className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
+          {/* Room for the focus ring of the grip and the row's buttons at the clipped edges, given back by the margin. */}
+          <ol ref={list} className="-mx-[calc(var(--focus-ring-offset)+var(--focus-ring-width))] min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-[calc(var(--focus-ring-offset)+var(--focus-ring-width))] scroll-py-[calc(var(--focus-ring-offset)+var(--focus-ring-width))]">
             {/* No stops yet: the hint under the tabs, Save off and no Discard (nothing to discard). */}
             {/* In All days the hint sits under the Day 1 label, as drawn. */}
             {stops.length ? null : (
@@ -344,23 +399,35 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
                 <p className="type-body-base text-ui-fg-muted">{labels.emptyBody}</p>
               </li>
             )}
-            {shown.map((s, i) => (
-              <li key={s.id} data-drag-item={s.id} style={dragStyle(s)} className="list-none transition-transform duration-short4 ease-out-strong motion-reduce:transition-none">
+            {shown.map((s, i) => {
+              const shift = dragShift(s)
+              return (
+              <li key={s.id} data-drag-item={s.id} style={shift.row} className="list-none transition-transform duration-short4 ease-out-strong motion-reduce:transition-none">
                 {/* All days: each day's stops under its label, numbered from 1 in that day (Figma Day label). */}
-                {activeDay === 'all' && shown[i - 1]?.day !== s.day ? <p className="pb-[var(--space-1)] pt-[var(--space-3)] type-eyebrow-category uppercase text-ui-fg-muted">{labels.day(s.day)}</p> : null}
+                {activeDay === 'all' && shown[i - 1]?.day !== s.day ? <p data-day-label className="pb-[var(--space-1)] pt-[var(--space-3)] type-eyebrow-category uppercase text-ui-fg-muted">{labels.day(s.day)}</p> : null}
+                <div style={shift.stop} className="transition-transform duration-short4 ease-out-strong motion-reduce:transition-none">
                 <ul>
                   <PlanStopRow name={s.name} thumbnail={s.imageSrc} number={stops.filter((x) => x.day === s.day).indexOf(s) + 1} day={s.day} duration={s.duration} durationLabel={s.durationLabel} onDuration={onDuration ? () => onDuration(s.id) : undefined} durationMenu={durationMenu?.(s.id)} onRemove={() => onRemove(s.id)} removeLabel={labels.remove(s.name)} reorderLabel={labels.reorder(s.name)} stopId={s.id} handleProps={handleProps(s)} dragging={dragId === s.id} onSelect={onSelect ? () => onSelect(s.id) : undefined} />
                 </ul>
                 {s.leg && i < shown.length - 1 ? <div className={cn('ml-[calc(var(--space-12)+var(--space-2))]', dragId === s.id && 'invisible')}><TransportMode mode="estimate" modeLabel={labels.about} time={s.leg} /></div> : null}
+                </div>
               </li>
-            ))}
+              )
+            })}
           </ol>
-          {drag?.outside ? (() => {
+          {drag?.outside || (drag?.full && labels.dayFull) ? (() => {
             const held = stops.find((x) => x.id === drag.id)
+            // Over a full day the copy says why the drop will not take (in the list, only that line).
+            const note = drag.full && labels.dayFull ? <span className="type-body-caption text-ui-fg-muted">{labels.dayFull(drag.full)}</span> : null
             return held ? (
-              <div aria-hidden className="pointer-events-none fixed z-50 flex max-w-[240px] items-center gap-[var(--space-2)] rounded-sq-md bg-ui-bg-elevated px-[var(--space-3)] py-[var(--space-2)] shadow-menu" style={{ left: drag.x + 12, top: drag.y + 12 }}>
-                <StopBadge number={stops.filter((x) => x.day === held.day).indexOf(held) + 1} day={held.day} />
-                <span className="truncate type-body-base text-ui-fg">{held.name}</span>
+              <div aria-hidden className="pointer-events-none fixed z-50 flex max-w-[240px] flex-col gap-[var(--space-1)] rounded-sq-md bg-ui-bg-elevated px-[var(--space-3)] py-[var(--space-2)] shadow-menu" style={{ left: drag.x + 12, top: drag.y + 12 }}>
+                {drag.outside ? (
+                  <span className="flex min-w-0 items-center gap-[var(--space-2)]">
+                    <StopBadge number={stops.filter((x) => x.day === held.day).indexOf(held) + 1} day={held.day} />
+                    <span className="truncate type-body-base text-ui-fg">{held.name}</span>
+                  </span>
+                ) : null}
+                {note}
               </div>
             ) : null
           })() : null}
@@ -389,17 +456,31 @@ export type LeftPanelProps = {
   /** Map type: the Plan cart; Open covers the panel. */
   cart?: ReactNode
   cartOpen?: boolean
+  /** Map type: the open cart rises over the panel and drops back down (useSheetSlide; drag on its bar). */
+  cartSlide?: ReturnType<typeof useSheetSlide>
   /** Top inset kept clear for the Universal search (shell without a top nav). */
   topClear?: boolean
   className?: string
 }
 
 /** Left panel: desktop panel next to the rail; complementary landmark. */
-export function LeftPanel({ type, label, children, cart, cartOpen, topClear, className }: LeftPanelProps) {
+export function LeftPanel({ type, label, children, cart, cartOpen, cartSlide, topClear, className }: LeftPanelProps) {
+  const raised = cartSlide ? cartSlide.mounted : cartOpen
   return (
-    <aside aria-label={label} className={cn('relative flex h-full shrink-0 flex-col bg-ui-bg', type === 'index' ? 'w-[var(--layout-left-panel-index)]' : 'w-[var(--layout-left-panel)]', topClear && 'pt-[calc(var(--space-3)+var(--control-height-xl)+var(--space-3))]', className)}>
-      <div className={cn('flex min-h-0 flex-1 flex-col overflow-y-auto scroll-py-[calc(var(--focus-ring-offset)+var(--focus-ring-width))]', cartOpen && 'invisible')}>{children}</div>
-      {type === 'map' && cart ? <div className={cn(cartOpen ? 'absolute inset-0 z-10' : 'shrink-0')}>{cart}</div> : null}
+    <aside aria-label={label} className={cn('relative flex h-full shrink-0 flex-col bg-ui-bg', cartSlide && 'overflow-hidden', type === 'index' ? 'w-[var(--layout-left-panel-index)]' : 'w-[var(--layout-left-panel)]', topClear && 'pt-[calc(var(--space-3)+var(--control-height-xl)+var(--space-3))]', className)}>
+      {/* With a sliding cart the panel's content hides once the cart has risen over it, and shows again as soon as it starts down. */}
+      <div className={cn('flex min-h-0 flex-1 flex-col overflow-y-auto scroll-py-[calc(var(--focus-ring-offset)+var(--focus-ring-width))]', cartOpen && 'invisible', cartOpen && cartSlide && 'transition-[visibility] delay-[var(--duration-medium2)]')}>{children}</div>
+      {type === 'map' && cart ? (
+        <div
+          ref={raised && cartSlide ? (n) => { cartSlide.ref.current = n } : undefined}
+          style={raised ? cartSlide?.style : undefined}
+          onTransitionEnd={raised ? cartSlide?.onTransitionEnd : undefined}
+          {...(raised && cartSlide ? cartSlide.grab : {})}
+          className={cn(raised ? 'absolute inset-0 z-10' : 'shrink-0')}
+        >
+          {cart}
+        </div>
+      ) : null}
     </aside>
   )
 }
@@ -412,12 +493,14 @@ export type SavedHubProps = {
   onOpenFolder: (id: string) => void
   onBack: () => void
   onAdd: (placeId: string) => void
+  /** Folder view: a click or Enter on a place row opens that place (the whole row; its + still adds). */
+  onOpenPlace?: (placeId: string) => void
   emptyAction: ReactNode
   labels: { back: string; add: (name: string) => string; emptyTitle: string; emptyBody: string }
 }
 
 /** Saved hub: saved places inside the map, for adding them to a plan. */
-export function SavedHub({ view, folders = [], folder, onOpenFolder, onBack, onAdd, emptyAction, labels }: SavedHubProps) {
+export function SavedHub({ view, folders = [], folder, onOpenFolder, onBack, onAdd, onOpenPlace, emptyAction, labels }: SavedHubProps) {
   // Figma Saved hub root: color/bg-raised, padding 16, gap 16 in every view.
   const root = 'flex flex-col gap-[var(--space-4)] bg-ui-bg-raised p-[var(--space-4)] text-ui-fg'
   if (view === 'empty') {
@@ -446,7 +529,21 @@ export function SavedHub({ view, folders = [], folder, onOpenFolder, onBack, onA
         <p className="type-title-card">{folder?.name}</p>
       </div>
       <ul>
-        {folder?.places.map((p) => (
+        {folder?.places.map((p) =>
+          onOpenPlace ? (
+            // The whole row opens the place: the name is a button stretched over the row (a row-wide button
+            // cannot hold the + button), the + sits above it and keeps its own click.
+            <li key={p.id} className={cn(ROW_DIVIDER, 'hover:bg-ui-state-hover has-[[data-poi-id]:focus-visible]:shadow-[inset_0_0_0_var(--focus-ring-width)_var(--color-border-focus)]')}>
+              <div className="flex min-h-[var(--target-touch-min)] w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left">
+                <span className="inline-flex shrink-0 items-center text-ui-fg-muted"><Image ratio="1:1" src={p.imageSrc} alt="" sizes="80px" className="w-[48px]" /></span>
+                <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-0-5)]">
+                  <button type="button" data-poi-id={p.id} onClick={() => onOpenPlace(p.id)} className="truncate text-left type-body-base text-ui-fg outline-none after:absolute after:inset-0 after:content-['']">{p.name}</button>
+                  {p.meta ? <span className="truncate type-body-caption text-ui-fg-muted">{p.meta}</span> : null}
+                </span>
+                <span className="relative z-10 inline-flex shrink-0 items-center"><IconButton label={labels.add(p.name)} icon={<Plus />} onClick={() => onAdd(p.id)} /></span>
+              </div>
+            </li>
+          ) : (
           <ListItem
             key={p.id}
             title={p.name}
@@ -454,7 +551,8 @@ export function SavedHub({ view, folders = [], folder, onOpenFolder, onBack, onA
             leading={<Image ratio="1:1" src={p.imageSrc} alt="" sizes="80px" className="w-[48px]" />}
             trailing={<IconButton label={labels.add(p.name)} icon={<Plus />} onClick={() => onAdd(p.id)} />}
           />
-        ))}
+          ),
+        )}
       </ul>
     </div>
   )
