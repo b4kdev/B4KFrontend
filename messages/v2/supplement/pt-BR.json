@@ -324,7 +324,7 @@
     "CD1587": "Todos os {n} selecionados",
     "CD1588": "Criar plano ({n})",
     "CD1589": "Um plano comporta até 48 lugares. Desmarque um para adicionar outro.",
-    "CD1590": "{n} de 12 conquistados",
+    "CD1590": "{earned} de {total} conquistados",
     "CD1591": "Entre para começar a conquistar",
     "CD1592": "Você",
     "CD1593": "Publique um plano para aparecer aqui.",
@@ -361,11 +361,11 @@
     "CD1624": "Caçador de Sabores",
     "CD1625": "Top 10 da Semana",
     "CD1626": "Guia Lendário",
-    "CD1627": "Receba 10 curtidas nos seus planos",
-    "CD1628": "Salve 5 lugares de K-Drama",
+    "CD1627": "Receba 10 curtidas nos seus roteiros",
+    "CD1628": "Salve 10 lugares de K-Drama",
     "CD1629": "Salve 5 lugares de K-Beauty",
-    "CD1630": "Salve 5 lugares de K-Culture",
-    "CD1631": "Salve 3 lugares em Jeju",
+    "CD1630": "Salve 25 lugares de K-Culture",
+    "CD1631": "Salve 10 lugares em Jeju",
     "CD1632": "Publique 10 planos",
     "CD1633": "Salve 5 lugares de comida",
     "CD1634": "Entre no top 10 semanal",
@@ -382,130 +382,130 @@
     "about": "Aprox.",
     "mapError": "Não foi possível carregar o mapa. Verifique sua conexão e tente novamente.",
     "addedToDay": "Adicionado ao Dia {day}",
-    "discardBody": "Isso remove {count, plural, one {# parada} other {# paradas}} do seu plano em andamento. Esta ação não pode ser desfeita.",
+    "discardBody": "{count, plural, one {O # lugar do seu roteiro em andamento será removido.} other {Os # lugares do seu roteiro em andamento serão removidos.}} Esta ação não pode ser desfeita.",
     "viewOnPartner": "Ver no {partner}",
     "noCategoryTrending": "Nenhum lugar de {category} em alta ainda",
     "noTrending": "Nenhum lugar em alta ainda",
     "editing": "Editando · {title}",
-    "editDraftBody": "O mapa tem um plano em andamento com {count, plural, one {# parada} other {# paradas}}. Salve ou descarte antes de editar {title}.",
+    "editDraftBody": "O mapa tem um roteiro em andamento com {count, plural, one {# lugar} other {# lugares}}. Salve ou descarte esse roteiro antes de editar {title}.",
     "createdBy": "Criado por {name}",
     "deletePlanTitle": "Excluir {title}?",
     "days": "{count, plural, one {# dia} other {# dias}}",
     "lastAddedMore": "{count, plural, =0 {Último adicionado} other {Último adicionado · mais #}}",
     "deleteDay": "Excluir dia {n}",
     "deleteDayTitle": "Excluir o dia {n}?",
-    "deleteDayBody": "{count, plural, one {# lugar} other {# lugares}} deste dia {count, plural, one {será removido} other {serão removidos}} do seu plano.",
+    "deleteDayBody": "{count, plural, one {# lugar} other {# lugares}} deste dia {count, plural, one {será removido} other {serão removidos}} do seu roteiro.",
     "deleteDayConfirm": "Excluir",
     "previousDays": "Dias anteriores",
     "nextDays": "Próximos dias",
     "settingsData": "Seus dados e privacidade",
     "deleteAccountNote": "Excluída após 30 dias; entre antes disso para restaurar",
-    "profilePlansNote": "Planos públicos, como os outros os veem. Rascunhos e planos privados ficam em Salvos.",
+    "profilePlansNote": "Roteiros públicos, como os outros os veem. Rascunhos e roteiros privados ficam em Salvos.",
     "openSaved": "Abrir Salvos",
     "linkExpired": "Link expirado",
     "interestsPicked": "{count, plural, one {# escolhido} other {# escolhidos}} · usado no Início e no Plano rápido",
     "searchArea": "Buscar nesta área",
-    "dayTotal": "Dia {n} · {time} · {count} de {max} paradas",
-    "allDaysTotal": "Todos os dias · {time} · {count, plural, one {# parada} other {# paradas}}",
+    "dayTotal": "Dia {n} · {time} · {count} de {max} lugares",
+    "allDaysTotal": "Todos os dias · {time} · {count, plural, one {# lugar} other {# lugares}}",
     "areaName": "{district}, {city}",
     "rides": {
       "dish": {
-        "title": "Pick a dish",
-        "line": "Choose what you want to eat. We show where."
+        "title": "Escolha um prato",
+        "line": "Escolha o que você quer comer. A gente mostra onde."
       },
       "city": {
-        "title": "Food trips by city",
-        "line": "One city, one day of eating."
+        "title": "Viagens gastronômicas por cidade",
+        "line": "Uma cidade, um dia de comilança."
       },
       "pick": {
         "title": "B4K Pick",
-        "line": "Tables our editors pick first."
+        "line": "Os lugares que nossos editores escolhem primeiro."
       },
       "local": {
-        "title": "Eat like a local",
-        "line": "How people here eat on a normal day."
+        "title": "Coma como um local",
+        "line": "Como as pessoas daqui comem num dia comum."
       },
       "region": {
-        "title": "Start from a region",
-        "line": "Where will you be? Start there."
+        "title": "Comece por uma região",
+        "line": "Onde você vai estar? Comece por lá."
       },
       "season": {
-        "title": "Chase the season",
-        "line": "Pick a season; go where it is at its best."
+        "title": "Siga a estação",
+        "line": "Escolha uma estação e vá aonde ela está no auge."
       },
       "towns": {
-        "title": "Unknown Korea",
-        "line": "Small towns, one day each. Pick a town."
+        "title": "Coreia desconhecida",
+        "line": "Cidades pequenas, um dia em cada. Escolha uma cidade."
       },
       "kids": {
-        "title": "Who's coming",
-        "line": "Days that work with kids along."
+        "title": "Quem vai junto",
+        "line": "Dias que funcionam com crianças."
       },
       "history": {
-        "title": "Korea through history",
-        "line": "Walks through the eras, one story each."
+        "title": "A Coreia pela história",
+        "line": "Passeios pelas épocas, uma história em cada."
       },
       "bias": {
-        "title": "Follow your bias",
-        "line": "Pick an artist. Walk where they went."
+        "title": "Siga seu bias",
+        "line": "Escolha um artista. Vá aos lugares por onde ele passou."
       },
       "week": {
-        "title": "This week",
-        "line": "What is on right now."
+        "title": "Esta semana",
+        "line": "O que está rolando agora."
       },
       "haul": {
-        "title": "Album run",
-        "line": "Tick off the shops as you go."
+        "title": "Caça aos álbuns",
+        "line": "Marque as lojas conforme for passando."
       },
       "routes": {
-        "title": "Fan routes",
-        "line": "Ready-made fan days, stop by stop."
+        "title": "Roteiros de fã",
+        "line": "Dias de fã prontos, lugar por lugar."
       },
       "scene": {
-        "title": "Scene finder",
-        "line": "Pick a show. Stand where it was shot."
+        "title": "Encontre a cena",
+        "line": "Escolha uma série. Pise onde ela foi gravada."
       },
       "walk": {
-        "title": "Walk the show",
-        "line": "A day on set, stop by stop."
+        "title": "Percorra a série",
+        "line": "Um dia nas locações, lugar por lugar."
       },
       "lead": {
-        "title": "Live like a lead",
-        "line": "Two ways to step into the screen."
+        "title": "Viva como protagonista",
+        "line": "Dois jeitos de entrar na tela."
       },
       "dramaPopups": {
-        "title": "Pop-ups and more",
-        "line": "Where drama pop-ups open first, and the Netflix sets."
+        "title": "Pop-ups e mais",
+        "line": "Onde os pop-ups de doramas abrem primeiro, e os cenários da Netflix."
       },
       "done": {
-        "title": "Get it done in Korea",
-        "line": "Pick what you want done. See where.",
-        "short": "Get it done"
+        "title": "Faça na Coreia",
+        "line": "Escolha o que você quer fazer. Veja onde.",
+        "short": "Faça aqui"
       },
       "runs": {
-        "title": "Shopping runs",
-        "line": "Pick a run. See the shops on it."
+        "title": "Rotas de compras",
+        "line": "Escolha uma rota. Veja as lojas dela."
       },
       "first": {
-        "title": "First time?",
-        "line": "Start here: the foolproof first course."
+        "title": "Primeira vez?",
+        "line": "Comece aqui: o roteiro infalível para a primeira vez."
       },
       "hero": {
-        "k-food": "What to eat in Korea, and where to eat it.",
-        "k-culture": "Palaces, temples, mountains and the small towns between them.",
-        "k-pop": "Follow your bias through Seoul and beyond.",
-        "k-drama": "Stand where the scene was shot.",
-        "k-beauty": "Treatments, shops and the haul to take home."
+        "k-food": "O que comer na Coreia, e onde comer.",
+        "k-culture": "Palácios, templos, montanhas e as cidadezinhas entre eles.",
+        "k-pop": "Siga seu bias por Seul e além.",
+        "k-drama": "Pise onde a cena foi gravada.",
+        "k-beauty": "Tratamentos, lojas e as compras para levar para casa."
       },
       "opt": {
         "naengmyeon": "Naengmyeon",
         "tteokbokki": "Tteokbokki",
         "jajangmyeon": "Jajangmyeon",
         "dakgalbi": "Dakgalbi",
-        "porkRiceSoup": "Pork rice soup",
+        "porkRiceSoup": "Dwaeji-gukbap",
         "wangGalbi": "Wang-galbi",
-        "blackPork": "Black pork",
-        "bread": "Bread",
+        "blackPork": "Porco-preto",
+        "bread": "Pães",
         "gimbap": "Gimbap",
         "busan": "Busan",
         "jeju": "Jeju",
@@ -515,59 +515,59 @@
         "suwon": "Suwon",
         "chuncheon": "Chuncheon",
         "daejeon": "Daejeon",
-        "spring": "Spring",
-        "summer": "Summer",
-        "autumn": "Autumn",
-        "winter": "Winter",
-        "sunset": "Sunset",
-        "hotSprings": "Hot springs",
-        "zoos": "Zoos",
-        "safari": "Safari",
-        "waterPark": "Water park",
-        "hanRiver": "Han River",
-        "smArtists": "SM artists",
+        "spring": "Primavera",
+        "summer": "Verão",
+        "autumn": "Outono",
+        "winter": "Inverno",
+        "sunset": "Pôr do sol",
+        "hotSprings": "Águas termais",
+        "zoos": "Zoológicos",
+        "safari": "Safári",
+        "waterPark": "Parque aquático",
+        "hanRiver": "Rio Hangang",
+        "smArtists": "Artistas da SM",
         "popups": "Pop-ups",
-        "birthdayCafes": "Birthday cafés",
-        "birthdayAds": "Birthday ads",
-        "big4": "Big 4 agencies",
+        "birthdayCafes": "Cafés de aniversário",
+        "birthdayAds": "Anúncios de aniversário",
+        "big4": "As Big 4",
         "hongdae": "Hongdae",
         "seongsu": "Seongsu",
-        "firstTime": "First time",
+        "firstTime": "Primeira vez",
         "gangnam": "Gangnam",
-        "netflixSets": "Netflix sets",
-        "personalColor": "Personal color",
-        "idolMakeup": "Idol makeup",
-        "biasHair": "Bias hair",
-        "idolDay": "Idol day",
+        "netflixSets": "Cenários da Netflix",
+        "personalColor": "Coloração pessoal",
+        "idolMakeup": "Maquiagem de idol",
+        "biasHair": "Cabelo do seu bias",
+        "idolDay": "Dia de idol",
         "headSpa": "Head spa",
-        "skinAnalysis": "Skin analysis",
+        "skinAnalysis": "Análise de pele",
         "jjimjilbang": "Jjimjilbang",
         "perfume": "Perfume",
-        "flagships": "Flagships",
-        "beforeYouFly": "Before you fly",
-        "gifts": "Gifts"
+        "flagships": "Lojas flagship",
+        "beforeYouFly": "Antes de embarcar",
+        "gifts": "Presentes"
       },
       "ui": {
-        "open": "Open the Collection",
-        "more": "and {n} more",
-        "also": "Also for this dish · {kind}",
-        "collections": "{n, plural, one {# Collection} other {# Collections}}",
-        "tables": "{n, plural, one {# table} other {# tables}}",
-        "tablesIn": "{n, plural, one {# table} other {# tables}} in {where}",
-        "done": "{done} of {n, plural, one {# shop} other {# shops}} done",
-        "and": "{a} and {b}",
-        "korea": "Korea",
-        "onThisPage": "On this page",
-        "pickDish": "Pick a dish",
-        "pickShow": "Pick a show",
-        "pickArtist": "Pick an artist",
-        "pickSeason": "Pick a season",
-        "pickTown": "Pick a town",
-        "pickOne": "Pick one",
-        "kindFan": "Fan trip",
-        "kindChallenge": "Challenge",
-        "kindMoment": "Moment",
-        "kindDayTrip": "Day trip"
+        "open": "Abrir a coleção",
+        "more": "e mais {n}",
+        "also": "Também para este prato · {kind}",
+        "collections": "{n, plural, one {# coleção} other {# coleções}}",
+        "tables": "{n, plural, one {# restaurante} other {# restaurantes}}",
+        "tablesIn": "{n, plural, one {# restaurante} other {# restaurantes}} em {where}",
+        "done": "Feito: {done} de {n, plural, one {# loja} other {# lojas}}",
+        "and": "{a} e {b}",
+        "korea": "Coreia",
+        "onThisPage": "Nesta página",
+        "pickDish": "Escolha um prato",
+        "pickShow": "Escolha uma série",
+        "pickArtist": "Escolha um artista",
+        "pickSeason": "Escolha uma estação",
+        "pickTown": "Escolha uma cidade",
+        "pickOne": "Escolha um",
+        "kindFan": "Viagem de fã",
+        "kindChallenge": "Desafio",
+        "kindMoment": "Momento",
+        "kindDayTrip": "Bate-volta"
       }
     }
   }
