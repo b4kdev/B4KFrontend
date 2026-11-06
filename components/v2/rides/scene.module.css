@@ -1,0 +1,45 @@
+/* Scene finder (K-Drama): the call sheet, one field of show titles in black ink (the chosen one a
+   black slate), beside it the chosen show's title card: lead still, title and line, the places as frames. */
+.sc { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--tile-gap); align-items: stretch; }
+.sheet { display: flex; flex-wrap: wrap; align-content: flex-start; gap: var(--space-1-5) var(--space-0-5); padding: var(--space-5); border-radius: var(--radius-tile); background: var(--c); }
+.show { position: relative; padding: var(--space-1-5) var(--space-3) var(--space-2); border-radius: var(--radius-md); color: var(--field-fg); font-family: var(--font-family-display); font-size: clamp(var(--font-size-2xl), 2.5vw, 40px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; text-align: left; overflow-wrap: break-word; min-width: 0; max-width: 100%; user-select: none; -webkit-tap-highlight-color: transparent; transition: background-color 180ms var(--easing-out-strong), color 180ms var(--easing-out-strong), transform 120ms var(--easing-out-strong); }
+.show[aria-pressed='true'] { background: var(--field-fg); color: var(--neutral-white); }
+.show:active { transform: scale(0.97); }
+.show:focus-visible { outline: 3px solid var(--field-fg); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) { .show:not([aria-pressed='true']):hover { background: var(--neutral-black-12); } }
+
+.card { color: var(--color-fg); display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: var(--space-5); padding: var(--space-3) var(--space-3) var(--space-6); border-radius: var(--radius-tile); background: var(--tile-surface); min-width: 0; height: 100%; }
+.lead { border-radius: var(--radius-tile-inner); }
+.title { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); padding: 0 var(--space-3); }
+.title p { margin: 0; font-size: var(--font-size-base); line-height: 1.5; max-width: 62ch; }
+.metaRow { display: flex; flex-wrap: wrap; gap: var(--space-1-5); }
+.metaRow span { padding: var(--space-1) var(--space-2-5); border-radius: var(--radius-sm); background: var(--control-fill); font-weight: 600; font-size: var(--font-size-xs); }
+.strip { list-style: none; margin: 0; padding: 0 var(--space-3); display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-4) var(--space-2-5); }
+.strip li:nth-child(6) { display: none; }
+.strip a { display: grid; align-content: start; gap: var(--space-0-5); min-width: 0; font-size: var(--font-size-xs); }
+.frame { border-radius: var(--radius-sm); margin-bottom: var(--space-1-5); }
+.strip b { font-size: var(--font-size-sm); font-weight: 700; line-height: 1.25; overflow-wrap: break-word; }
+.strip span:last-child { color: var(--color-fg-muted); }
+
+/* the change: the still settles in, the frames follow */
+[data-on='true'] > .card .lead { animation: still 320ms var(--easing-out-strong) both; }
+[data-on='true'] > .card .title, [data-on='true'] > .card .strip li { animation: rise 260ms var(--easing-out-strong) both; }
+[data-on='true'] > .card .strip li { animation-delay: calc(60ms + var(--i, 0) * 40ms); }
+@keyframes still { from { opacity: 0; transform: scale(1.04); } }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) {
+  [data-on='true'] > .card .lead, [data-on='true'] > .card .title, [data-on='true'] > .card .strip li { animation: fade 160ms ease both; animation-delay: 0ms; }
+  .show { transition: background-color 120ms ease, color 120ms ease; }
+  .show:active { transform: none; }
+}
+@keyframes fade { from { opacity: 0; } }
+
+@container rides (max-width: 980px) {
+  .sc { grid-template-columns: minmax(0, 1fr); gap: var(--space-2); }
+  .sheet { padding: var(--space-3); gap: var(--space-0-5); }
+  .show { font-size: var(--font-size-xl); padding: var(--space-1-5) var(--space-2-5) var(--space-2); }
+  .card { padding: var(--space-2) var(--space-2) var(--space-5); gap: var(--space-4); }
+  .title { padding: 0 var(--space-2); }
+  .strip { padding: 0 var(--space-2); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .strip li:nth-child(6) { display: block; }
+}
