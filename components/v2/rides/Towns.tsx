@@ -37,7 +37,7 @@ export function TownsRide({ ride }: { ride: Ride }) {
                   {c.places.slice(0, 6).map((p) => (
                     <li key={p.id}>
                       <IntlLink href={placeHref(p)} className="b4k-press">
-                        <Image src={p.img ?? undefined} alt="" ratio="1:1" sizes="56px" className={s.th} />
+                        <Image src={p.img ?? undefined} alt="" ratio="4:3" sizes="56px" className={s.th} />
                         <span>
                           <b>{p.name}</b>
                           {koName(p) ? <i lang="ko">{koName(p)}</i> : null}
@@ -46,7 +46,6 @@ export function TownsRide({ ride }: { ride: Ride }) {
                     </li>
                   ))}
                 </ol>
-                <p className={s.meta}>{w.where(c)} · {w.count(c)}</p>
                 <Cta c={c} />
               </div>
             </div>
