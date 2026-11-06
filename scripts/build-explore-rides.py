@@ -24,6 +24,60 @@ LOCALES = ['en', 'ko', 'ja', 'zh-TW', 'pt-BR']
 PLACES = 9  # the most any ride shows (Album run)
 SHOW = re.compile(r'^[‘〈『《「]([^’〉』》」]+)[’〉』》」]')
 
+# Ride tile images (in-house, public/images/explore): picker tiles by Collection slug, k-culture
+# region tiles by display region. k-food city tiles keep their place photos.
+TILE_IMG = {
+    'slide-kfood-101': 'food-naengmyeon.webp',
+    'slide-kfood-103': 'food-tteokbokki.webp',
+    'slide-food-100': 'food-jajangmyeon.webp',
+    'slide-food-96': 'food-dakgalbi.webp',
+    'slide-food-94': 'food-pork-rice-soup.webp',
+    'slide-kfood-97': 'food-wang-galbi.webp',
+    'slide-kfood-98': 'food-black-pork.webp',
+    'slide-kfood-91': 'food-bread.webp',
+    'slide-food-120': 'food-gimbap.webp',
+    'slide-kpop-1': 'pop-blackpink.webp',
+    'slide-kpop-26': 'pop-bts.webp',
+    'slide-kpop-7': 'pop-rm.webp',
+    'slide-kpop-9': 'pop-seventeen.webp',
+    'slide-kpop-18': 'pop-stray-kids.webp',
+    'slide-kpop-22': 'pop-txt.webp',
+    'slide-kpop-30': 'pop-aespa.webp',
+    'slide-kpop-27': 'pop-sm-artists.webp',
+    'slide-kbeauty-68': 'beauty-personal-color.webp',
+    'slide-kbeauty-69': 'beauty-idol-makeup.webp',
+    'slide-kbeauty-73': 'beauty-bias-hair.webp',
+    'slide-kbeauty-74': 'beauty-idol-day.webp',
+    'slide-kbeauty-82': 'beauty-head-spa.webp',
+    'slide-kbeauty-83': 'beauty-skin-analysis.webp',
+    'slide-kbeauty-77': 'beauty-jjimjilbang.webp',
+    'slide-kbeauty-78': 'beauty-perfume.webp',
+}
+REGION_IMG = {
+    '서울': 'culture-seoul.webp',
+    '강원': 'culture-gangwon.webp',
+    '경남': 'culture-gyeongnam.webp',
+    '전남': 'culture-jeonnam.webp',
+    '경기': 'culture-gyeonggi.webp',
+    '충남': 'culture-chungnam.webp',
+    '경북': 'culture-gyeongbuk.webp',
+    '충북': 'culture-chungbuk.webp',
+}
+
+
+def tile_images(P):
+    for name, page in P.items():
+        for r in page['rides']:
+            if r['kind'] == 'tiles':
+                for o in r['options']:
+                    if o['slug'] in TILE_IMG:
+                        o['img'] = '/images/explore/' + TILE_IMG[o['slug']]
+            elif name == 'k-culture' and r['id'] == 'region':
+                for g in r['groups']:
+                    if g['label'].get('region') in REGION_IMG:
+                        g['img'] = '/images/explore/' + REGION_IMG[g['label']['region']]
+    return P
+
 
 def col_dir(loc):
     return SRC / 'data' / 'col' if loc == 'en' else SRC / 'locale' / 'data' / loc / 'col'
@@ -191,7 +245,7 @@ def used(page):
 
 
 def main():
-    P = pages()
+    P = tile_images(pages())
     OUT.mkdir(parents=True, exist_ok=True)
     for loc in LOCALES:
         data = EN if loc == 'en' else load(loc)

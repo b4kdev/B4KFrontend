@@ -25,7 +25,7 @@ export function TilesRide({ ride }: { ride: Ride }) {
           const c = col(o.slug)!
           return (
             <button key={o.slug} type="button" className={cn(s.tp, 'b4k-press')} aria-pressed={i === on} onClick={() => setOn(i)}>
-              <Image src={(c.places[0]?.img ?? c.hero) || undefined} alt="" ratio="1:1" sizes="(max-width: 600px) 104px, 120px" className={s.tpImg} />
+              <Image src={(o.img ?? c.places[0]?.img ?? c.hero) || undefined} alt="" ratio="1:1" sizes="(max-width: 600px) 104px, 120px" className={s.tpImg} />
               <span>{w.label(o.label)}</span>
             </button>
           )
