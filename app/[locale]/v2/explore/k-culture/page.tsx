@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { CategoryScreen } from '@/components/v2/screens/A2Explore'
 import { JsonLd } from '@/components/v2/JsonLd'
+import { getRidePage } from '@/lib/explore-rides'
 import { buildExploreBreadcrumbJsonLd, buildExploreMetadata } from '@/app/[locale]/explore/_components/explore-seo'
 
 export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -13,7 +14,7 @@ export default async function Page(props: { params: Promise<{ locale: string }> 
   return (
     <>
       <JsonLd data={await buildExploreBreadcrumbJsonLd('k-culture', params.locale)} />
-      <CategoryScreen category="k-culture" />
+      <CategoryScreen category="k-culture" rides={await getRidePage('k-culture', params.locale)} />
     </>
   )
 }

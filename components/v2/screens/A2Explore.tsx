@@ -48,6 +48,9 @@ import { jsonFetch, RowState, SectionSkeletons, useContinueDraft } from './A2Hom
 import { CATEGORIES, rowName } from '../categories'
 import { NotFoundScreen } from './A4Pages'
 import { districtName, regionName } from '../map/areaName'
+import type { RidePage } from '@/lib/explore-rides-types'
+import { RideChips, Rides, shownRides, useRideNames } from '../rides/Rides'
+import { RideHero } from '../rides/Hero'
 
 // Explore (A2): Category page, See all list, Collection page,
 // Category special pages. Live data from /api/explore/*. Desktop: Left panel Index (280)
@@ -99,9 +102,10 @@ function useRowLabel() {
   return (category: string, row: string) => rowName(category, row, t, k)
 }
 
-function CategoryIndex({ category, sections, active, rowsKey }: { category: string; sections: string[]; active?: string; rowsKey?: string }) {
+function CategoryIndex({ category, sections, active, rowsKey, rides }: { category: string; sections: string[]; active?: string; rowsKey?: string; rides?: boolean }) {
   const t = useCd()
   const rowLabel = useRowLabel()
+  const rideName = useRideNames()
   const router = useRouter()
   // On the category page a leaf scrolls to its row and the row in view is the selected one; on a
   // list page (See all, a collection) its row stays selected and a leaf opens the category page there.
@@ -154,9 +158,10 @@ function CategoryIndex({ category, sections, active, rowsKey }: { category: stri
             {c.slug === category
               ? [
                   ...sections.map((s) => (
-                    <TreeItem key={s} level={2} kind="leaf" label={rowLabel(c.slug, s)} selected={current === s} onSelect={() => go(c.slug, s)} />
+                    <TreeItem key={s} level={2} kind="leaf" label={rides ? rideName(s) : rowLabel(c.slug, s)} selected={current === s} onSelect={() => go(c.slug, s)} />
                   )),
-                  <TreeItem key="collections" level={2} kind="leaf" label={t('CD0162')} selected={current === 'collections'} onSelect={() => go(c.slug, 'collections')} />,
+                  // With rides the Collections live inside them: no Collections grid to jump to.
+                  ...(rides ? [] : [<TreeItem key="collections" level={2} kind="leaf" label={t('CD0162')} selected={current === 'collections'} onSelect={() => go(c.slug, 'collections')} />]),
                 ]
               : null}
           </TreeItem>
@@ -166,7 +171,7 @@ function CategoryIndex({ category, sections, active, rowsKey }: { category: stri
   )
 }
 
-function ExploreFrame({ category, sections, active, pageTitle, rowsKey, children }: { category: string; sections: string[]; active?: string; pageTitle?: string; rowsKey?: string; children: React.ReactNode }) {
+function ExploreFrame({ category, sections, active, pageTitle, rowsKey, rides, children }: { category: string; sections: string[]; active?: string; pageTitle?: string; rowsKey?: string; rides?: RidePage | null; children: React.ReactNode }) {
   const t = useCd()
   // The phone layout (category tabs, no Index panel) runs until the shell's desktop layout, as
   // the shell keeps its phone bars below that width too.
@@ -178,7 +183,7 @@ function ExploreFrame({ category, sections, active, pageTitle, rowsKey, children
       {!phone ? (
         // The page scrolls under the Header; the Index stays put below it and scrolls on its own.
         <LeftPanel type="index" label={t('CD0804')} className="sticky top-0 h-[calc(100dvh-var(--layout-header-height))] self-start">
-          <CategoryIndex category={category} sections={sections} active={active} rowsKey={rowsKey} />
+          <CategoryIndex category={category} sections={sections} active={active} rowsKey={rowsKey} rides={!!rides} />
         </LeftPanel>
       ) : null}
       <div className="flex min-w-0 flex-1 flex-col">
@@ -196,6 +201,8 @@ function ExploreFrame({ category, sections, active, pageTitle, rowsKey, children
               width="equal"
               className="w-full justify-start"
             />
+            {/* The page's rides as chips under the tabs (On this page). */}
+            {rides ? <RideChips page={rides} /> : null}
             </div>
           ) : null}
           {children}
@@ -220,7 +227,9 @@ export function ExploreEntryScreen() {
   return category ? <CategoryScreen category={category} /> : null
 }
 
-export function CategoryScreen({ category }: { category: string }) {
+/** `rides`: the page's rides from the snapshot (server). With rides they replace everything below
+ * the hero (themed rows, Planning cue, Collections grid, Packages). */
+export function CategoryScreen({ category, rides }: { category: string; rides?: RidePage | null }) {
   useEffect(() => {
     try { localStorage.setItem(LAST_CATEGORY_KEY, category) } catch {}
   }, [category])
@@ -231,8 +240,8 @@ export function CategoryScreen({ category }: { category: string }) {
   const locale = useLocale()
   const { openQuickPlan } = useV2Shell()
   const rowLabel = useRowLabel()
-  const { data, error, isLoading, mutate } = useSWR<ExploreData>(`/api/explore/${category}`, jsonFetch)
-  const cols = useSWR<{ items: CollectionCard[] }>(`/api/explore/${category}/collections?locale=${locale}`, jsonFetch)
+  const { data, error, isLoading, mutate } = useSWR<ExploreData>(rides ? null : `/api/explore/${category}`, jsonFetch)
+  const cols = useSWR<{ items: CollectionCard[] }>(rides ? null : `/api/explore/${category}/collections?locale=${locale}`, jsonFetch)
   const [colType, setColType] = useState('all')
   // The Collections grid shows 8 and Load more adds 8 while more remain under the chip; a chip
   // change starts again at 8. After Load more, focus moves to the first new card.
@@ -264,10 +273,10 @@ export function CategoryScreen({ category }: { category: string }) {
     />
   )
   const colTypes = useMemo(() => Object.keys(COLLECTION_TYPE).filter((type) => (cols.data?.items ?? []).some((c) => c.primaryType === type)), [cols.data])
-  if (isLoading) {
+  if (isLoading && !rides) {
     // As drawn: the hero block, then two loading sections (cards 260 wide on desktop).
     return (
-      <ExploreFrame category={category} sections={[]}>
+      <ExploreFrame category={category} sections={rides ? shownRides(rides).map((r) => r.id) : []} rides={rides}>
         <div aria-busy className="flex flex-col">
           <Skeleton className="-mx-[var(--grid-gutter-mobile)] -mt-[var(--space-6)] h-[var(--hero-height-section)] w-auto md:-mx-[var(--grid-gutter-tablet)] lg:-mx-[var(--space-8)]" />
           <SectionSkeletons cardClassName="w-[240px] lg:w-[260px]" />
@@ -276,10 +285,15 @@ export function CategoryScreen({ category }: { category: string }) {
     )
   }
   return (
-    <ExploreFrame category={category} sections={sections.map((s) => s.id)} rowsKey={`${sections.map((s) => s.id).join()}|${cols.data?.items.length ? 'collections' : ''}`}>
+    <ExploreFrame
+      category={category}
+      sections={rides ? shownRides(rides).map((r) => r.id) : sections.map((s) => s.id)}
+      rides={rides}
+      rowsKey={rides ? shownRides(rides).map((r) => r.id).join() : `${sections.map((s) => s.id).join()}|${cols.data?.items.length ? 'collections' : ''}`}
+    >
       <div className="flex flex-col gap-[var(--space-12)]">
-        <h1 className="sr-only">{k(`explore.${CAT_KEY[category]}.title`)}</h1>
-        {hero ? (
+        {rides ? <RideHero page={rides} title={t(CATEGORIES.find((c) => c.slug === category)?.label ?? '')} /> : <h1 className="sr-only">{k(`explore.${CAT_KEY[category]}.title`)}</h1>}
+        {!rides && hero ? (
           <Hero
             size="section"
             as="h2"
@@ -292,9 +306,10 @@ export function CategoryScreen({ category }: { category: string }) {
             className="m-0 -mb-[var(--space-6)] w-full max-md:m-0 max-md:-mb-[var(--space-6)] max-md:w-full"
           />
         ) : null}
+        {rides ? <Rides page={rides} /> : null}
         {/* One request loads every row, so a failure is page-wide: the generic body, not 'the other rows still work'. */}
-        {error ? <RowState title={k(`explore.${CAT_KEY[category]}.title`)} errorBody="CD1572" error={error} onRetry={() => mutate()} /> : null}
-        {sections.map((s, i) => {
+        {error && !rides ? <RowState title={k(`explore.${CAT_KEY[category]}.title`)} errorBody="CD1572" error={error} onRetry={() => mutate()} /> : null}
+        {!rides && sections.map((s, i) => {
           const featured = s.items.find((p) => p.is_featured)
           return (
             <div key={s.id} id={`row-${s.id}`} data-explore-row={s.id} className="flex scroll-mt-[var(--space-6)] flex-col gap-[var(--space-12)]">
@@ -309,7 +324,7 @@ export function CategoryScreen({ category }: { category: string }) {
             </div>
           )
         })}
-        {cols.data?.items.length ? (
+        {!rides && cols.data?.items.length ? (
           <div id="row-collections" data-explore-row="collections" className="scroll-mt-[var(--space-6)]" onClickCapture={cardOpen('collection', locale, isCollection)}>
           <ExploreCollections
             title={t('CD0162')}
@@ -329,10 +344,10 @@ export function CategoryScreen({ category }: { category: string }) {
                 : <Card key={c.slug} type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta={c.primaryType && COLLECTION_TYPE[c.primaryType] ? t(COLLECTION_TYPE[c.primaryType]) : ''} />)}
           />
           </div>
-        ) : cols.error ? (
+        ) : !rides && cols.error ? (
           <RowState title={t('CD0162')} errorBody="CD1564" error={cols.error} onRetry={() => cols.mutate()} />
         ) : null}
-        {PACKAGES && data?.packages?.length ? (
+        {!rides && PACKAGES && data?.packages?.length ? (
           // Package cards open the partner's site: outbound_click with its host only.
           <div
             className="contents"
