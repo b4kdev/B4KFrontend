@@ -119,7 +119,8 @@ def read_col(loc, slug, cover):
                    img=place_img(str(i['poi_id']), i.get('primary_image_url')), region=i.get('display_region') or '') for i in d['items']]
     regions = [r for r, _ in collections.Counter(p['region'] for p in places if p['region']).most_common()]
     return dict(slug=slug, type=d['primaryType'], ordered=bool(d['isOrdered']), head=head, sub=sub,
-                hero=cover or (places[0]['img'] if places else None), count=len(places), regions=regions, places=places[:PLACES])
+                hero=cover or (d['items'][0].get('primary_image_url') if d['items'] else None),  # the database photo; own place photos change no cover
+                count=len(places), regions=regions, places=places[:PLACES])
 
 
 def load(loc):
