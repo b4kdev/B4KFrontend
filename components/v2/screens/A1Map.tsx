@@ -796,6 +796,11 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       })()}
       onOpenFolder={setFolderId}
       onBack={() => setFolderId(null)}
+      // A place row opens the place as a Nearby card does; the tab stays Saved, so Back returns to this folder.
+      onOpenPlace={(id) => {
+        setSelectedId(id)
+        if (phone && snap === 'peek') setSnap('mid')
+      }}
       onAdd={(id) => {
         const p = saved.data?.pois.find((x) => x.poi_id === id)
         if (p) addToPlan({ poi_id: p.poi_id, name_ko: p.name_ko, name_en: p.name_en, coords_lat: p.coords_lat, coords_lng: p.coords_lng, display_region: p.display_region, primary_image_url: p.primary_image_url ?? undefined }, undefined, 'saved')
@@ -994,7 +999,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
             onClose={closePlanSheet}
             resizeLabel={k('itinerary.sheet.handle')}
             // Its handle is the one way to close it: a wider coral bar, and Enter or Space closes it too.
-            grabber={{ className: '[&>span]:w-[var(--space-12)]', expanded: true, onActivate: closePlanSheet }}
+            grabber={{ className: '[&>span]:w-[var(--space-12)]', expanded: true, onActivate: closePlanSheet, label: k('map.plan.stripCollapse') }}
             heights={{ full: '70dvh' }}
             className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0 touch-pan-x touch-pan-y [--accent-add:var(--nav-map)] [--sheet-handle:var(--nav-map)]"
           >
