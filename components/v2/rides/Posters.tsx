@@ -23,7 +23,7 @@ export function PostersRide({ ride, category }: { ride: Ride; category?: string 
         const field = FIELDS[i % FIELDS.length]
         return (
           <IntlLink key={slug} href={colHref(c)} className={cn(s.pst, 'b4k-press')} style={{ background: field, '--c-pst': field } as React.CSSProperties}>
-            {glyph ? <span className={s.pstG} aria-hidden><Glyph name={glyph} size={22} /></span> : null}
+            {glyph ? <span className={s.pstG} aria-hidden><Glyph name={glyph} size={40} /></span> : null}
             <b>{c.head}</b>
             {c.sub ? <span>{c.sub}</span> : null}
             <span className={s.pstM}>{w.where(c)} · {w.count(c)}</span>

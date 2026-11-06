@@ -19,9 +19,11 @@ export function CitiesRide({ ride }: { ride: Ride }) {
       <div className={s.ctiles} role="group" aria-label={r('ui.pickOne')}>
         {groups.map((g, i) => (
           <button key={i} type="button" className={cn(s.ctile, 'b4k-press')} aria-pressed={i === on} onClick={() => setOn(i)}>
-            <Image src={g.img ?? undefined} alt="" ratio="1:1" sizes="(max-width: 600px) 132px, 160px" className={s.ctImg} />
-            <b>{w.label(g.label)}</b>
-            <span>{r('ui.collections', { n: g.count })}</span>
+            <Image src={g.img ?? undefined} alt="" ratio="1:1" sizes="(max-width: 600px) 112px, 160px" className={cn(s.ctImg, 'aspect-[4/5]')} />
+            <span className={s.ctTxt}>
+              <b>{w.label(g.label)}</b>
+              <span>{r('ui.collections', { n: g.count })}</span>
+            </span>
           </button>
         ))}
       </div>
