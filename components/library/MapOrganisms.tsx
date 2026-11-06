@@ -283,6 +283,9 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
       <p aria-live="polite" className="sr-only">{announce}</p>
       {/* Open: the Left panel's color/bg, everything inside the root's 16 padding; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
       <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('relative flex w-full flex-col gap-[var(--space-3)] text-left', HIT_AREA, state === 'collapsed' ? 'p-[var(--space-4)]' : 'rounded-sq-md hover:bg-ui-state-hover', FOCUS_RING_INSET)}>
+        {/* Desktop: the phone sheet's grabber bar, centred over the cart, so the bar reads as one that opens and closes
+            (phones already show it on the sheet). Inside the button, so a click on it toggles too. */}
+        <span aria-hidden className={cn('pointer-events-none absolute hidden h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-11)] -translate-x-1/2 rounded-[3px] bg-sheet-handle lg:block', state === 'open' ? 'left-1/2 -top-[calc(var(--space-2)+var(--space-0-5))]' : 'left-[calc(50%-(var(--nav-tile-size)+var(--space-4))/2)] top-[calc(var(--space-1)+var(--space-0-5))]')} />
         <span className="flex w-full items-center gap-[var(--space-2)]">
           <span id={id} aria-live="polite" className="min-w-0 flex-1 type-title-card font-[var(--font-weight-extrabold)]">{summary}</span>
           <span className="sr-only">{state === 'open' ? labels.close : labels.open}</span>
