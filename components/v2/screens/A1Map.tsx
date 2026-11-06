@@ -824,7 +824,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     <PlanCart
       // Desktop: the cart stays open while it slides back down.
       state={order.length || cart === 'open' ? (cartSlide.mounted ? 'open' : cart) : 'empty'}
-      // Phones: the plan sheet's own handle. The plan's handle bar is the Map's coral (Sun 2026-11-06).
+      // Phones: the plan sheet's own handle. The plan's handle bar is the Map's coral.
       handle={!phone}
       className="[--sheet-handle:var(--nav-map)]"
       onToggle={() => {
@@ -858,8 +858,13 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       onMove={draft.move}
       onMoveToDay={draft.moveToDay}
       dayFull={(d) => draft.countOn(d) >= PER_DAY}
+      // A stop opens its place: the plan folds away (desktop cart to its bar, phone plan sheet closed) so the place
+      // shows, and the map moves to it; Back returns to the map with the plan folded.
       onSelect={(id) => {
+        setCart('collapsed')
+        setPlanSheet(false)
         setSelectedId(id)
+        if (phone) setSnap('mid')
         const p = order.find((x) => x.poi_id === id)
         if (p) mapRef.current?.panTo(p.coords_lat, p.coords_lng)
       }}
