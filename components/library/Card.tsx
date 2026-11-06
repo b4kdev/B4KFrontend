@@ -173,11 +173,13 @@ export function Card(props: CardProps) {
       )
     case 'category':
       return (
+        // Shorter than 4:5 on phones and with five in a row on desktop, so the band between the line
+        // and the photo stays small; 640 to 1023 keep 4:5.
         <article
           data-category={props.category}
           style={{ backgroundColor: props.color }}
           className={cn(
-            'b4k-card b4k-press group relative isolate flex aspect-[3/4] flex-col overflow-hidden rounded-tile text-field-fg focus-within:shadow-focus-ring sm:aspect-[4/5]',
+            'b4k-card b4k-press group relative isolate flex aspect-[33/40] flex-col overflow-hidden rounded-tile text-field-fg focus-within:shadow-focus-ring sm:aspect-[4/5] lg:aspect-[24/25]',
             className,
           )}
         >

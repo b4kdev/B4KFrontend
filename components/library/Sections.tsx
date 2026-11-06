@@ -118,9 +118,10 @@ export type PlanningCueProps = {
 
 /** Planning cue: three tiles between content rows; side by side on desktop, stacked below it. */
 export function PlanningCue({ state, label, tiles }: PlanningCueProps) {
-  // Three colour fields (new plan powder, Quick plan lime, from Saved stone), black ink, content at
-  // the bottom; the chevron slides on hover.
-  const tile = 'b4k-press group/tile flex min-h-[var(--action-tile-min-height)] min-w-0 flex-1 items-end gap-[var(--space-4)] rounded-tile px-[var(--space-6)] py-[calc(var(--space-5)+var(--space-0-5))] text-left text-field-fg focus-visible:shadow-focus-ring focus-visible:outline-none max-md:px-[var(--space-5)] max-md:py-[calc(var(--space-4)+var(--space-0-5))]'
+  // Three colour fields (new plan powder, Quick plan lime, from Saved stone), black ink; each tile is
+  // as tall as its content with equal room above and below, and the tallest sets the row (content
+  // centred in the others). The chevron slides on hover.
+  const tile = 'b4k-press group/tile flex min-w-0 flex-1 items-center gap-[var(--space-4)] rounded-tile px-[var(--space-6)] py-[calc(var(--space-5)+var(--space-0-5))] text-left text-field-fg focus-visible:shadow-focus-ring focus-visible:outline-none max-md:px-[var(--space-5)] max-md:py-[calc(var(--space-4)+var(--space-0-5))]'
   const body = (icon: ReactNode, t: { title: string; text: string }) => (
     <>
       <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-2)]">
