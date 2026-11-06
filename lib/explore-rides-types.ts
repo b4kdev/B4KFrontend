@@ -35,7 +35,7 @@ export type RideLabel = { key: string } | { text: string } | { region: string }
 
 /** One choice inside a picker ride: its label and the Collection it opens; `also` = more
  * Collections for the same choice, shown as rows under it. */
-export type RideOption = { label: RideLabel; slug: string; also?: string[] }
+export type RideOption = { label: RideLabel; slug: string; also?: string[]; img?: string }
 
 /** A city or region tile: its label, its photo, how many Collections it has, and up to three of them. */
 export type RideGroup = { label: RideLabel; img: string | null; count: number; slugs: string[] }
