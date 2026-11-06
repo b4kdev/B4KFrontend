@@ -89,8 +89,9 @@ export function DateRangePicker({ value, onValueChange, previousLabel, nextLabel
               const inRange = !!value.start && !!value.end && d > value.start && d < value.end
               const isFocus = same(d, focus) || (!days.some((x) => same(x, focus)) && d.getDate() === 1)
               return (
-                <span key={d.getDate()} role="gridcell" aria-selected={start || end || inRange}>
+                <span key={d.getDate()} role="gridcell" aria-selected={start || end || inRange} className="flex">
                   <CalendarDay
+                    className="w-full"
                     day={d.getDate()}
                     label={full.format(d)}
                     today={same(d, today)}
@@ -108,11 +109,10 @@ export function DateRangePicker({ value, onValueChange, previousLabel, nextLabel
           </div>
         ))}
       </div>
-      {value.start ? (
-        <button type="button" onClick={() => onValueChange({ start: null, end: null })} className="self-end type-body-link text-ui-link underline decoration-[length:var(--border-width-1-5)] underline-offset-4 transition-colors duration-short4 ease-standard hover:text-ui-link-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+      {/* Clear keeps its line before a date is picked, so the column does not grow. */}
+      <button type="button" disabled={!value.start} aria-hidden={!value.start || undefined} tabIndex={value.start ? undefined : -1} onClick={() => onValueChange({ start: null, end: null })} className="self-end disabled:invisible type-body-link text-ui-link underline decoration-[length:var(--border-width-1-5)] underline-offset-4 transition-colors duration-short4 ease-standard hover:text-ui-link-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
           {clearLabel}
         </button>
-      ) : null}
     </div>
   )
 }

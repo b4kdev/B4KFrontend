@@ -538,7 +538,7 @@
   --nav-tile-hover: var(--neutral-750);
   --tile-surface: var(--neutral-875);
   --tile-surface-sunken: var(--neutral-950);
-  --sheet-handle: var(--lavender-200);
+  --sheet-handle: var(--neutral-600);
   --selection-bg: var(--lilac-300);
   --shadow-float: 0 10px 30px rgba(0, 0, 0, 0.55);
   --shadow-menu: 0 18px 40px rgba(0, 0, 0, 0.6);

@@ -241,8 +241,9 @@ export const CalendarDay = forwardRef<HTMLButtonElement, CalendarDayProps>(funct
       )}
       {...props}
     >
-      {today && !end ? <span aria-hidden className="absolute inset-0 rounded-sq-sm border border-ui-border-strong" /> : null}
+      {/* Today: a dot under the number, so it does not read as a picked day. */}
       <span className="relative">{day}</span>
+      {today && !end ? <span aria-hidden className="absolute bottom-[var(--space-1)] left-1/2 size-[var(--space-1)] -translate-x-1/2 rounded-full bg-current" /> : null}
     </button>
   )
 })

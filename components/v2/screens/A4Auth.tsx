@@ -38,7 +38,7 @@ export function LoginScreen() {
   }, [deletion])
   return (
     <V2Page bar={{ type: 'page', title: t('CD0050'), h1: 'always' }} noFooter="phone" className="flex items-center justify-center">
-      <SignInCard {...flow} title={t('CD0054')} subtitle={t('CD0056')} />
+      <SignInCard {...flow} title={t('CD0054')} subtitle={t('CD0056')} logo />
     </V2Page>
   )
 }
@@ -90,6 +90,7 @@ export function ResetPasswordScreen() {
       {expired ? (
         <SignInCard
           {...flow}
+          logo
           view={flow.view === 'providers' ? 'link-expired' : flow.view}
           title={flow.view === 'providers' ? gap.linkExpired : t('CD0042')}
           subtitle={t('CD0060')}
@@ -98,7 +99,7 @@ export function ResetPasswordScreen() {
           onViewChange={(v) => (v === 'sign-in' || v === 'providers' ? toSignIn() : flow.onViewChange(v))}
         />
       ) : token === undefined ? null : (
-        <SignInCard view="new-password" onViewChange={() => {}} title={t('CD1500')} onGoogle={() => {}} onSubmit={save} busy={busy} error={error} confirmError={confirmError} labels={flow.labels} />
+        <SignInCard logo view="new-password" onViewChange={() => {}} title={t('CD1500')} onGoogle={() => {}} onSubmit={save} busy={busy} error={error} confirmError={confirmError} labels={flow.labels} />
       )}
     </V2Page>
   )
