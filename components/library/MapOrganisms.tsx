@@ -273,7 +273,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
       className={cn(
         'relative flex flex-col rounded-t-tile bg-ui-bg-raised text-ui-fg',
         state === 'open'
-          ? 'h-full gap-[var(--space-3)] p-[var(--space-4)]'
+          ? 'h-full gap-[var(--space-3)] p-[var(--space-4)] lg:pt-[var(--space-8)]'
           // Collapsed: hovering the bar tints the whole cart, inside its own rounded corners.
           : 'pl-[calc(var(--nav-tile-size)+var(--space-4))] transition-[background-image] has-[>button:hover]:[background-image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]',
         className,
@@ -282,11 +282,15 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
       {state === 'collapsed' ? <TrayTile /> : null}
       <p aria-live="polite" className="sr-only">{announce}</p>
       {/* Open: the Left panel's color/bg, everything inside the root's 16 padding; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
-      <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('relative flex w-full flex-col gap-[var(--space-3)] text-left', HIT_AREA, state === 'collapsed' ? 'p-[var(--space-4)]' : 'rounded-sq-md hover:bg-ui-state-hover', FOCUS_RING_INSET)}>
+      <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('relative flex w-full flex-col gap-[var(--space-3)] text-left', HIT_AREA, state === 'collapsed' ? 'p-[var(--space-4)] lg:pt-[var(--space-8)]' : 'rounded-sq-md hover:bg-ui-state-hover', FOCUS_RING_INSET)}>
+        {/* Desktop: the phone sheet's grabber bar, 12 from the cart's top and centred over it, in place of the chevron, so the
+            bar reads as one that opens and closes (phones keep the chevron; the sheet shows its own bar). Inside the button,
+            so a click on it toggles too. */}
+        <span aria-hidden className={cn('absolute hidden h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-11)] -translate-x-1/2 rounded-[3px] bg-sheet-handle lg:block', state === 'open' ? 'left-1/2 -top-[var(--space-5)]' : 'left-[calc(50%-(var(--nav-tile-size)+var(--space-4))/2)] top-[var(--space-3)]')} />
         <span className="flex w-full items-center gap-[var(--space-2)]">
           <span id={id} aria-live="polite" className="min-w-0 flex-1 type-title-card font-[var(--font-weight-extrabold)]">{summary}</span>
           <span className="sr-only">{state === 'open' ? labels.close : labels.open}</span>
-          <ChevronDown aria-hidden className={cn('size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted transition-transform', state === 'collapsed' && 'rotate-180')} />
+          <ChevronDown aria-hidden className={cn('size-[var(--icon-size-sm)] shrink-0 text-ui-fg-muted transition-transform lg:hidden', state === 'collapsed' && 'rotate-180')} />
         </span>
         {/* Figma Plan cart Collapsed › Last added: photo, place, "Last added · 2 more". */}
         {state === 'collapsed' && lastAdded ? (
@@ -336,14 +340,14 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
             {/* In All days the hint sits under the Day 1 label, as drawn. */}
             {stops.length ? null : (
               <li className="list-none">
-                {activeDay === 'all' ? <p className="type-eyebrow-category uppercase text-ui-fg-muted">{labels.day(1)}</p> : null}
+                {activeDay === 'all' ? <p className="pb-[var(--space-1)] pt-[var(--space-3)] type-eyebrow-category uppercase text-ui-fg-muted">{labels.day(1)}</p> : null}
                 <p className="type-body-base text-ui-fg-muted">{labels.emptyBody}</p>
               </li>
             )}
             {shown.map((s, i) => (
               <li key={s.id} data-drag-item={s.id} style={dragStyle(s)} className="list-none transition-transform duration-short4 ease-out-strong motion-reduce:transition-none">
                 {/* All days: each day's stops under its label, numbered from 1 in that day (Figma Day label). */}
-                {activeDay === 'all' && shown[i - 1]?.day !== s.day ? <p className="type-eyebrow-category uppercase text-ui-fg-muted">{labels.day(s.day)}</p> : null}
+                {activeDay === 'all' && shown[i - 1]?.day !== s.day ? <p className="pb-[var(--space-1)] pt-[var(--space-3)] type-eyebrow-category uppercase text-ui-fg-muted">{labels.day(s.day)}</p> : null}
                 <ul>
                   <PlanStopRow name={s.name} thumbnail={s.imageSrc} number={stops.filter((x) => x.day === s.day).indexOf(s) + 1} day={s.day} duration={s.duration} durationLabel={s.durationLabel} onDuration={onDuration ? () => onDuration(s.id) : undefined} durationMenu={durationMenu?.(s.id)} onRemove={() => onRemove(s.id)} removeLabel={labels.remove(s.name)} reorderLabel={labels.reorder(s.name)} stopId={s.id} handleProps={handleProps(s)} dragging={dragId === s.id} onSelect={onSelect ? () => onSelect(s.id) : undefined} />
                 </ul>

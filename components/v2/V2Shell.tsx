@@ -282,8 +282,8 @@ export default function V2Shell({ children }: { children: ReactNode }) {
       ) : null}
       {/* Phones: the offline notice and the toasts rise above the floor by a transform, so a sheet moving under them does not move the page. */}
       {/* Offline notice: bottom center on every screen (above the Navigation bar on phones), as drawn. Desktop:
-          centred on the content beside the rail, and on the map beside the left panel. */}
-      <div aria-live="polite" style={{ '--toast-floor': toastFloor } as CSSProperties} className={cn('pointer-events-none fixed inset-x-0 bottom-[var(--space-3)] -translate-y-[var(--toast-floor)] lg:translate-y-0 z-50 flex justify-center px-[var(--space-4)] lg:bottom-[var(--space-6)] lg:px-0', fullFlow ? null : onMap ? 'lg:pl-[calc(var(--layout-nav-rail)+var(--layout-left-panel))]' : 'lg:pl-[var(--layout-nav-rail)]')}>
+          centred on the content beside the rail; on the map centred on the window. */}
+      <div aria-live="polite" style={{ '--toast-floor': toastFloor } as CSSProperties} className={cn('pointer-events-none fixed inset-x-0 bottom-[var(--space-3)] -translate-y-[var(--toast-floor)] lg:translate-y-0 z-50 flex justify-center px-[var(--space-4)] lg:bottom-[var(--space-6)] lg:px-0', fullFlow || onMap ? null : 'lg:pl-[var(--layout-nav-rail)]')}>
         {!online ? <Toast type="warning" message={onMap ? t('CD0120') : t('CD1865')} className="pointer-events-auto" /> : null}
       </div>
       {/* Toasts: on phones 12 above whatever is at the bottom (above the offline notice while offline);
@@ -291,7 +291,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
           left panel, so its plan bar and the zoom buttons stay clear), above the cookie banner and the
           offline notice while they show. A timed toast has no close button in the design: it leaves on
           its own after 4 s. */}
-      <div aria-live="polite" style={{ '--toast-floor': toastFloor } as CSSProperties} className={cn('pointer-events-none fixed inset-x-0 bottom-[var(--space-3)] -translate-y-[var(--toast-floor)] lg:translate-y-0 z-[60] flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-[var(--space-6)] lg:px-0', fullFlow ? null : onMap ? 'lg:pl-[calc(var(--layout-nav-rail)+var(--layout-left-panel))]' : 'lg:pl-[var(--layout-nav-rail)]', !online && 'max-lg:bottom-[calc(var(--space-3)+var(--space-16))] lg:bottom-[calc(var(--space-6)+var(--space-16))]', cookie === null && 'lg:bottom-[var(--space-24)]')}>
+      <div aria-live="polite" style={{ '--toast-floor': toastFloor } as CSSProperties} className={cn('pointer-events-none fixed inset-x-0 bottom-[var(--space-3)] -translate-y-[var(--toast-floor)] lg:translate-y-0 z-[60] flex flex-col items-center gap-[var(--space-2)] px-[var(--space-4)] lg:bottom-[var(--space-6)] lg:px-0', fullFlow || onMap ? null : 'lg:pl-[var(--layout-nav-rail)]', !online && 'max-lg:bottom-[calc(var(--space-3)+var(--space-16))] lg:bottom-[calc(var(--space-6)+var(--space-16))]', cookie === null && 'lg:bottom-[var(--space-24)]')}>
         <div ref={toastBox} className="flex w-full flex-col items-center">
         {toastMsg ? (
           <Toast

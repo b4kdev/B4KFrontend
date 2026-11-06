@@ -660,6 +660,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         day: Math.min(draft.dayOf(p.poi_id), 8) as 1,
         duration: formatMinutes(draft.plan.durations[p.poi_id] ?? 60, k),
         durationLabel: k('map.plan.durationAriaLabel', { name: nameOf(p, locale) }),
+        imageSrc: p.primary_image_url ?? null,
         leg: order[i + 1] && draft.dayOf(order[i + 1].poi_id) === draft.dayOf(p.poi_id) ? k('itinerary.stats.min', { min: routedLeg(p.poi_id, order[i + 1].poi_id) ?? legMinutes(p, order[i + 1]) }) : undefined,
       }))}
       days={draft.days}
