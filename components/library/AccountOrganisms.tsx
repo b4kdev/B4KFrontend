@@ -199,8 +199,11 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
         </div>
       </div>
       {draftNotice && view === 'providers' ? (
-        <p className="flex items-start gap-[var(--space-2)] bg-ui-bg-sunken p-[var(--space-3)] type-body-caption text-ui-fg-muted">
-          <Route aria-hidden className="size-[var(--icon-size-sm)] shrink-0" />
+        // Info note inside the card: outlined, card's inner radius, icon centred on the first line.
+        <p className="flex items-start gap-[var(--space-2)] rounded-tile-inner border border-ui-border px-[var(--space-4)] py-[var(--space-3)] type-body-caption text-ui-fg-muted">
+          <span aria-hidden className="inline-flex h-[1lh] shrink-0 items-center">
+            <Route className="size-[var(--icon-size-sm)]" />
+          </span>
           {draftNotice}
         </p>
       ) : null}
