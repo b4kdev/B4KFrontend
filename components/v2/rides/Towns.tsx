@@ -27,9 +27,11 @@ export function TownsRide({ ride }: { ride: Ride }) {
       <Swap on={on}>
         {options.map((o) => {
           const c = col(o.slug)!
+          // The big photo: the place whose photo is the Collection's cover, else the first place.
+          const lead = c.places.find((p) => p.img && p.img === c.hero) ?? c.places[0]
           return (
             <div key={o.slug} className={s.tw}>
-              <Image src={(c.places[0]?.img ?? c.hero) || undefined} alt={c.places[0]?.name ?? ''} ratio="4:3" sizes="(max-width: 880px) 92vw, 640px" className={s.twBig} />
+              <Image src={(lead?.img ?? c.hero) || undefined} alt={lead?.name ?? ''} ratio="4:3" sizes="(max-width: 880px) 92vw, 640px" className={s.twBig} />
               <div className={s.txt}>
                 <h3 className={s.h3}>{c.head}</h3>
                 {c.sub ? <p>{c.sub}</p> : null}

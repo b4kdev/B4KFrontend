@@ -104,5 +104,10 @@
   "jeonju": "city-jeonju.webp",
   "sokcho": "city-sokcho.webp",
   "suwon": "city-suwon.webp"
+ },
+ "cover": {
+  "slide-food-203": "151301",
+  "slide-food-109": "139806",
+  "slide-kpop-4": "153416"
  }
 }
