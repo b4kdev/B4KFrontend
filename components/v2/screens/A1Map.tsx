@@ -90,6 +90,9 @@ const PLACE_TYPES = [
 const SHEET_GAP_PX = 8
 
 const MAP_ACCENT = { '--accent-add': 'var(--nav-map)' } as CSSProperties
+// Empty map inputs that keep their identity across renders (the map redraws on a new array).
+const NO_POIS: MapPoi[] = []
+const NO_STOPS: { poi: MapPoi; day: number; order: number }[] = []
 
 /** `poiId`: the place to open (the /place/[poiId] page); otherwise ?poi= in the address. */
 export function MapScreen({ poiId }: { poiId?: string } = {}) {
@@ -495,7 +498,13 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       setSnap('peek')
     }
   }, [hasStops, phone, selectedId])
-  const planStops = order.map((poi) => ({ poi, day: draft.dayOf(poi.poi_id), order: order.filter((p) => draft.dayOf(p.poi_id) === draft.dayOf(poi.poi_id)).indexOf(poi) + 1 }))
+  // The map rebuilds its plan pins and route lines when these change, so they keep their identity until the stops,
+  // their order or their days do (a new array on every render made the route blink).
+  const dayKey = order.map((p) => `${p.poi_id}:${draft.dayOf(p.poi_id)}`).join()
+  const planStops = useMemo(
+    () => order.map((poi) => ({ poi, day: draft.dayOf(poi.poi_id), order: order.filter((p) => draft.dayOf(p.poi_id) === draft.dayOf(poi.poi_id)).indexOf(poi) + 1 })),
+    [order, dayKey], // eslint-disable-line react-hooks/exhaustive-deps
+  )
   // The plan's stops and route show on the map only while the plan is open (desktop: the Plan
   // cart opened from the bottom of the Left panel; phones: the plan sheet).
   const planVisible = phone ? planSheet : cart === 'open'
@@ -522,7 +531,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   useEffect(() => {
     if (savedPois?.length) mapRef.current?.fitTo(savedPois.map((p) => ({ lat: p.coords_lat, lng: p.coords_lng })))
   }, [savedPois])
-  const mapPois = showPlanOnly ? (detail && !order.some((p) => p.poi_id === detail.poi_id) ? [detail] : []) : savedPois ?? listPois
+  const planOnlyPoi = showPlanOnly && detail && !order.some((p) => p.poi_id === detail.poi_id) ? detail : null
+  const mapPois = useMemo(() => (showPlanOnly ? (planOnlyPoi ? [planOnlyPoi] : NO_POIS) : savedPois ?? listPois), [showPlanOnly, planOnlyPoi, savedPois, listPois])
   const addToPlan = (poi: MapPoi, toDay?: number, from?: PlaceSource) => {
     const source = from ?? (poi.poi_id === entry.current.id ? entry.current.source : 'map')
     // Read through the ref: the toast's action runs later, on the plan as it is then.
@@ -917,7 +927,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         pois={mapPois}
         selectedId={selectedId}
         onSelect={(id) => { if (!id) return closePlace(); setSelectedId(id); setMode('nearby'); setSnap('mid') }}
-        planStops={stopsVisible ? planStops : []}
+        planStops={stopsVisible ? planStops : NO_STOPS}
         fitBottom={fitBottom}
         fitTop={fitTopPx}
         activeDay={activeDay}

@@ -625,8 +625,6 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; tone: 'light' 
   useEffect(() => {
     if (!live()) return
     const N = window.naver.maps
-    lines.current.forEach((l) => l.setMap(null))
-    lines.current = []
     const theme = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'
     const color = (day: number) => TOKEN_HEX[theme].planDays[Math.min(Math.max(day, 1), 8) - 1].fill
     const paths = routeLegs
@@ -638,17 +636,27 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; tone: 'light' 
     const casing = TOKEN_HEX[theme].routeCasing
     const width = (name: string, fallback: number) => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || fallback
     // With one day chosen, the other days stay drawn under it at OTHER_DAY_OPACITY, casing included.
+    const wanted: Record<string, unknown>[] = []
     for (const p of paths) {
       if (p.path.length < 2) continue
       const path = p.path.map((x) => new N.LatLng(x.lat, x.lng))
       const other = activeDay !== 'all' && p.day !== activeDay
       const opacity = other ? OTHER_DAY_OPACITY : 1
       const z = other ? 0 : 2
-      if (casing) {
-        lines.current.push(new N.Polyline({ map: map.current, path, strokeColor: casing, strokeWeight: width('--route-casing-width', 9), strokeOpacity: opacity, strokeLineCap: 'round', strokeLineJoin: 'round', zIndex: z + 1 }))
-      }
-      lines.current.push(new N.Polyline({ map: map.current, path, strokeColor: color(p.day), strokeWeight: width('--route-width', 5), strokeOpacity: opacity, strokeLineCap: 'round', strokeLineJoin: 'round', zIndex: z + 2 }))
+      if (casing) wanted.push({ path, strokeColor: casing, strokeWeight: width('--route-casing-width', 9), strokeOpacity: opacity, strokeLineCap: 'round', strokeLineJoin: 'round', zIndex: z + 1 })
+      wanted.push({ path, strokeColor: color(p.day), strokeWeight: width('--route-width', 5), strokeOpacity: opacity, strokeLineCap: 'round', strokeLineJoin: 'round', zIndex: z + 2 })
     }
+    // Lines already on the map take their new path and look in place (no remove and add, so a reorder does not
+    // blink); only extra lines are added or taken away.
+    wanted.forEach(({ path, ...look }, i) => {
+      const line = lines.current[i]
+      if (!line) return void (lines.current[i] = new N.Polyline({ map: map.current, path, ...look }))
+      line.setOptions(look)
+      line.setPath(path)
+      // A map made again (a language switch) takes the lines over.
+      if (line.getMap() !== map.current) line.setMap(map.current)
+    })
+    lines.current.splice(wanted.length).forEach((l) => l.setMap(null))
   }, [planStops, routeLegs, activeDay, ready])
 
   return (

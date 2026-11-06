@@ -389,7 +389,8 @@ export function PlanCart({ state, onToggle, handle = true, stops, days, activeDa
               </button>
             ) : null}
           </div>
-          <ol ref={list} className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
+          {/* Room for the focus ring of the grip and the row's buttons at the clipped edges, given back by the margin. */}
+          <ol ref={list} className="-mx-[calc(var(--focus-ring-offset)+var(--focus-ring-width))] min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-[calc(var(--focus-ring-offset)+var(--focus-ring-width))] scroll-py-[calc(var(--focus-ring-offset)+var(--focus-ring-width))]">
             {/* No stops yet: the hint under the tabs, Save off and no Discard (nothing to discard). */}
             {/* In All days the hint sits under the Day 1 label, as drawn. */}
             {stops.length ? null : (
