@@ -124,8 +124,11 @@ export function PlanningCue({ state, label, tiles }: PlanningCueProps) {
   const body = (icon: ReactNode, t: { title: string; text: string }) => (
     <>
       <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-2)]">
-        <span aria-hidden className="inline-flex size-[var(--glyph-tile-size)] shrink-0 [&>svg]:size-full [&>svg]:[stroke-width:2.6]">{icon}</span>
-        <span className="text-[length:var(--title-size-tile)] font-[var(--font-weight-extrabold)] leading-[1.05] tracking-[-0.03em] [overflow-wrap:anywhere] [&:lang(ko)]:break-keep">{t.title}</span>
+        {/* Icon beside the title, the pair on one line. */}
+        <span className="flex min-w-0 items-center gap-[var(--space-2-5)]">
+          <span aria-hidden className="inline-flex size-[var(--title-size-tile)] shrink-0 [&>svg]:size-full [&>svg]:[stroke-width:2.6]">{icon}</span>
+          <span className="min-w-0 text-[length:var(--title-size-tile)] font-[var(--font-weight-extrabold)] leading-[1.05] tracking-[-0.03em] [overflow-wrap:anywhere] [&:lang(ko)]:break-keep">{t.title}</span>
+        </span>
         <span className="line-clamp-2 [text-wrap:pretty] type-body-base text-[length:calc(var(--font-size-base)-var(--border-width-1))] text-field-fg-muted">{t.text}</span>
       </span>
       <ChevronRight aria-hidden className="size-[var(--icon-size-lg)] shrink-0 transition-transform duration-short4 ease-out-strong [@media(hover:hover)_and_(pointer:fine)]:group-hover/tile:translate-x-[var(--space-1)]" />
