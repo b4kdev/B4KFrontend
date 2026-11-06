@@ -428,7 +428,7 @@ export function LeaderboardTab() {
           seeAll={user ? { href: '/badges', label: t('CD1309') } : undefined}
         />
         {user ? (
-          <ul className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:gap-[var(--space-6)] lg:px-0">
+          <ul className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex gap-[var(--space-3)] overflow-x-auto overflow-y-hidden px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:gap-[var(--space-6)] lg:px-0">
             {/* relative: keeps the locked tiles' screen-reader label inside the scrolling track. */}
             {next.map((b) => (
               <li key={b.id} className="relative shrink-0">
@@ -625,7 +625,7 @@ function InterestsSheet({ open, initial, onClose, onSaved }: { open: boolean; in
         ) : null}
         {group ? (
           <div className={phone ? 'flex flex-col gap-[var(--space-6)]' : 'flex gap-[var(--space-6)]'}>
-            <div role="group" aria-label={t('CD0778')} className={phone ? 'flex gap-[var(--space-2)] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : 'flex w-[136px] shrink-0 flex-col items-start gap-[var(--space-3)]'}>
+            <div role="group" aria-label={t('CD0778')} className={phone ? 'b4k-focus-room flex gap-[var(--space-2)] overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : 'flex w-[136px] shrink-0 flex-col items-start gap-[var(--space-3)]'}>
               {categories.map((g) =>
                 phone ? (
                   <Chip key={g.slug} selected={g.slug === group.slug} onClick={() => setActiveGroup(g.slug)} className="shrink-0">{labelOf(g, lang)}</Chip>

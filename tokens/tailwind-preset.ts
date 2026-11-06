@@ -63,6 +63,7 @@ const b4kTokens: Partial<Config> = {
           "pin-fill": "var(--map-pin-fill)",
           "pin-stroke": "var(--map-pin-stroke)",
           "pin-selected": "var(--map-pin-selected)",
+          "pin-selected-line": "var(--map-pin-selected-line)",
           "ground": "var(--map-ground)",
           "overlay": "var(--map-overlay)",
           "route-casing": "var(--map-route-casing)",
@@ -88,7 +89,8 @@ const b4kTokens: Partial<Config> = {
           "hero": "var(--field-hero)",
           "fg": "var(--field-fg)",
           "fg-muted": "var(--field-fg-muted)",
-          "inset": "var(--field-inset)"
+          "inset": "var(--field-inset)",
+          "bullet": "var(--field-bullet)"
         },
         "action": {
           "new-plan": "var(--action-new-plan)",

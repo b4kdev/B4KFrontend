@@ -4,8 +4,8 @@
 export const TOKEN_HEX = {
   light: {
     planDays: [
-      { fill: '#c9c3ff', fg: '#000000' }, // day 1
-      { fill: '#ff7548', fg: '#000000' }, // day 2
+      { fill: '#ff7548', fg: '#000000' }, // day 1
+      { fill: '#b48fde', fg: '#000000' }, // day 2
       { fill: '#6fb08f', fg: '#000000' }, // day 3
       { fill: '#f1e66b', fg: '#000000' }, // day 4
       { fill: '#a9c5ec', fg: '#000000' }, // day 5
@@ -13,15 +13,15 @@ export const TOKEN_HEX = {
       { fill: '#d6f26b', fg: '#000000' }, // day 7
       { fill: '#c08a74', fg: '#000000' }, // day 8
     ],
-    mapPin: { fill: '#ffffff', stroke: '#0a0a0a', selected: '#ff7548' },
+    mapPin: { fill: '#ffffff', stroke: '#373737', selected: '#ff7548' },
     mapType: { food: '#f1e66b', cafe: '#c08a74', stay: '#a9c5ec', shopping: '#f2bfdc', heritage: '#6fb08f', park: '#d6f26b', other: '#b4b1aa' },
     cluster: { fill: '#0a0a0a', fg: '#ffffff', stroke: '#ffffff' },
     routeCasing: '#0a0a0a',
   },
   dark: {
     planDays: [
-      { fill: '#c9c3ff', fg: '#000000' }, // day 1
-      { fill: '#ff7548', fg: '#000000' }, // day 2
+      { fill: '#ff7548', fg: '#000000' }, // day 1
+      { fill: '#b48fde', fg: '#000000' }, // day 2
       { fill: '#6fb08f', fg: '#000000' }, // day 3
       { fill: '#f1e66b', fg: '#000000' }, // day 4
       { fill: '#a9c5ec', fg: '#000000' }, // day 5
@@ -29,7 +29,7 @@ export const TOKEN_HEX = {
       { fill: '#d6f26b', fg: '#000000' }, // day 7
       { fill: '#c08a74', fg: '#000000' }, // day 8
     ],
-    mapPin: { fill: '#ffffff', stroke: '#000000', selected: '#ff7548' },
+    mapPin: { fill: '#ffffff', stroke: '#ffffff', selected: '#ff7548' },
     mapType: { food: '#f1e66b', cafe: '#c08a74', stay: '#a9c5ec', shopping: '#f2bfdc', heritage: '#6fb08f', park: '#d6f26b', other: '#b4b1aa' },
     cluster: { fill: '#ffffff', fg: '#000000', stroke: '#000000' },
     routeCasing: null,

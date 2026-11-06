@@ -139,11 +139,12 @@ export function Card(props: CardProps) {
       )
     case 'compact':
       return (
-        <article className={cn(SHELL, 'h-[80px] flex-row rounded-tile-inner p-[var(--space-1-5)]', className)}>
+        <article className={cn(SHELL, 'min-h-[80px] flex-row rounded-tile-inner p-[var(--space-1-5)]', className)}>
           <Image ratio="1:1" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="80px" className="w-[68px] shrink-0 rounded-sq-lg" />
           <div className="panel flex min-w-0 flex-1 items-center gap-[var(--space-2)] py-[var(--space-2)] pl-[var(--space-3)] pr-[var(--space-1)]">
             <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
-              <CardLink href={href} external={external} className={cn(TITLE2, 'line-clamp-1')}>{title}</CardLink>
+              {/* Two lines at every width: one cut place names short, three overflowed the row. */}
+              <CardLink href={href} external={external} className={cn(TITLE2, 'line-clamp-2 max-sm:line-clamp-2')}>{title}</CardLink>
               <div className="flex items-center gap-[var(--space-1)] type-body-caption text-ui-fg-muted">
                 <MapPin aria-hidden className="size-[var(--icon-size-xs)] shrink-0" />
                 <span className="truncate">{props.meta}</span>

@@ -135,18 +135,21 @@ const categoryOf = (p: MapPoi) => categoryAttr(p.display_domain)
 const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
   const selected = tier === 'selected'
   if (tier === 'dot') {
-    return `<div style="${HIT}" ${markerAttrs(p.poi_id, poiLabel(p), false, categoryOf(p))}><span class="b4k-mark" style="width:var(--map-pin-dot-size);height:var(--map-pin-dot-size);border-radius:calc(var(--map-pin-dot-size) / 3);background:var(--map-pin-fill);border:var(--border-width-2) solid var(--map-pin-stroke)"></span></div>`
+    return `<div style="${HIT}" ${markerAttrs(p.poi_id, poiLabel(p), false, categoryOf(p))}><span class="b4k-mark" style="width:var(--map-pin-dot-size);height:var(--map-pin-dot-size);border-radius:calc(var(--map-pin-dot-size) / 3);background:var(--map-pin-fill);border:var(--map-pin-ring-width) solid var(--map-pin-stroke)"></span></div>`
   }
   const size = `var(${PIN_SIZE[tier]})`
-  // Squircle head, 3 px ring in the pin stroke (the selected colour when selected), pointer below.
-  const ring = `var(--border-width-pin) solid ${selected ? 'var(--map-pin-selected)' : 'var(--map-pin-stroke)'}`
+  // Squircle head, ring in the pin stroke (3 px dark, 2 px light; the selected colour when selected), pointer below.
+  // Selected also gets a 2 px line outside the ring and around the pointer: the selected colour alone is under 3:1 on the light map.
+  const ring = `var(--map-pin-ring-width) solid ${selected ? 'var(--map-pin-selected);outline:var(--border-width-pin-selected-line) solid var(--map-pin-selected-line)' : 'var(--map-pin-stroke)'}`
   const tail = selected ? 'var(--map-pin-selected)' : 'var(--map-pin-stroke)'
+  const L = 'var(--border-width-pin-selected-line)', C = 'var(--map-pin-selected-line)'
+  const tailLine = selected ? `;filter:drop-shadow(${L} 0 0 ${C}) drop-shadow(calc(-1 * ${L}) 0 0 ${C}) drop-shadow(0 ${L} 0 ${C})` : ''
   const head = p.primary_image_url
     ? `background:var(--map-pin-fill) url('${esc(pinSrc(p.primary_image_url))}') center/cover no-repeat`
     : `background:${selected ? 'var(--map-pin-selected)' : `var(--map-type-${mapTypeOf(p)})`};display:flex;align-items:center;justify-content:center`
   const name = showName || selected ? `<span style="${LABEL}">${poiLabel(p)}</span>` : ''
   // Fixed width so the anchor (half of it) stays on the place; a wider name overflows evenly on both sides.
-  return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;width:${Math.max(44, PIN_PX[tier])}px" ${markerAttrs(p.poi_id, poiLabel(p), selected, categoryOf(p))}><span class="b4k-mark" style="box-sizing:border-box;flex-shrink:0;width:${size};height:${size};border-radius:var(--radius-sm);border:${ring};${head};transition:all 160ms var(--easing-out-strong)">${p.primary_image_url ? '' : typeIcon(p)}</span><span aria-hidden style="width:0;height:0;margin-top:-1px;border-left:${TAIL_PX}px solid transparent;border-right:${TAIL_PX}px solid transparent;border-top:${TAIL_PX}px solid ${tail}"></span>${name}</div>`
+  return `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;width:${Math.max(44, PIN_PX[tier])}px" ${markerAttrs(p.poi_id, poiLabel(p), selected, categoryOf(p))}><span class="b4k-mark" style="box-sizing:border-box;flex-shrink:0;width:${size};height:${size};border-radius:var(--radius-sm);border:${ring};${head};transition:all 160ms var(--easing-out-strong)">${p.primary_image_url ? '' : typeIcon(p)}</span><span aria-hidden style="width:0;height:0;margin-top:-1px;border-left:${TAIL_PX}px solid transparent;border-right:${TAIL_PX}px solid transparent;border-top:${TAIL_PX}px solid ${tail}${tailLine}"></span>${name}</div>`
 }
 // A cluster is a button named by its place count (not shown on screen); Enter or Space zooms in like a click.
 const clusterHtml = (n: number, key: string, name: string) => {
@@ -534,7 +537,7 @@ const Canvas = forwardRef<V2MapHandle, Props & { styleId: string; tone: 'light' 
   useEffect(() => {
     if (!live() || !mapReady || !userLocation) return
     const N = window.naver.maps
-    const html = `<div aria-hidden style="pointer-events:none;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-full);background:color-mix(in srgb, var(--accent-avatar) 30%, transparent)"><span style="box-sizing:border-box;width:16px;height:16px;border-radius:var(--radius-full);background:var(--accent-avatar);border:var(--border-width-pin) solid var(--map-pin-stroke)"></span></div>`
+    const html = `<div aria-hidden style="pointer-events:none;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-full);background:color-mix(in srgb, var(--accent-avatar) 30%, transparent)"><span style="box-sizing:border-box;width:16px;height:16px;border-radius:var(--radius-full);background:var(--accent-avatar);border:var(--map-pin-ring-width) solid var(--map-pin-stroke)"></span></div>`
     const dot = new N.Marker({ map: map.current, position: new N.LatLng(userLocation.lat, userLocation.lng), icon: { content: html, anchor: new N.Point(20, 20) }, clickable: false, zIndex: Z_LAYER * Z.selected - 1 })
     return () => dot.setMap(null)
   }, [mapReady, userLocation?.lat, userLocation?.lng]) // eslint-disable-line react-hooks/exhaustive-deps

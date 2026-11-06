@@ -266,7 +266,7 @@ export function SearchScreen() {
           <h1 className="sr-only">{q ? t('CD1861', { query: q }) : t('CD1293')}</h1>
           {box.open ? box.suggestions : (
             <>
-              <div className="-mx-[var(--grid-gutter-mobile)] mb-[var(--space-4)] flex gap-[var(--space-2)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none]">
+              <div className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] mb-[var(--space-4)] flex gap-[var(--space-2)] overflow-x-auto overflow-y-hidden px-[var(--grid-gutter-mobile)] [scrollbar-width:none]">
                 <Chip type="dropdown" selected onClick={() => setSheet(true)}>{active ? t('CD1815', { count: active }) : t('CD1814')}</Chip>
                 {groups.map((g) => <Chip key={g.id} type="dropdown" onClick={() => setSheet(true)}>{groupLabel(g)}</Chip>)}
               </div>

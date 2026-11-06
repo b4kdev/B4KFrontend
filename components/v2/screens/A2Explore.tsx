@@ -185,14 +185,18 @@ function ExploreFrame({ category, sections, active, pageTitle, rowsKey, children
         {/* A list page inside a category (See all) gets a Page top bar with its title on phones, no tabs. */}
         <V2Page bar={pageTitle ? { type: 'page', title: pageTitle, h1: 'page' } : { type: 'home' }}>
           {phone && !pageTitle ? (
+            // The category tabs stay under the top bar while the page scrolls, so another category is one tap away;
+            // their ground reaches up behind the floating bar so no content shows between the two.
+            <div className="sticky top-0 z-20 -mx-[var(--grid-gutter-mobile)] -mt-[calc(var(--fab-size)+env(safe-area-inset-top)+var(--space-4))] mb-[var(--space-3)] bg-ui-bg px-[var(--grid-gutter-mobile)] pb-[var(--space-3)] pt-[calc(var(--fab-size)+env(safe-area-inset-top)+var(--space-1))] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-[var(--space-4)] after:bg-gradient-to-b after:from-[var(--color-bg)] after:to-transparent after:content-[''] md:-mx-[var(--grid-gutter-tablet)] md:px-[var(--grid-gutter-tablet)]">
             <Tabs
               label={t('CD0804')}
               value={category}
               onValueChange={(v) => router.push(`/explore/${v}`)}
               tabs={CATEGORIES.map((c) => ({ id: c.slug, label: t(c.label), color: categoryStyle(c.slug)?.color, glyph: categoryStyle(c.slug)?.glyph }))}
               width="equal"
-              className="-mt-[var(--space-4)] mb-[var(--space-6)] w-full justify-start"
+              className="w-full justify-start"
             />
+            </div>
           ) : null}
           {children}
         </V2Page>
@@ -458,7 +462,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
           Phones: the first row sits 12 under the top bar. */}
       <div className="flex flex-wrap items-center justify-between gap-x-[var(--space-3)] gap-y-[var(--space-4)] max-lg:-mt-[var(--space-3)]">
         {fromHome && row === 'trending' ? (
-          <div className="flex gap-[var(--space-2)] max-lg:-mx-[var(--grid-gutter-mobile)] max-lg:w-[calc(100%+var(--grid-gutter-mobile)*2)] max-lg:overflow-x-auto max-lg:px-[var(--grid-gutter-mobile)] max-lg:[scrollbar-width:none] lg:flex-wrap">
+          <div className="b4k-focus-room flex gap-[var(--space-2)] max-lg:-mx-[var(--grid-gutter-mobile)] max-lg:w-[calc(100%+var(--grid-gutter-mobile)*2)] max-lg:overflow-x-auto overflow-y-hidden max-lg:px-[var(--grid-gutter-mobile)] max-lg:[scrollbar-width:none] lg:flex-wrap">
             <Chip selected={chip === 'all'} onClick={() => setChip('all')}>{t('CD1267')}</Chip>
             {CATEGORIES.map((c) => <Chip key={c.slug} selected={chip === c.slug} onClick={() => setChip(c.slug)}>{t(c.label)}</Chip>)}
           </div>
