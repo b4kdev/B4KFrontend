@@ -139,7 +139,8 @@ const pinHtml = (p: MapPoi, tier: PinTier, showName: boolean) => {
   }
   const size = `var(${PIN_SIZE[tier]})`
   // Squircle head, 3 px ring in the pin stroke (the selected colour when selected), pointer below.
-  const ring = `var(--border-width-pin) solid ${selected ? 'var(--map-pin-selected)' : 'var(--map-pin-stroke)'}`
+  // Selected also gets a 2 px ink line outside the ring: the selected colour alone is under 3:1 on the map.
+  const ring = `var(--border-width-pin) solid ${selected ? 'var(--map-pin-selected);outline:var(--border-width-2) solid var(--field-fg)' : 'var(--map-pin-stroke)'}`
   const tail = selected ? 'var(--map-pin-selected)' : 'var(--map-pin-stroke)'
   const head = p.primary_image_url
     ? `background:var(--map-pin-fill) url('${esc(pinSrc(p.primary_image_url))}') center/cover no-repeat`
