@@ -12,6 +12,7 @@ import { TilesRide } from './Tiles'
 import { TownsRide } from './Towns'
 import { PostersRide } from './Posters'
 import { CitiesRide } from './Cities'
+import { ChecklistRide } from './Checklist'
 import { ColsContext, s, useRideText } from './shared'
 
 // Explore rides (category page): every section below the hero. One ride = one section with its
@@ -20,6 +21,7 @@ import { ColsContext, s, useRideText } from './shared'
 
 type Renderer = (props: { ride: Ride; category: string }) => React.ReactNode
 const RENDERERS: Partial<Record<RideKind, Renderer>> = {
+  checklist: ChecklistRide,
   cities: CitiesRide,
   posters: PostersRide,
   towns: TownsRide,
