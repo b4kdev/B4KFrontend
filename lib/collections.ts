@@ -245,6 +245,12 @@ interface SnapshotPlace {
  *  page view makes no place reads (one read per place on a cold cache tripped the guest limit). */
 const SNAPSHOT_PLACES: Record<string, SnapshotPlace> = placeSnapshot.places
 
+/** Whether the database has a photo for the place; undefined when the place is not in the snapshot. */
+export const hasDbPhoto = (poiId: string): boolean | undefined => {
+  const db = SNAPSHOT_PLACES[poiId]
+  return db ? !!db.primary_image_url : undefined
+}
+
 /** Explore cards from hand-made lists carry a name, area and photo typed by hand; the place's
  *  own name (in the page language), area and photo from the snapshot replace them. A place not in
  *  the snapshot keeps the typed values. */
