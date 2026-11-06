@@ -98,6 +98,10 @@ export type SignInCardProps = {
   email?: string
   /** New password: the error under Confirm password (Passwords don't match). */
   confirmError?: string
+  /** Sign-in page: the wordmark above the heading; the modal and sheet leave it out (the header shows it). */
+  logo?: boolean
+  /** Inside a phone sheet: one surface (no card fill or corners), Grabber on top. */
+  flush?: boolean
   labels: {
     close: string
     google: string
@@ -147,7 +151,7 @@ export type SignInCardProps = {
 }
 
 /** Sign-in card: providers, sign in / sign up, forgot, check email, new password. */
-export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGuest, draftNotice, onGoogle, onSubmit, busy, error, email = '', confirmError, labels }: SignInCardProps) {
+export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGuest, draftNotice, onGoogle, onSubmit, busy, error, email = '', confirmError, logo, flush, labels }: SignInCardProps) {
   const id = useId()
   const [values, setValues] = useState<Record<string, string>>({ email })
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => setValues((v) => ({ ...v, [k]: e.target.value }))
@@ -183,73 +187,85 @@ export function SignInCard({ view, onViewChange, title, subtitle, onClose, onGue
                 : view === 'pending-deletion' ? labels.pendingBody
                 : undefined
   const emailField = labels.emailField ?? labels.email
+  // Views with fields keep one left edge; the others centre the heading, icon and logo.
+  const form = view === 'sign-in' || view === 'sign-up' || view === 'forgot' || view === 'new-password'
+  const showClose = onClose && view !== 'new-password' && view !== 'link-expired' && view !== 'pending-deletion'
+  const icon = view === 'check-email' ? Mail : view === 'pending-deletion' ? Clock : null
+  // The error sits under the field it is about; views without fields keep it above the actions.
+  const fieldError = form ? error : undefined
   return (
-    <div className="flex w-full max-w-[420px] flex-col gap-[var(--space-4)] rounded-tile bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg">
-      {/* Figma Top row: Logo wordmark 24 + Close Ghost 40 (no Close on New password). */}
-      <div className="flex items-center justify-between gap-[var(--space-2)]">
-        <Logo />
-        {onClose && view !== 'new-password' && view !== 'link-expired' && view !== 'pending-deletion' ? <IconButton label={labels.close} icon={<X />} onClick={onClose} /> : null}
-      </div>
-      {/* Figma Heading row: Check email and Pending deletion put their 40 icon left of the heading. */}
-      <div className="flex items-start gap-[var(--space-3)]">
-        {view === 'check-email' ? <Mail aria-hidden className="size-[var(--icon-size-2xl)] shrink-0" /> : null}
-        {view === 'pending-deletion' ? <Clock aria-hidden className="size-[var(--icon-size-2xl)] shrink-0" /> : null}
-        <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-2)]">
-          <h2 id={id} className="type-display-h4">{heading}</h2>
-          {sub ? <p className="type-body-base text-ui-fg-muted">{sub}</p> : null}
+    <div
+      className={cn(
+        'relative flex w-full flex-col text-ui-fg',
+        // Secondary buttons one tone up from the card (control-fill is the card's own neutral-825 in dark).
+        'dark:[--control-fill:var(--neutral-750)] dark:[--control-fill-hover:var(--neutral-700)]',
+        flush ? 'px-[var(--space-6)] pb-[var(--space-8)]' : 'max-w-[420px] rounded-tile bg-ui-bg-elevated p-[var(--space-6)]',
+      )}
+    >
+      {flush ? (
+        <div aria-hidden className="-mx-[var(--space-6)] flex justify-center py-[var(--space-2)]">
+          <span className="h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-11)] rounded-[3px] bg-sheet-handle" />
         </div>
+      ) : null}
+      {/* Close pinned to the corner, out of the flow, so the heading owns the top row. */}
+      {showClose ? <IconButton label={labels.close} icon={<X />} onClick={onClose} className={cn('absolute right-[var(--space-3)]', flush ? 'top-[var(--space-5)]' : 'top-[var(--space-3)]')} /> : null}
+      {logo ? <Logo className={cn('mb-[var(--space-6)] h-5', !form && 'self-center')} /> : null}
+      <div className={cn('flex flex-col gap-[var(--space-2)]', flush && 'pt-[var(--space-4)]', form ? 'pr-[var(--space-8)]' : 'items-center px-[var(--space-8)] text-center')}>
+        {icon ? (() => { const I = icon; return <I aria-hidden className="mb-[var(--space-2)] size-[var(--icon-size-2xl)] shrink-0" /> })() : null}
+        <h2 id={id} className="type-display-h4 [text-wrap:balance]">{heading}</h2>
+        {sub ? <p className="type-body-base text-ui-fg-muted [overflow-wrap:anywhere]">{sub}</p> : null}
       </div>
       {draftNotice && view === 'providers' ? (
-        // Info note inside the card: outlined, card's inner radius, icon centred on the first line.
-        <p className="flex items-start gap-[var(--space-2)] rounded-tile-inner border border-ui-border px-[var(--space-4)] py-[var(--space-3)] type-body-caption text-ui-fg-muted">
+        // Info note: one tone up from the card, no line; icon centred on the first line.
+        <p className="mt-[var(--space-4)] flex items-start gap-[var(--space-2)] rounded-sq-md bg-control-fill px-[var(--space-4)] py-[var(--space-3)] type-body-caption text-ui-fg-muted">
           <span aria-hidden className="inline-flex h-[1lh] shrink-0 items-center">
             <Route className="size-[var(--icon-size-sm)]" />
           </span>
           {draftNotice}
         </p>
       ) : null}
-      {error ? <p role="alert" className="type-body-caption text-ui-danger">{error}</p> : null}
+      {error && !form ? <p role="alert" className="mt-[var(--space-4)] text-center type-body-caption text-ui-danger">{error}</p> : null}
       {view === 'providers' ? (
-        <div className="flex flex-col gap-[var(--space-2)]">
+        <div className="mt-[var(--space-6)] flex flex-col gap-[var(--space-2)]">
           <Button leadingIcon={<ProviderLogo />} onClick={onGoogle} className="w-full">{labels.google}</Button>
           <Button variant="secondary" leadingIcon={<Mail />} onClick={() => onViewChange('sign-in')} className="w-full">{labels.email}</Button>
         </div>
       ) : view === 'sign-in' || view === 'sign-up' ? (
-        <form noValidate onSubmit={submit} aria-labelledby={id} className="flex flex-col gap-[var(--space-4)]">
+        <form noValidate onSubmit={submit} aria-labelledby={id} className="mt-[var(--space-6)] flex flex-col gap-[var(--space-4)]">
           <Tabs label={labels.tabs} width="equal" baseline={false} value={view} onValueChange={(v) => onViewChange(v as SignInView)} tabs={[{ id: 'sign-in', label: labels.signIn }, { id: 'sign-up', label: labels.signUp }]} />
-          <TextInput label={emailField} showLabel type="email" autoComplete="email" required placeholder={labels.emailPlaceholder} value={values.email ?? ''} onChange={set('email')} />
-          <TextInput label={labels.password} showLabel type="password" autoComplete={view === 'sign-in' ? 'current-password' : 'new-password'} required placeholder={view === 'sign-in' ? labels.passwordPlaceholder : undefined} value={values.password ?? ''} onChange={set('password')} help={view === 'sign-up' ? labels.passwordHint : undefined} />
+          <TextInput label={emailField} showLabel type="email" autoComplete="email" autoCapitalize="none" spellCheck={false} required placeholder={labels.emailPlaceholder} value={values.email ?? ''} onChange={set('email')} />
+          <TextInput label={labels.password} showLabel type="password" autoComplete={view === 'sign-in' ? 'current-password' : 'new-password'} required placeholder={view === 'sign-in' ? labels.passwordPlaceholder : undefined} value={values.password ?? ''} onChange={set('password')} help={view === 'sign-up' ? labels.passwordHint : undefined} error={fieldError} />
           {view === 'sign-in' ? <button type="button" onClick={() => onViewChange('forgot')} className={cn('relative self-start type-body-link text-ui-link underline decoration-[length:var(--border-width-1-5)] underline-offset-4 hover:text-ui-link-hover', HIT_AREA)}>{labels.forgot}</button> : null}
-          <Button type="submit" loading={busy} className="w-full">{view === 'sign-in' ? labels.signIn : labels.signUp}</Button>
+          <Button type="submit" loading={busy} className="mt-[var(--space-2)] w-full">{view === 'sign-in' ? labels.signIn : labels.signUp}</Button>
         </form>
       ) : view === 'forgot' ? (
-        <form noValidate onSubmit={submit} className="flex flex-col gap-[var(--space-4)]">
-          <TextInput label={emailField} showLabel type="email" autoComplete="email" required placeholder={labels.emailPlaceholder} value={values.email ?? ''} onChange={set('email')} />
-          <Button type="submit" loading={busy} className="w-full">{labels.sendLink}</Button>
+        <form noValidate onSubmit={submit} className="mt-[var(--space-6)] flex flex-col gap-[var(--space-4)]">
+          <TextInput label={emailField} showLabel type="email" autoComplete="email" autoCapitalize="none" spellCheck={false} required placeholder={labels.emailPlaceholder} value={values.email ?? ''} onChange={set('email')} error={fieldError} />
+          <Button type="submit" loading={busy} className="mt-[var(--space-2)] w-full">{labels.sendLink}</Button>
         </form>
       ) : view === 'link-expired' ? (
         // Figma New password card with its fields hidden: the title and subtitle say why, one button asks again.
-        <Button onClick={() => onSubmit('link-expired', values)} loading={busy} className="w-full">{labels.sendLink}</Button>
+        <Button onClick={() => onSubmit('link-expired', values)} loading={busy} className="mt-[var(--space-6)] w-full">{labels.sendLink}</Button>
       ) : view === 'check-email' ? (
-        <Button variant="secondary" onClick={() => onSubmit('forgot', values)} loading={busy} className="w-full">{labels.resend}</Button>
+        <Button variant="secondary" onClick={() => onSubmit('forgot', values)} loading={busy} className="mt-[var(--space-6)] w-full">{labels.resend}</Button>
       ) : view === 'pending-deletion' ? (
         // Keep cancels the deletion; Continue keeps it and signs out.
-        <div className="flex flex-col items-start gap-[var(--space-4)]">
+        <div className="mt-[var(--space-6)] flex flex-col gap-[var(--space-1)]">
           <Button onClick={() => onSubmit('pending-deletion', { action: 'keep' })} loading={busy} className="w-full">{labels.keepAccount}</Button>
-          <Button variant="ghost" size="md" onClick={() => onSubmit('pending-deletion', { action: 'continue' })}>{labels.continueDeletion}</Button>
+          <Button variant="ghost" size="md" onClick={() => onSubmit('pending-deletion', { action: 'continue' })} className="mt-[var(--space-3)] w-full whitespace-normal">{labels.continueDeletion}</Button>
         </div>
       ) : (
-        <form noValidate onSubmit={submit} className="flex flex-col gap-[var(--space-4)]">
-          <TextInput label={labels.newPassword} showLabel type="password" autoComplete="new-password" required value={values.password ?? ''} onChange={set('password')} help={labels.newPasswordHint ?? labels.passwordHint} />
+        <form noValidate onSubmit={submit} className="mt-[var(--space-6)] flex flex-col gap-[var(--space-4)]">
+          <TextInput label={labels.newPassword} showLabel type="password" autoComplete="new-password" required value={values.password ?? ''} onChange={set('password')} help={labels.newPasswordHint ?? labels.passwordHint} error={fieldError} />
           <TextInput label={labels.confirmPassword} showLabel type="password" autoComplete="new-password" required placeholder={labels.confirmPlaceholder} value={values.confirm ?? ''} onChange={set('confirm')} error={confirmError} />
-          <Button type="submit" loading={busy} className="w-full">{labels.savePassword}</Button>
+          <Button type="submit" loading={busy} className="mt-[var(--space-2)] w-full">{labels.savePassword}</Button>
         </form>
       )}
-      {/* Figma Back and Guest: Ghost md 40, hugging at the start; Guest in every view but New password. */}
+      {/* Back and Guest: full-width Ghost md, centred, one axis with the buttons above. */}
       {back || guest ? (
-        <div className="flex flex-col items-start gap-[var(--space-2)]">
-          {back ? <Button variant="ghost" size="md" leadingIcon={<ArrowLeft />} onClick={() => onViewChange(back.to)}>{back.label}</Button> : null}
-          {guest ? <Button variant="ghost" size="md" onClick={onGuest}>{labels.guest}</Button> : null}
+        <div className="mt-[var(--space-4)] flex flex-col gap-[var(--space-1)]">
+          {back ? <Button variant="ghost" size="md" leadingIcon={<ArrowLeft />} onClick={() => onViewChange(back.to)} className="w-full whitespace-normal">{back.label}</Button> : null}
+          {guest ? <Button variant="ghost" size="md" onClick={onGuest} className="w-full whitespace-normal">{labels.guest}</Button> : null}
         </div>
       ) : null}
     </div>

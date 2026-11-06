@@ -42,7 +42,7 @@ export const Chip = forwardRef<HTMLButtonElement, ChipProps>(function Chip(
       aria-label={iconOnly ? String(children) : type === 'dismissible' ? dismissLabel : undefined}
       style={keyColor ? ({ ...style, '--chip-c': keyColor } as CSSProperties) : style}
       className={cn(
-        'relative inline-flex h-[var(--control-height-sm)] shrink-0 items-center justify-center gap-[var(--gap-sm)] rounded-sq-sm type-body-chip',
+        'relative inline-flex h-[var(--control-height-sm)] max-w-full shrink-0 items-center justify-center gap-[var(--gap-sm)] rounded-sq-sm type-body-chip',
         'transition-[background-color,background-image,color,transform] duration-short4 ease-out-strong enabled:active:scale-[var(--press-scale)] motion-reduce:enabled:active:scale-100 focus-visible:shadow-focus-ring focus-visible:outline-none disabled:cursor-not-allowed',
         iconOnly ? 'w-[var(--control-height-sm)]' : type === 'dropdown' ? 'pl-[var(--space-3)] pr-[var(--space-2-5)]' : 'px-[var(--space-3)]',
         type === 'map' && 'h-[var(--chip-height-map)] shadow-overlay',
@@ -70,8 +70,8 @@ export const Chip = forwardRef<HTMLButtonElement, ChipProps>(function Chip(
         </span>
       ) : null}
       {iconOnly ? null : (
-        <span className="inline-flex items-center gap-[var(--gap-xs)]">
-          {children}
+        <span className="inline-flex min-w-0 items-center gap-[var(--gap-xs)] whitespace-nowrap">
+          <span className="truncate">{children}</span>
           {count !== undefined ? <span>{count}</span> : null}
         </span>
       )}

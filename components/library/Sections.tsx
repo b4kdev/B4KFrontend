@@ -209,27 +209,45 @@ export function QuickPlan({ open, onClose, step, stepTitle, stepSubtitle, progre
   const phone = usePhone()
   const ref = useFocusTrap<HTMLDivElement>(open, onClose)
   const heading = useRef<HTMLHeadingElement>(null)
-  // Phones: the grabber drags the sheet down; past 80 px (or a tap) it closes.
+  // Phones: the grabber drags the sheet down; past 80 px, or a quick flick, it closes. A tap does nothing.
   const [drag, setDrag] = useState<number | null>(null)
-  const start = useRef(0)
+  const start = useRef({ y: 0, t: 0 })
+  // Closing plays the way out (sheet down, modal fade) before the dialog leaves the page.
+  const [leaving, setLeaving] = useState(false)
+  const wasOpen = useRef(open)
   useEffect(() => {
     if (open) heading.current?.focus()
   }, [step, open])
   useEffect(() => { if (!open) setDrag(null) }, [open])
-  if (!open) return null
+  useEffect(() => {
+    if (wasOpen.current && !open && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setLeaving(true)
+      const id = setTimeout(() => setLeaving(false), 200)
+      wasOpen.current = open
+      return () => clearTimeout(id)
+    }
+    wasOpen.current = open
+  }, [open])
+  if (!open && !leaving) return null
   const padX = phone ? 'px-[var(--space-4)]' : 'px-[var(--space-6)]'
+  const out = !open && leaving
   return (
     <>
-      <Scrim onClick={onClose} className="z-50" />
+      <Scrim onClick={onClose} className={cn('z-50 transition-opacity duration-short4 ease-standard', out && 'opacity-0')} />
       <div
         ref={ref}
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        style={phone && drag ? { transform: `translateY(${drag}px)` } : undefined}
+        style={phone ? (out ? { transform: 'translateY(100%)' } : drag ? { transform: `translateY(${drag}px)` } : undefined) : out ? { opacity: 0 } : undefined}
         className={cn(
-          'fixed z-50 flex flex-col overflow-hidden bg-ui-bg-raised text-ui-fg dark:bg-ui-bg-media',
-          phone ? 'inset-x-0 bottom-0 max-h-[min(768px,calc(100dvh-44px))] rounded-t-tile shadow-sheet motion-safe:animate-b4k-sheet-in' : 'left-1/2 top-1/2 max-h-[90dvh] w-[min(864px,calc(100%-var(--space-8)))] -translate-x-1/2 -translate-y-1/2 rounded-tile shadow-menu',
+          // Dark: the card surface (neutral-825) with controls and the date range one tone up, so the dialog stands off the black page.
+          'fixed z-50 flex flex-col overflow-hidden bg-ui-bg-raised text-ui-fg dark:bg-ui-bg-elevated dark:[--control-fill:var(--neutral-750)] dark:[--control-fill-hover:var(--neutral-700)] dark:[--color-state-selected:var(--neutral-750)]',
+          drag === null && 'transition-[transform,opacity] duration-short4 ease-out-strong',
+          phone
+            ? 'inset-x-0 bottom-0 max-h-[min(768px,calc(100dvh-44px))] rounded-t-tile shadow-sheet motion-safe:animate-b4k-sheet-in'
+            // Desktop: centred in the viewport, one height for every step (the tallest, Interests) so nothing jumps between steps.
+            : 'left-1/2 top-1/2 h-[min(680px,90dvh)] w-[min(760px,calc(100%-var(--space-8)))] -translate-x-1/2 -translate-y-1/2 rounded-tile border border-ui-border shadow-menu motion-safe:animate-b4k-fade-in',
         )}
       >
         {phone ? (
@@ -237,24 +255,27 @@ export function QuickPlan({ open, onClose, step, stepTitle, stepSubtitle, progre
             aria-hidden
             className="relative z-10 -my-[var(--space-3)] flex touch-none justify-center py-[var(--space-5)]"
             onPointerDown={(e) => {
-              start.current = e.clientY
+              start.current = { y: e.clientY, t: e.timeStamp }
               setDrag(0)
               ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
             }}
-            onPointerMove={(e) => drag !== null && setDrag(Math.max(0, e.clientY - start.current))}
-            onPointerUp={() => {
-              if (drag !== null && (drag > 80 || drag < 8)) onClose()
+            onPointerMove={(e) => drag !== null && setDrag(Math.max(0, e.clientY - start.current.y))}
+            onPointerUp={(e) => {
+              const d = e.clientY - start.current.y
+              const v = d / Math.max(1, e.timeStamp - start.current.t)
+              if (d > 80 || (d > 8 && v > 0.5)) onClose()
               setDrag(null)
             }}
+            onPointerCancel={() => setDrag(null)}
           >
             <span className="h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-11)] rounded-[3px] bg-sheet-handle" />
           </div>
         ) : null}
-        <div className={cn('flex items-center gap-[var(--space-4)] pr-[var(--space-3)]', phone ? 'pb-[var(--space-4)] pl-[var(--space-4)] pt-[var(--space-2)]' : 'py-[var(--space-4)] pl-[var(--space-6)]')}>
+        <div className={cn('flex items-center gap-[var(--space-4)]', phone ? 'pb-[var(--space-3)] pl-[var(--space-4)] pr-[var(--space-2)] pt-[var(--space-2)]' : 'py-[var(--space-4)] pl-[var(--space-6)] pr-[var(--space-3)]')}>
           {stepList || progressLabel ? (
             <>
               <div className="min-w-0 flex-1">
-                {stepList ? <StepList label={progressLabel ?? title} steps={stepList} current={step} /> : <ProgressIndicator step={step} steps={3} label={progressLabel ?? title} className="max-w-[320px]" />}
+                {stepList ? <StepList label={progressLabel ?? title} steps={stepList} current={step} /> : <ProgressIndicator step={step} steps={3} label={progressLabel ?? title} className="max-w-[480px]" />}
               </div>
               <IconButton label={closeLabel} icon={<X />} onClick={onClose} />
             </>
@@ -263,13 +284,13 @@ export function QuickPlan({ open, onClose, step, stepTitle, stepSubtitle, progre
           )}
         </div>
         <Separator className="shrink-0" />
-        <div className={cn('flex min-h-0 flex-1 flex-col gap-[var(--space-5)] overflow-y-auto py-[var(--space-6)]', padX)}>
+        <div className={cn('flex min-h-0 flex-1 flex-col gap-[var(--space-6)] overflow-y-auto overscroll-contain py-[var(--space-6)]', padX)}>
           <div className="flex flex-col gap-[var(--space-2)]">
-            <h2 ref={heading} tabIndex={-1} className="type-display-h3 outline-none">{stepTitle}</h2>
+            <h2 ref={heading} tabIndex={-1} className="type-display-h4 outline-none [text-wrap:balance]">{stepTitle}</h2>
             {stepSubtitle ? <p className="type-body-base text-ui-fg-muted">{stepSubtitle}</p> : null}
           </div>
           {aside && !phone ? (
-            <div className="flex gap-[var(--space-6)]">
+            <div className="flex items-start gap-[var(--space-8)]">
               <div className="min-w-0 flex-1">{children}</div>
               <div className="w-[280px] shrink-0">{aside}</div>
             </div>
@@ -282,7 +303,7 @@ export function QuickPlan({ open, onClose, step, stepTitle, stepSubtitle, progre
         </div>
         <Separator className="shrink-0" />
         <div className={cn('flex gap-[var(--gap-sm)] py-[var(--space-4)]', padX, phone ? 'pb-[calc(var(--space-4)+env(safe-area-inset-bottom))] [&>:last-child]:flex-1' : 'justify-end')}>
-          {back ? <Button variant="ghost" size="lg" onClick={back.onClick}>{back.label}</Button> : null}
+          {back ? <Button variant="ghost" size="lg" onClick={back.onClick} className={phone ? 'min-w-[96px]' : undefined}>{back.label}</Button> : null}
           <Button size="lg" onClick={next.onClick} disabled={next.disabled} loading={next.loading}>{next.label}</Button>
         </div>
       </div>
