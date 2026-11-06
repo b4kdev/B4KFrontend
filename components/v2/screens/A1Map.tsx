@@ -1,7 +1,7 @@
 'use client'
 
 import { Fragment, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import { BedDouble, Coffee, Crown, Flower2, Landmark, Search, ShoppingBag, Trees, Utensils } from 'lucide-react'
+import { BedDouble, ChevronRight, Coffee, Crown, Flower2, Landmark, LayoutGrid, Search, ShoppingBag, Trees, Utensils } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
@@ -150,6 +150,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // The open plan starts on All days; each day is one tab away.
   const [activeDay, setActiveDay] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>('all')
   const [snap, setSnap] = useState<SheetSnap>('mid')
+  // Phone: with the list pulled up full, the chip row folds into one chip so the list gets the room;
+  // a tap on it opens the row again until the sheet leaves full.
+  const [chipsOpen, setChipsOpen] = useState(false)
+  useEffect(() => { if (snap !== 'full') setChipsOpen(false) }, [snap])
   const [planSheet, setPlanSheet] = useState(!!params?.get('plan') && phone)
   // /plan and ?plan= open the plan on phones too (the phone check settles after the first render).
   const openedFromAddress = useRef(false)
@@ -726,7 +730,16 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   )
 
   // Chips belong to browsing: an open place hides them (phone and desktop), as drawn.
-  const chips = selectedId ? null : (
+  const picked = PLACE_TYPES.find((c) => c.id === filter)
+  const PickedIcon = picked?.icon ?? LayoutGrid
+  const chips = selectedId ? null : phone && snap === 'full' && !planSheet && !chipsOpen ? (
+    <div className="b4k-focus-room flex">
+      <Chip type="map" selected={!!picked} leadingIcon={<PickedIcon />} keyColor={picked?.color} aria-expanded={false} onClick={() => setChipsOpen(true)}>
+        {picked ? t(picked.label) : t('CD0778')}
+        <ChevronRight aria-hidden className="-mr-[var(--space-1)] size-[var(--icon-size-xs)]" />
+      </Chip>
+    </div>
+  ) : (
     <div className="b4k-focus-room flex gap-[var(--space-2)] overflow-x-auto overflow-y-hidden [scrollbar-width:none]">
       {PLACE_TYPES.map((c) => (
         <Chip key={c.id} type="map" selected={filter === c.id} leadingIcon={<c.icon />} keyColor={c.color} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setAreaBounds(bounds); setAreaMoved(false); setFilter((f) => (f === c.id ? null : c.id)) }}>{t(c.label)}</Chip>
