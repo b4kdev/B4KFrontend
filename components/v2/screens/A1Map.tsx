@@ -33,6 +33,7 @@ import {
   placeTypeOf,
 } from '@/components/library'
 import { usePhone, useSheetSlide } from '@/components/library/hooks'
+import { BackToExplore } from '../map/BackToExplore'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMapPois, type MapBounds, type MapPoi } from '@/hooks/useMapPois'
 import { usePlaceDetail } from '@/hooks/usePlaceDetail'
@@ -315,17 +316,21 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const [held, setHeld] = useState<{ pois: typeof livePois; area: string | null } | null>(null)
   const listPois = held?.pois ?? livePois
   const areaLine = held ? held.area : liveArea
-  const listRef = useRef<HTMLUListElement>(null)
+  // Back from a place returns to the list it came from, as it was left: the Nearby list (tab, filter, places, area)
+  // or a Saved folder; the same scroll, the phone sheet's height, and focus on the row that was opened.
+  const listBox = useRef<HTMLDivElement>(null)
   const listScroll = useRef(0)
-  const listSnap = useRef<SheetSnap>('mid')
+  const listFrom = useRef<{ mode: typeof mode; folderId: string | null; snap: SheetSnap }>({ mode, folderId, snap })
   const openedCard = useRef<string | null>(null)
+  const restoring = useRef(false)
   const backRow = useRef<HTMLDivElement>(null)
   const placeOpen = useRef(selectedId)
   placeOpen.current = selectedId
+  if (!selectedId) listFrom.current = { mode, folderId, snap }
   // The list's scroll, read while it shows (a scroll that comes from the list leaving is not kept).
   useEffect(() => {
     const onScroll = (e: Event) => {
-      if (placeOpen.current || !(e.target instanceof HTMLElement) || !listRef.current || !e.target.contains(listRef.current)) return
+      if (placeOpen.current || !(e.target instanceof HTMLElement) || !listBox.current || !e.target.contains(listBox.current)) return
       listScroll.current = e.target.scrollTop
     }
     document.addEventListener('scroll', onScroll, true)
@@ -341,20 +346,28 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     wasOpen.current = selectedId
     if (selectedId && !was) {
       openedCard.current = selectedId
-      if (mode === 'nearby') setHeld({ pois: livePois, area: liveArea })
+      if (listFrom.current.mode === 'nearby') setHeld({ pois: livePois, area: liveArea })
     }
     // A place opens at its top, wherever the list (or the place before) was scrolled.
     const top = selectedId ? scrollerOf(backRow.current) : null
     if (top) top.scrollTop = 0
     if (selectedId || !was) return
-    // Back to the list: its scroll, its sheet height on phones, and focus on the card that was opened.
-    if (phone) setSnap(listSnap.current)
-    const list = listRef.current
-    const scroller = scrollerOf(list)
-    if (scroller) scroller.scrollTop = listScroll.current
-    list?.querySelector<HTMLElement>(`a[href$="poi=${openedCard.current}"]`)?.focus({ preventScroll: true })
+    const from = listFrom.current
+    setMode(from.mode)
+    setFolderId(from.folderId)
+    if (phone) setSnap(from.snap)
+    restoring.current = true
   }, [selectedId]) // eslint-disable-line react-hooks/exhaustive-deps
-  if (!selectedId) listSnap.current = snap
+  // Once the list it came from shows again: its scroll and focus on the row that was opened.
+  useLayoutEffect(() => {
+    const from = listFrom.current
+    if (!restoring.current || selectedId || mode !== from.mode || folderId !== from.folderId) return
+    restoring.current = false
+    const scroller = scrollerOf(listBox.current)
+    if (scroller) scroller.scrollTop = listScroll.current
+    const id = openedCard.current
+    listBox.current?.querySelector<HTMLElement>(`a[href$="poi=${id}"], [data-poi-id="${id}"]`)?.focus({ preventScroll: true })
+  })
   // An area name can come at this zoom (the geocoder names nothing past a province): hold its line.
   const areaHeld = !collectionOn && zoom >= 9
   const { detail, isError: placeMissing } = usePlaceDetail(selectedId)
@@ -729,7 +742,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         </div>
       ) : null}
       {/* Nearby by default shows the full place cards; results (a place-type chip or a collection) are compact rows. */}
-      <ul ref={listRef} className={cn('flex flex-col', filter || collectionOn ? 'gap-[var(--space-2)]' : 'gap-[var(--space-4)]')}>
+      <ul className={cn('flex flex-col', filter || collectionOn ? 'gap-[var(--space-2)]' : 'gap-[var(--space-4)]')}>
         {listPois.slice(0, 40).map((p) => (
           <li key={p.poi_id}>
             {filter || collectionOn ? (
@@ -800,7 +813,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       <IconButton label={t('CD0121')} icon={<ChevronLeft />} onClick={closePlace} />
     </div>
   )
-  const content = selectedId ? <>{placeBack}{placeView}</> : mode === 'nearby' ? nearbyList : savedView
+  const content = selectedId ? <>{placeBack}{placeView}</> : <div ref={listBox} className="contents">{mode === 'nearby' ? nearbyList : savedView}</div>
 
   const cartNode = (
     <PlanCart
@@ -960,6 +973,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         <div ref={topBars} className={cn('absolute inset-x-0 top-0 flex flex-col pt-[var(--space-2)]', !planSheet && snap === 'full' ? 'z-50' : 'z-20')}>
           <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} />
           <div className="px-[var(--space-4)]">{chips}</div>
+          {/* The way back to Explore when the place came from there (nothing otherwise, so the bars keep their height). */}
+          <div className="flex px-[var(--space-4)] pt-[var(--space-2)] empty:hidden"><BackToExplore poi={openedWith} /></div>
           {searchArea ? <div className="mt-[var(--space-4)]">{searchArea}</div> : null}
         </div>
         {/* The open plan dims the map and the bar above it, as drawn; a tap there closes it. */}
@@ -1026,6 +1041,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         {map}
         <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-col gap-[var(--space-4)] p-[var(--space-4)] [&>*]:pointer-events-auto">
           {chips}
+          {/* The way back to Explore when the place came from there; over the map's top left, the place in the panel. */}
+          <div className="flex self-start empty:hidden"><BackToExplore poi={openedWith} /></div>
           {searchArea}
         </div>
         <MapLegalLine />
