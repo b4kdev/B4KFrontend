@@ -217,7 +217,7 @@ export function PlanStopRow({ name, number, day, duration, durationLabel, onDura
     <li data-stop-id={stopId} className={cn('group relative flex h-[var(--control-height-md)] items-center gap-[var(--space-2)] rounded-sq-md transition-[transform,box-shadow,background-color] duration-short4 ease-out-strong', dragging && 'z-10 scale-[1.02] bg-ui-bg-elevated shadow-menu', className)}>
       <DragHandle label={reorderLabel} {...handleProps} className={cn('touch-none', dragging ? 'cursor-grabbing' : 'cursor-grab')} />
       <StopBadge number={number} day={day} />
-      {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="80px" className="w-[var(--control-height-md)] shrink-0" /> : null}
+      {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="80px" className="w-[var(--control-height-md)] shrink-0 rounded-sq-sm" /> : null}
       {onSelect ? (
         // 44 to tap: padding grows the button around its line; the row centres it, so the row keeps its height.
         <button type="button" onClick={onSelect} className="min-w-0 flex-1 truncate py-[calc((var(--target-touch-min)-1lh)/2)] text-left type-body-base text-ui-fg hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none">{name}</button>
