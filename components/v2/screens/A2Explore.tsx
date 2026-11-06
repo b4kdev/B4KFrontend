@@ -458,7 +458,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
           Phones: the first row sits 12 under the top bar. */}
       <div className="flex flex-wrap items-center justify-between gap-x-[var(--space-3)] gap-y-[var(--space-4)] max-lg:-mt-[var(--space-3)]">
         {fromHome && row === 'trending' ? (
-          <div className="flex gap-[var(--space-2)] max-lg:-mx-[var(--grid-gutter-mobile)] max-lg:w-[calc(100%+var(--grid-gutter-mobile)*2)] max-lg:overflow-x-auto max-lg:px-[var(--grid-gutter-mobile)] max-lg:[scrollbar-width:none] lg:flex-wrap">
+          <div className="flex gap-[var(--space-2)] max-lg:-mx-[var(--grid-gutter-mobile)] max-lg:w-[calc(100%+var(--grid-gutter-mobile)*2)] max-lg:overflow-x-auto overflow-y-hidden max-lg:px-[var(--grid-gutter-mobile)] max-lg:[scrollbar-width:none] lg:flex-wrap">
             <Chip selected={chip === 'all'} onClick={() => setChip('all')}>{t('CD1267')}</Chip>
             {CATEGORIES.map((c) => <Chip key={c.slug} selected={chip === c.slug} onClick={() => setChip(c.slug)}>{t(c.label)}</Chip>)}
           </div>

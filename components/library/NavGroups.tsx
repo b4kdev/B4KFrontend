@@ -80,7 +80,7 @@ export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollL
       onScroll={measure}
       className={cn(
         // The track: a sunken squircle, 4 inside, tabs 6 apart; it hugs its tabs unless they share the width.
-        'flex max-w-full gap-[var(--space-1-5)] overflow-x-auto rounded-sq-lg bg-tile-surface-sunken p-[var(--space-1)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+        'flex max-w-full gap-[var(--space-1-5)] overflow-x-auto overflow-y-hidden rounded-sq-lg bg-tile-surface-sunken p-[var(--space-1)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
         width === 'equal' ? 'w-full' : 'w-fit',
         scrollLabels ? 'min-w-0 flex-1' : className,
       )}

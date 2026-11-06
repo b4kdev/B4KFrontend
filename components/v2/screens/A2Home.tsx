@@ -219,7 +219,7 @@ export function HomeScreen() {
   const blocks: Record<string, React.ReactNode> = {
     exploreHub: <section aria-labelledby="explore-cats" className="flex flex-col gap-[var(--space-4)]">
               <SectionHeader id="explore-cats" title={t('CD0426')} />
-              <ul className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex gap-[var(--tile-gap)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
+              <ul className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex gap-[var(--tile-gap)] overflow-x-auto overflow-y-hidden px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
                 {CATEGORIES.map((c, i) => {
                   const k = categoryStyle(c.slug)
                   return (

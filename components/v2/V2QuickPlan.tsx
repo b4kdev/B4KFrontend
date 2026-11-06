@@ -129,7 +129,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
         {group ? (
           <div className={phone ? 'flex flex-col gap-[var(--space-6)]' : 'flex gap-[var(--space-6)]'}>
             {/* Categories: a list on desktop, a row of chips on phones (Figma Step 2 Mobile). */}
-            <div role="group" aria-label={t('CD0778')} className={phone ? 'flex gap-[var(--space-2)] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : 'flex w-[136px] shrink-0 flex-col items-start gap-[var(--space-3)]'}>
+            <div role="group" aria-label={t('CD0778')} className={phone ? 'flex gap-[var(--space-2)] overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : 'flex w-[136px] shrink-0 flex-col items-start gap-[var(--space-3)]'}>
               {categories.map((g) =>
                 phone ? (
                   <Chip key={g.slug} selected={g.slug === group.slug} onClick={() => setActiveGroup(g.slug)} className="shrink-0">{labelOf(g, lang)}</Chip>

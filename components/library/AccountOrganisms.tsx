@@ -405,7 +405,7 @@ export function ProfileHeader({ viewport, name, avatarSrc, stats, badges, action
         {inRow ? action : null}
       </div>
       {!inRow ? action : null}
-      {badges ? <div className="flex gap-[var(--space-3)] overflow-x-auto">{badges}</div> : null}
+      {badges ? <div className="flex gap-[var(--space-3)] overflow-x-auto overflow-y-hidden">{badges}</div> : null}
       {tabs}
     </header>
   )

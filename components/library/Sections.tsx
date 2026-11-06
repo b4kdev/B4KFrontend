@@ -17,7 +17,7 @@ import { Separator } from './Separator'
 // Explore packages, Plan card row, Quick plan, Planning cue, Interests card. Built from cards and
 // molecules; data as props, texts as labels.
 
-const RAIL = 'b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory scroll-px-[var(--grid-gutter-mobile)] gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] -mb-[var(--space-1)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:scroll-px-0 lg:px-0'
+const RAIL = 'b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex snap-x snap-mandatory scroll-px-[var(--grid-gutter-mobile)] gap-[var(--space-3)] overflow-x-auto overflow-y-hidden px-[var(--grid-gutter-mobile)] pb-[var(--space-1)] -mb-[var(--space-1)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:scroll-px-0 lg:px-0'
 
 export type RowSectionProps = {
   title: string
@@ -84,7 +84,7 @@ export function ExploreCollections({ title, filters, active, onFilter, cards, mo
   return (
     <section aria-labelledby={id} className="flex flex-col gap-[var(--space-4)]">
       <SectionHeader id={id} title={title} />
-      <div className="flex gap-[var(--space-2)] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex gap-[var(--space-2)] overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {filters.map((f) => <Chip key={f.id} selected={f.id === active} onClick={() => onFilter(f.id)} className="shrink-0">{f.label}</Chip>)}
       </div>
       <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4">{cards.map((c, i) => <li key={i}>{c}</li>)}</ul>
