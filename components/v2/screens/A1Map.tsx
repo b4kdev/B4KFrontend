@@ -759,6 +759,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
               <Card
                 type="compact"
                 href={`/map?poi=${p.poi_id}`}
+                onClick={openOnPage(p.poi_id)}
                 title={nameOf(p, locale)}
                 imageSrc={p.primary_image_url}
                 meta={regionName(p.display_region ?? '', locale)}
@@ -769,6 +770,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
             <Card
               type="place"
               href={`/map?poi=${p.poi_id}`}
+              onClick={openOnPage(p.poi_id)}
               title={nameOf(p, locale)}
               imageSrc={p.primary_image_url}
               placeType={placeTypeOf(p.interest_category)}
@@ -1076,3 +1078,15 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   )
 }
 
+/** A list card opens its place on the click itself: the address takes ?poi= at once (Next keeps the search params in
+ * step with pushState), so the place view shows without waiting for a server round trip. Other clicks (new tab,
+ * middle click, modifier keys) keep the plain link. */
+function openOnPage(id: string) {
+  return (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+    e.preventDefault()
+    const query = new URLSearchParams(window.location.search)
+    query.set('poi', id)
+    window.history.pushState(null, '', `${window.location.pathname}?${query}`)
+  }
+}
