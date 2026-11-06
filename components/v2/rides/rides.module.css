@@ -106,8 +106,8 @@
 .ck { background: var(--c); color: var(--field-fg); border-radius: var(--radius-tile); padding: var(--space-8); display: flex; flex-direction: column; gap: var(--space-3); }
 .ck p { margin: 0; }
 .ckList { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
-.ckList label { display: grid; grid-template-columns: auto var(--space-12) minmax(0, 1fr); gap: var(--space-2-5); align-items: center; cursor: pointer; min-width: 0; }
-.ckList label > span:last-child { display: flex; flex-direction: column; font-size: var(--font-size-sm); line-height: 1.25; min-width: 0; overflow-wrap: anywhere; }
+.ckList label { display: grid; grid-template-columns: var(--space-12) minmax(0, 1fr) auto; gap: var(--space-2-5); align-items: center; cursor: pointer; min-width: 0; }
+.ckList label > span:nth-child(2) { display: flex; flex-direction: column; font-size: var(--font-size-sm); line-height: 1.25; min-width: 0; overflow-wrap: anywhere; }
 .ckList i { font-style: normal; font-size: var(--font-size-xs); color: var(--field-fg-muted); }
 .ckList input { width: var(--space-5); height: var(--space-5); accent-color: var(--field-fg); }
 .ckProg { font-size: var(--font-size-base); }
@@ -213,7 +213,7 @@
 .alsoRow b { font-size: 17px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.25; }
 .alsoK { font-size: 13px; font-weight: 600; }
 .ckList { grid-template-columns: 1fr 1fr; gap: var(--space-2); margin-top: var(--space-2); }
-.ckList label { grid-template-columns: 22px 48px minmax(0, 1fr); gap: var(--space-3); padding: var(--space-1-5); border-radius: var(--radius-sm); background: color-mix(in srgb, var(--neutral-white) 35%, transparent); transition: background-color 160ms ease; }
+.ckList label { grid-template-columns: 48px minmax(0, 1fr) 22px; gap: var(--space-3); padding: var(--space-1-5); border-radius: var(--radius-sm); background: color-mix(in srgb, var(--neutral-white) 35%, transparent); transition: background-color 160ms ease; }
 .ckList label:has(input:checked) { background: color-mix(in srgb, var(--field-fg) 8%, transparent); }
 .ckList label:has(input:checked) b { text-decoration: line-through; }
 .ckProg { display: flex; align-items: baseline; gap: var(--space-1-5); white-space: nowrap; }
