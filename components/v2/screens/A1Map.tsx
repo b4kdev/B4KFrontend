@@ -135,6 +135,29 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   }, [phone])
 
   useEffect(() => { entry.current = { id: poiId ?? params?.get('poi') ?? null, source: previousScreenSource() } }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  // ?poi= in the address follows the open place both ways. A list card links to /map?poi=… (new tab, Back and the
+  // address bar keep working): when the address changes on the page, its place opens; when the place it opened goes
+  // (Back), the list returns. A place closed or another picked on the map drops ?poi=, so the same card opens again.
+  const urlPoi = params?.get('poi') ?? null
+  const lastUrlPoi = useRef(urlPoi)
+  useEffect(() => {
+    const was = lastUrlPoi.current
+    lastUrlPoi.current = urlPoi
+    if (urlPoi === was) return
+    if (urlPoi) {
+      setSelectedId(urlPoi)
+      setMode('nearby')
+      setSnap('mid')
+    } else setSelectedId((id) => (id === was ? null : id))
+  }, [urlPoi])
+  useEffect(() => {
+    if (!urlPoi || selectedId === urlPoi) return
+    const rest = new URLSearchParams(params?.toString())
+    rest.delete('poi')
+    const query = rest.toString()
+    lastUrlPoi.current = null
+    router.replace(query ? `/map?${query}` : '/map', { scroll: false })
+  }, [selectedId]) // eslint-disable-line react-hooks/exhaustive-deps
   const [openedWith] = useState(selectedId)
   const viewedOnce = useRef(false)
   // Escape goes back from a selected place to the list (no dialog open); a map tap does the same.
