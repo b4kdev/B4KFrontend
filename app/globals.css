@@ -9,9 +9,57 @@
 :root { color-scheme: light; }
 [data-theme="dark"] { color-scheme: dark; }
 
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   background: var(--color-bg);
   color: var(--color-fg);
+  font-family: var(--font-family-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Text selection: the hero colour with black ink, both themes. */
+::selection {
+  background: var(--selection-bg);
+  color: var(--field-fg);
+}
+
+/* Inputs: the caret is the accent; 16 px on touch so iOS never zooms the page. */
+input, textarea, select { caret-color: var(--accent-caret); }
+@media (pointer: coarse) {
+  input, textarea, select { font-size: max(16px, 1em); }
+}
+
+/* Controls: no double-tap zoom delay, no text selection on a long press. */
+a, button, [role="button"] { touch-action: manipulation; }
+button, [role="button"], [role="tab"] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Korean text, every style (body included): lines break between words, never inside one; a string
+   with no break point (a long English word, a URL) still wraps inside its box. Both inherit. */
+:lang(ko) {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.type-title-card { overflow-wrap: anywhere; }
+/* Moderniz (the English hero and hub) is set in capitals and, being a very wide face, on its own
+   smaller size scale; other languages keep sentence case and the display sizes. */
+.type-display-hero:lang(en),
+.type-display-hub:lang(en) { text-transform: uppercase; }
+.type-display-hero:lang(en) { font-size: var(--display-size-hero-brand); }
+.type-display-hub:lang(en) { font-size: var(--display-size-hub-brand); }
+
+/* Idle chips and tabs get an outline when the visitor asks for more contrast. */
+@media (prefers-contrast: more) {
+  [role="tab"]:not([aria-selected="true"]),
+  .type-body-chip:not([aria-pressed="true"]) {
+    outline: 1px solid var(--color-border-strong);
+  }
 }
 
 /* No visible scrollbars anywhere (page, panels, lists, rows), in every browser; scrolling by wheel,
@@ -25,17 +73,83 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
   width: 0;
   height: 0;
 }
+@media (pointer: fine) { html { overscroll-behavior: none; } }
+/* The map pages work like an app: a pull down moves the map or its sheet, never the browser's
+   pull-to-refresh. Other pages keep it. */
+html:has([role="application"]) { overscroll-behavior-y: none; }
+
+/* Keyboard focus: plain links and buttons (text links, prose links, text buttons) get the site's
+   ring instead of the browser's thin outline. Parts that draw their own focus (a focus-visible or
+   outline-none class, or a ring on a parent) keep it. */
+:where(a[href], button, summary, [tabindex]:not([tabindex="-1"])):focus-visible:not([class*="outline-none"]):not([class*="focus-visible:shadow"]):not(.b4k-map-marker) {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+/* A sideways-scrolling row clips anything outside its box, so the ring of a focused tile in it was
+   cut. The row gets the ring's room as padding, taken back with a negative margin so the layout
+   stays where it was; at desktop width (no side gutter) on the sides too. */
+.b4k-focus-room.b4k-focus-room {
+  --focus-room: calc(var(--focus-ring-offset) + var(--focus-ring-width));
+  padding-block: var(--focus-room);
+  margin-block: calc(var(--focus-room) * -1);
+}
+/* Doubled class: the compiled utilities (lg:px-0, lg:mx-0) come after this file. */
+@media (min-width: 1024px) {
+  .b4k-focus-room.b4k-focus-room {
+    padding-inline: var(--focus-room);
+    margin-inline: calc(var(--focus-room) * -1);
+    scroll-padding-inline: var(--focus-room);
+  }
+}
 
 /* Map pins and plan stops are focusable buttons inside the Naver map (V2MapCanvas). */
-/* Map pins are inverse to the map, not to the page theme: dark pins on the light map tiles. */
-[data-map-tone="light"] { --map-pin-fill: var(--neutral-950); --map-pin-stroke: var(--neutral-50); }
-[data-map-tone="dark"] { --map-pin-fill: var(--neutral-50); --map-pin-stroke: var(--neutral-950); }
 .b4k-map-marker:focus { outline: none; }
-.b4k-map-marker:focus-visible > span { box-shadow: var(--focus-ring); }
+/* The marker's head (pin, dot, cluster, stop badge) carries its shadow in a class, so keyboard focus
+   can add the ring on top of it; a cluster sets --mark-shadow to its own shadow. */
+.b4k-mark { box-shadow: var(--mark-shadow, var(--shadow-pin)); }
+.b4k-map-marker:focus-visible > .b4k-mark { box-shadow: var(--focus-ring), var(--mark-shadow, var(--shadow-pin)); }
+
+/* ─── Entrances (one each; the reduced-motion block below turns them into a fade) ─── */
+@keyframes b4k-rise { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+@keyframes b4k-rise-sm { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes b4k-tile-in { from { opacity: 0; transform: translateY(16px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes b4k-glyph-in { from { opacity: 0; transform: translate(-24px, 24px) scale(0.94); } to { opacity: 1; transform: none; } }
+.b4k-rise { animation: b4k-rise var(--duration-extra-long1) var(--easing-out-strong) both; }
+.b4k-glyph-in { animation: b4k-glyph-in var(--duration-extra-long3) var(--easing-out-strong) 100ms both; }
+.b4k-tile-in { animation: b4k-tile-in var(--duration-long4) var(--easing-out-strong) both; }
+/* Lists that arrive once: 40 ms per item, capped at 160 ms. */
+.b4k-stagger > * { animation: b4k-rise-sm 260ms var(--easing-out-strong) both; }
+.b4k-stagger > :nth-child(2) { animation-delay: 40ms; }
+.b4k-stagger > :nth-child(3) { animation-delay: 80ms; }
+.b4k-stagger > :nth-child(4) { animation-delay: 120ms; }
+.b4k-stagger > :nth-child(n + 5) { animation-delay: 160ms; }
+
+/* Press feedback: tiles and buttons shrink a little on pointer-down. */
+.b4k-press { transition: transform var(--duration-short3) var(--easing-out-strong); }
+/* A card does not shrink while one of its own buttons (Save, Like, Add) is pressed; the button has its own press. */
+.b4k-press:active:not(:has(button:active)) { transform: scale(var(--press-scale)); }
+
+/* Cards (fine pointer only): the photo zooms a little, the title underlines, a category glyph tilts. */
+.b4k-card-media img { transition: transform var(--duration-long4) var(--easing-out-strong); }
+.b4k-card-glyph { transition: transform 260ms var(--easing-out-strong); }
+@media (hover: hover) and (pointer: fine) {
+  .b4k-card:hover .b4k-card-media img { transform: scale(1.04); }
+  .b4k-card:hover .b4k-card-title {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+  .b4k-card:hover .b4k-card-glyph { transform: rotate(-12deg) scale(1.06); }
+}
 
 /* ─── Reduced motion ────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   html:focus-within { scroll-behavior: auto; }
+  .b4k-rise, .b4k-glyph-in, .b4k-tile-in, .b4k-stagger > * {
+    animation: b4k-fade-in 200ms ease both !important;
+  }
+  .b4k-press:active { transform: none; }
+  .b4k-card:hover .b4k-card-media img, .b4k-card:hover .b4k-card-glyph { transform: none; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
@@ -43,6 +157,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
     scroll-behavior: auto !important;
   }
 }
+@keyframes b4k-fade-in { from { opacity: 0; } to { opacity: 1; } }
 
 /* Phones: anchors and focused fields stop below the 56 px top app bar and above the 56 px
    Navigation bar (WCAG 2.4.11). */

@@ -4,26 +4,28 @@ import { ImageResponse } from 'next/og'
 
 // Share image for pages without a photo of their own: the page title in the display face on the
 // dark background, the B4K mark below. Colors are the dark theme's token values (color-bg,
-// color-fg, color-fg-muted); ImageResponse needs literal colors. The face is the display face of
-// the language (Archivo Black; Noto Sans KR / JP / TC Black), loaded from Google Fonts as a subset
-// of the title's characters; when that fails the image shows the mark alone. Cache: set below.
+// color-fg, color-fg-muted); ImageResponse needs literal colors. The face is the heading face of
+// the language (Onest ExtraBold; Noto Sans KR ExtraBold, as Pretendard is not on Google Fonts;
+// Noto Sans JP / TC Black), loaded from Google Fonts as a subset of the title's characters; when
+// that fails the image shows the mark alone. Sentence case, as the site's headings. Cache: below.
 
 export const runtime = 'nodejs'
 
 const SIZE = { width: 1200, height: 630 }
-const BG = '#0a0a0a' // allow-hex — color-bg (dark); ImageResponse requires literal colours
-const FG = '#f7f6f3' // allow-hex — color-fg (dark)
-const MUTED = '#8f8e8c' // allow-hex — color-fg-muted (dark)
+const BG = '#000000' // allow-hex — color-bg (dark); ImageResponse requires literal colours
+const FG = '#ffffff' // allow-hex — color-fg (dark)
+const MUTED = '#c4c4c1' // allow-hex — color-fg-muted (dark)
 // Spacing of the 1200 x 630 card, in image pixels
 const PAD = 80 // allow-raw — ImageResponse cannot read CSS variables
 const GAP = 24 // allow-raw
 const LOGO_LIFT = 120 // allow-raw
 const FACE: Record<string, string> = { ko: 'Noto Sans KR', ja: 'Noto Sans JP', 'zh-TW': 'Noto Sans TC' }
+const WEIGHT: Record<string, number> = { Onest: 800, 'Noto Sans KR': 800, 'Noto Sans JP': 900, 'Noto Sans TC': 900 }
 
 // Fonts are cached once fetched (Next 15 no longer caches fetch by default).
 async function loadFont(family: string, text: string): Promise<ArrayBuffer | null> {
   try {
-    const weight = family === 'Archivo Black' ? '400' : '900'
+    const weight = String(WEIGHT[family] ?? 800)
     const css = await fetch(`https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@${weight}&text=${encodeURIComponent(text)}`, { cache: 'force-cache', signal: AbortSignal.timeout(4000) }).then((r) => r.text())
     const url = /src: url\((.+?)\) format\('(?:opentype|truetype)'\)/.exec(css)?.[1]
     return url ? await fetch(url, { cache: 'force-cache', signal: AbortSignal.timeout(4000) }).then((r) => r.arrayBuffer()) : null
@@ -43,7 +45,7 @@ export async function GET(req: Request) {
   const title = (url.searchParams.get('title') ?? '').slice(0, 90)
   const kind = (url.searchParams.get('kind') ?? '').slice(0, 40)
   const locale = url.searchParams.get('locale') ?? 'en'
-  const family = FACE[locale] ?? 'Archivo Black'
+  const family = FACE[locale] ?? 'Onest'
   const font = title ? await loadFont(family, `${title}${kind}`) : null
   const logo = await markSrc()
   const res = new ImageResponse(
@@ -51,8 +53,8 @@ export async function GET(req: Request) {
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: PAD, backgroundColor: BG }}>
         {font ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: GAP }}>
-            {kind ? <div style={{ fontFamily: 'Display', fontSize: 28, color: MUTED, textTransform: 'uppercase', letterSpacing: 2 }}>{kind}</div> : null}
-            <div style={{ fontFamily: 'Display', fontSize: title.length > 40 ? 64 : 80, lineHeight: 1.1, color: FG, display: 'flex' }}>{title}</div>
+            {kind ? <div style={{ fontFamily: 'Display', fontSize: 28, color: MUTED }}>{kind}</div> : null}
+            <div style={{ fontFamily: 'Display', fontSize: title.length > 40 ? 64 : 80, lineHeight: family === 'Onest' ? 1.05 : 1.15, letterSpacing: family === 'Onest' ? '-0.03em' : 0, color: FG, display: 'flex' }}>{title}</div>
           </div>
         ) : (
           <div style={{ display: 'flex' }} />
@@ -63,7 +65,7 @@ export async function GET(req: Request) {
     ),
     {
       ...SIZE,
-      ...(font ? { fonts: [{ name: 'Display', data: font, style: 'normal' as const, weight: 400 as const }] } : {}),
+      ...(font ? { fonts: [{ name: 'Display', data: font, style: 'normal' as const, weight: (WEIGHT[family] ?? 800) as 800 | 900 }] } : {}),
     },
   )
   // Share images (title cards) change only with the title in their address: a day, a week at the CDN.

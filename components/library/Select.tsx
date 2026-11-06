@@ -36,8 +36,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
       <div
         className={cn(
           FIELD_FRAME,
-          'relative flex items-center gap-[var(--gap-sm)] px-[var(--input-padding-x)]',
-          size === 'lg' ? 'h-[var(--control-height-lg)]' : 'h-[var(--control-height-md)]',
+          'relative flex items-center gap-[var(--gap-sm)] px-[var(--input-padding-x)] has-[select:focus-visible]:shadow-focus-ring',
+          size === 'lg' ? 'h-[var(--control-height-xl)]' : 'h-[var(--control-height-md)]',
           error && 'border-ui-danger-border hover:border-ui-danger-border focus-within:border-ui-danger-border',
           disabled && 'cursor-not-allowed border-ui-border-disabled bg-ui-bg-disabled text-ui-fg-disabled hover:border-ui-border-disabled',
         )}

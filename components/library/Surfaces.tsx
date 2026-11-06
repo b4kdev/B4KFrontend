@@ -1,27 +1,28 @@
 'use client'
 
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type PointerEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Scrim } from './Content'
 import { DragHandle } from './Plan'
 import { IconButton } from './IconButton'
-import { useFocusTrap, useMounted, usePhone } from './hooks'
+import { useFocusTrap, useMounted, usePhone, type useSheetSlide } from './hooks'
 
-// Surfaces (Figma Organisms): Modal, Dialog, Bottom sheet. No shadows, no lines
+// Surfaces (Figma Organisms): Modal, Dialog, Bottom sheet. Sheets: tile radius on top, the sheet
+// shadow; dialogs: tile radius, no lines
 // between header, body and footer; the 1px outline stays. Modal and Dialog become a
 // Modal bottom sheet on phones (adaptive).
 
 const Portal = ({ children }: { children: ReactNode }) => (useMounted() ? createPortal(children, document.body) : null)
 
 const SHEET =
-  'fixed inset-x-0 bottom-0 z-50 flex max-h-[85dvh] flex-col rounded-t-3xl bg-ui-bg-raised pb-[env(safe-area-inset-bottom)] text-ui-fg motion-safe:animate-b4k-sheet-in'
+  'fixed inset-x-0 bottom-0 z-50 flex max-h-[85dvh] flex-col rounded-t-tile bg-ui-bg-raised pb-[env(safe-area-inset-bottom)] shadow-sheet dark:bg-ui-bg-media text-ui-fg motion-safe:animate-b4k-sheet-in'
 
 /** Grabber on phone sheets: the 32x4 bar with py 8 (area 20). */
 const GRABBER = (
   <div aria-hidden className="flex shrink-0 justify-center py-[var(--space-2)]">
-    <span className="h-[var(--space-1)] w-[var(--space-8)] rounded-full bg-ui-border-strong" />
+    <span className="h-[calc(var(--space-1)+var(--border-width-1))] w-[var(--space-11)] rounded-[3px] bg-sheet-handle" />
   </div>
 )
 
@@ -73,9 +74,9 @@ export function Modal({ open, onClose, title, closeLabel, size = 'md', children,
         className={cn(
           'outline-none',
           phone
-            ? cn(SHEET, 'bg-ui-bg-elevated')
+            ? SHEET
             : cn(
-                'fixed left-1/2 top-1/2 z-50 flex max-h-[90dvh] w-[calc(100%-var(--space-8))] -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl border border-ui-border bg-ui-bg-elevated text-ui-fg',
+                'fixed left-1/2 top-1/2 z-50 flex max-h-[90dvh] w-[calc(100%-var(--space-8))] -translate-x-1/2 -translate-y-1/2 flex-col rounded-tile bg-ui-bg-elevated text-ui-fg shadow-menu',
                 size === 'sm' ? 'max-w-[400px]' : size === 'md' ? 'max-w-[560px]' : 'max-w-[720px]',
               ),
         )}
@@ -120,7 +121,7 @@ export function Dialog({ open, onCancel, title, body, confirm, cancel, third }: 
         aria-describedby={`${id}-b`}
         className={cn(
           'outline-none',
-          phone ? cn(SHEET, 'px-[var(--space-6)] pb-[var(--space-6)]') : 'fixed left-1/2 top-1/2 z-50 w-[calc(100%-var(--space-8))] max-w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ui-border bg-ui-bg-elevated p-[var(--space-6)] text-ui-fg',
+          phone ? cn(SHEET, 'px-[var(--space-6)] pb-[var(--space-6)]') : 'fixed left-1/2 top-1/2 z-50 w-[calc(100%-var(--space-8))] max-w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-tile bg-ui-bg-elevated shadow-menu p-[var(--space-6)] text-ui-fg',
         )}
       >
         {phone ? <div className="mb-[var(--space-2)]">{GRABBER}</div> : null}
@@ -155,6 +156,10 @@ export type BottomSheetProps = {
   snap?: SheetSnap
   onSnapChange?: (s: SheetSnap) => void
   resizeLabel?: string
+  /** Map sheets whose handle is the only way to close them (Plan): the handle's class (e.g. a wider bar), its
+      aria-expanded, what Enter or Space on it does (a pointer tap already goes through the drag), and its accessible
+      name when it acts as a close button (e.g. "Collapse plan" instead of the resize label). */
+  grabber?: { className?: string; expanded?: boolean; onActivate?: () => void; label?: string }
   /** Map sheets: a height per snap instead of the defaults (e.g. a shorter full state). */
   heights?: Partial<Record<SheetSnap, string>>
   /** Header shown at peek (map sheets). */
@@ -167,6 +172,10 @@ export type BottomSheetProps = {
   actions?: ReactNode
   /** Modal: the content draws its own padding and gaps (Search filters is drawn as the whole sheet). */
   flush?: boolean
+  /** Map sheets: false while another map sheet lies over this one, so toasts and map padding follow the top one. */
+  floor?: boolean
+  /** Map sheets that slide in and out on their own (useSheetSlide): the slide drives the sheet and its handle's drag. */
+  slide?: ReturnType<typeof useSheetSlide>
   children: ReactNode
   className?: string
 }
@@ -175,7 +184,7 @@ const SNAP_VH: Record<SheetSnap, string> = { peek: '76px', mid: '50dvh', full: '
 const ORDER: SheetSnap[] = ['peek', 'mid', 'full']
 
 /** Bottom sheet: radius/3xl top, bg-raised, grabber 32 by 4; map sheets drag between snaps. */
-export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', heights, header, above, aboveEnd, actions, flush, children, className }: BottomSheetProps) {
+export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid', onSnapChange, resizeLabel = '', grabber, heights, header, above, aboveEnd, actions, flush, floor = true, slide, children, className }: BottomSheetProps) {
   const modal = type === 'modal'
   const ref = useFocusTrap<HTMLDivElement>(open && modal, onClose)
   const [drag, setDrag] = useState<number | null>(null)
@@ -191,39 +200,52 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
     <Portal>
       {modal ? <Scrim onClick={onClose} className="z-50" /> : null}
       <div
-        ref={ref}
+        ref={(n) => {
+          ref(n)
+          if (slide) slide.ref.current = n
+        }}
         role={modal ? 'dialog' : 'region'}
         aria-modal={modal || undefined}
         aria-label={label}
         tabIndex={-1}
         // Map sheets: toasts sit 12 above the sheet's top edge as it moves (V2Shell).
-        data-toast-floor={!modal || undefined}
+        data-toast-floor={(!modal && floor) || undefined}
         className={cn(SHEET, 'outline-none', !modal && 'z-40 transition-[height] duration-medium2 ease-emphasized-decelerate motion-reduce:transition-none', className)}
-        style={!modal ? { height: drag !== null ? `calc(${heights?.[snap] ?? SNAP_VH[snap]} + ${drag}px)` : heights?.[snap] ?? SNAP_VH[snap], maxHeight: '85dvh' } : undefined}
+        style={slide ? { height: heights?.[snap] ?? SNAP_VH[snap], maxHeight: '85dvh', ...slide.style } : !modal ? { height: drag !== null ? `calc(${heights?.[snap] ?? SNAP_VH[snap]} + ${drag}px)` : heights?.[snap] ?? SNAP_VH[snap], maxHeight: '85dvh' } : undefined}
+        onTransitionEnd={slide?.onTransitionEnd}
       >
         {/* The control above the sheet (Plan pill) is the toast floor while it shows: toasts sit 12 above it. */}
         {!modal && above ? <div data-toast-floor className="absolute bottom-[calc(100%+var(--space-3))] left-[var(--space-4)]">{above}</div> : null}
         {!modal && aboveEnd ? <div className="absolute bottom-[calc(100%+var(--space-3))] right-[var(--space-4)]">{aboveEnd}</div> : null}
+        {/* Drag area: the grabber row plus 12 above and below it (taken back by margins, so the layout
+            stays), so a finger that lands near the bar drags the sheet instead of the page. A tap
+            lowers the sheet one step (from the lowest step it rises). */}
         <div
-          className="flex shrink-0 touch-none justify-center py-[var(--space-2)]"
-          onPointerDown={(e) => {
+          className="relative z-10 -my-[var(--space-3)] flex shrink-0 touch-none select-none justify-center py-[var(--space-5)]"
+          {...(slide ? slide.grab : {
+          onPointerDown: (e: PointerEvent<HTMLDivElement>) => {
             if (modal) return
             start.current = e.clientY
             setDrag(0)
             ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
-          }}
-          onPointerMove={(e) => drag !== null && setDrag(start.current - e.clientY)}
-          onPointerUp={() => {
+          },
+          onPointerMove: (e: PointerEvent<HTMLDivElement>) => drag !== null && setDrag(start.current - e.clientY),
+          onPointerUp: () => {
             if (drag === null) return
             if (drag > 60) step(1)
             else if (drag < -60) step(-1)
+            else if (Math.abs(drag) < 8) step(snap === ORDER[0] ? 1 : -1)
             setDrag(null)
-          }}
+          },
+          })}
         >
           <DragHandle
             type="grabber"
-            label={resizeLabel}
-            className="h-[var(--space-1)]"
+            label={grabber?.label ?? resizeLabel}
+            aria-expanded={grabber?.expanded}
+            className={cn('h-[var(--space-1)]', grabber?.className)}
+            // Keyboard only (a click with no pointer): a tap is handled by the drag above.
+            onClick={grabber?.onActivate ? (e) => e.detail === 0 && grabber.onActivate?.() : undefined}
             onKeyDown={(e) => {
               if (e.key === 'ArrowUp') step(1)
               else if (e.key === 'ArrowDown') step(-1)
@@ -233,7 +255,8 @@ export function BottomSheet({ type = 'modal', open, onClose, label, snap = 'mid'
         {header ? <div className="shrink-0 px-[var(--space-4)] pb-[var(--space-2)]">{header}</div> : null}
         <div
           className={cn(
-            'flex min-h-0 flex-1 flex-col overflow-y-auto',
+            // Scroll padding: a control focused by keyboard scrolls in with room for its focus ring.
+            'flex min-h-0 flex-1 flex-col overflow-y-auto scroll-py-[calc(var(--focus-ring-offset)+var(--focus-ring-width))]',
             flush ? null : modal ? 'gap-[var(--space-2)] px-[var(--space-6)] py-[var(--space-2)]' : 'gap-[var(--space-4)] px-[var(--space-4)] pb-[var(--space-6)] pt-[var(--space-2)]',
           )}
         >

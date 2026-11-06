@@ -9,9 +9,13 @@ import { IconButton } from './IconButton'
 import { Image, ImageMissingLabel } from './Image'
 import type { PlaceType } from './Content'
 import { SaveLikeOverlay } from './ContentMolecules'
+import { Glyph, type GlyphName } from './Glyph'
 
-// Card (Figma Organisms › Card). Filled and square, no shadow; the text panel on
-// bg-raised; hover adds the state layer; keyboard focus rings the whole card. The card is one link
+// Card (Figma Organisms › Card). A tile: tile surface, tile radius, 8 inset, the photo inside as an
+// inner squircle, no border or shadow (the tone step against the ground is the edge). Hover (fine
+// pointer) zooms the photo a little and underlines the title; press shrinks the tile; keyboard focus
+// rings the whole card. Category: a colour field with black ink, label top-left, glyph bottom-left
+// and the photo as an inset bottom-right. The card is one link
 // (a stretched link); Save, Like and Add to plan are separate buttons above it.
 // Text fit: titles and meta two lines then an ellipsis; Place description one line.
 
@@ -39,10 +43,21 @@ export type CardProps = Common &
         sponsored?: string
         dDay?: string
         trending?: string
+        /** The place's category key ("pop"): data-category on the card. */
+        category?: string
       })
     | (Media & { type: 'compact'; meta: ReactNode; save?: { saved: boolean; onSave: () => void; label: string }; addToPlan?: { onAdd: () => void; label: string } })
     | { type: 'collection'; images: (string | null)[]; meta: ReactNode }
     | (Media & { type: 'collection-photo'; meta: ReactNode })
+    | (Media & {
+        type: 'category'
+        meta: ReactNode
+        /** The field colour (a CSS colour, var(--category-*)) and its glyph. */
+        color: string
+        glyph: GlyphName
+        /** data-category on the tile, e.g. "pop". */
+        category?: string
+      })
     | (Media & {
         type: 'plan'
         author: string
@@ -61,9 +76,15 @@ export type CardProps = Common &
 // isolate: the card's own layers (stretched link, Save and Like over the photo) stack inside the
 // card, so a sticky bar above a scrolling list of cards stays on top.
 const SHELL =
-  'group relative isolate flex overflow-hidden rounded-none bg-ui-bg-raised text-ui-fg focus-within:shadow-focus-ring has-[a:hover]:[&>.panel]:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]'
+  'b4k-card b4k-press group relative isolate flex overflow-hidden rounded-tile bg-tile-surface p-[var(--space-2)] text-ui-fg focus-within:shadow-focus-ring'
+/** The photo slot inside a tile. */
+const MEDIA = 'b4k-card-media overflow-hidden rounded-tile-inner'
+/** Text panel under the photo: 14 above, 12 at the sides and below. */
+const PANEL = 'panel px-[var(--space-3)] pb-[var(--space-3)] pt-[var(--space-3-5)]'
+/** Add to plan (+) on a card: the add accent with black ink; inverse on hover. */
+const ADD = 'relative z-10 rounded-sq-md !bg-accent-add !text-field-fg [&>svg]:[stroke-width:2.6] [@media(hover:hover)_and_(pointer:fine)]:hover:!bg-ui-bg-inverse [@media(hover:hover)_and_(pointer:fine)]:hover:!text-ui-fg-inverse'
 const STRETCH = "outline-none after:absolute after:inset-0 after:z-0 after:content-['']"
-const TITLE2 = 'line-clamp-2 [text-wrap:pretty] type-title-card [&:lang(ko)]:break-keep'
+const TITLE2 = 'b4k-card-title line-clamp-2 [text-wrap:pretty] type-title-card [&:lang(ko)]:break-keep max-sm:line-clamp-3'
 
 function CardLink({ href, external, children, className }: { href: string; external?: { newTabLabel: string }; children: ReactNode; className?: string }) {
   if (external) {
@@ -95,8 +116,8 @@ export function Card(props: CardProps) {
   switch (props.type) {
     case 'place':
       return (
-        <article className={cn(SHELL, 'flex-col', className)}>
-          <div className="relative">
+        <article data-category={props.category} className={cn(SHELL, 'flex-col', className)}>
+          <div className={cn('relative', MEDIA)}>
             {/* A place photo is named after the place unless the caller gives its own description. */}
             {/* The shell's label names Place: shown only while the type is Place (no label text per type yet). */}
             <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? title} sizes="280px" placeType={props.placeType} missingLabel={(props.placeType ?? 'place') === 'place' ? missingLabel : undefined} />
@@ -106,29 +127,30 @@ export function Card(props: CardProps) {
             </div>
             {props.save ? <SaveLikeOverlay className="z-10" saved={props.save.saved} onSave={props.save.onSave} saveLabel={props.save.label} like={props.like} /> : null}
           </div>
-          <div className="panel flex items-center gap-[var(--space-2)] p-[var(--space-3)]">
+          <div className={cn(PANEL, 'flex items-center gap-[var(--space-2)]')}>
             <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
               <CardLink href={href} external={external} className={TITLE2}>{title}</CardLink>
               {props.description ? <p className="truncate type-body-base text-ui-fg-muted">{props.description}</p> : null}
               <MetaRow meta={props.meta} trending={props.trending} external={!!external} />
             </div>
-            {props.addToPlan ? <IconButton variant="primary" label={props.addToPlan.label} icon={<Plus />} onClick={props.addToPlan.onAdd} className="relative z-10" /> : null}
+            {props.addToPlan ? <IconButton variant="primary" label={props.addToPlan.label} icon={<Plus />} onClick={props.addToPlan.onAdd} className={ADD} /> : null}
           </div>
         </article>
       )
     case 'compact':
       return (
-        <article className={cn(SHELL, 'h-[80px] flex-row', className)}>
-          <Image ratio="1:1" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="80px" className="w-[80px] shrink-0" />
+        <article className={cn(SHELL, 'min-h-[80px] flex-row rounded-tile-inner p-[var(--space-1-5)]', className)}>
+          <Image ratio="1:1" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="80px" className="w-[68px] shrink-0 rounded-sq-lg" />
           <div className="panel flex min-w-0 flex-1 items-center gap-[var(--space-2)] py-[var(--space-2)] pl-[var(--space-3)] pr-[var(--space-1)]">
             <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
-              <CardLink href={href} external={external} className={cn(TITLE2, 'line-clamp-1')}>{title}</CardLink>
+              {/* Two lines at every width: one cut place names short, three overflowed the row. */}
+              <CardLink href={href} external={external} className={cn(TITLE2, 'line-clamp-2 max-sm:line-clamp-2')}>{title}</CardLink>
               <div className="flex items-center gap-[var(--space-1)] type-body-caption text-ui-fg-muted">
                 <MapPin aria-hidden className="size-[var(--icon-size-xs)] shrink-0" />
                 <span className="truncate">{props.meta}</span>
               </div>
             </div>
-            {props.addToPlan ? <IconButton variant="primary" label={props.addToPlan.label} icon={<Plus />} onClick={props.addToPlan.onAdd} className="relative z-10" /> : null}
+            {props.addToPlan ? <IconButton variant="primary" label={props.addToPlan.label} icon={<Plus />} onClick={props.addToPlan.onAdd} className={ADD} /> : null}
             {props.save ? (
               <IconButton label={props.save.label} icon={<Bookmark className={props.save.saved ? 'fill-current' : undefined} />} aria-pressed={props.save.saved} onClick={props.save.onSave} className="relative z-10" />
             ) : null}
@@ -138,22 +160,46 @@ export function Card(props: CardProps) {
     case 'collection':
       return (
         <article className={cn(SHELL, 'flex-col', className)}>
-          <div className="grid aspect-[2/1] grid-cols-2 grid-rows-2 gap-[var(--space-0-5)] bg-ui-bg">
+          <div className={cn(MEDIA, 'grid aspect-[2/1] grid-cols-2 grid-rows-2 gap-[var(--space-0-5)] bg-tile-surface')}>
             {[0, 1, 2, 3].map((i) => (
               <Image key={i} ratio="1:1" src={props.images[i] ?? null} alt="" sizes="280px" className="h-full !aspect-auto" />
             ))}
           </div>
-          <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
+          <div className={cn(PANEL, 'flex flex-col gap-[var(--space-1)]')}>
             <CardLink href={href} className={TITLE2}>{title}</CardLink>
             {props.meta ? <div className="type-body-caption text-ui-fg-muted">{props.meta}</div> : null}
           </div>
         </article>
       )
+    case 'category':
+      return (
+        // Shorter than 4:5 on phones and with five in a row on desktop, so the band between the line
+        // and the photo stays small; 640 to 1023 keep 4:5.
+        <article
+          data-category={props.category}
+          style={{ backgroundColor: props.color }}
+          className={cn(
+            'b4k-card b4k-press group relative isolate flex aspect-[33/40] flex-col overflow-hidden rounded-tile text-field-fg focus-within:shadow-focus-ring sm:aspect-[4/5] lg:aspect-[24/25]',
+            className,
+          )}
+        >
+          {/* No positioning on the label block: the title link's stretched area then covers the whole
+              tile; the glyph and the photo let taps through to it. */}
+          <div className="flex flex-col gap-[var(--space-1)] px-[var(--tile-padding)] pt-[var(--tile-padding)]">
+            <CardLink href={href} className="text-[length:var(--title-size-tile)] font-[var(--font-weight-extrabold)] leading-[1.05] tracking-[-0.03em] [overflow-wrap:anywhere] [&:lang(ko)]:break-keep">{title}</CardLink>
+            {props.meta ? <div className="text-[length:calc(var(--font-size-sm)*13/14)] leading-[1.3] text-field-fg-muted sm:text-sm sm:leading-[1.3]">{props.meta}</div> : null}
+          </div>
+          <Glyph name={props.glyph} size="26%" className="b4k-card-glyph pointer-events-none absolute bottom-[var(--tile-padding)] left-[var(--tile-padding)] !h-auto" />
+          <span className="b4k-card-media pointer-events-none absolute bottom-[var(--space-3-5)] right-[var(--space-3-5)] w-1/2 overflow-hidden rounded-tile-inner bg-field-inset">
+            <Image ratio="1:1" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="160px" className="bg-transparent" />
+          </span>
+        </article>
+      )
     case 'collection-photo':
       return (
         <article className={cn(SHELL, 'flex-col', className)}>
-          <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="280px" />
-          <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
+          <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="280px" className={MEDIA} />
+          <div className={cn(PANEL, 'flex flex-col gap-[var(--space-1)]')}>
             <CardLink href={href} className={TITLE2}>{title}</CardLink>
             {props.meta ? <div className="type-body-caption text-ui-fg-muted">{props.meta}</div> : null}
           </div>
@@ -162,12 +208,12 @@ export function Card(props: CardProps) {
     case 'plan':
       return (
         <article className={cn(SHELL, 'flex-col', className)}>
-          <div className="relative">
+          <div className={cn('relative', MEDIA)}>
             <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="280px" />
             {props.sponsored ? <Badge variant="on-image" className="absolute left-[var(--space-2)] top-[var(--space-2)]">{props.sponsored}</Badge> : null}
             {props.save ? <SaveLikeOverlay className="z-10" saved={props.save.saved} onSave={props.save.onSave} saveLabel={props.save.label} /> : null}
           </div>
-          <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
+          <div className={cn(PANEL, 'flex flex-col gap-[var(--space-1)]')}>
             <CardLink href={href} className={TITLE2}>{title}</CardLink>
             <div className="flex items-center justify-between gap-[var(--space-1)] type-body-caption text-ui-fg-muted">
               {props.authorHref ? (
@@ -186,11 +232,11 @@ export function Card(props: CardProps) {
     case 'package':
       return (
         <article className={cn(SHELL, 'flex-col', className)}>
-          <div className="relative">
+          <div className={cn('relative', MEDIA)}>
             <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="280px" />
             <Badge variant="on-image" className="absolute left-[var(--space-2)] top-[var(--space-2)]">{props.sponsored}</Badge>
           </div>
-          <div className="panel flex flex-col gap-[var(--space-1)] p-[var(--space-3)]">
+          <div className={cn(PANEL, 'flex flex-col gap-[var(--space-1)]')}>
             <CardLink href={href} external={external} className={TITLE2}>{title}</CardLink>
             <div className="type-body-caption text-ui-fg-muted">{props.partner}</div>
             <div aria-hidden className="inline-flex items-center gap-[var(--gap-xs)] type-body-label text-ui-fg">{props.cta}<ExternalLink className="size-[var(--icon-size-xs)]" /></div>
@@ -202,7 +248,7 @@ export function Card(props: CardProps) {
       const stacked = props.type === 'featured-stacked'
       return (
         <article className={cn(SHELL, stacked ? 'flex-col' : 'flex-col sm:flex-row', className)}>
-          <div className={cn('relative', !stacked && 'sm:w-[42%] sm:shrink-0')}>
+          <div className={cn('relative', MEDIA, !stacked && 'sm:w-[42%] sm:shrink-0')}>
             <Image ratio="16:9" src={props.imageSrc} alt={props.imageAlt ?? ''} sizes="(min-width: 640px) 360px, 100vw" className={!stacked ? 'sm:h-full' : undefined} />
             {props.sponsored ? <Badge variant="on-image" className="absolute left-[var(--space-2)] top-[var(--space-2)]">{props.sponsored}</Badge> : null}
           </div>

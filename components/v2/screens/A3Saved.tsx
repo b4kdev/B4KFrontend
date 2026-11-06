@@ -29,6 +29,7 @@ import {
   Skeleton,
   Tabs,
   TextInput,
+  linkButtonVariants,
 } from '@/components/library'
 import { useAuth } from '@/contexts/AuthContext'
 import { saveCourseHandoff } from '@/lib/quickplan'
@@ -43,13 +44,14 @@ import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { jsonFetch } from './A2Home'
 import { LeaderboardTab } from './A3Account'
 import { regionName } from '../map/areaName'
+import { httpError } from '@/lib/session-expired'
 
 // Saved and Plan from saved places.
 // Live /api/saved, /api/folders, /api/plans, /api/profile/trips.
 
 const send = (url: string, method: string, body?: unknown) =>
   fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }).then((r) => {
-    if (!r.ok) throw new Error(String(r.status))
+    if (!r.ok) throw httpError(r.status)
     return r.json().catch(() => ({}))
   })
 
@@ -162,7 +164,7 @@ export function SavedScreen() {
   const toolbar = (
     <div className="flex items-center justify-between gap-[var(--space-4)]">
       <Button variant="ghost" size="md" onClick={() => setSheet({ mode: 'new' })}>{t('CD1206')}</Button>
-      <IntlLink href="/saved/plan" aria-disabled={!!data && !data.pois.length} className="inline-flex h-[var(--control-height-md)] items-center gap-[var(--gap-sm)] bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse aria-disabled:pointer-events-none aria-disabled:bg-ui-bg-disabled aria-disabled:text-ui-fg-disabled">
+      <IntlLink href="/saved/plan" aria-disabled={!!data && !data.pois.length} className={cn(linkButtonVariants({ size: 'md' }), 'aria-disabled:pointer-events-none aria-disabled:bg-ui-bg-disabled aria-disabled:text-ui-fg-disabled')}>
         {t('CD1363')}
       </IntlLink>
     </div>
@@ -177,7 +179,7 @@ export function SavedScreen() {
         {/* Figma: the tabs stay; a plain prompt with the bookmark icon fills the page. */}
         <div className="flex flex-1 flex-col gap-[var(--space-4)]">
           {head}
-          <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={setTab} tabs={tabs} className="self-start" />
+          <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={setTab} tabs={tabs.map((x) => ({ ...x, color: 'var(--nav-saved)' }))} className="self-start" />
           {board ? <LeaderboardTab /> : <SignedOutPrompt title={t('CD1577')} text={t('CD1581')} icon={<Bookmark />} plain className="flex-1" />}
         </div>
       </V2Page>
@@ -212,16 +214,17 @@ export function SavedScreen() {
       </ul>
     </div>
   ) : data && !data.pois.length ? (
-    <EmptyState icon={<Bookmark />} title={k('saved.empty.places.title')} className="flex-1" action={<IntlLink href="/map" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{t('CD1430')}</IntlLink>}>{t('CD1429')}</EmptyState>
+    <EmptyState icon={<Bookmark />} title={k('saved.empty.places.title')} className="flex-1" action={<IntlLink href="/map" className={linkButtonVariants({ size: 'md' })}>{t('CD1430')}</IntlLink>}>{t('CD1429')}</EmptyState>
   ) : (
     <div className="flex flex-col gap-[var(--space-4)]">
       <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4 lg:gap-[var(--space-4)]">
         {data?.folders.map((f) => (
           <li key={f.id}>
-            <button type="button" onClick={() => setFolderId(f.id)} aria-label={k('saved.folder.openAriaLabel', { name: f.name })} className="block w-full text-left focus-visible:shadow-focus-ring focus-visible:outline-none">
-              <span className="flex flex-col bg-ui-bg-raised hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]">
+            <button type="button" onClick={() => setFolderId(f.id)} aria-label={k('saved.folder.openAriaLabel', { name: f.name })} className="b4k-press block w-full rounded-tile text-left focus-visible:shadow-focus-ring focus-visible:outline-none">
+              {/* A list is a content tile: the tile surface, 8 inside, the cover as an inner squircle. */}
+              <span className="flex flex-col rounded-tile bg-tile-surface p-[var(--space-2)] hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))]">
                 <ListCover name={f.name} photos={f.pois.map((p) => p.primary_image_url).filter((u): u is string => !!u)} />
-                <span className="flex flex-col gap-[var(--space-1)] bg-ui-bg-raised p-[var(--space-3)]">
+                <span className="flex flex-col gap-[var(--space-1)] px-[var(--space-3)] pb-[var(--space-3)] pt-[var(--space-3-5)]">
                   <span className="type-title-card text-ui-fg">{f.name}</span>
                   <span className="type-body-caption text-ui-fg-muted">{t('CD1340', { count: f.pois.length, when: updatedWhen(f, locale) })}</span>
                 </span>
@@ -277,7 +280,7 @@ export function SavedScreen() {
       ) })}
     </ul>
   ) : (
-    <EmptyState container="bordered" title={k('saved.empty.myPlans.title')} action={<IntlLink href="/map?plan=new" className="inline-flex h-[var(--control-height-md)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{k('saved.empty.myPlans.cta')}</IntlLink>}>{k('saved.empty.myPlans.desc')}</EmptyState>
+    <EmptyState container="bordered" title={k('saved.empty.myPlans.title')} action={<IntlLink href="/map?plan=new" className={linkButtonVariants({ size: 'md' })}>{k('saved.empty.myPlans.cta')}</IntlLink>}>{k('saved.empty.myPlans.desc')}</EmptyState>
   )
 
   const savedPlans = data?.plans.length ? (
@@ -296,7 +299,7 @@ export function SavedScreen() {
         {folder && tab === 'places' ? null : (
           <>
             {head}
-            <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={(v) => { setTab(v); setFolderId(null) }} tabs={tabs} className="self-start" />
+            <Tabs label={k('saved.tabs.ariaLabel')} value={tab} onValueChange={(v) => { setTab(v); setFolderId(null) }} tabs={tabs.map((x) => ({ ...x, color: 'var(--nav-saved)' }))} className="self-start" />
           </>
         )}
         {tab === 'places' && !folder ? toolbar : null}
@@ -318,7 +321,7 @@ export function SavedScreen() {
             setSheet(null)
             mutate()
           } catch {
-            toast({ type: 'critical', message: navigator.onLine === false ? t('CD1426') : t('CD0061') })
+            toast({ type: 'critical', message: navigator.onLine === false ? t('CD1208') : t('CD0061') })
           }
         }}
       />
@@ -500,9 +503,9 @@ export function PlanFromSavedScreen() {
 
 function ListCover({ name, photos }: { name: string; photos: string[] }) {
   return (
-    <span aria-hidden className={cn('relative block w-full overflow-hidden bg-ui-state-selected', photos.length >= 4 ? 'aspect-[2/1]' : 'aspect-[4/3]')}>
+    <span aria-hidden className={cn('relative block w-full overflow-hidden rounded-tile-inner bg-control-fill', photos.length >= 4 ? 'aspect-[2/1]' : 'aspect-[4/3]')}>
       {photos.length >= 4 ? (
-        <span className="grid size-full grid-cols-2 grid-rows-2 gap-[var(--space-0-5)] bg-ui-bg">
+        <span className="grid size-full grid-cols-2 grid-rows-2 gap-[var(--space-0-5)] bg-tile-surface">
           {photos.slice(0, 4).map((src) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img key={src} src={src} alt="" className="size-full object-cover" />

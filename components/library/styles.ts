@@ -16,4 +16,4 @@ export const STATE_LAYER = 'enabled:hover:bg-ui-state-hover enabled:active:bg-ui
 
 /** Field frame shared by Text input, Select, Textarea and Search input. */
 export const FIELD_FRAME =
-  'border border-ui-border-strong bg-transparent text-ui-fg type-body-base transition-colors duration-short4 ease-standard hover:border-ui-border-focus focus-within:border-[length:var(--border-width-2)] focus-within:border-ui-border-focus'
+  'rounded-sq-lg border-[length:var(--border-width-1-5)] border-ui-border bg-ui-bg-raised text-ui-fg type-body-base transition-[border-color,background-color] duration-short4 ease-out-strong dark:border-transparent hover:border-ui-border-strong focus-within:border-ui-border-focus focus-within:bg-ui-bg-elevated'

@@ -1,17 +1,14 @@
 // Every font the app loads through next/font. Shared by app/layout.tsx and Storybook.
-import {
-  Noto_Sans_TC,
-  Inter,
-  Archivo_Black,
-  Noto_Sans_KR,
-  Noto_Sans_JP,
-  Dela_Gothic_One,
-} from 'next/font/google';
+//
+// One family for display and body: Onest (Latin, every locale). Hangul falls through to
+// Pretendard Variable (self-hosted dynamic subset, imported in app/layout.tsx: the browser fetches
+// only the unicode ranges a page uses); Japanese and Traditional Chinese to their Noto faces.
+// The stacks live in app/tokens.css (--font-family-display / --font-family-body).
+import { Onest, Noto_Sans_JP, Noto_Sans_TC } from 'next/font/google';
 import localFont from 'next/font/local';
 
-
-// Display face (--font-family-display). next/font/local generates the ascent/descent/
-// size-adjust fallback override (CLS on the hero heading).
+// Moderniz: the brand face of the English hero and hub (--font-family-brand). next/font/local
+// generates the size-adjust fallback, so the hero heading does not jump when it swaps in.
 const moderniz = localFont({
   src: '../public/fonts/moderniz.woff2',
   weight: '900',
@@ -20,31 +17,14 @@ const moderniz = localFont({
   display: 'swap',
 });
 
-// New design fonts, read by --font-family-display / --font-family-body in
-// app/tokens.css. preload: false — a browser fetches a face only when text uses it (the CJK
-// faces only for their locales). CJK faces load per unicode-range.
-const uiInter = Inter({
+const onest = Onest({
   subsets: ['latin', 'latin-ext'],
-  variable: '--font-ui-inter',
+  weight: 'variable',
+  variable: '--font-onest',
   display: 'swap',
-  preload: false,
 });
 
-const uiArchivoBlack = Archivo_Black({
-  subsets: ['latin', 'latin-ext'],
-  weight: '400',
-  variable: '--font-ui-archivo-black',
-  display: 'swap',
-  preload: false,
-});
-
-const uiNotoSansKR = Noto_Sans_KR({
-  subsets: ['latin'],
-  variable: '--font-ui-noto-sans-kr',
-  display: 'swap',
-  preload: false,
-});
-
+// preload: false: a browser fetches a CJK face only when text in that script is on the page.
 const uiNotoSansJP = Noto_Sans_JP({
   subsets: ['latin'],
   variable: '--font-ui-noto-sans-jp',
@@ -59,20 +39,7 @@ const uiNotoSansTC = Noto_Sans_TC({
   preload: false,
 });
 
-const uiDelaGothicOne = Dela_Gothic_One({
-  subsets: ['latin'],
-  weight: '400',
-  variable: '--font-ui-dela-gothic-one',
-  display: 'swap',
-  preload: false,
-});
-
-export const uiFontVariables = [uiInter, uiArchivoBlack, uiNotoSansKR, uiNotoSansJP, uiNotoSansTC, uiDelaGothicOne]
-  .map((f) => f.variable)
-  .join(' ');
+export const uiFontVariables = [moderniz, onest, uiNotoSansJP, uiNotoSansTC].map((f) => f.variable).join(' ');
 
 // All font CSS variables, set on <html>.
-export const fontVariables = [moderniz]
-  .map((f) => f.variable)
-  .concat(uiFontVariables)
-  .join(' ');
+export const fontVariables = uiFontVariables;

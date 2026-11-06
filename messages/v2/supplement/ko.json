@@ -436,6 +436,168 @@
     "searchArea": "이 지역 검색",
     "dayTotal": "{n}일차 · {time} · {max}곳 중 {count}곳",
     "allDaysTotal": "전체 일정 · {time} · {count}곳",
-    "areaName": "{city} {district}"
+    "areaName": "{city} {district}",
+    "rides": {
+      "dish": {
+        "title": "Pick a dish",
+        "line": "Choose what you want to eat. We show where."
+      },
+      "city": {
+        "title": "Food trips by city",
+        "line": "One city, one day of eating."
+      },
+      "pick": {
+        "title": "B4K Pick",
+        "line": "Tables our editors pick first."
+      },
+      "local": {
+        "title": "Eat like a local",
+        "line": "How people here eat on a normal day."
+      },
+      "region": {
+        "title": "Start from a region",
+        "line": "Where will you be? Start there."
+      },
+      "season": {
+        "title": "Chase the season",
+        "line": "Pick a season; go where it is at its best."
+      },
+      "towns": {
+        "title": "Unknown Korea",
+        "line": "Small towns, one day each. Pick a town."
+      },
+      "kids": {
+        "title": "Who's coming",
+        "line": "Days that work with kids along."
+      },
+      "history": {
+        "title": "Korea through history",
+        "line": "Walks through the eras, one story each."
+      },
+      "bias": {
+        "title": "Follow your bias",
+        "line": "Pick an artist. Walk where they went."
+      },
+      "week": {
+        "title": "This week",
+        "line": "What is on right now."
+      },
+      "haul": {
+        "title": "Album run",
+        "line": "Tick off the shops as you go."
+      },
+      "routes": {
+        "title": "Fan routes",
+        "line": "Ready-made fan days, stop by stop."
+      },
+      "scene": {
+        "title": "Scene finder",
+        "line": "Pick a show. Stand where it was shot."
+      },
+      "walk": {
+        "title": "Walk the show",
+        "line": "A day on set, stop by stop."
+      },
+      "lead": {
+        "title": "Live like a lead",
+        "line": "Two ways to step into the screen."
+      },
+      "dramaPopups": {
+        "title": "Pop-ups and more",
+        "line": "Where drama pop-ups open first, and the Netflix sets."
+      },
+      "done": {
+        "title": "Get it done in Korea",
+        "line": "Pick what you want done. See where.",
+        "short": "Get it done"
+      },
+      "runs": {
+        "title": "Shopping runs",
+        "line": "Pick a run. See the shops on it."
+      },
+      "first": {
+        "title": "First time?",
+        "line": "Start here: the foolproof first course."
+      },
+      "hero": {
+        "k-food": "What to eat in Korea, and where to eat it.",
+        "k-culture": "Palaces, temples, mountains and the small towns between them.",
+        "k-pop": "Follow your bias through Seoul and beyond.",
+        "k-drama": "Stand where the scene was shot.",
+        "k-beauty": "Treatments, shops and the haul to take home."
+      },
+      "opt": {
+        "naengmyeon": "Naengmyeon",
+        "tteokbokki": "Tteokbokki",
+        "jajangmyeon": "Jajangmyeon",
+        "dakgalbi": "Dakgalbi",
+        "porkRiceSoup": "Pork rice soup",
+        "wangGalbi": "Wang-galbi",
+        "blackPork": "Black pork",
+        "bread": "Bread",
+        "gimbap": "Gimbap",
+        "busan": "Busan",
+        "jeju": "Jeju",
+        "jeonju": "Jeonju",
+        "sokcho": "Sokcho",
+        "incheon": "Incheon",
+        "suwon": "Suwon",
+        "chuncheon": "Chuncheon",
+        "daejeon": "Daejeon",
+        "spring": "Spring",
+        "summer": "Summer",
+        "autumn": "Autumn",
+        "winter": "Winter",
+        "sunset": "Sunset",
+        "hotSprings": "Hot springs",
+        "zoos": "Zoos",
+        "safari": "Safari",
+        "waterPark": "Water park",
+        "hanRiver": "Han River",
+        "smArtists": "SM artists",
+        "popups": "Pop-ups",
+        "birthdayCafes": "Birthday cafés",
+        "birthdayAds": "Birthday ads",
+        "big4": "Big 4 agencies",
+        "hongdae": "Hongdae",
+        "seongsu": "Seongsu",
+        "firstTime": "First time",
+        "gangnam": "Gangnam",
+        "netflixSets": "Netflix sets",
+        "personalColor": "Personal color",
+        "idolMakeup": "Idol makeup",
+        "biasHair": "Bias hair",
+        "idolDay": "Idol day",
+        "headSpa": "Head spa",
+        "skinAnalysis": "Skin analysis",
+        "jjimjilbang": "Jjimjilbang",
+        "perfume": "Perfume",
+        "flagships": "Flagships",
+        "beforeYouFly": "Before you fly",
+        "gifts": "Gifts"
+      },
+      "ui": {
+        "open": "Open the Collection",
+        "more": "and {n} more",
+        "also": "Also for this dish · {kind}",
+        "collections": "{n, plural, one {# Collection} other {# Collections}}",
+        "tables": "{n, plural, one {# table} other {# tables}}",
+        "tablesIn": "{n, plural, one {# table} other {# tables}} in {where}",
+        "done": "{done} of {n, plural, one {# shop} other {# shops}} done",
+        "and": "{a} and {b}",
+        "korea": "Korea",
+        "onThisPage": "On this page",
+        "pickDish": "Pick a dish",
+        "pickShow": "Pick a show",
+        "pickArtist": "Pick an artist",
+        "pickSeason": "Pick a season",
+        "pickTown": "Pick a town",
+        "pickOne": "Pick one",
+        "kindFan": "Fan trip",
+        "kindChallenge": "Challenge",
+        "kindMoment": "Moment",
+        "kindDayTrip": "Day trip"
+      }
+    }
   }
 }

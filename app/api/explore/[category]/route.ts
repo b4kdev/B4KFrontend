@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { bffFetch } from '@/lib/bff'
 import { withDbPoiIds } from '@/lib/db-poi-mapping'
-import { withDbPlaces } from '@/lib/collections'
+import { hasDbPhoto, withDbPlaces } from '@/lib/collections'
 import { withSafePartnerUrls } from '@/lib/partner-url'
 import { SECTIONS_BY_CATEGORY } from '@/lib/explore-sections'
 import { resolveMichelinNoodles, type MichelinNoodlePoi } from '@/lib/kfood-michelin-noodles'
@@ -582,9 +582,11 @@ function mapArtist(e: BffEntity, locale: string): ExploreArtist {
 /** A themed row needs at least this many places to show. */
 const MIN_THEMED_ROW = 3
 
-/** Places with a photo first; the order within each group stays as given (a stable sort). */
-function photosFirst<T extends { primary_image_url?: string | null }>(items: T[]): T[] {
-  return [...items.filter((p) => p.primary_image_url), ...items.filter((p) => !p.primary_image_url)]
+/** Only places with a photo: the database no longer serves a place without one (its page shows as gone,
+ * it cannot be added to a plan), so a card for it would lead nowhere. The hand-picked order stays. */
+function withPhoto<T extends { poi_id: string; primary_image_url?: string | null }>(items: T[]): T[] {
+  // The database's own photo decides (a typed fallback photo does not bring the place back).
+  return items.filter((p) => hasDbPhoto(p.poi_id) ?? !!p.primary_image_url)
 }
 
 export async function GET(req: NextRequest, props: { params: Promise<{ category: string }> }) {
@@ -695,7 +697,7 @@ export async function GET(req: NextRequest, props: { params: Promise<{ category:
   // read); one read per place across all rows.
   const themed = sections.map((s) => ({ ...s, items: withDbPoiIds(s.items) }))
   const read = new Map(
-    (await withDbPlaces(themed.flatMap((s) => s.items), locale)).map(
+    withDbPlaces(themed.flatMap((s) => s.items), locale).map(
       ({ poi_id, name_ko, name_en, primary_image_url, display_region, display_district }) =>
         [poi_id, { name_ko, name_en, primary_image_url, display_region, display_district }] as const,
     ),
@@ -707,13 +709,12 @@ export async function GET(req: NextRequest, props: { params: Promise<{ category:
     packages: withSafePartnerUrls(base.packages ?? []),
     artists,
     // Seed rows carry content-sheet codes ('KD016-007'): swap in the DB place_id and drop the
-    // ones with no DB row, which open nothing when tapped (lib/db-poi-mapping.ts). Then each themed row puts the places with a photo first (the hand-picked order kept within
-    // each group; the featured place keeps its flag) and a themed row with fewer than 3 places is
-    // not shown.
+    // ones with no DB row, which open nothing when tapped (lib/db-poi-mapping.ts). Then each themed row keeps only the places with a photo (the hand-picked order kept; the
+    // featured place keeps its flag) and a themed row with fewer than 3 places is not shown.
     sections: [
       { ...trendingSection, items: withDbPoiIds(trendingSection.items) },
       ...themed
-        .map((s) => ({ ...s, items: photosFirst(s.items.map((p) => ({ ...p, ...read.get(p.poi_id) }))) }))
+        .map((s) => ({ ...s, items: withPhoto(s.items.map((p) => ({ ...p, ...read.get(p.poi_id) }))) }))
         .filter((s) => s.items.length >= MIN_THEMED_ROW),
     ],
   }

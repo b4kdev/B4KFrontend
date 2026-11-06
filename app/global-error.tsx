@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import * as Sentry from '@sentry/nextjs';
-import { Button } from '@/components/library/Button';
+import { Button, linkButtonVariants } from '@/components/library/Button';
 import { EmptyState } from '@/components/library/Feedback';
 import { getStoredTheme, type Theme } from '@/lib/theme';
 import { fontVariables } from './fonts';
@@ -53,7 +53,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
               <EmptyState type="error" titleAs="h1" title={texts.title} className="w-full lg:w-[400px]">{texts.body}</EmptyState>
               <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
                 <Button onClick={reset}>{texts.retry}</Button>
-                <a href={`/${lang}`} className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{texts.home}</a>
+                <a href={`/${lang}`} className={linkButtonVariants({ variant: 'secondary' })}>{texts.home}</a>
               </div>
             </>
           ) : null}

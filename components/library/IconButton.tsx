@@ -3,13 +3,13 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
 import { HIT_AREA } from './styles'
 
-// Icon button (Figma Atoms › Icon button): round 40 (radius/full, control/height-md), icon
+// Icon button (Figma Atoms › Icon button): squircle 40 (radius md, control/height-md), icon
 // 20. Primary, Secondary, Ghost; states as Button. 44 tap area. Always needs an accessible name.
 
 export const iconButtonVariants = cva(
   [
-    'relative inline-flex size-[var(--control-height-md)] shrink-0 items-center justify-center rounded-full',
-    'transition-[background-color,background-image,border-color,color] duration-short4 ease-standard',
+    'relative inline-flex size-[var(--control-height-md)] shrink-0 items-center justify-center rounded-sq-md',
+    'transition-[background-color,background-image,border-color,color,transform] duration-short4 ease-out-strong enabled:active:scale-[var(--press-scale)] motion-reduce:enabled:active:scale-100',
     'focus-visible:shadow-focus-ring focus-visible:outline-none disabled:cursor-not-allowed',
     '[&>svg]:size-[var(--icon-size-md)]',
     HIT_AREA,
@@ -24,11 +24,13 @@ export const iconButtonVariants = cva(
           'disabled:bg-ui-bg-disabled disabled:text-ui-fg-disabled',
         ],
         secondary: [
-          'border border-ui-border-strong text-ui-fg',
-          'enabled:hover:bg-ui-state-hover enabled:active:bg-ui-state-pressed',
-          'disabled:border-ui-border-disabled disabled:text-ui-fg-disabled',
+          'bg-control-fill text-ui-fg',
+          'enabled:hover:bg-control-fill-hover',
+          'disabled:bg-ui-bg-disabled disabled:text-ui-fg-disabled',
         ],
         ghost: ['text-ui-fg', 'enabled:hover:bg-ui-state-hover enabled:active:bg-ui-state-pressed', 'disabled:text-ui-fg-disabled'],
+        // On the ground (header, top bars): the idle nav tile, the hover tile under a fine pointer.
+        tile: ['bg-nav-tile-idle text-ui-fg', '[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-nav-tile-hover', 'disabled:text-ui-fg-disabled'],
       },
     },
     defaultVariants: { variant: 'ghost' },

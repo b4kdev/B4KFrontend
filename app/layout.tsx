@@ -3,10 +3,13 @@ import { getLocale } from 'next-intl/server';
 import { SITE_URL } from '@/lib/site-url';
 import { seoText } from '@/lib/seo';
 import { THEME_BOOT_SCRIPT } from '@/lib/theme';
+// Hangul face: Pretendard Variable, dynamic subset (only the unicode ranges a page uses load).
+import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
 import './tokens.css';
 import './globals.css';
 import { fontVariables } from './fonts';
 import VercelTools from '@/components/analytics/VercelTools';
+import FaviconTheme from '@/components/v2/FaviconTheme';
 
 // The site default (every page without its own title): the Home title and description of the
 // visitor's language from the Copy Deck.
@@ -43,6 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         {children}
         <VercelTools />
+        <FaviconTheme />
       </body>
     </html>
   );

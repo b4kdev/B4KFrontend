@@ -123,9 +123,10 @@ export type ZoomControlProps = {
 /** Zoom control: two Map controls sharing one border, bottom right on desktop and tablet. */
 export function ZoomControl({ onZoomIn, onZoomOut, zoomInLabel, zoomOutLabel, atMax, atMin, className }: ZoomControlProps) {
   return (
-    <div className={cn('flex flex-col [&>button+button]:-mt-[var(--border-width-1)]', className)}>
-      <MapControl icon={<Plus />} label={zoomInLabel} onClick={onZoomIn} disabled={atMax} aria-disabled={atMax} />
-      <MapControl icon={<Minus />} label={zoomOutLabel} onClick={onZoomOut} disabled={atMin} aria-disabled={atMin} />
+    // One squircle split in two: square inner corners, a 1px divider in the control hover fill.
+    <div className={cn('flex flex-col rounded-sq-md shadow-control', className)}>
+      <MapControl icon={<Plus />} label={zoomInLabel} onClick={onZoomIn} disabled={atMax} aria-disabled={atMax} className="rounded-b-none border-b border-control-fill-hover shadow-none" />
+      <MapControl icon={<Minus />} label={zoomOutLabel} onClick={onZoomOut} disabled={atMin} aria-disabled={atMin} className="rounded-t-none shadow-none" />
     </div>
   )
 }
@@ -143,7 +144,7 @@ const DAY_BG = ['', 'bg-plan-day-1 text-plan-day-1-fg', 'bg-plan-day-2 text-plan
 /** Route map preview: small map with Stop badges md on a 2px fg route line, radius/2xl. Decorative. */
 export function RouteMapPreview({ src, stops, className }: RouteMapPreviewProps) {
   return (
-    <div aria-hidden className={cn('relative aspect-[320/140] w-full overflow-hidden rounded-2xl bg-ui-bg-sunken', className)}>
+    <div aria-hidden className={cn('relative aspect-[320/140] w-full overflow-hidden rounded-tile-inner bg-map-ui-ground', className)}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {src ? <img src={src} alt="" className="absolute inset-0 size-full object-cover" /> : null}
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full text-ui-fg">
@@ -152,7 +153,7 @@ export function RouteMapPreview({ src, stops, className }: RouteMapPreviewProps)
       {stops.map((s, i) => (
         <span
           key={i}
-          className={cn('absolute inline-flex size-[var(--stop-badge-size-md)] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full type-body-label', s.day ? DAY_BG[s.day] : 'bg-ui-bg-inverse text-ui-fg-inverse')}
+          className={cn('absolute inline-flex size-[var(--stop-badge-size-md)] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-sq-sm border-[length:var(--border-width-pin)] border-map-ui-pin-stroke type-body-label font-[var(--font-weight-extrabold)] tabular-nums', s.day ? DAY_BG[s.day] : 'bg-ui-bg-inverse text-ui-fg-inverse')}
           style={{ left: `${s.x}%`, top: `${s.y}%` }}
         >
           {i + 1}

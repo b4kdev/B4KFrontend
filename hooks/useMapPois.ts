@@ -18,6 +18,8 @@ export interface MapPoi {
   display_domain?:   string | null
   /** The interest category (food, stay, …): the place type icon when there is no photo. */
   interest_category?: string | null
+  /** The place's interest chips (cafe, palace, …): its colour type on the map, as the map chips filter. */
+  interest_tags?:    string[]
   display_region?:   string | null
   display_region_detail?: string
   is_trending?:      boolean   // no backing data yet — always undefined, degrades gracefully
@@ -51,6 +53,7 @@ interface RawPlace {
   display_region:    string | null
   domains:           string[] | null
   interest_category?: string | null
+  interest_tags?:    string[] | null
   default_visit_min?: number | null
   translations:      Record<string, { name?: string; description?: string }>
 }
@@ -77,6 +80,8 @@ function mapPlace(row: RawPlace, locale: string): MapPoi {
     coords_lng:         row.coords_lng,
     display_domain:     row.domains?.[0] ?? null,
     interest_category:  row.interest_category ?? null,
+    // Left out when the source sends none, so the map colour falls back to the interest category.
+    interest_tags:      row.interest_tags ?? undefined,
     display_region:     row.display_region,
     save_count:         row.save_count,
     like_count:         row.like_count,

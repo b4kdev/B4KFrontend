@@ -29,7 +29,9 @@ import {
   TopAppBar,
   buttonVariants,
   type FilterGroup,
+  categoryAttr,
   placeTypeOf,
+  linkButtonVariants,
 } from '@/components/library'
 import { usePhone } from '@/components/library/hooks'
 import { getConsent, setConsent } from '@/lib/consent'
@@ -82,7 +84,7 @@ export function SearchScreen() {
   const show = filters.show?.[0] ?? 'all'
   // No results names the picked area: the district if one is picked, else the region.
   const noResultsArea = filters.district?.[0] ? districtName(filters.district[0], locale) : filters.region?.[0] ? regionName(filters.region[0], locale) : null
-  const qs = new URLSearchParams({ q, sort })
+  const qs = new URLSearchParams({ q, sort, locale })
   if (show !== 'all') qs.set('type', show)
   if (filters.region?.[0]) qs.set('area_lv1', filters.region[0])
   if (filters.district?.[0]) qs.set('area_lv2', filters.district[0])
@@ -137,7 +139,7 @@ export function SearchScreen() {
   const collections = data?.collections ?? []
   const noResults = !!data && !data.places.length && !data.plans.length && !collections.length
   const exploreChips = (data?.explore ?? []).map((e) => (
-    <IntlLink key={e.href} href={`${e.href}`} className="inline-flex h-[var(--control-height-sm)] items-center rounded-full border border-ui-border-strong px-[var(--chip-padding-x)] type-body-chip text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">
+    <IntlLink key={e.href} href={`${e.href}`} className="inline-flex h-[var(--control-height-sm)] items-center rounded-sq-sm bg-control-fill px-[var(--space-3)] hover:bg-control-fill-hover type-body-chip text-ui-fg focus-visible:shadow-focus-ring focus-visible:outline-none">
       {t(({ kpop: 'CD1247', kdrama: 'CD1246', kbeauty: 'CD1244', kculture: 'CD1245' } as Record<string, string>)[e.label_key] ?? 'CD1306')}
     </IntlLink>
   ))
@@ -194,7 +196,7 @@ export function SearchScreen() {
           <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-4)] lg:grid-cols-3 lg:gap-x-[var(--space-4)]">
             {(show === 'places' ? data.places : data.places.slice(0, phone ? 4 : 3)).map((p) => (
               <li key={p.poi_id}>
-                <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, placeName(p))} title={placeName(p)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} meta={p.display_region ? regionName(p.display_region, locale) : ''} />
+                <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, placeName(p))} title={placeName(p)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} category={categoryAttr(p.display_domain)} meta={p.display_region ? regionName(p.display_region, locale) : ''} />
               </li>
             ))}
           </ul>
@@ -264,7 +266,7 @@ export function SearchScreen() {
           <h1 className="sr-only">{q ? t('CD1861', { query: q }) : t('CD1293')}</h1>
           {box.open ? box.suggestions : (
             <>
-              <div className="-mx-[var(--grid-gutter-mobile)] mb-[var(--space-4)] flex gap-[var(--space-2)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none]">
+              <div className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] mb-[var(--space-4)] flex gap-[var(--space-2)] overflow-x-auto overscroll-x-contain overflow-y-hidden px-[var(--grid-gutter-mobile)] [scrollbar-width:none]">
                 <Chip type="dropdown" selected onClick={() => setSheet(true)}>{active ? t('CD1815', { count: active }) : t('CD1814')}</Chip>
                 {groups.map((g) => <Chip key={g.id} type="dropdown" onClick={() => setSheet(true)}>{groupLabel(g)}</Chip>)}
               </div>
@@ -434,7 +436,7 @@ export function LegalScreen({ doc }: { doc: 'terms' | 'privacy' | 'cookies' }) {
           breadcrumbs={[{ label: t('CD0807'), href: '/' }, { label: cfg.title }]}
           title={cfg.title}
           updated={GAP.lastUpdated(cfg.updated)}
-          contact={{ label: t('CD0345'), link: <a href={`mailto:${cfg.email}`} className={cn('relative type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{cfg.email}</a> }}
+          contact={{ label: t('CD0345'), link: <a href={`mailto:${cfg.email}`} className={cn('relative type-body-link text-ui-link underline decoration-[length:var(--border-width-1-5)] underline-offset-4 hover:text-ui-link-hover', HIT_AREA)}>{cfg.email}</a> }}
           sections={cfg.sections.map((s) => ({ id: s.id, title: s.heading.replace(/^\d+\.\s*/, ''), body: s.body }))}
           currentSection={current}
           intro={doc === 'cookies' ? (
@@ -470,8 +472,8 @@ export function NotFoundScreen() {
       <title>{t('CD1832', { page: t('CD0116') })}</title>
       <EmptyState type="no-results" titleAs="h1" title={t('CD0116')} className="w-full lg:w-[400px]">{t('CD0115')}</EmptyState>
       <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
-        <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0114')}</IntlLink>
-        <IntlLink href="/map" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0481')}</IntlLink>
+        <IntlLink href="/" className={linkButtonVariants()}>{t('CD0114')}</IntlLink>
+        <IntlLink href="/map" className={linkButtonVariants({ variant: 'secondary' })}>{t('CD0481')}</IntlLink>
       </div>
     </V2Page>
   )
@@ -485,7 +487,7 @@ export function ErrorScreen({ reset }: { reset: () => void }) {
       <EmptyState type="error" titleAs="h1" title={t('CD0113')} className="w-full lg:w-[400px]">{t('CD0111')}</EmptyState>
       <div className="flex flex-wrap justify-center gap-[var(--gap-sm)]">
         <Button onClick={reset}>{t('CD0110')}</Button>
-        <IntlLink href="/" className="inline-flex h-[var(--control-height-lg)] items-center border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none">{t('CD0112')}</IntlLink>
+        <IntlLink href="/" className={linkButtonVariants({ variant: 'secondary' })}>{t('CD0112')}</IntlLink>
       </div>
     </V2Page>
   )
@@ -505,12 +507,16 @@ export function AboutScreen() {
         <Logo type="wordmark" className="h-auto w-full" />
         <div aria-hidden className="h-[var(--space-4)] lg:hidden" />
         <div className="flex flex-col gap-[var(--space-4)] lg:max-w-[760px] lg:gap-[var(--space-6)] lg:pb-[var(--space-4)] lg:pt-[var(--space-12)]">
-          <h1 className="type-title-card">{t('CD1173')}</h1>
-          <p className="type-body-base text-ui-fg-muted">{t('CD1687')}</p>
-          {/* Company details as drawn under the about text: title, one line per detail, Check business info. */}
-          <h2 className="type-title-card">{t('CD1688')}</h2>
-          <p className="whitespace-pre-line type-body-base text-ui-fg-muted">{fillCompanyText(t.raw('CD1689') as string, companyValues(locale))}</p>
-          <a href={COMPANY.checkUrl} target="_blank" rel="noopener noreferrer" className={cn('relative self-start type-body-link text-ui-link underline underline-offset-2 hover:text-ui-link-hover', HIT_AREA)}>{t('CD1685')}</a>
+          {/* Title 34 on phones growing to 56; the about text in the long-read size. */}
+          <h1 className="type-display-h1 [--display-size-h1:clamp(34px,3.5vw+20px,56px)]">{t('CD1173')}</h1>
+          <p className="type-body-long text-ui-fg-muted">{t('CD1687')}</p>
+          {/* Company details as drawn under the about text, on a tile: title, one line per detail
+              (figures tabular), Check business info. */}
+          <div className="flex flex-col gap-[var(--space-3)] rounded-tile-inner bg-tile-surface px-[calc(var(--space-5)+var(--space-0-5))] py-[var(--space-5)] tabular-nums">
+            <h2 className="type-display-h4">{t('CD1688')}</h2>
+            <p className="whitespace-pre-line type-body-base text-ui-fg-muted">{fillCompanyText(t.raw('CD1689') as string, companyValues(locale))}</p>
+            <a href={COMPANY.checkUrl} target="_blank" rel="noopener noreferrer" className={cn('relative self-start type-body-link text-ui-link underline decoration-[length:var(--border-width-1-5)] underline-offset-4 hover:text-ui-link-hover', HIT_AREA)}>{t('CD1685')}</a>
+          </div>
         </div>
       </div>
     </V2Page>

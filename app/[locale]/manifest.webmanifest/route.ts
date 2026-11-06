@@ -3,7 +3,8 @@ import { routing } from '@/i18n/routing'
 import { seoText } from '@/lib/seo'
 
 // Web app manifest per language (installable, no service worker): opens on the visitor's language,
-// colors from the dark color-bg token (the icons are the white mark on it).
+// colors from the dark color-bg token. Icons are the brand kit's black mark on a white tile; the
+// transparent icon.svg is left out here because it follows the browser theme, not the launcher's.
 const BG = '#0a0a0a' // allow-hex — color-bg (dark); a manifest cannot read CSS variables
 
 export async function GET(_req: Request, props: { params: Promise<{ locale: string }> }) {
@@ -25,7 +26,6 @@ export async function GET(_req: Request, props: { params: Promise<{ locale: stri
         { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
         { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
         { src: '/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-        { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
       ],
     },
     { headers: { 'Content-Type': 'application/manifest+json', 'Cache-Control': 'public, max-age=86400' } },

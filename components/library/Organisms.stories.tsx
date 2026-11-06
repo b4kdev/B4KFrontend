@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Bookmark, CloudRain, CloudSun, Pencil, Share2, Sun, Trophy } from 'lucide-react'
 import { Button } from './Button'
 import { Card } from './Card'
+import { categoryStyle } from './category'
 import { AchievementBadge } from './ContentMolecules'
 import { Footer, Hero, NowSeoulCard } from './ContentOrganisms'
 import { ConsentStep, CookieBanner, ProfileHeader, SearchFilters, SearchSuggestions, SignInCard, type SignInView } from './AccountOrganisms'
@@ -51,9 +52,28 @@ export const Cards: Story = {
   ),
 }
 
+/** Home "Explore by category": one colour field per category, black title and glyph, photo inset. */
+export const CategoryTiles: Story = {
+  render: () => (
+    <div className="grid max-w-[1100px] grid-cols-5 gap-[var(--tile-gap)]">
+      {([
+        ['pop', 'K-Pop', 'Stages and studios'],
+        ['drama', 'K-Drama', 'Filming sites'],
+        ['beauty', 'K-Beauty', 'Shops and clinics'],
+        ['culture', 'K-Culture', 'Palaces and temples'],
+        ['food', 'K-Food', 'Markets and kitchens'],
+      ] as const).map(([key, title, meta], i) => {
+        const k = categoryStyle(key)!
+        return <Card key={key} type="category" href="#" title={title} meta={meta} imageSrc={i % 2 ? null : IMG} color={k.color} glyph={k.glyph} category={key} />
+      })}
+    </div>
+  ),
+}
+
 export const HeroFooterWeather: Story = {
   render: () => (
     <div className="grid gap-[var(--space-6)]">
+      <Hero title="Find the places behind the K-culture you love" subtitle="Plan a trip around K-Pop, K-Drama, K-Beauty, K-Culture and K-Food" action={<Button>Start planning</Button>} />
       <Hero imageSrc={IMG} eyebrow="Now in Seoul" title="Seoul nights" subtitle="Gwangjang, Euljiro and the river after dark" action={<Button>Explore</Button>} />
       <div className="max-w-[343px]">
         <NowSeoulCard label="Seoul now" eyebrow="Now in Seoul" time="14:32" date="Sun 12 Oct" temperature="18°" condition="Partly cloudy" weatherIcon={<CloudSun />} forecast={[{ day: 'Mon', icon: <Sun />, range: '21° / 13°', label: 'Monday, sunny' }, { day: 'Tue', icon: <CloudRain />, range: '17° / 12°', label: 'Tuesday, rain' }, { day: 'Wed', icon: <CloudSun />, range: '19° / 12°', label: 'Wednesday, partly cloudy' }]} tip="Palaces are free in hanbok." />

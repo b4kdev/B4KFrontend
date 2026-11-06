@@ -1,7 +1,7 @@
 'use client'
 
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import { BedDouble, Coffee, Crown, Flower2, Landmark, Search, ShoppingBag, Trees, Utensils } from 'lucide-react'
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { BedDouble, ChevronLeft, ChevronRight, Coffee, Crown, Flower2, Landmark, LayoutGrid, Search, ShoppingBag, Trees, Utensils } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
@@ -15,6 +15,7 @@ import {
   Chip,
   Dialog,
   EmptyState,
+  IconButton,
   LeftPanel,
   MenuItem,
   Modal,
@@ -31,7 +32,8 @@ import {
   type SheetSnap,
   placeTypeOf,
 } from '@/components/library'
-import { usePhone } from '@/components/library/hooks'
+import { usePhone, useSheetSlide } from '@/components/library/hooks'
+import { BackToExplore } from '../map/BackToExplore'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMapPois, type MapBounds, type MapPoi } from '@/hooks/useMapPois'
 import { usePlaceDetail } from '@/hooks/usePlaceDetail'
@@ -52,7 +54,9 @@ import { V2MapCanvas, type V2MapHandle } from '../map/V2MapCanvas'
 import { COURSE_HANDOFF_EVENT, DURATIONS, MAX_DAYS, MAX_STOPS, PER_DAY, draftStopCount, formatMinutes, itineraryToDraft, legMinutes, usePlanDraft } from '../map/usePlanDraft'
 import { useRoutedLegs } from '../map/useRoutedLegs'
 import { CATEGORIES, jsonFetch } from './A2Home'
-import { previousScreenSource, type PlaceSource, type PlanFlow } from '@/lib/place-source'
+import { PLAN_FLOWS, previousScreenSource, type PlaceSource, type PlanFlow } from '@/lib/place-source'
+import { fitDays } from '@/lib/plan-days'
+import { httpError } from '@/lib/session-expired'
 
 // The map (A1): Map browse
 //, Place selected, Plan in progress / Plan editor, Save plan
@@ -62,7 +66,7 @@ import { previousScreenSource, type PlaceSource, type PlanFlow } from '@/lib/pla
 
 const send = (url: string, method: string, body?: unknown) =>
   fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }).then((r) => {
-    if (!r.ok) throw new Error(String(r.status))
+    if (!r.ok) throw httpError(r.status)
     return r.json().catch(() => ({}))
   })
 
@@ -71,15 +75,24 @@ const nameOf = (p: { name_ko: string; name_en?: string; name_preferred?: string 
 // The map chips: place types, one at a time, as BFF place filters (tags = any of these chips),
 // each with its drawn leading icon.
 const PLACE_TYPES = [
-  { id: 'restaurants', label: 'CD0633', query: 'tags=restaurant', icon: Utensils },
-  { id: 'cafes', label: 'CD0628', query: 'tags=cafe', icon: Coffee },
-  { id: 'stays', label: 'CD0629', query: 'tags=hotel,resort,pension,guesthouse,hanok-stay,motel', icon: BedDouble },
-  { id: 'shopping', label: 'CD1282', query: 'interest=shopping', icon: ShoppingBag },
-  { id: 'palaces', label: 'CD0631', query: 'tags=palace', icon: Crown },
-  { id: 'temples', label: 'CD0635', query: 'tags=temple', icon: Flower2 },
-  { id: 'museums', label: 'CD0630', query: 'tags=museum', icon: Landmark },
-  { id: 'parks', label: 'CD0632', query: 'tags=park', icon: Trees },
+  { id: 'restaurants', label: 'CD0633', query: 'tags=restaurant', icon: Utensils, color: 'var(--map-type-food)' },
+  { id: 'cafes', label: 'CD0628', query: 'tags=cafe', icon: Coffee, color: 'var(--map-type-cafe)' },
+  { id: 'stays', label: 'CD0629', query: 'tags=hotel,resort,pension,guesthouse,hanok-stay,motel', icon: BedDouble, color: 'var(--map-type-stay)' },
+  { id: 'shopping', label: 'CD1282', query: 'interest=shopping', icon: ShoppingBag, color: 'var(--map-type-shopping)' },
+  { id: 'palaces', label: 'CD0631', query: 'tags=palace', icon: Crown, color: 'var(--map-type-heritage)' },
+  { id: 'temples', label: 'CD0635', query: 'tags=temple', icon: Flower2, color: 'var(--map-type-heritage)' },
+  { id: 'museums', label: 'CD0630', query: 'tags=museum', icon: Landmark, color: 'var(--map-type-heritage)' },
+  { id: 'parks', label: 'CD0632', query: 'tags=park', icon: Trees, color: 'var(--map-type-park)' },
 ] as const
+
+/** On the Map the add actions (Add to plan, the plan tray tile) take the Map's coral, not the lilac used elsewhere. */
+/** Room between the chips and the top of the full map sheet. */
+const SHEET_GAP_PX = 8
+
+const MAP_ACCENT = { '--accent-add': 'var(--nav-map)' } as CSSProperties
+// Empty map inputs that keep their identity across renders (the map redraws on a new array).
+const NO_POIS: MapPoi[] = []
+const NO_STOPS: { poi: MapPoi; day: number; order: number }[] = []
 
 /** `poiId`: the place to open (the /place/[poiId] page); otherwise ?poi= in the address. */
 export function MapScreen({ poiId }: { poiId?: string } = {}) {
@@ -95,7 +108,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const mapRef = useRef<V2MapHandle>(null)
   const locate = useLocateMe(mapRef, { phone })
   const unlock = useBadgeUnlock()
-  const draft = usePlanDraft()
+  // A failed autosave is said (the plan is also kept on this device).
+  const draft = usePlanDraft({ onSaveFailed: () => toast({ type: 'critical', message: t('CD0673') }) })
   // Toast actions run later (Undo): they call the draft as it is then, not as it was.
   const latestDraft = useRef(draft)
   latestDraft.current = draft
@@ -115,22 +129,73 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const [selectedId, setSelectedId] = useState<string | null>(poiId ?? params?.get('poi') ?? null)
   // A place opened from another screen (/map?poi=…) was found there; anything picked on the map, on the map.
   const entry = useRef<{ id: string | null; source: PlaceSource }>({ id: null, source: 'map' })
+  // Phone: a pinch on the Map page zooms the map, not the page (the page zoomed when a pinch missed the
+  // map). touch-pan-x/y stops it in Chrome; Safari ignores that for page zoom and needs its gesture
+  // event stopped. Only while the Map page is open; every other page keeps pinch zoom.
+  useEffect(() => {
+    if (!phone) return
+    const stop = (e: Event) => e.preventDefault()
+    document.addEventListener('gesturestart', stop)
+    return () => document.removeEventListener('gesturestart', stop)
+  }, [phone])
+
   useEffect(() => { entry.current = { id: poiId ?? params?.get('poi') ?? null, source: previousScreenSource() } }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  // ?poi= in the address follows the open place both ways. A list card links to /map?poi=… (new tab, Back and the
+  // address bar keep working): when the address changes on the page, its place opens; when the place it opened goes
+  // (Back), the list returns. A place closed or another picked on the map drops ?poi=, so the same card opens again.
+  const urlPoi = params?.get('poi') ?? null
+  const lastUrlPoi = useRef(urlPoi)
+  // True while the address's ?poi= is a history step made on this page (a card link or a pick on the map), so Back
+  // in the place view steps back to the list instead of leaving a second /map entry.
+  const ownStep = useRef(false)
+  useEffect(() => {
+    const was = lastUrlPoi.current
+    lastUrlPoi.current = urlPoi
+    if (urlPoi === was) return
+    if (urlPoi) {
+      ownStep.current = true
+      setSelectedId(urlPoi)
+      setMode('nearby')
+      setSnap('mid')
+    } else setSelectedId((id) => (id === was ? null : id))
+  }, [urlPoi])
+  useEffect(() => {
+    // The /place/[poiId] page keeps its own address.
+    if (poiId || selectedId === urlPoi || (!urlPoi && !selectedId)) return
+    const rest = new URLSearchParams(params?.toString())
+    rest.delete('poi')
+    // A place picked on the map is a history step too, so the browser's Back returns to the list.
+    if (selectedId) rest.set('poi', selectedId)
+    const query = rest.toString()
+    lastUrlPoi.current = selectedId
+    ownStep.current = !!selectedId
+    if (selectedId) router.push(`/map?${query}`, { scroll: false })
+    else router.replace(query ? `/map?${query}` : '/map', { scroll: false })
+  }, [selectedId]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Back to the list (the place view's back button, Escape, a map tap): a step made here goes back in history.
+  const closePlace = () => {
+    if (ownStep.current && lastUrlPoi.current) window.history.back()
+    else setSelectedId(null)
+  }
   const [openedWith] = useState(selectedId)
   const viewedOnce = useRef(false)
   // Escape goes back from a selected place to the list (no dialog open); a map tap does the same.
   useEffect(() => {
     if (!selectedId) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !document.querySelector('[role="dialog"]')) setSelectedId(null)
+      if (e.key === 'Escape' && !document.querySelector('[role="dialog"]')) closePlace()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [selectedId])
+  }, [selectedId]) // eslint-disable-line react-hooks/exhaustive-deps
   const [cart, setCart] = useState<'collapsed' | 'open'>(params?.get('plan') ? 'open' : 'collapsed')
   // The open plan starts on All days; each day is one tab away.
   const [activeDay, setActiveDay] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>('all')
   const [snap, setSnap] = useState<SheetSnap>('mid')
+  // Phone: with the list pulled up full, the chip row folds into one chip so the list gets the room;
+  // a tap on it opens the row again until the sheet leaves full.
+  const [chipsOpen, setChipsOpen] = useState(false)
+  useEffect(() => { if (snap !== 'full') setChipsOpen(false) }, [snap])
   const [planSheet, setPlanSheet] = useState(!!params?.get('plan') && phone)
   // /plan and ?plan= open the plan on phones too (the phone check settles after the first render).
   const openedFromAddress = useRef(false)
@@ -140,6 +205,33 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     setPlanSheet(true)
   }, [phone, params])
   const [saveOpen, setSaveOpen] = useState(false)
+  // Phones: the plan sheet rises over the map sheet when opened and drops back down when closed; a drag
+  // on its handle follows the finger, and a pull far or fast enough closes it. A tap on the handle closes it too.
+  const closePlanSheet = () => setPlanSheet(false)
+  const planSlide = useSheetSlide({ open: planSheet, onDismiss: closePlanSheet, onTap: closePlanSheet })
+  // Desktop: the open Plan cart rises over the Left panel and drops back down; its bar drags it down.
+  const cartSlide = useSheetSlide({ open: !phone && cart === 'open', onDismiss: () => setCart('collapsed'), handle: '[data-sheet-handle]' })
+  // Escape closes the open plan (no dialog or place open) and puts focus back on what opened it: the Plan pill
+  // on phones, the cart's bar on desktop.
+  const refocusPlan = useRef(false)
+  const planOpen = phone ? planSheet : cart === 'open'
+  useEffect(() => {
+    if (!planOpen || selectedId) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || document.querySelector('[role="dialog"]')) return
+      refocusPlan.current = true
+      if (phone) setPlanSheet(false)
+      else setCart('collapsed')
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [planOpen, phone, selectedId])
+  const planOnPage = phone ? planSlide.mounted : cartSlide.mounted
+  useEffect(() => {
+    if (planOnPage || !refocusPlan.current) return
+    refocusPlan.current = false
+    document.querySelector<HTMLElement>(phone ? '[data-plan-pill] button' : '[data-sheet-handle]')?.focus()
+  }, [planOnPage, phone])
   // Phones: what covers the map, measured from the parts themselves: the floating bars and chips at
   // the top, the map sheet (its real top edge, through its height transition) at the bottom.
   const mapArea = useRef<HTMLElement>(null)
@@ -179,18 +271,24 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     const parts = new MutationObserver(watch)
     parts.observe(document.body, { childList: true, subtree: true })
     window.addEventListener('resize', measure)
+    // A sheet that slides in keeps its size, so the size watcher misses it: measure again where the slide ends.
+    const settled = (e: TransitionEvent) => (e.target as Element).matches?.('[role="region"][data-toast-floor]') && measure()
+    document.addEventListener('transitionend', settled)
     watch()
     return () => {
       cancelAnimationFrame(frame)
       sizes.disconnect()
       parts.disconnect()
       window.removeEventListener('resize', measure)
+      document.removeEventListener('transitionend', settled)
     }
   }, [phone])
   const [planName, setPlanName] = useState('')
   const [nameError, setNameError] = useState(false)
   const [saving, setSaving] = useState(false)
   const [discardOpen, setDiscardOpen] = useState(false)
+  // The day waiting on the delete confirm (a day with stops); an empty day goes at once.
+  const [deleteDay, setDeleteDay] = useState<number | null>(null)
   const [folderId, setFolderId] = useState<string | null>(params?.get('folder'))
   const [editing, setEditing] = useState<{ id: string; title: string } | null>(null)
   const [pendingEdit, setPendingEdit] = useState<ItineraryDetail | null>(null)
@@ -211,11 +309,68 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     () => (collection.data ? collection.data.items.filter((p) => Number.isFinite(p.coords_lat) && Number.isFinite(p.coords_lng)).map((p) => ({ ...p, primary_image_url: p.primary_image_url ?? undefined })) : null),
     [collection.data],
   )
-  const listPois = collectionOn && collectionPois ? collectionPois : pois
+  const livePois = collectionOn && collectionPois ? collectionPois : pois
   // List header: the district and city at the center of the map in view (on phones the part above
   // the sheet; none for a category page's places).
   const area = useAreaName(collectionOn ? null : bounds, zoom, locale, phone ? (snap === 'peek' ? 0.45 : 0.25) : 0.5)
-  const areaLine = area ? (area.district ? GAP.areaName(area.district, area.city) : area.city) : null
+  const liveArea = area ? (area.district ? GAP.areaName(area.district, area.city) : area.city) : null
+  // Back from a place shows the list as it was left: opening a place moves the map (and so the area's list), so the
+  // list and its area line are held from the moment a place opens until the map is moved again after Back.
+  const [held, setHeld] = useState<{ pois: typeof livePois; area: string | null } | null>(null)
+  const listPois = held?.pois ?? livePois
+  const areaLine = held ? held.area : liveArea
+  // Back from a place returns to the list it came from, as it was left: the Nearby list (tab, filter, places, area)
+  // or a Saved folder; the same scroll, the phone sheet's height, and focus on the row that was opened.
+  const listBox = useRef<HTMLDivElement>(null)
+  const listScroll = useRef(0)
+  const listFrom = useRef<{ mode: typeof mode; folderId: string | null; snap: SheetSnap }>({ mode, folderId, snap })
+  const openedCard = useRef<string | null>(null)
+  const restoring = useRef(false)
+  const backRow = useRef<HTMLDivElement>(null)
+  const placeOpen = useRef(selectedId)
+  placeOpen.current = selectedId
+  if (!selectedId) listFrom.current = { mode, folderId, snap }
+  // The list's scroll, read while it shows (a scroll that comes from the list leaving is not kept).
+  useEffect(() => {
+    const onScroll = (e: Event) => {
+      if (placeOpen.current || !(e.target instanceof HTMLElement) || !listBox.current || !e.target.contains(listBox.current)) return
+      listScroll.current = e.target.scrollTop
+    }
+    document.addEventListener('scroll', onScroll, true)
+    return () => document.removeEventListener('scroll', onScroll, true)
+  }, [])
+  const scrollerOf = (el: Element | null) => {
+    for (let n = el?.parentElement; n; n = n.parentElement) if (/auto|scroll/.test(getComputedStyle(n).overflowY)) return n
+    return null
+  }
+  const wasOpen = useRef(selectedId)
+  useLayoutEffect(() => {
+    const was = wasOpen.current
+    wasOpen.current = selectedId
+    if (selectedId && !was) {
+      openedCard.current = selectedId
+      if (listFrom.current.mode === 'nearby') setHeld({ pois: livePois, area: liveArea })
+    }
+    // A place opens at its top, wherever the list (or the place before) was scrolled.
+    const top = selectedId ? scrollerOf(backRow.current) : null
+    if (top) top.scrollTop = 0
+    if (selectedId || !was) return
+    const from = listFrom.current
+    setMode(from.mode)
+    setFolderId(from.folderId)
+    if (phone) setSnap(from.snap)
+    restoring.current = true
+  }, [selectedId]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Once the list it came from shows again: its scroll and focus on the row that was opened.
+  useLayoutEffect(() => {
+    const from = listFrom.current
+    if (!restoring.current || selectedId || mode !== from.mode || folderId !== from.folderId) return
+    restoring.current = false
+    const scroller = scrollerOf(listBox.current)
+    if (scroller) scroller.scrollTop = listScroll.current
+    const id = openedCard.current
+    listBox.current?.querySelector<HTMLElement>(`a[href$="poi=${id}"], [data-poi-id="${id}"]`)?.focus({ preventScroll: true })
+  })
   // An area name can come at this zoom (the geocoder names nothing past a province): hold its line.
   const areaHeld = !collectionOn && zoom >= 9
   const { detail, isError: placeMissing } = usePlaceDetail(selectedId)
@@ -257,14 +412,18 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // loads a published plan for editing.
   // How the plan in the editor started, for plan_create: a hand-off, or places added by hand.
   const planFlow = useRef<PlanFlow>('manual')
+  // A plan saved whose publish step failed: the next Save updates and publishes it, never a second plan.
+  const savedUnpublished = useRef<string | null>(null)
   const takeHandoff = () => {
     const handoff = takeCourseHandoff()
     if (!handoff) return
-    const { stops, name, source } = handoff
+    const { name, source } = handoff
+    // Plan from saved places can return more than 8 days (one per area): fit them to the plan limits.
+    const stops = fitDays(handoff.stops)
     planFlow.current = source
     const had = draft.plan.stops.length > 0
     const asPois: MapPoi[] = stops.map((s) => ({ poi_id: s.poi_id, name_ko: s.name_ko, name_preferred: s.name_preferred, coords_lat: s.coords_lat, coords_lng: s.coords_lng, display_region: s.display_region ?? null, primary_image_url: s.primary_image_url }))
-    draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])), name, undefined, { source: source === 'from_saved' ? 'saved' : source === 'quick_plan' ? 'quick_plan' : undefined })
+    draft.replace(asPois, Object.fromEntries(stops.map((s) => [s.poi_id, s.day])), name, undefined, { flow: source, source: source === 'from_saved' ? 'saved' : source === 'quick_plan' ? 'quick_plan' : undefined })
     setActiveDay('all')
     setSelectedId(null)
     setCollectionOn(false)
@@ -339,7 +498,13 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       setSnap('peek')
     }
   }, [hasStops, phone, selectedId])
-  const planStops = order.map((poi) => ({ poi, day: draft.dayOf(poi.poi_id), order: order.filter((p) => draft.dayOf(p.poi_id) === draft.dayOf(poi.poi_id)).indexOf(poi) + 1 }))
+  // The map rebuilds its plan pins and route lines when these change, so they keep their identity until the stops,
+  // their order or their days do (a new array on every render made the route blink).
+  const dayKey = order.map((p) => `${p.poi_id}:${draft.dayOf(p.poi_id)}`).join()
+  const planStops = useMemo(
+    () => order.map((poi) => ({ poi, day: draft.dayOf(poi.poi_id), order: order.filter((p) => draft.dayOf(p.poi_id) === draft.dayOf(poi.poi_id)).indexOf(poi) + 1 })),
+    [order, dayKey], // eslint-disable-line react-hooks/exhaustive-deps
+  )
   // The plan's stops and route show on the map only while the plan is open (desktop: the Plan
   // cart opened from the bottom of the Left panel; phones: the plan sheet).
   const planVisible = phone ? planSheet : cart === 'open'
@@ -366,7 +531,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   useEffect(() => {
     if (savedPois?.length) mapRef.current?.fitTo(savedPois.map((p) => ({ lat: p.coords_lat, lng: p.coords_lng })))
   }, [savedPois])
-  const mapPois = showPlanOnly ? (detail && !order.some((p) => p.poi_id === detail.poi_id) ? [detail] : []) : savedPois ?? listPois
+  const planOnlyPoi = showPlanOnly && detail && !order.some((p) => p.poi_id === detail.poi_id) ? detail : null
+  const mapPois = useMemo(() => (showPlanOnly ? (planOnlyPoi ? [planOnlyPoi] : NO_POIS) : savedPois ?? listPois), [showPlanOnly, planOnlyPoi, savedPois, listPois])
   const addToPlan = (poi: MapPoi, toDay?: number, from?: PlaceSource) => {
     const source = from ?? (poi.poi_id === entry.current.id ? entry.current.source : 'map')
     // Read through the ref: the toast's action runs later, on the plan as it is then.
@@ -397,7 +563,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // signedIn: the save a guest started, finished after the sign-in (its own toast).
   const setSave = async (id: string, on: boolean, signedIn = false) => {
     const category = detail?.poi_id === id ? detail.display_domain ?? undefined : undefined
-    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => track('poi_save', { action: on ? 'unsave' : 'save', category, locale, screen_id: 'map' })).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: navigator.onLine === false ? t('CD1426') : t('CD0061') }))
+    await send('/api/saved/poi', on ? 'DELETE' : 'POST', { poi_id: id }).then(() => track('poi_save', { action: on ? 'unsave' : 'save', category, locale, screen_id: 'map' })).then(() => toast({ type: 'success', message: on ? k('map.poiDetail.removedSave') : signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })).catch(() => toast({ type: 'critical', message: navigator.onLine === false ? t('CD1208') : t('CD0061') }))
     saved.mutate()
   }
   // Optimistic: the heart changes at once and goes back with a toast if the server refuses.
@@ -423,6 +589,14 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     openSaveSheet()
   }, [saveFirst, pendingEdit, order.length]) // eslint-disable-line react-hooks/exhaustive-deps
   const totalMin = order.reduce((s, p) => s + (draft.plan.durations[p.poi_id] ?? 60), 0)
+  // Deletes a day with its stops; later days move up one, and the selection stays on the same day
+  // or on the day now in its place.
+  const removeDay = (d: number) => {
+    const left = draft.days - 1
+    draft.removeDay(d)
+    setActiveDay((a) => (a === 'all' ? 'all' : a > d ? ((a - 1) as 1) : a === d ? (Math.min(d, left) as 1) : a))
+    setDeleteDay(null)
+  }
   const dayStops = typeof activeDay === 'number' ? order.filter((p) => draft.dayOf(p.poi_id) === activeDay).length : 0
   // A published plan open for editing: the day line ends with "keeps the same link".
   const withEditNote = (line?: string) => (line && editing ? `${line} · ${t('CD1808')}` : line)
@@ -454,17 +628,26 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       }
       return
     }
+    // After a reload the flow comes back with the draft; this session's hand-off otherwise.
+    const flow = PLAN_FLOWS.includes(draft.plan.flow as PlanFlow) ? (draft.plan.flow as PlanFlow) : planFlow.current
     try {
-      const res = await send('/api/plans', 'POST', {
-        title: planName.trim(),
-        stops,
-        source: planFlow.current,
-        is_published: false,
-      })
-      const id: string | undefined = res?.plan?.id
+      let id: string | undefined = savedUnpublished.current ?? undefined
+      if (id) {
+        await send(`/api/plans/${id}`, 'PUT', { title: planName.trim(), stops })
+      } else {
+        const res = await send('/api/plans', 'POST', {
+          title: planName.trim(),
+          stops,
+          source: flow,
+          is_published: false,
+        })
+        id = res?.plan?.id
+        savedUnpublished.current = id ?? null
+      }
       // Saving publishes it, as on the live map.
       if (id) await send(`/api/plans/${id}`, 'PATCH', { is_published: true })
-      track('plan_create', { flow: planFlow.current, days: draft.days, stops: stops.length, locale, screen_id: 'map' })
+      savedUnpublished.current = null
+      track('plan_create', { flow, days: draft.days, stops: stops.length, locale, screen_id: 'map' })
       track('plan_save', { days: draft.days, stops: stops.length, is_public: !!id, locale, screen_id: 'map' })
       planFlow.current = 'manual'
       draft.discard()
@@ -483,7 +666,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   // ── Panel content ──────────────────────────────────────────────────────────
   const switcher = (
-    <Tabs label={t('CD0815')} width="equal" className={phone ? undefined : 'mx-[var(--space-4)]'} value={mode} onValueChange={(v) => { setMode(v as 'nearby' | 'saved'); setSelectedId(null); if (v === 'saved' && phone && snap === 'peek') setSnap('mid') }} tabs={[{ id: 'nearby', label: t('CD1576') }, { id: 'saved', label: k('saved.title') }]} />
+    <Tabs label={t('CD0815')} width="equal" value={mode} onValueChange={(v) => { setMode(v as 'nearby' | 'saved'); setSelectedId(null); if (v === 'saved' && phone && snap === 'peek') setSnap('mid') }} tabs={[{ id: 'nearby', label: t('CD1576'), color: 'var(--nav-map)' }, { id: 'saved', label: k('saved.title'), color: 'var(--nav-saved)' }]} />
   )
   const placeView = detail ? (
     <div className={cn('flex flex-col gap-[var(--space-2)] pb-[var(--space-4)]', phone && '-mx-[var(--space-4)] -mt-[var(--space-2)]')}>
@@ -520,7 +703,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     <EmptyState
       type="no-results"
       title={t('CD1529')}
-      action={<Button size="md" variant="secondary" onClick={() => setSelectedId(null)}>{t('CD0594')}</Button>}
+      action={<Button size="md" variant="secondary" onClick={closePlace}>{t('CD0594')}</Button>}
       className={phone ? '-mx-[var(--space-4)] mt-[var(--space-2)]' : undefined}
     >
       {t('CD1530')}
@@ -539,7 +722,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   const nearbyList = (
     <div className={cn('flex flex-col gap-[var(--space-3)]', !phone && 'p-[var(--space-4)]')}>
-      {(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? (
+      {(!held && (collectionOn ? collection.isLoading : isLoading)) && !listPois.length ? (
         // As drawn: the area name and count, then each card's photo (4:3) and title.
         <div className="flex flex-col gap-[var(--space-4)]">
           <Skeleton shape="line" className="h-[var(--space-3)] w-1/2" />
@@ -556,21 +739,33 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           comes later from the geocoder, so its line is held from the first paint (blank until then) and
           the list does not move down when it arrives. The header goes only on the first load: while
           the list reloads for a new map area it stays, and the count changes when the answer lands. */}
-      {!((collectionOn ? collection.isLoading : isLoading) && !listPois.length) && (areaLine || areaHeld || (listPois.length && !collectionOn)) ? (
+      {!((!held && (collectionOn ? collection.isLoading : isLoading)) && !listPois.length) && (areaLine || areaHeld || (listPois.length && !collectionOn)) ? (
         <div className="mb-[var(--space-1)] flex flex-col">
           {areaLine ? <h2 className="type-title-card text-ui-fg">{areaLine}</h2> : areaHeld ? <div aria-hidden className="type-title-card">{'\u00a0'}</div> : null}
           {listPois.length && !collectionOn ? <p className="type-body-caption text-ui-fg-muted">{GAP.placesInArea(listPois.length)}</p> : null}
         </div>
       ) : null}
       {/* No places: the empty state titled No places in this area, Zoom out under it. */}
-      {!(collectionOn ? collection.isLoading : isLoading) && !listPois.length ? (
+      {!(!held && (collectionOn ? collection.isLoading : isLoading)) && !listPois.length ? (
         <div className="flex flex-col gap-[var(--space-4)]">
           <EmptyState type="no-results" title={t('CD0626')} action={<Button size="md" variant="secondary" onClick={() => mapRef.current?.zoomOut()}>{t('CD0737')}</Button>}>{t('CD1531')}</EmptyState>
         </div>
       ) : null}
-      <ul className="flex flex-col gap-[var(--space-4)]">
+      {/* Nearby by default shows the full place cards; results (a place-type chip or a collection) are compact rows. */}
+      <ul className={cn('flex flex-col', filter || collectionOn ? 'gap-[var(--space-2)]' : 'gap-[var(--space-4)]')}>
         {listPois.slice(0, 40).map((p) => (
           <li key={p.poi_id}>
+            {filter || collectionOn ? (
+              <Card
+                type="compact"
+                href={`/map?poi=${p.poi_id}`}
+                title={nameOf(p, locale)}
+                imageSrc={p.primary_image_url}
+                meta={regionName(p.display_region ?? '', locale)}
+                addToPlan={{ onAdd: () => addToPlan(p), label: `${k('map.poiDetail.addToPlan')}: ${nameOf(p, locale)}` }}
+                save={{ saved: savedIds.has(p.poi_id), onSave: () => toggleSave(p), label: `${k('map.poiDetail.save')} ${nameOf(p, locale)}` }}
+              />
+            ) : (
             <Card
               type="place"
               href={`/map?poi=${p.poi_id}`}
@@ -583,6 +778,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
               save={{ saved: savedIds.has(p.poi_id), onSave: () => toggleSave(p), label: `${k('map.poiDetail.save')} ${nameOf(p, locale)}` }}
               like={{ liked: likes.isLiked(p.poi_id), onLike: () => toggleLike(p.poi_id), label: likes.isLiked(p.poi_id) ? k('explore.card.unlikeAria', { name: nameOf(p, locale) }) : k('explore.card.likeAria', { name: nameOf(p, locale) }) }}
             />
+            )}
           </li>
         ))}
       </ul>
@@ -610,6 +806,11 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       })()}
       onOpenFolder={setFolderId}
       onBack={() => setFolderId(null)}
+      // A place row opens the place as a Nearby card does; the tab stays Saved, so Back returns to this folder.
+      onOpenPlace={(id) => {
+        setSelectedId(id)
+        if (phone && snap === 'peek') setSnap('mid')
+      }}
       onAdd={(id) => {
         const p = saved.data?.pois.find((x) => x.poi_id === id)
         if (p) addToPlan({ poi_id: p.poi_id, name_ko: p.name_ko, name_en: p.name_en, coords_lat: p.coords_lat, coords_lng: p.coords_lng, display_region: p.display_region, primary_image_url: p.primary_image_url ?? undefined }, undefined, 'saved')
@@ -618,11 +819,24 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       labels={{ back: k('saved.folder.back'), add: (n) => `${k('map.poiDetail.addToPlan')}: ${n}`, emptyTitle: k('saved.empty.places.title'), emptyBody: t('CD1429') }}
     />
   )
-  const content = selectedId ? placeView : mode === 'nearby' ? nearbyList : savedView
+  // The place view's back control: the "‹" button at the top left, as Google Maps' place panel; it stays in view as
+  // the place scrolls (on phones it also covers the sheet's top padding, so nothing shows above it).
+  const placeBack = (
+    <div
+      ref={backRow}
+      className={cn('sticky top-0 z-10 flex', phone ? '-top-[var(--space-2)] -mx-[var(--space-4)] -mb-[var(--space-4)] -mt-[var(--space-2)] bg-ui-bg-raised px-[var(--space-2)] pt-[var(--space-2)] dark:bg-ui-bg-media' : 'bg-ui-bg px-[var(--space-2)] pt-[var(--space-2)]')}>
+      <IconButton label={t('CD0121')} icon={<ChevronLeft />} onClick={closePlace} />
+    </div>
+  )
+  const content = selectedId ? <>{placeBack}{placeView}</> : <div ref={listBox} className="contents">{mode === 'nearby' ? nearbyList : savedView}</div>
 
   const cartNode = (
     <PlanCart
-      state={order.length || cart === 'open' ? cart : 'empty'}
+      // Desktop: the cart stays open while it slides back down.
+      state={order.length || cart === 'open' ? (cartSlide.mounted ? 'open' : cart) : 'empty'}
+      // Phones: the plan sheet's own handle. The plan's handle bar is the Map's coral.
+      handle={!phone}
+      className="[--sheet-handle:var(--nav-map)]"
       onToggle={() => {
         if (cart !== 'open' && order.length) fitPlan(order)
         setCart((c) => (c === 'open' ? 'collapsed' : 'open'))
@@ -634,12 +848,14 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         day: Math.min(draft.dayOf(p.poi_id), 8) as 1,
         duration: formatMinutes(draft.plan.durations[p.poi_id] ?? 60, k),
         durationLabel: k('map.plan.durationAriaLabel', { name: nameOf(p, locale) }),
+        imageSrc: p.primary_image_url ?? null,
         leg: order[i + 1] && draft.dayOf(order[i + 1].poi_id) === draft.dayOf(p.poi_id) ? k('itinerary.stats.min', { min: routedLeg(p.poi_id, order[i + 1].poi_id) ?? legMinutes(p, order[i + 1]) }) : undefined,
       }))}
       days={draft.days}
       activeDay={activeDay}
       onDayChange={(d) => setActiveDay(d)}
       onAddDay={draft.addDay}
+      onRemoveDay={(d) => (draft.countOn(d) ? setDeleteDay(d) : removeDay(d))}
       summary={editing ? GAP.editing(editing.title) : order.length ? t('CD1858', { count: order.length, time: formatMinutes(totalMin, k) }) : t('CD1359')}
       lastAdded={order.length ? nameOf(order[order.length - 1], locale) : undefined}
       lastAddedImage={order.length ? order[order.length - 1].primary_image_url ?? null : undefined}
@@ -650,8 +866,15 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       ))}
       onRemove={draft.remove}
       onMove={draft.move}
+      onMoveToDay={draft.moveToDay}
+      dayFull={(d) => draft.countOn(d) >= PER_DAY}
+      // A stop opens its place: the plan folds away (desktop cart to its bar, phone plan sheet closed) so the place
+      // shows, and the map moves to it; Back returns to the map with the plan folded.
       onSelect={(id) => {
+        setCart('collapsed')
+        setPlanSheet(false)
         setSelectedId(id)
+        if (phone) setSnap('mid')
         const p = order.find((x) => x.poi_id === id)
         if (p) mapRef.current?.panTo(p.coords_lat, p.coords_lng)
       }}
@@ -659,18 +882,27 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
       onDiscard={() => (editing ? stopEditing() : setDiscardOpen(true))}
       labels={{
         region: t('CD0679'), emptyTitle: t('CD1359'), emptyBody: t('CD1607'), all: k('map.plan.allDays'),
-        day: (n) => k('map.plan.dayTab', { n }), addDay: t('CD1480'), addDayAria: t('CD0649'), save: editing ? t('CD0993') : k('map.plan.save'), discard: editing ? t('CD1528') : t('CD0655'),
-        remove: (n) => `${k('saved.poi.removeLabel')} ${n}`, reorder: (n) => k('map.plan.dragHandle', { n }), moved: (name, position, total) => t('CD1807', { name, position, total }),
+        day: (n) => k('map.plan.dayTab', { n }), addDay: t('CD1480'), addDayAria: t('CD0649'), removeDay: (n) => t('CD0664', { n }), previousDays: t('CD0121'), nextDays: t('CD0768'), save: editing ? t('CD0993') : k('map.plan.save'), discard: editing ? t('CD1528') : t('CD0655'),
+        remove: (n) => `${k('saved.poi.removeLabel')} ${n}`, reorder: (n) => k('map.plan.dragHandle', { n }), moved: (name, position, total) => t('CD1807', { name, position, total }), dayFull: (n) => t('CD1533', { day: n }),
         open: k('map.plan.stripExpand'), close: k('map.plan.stripCollapse'), about: GAP.about,
       }}
     />
   )
 
   // Chips belong to browsing: an open place hides them (phone and desktop), as drawn.
-  const chips = selectedId ? null : (
-    <div className="flex gap-[var(--space-2)] overflow-x-auto [scrollbar-width:none]">
+  const picked = PLACE_TYPES.find((c) => c.id === filter)
+  const PickedIcon = picked?.icon ?? LayoutGrid
+  const chips = selectedId ? null : phone && snap === 'full' && !planSheet && !chipsOpen ? (
+    <div className="b4k-focus-room flex">
+      <Chip type="map" selected={!!picked} leadingIcon={<PickedIcon />} keyColor={picked?.color} aria-expanded={false} onClick={() => setChipsOpen(true)}>
+        {picked ? t(picked.label) : t('CD0778')}
+        <ChevronRight aria-hidden className="-mr-[var(--space-1)] size-[var(--icon-size-xs)]" />
+      </Chip>
+    </div>
+  ) : (
+    <div className="b4k-focus-room flex gap-[var(--space-2)] overflow-x-auto overscroll-x-contain overflow-y-hidden [scrollbar-width:none]">
       {PLACE_TYPES.map((c) => (
-        <Chip key={c.id} type="map" selected={filter === c.id} leadingIcon={<c.icon />} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setAreaBounds(bounds); setAreaMoved(false); setFilter((f) => (f === c.id ? null : c.id)) }}>{t(c.label)}</Chip>
+        <Chip key={c.id} type="map" selected={filter === c.id} leadingIcon={<c.icon />} keyColor={c.color} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setAreaBounds(bounds); setAreaMoved(false); setFilter((f) => (f === c.id ? null : c.id)) }}>{t(c.label)}</Chip>
       ))}
     </div>
   )
@@ -694,13 +926,13 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         holdOpen={!!openedWith && !placeMissing}
         pois={mapPois}
         selectedId={selectedId}
-        onSelect={(id) => { setSelectedId(id); if (id) { setMode('nearby'); setSnap('mid') } }}
-        planStops={stopsVisible ? planStops : []}
+        onSelect={(id) => { if (!id) return closePlace(); setSelectedId(id); setMode('nearby'); setSnap('mid') }}
+        planStops={stopsVisible ? planStops : NO_STOPS}
         fitBottom={fitBottom}
         fitTop={fitTopPx}
         activeDay={activeDay}
         savedIds={savedIds}
-        onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => { setBounds(b); if (filterOn.current) setAreaMoved(true) }, 300) }}
+        onBounds={(b, z) => { setZoom(z); if (boundsTimer.current) clearTimeout(boundsTimer.current); boundsTimer.current = setTimeout(() => { setBounds(b); if (!placeOpen.current) setHeld(null); if (filterOn.current) setAreaMoved(true) }, 300) }}
         userLocation={locate.location}
         label={k('itinerary.mapAriaLabel')}
         errorText={GAP.mapError}
@@ -730,7 +962,15 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         title={t('CD1536')}
         body={GAP.discardBody(order.length)}
         cancel={<Button variant="secondary" data-autofocus onClick={() => setDiscardOpen(false)}>{k('map.plan.discardCancel')}</Button>}
-        confirm={<Button variant="danger" onClick={() => { draft.discard(); planFlow.current = 'manual'; setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
+        confirm={<Button variant="danger" onClick={() => { draft.discard(); planFlow.current = 'manual'; savedUnpublished.current = null; setDiscardOpen(false); setCart('collapsed'); setPlanSheet(false) }}>{k('map.plan.discardConfirm')}</Button>}
+      />
+      <Dialog
+        open={deleteDay !== null}
+        onCancel={() => setDeleteDay(null)}
+        title={deleteDay !== null ? t('CD0666', { n: deleteDay }) : ''}
+        body={deleteDay !== null ? t('CD0667', { count: draft.countOn(deleteDay) }) : ''}
+        cancel={<Button variant="secondary" data-autofocus onClick={() => setDeleteDay(null)}>{k('map.plan.discardCancel')}</Button>}
+        confirm={<Button variant="danger" onClick={() => deleteDay !== null && removeDay(deleteDay)}>{t('CD0665')}</Button>}
       />
       <Dialog
         open={!!pendingEdit && !saveFirst && !saveOpen}
@@ -746,36 +986,60 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   if (phone) {
     return (
-      <div className="relative h-[calc(100dvh)] w-full overflow-hidden">
+      <div style={MAP_ACCENT} className="relative h-[calc(100dvh)] w-full touch-pan-x touch-pan-y overflow-hidden">
         {/* The map ends at the navigation bar, so Naver's logo stays in view. */}
         <main id="main" ref={mapArea} className="absolute inset-x-0 top-0 bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))]">{map}</main>
         {/* With the browse sheet full, the bar and chips stay drawn over the sheet's top edge. */}
         <div ref={topBars} className={cn('absolute inset-x-0 top-0 flex flex-col pt-[var(--space-2)]', !planSheet && snap === 'full' ? 'z-50' : 'z-20')}>
           <TopAppBar type="map" labels={labels} onMenu={openDrawer} search={<SearchPill label={labels.search} href="/search" />} />
           <div className="px-[var(--space-4)]">{chips}</div>
+          {/* The way back to Explore when the place came from there (nothing otherwise, so the bars keep their height). */}
+          <div className="flex px-[var(--space-4)] pt-[var(--space-2)] empty:hidden"><BackToExplore poi={openedWith} /></div>
           {searchArea ? <div className="mt-[var(--space-4)]">{searchArea}</div> : null}
         </div>
         {/* The open plan dims the map and the bar above it, as drawn; a tap there closes it. */}
-        {planSheet ? <Scrim onClick={() => setPlanSheet(false)} className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] z-30" /> : null}
+        {/* The dimmed layer fades in and out with the plan sheet. */}
+        {planSlide.mounted ? <Scrim onClick={closePlanSheet} className={cn('bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] z-30 transition-opacity duration-medium2 ease-emphasized-decelerate', planSlide.shown ? 'opacity-100' : 'pointer-events-none opacity-0')} /> : null}
         {/* Naming the plan shows the map behind its sheet, as drawn; Cancel brings the map sheet back as it was. */}
-        {/* The plan sheet is its own sheet, shown at its full height at once: a plan made by Quick plan arrives
-            well after the tap, and the map sheet growing into it then moved the page under the reader. */}
+        {/* The plan sheet is its own sheet over the map sheet, at its full height from the start: a plan made by Quick
+            plan arrives well after the tap, and a sheet growing into it then moved the page under the reader. */}
+        {planSlide.mounted ? (
+          <BottomSheet
+            type="map"
+            open={!saveOpen}
+            label={t('CD0679')}
+            snap="full"
+            slide={planSlide}
+            onSnapChange={(s) => s !== 'full' && closePlanSheet()}
+            onClose={closePlanSheet}
+            resizeLabel={k('itinerary.sheet.handle')}
+            // Its handle is the one way to close it: a wider coral bar, and Enter or Space closes it too.
+            grabber={{ className: '[&>span]:w-[var(--space-12)]', expanded: true, onActivate: closePlanSheet, label: k('map.plan.stripCollapse') }}
+            heights={{ full: '70dvh' }}
+            className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0 touch-pan-x touch-pan-y [--accent-add:var(--nav-map)] [--sheet-handle:var(--nav-map)]"
+          >
+            <div className="-mx-[var(--space-4)] -mb-[var(--space-6)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div>
+          </BottomSheet>
+        ) : null}
+        {/* The map sheet is named after what it shows: the open place, else the map's list. */}
         <BottomSheet
-          key={planSheet ? 'plan' : 'browse'}
           type="map"
           open={!saveOpen}
-          label={t('CD0679')}
-          snap={planSheet ? 'full' : snap}
-          onSnapChange={(s) => (planSheet ? s !== 'full' && setPlanSheet(false) : setSnap(s))}
-          onClose={() => (planSheet ? setPlanSheet(false) : setSnap('peek'))}
+          label={selectedId && detailName ? detailName : t('CD0815')}
+          snap={snap}
+          floor={!planSlide.mounted}
+          onSnapChange={setSnap}
+          onClose={() => setSnap('peek')}
           resizeLabel={k('itinerary.sheet.handle')}
-          heights={planSheet ? { full: '70dvh' } : undefined}
-          header={selectedId || planSheet ? undefined : <div className="pt-[var(--space-4)]">{switcher}</div>}
-          aboveEnd={planSheet || snap === 'full' ? undefined : locate.control}
-          above={order.length && !planSheet ? <PlanPill label={t('CD0686', { count: order.length })} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /> : undefined}
-          className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0"
+          // Full stops under the bar and chips, so its handle stays in reach to pull it back down.
+          heights={covered.top ? { full: `${covered.height - covered.top - SHEET_GAP_PX}px` } : undefined}
+          header={selectedId ? undefined : <div className="relative pb-[var(--space-3)] pt-[var(--space-4)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:z-10 after:h-[var(--space-4)] after:bg-gradient-to-b after:from-[var(--color-bg-raised)] after:to-transparent after:content-[''] dark:after:from-[var(--color-bg-media)]">{switcher}</div>}
+          aboveEnd={planSlide.mounted || snap === 'full' ? undefined : locate.control}
+          above={order.length && !planSlide.mounted ? <span data-plan-pill className="contents"><PlanPill label={t('CD0686', { count: order.length })} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /></span> : undefined}
+          // Under the plan sheet the map sheet sits below the dimmed layer.
+          className={cn('bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0 touch-pan-x touch-pan-y [--accent-add:var(--nav-map)]', planSlide.mounted && 'z-20')}
         >
-          {planSheet ? <div className="-mx-[var(--space-4)] -mb-[var(--space-6)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div> : content}
+          {content}
         </BottomSheet>
         {/* While the plan is named, Locate me stays on the map where it sits above the half sheet, under the dimmed layer, as drawn. */}
         {/* The toast then sits above the name sheet, not on this line, so the control does not lift. */}
@@ -785,9 +1049,11 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     )
   }
   return (
-    <div className="flex min-h-0 flex-1">
-      <LeftPanel type="map" label={t('CD0679')} cart={cartNode} cartOpen={cart === 'open'}>
-        {selectedId ? null : <div className="sticky top-0 z-10 bg-ui-bg pt-[var(--space-4)]">{switcher}</div>}
+    // From 768 to 1023 the shell is not held to the window (no rail, the bar sits fixed at the bottom), so the map
+    // layout holds its own height there; otherwise the panel list grows the whole page.
+    <div style={MAP_ACCENT} className="flex min-h-0 flex-1 max-lg:h-[calc(100dvh-var(--fab-size)-env(safe-area-inset-bottom))] max-lg:flex-none">
+      <LeftPanel type="map" label={t('CD0679')} cart={cartNode} cartOpen={cart === 'open'} cartSlide={cartSlide}>
+        {selectedId ? null : <div className="sticky top-0 z-10 bg-ui-bg px-[var(--space-4)] pb-[var(--space-3)] pt-[var(--space-4)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-[var(--space-4)] after:bg-gradient-to-b after:from-[var(--color-bg)] after:to-transparent after:content-['']">{switcher}</div>}
         {/* The Saved hub's raised background sits 16 under the tabs and 16 above the Plan cart, as drawn. */}
         {!selectedId && mode === 'saved' ? <div className="my-[var(--space-4)] flex-1 bg-ui-bg-raised">{content}</div> : content}
       </LeftPanel>
@@ -795,6 +1061,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
         {map}
         <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-col gap-[var(--space-4)] p-[var(--space-4)] [&>*]:pointer-events-auto">
           {chips}
+          {/* The way back to Explore when the place came from there; over the map's top left, the place in the panel. */}
+          <div className="flex self-start empty:hidden"><BackToExplore poi={openedWith} /></div>
           {searchArea}
         </div>
         <MapLegalLine />

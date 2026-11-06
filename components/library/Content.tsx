@@ -54,6 +54,21 @@ export const PLACE_TYPE_ICON = {
 
 export type PlaceType = keyof typeof PLACE_TYPE_ICON
 
+/** The colour field of a place type (map pins, missing-photo tiles): the map type colours. */
+export const PLACE_TYPE_COLOR: Record<PlaceType, string> = {
+  food: 'var(--map-type-food)',
+  shopping: 'var(--map-type-shopping)',
+  beauty: 'var(--map-type-shopping)',
+  stay: 'var(--map-type-stay)',
+  heritage: 'var(--map-type-heritage)',
+  exhibition: 'var(--map-type-heritage)',
+  nature: 'var(--map-type-park)',
+  hallyu: 'var(--map-type-other)',
+  activity: 'var(--map-type-other)',
+  sightseeing: 'var(--map-type-other)',
+  place: 'var(--map-type-other)',
+}
+
 /** The Place type of an interest category; Place when it is missing or unknown. */
 export const placeTypeOf = (category: string | null | undefined): PlaceType =>
   category && category in PLACE_TYPE_ICON ? (category as PlaceType) : 'place'
@@ -95,7 +110,7 @@ export type ImageActionProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'ty
   label: string
 }
 
-/** Image action: round 32 button on a photo, scrim behind a 16 icon in fg-on-media. */
+/** Image action: 32 squircle on a photo, black 62% behind a 16 white icon in both themes; on = white with a black icon. */
 export const ImageAction = forwardRef<HTMLButtonElement, ImageActionProps>(function ImageAction(
   { on = false, icon, label, className, ...props },
   ref,
@@ -107,9 +122,9 @@ export const ImageAction = forwardRef<HTMLButtonElement, ImageActionProps>(funct
       aria-label={label}
       aria-pressed={on}
       className={cn(
-        'relative inline-flex size-[var(--control-height-sm)] shrink-0 items-center justify-center rounded-full bg-ui-scrim text-ui-fg-on-media',
+        'relative inline-flex size-[var(--control-height-sm)] shrink-0 items-center justify-center rounded-sq-sm transition-[background-color,color,transform] duration-short3 ease-out-strong active:scale-[var(--press-scale)]',
         '[&>svg]:size-[var(--icon-size-sm)]',
-        on && '[&>svg]:fill-current',
+        on ? 'bg-photo-action-fill-on text-photo-action-fg-on [&>svg]:fill-current' : 'bg-photo-action-fill text-photo-action-fg',
         FOCUS_RING,
         HIT_AREA,
         className,
@@ -157,7 +172,7 @@ export function ChatBubble({ role, children, typingLabel }: ChatBubbleProps) {
     <div className={cn('flex w-full', role === 'user' ? 'justify-end' : 'justify-start')}>
       <div
         className={cn(
-          'max-w-[80%] rounded-2xl px-[var(--space-3)] py-[var(--space-2)] type-body-base',
+          'max-w-[80%] rounded-sq-lg px-[var(--space-3)] py-[var(--space-2)] type-body-base',
           role === 'user' ? 'bg-ui-bg-inverse text-ui-fg-inverse' : 'bg-ui-bg-sunken text-ui-fg',
         )}
       >
@@ -202,7 +217,8 @@ export type CalendarDayProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'ty
   position?: 'start' | 'end' | 'in-range'
 }
 
-/** Calendar day: 40 square; start and end = bg-inverse; in range = state-selected; today = ring. */
+/** Calendar day: 40 square; start and end = bg-inverse squircles; in range = state-selected (a flat band);
+ * today = a squircle ring. */
 export const CalendarDay = forwardRef<HTMLButtonElement, CalendarDayProps>(function CalendarDay(
   { day, label, today, position, className, ...props },
   ref,
@@ -216,7 +232,7 @@ export const CalendarDay = forwardRef<HTMLButtonElement, CalendarDayProps>(funct
       aria-pressed={end || undefined}
       className={cn(
         'relative inline-flex size-[var(--control-height-md)] items-center justify-center',
-        end ? 'bg-ui-bg-inverse type-body-label text-ui-fg-inverse' : position === 'in-range' ? 'bg-ui-state-selected type-body-base text-ui-fg' : 'type-body-base text-ui-fg enabled:hover:bg-ui-state-hover',
+        end ? 'rounded-sq-sm bg-ui-bg-inverse type-body-label text-ui-fg-inverse' : position === 'in-range' ? 'bg-ui-state-selected type-body-base text-ui-fg' : 'rounded-sq-sm type-body-base text-ui-fg enabled:hover:bg-ui-state-hover',
         'disabled:cursor-not-allowed disabled:text-ui-fg-disabled',
         // Focus ring: 2px square, 2px in from the cell edge.
         'focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:-outline-offset-[calc(var(--focus-ring-offset)_+_var(--focus-ring-width))] focus-visible:outline-ui-border-focus',
@@ -225,7 +241,7 @@ export const CalendarDay = forwardRef<HTMLButtonElement, CalendarDayProps>(funct
       )}
       {...props}
     >
-      {today && !end ? <span aria-hidden className="absolute inset-0 rounded-full border border-ui-border-strong" /> : null}
+      {today && !end ? <span aria-hidden className="absolute inset-0 rounded-sq-sm border border-ui-border-strong" /> : null}
       <span className="relative">{day}</span>
     </button>
   )

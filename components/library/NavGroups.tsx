@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { Link as IntlLink } from '@/i18n/navigation'
 import { cn } from '@/lib/cn'
 import { IconButton } from './IconButton'
+import type { GlyphName } from './Glyph'
 import { PageItem, Segment, StepItem, Tab } from './Nav'
 import { HIT_AREA } from './styles'
 
@@ -15,20 +16,23 @@ export type TabsProps = {
   /** Accessible name of the tab list. */
   label: string
   /** `onClose` adds a × inside the tab (e.g. delete a plan day); `closeLabel` is its accessible name. */
-  tabs: { id: string; label: ReactNode; day?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8; disabled?: boolean; onClose?: () => void; closeLabel?: string }[]
+  tabs: { id: string; label: ReactNode; day?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8; color?: string; glyph?: GlyphName; disabled?: boolean; onClose?: () => void; closeLabel?: string; dropTarget?: boolean }[]
   value: string
   onValueChange: (id: string) => void
   /** Figma Width: Hug (scrolls sideways) or Equal (shares the width, mobile). */
   width?: 'hug' | 'equal'
   /** Hug: accessible names of the scroll arrows shown when the tabs overflow. */
   scrollLabels?: { previous: string; next: string }
-  /** 1px color/border line under the row (Figma: Profile header tabs); false in carts, panels and cards. */
+  /** Kept for callers; the tabs sit on a squircle track in every place, so it draws nothing. */
   baseline?: boolean
   className?: string
 }
 
 /** Tabs: switches views in a page or panel, never filters. Arrow keys move. */
-export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollLabels, baseline = true, className }: TabsProps) {
+// A tab a held item is over (e.g. a plan stop over a day tab): filled with its colour, a little larger.
+const DROP_TARGET = 'scale-[1.08] bg-[var(--tab-c,var(--color-bg-inverse))] text-field-fg shadow-menu'
+
+export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollLabels, className }: TabsProps) {
   const list = useRef<HTMLDivElement>(null)
   const [edges, setEdges] = useState({ start: false, end: false })
   const measure = useCallback(() => {
@@ -74,25 +78,41 @@ export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollL
       aria-label={label}
       onKeyDown={onKey}
       onScroll={measure}
-      className={cn('flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden', baseline && 'border-b border-ui-border', scrollLabels ? 'min-w-0 flex-1' : className)}
+      className={cn(
+        // The track: a sunken squircle, 4 inside, tabs 6 apart; it hugs its tabs unless they share the width.
+        'flex max-w-full gap-[var(--space-1-5)] overflow-x-auto overscroll-x-contain overflow-y-hidden rounded-sq-lg bg-tile-surface-sunken p-[var(--space-1)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+        width === 'equal' ? 'w-full' : 'w-fit',
+        scrollLabels ? 'min-w-0 flex-1' : className,
+      )}
     >
       {tabs.map((t) =>
         t.onClose ? (
-          <div key={t.id} role="presentation" className="relative flex shrink-0 items-center">
-            <Tab id={`tab-${t.id}`} selected={t.id === value} day={t.day} disabled={t.disabled} onClick={() => onValueChange(t.id)} className="shrink-0 pr-[var(--space-8)]">
+          // The × space is kept on every closable tab so nothing jumps; the × itself shows on the selected
+          // tab, and on another tab under a mouse (devices that hover) or while it has keyboard focus.
+          <div key={t.id} role="presentation" className="group/tab relative flex shrink-0 items-center">
+            <Tab id={`tab-${t.id}`} selected={t.id === value} day={t.day} color={t.color} glyph={t.glyph} disabled={t.disabled} onClick={() => onValueChange(t.id)} className={cn('shrink-0 pr-[var(--space-8)]', t.dropTarget && DROP_TARGET)}>
               {t.label}
             </Tab>
             <button
               type="button"
               aria-label={t.closeLabel}
               onClick={t.onClose}
-              className="absolute right-[var(--space-2)] inline-flex size-[var(--space-5)] items-center justify-center rounded-full text-ui-fg-muted hover:bg-ui-state-hover hover:text-ui-fg focus-visible:shadow-focus-ring focus-visible:outline-none"
+              // Only the selected tab's × is a Tab stop: arrow to a day, then Tab to its ×.
+              tabIndex={t.id === value ? undefined : -1}
+              // The × takes the tab's own ink: black on a day or colour fill, the inverse ink on the inverse fill.
+              // 24 drawn, its hit area padded out to the tab's height and right edge so a near miss still closes.
+              className={cn(
+                'absolute right-[var(--space-1-5)] inline-flex size-[var(--space-6)] items-center justify-center rounded-sq-xs opacity-70 before:absolute before:-inset-y-[var(--space-2)] before:-left-[var(--space-1)] before:right-[calc(var(--space-1-5)*-1)] hover:opacity-100 focus-visible:shadow-focus-ring focus-visible:outline-none',
+                t.id !== value
+                  ? 'pointer-events-none text-ui-fg-muted opacity-0 hover:bg-ui-state-hover hover:text-ui-fg group-focus-within/tab:pointer-events-auto group-focus-within/tab:opacity-70 [@media(hover:hover)]:group-hover/tab:pointer-events-auto [@media(hover:hover)]:group-hover/tab:opacity-70 [@media(hover:hover)]:hover:!opacity-100'
+                  : t.day || t.color ? 'text-field-fg' : 'text-ui-fg-inverse',
+              )}
             >
               <X aria-hidden className="size-[var(--icon-size-xs)]" />
             </button>
           </div>
         ) : (
-          <Tab key={t.id} id={`tab-${t.id}`} selected={t.id === value} day={t.day} disabled={t.disabled} onClick={() => onValueChange(t.id)} className={width === 'equal' ? 'flex-1 justify-center' : 'shrink-0'}>
+          <Tab key={t.id} id={`tab-${t.id}`} selected={t.id === value} day={t.day} color={t.color} glyph={t.glyph} disabled={t.disabled} onClick={() => onValueChange(t.id)} className={cn(width === 'equal' ? 'flex-1 justify-center' : 'shrink-0', t.dropTarget && DROP_TARGET)}>
             {t.label}
           </Tab>
         ),
@@ -127,7 +147,7 @@ export function SegmentedControl({ label, options, value, onValueChange, classNa
     e.preventDefault()
   }
   return (
-    <div role="radiogroup" aria-label={label} onKeyDown={onKey} className={cn('flex gap-[var(--space-1)] rounded-full bg-ui-state-selected p-[var(--space-1)]', className)}>
+    <div role="radiogroup" aria-label={label} onKeyDown={onKey} className={cn('flex gap-[var(--space-1)] rounded-sq-md bg-tile-surface-sunken p-[var(--space-1)]', className)}>
       {options.map((o) => (
         <Segment key={o.id} selected={o.id === value} tabIndex={o.id === value ? 0 : -1} onClick={() => onValueChange(o.id)}>
           {o.label}
@@ -203,7 +223,7 @@ export function Pagination({ label, type = 'numbered', page, pageCount, onPageCh
       <div role="status" aria-label={label} className={cn('flex items-center gap-[var(--space-2)]', className)}>
         <span className="sr-only">{statusText}</span>
         {Array.from({ length: pageCount }, (_, i) => (
-          <span key={i} aria-hidden className={cn('size-[var(--space-2)] rounded-full', i + 1 === page ? 'bg-ui-fg' : 'bg-ui-border-strong')} />
+          <span key={i} aria-hidden className={cn('size-[var(--space-2)] rounded-[3px]', i + 1 === page ? 'bg-ui-fg' : 'bg-ui-border-strong')} />
         ))}
       </div>
     )
@@ -239,7 +259,7 @@ export function ProgressIndicator({ step, steps, label, className }: ProgressInd
       <span className="type-body-caption text-ui-fg-muted">{label}</span>
       <div role="progressbar" aria-label={label} aria-valuemin={1} aria-valuemax={steps} aria-valuenow={step} aria-valuetext={label} className="flex gap-[var(--space-1)]">
         {Array.from({ length: steps }, (_, i) => (
-          <span key={i} className={cn('h-[var(--progress-height)] flex-1 rounded-full', i < step ? 'bg-ui-fg' : 'bg-ui-state-selected')} />
+          <span key={i} className={cn('h-[var(--progress-height)] flex-1 rounded-[3px]', i < step ? 'bg-accent-progress' : 'bg-control-fill')} />
         ))}
       </div>
     </div>

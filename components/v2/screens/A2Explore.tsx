@@ -24,7 +24,10 @@ import {
   Tabs,
   TreeItem,
   TreeView,
+  categoryAttr,
+  categoryStyle,
   placeTypeOf,
+  linkButtonVariants,
 } from '@/components/library'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/cn'
@@ -45,6 +48,10 @@ import { jsonFetch, RowState, SectionSkeletons, useContinueDraft } from './A2Hom
 import { CATEGORIES, rowName } from '../categories'
 import { NotFoundScreen } from './A4Pages'
 import { districtName, regionName } from '../map/areaName'
+import type { RidePage } from '@/lib/explore-rides-types'
+import { RideChips, Rides, shownRides, useRideNames } from '../rides/Rides'
+import { RideHero } from '../rides/Hero'
+import { useExploreReturn } from '@/lib/explore-return'
 
 // Explore (A2): Category page, See all list, Collection page,
 // Category special pages. Live data from /api/explore/*. Desktop: Left panel Index (280)
@@ -96,9 +103,10 @@ function useRowLabel() {
   return (category: string, row: string) => rowName(category, row, t, k)
 }
 
-function CategoryIndex({ category, sections, active, rowsKey }: { category: string; sections: string[]; active?: string; rowsKey?: string }) {
+function CategoryIndex({ category, sections, active, rowsKey, rides }: { category: string; sections: string[]; active?: string; rowsKey?: string; rides?: boolean }) {
   const t = useCd()
   const rowLabel = useRowLabel()
+  const rideName = useRideNames()
   const router = useRouter()
   // On the category page a leaf scrolls to its row and the row in view is the selected one; on a
   // list page (See all, a collection) its row stays selected and a leaf opens the category page there.
@@ -136,10 +144,12 @@ function CategoryIndex({ category, sections, active, rowsKey }: { category: stri
   return (
     <div className="flex flex-col gap-[var(--space-4)] pt-[var(--space-4)]">
       <p aria-hidden className="px-[var(--space-4)] type-eyebrow-category text-ui-fg-muted">{t('CD0804')}</p>
-      <TreeView label={t('CD0804')}>
+      <TreeView label={t('CD0804')} className="b4k-stagger flex flex-col gap-[var(--space-1-5)] pl-[var(--space-2)] pr-[var(--space-2-5)]">
         {CATEGORIES.map((c) => (
           <TreeItem
             key={c.slug}
+            color={categoryStyle(c.slug)?.color}
+            glyph={categoryStyle(c.slug)?.glyph}
             label={t(c.label)}
             kind={c.slug === category ? 'expanded' : 'collapsed'}
             selected={false}
@@ -149,9 +159,10 @@ function CategoryIndex({ category, sections, active, rowsKey }: { category: stri
             {c.slug === category
               ? [
                   ...sections.map((s) => (
-                    <TreeItem key={s} level={2} kind="leaf" label={rowLabel(c.slug, s)} selected={current === s} onSelect={() => go(c.slug, s)} />
+                    <TreeItem key={s} level={2} kind="leaf" label={rides ? rideName(s) : rowLabel(c.slug, s)} selected={current === s} onSelect={() => go(c.slug, s)} />
                   )),
-                  <TreeItem key="collections" level={2} kind="leaf" label={t('CD0162')} selected={current === 'collections'} onSelect={() => go(c.slug, 'collections')} />,
+                  // With rides the Collections live inside them: no Collections grid to jump to.
+                  ...(rides ? [] : [<TreeItem key="collections" level={2} kind="leaf" label={t('CD0162')} selected={current === 'collections'} onSelect={() => go(c.slug, 'collections')} />]),
                 ]
               : null}
           </TreeItem>
@@ -161,7 +172,7 @@ function CategoryIndex({ category, sections, active, rowsKey }: { category: stri
   )
 }
 
-function ExploreFrame({ category, sections, active, pageTitle, rowsKey, children }: { category: string; sections: string[]; active?: string; pageTitle?: string; rowsKey?: string; children: React.ReactNode }) {
+function ExploreFrame({ category, sections, active, pageTitle, rowsKey, rides, children }: { category: string; sections: string[]; active?: string; pageTitle?: string; rowsKey?: string; rides?: RidePage | null; children: React.ReactNode }) {
   const t = useCd()
   // The phone layout (category tabs, no Index panel) runs until the shell's desktop layout, as
   // the shell keeps its phone bars below that width too.
@@ -173,20 +184,27 @@ function ExploreFrame({ category, sections, active, pageTitle, rowsKey, children
       {!phone ? (
         // The page scrolls under the Header; the Index stays put below it and scrolls on its own.
         <LeftPanel type="index" label={t('CD0804')} className="sticky top-0 h-[calc(100dvh-var(--layout-header-height))] self-start">
-          <CategoryIndex category={category} sections={sections} active={active} rowsKey={rowsKey} />
+          <CategoryIndex category={category} sections={sections} active={active} rowsKey={rowsKey} rides={!!rides} />
         </LeftPanel>
       ) : null}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* A list page inside a category (See all) gets a Page top bar with its title on phones, no tabs. */}
         <V2Page bar={pageTitle ? { type: 'page', title: pageTitle, h1: 'page' } : { type: 'home' }}>
           {phone && !pageTitle ? (
+            // The category tabs stay under the top bar while the page scrolls, so another category is one tap away;
+            // their ground reaches up behind the floating bar so no content shows between the two.
+            <div className="sticky top-0 z-20 -mx-[var(--grid-gutter-mobile)] -mt-[calc(var(--fab-size)+env(safe-area-inset-top)+var(--space-4))] mb-[var(--space-3)] bg-ui-bg px-[var(--grid-gutter-mobile)] pb-[var(--space-3)] pt-[calc(var(--fab-size)+env(safe-area-inset-top)+var(--space-1))] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-[var(--space-4)] after:bg-gradient-to-b after:from-[var(--color-bg)] after:to-transparent after:content-[''] md:-mx-[var(--grid-gutter-tablet)] md:px-[var(--grid-gutter-tablet)]">
             <Tabs
               label={t('CD0804')}
               value={category}
               onValueChange={(v) => router.push(`/explore/${v}`)}
-              tabs={CATEGORIES.map((c) => ({ id: c.slug, label: t(c.label) }))}
-              className="-mx-[var(--grid-gutter-mobile)] -mt-[var(--space-6)] mb-[var(--space-6)] px-[var(--grid-gutter-mobile)]"
+              tabs={CATEGORIES.map((c) => ({ id: c.slug, label: t(c.label), color: categoryStyle(c.slug)?.color, glyph: categoryStyle(c.slug)?.glyph }))}
+              width="equal"
+              className="w-full justify-start"
             />
+            {/* The page's rides as chips under the tabs (On this page). */}
+            {rides ? <RideChips page={rides} /> : null}
+            </div>
           ) : null}
           {children}
         </V2Page>
@@ -210,7 +228,11 @@ export function ExploreEntryScreen() {
   return category ? <CategoryScreen category={category} /> : null
 }
 
-export function CategoryScreen({ category }: { category: string }) {
+/** `rides`: the page's rides from the snapshot (server). With rides they replace everything below
+ * the hero (themed rows, Planning cue, Collections grid, Packages). */
+export function CategoryScreen({ category, rides }: { category: string; rides?: RidePage | null }) {
+  // Keeps this page's spot for the way back from the map.
+  useExploreReturn(`/explore/${category}`)
   useEffect(() => {
     try { localStorage.setItem(LAST_CATEGORY_KEY, category) } catch {}
   }, [category])
@@ -221,8 +243,8 @@ export function CategoryScreen({ category }: { category: string }) {
   const locale = useLocale()
   const { openQuickPlan } = useV2Shell()
   const rowLabel = useRowLabel()
-  const { data, error, isLoading, mutate } = useSWR<ExploreData>(`/api/explore/${category}`, jsonFetch)
-  const cols = useSWR<{ items: CollectionCard[] }>(`/api/explore/${category}/collections?locale=${locale}`, jsonFetch)
+  const { data, error, isLoading, mutate } = useSWR<ExploreData>(rides ? null : `/api/explore/${category}`, jsonFetch)
+  const cols = useSWR<{ items: CollectionCard[] }>(rides ? null : `/api/explore/${category}/collections?locale=${locale}`, jsonFetch)
   const [colType, setColType] = useState('all')
   // The Collections grid shows 8 and Load more adds 8 while more remain under the chip; a chip
   // change starts again at 8. After Load more, focus moves to the first new card.
@@ -254,10 +276,10 @@ export function CategoryScreen({ category }: { category: string }) {
     />
   )
   const colTypes = useMemo(() => Object.keys(COLLECTION_TYPE).filter((type) => (cols.data?.items ?? []).some((c) => c.primaryType === type)), [cols.data])
-  if (isLoading) {
+  if (isLoading && !rides) {
     // As drawn: the hero block, then two loading sections (cards 260 wide on desktop).
     return (
-      <ExploreFrame category={category} sections={[]}>
+      <ExploreFrame category={category} sections={rides ? shownRides(rides).map((r) => r.id) : []} rides={rides}>
         <div aria-busy className="flex flex-col">
           <Skeleton className="-mx-[var(--grid-gutter-mobile)] -mt-[var(--space-6)] h-[var(--hero-height-section)] w-auto md:-mx-[var(--grid-gutter-tablet)] lg:-mx-[var(--space-8)]" />
           <SectionSkeletons cardClassName="w-[240px] lg:w-[260px]" />
@@ -266,10 +288,15 @@ export function CategoryScreen({ category }: { category: string }) {
     )
   }
   return (
-    <ExploreFrame category={category} sections={sections.map((s) => s.id)} rowsKey={`${sections.map((s) => s.id).join()}|${cols.data?.items.length ? 'collections' : ''}`}>
+    <ExploreFrame
+      category={category}
+      sections={rides ? shownRides(rides).map((r) => r.id) : sections.map((s) => s.id)}
+      rides={rides}
+      rowsKey={rides ? shownRides(rides).map((r) => r.id).join() : `${sections.map((s) => s.id).join()}|${cols.data?.items.length ? 'collections' : ''}`}
+    >
       <div className="flex flex-col gap-[var(--space-12)]">
-        <h1 className="sr-only">{k(`explore.${CAT_KEY[category]}.title`)}</h1>
-        {hero ? (
+        {rides ? <RideHero page={rides} title={t(CATEGORIES.find((c) => c.slug === category)?.label ?? '')} /> : <h1 className="sr-only">{k(`explore.${CAT_KEY[category]}.title`)}</h1>}
+        {!rides && hero ? (
           <Hero
             size="section"
             as="h2"
@@ -277,14 +304,15 @@ export function CategoryScreen({ category }: { category: string }) {
             eyebrow={hero.badge}
             title={hero.title}
             // No subtitle line: the category hero is drawn with eyebrow, title and action only.
-            action={<IntlLink href={`${hero.cta_href}`} onClick={() => track('explore_card_open', { card_type: 'theme', position: 1, locale, screen_id: 'explore' })} className="inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse">{hero.cta_label}</IntlLink>}
+            action={<IntlLink href={`${hero.cta_href}`} onClick={() => track('explore_card_open', { card_type: 'theme', position: 1, locale, screen_id: 'explore' })} className="b4k-press inline-flex h-[var(--control-height-2xl)] items-center rounded-sq-lg bg-ui-bg-inverse px-[var(--space-7)] type-label-button text-base text-ui-fg-inverse">{hero.cta_label}</IntlLink>}
             // Edge to edge in the content area: flush under the header on desktop, under the tabs on phones; 24 to the first row.
-            className="-mx-[var(--grid-gutter-mobile)] -mb-[var(--space-6)] -mt-[var(--space-6)] w-auto md:-mx-[var(--grid-gutter-tablet)] lg:-mx-[var(--space-8)]"
+            className="m-0 -mb-[var(--space-6)] w-full max-md:m-0 max-md:-mb-[var(--space-6)] max-md:w-full"
           />
         ) : null}
+        {rides ? <Rides page={rides} /> : null}
         {/* One request loads every row, so a failure is page-wide: the generic body, not 'the other rows still work'. */}
-        {error ? <RowState title={k(`explore.${CAT_KEY[category]}.title`)} errorBody="CD1572" error={error} onRetry={() => mutate()} /> : null}
-        {sections.map((s, i) => {
+        {error && !rides ? <RowState title={k(`explore.${CAT_KEY[category]}.title`)} errorBody="CD1572" error={error} onRetry={() => mutate()} /> : null}
+        {!rides && sections.map((s, i) => {
           const featured = s.items.find((p) => p.is_featured)
           return (
             <div key={s.id} id={`row-${s.id}`} data-explore-row={s.id} className="flex scroll-mt-[var(--space-6)] flex-col gap-[var(--space-12)]">
@@ -293,13 +321,13 @@ export function CategoryScreen({ category }: { category: string }) {
                 title={rowLabel(category, s.id)}
                 seeAll={{ href: rowHref(category, s.id), label: t('CD1309') }}
                 featured={featured ? <Card type="featured" href={`/map?poi=${featured.poi_id}`} title={poiName(featured, locale)} imageSrc={featured.primary_image_url} eyebrow={t('CD0151')} meta={placeArea(featured, locale)} trending={featured.is_trending ? t('CD0313') : undefined} /> : undefined}
-                cards={s.items.filter((p) => p !== featured).map((p) => <PoiCard key={p.poi_id} p={p} act={act} />)}
+                cards={s.items.filter((p) => p !== featured).map((p) => <PoiCard key={p.poi_id} p={p} act={act} category={category} />)}
               />
               {i === 0 ? cue : null}
             </div>
           )
         })}
-        {cols.data?.items.length ? (
+        {!rides && cols.data?.items.length ? (
           <div id="row-collections" data-explore-row="collections" className="scroll-mt-[var(--space-6)]" onClickCapture={cardOpen('collection', locale, isCollection)}>
           <ExploreCollections
             title={t('CD0162')}
@@ -319,10 +347,10 @@ export function CategoryScreen({ category }: { category: string }) {
                 : <Card key={c.slug} type="collection-photo" href={`/explore/collections/${c.slug}`} title={c.title} imageSrc={c.primary_image_url} meta={c.primaryType && COLLECTION_TYPE[c.primaryType] ? t(COLLECTION_TYPE[c.primaryType]) : ''} />)}
           />
           </div>
-        ) : cols.error ? (
+        ) : !rides && cols.error ? (
           <RowState title={t('CD0162')} errorBody="CD1564" error={cols.error} onRetry={() => cols.mutate()} />
         ) : null}
-        {PACKAGES && data?.packages?.length ? (
+        {!rides && PACKAGES && data?.packages?.length ? (
           // Package cards open the partner's site: outbound_click with its host only.
           <div
             className="contents"
@@ -346,7 +374,8 @@ export function CategoryScreen({ category }: { category: string }) {
   )
 }
 
-function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceActions> }) {
+/** A place on an Explore row; `category` is the page's category slug, set as data-category on the card. */
+function PoiCard({ p, act, category }: { p: ExplorePoi; act: ReturnType<typeof usePlaceActions>; category?: string }) {
   const locale = useLocale()
   const t = useCd()
   const dDay = useDDay()
@@ -359,6 +388,7 @@ function PoiCard({ p, act }: { p: ExplorePoi; act: ReturnType<typeof usePlaceAct
       imageSrc={p.primary_image_url}
       placeType={placeTypeOf(p.interest_category)}
       meta={placeArea(p, locale)}
+      category={categoryAttr(category)}
       trending={p.is_trending ? t('CD0313') : undefined}
       sponsored={p.is_partner ? t('CD0476') : undefined}
       dDay={p.event_date ? dDay(p.event_date) : undefined}
@@ -414,9 +444,9 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
   const subtitle = fromHome ? (row === 'trending' ? t('CD1566') : t('CD1568')) : undefined
   const places: { id: string; node: React.ReactNode; domain?: string }[] = fromHome
     ? row === 'trending'
-      ? (trending.data ?? []).map((p) => ({ id: p.poi_id, domain: p.display_domain, node: <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} meta={regionName(p.display_region ?? '', locale)} /> }))
+      ? (trending.data ?? []).map((p) => ({ id: p.poi_id, domain: p.display_domain, node: <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} category={categoryAttr(p.display_domain)} meta={regionName(p.display_region ?? '', locale)} /> }))
       : (plans.data ?? []).map((p) => ({ id: p.id, node: <Card type="plan" href={`/plan/${p.id}`} title={p.title} save={planAct(String(p.id), p.title)} imageSrc={p.cover_image_url} author={p.author_name} authorHref={p.author_id ? `/profile/${p.author_id}` : undefined} saves={String(p.save_count)} stops={[t('CD0473', { n: p.stop_count }), ...(p.duration_days ? [t('CD1232', { count: p.duration_days })] : [])].join(' · ')} /> }))
-    : (explore.data?.sections.find((s) => s.id === row)?.items ?? []).map((p) => ({ id: p.poi_id, node: <PoiCard p={p} act={act} /> }))
+    : (explore.data?.sections.find((s) => s.id === row)?.items ?? []).map((p) => ({ id: p.poi_id, node: <PoiCard p={p} act={act} category={category} /> }))
   const chipped = chip === 'all' ? places : places.filter((p) => p.domain === chip)
   // Newest: plans come sorted by the server; places by when B4K added them (a higher id is newer,
   // as the backend's own newest order), places without a numeric id keep their place at the end.
@@ -450,7 +480,7 @@ export function SeeAllScreen({ category, row }: { category: string; row: string 
           Phones: the first row sits 12 under the top bar. */}
       <div className="flex flex-wrap items-center justify-between gap-x-[var(--space-3)] gap-y-[var(--space-4)] max-lg:-mt-[var(--space-3)]">
         {fromHome && row === 'trending' ? (
-          <div className="flex gap-[var(--space-2)] max-lg:-mx-[var(--grid-gutter-mobile)] max-lg:w-[calc(100%+var(--grid-gutter-mobile)*2)] max-lg:overflow-x-auto max-lg:px-[var(--grid-gutter-mobile)] max-lg:[scrollbar-width:none] lg:flex-wrap">
+          <div className="b4k-focus-room flex gap-[var(--space-2)] max-lg:-mx-[var(--grid-gutter-mobile)] max-lg:w-[calc(100%+var(--grid-gutter-mobile)*2)] max-lg:overflow-x-auto overscroll-x-contain overflow-y-hidden max-lg:px-[var(--grid-gutter-mobile)] max-lg:[scrollbar-width:none] lg:flex-wrap">
             <Chip selected={chip === 'all'} onClick={() => setChip('all')}>{t('CD1267')}</Chip>
             {CATEGORIES.map((c) => <Chip key={c.slug} selected={chip === c.slug} onClick={() => setChip(c.slug)}>{t(c.label)}</Chip>)}
           </div>
@@ -612,11 +642,11 @@ export function SpecialScreen({ api, category }: { api: string; category: string
         </header>
         {/* Media: a photo on the left, the facts and actions on the right. */}
         <section className="flex flex-col gap-[var(--space-6)] md:flex-row">
-          <Image ratio="16:9" src={data?.items[0]?.primary_image_url} alt="" sizes="(min-width: 768px) 480px, 100vw" className="w-full shrink-0 md:w-[480px]" />
+          <Image ratio="16:9" src={data?.items[0]?.primary_image_url} alt="" sizes="(min-width: 768px) 480px, 100vw" className="w-full shrink-0 rounded-tile-inner md:w-[480px]" />
           <div className="flex min-w-0 flex-1 flex-col gap-[var(--space-3)]">
             <span className="type-eyebrow-category text-ui-fg-muted">{[categoryLabel, typeof data?.broadcaster === 'string' ? data.broadcaster : null].filter(Boolean).join(' · ')}</span>
             <div className="flex flex-wrap gap-[var(--gap-sm)]">
-              <IntlLink href={`/map?collection=${encodeURIComponent(api)}`} className="inline-flex h-[var(--control-height-lg)] items-center justify-center gap-[var(--gap-sm)] max-md:w-full border border-ui-border-strong px-[var(--button-padding-x)] type-label-button text-ui-fg hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"><MapPin aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1573')}</IntlLink>
+              <IntlLink href={`/map?collection=${encodeURIComponent(api)}`} className={cn(linkButtonVariants({ variant: 'secondary' }), 'max-md:w-full')}><MapPin aria-hidden className="size-[var(--icon-size-sm)]" />{t('CD1573')}</IntlLink>
             </div>
           </div>
         </section>

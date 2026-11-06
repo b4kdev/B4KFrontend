@@ -5,8 +5,9 @@ import { bffFetch, bffErrorResponse, getSessionAuth, unauthorized } from '@/lib/
 //   /me/likes?ids= ({ liked_ids }); numeric ids only, at most 300 a call
 // POST /api/likes/poi — like a POI → BFF POST /likes/toggle
 // DELETE /api/likes/poi — unlike a POI → BFF POST /likes/toggle
-// The BFF endpoint is a toggle — the response carries the BFF's actual resulting
-// state (liked) so the client can reconcile if intent and outcome diverge.
+// The BFF endpoint is a toggle, so the route asks for a state: POST = liked, DELETE = not liked.
+// When the toggle lands on the other state (already liked, e.g. a like finished after sign-in), it
+// toggles once more, so an action never undoes the state it asked for.
 
 interface ToggleLikeResult {
   action: 'added' | 'removed'
@@ -14,13 +15,15 @@ interface ToggleLikeResult {
   like_count: number
 }
 
-async function toggleLike(poiId: string | number, token: string) {
+async function toggleLike(poiId: string | number, token: string, want: boolean) {
   try {
-    const data = await bffFetch<ToggleLikeResult>('/likes/toggle', {
+    const toggle = () => bffFetch<ToggleLikeResult>('/likes/toggle', {
       method: 'POST',
       body: JSON.stringify({ poi_id: Number(poiId) }),
       token,
     })
+    let data = await toggle()
+    if ((data.action === 'added') !== want) data = await toggle()
     return NextResponse.json({
       success: true,
       poi_id: poiId,
@@ -54,7 +57,7 @@ export async function POST(req: NextRequest) {
   // Home/Explore seed content ships content-sheet codes ('KP-207') as a display id,
   // not the live DB's numeric poi_id — Number(poi_id) would silently collapse to NaN.
   if (!Number.isFinite(Number(poi_id))) return NextResponse.json({ error: 'invalid_poi_id' }, { status: 400 })
-  return toggleLike(poi_id, auth.token)
+  return toggleLike(poi_id, auth.token, true)
 }
 
 export async function DELETE(req: NextRequest) {
@@ -66,5 +69,5 @@ export async function DELETE(req: NextRequest) {
   // Home/Explore seed content ships content-sheet codes ('KP-207') as a display id,
   // not the live DB's numeric poi_id — Number(poi_id) would silently collapse to NaN.
   if (!Number.isFinite(Number(poi_id))) return NextResponse.json({ error: 'invalid_poi_id' }, { status: 400 })
-  return toggleLike(poi_id, auth.token)
+  return toggleLike(poi_id, auth.token, false)
 }

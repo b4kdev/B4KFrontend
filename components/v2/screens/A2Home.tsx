@@ -4,7 +4,6 @@ import { Fragment, useEffect, useState } from 'react'
 import { useLocale } from 'next-intl'
 import useSWR from 'swr'
 import { RotateCw } from 'lucide-react'
-import { Link as IntlLink } from '@/i18n/navigation'
 import {
   Button,
   Card,
@@ -16,7 +15,6 @@ import {
   RowSection,
   SectionHeader,
   Skeleton,
-  placeTypeOf,
 } from '@/components/library'
 import { useAuth } from '@/contexts/AuthContext'
 import { useInterests } from '@/hooks/useInterests'
@@ -26,22 +24,28 @@ import { labelOf } from '@/lib/quickplan'
 import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 import type { HomePopularPlan } from '@/app/api/home/popular-plans/route'
 import type { HomeEvent } from '@/app/api/home/events/route'
-import { HOME_SECTION_ORDER, type HomeSectionOrder } from '@/app/api/home/section-order/order'
 import { useCd } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
 import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { CATEGORIES } from '../categories'
+import { categoryStyle } from '@/components/library/category'
 import { useDDay } from '../useDDay'
-import { regionName } from '../map/areaName'
+import type { RidePage } from '@/lib/explore-rides-types'
+import { HomeRideBlock } from '../rides/HomeBlock'
+import { HomeTrending } from '../rides/HomeTrending'
 
 // Home: hero, Explore by category, Trending now,
 // Planning cue (after Trending), Interests card, Upcoming events, Popular plans.
 // Live data from /api/home/*; a row with no content hides; a row that fails shows an
 // Empty state Error with Try again.
 
+// Desktop: the hero sits in the content column; the poster keeps its own 12 margin, so the column's
+// side padding is 12 less, and the poster's edges meet the rows' edges.
+const HERO_COLUMN = 'lg:mx-auto lg:w-full lg:max-w-[calc(var(--container-xl)+var(--space-8)*2)] lg:px-[calc(var(--space-8)-var(--space-3))]'
+
 // The hero's action button look.
-const HERO_ACTION = 'inline-flex h-[var(--control-height-lg)] items-center bg-ui-bg-inverse px-[var(--button-padding-x)] type-label-button text-ui-fg-inverse focus-visible:shadow-focus-ring focus-visible:outline-none'
+const HERO_ACTION = 'b4k-press inline-flex h-[var(--control-height-2xl)] items-center rounded-sq-lg bg-field-fg px-[var(--space-7)] type-label-button text-base text-photo-action-fg focus-visible:shadow-focus-ring focus-visible:outline-none'
 
 export const jsonFetch = <T,>(url: string) => fetch(url).then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(r.status)))
 
@@ -80,7 +84,9 @@ export function SectionSkeletons({ cardClassName }: { cardClassName?: string }) 
 function HomeSkeleton({ heroClassName }: { heroClassName: string }) {
   return (
     <div aria-busy className="pb-[var(--space-8)]">
-      <Skeleton className={`h-[var(--hero-height-home)] w-full ${heroClassName}`} />
+      <div className={HERO_COLUMN}>
+        <Skeleton className={`h-[var(--hero-height-home)] w-full ${heroClassName} lg:m-[var(--space-3)] lg:w-[calc(100%-var(--space-3)*2)] lg:rounded-tile`} />
+      </div>
       <div className="mx-auto w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] px-[var(--grid-gutter-mobile)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
         <SectionSkeletons />
       </div>
@@ -135,31 +141,24 @@ export function useContinueDraft() {
     : null
 }
 
-/** The served order, cleaned: known keys only, then any default key it left out, in its default place. */
-function sectionOrder(served?: string[]) {
-  const known = (served ?? []).filter((k, i, all) => HOME_SECTION_ORDER.includes(k) && all.indexOf(k) === i)
-  const out = [...known]
-  HOME_SECTION_ORDER.forEach((k, i) => {
-    if (!out.includes(k)) out.splice(Math.min(i, out.length), 0, k)
-  })
-  return out
-}
+// Home at launch: these sections only, in this order (the served order and the Interests card,
+// Upcoming events and Popular plans rows wait for after launch).
+const HOME_ORDER = ['exploreHub', 'trending', 'planningCue', 'kCulture', 'kFood']
 
-export function HomeScreen() {
-  const act = usePlaceActions({ resume: true })
+/** `rides`: the K-Culture and K-Food rides from the snapshot (server), for their two Home blocks. */
+export function HomeScreen({ rides }: { rides?: { culture: RidePage | null; food: RidePage | null } }) {
+  // Finishes a place save started here before sign-in.
+  usePlaceActions({ resume: true })
   const planAct = usePlanActions({ resume: true })
   const dDay = useDDay()
   const t = useCd()
   const locale = useLocale()
   const { openQuickPlan, toast } = useV2Shell()
   const { user } = useAuth()
-  // Hero slide 2 shows the photo its Theme page shows (its first place's photo), read from the same
-  // data as that page so the two stay in step.
-  const foodTheme = useSWR<{ items: { primary_image_url: string | null }[] }>('/api/explore/k-food/michelin-noodles', jsonFetch)
   const trending = useSWR<HomeTrendingPoi[]>(`/api/home/trending?locale=${locale}`, jsonFetch)
-  const plans = useSWR<HomePopularPlan[]>('/api/home/popular-plans', jsonFetch)
-  const events = useSWR<HomeEvent[]>('/api/home/events', jsonFetch)
-  const order = useSWR<HomeSectionOrder>('/api/home/section-order', jsonFetch, { revalidateOnFocus: false })
+  // Rows left out at launch ask for nothing.
+  const plans = useSWR<HomePopularPlan[]>(HOME_ORDER.includes('popularPlans') ? '/api/home/popular-plans' : null, jsonFetch)
+  const events = useSWR<HomeEvent[]>(HOME_ORDER.includes('events') ? '/api/home/events' : null, jsonFetch)
   const draft = useContinueDraft()
 
   // Interests card: on a following visit (a later browser session than the one in which this device
@@ -196,8 +195,9 @@ export function HomeScreen() {
 
   const name = (p: HomeTrendingPoi) => (locale === 'ko' ? p.name_ko : p.name_en || p.name_ko)
 
-  // Phones: the hero runs up under the floating top bar, so it grows by the bar's height.
-  const heroPhone = 'max-lg:h-[calc(var(--hero-height-home)+var(--fab-size)+env(safe-area-inset-top))]'
+  // Phones: the hero runs up under the floating top bar inside its own height (the glyph sits below
+  // the bar); only the notch area is added.
+  const heroPhone = 'max-lg:h-[calc(var(--hero-height-home)+env(safe-area-inset-top))]'
   if (trending.isLoading && !trending.data) {
     return (
       <V2Page bleed underBar>
@@ -209,26 +209,24 @@ export function HomeScreen() {
   // Home's content sections by key, in the order /api/home/section-order gives (the drawn order by
   // default; later the account's own). Unknown keys are ignored; a missing key keeps its default place.
   const blocks: Record<string, React.ReactNode> = {
+    kCulture: rides?.culture ? <HomeRideBlock page={rides.culture} flip /> : null,
+    kFood: rides?.food ? <HomeRideBlock page={rides.food} /> : null,
     exploreHub: <section aria-labelledby="explore-cats" className="flex flex-col gap-[var(--space-4)]">
               <SectionHeader id="explore-cats" title={t('CD0426')} />
-              <ul className="-mx-[var(--grid-gutter-mobile)] flex gap-[var(--space-3)] overflow-x-auto px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
-                {CATEGORIES.map((c) => (
-                  <li key={c.slug} className="w-[160px] shrink-0 lg:w-auto">
-                    <Card type="collection-photo" href={`/explore/${c.slug}`} title={t(c.label)} imageSrc={c.image} meta={t(c.sub)} />
-                  </li>
-                ))}
+              <ul className="b4k-focus-room -mx-[var(--grid-gutter-mobile)] flex gap-[var(--tile-gap)] overflow-x-auto overscroll-x-contain overflow-y-hidden px-[var(--grid-gutter-mobile)] [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-5 lg:px-0">
+                {CATEGORIES.map((c, i) => {
+                  const k = categoryStyle(c.slug)
+                  return (
+                    // The tiles arrive in a short stagger, 60 ms apart.
+                    <li key={c.slug} className="b4k-tile-in w-[150px] shrink-0 lg:w-auto" style={{ animationDelay: `${i * 60}ms` }}>
+                      <Card type="category" href={`/explore/${c.slug}`} title={t(c.label)} imageSrc={c.image} meta={t(c.sub)} color={k?.color ?? 'var(--tile-surface)'} glyph={k?.glyph ?? 'spark'} category={k?.key} />
+                    </li>
+                  )
+                })}
               </ul>
             </section>,
     trending: (trending.data?.length ? (
-              <RowSection
-                arrowLabels={{ previous: t('CD0390'), next: t('CD0389') }}
-                title={t('CD0313')}
-                seeAll={{ href: '/explore/trending', label: t('CD1309') }}
-                cards={trending.data.map((p) => (
-                  // Every place in the Trending row is trending, so each card carries the badge, as drawn.
-                  <Card key={p.poi_id} type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, name(p))} title={name(p)} imageSrc={p.primary_image_url} placeType={placeTypeOf(p.interest_category)} meta={regionName(p.display_region ?? '', locale)} trending={t('CD0313')} />
-                ))}
-              />
+              <HomeTrending places={trending.data} name={name} />
             ) : (
               <RowState title={t('CD0313')} loading={trending.isLoading} error={trending.error} onRetry={() => trending.mutate()} />
             )),
@@ -283,22 +281,29 @@ export function HomeScreen() {
             )),
   }
 
+  const heroSlides: { id: string; eyebrow: string; title: string; subtitle: string; image: string | null; action: React.ReactNode }[] = [
+    { id: 'plan', eyebrow: t('CD0463'), title: t('CD1781'), subtitle: t('CD1782'), image: null, action: <button type="button" onClick={openQuickPlan} className={HERO_ACTION}>{t('CD0738')}</button> },
+  ]
+  const heroes = heroSlides.map((s, i) => (
+    <Hero key={s.id} className={heroPhone} as={i === 0 ? 'h1' : 'h2'} priority={i === 0} imageSrc={s.image} eyebrow={s.eyebrow} title={s.title} subtitle={s.subtitle} action={s.action} />
+  ))
+
   return (
     <V2Page bleed underBar>
-      {/* Two slides: no autoplay, the arrows wrap around. Slide 1 is the brand slide (no photo, the
-          media surface with the fade); its action opens Quick plan. The drawn K-Drama slide waits for
-          its photo. */}
-      <Carousel type="hero" label={t('CD0388')} previousLabel={t('CD0390')} nextLabel={t('CD0389')} slideLabel={(n) => t('CD0391', { n })}>
-        {[
-          { id: 'plan', eyebrow: t('CD0463'), title: t('CD1781'), subtitle: t('CD1782'), image: null, action: <button type="button" onClick={openQuickPlan} className={HERO_ACTION}>{t('CD0738')}</button> },
-          { id: 'food', eyebrow: t('CD0251'), title: t('CD1786'), subtitle: t('CD1787'), image: foodTheme.data?.items[0]?.primary_image_url ?? null, action: <IntlLink href="/explore/k-food/michelin-noodles" className={HERO_ACTION}>{t('CD1785')}</IntlLink> },
-        ].map((s, i) => (
-          <Hero key={s.id} className={heroPhone} as={i === 0 ? 'h1' : 'h2'} priority={i === 0} imageSrc={s.image} eyebrow={s.eyebrow} title={s.title} subtitle={s.subtitle} action={s.action} />
-        ))}
-      </Carousel>
+      {/* The hero slides. One slide shows as a plain hero; two or more bring back the carousel (no
+          autoplay, dots, the arrows wrap around). Slide 1 is the brand slide (no photo, the media
+          surface with the fade); its action opens Quick plan. More slides are added here later. */}
+      {/* Desktop: the hero keeps to the content column, the same edges as the rows under it. */}
+      <div className={HERO_COLUMN}>
+      {heroes.length > 1 ? (
+        <Carousel type="hero" label={t('CD0388')} previousLabel={t('CD0390')} nextLabel={t('CD0389')} slideLabel={(n) => t('CD0391', { n })}>
+          {heroes}
+        </Carousel>
+      ) : heroes}
+      </div>
 
       <div className="mx-auto flex w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] flex-col gap-[var(--space-12)] px-[var(--grid-gutter-mobile)] pb-[calc(var(--space-6)+var(--space-8))] pt-[var(--space-6)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
-        {sectionOrder(order.data?.order).map((key) => (
+        {HOME_ORDER.map((key) => (
           <Fragment key={key}>{blocks[key]}</Fragment>
         ))}
       </div>

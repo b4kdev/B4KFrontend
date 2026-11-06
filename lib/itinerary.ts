@@ -4,6 +4,7 @@
 // any other export breaks `next build`'s generated route types.
 
 import { bffFetch } from './bff'
+import { fitDays } from './plan-days'
 
 export interface ItineraryStop {
   stop_order: number
@@ -11,6 +12,8 @@ export interface ItineraryStop {
   duration_min: number
   transport_mode: 'car' | 'public' | 'walk' | null
   notes: string | null
+  /** Where the place was found when it was added (owner reads). */
+  source?: string | null
   poi: {
     poi_id: string
     name_preferred: string | null
@@ -50,6 +53,8 @@ export interface ItineraryDetail {
   title: string | null
   is_partner: boolean
   is_published: boolean
+  /** How the plan was made: manual, quick_plan or from_saved (owner reads). */
+  source?: string | null
   share_url: string | null
   like_count: number
   save_count: number
@@ -178,8 +183,8 @@ export async function fetchDbDraft(token: string): Promise<DbDraftSummary | null
  *  restarts at 1 inside each day, preserving the input order. */
 export function groupPlacesIntoDays<P extends { day?: number }>(places: P[]) {
   const byDay = new Map<number, Array<Omit<P, 'day'> & { visit_order: number }>>()
-  for (const { day, ...place } of places) {
-    const d = typeof day === 'number' && Number.isInteger(day) && day >= 1 ? day : 1
+  // Fitted to 8 days of 6 stops first (lib/plan-days): the backend refuses a save outside them.
+  for (const { day: d, ...place } of fitDays(places)) {
     const list = byDay.get(d) ?? []
     list.push({ ...place, visit_order: list.length + 1 })
     byDay.set(d, list)
@@ -208,17 +213,16 @@ export function flattenBffDays(days: BffDay[] | null): Array<{ place: BffPlace; 
 
 /** Convert fetched BFF days back into the PUT /itineraries/:id body (full replace). */
 export function daysToPutPayload(days: BffDay[] | null) {
-  return (days ?? []).map(d => ({
-    day_number: d.day_number,
-    places: (d.places ?? []).map(p => ({
-      poi_id:       p.poi_id,
-      visit_order:  p.visit_order,
-      travel_mode:  p.travel_mode ?? 'walking',
-      note:         p.note ?? null,
-      duration_min: p.duration_min ?? null,
-      ...(p.source ? { source: p.source } : {}),
-    })),
-  }))
+  // Regrouped through groupPlacesIntoDays, so a plan saved before the day limits (old site: every
+  // stop on day 1) is fitted to them instead of being refused.
+  return groupPlacesIntoDays(flattenBffDays(days).map(({ place: p, day }) => ({
+    poi_id:       p.poi_id,
+    travel_mode:  p.travel_mode ?? 'walking',
+    note:         p.note ?? null,
+    duration_min: p.duration_min ?? null,
+    ...(p.source ? { source: p.source } : {}),
+    day,
+  })))
 }
 
 /** The plan-level fields a BFF PUT /itineraries/:id writes back as given (a missing one is
@@ -245,6 +249,7 @@ export function mapBffToDetail(bff: BffItinerary): ItineraryDetail {
     duration_min:   place.duration_min ?? place.default_visit_min ?? DEFAULT_DURATION_MIN,
     transport_mode: toFrontMode(place.travel_mode),
     notes:          place.note ?? null,
+    source:         place.source ?? null,
     poi: {
       poi_id:            String(place.poi_id),
       name_preferred:    null,
@@ -287,6 +292,7 @@ export function mapBffToDetail(bff: BffItinerary): ItineraryDetail {
     title:              bff.title,
     is_partner:         bff.is_partner ?? false,
     is_published:       bff.is_public ?? false,
+    source:             bff.source ?? null,
     share_url:          null,
     like_count:         bff.like_count ?? 0,
     save_count:         bff.save_count ?? 0,
