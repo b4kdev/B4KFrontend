@@ -271,6 +271,9 @@ def main():
                     missing.append(slug)
                     c = EN[slug]  # not read in this locale: the English Collection stands in
                 cols[slug] = {k: v for k, v in c.items() if k not in ('cat', 'title')}
+        for slug, pid in PLACE_IMG.get('cover', {}).items():  # a Collection's cover set to one of its places
+            if slug in cols and pid in PLACE_IMG['place']:
+                cols[slug]['hero'] = '/images/explore/places/' + PLACE_IMG['place'][pid]
         pages_loc = json.loads(json.dumps(P))
         if loc != 'en':  # show names as this locale titles them
             for page in pages_loc.values():
