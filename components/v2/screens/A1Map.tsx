@@ -31,7 +31,7 @@ import {
   type SheetSnap,
   placeTypeOf,
 } from '@/components/library'
-import { usePhone } from '@/components/library/hooks'
+import { usePhone, useSheetSlide } from '@/components/library/hooks'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMapPois, type MapBounds, type MapPoi } from '@/hooks/useMapPois'
 import { usePlaceDetail } from '@/hooks/usePlaceDetail'
@@ -163,6 +163,33 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     setPlanSheet(true)
   }, [phone, params])
   const [saveOpen, setSaveOpen] = useState(false)
+  // Phones: the plan sheet rises over the map sheet when opened and drops back down when closed; a drag
+  // on its handle follows the finger, and a pull far or fast enough closes it. A tap on the handle closes it too.
+  const closePlanSheet = () => setPlanSheet(false)
+  const planSlide = useSheetSlide({ open: planSheet, onDismiss: closePlanSheet, onTap: closePlanSheet })
+  // Desktop: the open Plan cart rises over the Left panel and drops back down; its bar drags it down.
+  const cartSlide = useSheetSlide({ open: !phone && cart === 'open', onDismiss: () => setCart('collapsed'), handle: '[data-sheet-handle]' })
+  // Escape closes the open plan (no dialog or place open) and puts focus back on what opened it: the Plan pill
+  // on phones, the cart's bar on desktop.
+  const refocusPlan = useRef(false)
+  const planOpen = phone ? planSheet : cart === 'open'
+  useEffect(() => {
+    if (!planOpen || selectedId) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || document.querySelector('[role="dialog"]')) return
+      refocusPlan.current = true
+      if (phone) setPlanSheet(false)
+      else setCart('collapsed')
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [planOpen, phone, selectedId])
+  const planOnPage = phone ? planSlide.mounted : cartSlide.mounted
+  useEffect(() => {
+    if (planOnPage || !refocusPlan.current) return
+    refocusPlan.current = false
+    document.querySelector<HTMLElement>(phone ? '[data-plan-pill] button' : '[data-sheet-handle]')?.focus()
+  }, [planOnPage, phone])
   // Phones: what covers the map, measured from the parts themselves: the floating bars and chips at
   // the top, the map sheet (its real top edge, through its height transition) at the bottom.
   const mapArea = useRef<HTMLElement>(null)
@@ -202,12 +229,16 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     const parts = new MutationObserver(watch)
     parts.observe(document.body, { childList: true, subtree: true })
     window.addEventListener('resize', measure)
+    // A sheet that slides in keeps its size, so the size watcher misses it: measure again where the slide ends.
+    const settled = (e: TransitionEvent) => (e.target as Element).matches?.('[role="region"][data-toast-floor]') && measure()
+    document.addEventListener('transitionend', settled)
     watch()
     return () => {
       cancelAnimationFrame(frame)
       sizes.disconnect()
       parts.disconnect()
       window.removeEventListener('resize', measure)
+      document.removeEventListener('transitionend', settled)
     }
   }, [phone])
   const [planName, setPlanName] = useState('')
@@ -681,7 +712,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   const cartNode = (
     <PlanCart
-      state={order.length || cart === 'open' ? cart : 'empty'}
+      // Desktop: the cart stays open while it slides back down.
+      state={order.length || cart === 'open' ? (cartSlide.mounted ? 'open' : cart) : 'empty'}
       onToggle={() => {
         if (cart !== 'open' && order.length) fitPlan(order)
         setCart((c) => (c === 'open' ? 'collapsed' : 'open'))
@@ -836,27 +868,45 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           {searchArea ? <div className="mt-[var(--space-4)]">{searchArea}</div> : null}
         </div>
         {/* The open plan dims the map and the bar above it, as drawn; a tap there closes it. */}
-        {planSheet ? <Scrim onClick={() => setPlanSheet(false)} className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] z-30" /> : null}
+        {/* The dimmed layer fades in and out with the plan sheet. */}
+        {planSlide.mounted ? <Scrim onClick={closePlanSheet} className={cn('bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] z-30 transition-opacity duration-medium2 ease-emphasized-decelerate', planSlide.shown ? 'opacity-100' : 'pointer-events-none opacity-0')} /> : null}
         {/* Naming the plan shows the map behind its sheet, as drawn; Cancel brings the map sheet back as it was. */}
-        {/* The plan sheet is its own sheet, shown at its full height at once: a plan made by Quick plan arrives
-            well after the tap, and the map sheet growing into it then moved the page under the reader. */}
+        {/* The plan sheet is its own sheet over the map sheet, at its full height from the start: a plan made by Quick
+            plan arrives well after the tap, and a sheet growing into it then moved the page under the reader. */}
+        {planSlide.mounted ? (
+          <BottomSheet
+            type="map"
+            open={!saveOpen}
+            label={t('CD0679')}
+            snap="full"
+            slide={planSlide}
+            onSnapChange={(s) => s !== 'full' && closePlanSheet()}
+            onClose={closePlanSheet}
+            resizeLabel={k('itinerary.sheet.handle')}
+            heights={{ full: '70dvh' }}
+            className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0 touch-pan-x touch-pan-y [--accent-add:var(--nav-map)]"
+          >
+            <div className="-mx-[var(--space-4)] -mb-[var(--space-6)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div>
+          </BottomSheet>
+        ) : null}
         <BottomSheet
-          key={planSheet ? 'plan' : 'browse'}
           type="map"
           open={!saveOpen}
           label={t('CD0679')}
-          snap={planSheet ? 'full' : snap}
-          onSnapChange={(s) => (planSheet ? s !== 'full' && setPlanSheet(false) : setSnap(s))}
-          onClose={() => (planSheet ? setPlanSheet(false) : setSnap('peek'))}
+          snap={snap}
+          floor={!planSlide.mounted}
+          onSnapChange={setSnap}
+          onClose={() => setSnap('peek')}
           resizeLabel={k('itinerary.sheet.handle')}
           // Full stops under the bar and chips, so its handle stays in reach to pull it back down.
-          heights={planSheet ? { full: '70dvh' } : covered.top ? { full: `${covered.height - covered.top - SHEET_GAP_PX}px` } : undefined}
-          header={selectedId || planSheet ? undefined : <div className="relative pb-[var(--space-3)] pt-[var(--space-4)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:z-10 after:h-[var(--space-4)] after:bg-gradient-to-b after:from-[var(--color-bg-raised)] after:to-transparent after:content-[''] dark:after:from-[var(--color-bg-media)]">{switcher}</div>}
-          aboveEnd={planSheet || snap === 'full' ? undefined : locate.control}
-          above={order.length && !planSheet ? <PlanPill label={t('CD0686', { count: order.length })} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /> : undefined}
-          className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0 touch-pan-x touch-pan-y [--accent-add:var(--nav-map)]"
+          heights={covered.top ? { full: `${covered.height - covered.top - SHEET_GAP_PX}px` } : undefined}
+          header={selectedId ? undefined : <div className="relative pb-[var(--space-3)] pt-[var(--space-4)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:z-10 after:h-[var(--space-4)] after:bg-gradient-to-b after:from-[var(--color-bg-raised)] after:to-transparent after:content-[''] dark:after:from-[var(--color-bg-media)]">{switcher}</div>}
+          aboveEnd={planSlide.mounted || snap === 'full' ? undefined : locate.control}
+          above={order.length && !planSlide.mounted ? <span data-plan-pill className="contents"><PlanPill label={t('CD0686', { count: order.length })} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /></span> : undefined}
+          // Under the plan sheet the map sheet sits below the dimmed layer.
+          className={cn('bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0 touch-pan-x touch-pan-y [--accent-add:var(--nav-map)]', planSlide.mounted && 'z-20')}
         >
-          {planSheet ? <div className="-mx-[var(--space-4)] -mb-[var(--space-6)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div> : content}
+          {content}
         </BottomSheet>
         {/* While the plan is named, Locate me stays on the map where it sits above the half sheet, under the dimmed layer, as drawn. */}
         {/* The toast then sits above the name sheet, not on this line, so the control does not lift. */}
@@ -869,7 +919,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     // From 768 to 1023 the shell is not held to the window (no rail, the bar sits fixed at the bottom), so the map
     // layout holds its own height there; otherwise the panel list grows the whole page.
     <div style={MAP_ACCENT} className="flex min-h-0 flex-1 max-lg:h-[calc(100dvh-var(--fab-size)-env(safe-area-inset-bottom))] max-lg:flex-none">
-      <LeftPanel type="map" label={t('CD0679')} cart={cartNode} cartOpen={cart === 'open'}>
+      <LeftPanel type="map" label={t('CD0679')} cart={cartNode} cartOpen={cart === 'open'} cartSlide={cartSlide}>
         {selectedId ? null : <div className="sticky top-0 z-10 bg-ui-bg px-[var(--space-4)] pb-[var(--space-3)] pt-[var(--space-4)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-[var(--space-4)] after:bg-gradient-to-b after:from-[var(--color-bg)] after:to-transparent after:content-['']">{switcher}</div>}
         {/* The Saved hub's raised background sits 16 under the tabs and 16 above the Plan cart, as drawn. */}
         {!selectedId && mode === 'saved' ? <div className="my-[var(--space-4)] flex-1 bg-ui-bg-raised">{content}</div> : content}

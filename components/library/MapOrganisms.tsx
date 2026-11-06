@@ -17,6 +17,7 @@ import { ListItem } from './Lists'
 import { Tabs } from './NavGroups'
 import { StopBadge, TransportMode } from './Plan'
 import { FOCUS_RING_INSET, HIT_AREA } from './styles'
+import type { useSheetSlide } from './hooks'
 import { Link as IntlLink } from '@/i18n/navigation'
 
 // Map and planning organisms (Figma Organisms): AI panel, Plan cart,
@@ -282,7 +283,7 @@ export function PlanCart({ state, onToggle, stops, days, activeDay, onDayChange,
       {state === 'collapsed' ? <TrayTile /> : null}
       <p aria-live="polite" className="sr-only">{announce}</p>
       {/* Open: the Left panel's color/bg, everything inside the root's 16 padding; collapsed: the color/bg-sunken bar (Figma Plan cart). */}
-      <button type="button" aria-expanded={state === 'open'} onClick={onToggle} className={cn('relative flex w-full flex-col gap-[var(--space-3)] text-left', HIT_AREA, state === 'collapsed' ? 'p-[var(--space-4)] lg:pt-[var(--space-8)]' : 'rounded-sq-md hover:bg-ui-state-hover', FOCUS_RING_INSET)}>
+      <button type="button" data-sheet-handle aria-expanded={state === 'open'} onClick={onToggle} className={cn('relative flex w-full flex-col gap-[var(--space-3)] text-left', HIT_AREA, state === 'collapsed' ? 'p-[var(--space-4)] lg:pt-[var(--space-8)]' : 'rounded-sq-md hover:bg-ui-state-hover', FOCUS_RING_INSET)}>
         {/* Desktop: the phone sheet's grabber bar, 12 from the cart's top and centred over it, in place of the chevron, so the
             bar reads as one that opens and closes (phones keep the chevron; the sheet shows its own bar). Inside the button,
             so a click on it toggles too. */}
@@ -389,17 +390,31 @@ export type LeftPanelProps = {
   /** Map type: the Plan cart; Open covers the panel. */
   cart?: ReactNode
   cartOpen?: boolean
+  /** Map type: the open cart rises over the panel and drops back down (useSheetSlide; drag on its bar). */
+  cartSlide?: ReturnType<typeof useSheetSlide>
   /** Top inset kept clear for the Universal search (shell without a top nav). */
   topClear?: boolean
   className?: string
 }
 
 /** Left panel: desktop panel next to the rail; complementary landmark. */
-export function LeftPanel({ type, label, children, cart, cartOpen, topClear, className }: LeftPanelProps) {
+export function LeftPanel({ type, label, children, cart, cartOpen, cartSlide, topClear, className }: LeftPanelProps) {
+  const raised = cartSlide ? cartSlide.mounted : cartOpen
   return (
-    <aside aria-label={label} className={cn('relative flex h-full shrink-0 flex-col bg-ui-bg', type === 'index' ? 'w-[var(--layout-left-panel-index)]' : 'w-[var(--layout-left-panel)]', topClear && 'pt-[calc(var(--space-3)+var(--control-height-xl)+var(--space-3))]', className)}>
-      <div className={cn('flex min-h-0 flex-1 flex-col overflow-y-auto scroll-py-[calc(var(--focus-ring-offset)+var(--focus-ring-width))]', cartOpen && 'invisible')}>{children}</div>
-      {type === 'map' && cart ? <div className={cn(cartOpen ? 'absolute inset-0 z-10' : 'shrink-0')}>{cart}</div> : null}
+    <aside aria-label={label} className={cn('relative flex h-full shrink-0 flex-col bg-ui-bg', cartSlide && 'overflow-hidden', type === 'index' ? 'w-[var(--layout-left-panel-index)]' : 'w-[var(--layout-left-panel)]', topClear && 'pt-[calc(var(--space-3)+var(--control-height-xl)+var(--space-3))]', className)}>
+      {/* With a sliding cart the panel's content hides once the cart has risen over it, and shows again as soon as it starts down. */}
+      <div className={cn('flex min-h-0 flex-1 flex-col overflow-y-auto scroll-py-[calc(var(--focus-ring-offset)+var(--focus-ring-width))]', cartOpen && 'invisible', cartOpen && cartSlide && 'transition-[visibility] delay-[var(--duration-medium2)]')}>{children}</div>
+      {type === 'map' && cart ? (
+        <div
+          ref={raised && cartSlide ? (n) => { cartSlide.ref.current = n } : undefined}
+          style={raised ? cartSlide?.style : undefined}
+          onTransitionEnd={raised ? cartSlide?.onTransitionEnd : undefined}
+          {...(raised && cartSlide ? cartSlide.grab : {})}
+          className={cn(raised ? 'absolute inset-0 z-10' : 'shrink-0')}
+        >
+          {cart}
+        </div>
+      ) : null}
     </aside>
   )
 }
