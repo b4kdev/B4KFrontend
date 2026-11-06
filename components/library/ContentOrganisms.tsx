@@ -171,6 +171,14 @@ const FOOTER_LINK = 'relative text-ui-fg-muted hover:text-ui-fg hover:underline 
 export function Footer({ links, copyright, navLabel, company, className }: FooterProps) {
   const [companyOpen, setCompanyOpen] = useState(false)
   const companyId = useId()
+  // The company line opens under the last row of the page, below the fold when the page is already
+  // scrolled to its end: scroll it into view (the desktop shell scrolls its own column, not the window).
+  const companyLine = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!companyOpen) return
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    companyLine.current?.scrollIntoView({ block: 'nearest', behavior: still ? 'auto' : 'smooth' })
+  }, [companyOpen])
   // Desktop: the links, Company details and the copyright in one row; the company line opens under
   // it (12 apart). Phones: the links, Company details (opens the company line), the copyright.
   return (
@@ -191,7 +199,7 @@ export function Footer({ links, copyright, navLabel, company, className }: Foote
       ) : null}
       <p className="max-md:order-last">{copyright}</p>
       {company ? (
-        <div id={companyId} className={cn('flex w-full gap-[var(--space-3)] max-md:flex-col md:flex-wrap md:items-start', !companyOpen && 'hidden')}>
+        <div ref={companyLine} id={companyId} className={cn('flex w-full scroll-mb-[var(--space-6)] gap-[var(--space-3)] max-md:flex-col md:flex-wrap md:items-start', !companyOpen && 'hidden')}>
           <p className="md:min-w-0 md:max-w-max md:flex-1">{company.line}</p>
           <a href={company.check.href} target="_blank" rel="noopener noreferrer" className={cn(FOOTER_LINK, HIT_AREA, 'shrink-0 self-start')}>{company.check.label}</a>
         </div>
