@@ -196,7 +196,7 @@ export type PlanStopRowProps = {
   className?: string
 }
 
-/** Plan stop row: grip, Stop badge sm, optional 52 thumbnail, name on up to two lines, Duration button, Remove; 72 high at least. */
+/** Plan stop row: grip, Stop badge sm, optional thumbnail (40 on phones, 52 from desktop), name on up to two lines, Duration button, Remove; 72 high at least. */
 export function PlanStopRow({ name, number, day, duration, durationLabel, onDuration, durationMenu, onRemove, removeLabel, reorderLabel, dragging, stopId, handleProps, onSelect, thumbnail, className }: PlanStopRowProps) {
   const durationButton = (
     <button
@@ -214,15 +214,15 @@ export function PlanStopRow({ name, number, day, duration, durationLabel, onDura
   return (
     // While dragged the row lifts (raised fill, shadow, slightly larger) so the finger or pointer
     // visibly holds it; the other rows move into place under it.
-    <li data-stop-id={stopId} className={cn('group relative flex min-h-[var(--stop-row-min-height)] items-center gap-[var(--space-3)] rounded-sq-md py-[var(--space-2)] transition-[transform,box-shadow,background-color] duration-short4 ease-out-strong', dragging && 'z-10 scale-[1.02] bg-ui-bg-elevated shadow-menu', className)}>
+    <li data-stop-id={stopId} className={cn('group relative flex min-h-[var(--stop-row-min-height)] items-center gap-[var(--space-2)] rounded-sq-md lg:gap-[var(--space-3)] py-[var(--space-2)] transition-[transform,box-shadow,background-color] duration-short4 ease-out-strong', dragging && 'z-10 scale-[1.02] bg-ui-bg-elevated shadow-menu', className)}>
       <DragHandle label={reorderLabel} {...handleProps} className={cn('touch-none', dragging ? 'cursor-grabbing' : 'cursor-grab')} />
       <StopBadge number={number} day={day} />
-      {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="104px" className="w-[var(--stop-thumb-size)] shrink-0 rounded-sq-md" /> : null}
+      {thumbnail !== undefined ? <Image ratio="1:1" src={thumbnail} alt="" sizes="104px" className="w-[var(--space-10)] shrink-0 rounded-sq-md lg:w-[var(--stop-thumb-size)]" /> : null}
       {onSelect ? (
         // At least 44 to tap; the name sits centred in it on one or two lines.
-        <button type="button" onClick={onSelect} className="flex min-h-[var(--target-touch-min)] min-w-0 flex-1 items-center text-left type-body-base text-ui-fg hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none"><span className="line-clamp-2 break-words">{name}</span></button>
+        <button type="button" onClick={onSelect} title={name} className="flex min-h-[var(--target-touch-min)] min-w-0 flex-1 items-center text-left type-body-base text-ui-fg hover:underline focus-visible:shadow-focus-ring focus-visible:outline-none"><span className="line-clamp-2 hyphens-auto break-words">{name}</span></button>
       ) : (
-        <span className="line-clamp-2 min-w-0 flex-1 break-words type-body-base text-ui-fg">{name}</span>
+        <span title={name} className="line-clamp-2 min-w-0 flex-1 hyphens-auto break-words type-body-base text-ui-fg">{name}</span>
       )}
       {durationMenu ? (
         // Figma: the menu ends where the Remove button starts (8 right of the duration button).

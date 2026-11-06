@@ -96,8 +96,9 @@ export function Tabs({ label, tabs, value, onValueChange, width = 'hug', scrollL
               aria-label={t.closeLabel}
               onClick={t.onClose}
               // The × takes the tab's own ink: black on a day or colour fill, the inverse ink on the inverse fill.
+              // 24 drawn, its hit area padded out to the tab's height and right edge so a near miss still closes.
               className={cn(
-                'absolute right-[var(--space-2)] inline-flex size-[var(--space-5)] items-center justify-center rounded-sq-xs opacity-70 hover:opacity-100 focus-visible:shadow-focus-ring focus-visible:outline-none',
+                'absolute right-[var(--space-1-5)] inline-flex size-[var(--space-6)] items-center justify-center rounded-sq-xs opacity-70 before:absolute before:-inset-y-[var(--space-2)] before:-left-[var(--space-1)] before:right-[calc(var(--space-1-5)*-1)] hover:opacity-100 focus-visible:shadow-focus-ring focus-visible:outline-none',
                 t.id !== value ? 'text-ui-fg-muted hover:bg-ui-state-hover hover:text-ui-fg' : t.day || t.color ? 'text-field-fg' : 'text-ui-fg-inverse',
               )}
             >
