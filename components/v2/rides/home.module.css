@@ -28,7 +28,7 @@
 .ct p { margin: 0; font-size: var(--font-size-base); line-height: 1.5; max-width: 62ch; }
 .ct .m { font-size: var(--font-size-sm); color: var(--color-fg-muted); }
 .strip { list-style: none; margin: 0; padding: 0 var(--space-3); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3-5) var(--space-2-5); }
-.strip a { display: grid; align-content: start; gap: var(--space-0-5); min-width: 0; font-size: var(--font-size-xs); }
+.strip a { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: var(--space-0-5); min-width: 0; font-size: var(--font-size-xs); }
 .fimg { border-radius: var(--radius-sm); margin-bottom: var(--space-1-5); }
 .strip b { font-size: var(--font-size-sm); font-weight: 700; line-height: 1.25; overflow-wrap: break-word; }
 .strip span:last-child { color: var(--color-fg-muted); }
