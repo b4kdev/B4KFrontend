@@ -1,7 +1,7 @@
 'use client'
 
 import { Fragment, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import { BedDouble, Coffee, Crown, Flower2, Landmark, Search, ShoppingBag, Trees, Utensils } from 'lucide-react'
+import { BedDouble, ChevronRight, Coffee, Crown, Flower2, Landmark, LayoutGrid, Search, ShoppingBag, Trees, Utensils } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
@@ -84,6 +84,9 @@ const PLACE_TYPES = [
 ] as const
 
 /** On the Map the add actions (Add to plan, the plan tray tile) take the Map's coral, not the lilac used elsewhere. */
+/** Room between the chips and the top of the full map sheet. */
+const SHEET_GAP_PX = 8
+
 const MAP_ACCENT = { '--accent-add': 'var(--nav-map)' } as CSSProperties
 
 /** `poiId`: the place to open (the /place/[poiId] page); otherwise ?poi= in the address. */
@@ -147,6 +150,10 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // The open plan starts on All days; each day is one tab away.
   const [activeDay, setActiveDay] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>('all')
   const [snap, setSnap] = useState<SheetSnap>('mid')
+  // Phone: with the list pulled up full, the chip row folds into one chip so the list gets the room;
+  // a tap on it opens the row again until the sheet leaves full.
+  const [chipsOpen, setChipsOpen] = useState(false)
+  useEffect(() => { if (snap !== 'full') setChipsOpen(false) }, [snap])
   const [planSheet, setPlanSheet] = useState(!!params?.get('plan') && phone)
   // /plan and ?plan= open the plan on phones too (the phone check settles after the first render).
   const openedFromAddress = useRef(false)
@@ -723,7 +730,16 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   )
 
   // Chips belong to browsing: an open place hides them (phone and desktop), as drawn.
-  const chips = selectedId ? null : (
+  const picked = PLACE_TYPES.find((c) => c.id === filter)
+  const PickedIcon = picked?.icon ?? LayoutGrid
+  const chips = selectedId ? null : phone && snap === 'full' && !planSheet && !chipsOpen ? (
+    <div className="b4k-focus-room flex">
+      <Chip type="map" selected={!!picked} leadingIcon={<PickedIcon />} keyColor={picked?.color} aria-expanded={false} onClick={() => setChipsOpen(true)}>
+        {picked ? t(picked.label) : t('CD0778')}
+        <ChevronRight aria-hidden className="-mr-[var(--space-1)] size-[var(--icon-size-xs)]" />
+      </Chip>
+    </div>
+  ) : (
     <div className="b4k-focus-room flex gap-[var(--space-2)] overflow-x-auto overflow-y-hidden [scrollbar-width:none]">
       {PLACE_TYPES.map((c) => (
         <Chip key={c.id} type="map" selected={filter === c.id} leadingIcon={<c.icon />} keyColor={c.color} onClick={() => { setCart((x) => (x === 'open' ? 'collapsed' : x)); setPlanSheet(false); setCollectionOn(false); setAreaBounds(bounds); setAreaMoved(false); setFilter((f) => (f === c.id ? null : c.id)) }}>{t(c.label)}</Chip>
@@ -833,7 +849,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           onSnapChange={(s) => (planSheet ? s !== 'full' && setPlanSheet(false) : setSnap(s))}
           onClose={() => (planSheet ? setPlanSheet(false) : setSnap('peek'))}
           resizeLabel={k('itinerary.sheet.handle')}
-          heights={planSheet ? { full: '70dvh' } : undefined}
+          // Full stops under the bar and chips, so its handle stays in reach to pull it back down.
+          heights={planSheet ? { full: '70dvh' } : covered.top ? { full: `${covered.height - covered.top - SHEET_GAP_PX}px` } : undefined}
           header={selectedId || planSheet ? undefined : <div className="relative pb-[var(--space-3)] pt-[var(--space-4)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:z-10 after:h-[var(--space-4)] after:bg-gradient-to-b after:from-[var(--color-bg-raised)] after:to-transparent after:content-[''] dark:after:from-[var(--color-bg-media)]">{switcher}</div>}
           aboveEnd={planSheet || snap === 'full' ? undefined : locate.control}
           above={order.length && !planSheet ? <PlanPill label={t('CD0686', { count: order.length })} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /> : undefined}
