@@ -215,7 +215,7 @@ def pages():
     arts = [('BLACKPINK', 'BLACKPINK'), ('BTS', 'Eating Like BTS'), ('RM', 'Namjoon'), ('SEVENTEEN', 'SEVENTEEN'), ('Stray Kids', 'Stray Kids'),
             ('TXT', 'TXT'), ('aespa', 'aespa'), ('SM artists', 'SM Fans')]
     pop = {
-        'hero': {'slug': p('Big 4 Agency'), 'skip': [1]},  # place 2 (an agency front) reads as a black block in the small frame
+        'hero': {'slug': p('Big 4 Agency'), 'skip': [0]},  # HYBE (own photo) leads; YG left out to keep three photos
         'rides': [
             {'id': 'bias', 'kind': 'tiles', 'options': [opt({'key': 'smArtists'} if a == 'SM artists' else {'text': a}, p(w)) for a, w in arts]},
             {'id': 'week', 'kind': 'switch', 'options': [opt(key('popups'), p('Pop-ups')), opt(key('birthdayCafes'), p('Birthday Cafes')), opt(key('birthdayAds'), p('Birthday Ads'))]},
