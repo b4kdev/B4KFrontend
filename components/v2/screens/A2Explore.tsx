@@ -51,6 +51,7 @@ import { districtName, regionName } from '../map/areaName'
 import type { RidePage } from '@/lib/explore-rides-types'
 import { RideChips, Rides, shownRides, useRideNames } from '../rides/Rides'
 import { RideHero } from '../rides/Hero'
+import { useExploreReturn } from '@/lib/explore-return'
 
 // Explore (A2): Category page, See all list, Collection page,
 // Category special pages. Live data from /api/explore/*. Desktop: Left panel Index (280)
@@ -230,6 +231,8 @@ export function ExploreEntryScreen() {
 /** `rides`: the page's rides from the snapshot (server). With rides they replace everything below
  * the hero (themed rows, Planning cue, Collections grid, Packages). */
 export function CategoryScreen({ category, rides }: { category: string; rides?: RidePage | null }) {
+  // Keeps this page's spot for the way back from the map.
+  useExploreReturn(`/explore/${category}`)
   useEffect(() => {
     try { localStorage.setItem(LAST_CATEGORY_KEY, category) } catch {}
   }, [category])

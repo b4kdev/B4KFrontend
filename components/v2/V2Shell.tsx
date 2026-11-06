@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, Suspense, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { createContext, Suspense, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
 import { useLocale } from 'next-intl'
@@ -10,6 +10,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { getConsent, setConsent } from '@/lib/consent'
 import { v2Area } from '@/lib/v2-live'
 import { cn } from '@/lib/cn'
+import { barePath, lastExplore, markExploreReturn, scrollPageTop, useExploreReturnListener } from '@/lib/explore-return'
 import { applyTheme, getStoredTheme } from '@/lib/theme'
 import {
   AccountMenu,
@@ -189,6 +190,18 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   // so do accounts set to be deleted until they keep the account, as drawn.
   const user: ShellUser = authUser && !held && v2Area(pathname) !== 'consent' ? { name: meta?.full_name ?? meta?.name ?? authUser.email?.split('@')[0] ?? '', avatarSrc: meta?.avatar_url ?? null, unread: unreadCount } : null
   const active = activeFrom(pathname)
+  // Explore in the nav returns to the last Explore page and spot; tapped on that page, back to its top.
+  useExploreReturnListener()
+  const [exploreHref, setExploreHref] = useState('/explore')
+  useEffect(() => { setExploreHref(lastExplore()?.path ?? '/explore') }, [pathname])
+  const navHrefs = useMemo(() => ({ explore: exploreHref }), [exploreHref])
+  const onNavigate = (id: Destination, e: MouseEvent<HTMLAnchorElement>) => {
+    if (id !== 'explore') return
+    if (barePath(pathname) === exploreHref) {
+      e.preventDefault()
+      scrollPageTop()
+    } else markExploreReturn()
+  }
   const onMap = ['map', 'plan', 'place'].includes(v2Area(pathname))
   // Sign-in, reset and consent are full-screen flows on phones: no Navigation bar.
   const inFlow = ['login', 'auth', 'consent'].includes(v2Area(pathname))
@@ -284,11 +297,13 @@ export default function V2Shell({ children }: { children: ReactNode }) {
             labels={labels}
             user={user}
             onQuickPlan={() => setQuick(true)}
+            hrefs={navHrefs}
+            onNavigate={onNavigate}
             accountMenu={<AccountMenu labels={labels} user={user} onSignOut={signOut} links={{ profile: `/${locale}/profile`, settings: `/${locale}/settings`, signIn: `/${locale}/login` }} />}
           />
-          <div ref={page} className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto"><PageSlot>{children}</PageSlot></div>
+          <div ref={page} data-page-scroll className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto"><PageSlot>{children}</PageSlot></div>
         </div>
-        {inFlow || fullFlow ? null : <NavigationBar className={cn(onMap ? 'fixed inset-x-0 bottom-0 z-[45]' : 'sticky bottom-0 z-30', 'lg:hidden')} active={active} labels={labels} onQuickPlan={() => setQuick(true)} />}
+        {inFlow || fullFlow ? null : <NavigationBar className={cn(onMap ? 'fixed inset-x-0 bottom-0 z-[45]' : 'sticky bottom-0 z-30', 'lg:hidden')} active={active} labels={labels} hrefs={navHrefs} onNavigate={onNavigate} onQuickPlan={() => setQuick(true)} />}
       </div>
       <Drawer
         open={drawer}
