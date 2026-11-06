@@ -251,3 +251,10 @@
 }
 @media (max-width: 480px) { .seg { flex-wrap: wrap; overflow-x: visible; } .seg button { height: auto; min-height: var(--control-height-lg); white-space: normal; } }
 @media (max-width: 400px) { .h3, .cp .h3, .swP .h3, .tw .h3 { font-size: var(--font-size-2xl); } .side .ccT { font-size: 15px; } }
+
+/* one hero height on all five pages: the photo block takes what the words leave, photos never set the height */
+.hero { grid-template-rows: 440px; min-height: 0; }
+.imgs { min-height: 0; height: 100%; overflow: hidden; }
+.pickTxt { min-height: 132px; }
+@container hero (max-width: 880px) { .hero { grid-template-rows: 260px auto; } .field { min-height: 0; } .imgs { height: 240px; } }
+@container hero (max-width: 600px) { .hero { grid-template-rows: 240px auto; } .imgs { height: 200px; } .pickTxt { min-height: 144px; padding: var(--space-4) var(--space-5) var(--space-5); } }
