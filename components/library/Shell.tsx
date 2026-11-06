@@ -236,8 +236,9 @@ export function TopAppBar({ type, labels, onMenu, onBack, title, titleAs: Title 
       >
         {floating ? (
           <>
-            <IconButton label={labels.menu} icon={<Menu />} onClick={onMenu} className={round} />
-            <div className="min-w-0 flex-1">{search}</div>
+            {/* Light: both float on the hero and the photos with a soft lift (none in dark, which keeps its own look). */}
+            <IconButton label={labels.menu} icon={<Menu />} onClick={onMenu} className={cn(round, 'shadow-lift')} />
+            <div className="min-w-0 flex-1 rounded-sq-md shadow-lift">{search}</div>
           </>
         ) : type === 'search' ? (
           <>
@@ -409,8 +410,10 @@ export function UniversalSearch({ children, className }: UniversalSearchProps) {
 /** A search field look-alike that opens the full search (Top app bar Home and Map): a squircle with the
  * search glyph tile at its start. */
 export function SearchPill({ label, href = '/search', className }: { label: string; href?: string; className?: string }) {
+  // Drawn like the desktop search field: its corner keeps the desktop's share of the height (18 on 48,
+  // so 14 on this 40 bar) and it has the same border (none in dark).
   return (
-    <IntlLink href={href} className={cn('flex h-[var(--control-height-md)] items-center gap-[var(--space-2)] rounded-sq-lg bg-ui-bg-raised pl-[var(--space-1)] pr-[var(--space-4)] type-body-base text-ui-fg-placeholder shadow-overlay focus-visible:shadow-focus-ring focus-visible:outline-none', className)}>
+    <IntlLink href={href} className={cn('flex h-[var(--control-height-md)] items-center gap-[var(--space-2)] rounded-sq-md border-[length:var(--border-width-1-5)] border-ui-border bg-ui-bg-raised pl-[var(--space-1)] pr-[var(--space-4)] type-body-base text-ui-fg-placeholder shadow-overlay focus-visible:shadow-focus-ring focus-visible:outline-none dark:border-transparent', className)}>
       <SearchGlyphTile className="size-[var(--control-height-sm)]" />
       <span className="truncate">{label}</span>
     </IntlLink>

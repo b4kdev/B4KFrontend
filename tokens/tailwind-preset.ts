@@ -159,6 +159,7 @@ const b4kTokens: Partial<Config> = {
         'float': 'var(--shadow-float)',
         'menu': 'var(--shadow-menu)',
         'overlay': 'var(--shadow-overlay)',
+        'lift': 'var(--shadow-lift)',
         'pin': 'var(--shadow-pin)',
         'sheet': 'var(--shadow-sheet)',
         'cluster': 'var(--shadow-cluster)',
