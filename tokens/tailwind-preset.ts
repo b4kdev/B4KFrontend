@@ -63,6 +63,7 @@ const b4kTokens: Partial<Config> = {
           "pin-fill": "var(--map-pin-fill)",
           "pin-stroke": "var(--map-pin-stroke)",
           "pin-selected": "var(--map-pin-selected)",
+          "pin-selected-line": "var(--map-pin-selected-line)",
           "ground": "var(--map-ground)",
           "overlay": "var(--map-overlay)",
           "route-casing": "var(--map-route-casing)",

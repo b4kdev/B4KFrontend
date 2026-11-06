@@ -13,7 +13,7 @@ export const TOKEN_HEX = {
       { fill: '#d6f26b', fg: '#000000' }, // day 7
       { fill: '#c08a74', fg: '#000000' }, // day 8
     ],
-    mapPin: { fill: '#ffffff', stroke: '#0a0a0a', selected: '#b48fde' },
+    mapPin: { fill: '#ffffff', stroke: '#373737', selected: '#ff7548' },
     mapType: { food: '#f1e66b', cafe: '#c08a74', stay: '#a9c5ec', shopping: '#f2bfdc', heritage: '#6fb08f', park: '#d6f26b', other: '#b4b1aa' },
     cluster: { fill: '#0a0a0a', fg: '#ffffff', stroke: '#ffffff' },
     routeCasing: '#0a0a0a',
@@ -29,7 +29,7 @@ export const TOKEN_HEX = {
       { fill: '#d6f26b', fg: '#000000' }, // day 7
       { fill: '#c08a74', fg: '#000000' }, // day 8
     ],
-    mapPin: { fill: '#ffffff', stroke: '#000000', selected: '#b48fde' },
+    mapPin: { fill: '#ffffff', stroke: '#ffffff', selected: '#ff7548' },
     mapType: { food: '#f1e66b', cafe: '#c08a74', stay: '#a9c5ec', shopping: '#f2bfdc', heritage: '#6fb08f', park: '#d6f26b', other: '#b4b1aa' },
     cluster: { fill: '#ffffff', fg: '#000000', stroke: '#000000' },
     routeCasing: null,
