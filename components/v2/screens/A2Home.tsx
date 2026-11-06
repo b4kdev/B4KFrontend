@@ -25,7 +25,6 @@ import { labelOf } from '@/lib/quickplan'
 import type { HomeTrendingPoi } from '@/app/api/home/trending/route'
 import type { HomePopularPlan } from '@/app/api/home/popular-plans/route'
 import type { HomeEvent } from '@/app/api/home/events/route'
-import { HOME_SECTION_ORDER, type HomeSectionOrder } from '@/app/api/home/section-order/order'
 import { useCd } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
@@ -141,15 +140,9 @@ export function useContinueDraft() {
     : null
 }
 
-/** The served order, cleaned: known keys only, then any default key it left out, in its default place. */
-function sectionOrder(served?: string[]) {
-  const known = (served ?? []).filter((k, i, all) => HOME_SECTION_ORDER.includes(k) && all.indexOf(k) === i)
-  const out = [...known]
-  HOME_SECTION_ORDER.forEach((k, i) => {
-    if (!out.includes(k)) out.splice(Math.min(i, out.length), 0, k)
-  })
-  return out
-}
+// Home at launch: these sections only, in this order (the served order and the Interests card,
+// Upcoming events and Popular plans rows wait for after launch).
+const HOME_ORDER = ['exploreHub', 'trending', 'planningCue']
 
 export function HomeScreen() {
   const act = usePlaceActions({ resume: true })
@@ -160,9 +153,9 @@ export function HomeScreen() {
   const { openQuickPlan, toast } = useV2Shell()
   const { user } = useAuth()
   const trending = useSWR<HomeTrendingPoi[]>(`/api/home/trending?locale=${locale}`, jsonFetch)
-  const plans = useSWR<HomePopularPlan[]>('/api/home/popular-plans', jsonFetch)
-  const events = useSWR<HomeEvent[]>('/api/home/events', jsonFetch)
-  const order = useSWR<HomeSectionOrder>('/api/home/section-order', jsonFetch, { revalidateOnFocus: false })
+  // Rows left out at launch ask for nothing.
+  const plans = useSWR<HomePopularPlan[]>(HOME_ORDER.includes('popularPlans') ? '/api/home/popular-plans' : null, jsonFetch)
+  const events = useSWR<HomeEvent[]>(HOME_ORDER.includes('events') ? '/api/home/events' : null, jsonFetch)
   const draft = useContinueDraft()
 
   // Interests card: on a following visit (a later browser session than the one in which this device
@@ -313,7 +306,7 @@ export function HomeScreen() {
       </div>
 
       <div className="mx-auto flex w-full max-w-[calc(var(--container-xl)+var(--space-8)*2)] flex-col gap-[var(--space-12)] px-[var(--grid-gutter-mobile)] pb-[calc(var(--space-6)+var(--space-8))] pt-[var(--space-6)] md:px-[var(--grid-gutter-tablet)] lg:px-[var(--space-8)]">
-        {sectionOrder(order.data?.order).map((key) => (
+        {HOME_ORDER.map((key) => (
           <Fragment key={key}>{blocks[key]}</Fragment>
         ))}
       </div>
