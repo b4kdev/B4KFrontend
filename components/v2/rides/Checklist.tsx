@@ -30,12 +30,12 @@ export function ChecklistRide({ ride }: { ride: Ride }) {
           {places.map((p) => (
             <li key={p.id}>
               <label>
-                <input type="checkbox" checked={done.has(p.id)} onChange={() => toggle(p.id)} />
                 <Image src={p.img ?? undefined} alt="" ratio="1:1" sizes="48px" className="rounded-[var(--radius-xs)]" />
                 <span>
                   <b>{p.name}</b>
                   {koName(p) ? <i lang="ko">{koName(p)}</i> : null}
                 </span>
+                <input type="checkbox" checked={done.has(p.id)} onChange={() => toggle(p.id)} />
               </label>
             </li>
           ))}
