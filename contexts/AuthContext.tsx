@@ -51,6 +51,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
+  // Once per tab for a signed-in account: the server keeps the request's country on the
+  // account (first and latest), so accounts can be counted by country. No identity is sent.
+  const userId = user?.id
+  useEffect(() => {
+    if (!userId) return
+    const key = `b4k_country_sent:${userId}`
+    try {
+      if (sessionStorage.getItem(key)) return
+      sessionStorage.setItem(key, '1')
+    } catch {}
+    fetch('/api/account/country', { method: 'POST' }).catch(() => {})
+  }, [userId])
+
   return (
     <AuthContext.Provider value={{ user, session, loading }}>
       {children}
