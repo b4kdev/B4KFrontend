@@ -227,11 +227,12 @@ export function SignInGate({ request, onClose, onConsent }: { request: GateReque
         role="dialog"
         aria-modal="true"
         aria-label={request.title}
+        // Phone: one sheet surface (the card's own fill) that slides up; desktop: the card with a line and a shadow over the scrim.
         className={phone
-          ? 'fixed inset-x-0 bottom-0 z-50 max-h-[90dvh] overflow-y-auto rounded-t-tile bg-ui-bg-raised shadow-sheet dark:bg-ui-bg-media pb-[env(safe-area-inset-bottom)]'
-          : 'fixed left-1/2 top-1/2 z-50 w-[calc(100%-var(--space-8))] max-w-[420px] -translate-x-1/2 -translate-y-1/2'}
+          ? 'fixed inset-x-0 bottom-0 z-50 max-h-[90dvh] overflow-y-auto overscroll-contain rounded-t-tile bg-ui-bg-elevated shadow-sheet pb-[env(safe-area-inset-bottom)] motion-safe:animate-b4k-sheet-in'
+          : 'fixed left-1/2 top-1/2 z-50 max-h-[90dvh] w-[calc(100%-var(--space-8))] max-w-[420px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto overscroll-contain rounded-tile border border-ui-border shadow-menu'}
       >
-        <SignInCard {...flow} title={request.title} subtitle={t('CD0056')} draftNotice={request.draftNotice} onClose={onClose} onGuest={planSave ? undefined : onClose} />
+        <SignInCard {...flow} title={request.title} subtitle={t('CD0056')} draftNotice={request.draftNotice} onClose={onClose} onGuest={planSave ? undefined : onClose} flush={phone} />
       </div>
     </>
   )

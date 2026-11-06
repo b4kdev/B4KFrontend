@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type KeyboardEvent } from 'react'
 import { ArrowRight, Check } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
@@ -33,6 +33,20 @@ const WHO = [['solo', 'CD0798'], ['couple', 'CD0794'], ['friends', 'CD0796'], ['
 const MAX = 10
 
 const WHO_KEY = 'b4k_quickplan_who'
+
+/** Radio group keys: arrows move the choice and the focus to the next or previous chip. */
+function radioKeys<T extends string>(ids: readonly T[], current: T | null, set: (id: T) => void) {
+  return (e: KeyboardEvent<HTMLDivElement>) => {
+    const step = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0
+    if (!step) return
+    e.preventDefault()
+    const i = current ? ids.indexOf(current) : -1
+    const n = (i + step + ids.length) % ids.length
+    set(ids[n])
+    const radios = e.currentTarget.querySelectorAll<HTMLElement>('[role="radio"]')
+    requestAnimationFrame(() => radios[n]?.focus())
+  }
+}
 
 export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose: () => void }) {
   const t = useCd()
@@ -80,15 +94,19 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
       if (tags?.length) setPicked((cur) => (cur.length ? cur : tags.slice(0, MAX)))
     }
   }, [open, user])
+  // Closing while the plan is being made would open the map after the dialog is gone: wait for it.
   const close = () => {
+    if (building) return
     onClose()
     setStep(1)
   }
-  const fmt = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' })
-  const dates = range.start ? `${fmt.format(range.start)}${range.end ? ` – ${fmt.format(range.end)}` : ''}` : t('CD0767')
+  // Dates in the page's language, not the browser's.
+  const fmt = new Intl.DateTimeFormat(lang, { month: 'short', day: 'numeric' })
+  const dates = range.start ? (range.end ? fmt.formatRange(range.start, range.end) : fmt.format(range.start)) : t('CD0767')
   const progress = step === 1 ? t('CD1344') : step === 2 ? t('CD1346') : t('CD1356')
 
-  const lbl = 'type-eyebrow-category text-ui-fg-muted'
+  // Group labels in sentence case at title size, not small caps.
+  const lbl = 'type-title-card text-ui-fg'
   const chipLabel = new Map(categories.flatMap((g) => g.chips.map((c) => [c.slug, labelOf(c, lang)] as const)))
   const group = categories.find((g) => g.slug === activeGroup) ?? categories[0]
   const toggle = (slug: string) => setPicked((p) => (p.includes(slug) ? p.filter((x) => x !== slug) : p.length < MAX ? [...p, slug] : p))
@@ -96,29 +114,31 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
   // Figma A1 / Quick plan / Step 1 to 3.
   const body =
     step === 1 ? (
-      <div className={phone ? 'flex flex-col gap-[var(--space-6)]' : 'flex flex-col gap-[var(--space-5)]'}>
-        <fieldset className="flex flex-col gap-[var(--space-2)]">
-          <legend className={`mb-[var(--space-2)] ${lbl}`}>{t('CD0791')}</legend>
-          <div className="flex flex-wrap gap-[var(--space-2)]">
-            {CITIES.map((c) => <Chip key={c} selected={city === c} leadingIcon={city === c ? <Check /> : undefined} onClick={() => setCity(c)}>{t(CITY_CD[c])}</Chip>)}
+      <div className="flex flex-col gap-[var(--space-6)]">
+        {/* One choice each: radio groups (arrow keys move and pick). */}
+        <fieldset className="flex flex-col gap-[var(--space-3)]">
+          <legend className={`mb-[var(--space-3)] ${lbl}`}>{t('CD0791')}</legend>
+          <div role="radiogroup" aria-label={t('CD0791')} onKeyDown={radioKeys(CITIES, city, setCity)} className="flex flex-wrap gap-[var(--space-2)]">
+            {CITIES.map((c) => <Chip key={c} role="radio" aria-checked={city === c} aria-pressed={undefined} tabIndex={city === c ? 0 : -1} selected={city === c} leadingIcon={city === c ? <Check /> : undefined} onClick={() => setCity(c)}>{t(CITY_CD[c])}</Chip>)}
           </div>
         </fieldset>
-        <fieldset className="flex flex-col gap-[var(--space-2)]">
-          <legend className={`mb-[var(--space-2)] ${lbl}`}>{t('CD0797')}</legend>
-          <div className="flex flex-wrap gap-[var(--space-2)]">
-            {WHO.map(([id, cd]) => <Chip key={id} selected={who === id} leadingIcon={who === id ? <Check /> : undefined} onClick={() => setWho(id)}>{t(cd)}</Chip>)}
+        <fieldset className="flex flex-col gap-[var(--space-3)]">
+          <legend className={`mb-[var(--space-3)] ${lbl}`}>{t('CD0797')}</legend>
+          <div role="radiogroup" aria-label={t('CD0797')} onKeyDown={radioKeys(WHO.map(([id]) => id), who, setWho)} className="flex flex-wrap gap-[var(--space-2)]">
+            {WHO.map(([id, cd], i) => <Chip key={id} role="radio" aria-checked={who === id} aria-pressed={undefined} tabIndex={who === id || (!who && i === 0) ? 0 : -1} selected={who === id} leadingIcon={who === id ? <Check /> : undefined} onClick={() => setWho(id)}>{t(cd)}</Chip>)}
           </div>
         </fieldset>
       </div>
     ) : step === 2 ? (
       <div className="flex flex-col gap-[var(--space-5)]">
         <div className="flex flex-col gap-[var(--space-2)]">
-          <p aria-live="polite" className={lbl}>{t('CD1348', { count: picked.length, max: MAX })}</p>
+          <p aria-live="polite" className="type-body-caption text-ui-fg-muted">{t('CD1348', { count: picked.length, max: MAX })}</p>
+          {/* Picked: every pick in plain sight, wrapping; a new pick lands at the end (Sun 2026-11-06). */}
           {picked.length ? (
             <div className="flex flex-wrap gap-[var(--space-2)]">
               {picked.map((slug) => <Chip key={slug} type="dismissible" dismissLabel={t('CD0783', { label: chipLabel.get(slug) ?? slug })} onClick={() => toggle(slug)}>{chipLabel.get(slug) ?? slug}</Chip>)}
             </div>
-          ) : <p className="type-body-caption text-ui-fg-muted">{t('CD0779')}</p>}
+          ) : <p className="flex h-[var(--control-height-sm)] items-center type-body-caption text-ui-fg-muted">{t('CD0779')}</p>}
         </div>
         {isLoading ? <Spinner label={t('CD0781')} /> : null}
         {isError ? (
@@ -139,7 +159,7 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
                     type="button"
                     aria-pressed={g.slug === group.slug}
                     onClick={() => setActiveGroup(g.slug)}
-                    className={`text-left focus-visible:shadow-focus-ring focus-visible:outline-none ${g.slug === group.slug ? 'type-body-label text-ui-fg' : 'type-body-base text-ui-fg-muted hover:text-ui-fg'}`}
+                    className={`relative -ml-[var(--space-3)] border-l-2 pl-[calc(var(--space-3)-2px)] text-left type-body-base focus-visible:shadow-focus-ring focus-visible:outline-none ${g.slug === group.slug ? 'border-ui-fg text-ui-fg' : 'border-transparent text-ui-fg-muted hover:text-ui-fg'}`}
                   >
                     {labelOf(g, lang)}
                   </button>
@@ -160,26 +180,24 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
         ) : null}
       </div>
     ) : (
-      <ul className="border border-ui-border">
+      <ul>
         {[
           { key: t('CD0762'), value: t(CITY_CD[city]), to: 1 as const },
           { key: t('CD0759'), value: who ? t(WHO.find((w) => w[0] === who)![1]) : t('CD0767'), to: 1 as const },
           { key: t('CD0761'), value: dates, to: 1 as const },
           { key: `${t('CD0776')} · ${picked.length}`, value: picked.length ? picked.map((x) => chipLabel.get(x) ?? x).join(', ') : t('CD0767'), to: 2 as const },
         ].map((r, i) => (
-          <li key={r.key} className={i ? 'border-t border-ui-border' : undefined}>
+          <li key={r.key} className={i ? 'border-t border-ui-border-subtle' : undefined}>
             <button
               type="button"
               onClick={() => setStep(r.to)}
               aria-label={`${t('CD0760')} ${r.key}: ${r.value}`}
-              className="flex w-full items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] text-left hover:bg-[image:linear-gradient(var(--color-state-hover),var(--color-state-hover))] focus-visible:shadow-focus-ring focus-visible:outline-none"
+              className="-mx-[var(--space-3)] flex w-[calc(100%+var(--space-3)*2)] items-center gap-[var(--space-3)] rounded-sq-md px-[var(--space-3)] py-[var(--space-4)] text-left hover:bg-ui-state-hover focus-visible:shadow-focus-ring focus-visible:outline-none"
             >
-              <span className={phone ? 'shrink-0 whitespace-nowrap type-body-label text-ui-fg' : 'w-[140px] shrink-0 type-body-label text-ui-fg'}>{r.key}</span>
-              <span className="min-w-0 flex-1 type-body-base text-ui-fg-muted">{r.value}</span>
-              <span aria-hidden className="inline-flex shrink-0 items-center gap-[var(--space-1-5)] type-label-button text-ui-link">
-                {t('CD0760')}
-                <ArrowRight className="size-[var(--icon-size-sm)]" />
-              </span>
+              {/* The row is the Edit button (its name says so); the arrow is the only mark. */}
+              <span className={phone ? 'w-[96px] shrink-0 type-body-base text-ui-fg-muted' : 'w-[140px] shrink-0 type-body-base text-ui-fg-muted'}>{r.key}</span>
+              <span className="min-w-0 flex-1 type-body-base text-ui-fg">{r.value}</span>
+              <ArrowRight aria-hidden className="size-[var(--icon-size-md)] shrink-0 text-ui-fg-muted" />
             </button>
           </li>
         ))}
@@ -260,8 +278,8 @@ export default function V2QuickPlan({ open, onClose }: { open: boolean; onClose:
       stepSubtitle={step === 1 ? t('CD1345') : step === 2 ? t('CD1347') : t('CD0764')}
       aside={step === 1 ? (
         <div className="flex flex-col gap-[var(--space-2)]">
-          <span className={lbl}>{t('CD0790')}</span>
-          <DateRangePicker value={range} onValueChange={setRange} previousLabel={t('CD0740')} nextLabel={t('CD0739')} clearLabel={t('CD0789')} maxDays={8} className={phone ? 'self-center' : undefined} />
+          <span className={`mb-[var(--space-1)] ${lbl}`}>{t('CD0790')}</span>
+          <DateRangePicker value={range} onValueChange={setRange} previousLabel={t('CD0740')} nextLabel={t('CD0739')} clearLabel={t('CD0789')} maxDays={8} className={phone ? 'w-full' : undefined} />
         </div>
       ) : undefined}
       back={step > 1 ? { label: t('CD0769'), onClick: () => setStep((s) => (s - 1) as 1 | 2) } : undefined}
