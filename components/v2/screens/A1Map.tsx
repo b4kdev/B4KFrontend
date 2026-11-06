@@ -121,6 +121,16 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   const [selectedId, setSelectedId] = useState<string | null>(poiId ?? params?.get('poi') ?? null)
   // A place opened from another screen (/map?poi=…) was found there; anything picked on the map, on the map.
   const entry = useRef<{ id: string | null; source: PlaceSource }>({ id: null, source: 'map' })
+  // Phone: a pinch on the Map page zooms the map, not the page (the page zoomed when a pinch missed the
+  // map). touch-pan-x/y stops it in Chrome; Safari ignores that for page zoom and needs its gesture
+  // event stopped. Only while the Map page is open; every other page keeps pinch zoom.
+  useEffect(() => {
+    if (!phone) return
+    const stop = (e: Event) => e.preventDefault()
+    document.addEventListener('gesturestart', stop)
+    return () => document.removeEventListener('gesturestart', stop)
+  }, [phone])
+
   useEffect(() => { entry.current = { id: poiId ?? params?.get('poi') ?? null, source: previousScreenSource() } }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const [openedWith] = useState(selectedId)
   const viewedOnce = useRef(false)
@@ -800,7 +810,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
 
   if (phone) {
     return (
-      <div style={MAP_ACCENT} className="relative h-[calc(100dvh)] w-full overflow-hidden">
+      <div style={MAP_ACCENT} className="relative h-[calc(100dvh)] w-full touch-pan-x touch-pan-y overflow-hidden">
         {/* The map ends at the navigation bar, so Naver's logo stays in view. */}
         <main id="main" ref={mapArea} className="absolute inset-x-0 top-0 bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))]">{map}</main>
         {/* With the browse sheet full, the bar and chips stay drawn over the sheet's top edge. */}
@@ -827,7 +837,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           header={selectedId || planSheet ? undefined : <div className="relative pb-[var(--space-3)] pt-[var(--space-4)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:z-10 after:h-[var(--space-4)] after:bg-gradient-to-b after:from-[var(--color-bg-raised)] after:to-transparent after:content-[''] dark:after:from-[var(--color-bg-media)]">{switcher}</div>}
           aboveEnd={planSheet || snap === 'full' ? undefined : locate.control}
           above={order.length && !planSheet ? <PlanPill label={t('CD0686', { count: order.length })} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /> : undefined}
-          className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0 [--accent-add:var(--nav-map)]"
+          className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0 touch-pan-x touch-pan-y [--accent-add:var(--nav-map)]"
         >
           {planSheet ? <div className="-mx-[var(--space-4)] -mb-[var(--space-6)] -mt-[var(--space-2)] flex min-h-0 flex-1 flex-col">{cartNode}</div> : content}
         </BottomSheet>
