@@ -215,8 +215,9 @@ function ExploreFrame({ category, sections, active, pageTitle, rowsKey, rides, c
 
 const LAST_CATEGORY_KEY = 'b4k_last_explore_category'
 
-/** /explore: no hub, it opens the category the visitor used last on this device (K-Pop the first time). */
-export function ExploreEntryScreen() {
+/** /explore: no hub, it opens the category the visitor used last on this device (K-Pop the first time).
+ * `rides`: K-Pop's rides from the snapshot (server), so the entry shows the same page as /explore/k-pop. */
+export function ExploreEntryScreen({ rides }: { rides?: RidePage | null } = {}) {
   const router = useRouter()
   const [category, setCategory] = useState<string | null>(null)
   useEffect(() => {
@@ -225,7 +226,7 @@ export function ExploreEntryScreen() {
     if (last && last !== 'k-pop' && CATEGORIES.some((c) => c.slug === last)) router.replace(`/explore/${last}`)
     else setCategory('k-pop')
   }, [router])
-  return category ? <CategoryScreen category={category} /> : null
+  return category ? <CategoryScreen category={category} rides={rides} /> : null
 }
 
 /** `rides`: the page's rides from the snapshot (server). With rides they replace everything below
