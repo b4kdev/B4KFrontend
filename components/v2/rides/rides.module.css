@@ -195,7 +195,7 @@
 .cc:focus-visible, .pst:focus-visible, .alsoRow:focus-visible, .pick:focus-visible, .cta:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 3px; }
 .ck .cta:focus-visible { outline-color: var(--field-fg); }
 .ctile { aspect-ratio: auto; padding: 0; overflow: visible; justify-content: flex-start; gap: var(--space-2); color: var(--color-fg); outline: 0; }
-.ctImg { position: static; aspect-ratio: 4 / 5; height: auto; border-radius: var(--radius-tile-inner); filter: saturate(.75) brightness(.8); transition: filter 200ms ease, outline-color 160ms ease; }
+.ctImg { position: relative; aspect-ratio: 4 / 5; height: auto; border-radius: var(--radius-tile-inner); filter: saturate(.75) brightness(.8); transition: filter 200ms ease, outline-color 160ms ease; }
 .ctile[aria-pressed='true'] .ctImg { filter: none; }
 @media (hover: hover) and (pointer: fine) { .ctile:hover .ctImg { filter: none; transform: none; } }
 .ctTxt { display: flex; flex-direction: column; gap: 0; min-width: 0; }
