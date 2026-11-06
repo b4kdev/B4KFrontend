@@ -84,6 +84,9 @@ const PLACE_TYPES = [
 ] as const
 
 /** On the Map the add actions (Add to plan, the plan tray tile) take the Map's coral, not the lilac used elsewhere. */
+/** Room between the chips and the top of the full map sheet. */
+const SHEET_GAP_PX = 8
+
 const MAP_ACCENT = { '--accent-add': 'var(--nav-map)' } as CSSProperties
 
 /** `poiId`: the place to open (the /place/[poiId] page); otherwise ?poi= in the address. */
@@ -833,7 +836,8 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           onSnapChange={(s) => (planSheet ? s !== 'full' && setPlanSheet(false) : setSnap(s))}
           onClose={() => (planSheet ? setPlanSheet(false) : setSnap('peek'))}
           resizeLabel={k('itinerary.sheet.handle')}
-          heights={planSheet ? { full: '70dvh' } : undefined}
+          // Full stops under the bar and chips, so its handle stays in reach to pull it back down.
+          heights={planSheet ? { full: '70dvh' } : covered.top ? { full: `${covered.height - covered.top - SHEET_GAP_PX}px` } : undefined}
           header={selectedId || planSheet ? undefined : <div className="relative pb-[var(--space-3)] pt-[var(--space-4)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:z-10 after:h-[var(--space-4)] after:bg-gradient-to-b after:from-[var(--color-bg-raised)] after:to-transparent after:content-[''] dark:after:from-[var(--color-bg-media)]">{switcher}</div>}
           aboveEnd={planSheet || snap === 'full' ? undefined : locate.control}
           above={order.length && !planSheet ? <PlanPill label={t('CD0686', { count: order.length })} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /> : undefined}
