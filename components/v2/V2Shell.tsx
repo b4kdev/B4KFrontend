@@ -211,6 +211,44 @@ export default function V2Shell({ children }: { children: ReactNode }) {
     sizes.observe(el)
     return () => sizes.disconnect()
   }, [])
+  // Desktop: the page scrolls in the content column beside the rail, not the window. A wheel over the
+  // header or the rail, and the scroll keys while nothing is focused, scroll that column too, as they
+  // would scroll a window.
+  const page = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const wide = window.matchMedia('(min-width: 1024px)')
+    // After a click in the column the browser scrolls it with the keys itself; only fill in otherwise.
+    let clickedIn = false
+    const onDown = (e: PointerEvent) => { clickedIn = !!page.current?.contains(e.target as Node) }
+    const onWheel = (e: WheelEvent) => {
+      const box = page.current
+      if (!wide.matches || !box || e.ctrlKey || box.contains(e.target as Node) || (e.target as Element).closest?.('[role="dialog"], [role="menu"]')) return
+      box.scrollBy({ top: e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * box.clientHeight : e.deltaY })
+    }
+    const onKey = (e: KeyboardEvent) => {
+      const box = page.current
+      const at = document.activeElement
+      if (!wide.matches || !box || clickedIn || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || (at && at !== document.body && !(at as HTMLElement).closest?.('header, nav'))) return
+      if (at && at !== document.body && (e.key === ' ' || e.key.startsWith('Arrow'))) return
+      if (document.querySelector('[role="dialog"]')) return
+      const step = box.clientHeight * 0.875
+      const by: Record<string, number> = { PageDown: step, PageUp: -step, ' ': e.shiftKey ? -step : step, ArrowDown: 40, ArrowUp: -40 }
+      const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+      if (e.key === 'Home') box.scrollTo({ top: 0, behavior })
+      else if (e.key === 'End') box.scrollTo({ top: box.scrollHeight, behavior })
+      else if (e.key in by) box.scrollBy({ top: by[e.key], behavior })
+      else return
+      e.preventDefault()
+    }
+    window.addEventListener('wheel', onWheel, { passive: true })
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('pointerdown', onDown, true)
+    return () => {
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('pointerdown', onDown, true)
+    }
+  }, [])
   const ctx: ShellCtx = {
     openDrawer: () => setDrawer(true),
     openQuickPlan: () => setQuick(true),
@@ -248,7 +286,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
             onQuickPlan={() => setQuick(true)}
             accountMenu={<AccountMenu labels={labels} user={user} onSignOut={signOut} links={{ profile: `/${locale}/profile`, settings: `/${locale}/settings`, signIn: `/${locale}/login` }} />}
           />
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto"><PageSlot>{children}</PageSlot></div>
+          <div ref={page} className="flex min-h-0 min-w-0 flex-1 flex-col lg:overflow-y-auto"><PageSlot>{children}</PageSlot></div>
         </div>
         {inFlow || fullFlow ? null : <NavigationBar className={cn(onMap ? 'fixed inset-x-0 bottom-0 z-[45]' : 'sticky bottom-0 z-30', 'lg:hidden')} active={active} labels={labels} onQuickPlan={() => setQuick(true)} />}
       </div>
