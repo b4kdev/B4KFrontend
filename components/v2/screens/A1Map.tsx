@@ -597,9 +597,21 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           <EmptyState type="no-results" title={t('CD0626')} action={<Button size="md" variant="secondary" onClick={() => mapRef.current?.zoomOut()}>{t('CD0737')}</Button>}>{t('CD1531')}</EmptyState>
         </div>
       ) : null}
-      <ul className="flex flex-col gap-[var(--space-4)]">
+      {/* Nearby by default shows the full place cards; results (a place-type chip or a collection) are compact rows. */}
+      <ul className={cn('flex flex-col', filter || collectionOn ? 'gap-[var(--space-2)]' : 'gap-[var(--space-4)]')}>
         {listPois.slice(0, 40).map((p) => (
           <li key={p.poi_id}>
+            {filter || collectionOn ? (
+              <Card
+                type="compact"
+                href={`/map?poi=${p.poi_id}`}
+                title={nameOf(p, locale)}
+                imageSrc={p.primary_image_url}
+                meta={regionName(p.display_region ?? '', locale)}
+                addToPlan={{ onAdd: () => addToPlan(p), label: `${k('map.poiDetail.addToPlan')}: ${nameOf(p, locale)}` }}
+                save={{ saved: savedIds.has(p.poi_id), onSave: () => toggleSave(p), label: `${k('map.poiDetail.save')} ${nameOf(p, locale)}` }}
+              />
+            ) : (
             <Card
               type="place"
               href={`/map?poi=${p.poi_id}`}
@@ -612,6 +624,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
               save={{ saved: savedIds.has(p.poi_id), onSave: () => toggleSave(p), label: `${k('map.poiDetail.save')} ${nameOf(p, locale)}` }}
               like={{ liked: likes.isLiked(p.poi_id), onLike: () => toggleLike(p.poi_id), label: likes.isLiked(p.poi_id) ? k('explore.card.unlikeAria', { name: nameOf(p, locale) }) : k('explore.card.likeAria', { name: nameOf(p, locale) }) }}
             />
+            )}
           </li>
         ))}
       </ul>
@@ -811,7 +824,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
           onClose={() => (planSheet ? setPlanSheet(false) : setSnap('peek'))}
           resizeLabel={k('itinerary.sheet.handle')}
           heights={planSheet ? { full: '70dvh' } : undefined}
-          header={selectedId || planSheet ? undefined : <div className="pt-[var(--space-4)]">{switcher}</div>}
+          header={selectedId || planSheet ? undefined : <div className="relative pb-[var(--space-3)] pt-[var(--space-4)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:z-10 after:h-[var(--space-4)] after:bg-gradient-to-b after:from-[var(--color-bg-raised)] after:to-transparent after:content-[''] dark:after:from-[var(--color-bg-media)]">{switcher}</div>}
           aboveEnd={planSheet || snap === 'full' ? undefined : locate.control}
           above={order.length && !planSheet ? <PlanPill label={t('CD0686', { count: order.length })} accessibleLabel={k('map.plan.stripExpand')} expanded={planSheet} onClick={() => { setCart('open'); setPlanSheet(true); fitPlan(order) }} /> : undefined}
           className="bottom-[calc(var(--fab-size)+env(safe-area-inset-bottom))] pb-0"
@@ -830,7 +843,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     // layout holds its own height there; otherwise the panel list grows the whole page.
     <div style={MAP_ACCENT} className="flex min-h-0 flex-1 max-lg:h-[calc(100dvh-var(--fab-size)-env(safe-area-inset-bottom))] max-lg:flex-none">
       <LeftPanel type="map" label={t('CD0679')} cart={cartNode} cartOpen={cart === 'open'}>
-        {selectedId ? null : <div className="sticky top-0 z-10 bg-ui-bg px-[var(--space-4)] pt-[var(--space-4)]">{switcher}</div>}
+        {selectedId ? null : <div className="sticky top-0 z-10 bg-ui-bg px-[var(--space-4)] pb-[var(--space-3)] pt-[var(--space-4)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-[var(--space-4)] after:bg-gradient-to-b after:from-[var(--color-bg)] after:to-transparent after:content-['']">{switcher}</div>}
         {/* The Saved hub's raised background sits 16 under the tabs and 16 above the Plan cart, as drawn. */}
         {!selectedId && mode === 'saved' ? <div className="my-[var(--space-4)] flex-1 bg-ui-bg-raised">{content}</div> : content}
       </LeftPanel>
