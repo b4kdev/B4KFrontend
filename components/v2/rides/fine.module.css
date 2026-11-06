@@ -3,7 +3,8 @@
 .fc { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--space-12); align-items: stretch; }
 .poster { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); padding: var(--space-7); min-height: 360px; background: var(--category-food); color: var(--field-fg); border-radius: var(--radius-tile); }
 .glyph { margin-bottom: auto; }
-.h { margin: var(--space-6) 0 0; font-family: var(--font-family-display); font-weight: 800; font-size: 44px; line-height: 1; letter-spacing: -0.04em; overflow-wrap: anywhere; }
+/* the title follows the ride h3 size (30, 24 on phones) */
+.h { margin: var(--space-6) 0 0; font-family: var(--font-family-display); font-weight: 800; font-size: var(--font-size-3xl); line-height: 1.05; letter-spacing: -0.03em; overflow-wrap: anywhere; }
 .m { margin: 0 0 var(--space-4); font-size: var(--font-size-base); font-weight: 600; }
 .cta { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--control-height-xl); padding: 0 var(--space-5); border-radius: var(--radius-lg); background: var(--field-fg); color: var(--neutral-white); font-weight: 700; font-size: var(--font-size-base); }
 .cta svg { transition: transform 160ms var(--easing-out-strong); }
@@ -36,7 +37,7 @@
   .fc { grid-template-columns: minmax(0, 1fr); gap: var(--space-7); }
   .poster { min-height: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--space-4); align-items: center; padding: var(--space-5); }
   .glyph { margin: 0; grid-row: span 2; }
-  .h { margin: 0; font-size: 34px; align-self: end; }
+  .h { margin: 0; align-self: end; }
   .m { margin: 0; align-self: start; }
   .cta { grid-column: 1 / -1; margin-top: var(--space-4); justify-self: start; }
 }
@@ -45,5 +46,6 @@
   .ph { flex-basis: 64px; width: 64px; height: 48px; }
   .n { align-items: flex-start; }
   .t b { font-size: 28px; }
+  .h { font-size: var(--font-size-2xl); }
   .t span { font-size: var(--font-size-sm); }
 }
