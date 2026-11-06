@@ -42,7 +42,7 @@ import { cn } from '@/lib/cn'
 import { useAuth } from '@/contexts/AuthContext'
 import { getThemeChoice, setTheme, type ThemeChoice } from '@/lib/theme'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { GAMIFICATION } from '@/lib/features'
+import { GAMIFICATION, notificationShown } from '@/lib/features'
 import type { ProfileData } from '@/app/api/profile/route'
 import type { ProfileTrip } from '@/app/api/profile/trips/route'
 import type { Badge as BadgeT, BadgesData } from '@/app/api/badges/route'
@@ -486,7 +486,9 @@ export function NotificationsScreen() {
     jsonFetch,
   )
   const { error, isLoading, mutate, setSize } = pages
-  const data = pages.data ? { notifications: pages.data.flatMap((p) => p.notifications), unread_count: pages.data[0]?.unread_count ?? 0 } : undefined
+  // Only the shown types count (notificationShown): hidden ones neither fill the list nor keep Mark all read up.
+  const shown = pages.data?.flatMap((p) => p.notifications).filter((n) => notificationShown(n.type))
+  const data = pages.data && shown ? { notifications: shown, unread_count: GAMIFICATION ? (pages.data[0]?.unread_count ?? 0) : shown.filter((n) => !n.is_read).length } : undefined
   const more = !!pages.data && (pages.data[pages.data.length - 1]?.notifications.length ?? 0) >= NOTIF_PAGE
   // Mark read and Mark all read show at once and roll back with an error toast if the server says no.
   const markRead = async (id: string | null) => {
@@ -504,7 +506,7 @@ export function NotificationsScreen() {
     const today = new Date().toDateString()
     const y = new Date(Date.now() - 864e5).toDateString()
     const g: Record<'today' | 'yesterday' | 'earlier', Notification[]> = { today: [], yesterday: [], earlier: [] }
-    for (const n of (pages.data ?? []).flatMap((p) => p.notifications).filter((n) => GAMIFICATION || (n.type !== 'badge_earned' && n.type !== 'challenge_new'))) {
+    for (const n of (pages.data ?? []).flatMap((p) => p.notifications).filter((n) => notificationShown(n.type))) {
       const d = new Date(n.created_at).toDateString()
       g[d === today ? 'today' : d === y ? 'yesterday' : 'earlier'].push(n)
     }
