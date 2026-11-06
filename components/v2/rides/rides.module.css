@@ -258,3 +258,12 @@
 .pickTxt { min-height: 132px; }
 @container hero (max-width: 880px) { .hero { grid-template-rows: 260px auto; } .field { min-height: 0; } .imgs { height: 240px; } }
 @container hero (max-width: 600px) { .hero { grid-template-rows: 240px auto; } .imgs { height: 200px; } .pickTxt { min-height: 144px; padding: var(--space-4) var(--space-5) var(--space-5); } }
+
+/* stops as in the reference: 56 x 42 thumbs, 15 / 13 text; phone hero words at the reference size */
+.stops li a > span:last-child { font-size: 15px; }
+.stops i { font-size: 13px; }
+.th { width: calc(var(--space-12) + var(--space-2)); }
+@container hero (max-width: 600px) { .pickTxt b { font-size: 22px; } .pickTxt .meta { font-size: 13px; } }
+.field p { font-size: 19px; line-height: 1.5; }
+.ctile[aria-pressed='true'] { outline: 0; }
+@container rides (max-width: 600px) { .tps, .ctiles { padding: var(--space-1) 0; margin: 0 0 var(--space-4); } }

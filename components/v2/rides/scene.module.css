@@ -43,3 +43,7 @@
   .strip { padding: 0 var(--space-2); grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .strip li:nth-child(6) { display: block; }
 }
+/* as the reference: balanced show names, the card title scales with the window */
+.show { text-wrap: balance; hyphens: manual; }
+.title h3 { font-size: clamp(var(--font-size-2xl), 2.2vw, 34px); line-height: 1.1; }
+@container rides (max-width: 980px) { .show { font-size: 21px; } .title h3 { font-size: 22px; } }
