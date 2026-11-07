@@ -1,5 +1,7 @@
-// GA4 launch events, snake_case. No-ops without window.gtag (SSR, script not yet loaded, or no
-// Accept yet: Analytics.tsx loads gtag only after Accept), so track() needs no consent check of its own.
+import { getConsent } from '@/lib/consent'
+
+// GA4 launch events, snake_case. Sent only after Accept (Analytics.tsx loads gtag only then); an event
+// fired after Accept but before gtag is set up waits in window.__b4kq until the init script sends it.
 // Fields carry no ids, emails, names, typed text or exact dates: counts, categories and slugs only.
 
 // An edit saves an existing plan (plan_save only), so it is not a plan_create flow.
@@ -41,8 +43,14 @@ export function track<E extends keyof AnalyticsEventMap>(
   event: E,
   params: AnalyticsEventMap[E] & BaseParams
 ): void {
-  if (typeof window === 'undefined' || !window.gtag) return
-  window.gtag('event', event, params)
+  if (typeof window === 'undefined') return
+  if (window.gtag) return window.gtag('event', event, params)
+  // Accepted but gtag not set up yet (a full page load, such as the return from Google sign-in or
+  // a direct link to search): keep the event until the init script in Analytics.tsx sends it.
+  // Without Accept nothing is kept.
+  if (getConsent() !== 'accepted') return
+  const q = (window.__b4kq ??= [])
+  if (q.length < 50) q.push([event, params])
 }
 
 // Page addresses sent to analytics and error tools keep only campaign tags (utm_*): a search
