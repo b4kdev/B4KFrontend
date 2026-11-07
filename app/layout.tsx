@@ -30,8 +30,8 @@ export async function generateMetadata(): Promise<Metadata> {
     manifest: `/${locale}/manifest.webmanifest`,
     openGraph: { title, description, siteName: 'B4K', locale, type: 'website' },
     twitter: { card: 'summary_large_image', title, description },
-    // Site ownership for Naver Search Advisor (the token is public by design).
-    verification: { other: { 'naver-site-verification': '40bee30ff7d84115489ea026d14d4bd452ec8437' } },
+    // Site ownership for Naver Search Advisor (tokens are public by design; the second is the 2026-11-07 registration).
+    verification: { other: { 'naver-site-verification': ['40bee30ff7d84115489ea026d14d4bd452ec8437', '426bafa43c6528814789d93e257c122382c39e8e'] } },
   };
 }
 
