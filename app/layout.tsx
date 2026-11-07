@@ -30,8 +30,8 @@ export async function generateMetadata(): Promise<Metadata> {
     manifest: `/${locale}/manifest.webmanifest`,
     openGraph: { title, description, siteName: 'B4K', locale, type: 'website' },
     twitter: { card: 'summary_large_image', title, description },
-    // Site ownership for Naver Search Advisor (tokens are public by design; the second is the 2026-11-07 registration).
-    verification: { other: { 'naver-site-verification': ['40bee30ff7d84115489ea026d14d4bd452ec8437', '426bafa43c6528814789d93e257c122382c39e8e'] } },
+    // Site ownership for Naver Search Advisor (tokens are public by design; the second is https://www.b4korea.com, registered 2026-11-07).
+    verification: { other: { 'naver-site-verification': ['40bee30ff7d84115489ea026d14d4bd452ec8437', 'a6cad2cd47f2177f68898527bcaf25b7472776cc'] } },
   };
 }
 
