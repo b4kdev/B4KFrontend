@@ -86,6 +86,8 @@ export default function Analytics() {
               gtag('config', '${GA_ID}', { send_page_view: false, page_location: loc, page_referrer: ref });
               document.documentElement.dataset.pv = location.pathname;
               gtag('event', 'page_view', { page_location: loc, page_title: document.title });
+              // Events fired after Accept but before this script ran (track() in lib/analytics.ts).
+              (window.__b4kq || []).splice(0).forEach(function (e) { gtag('event', e[0], e[1]); });
             `}
           </Script>
           <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
