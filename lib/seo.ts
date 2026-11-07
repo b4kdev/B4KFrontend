@@ -76,7 +76,12 @@ export function pageMeta({
 }): Metadata {
   const url = localizedUrl(locale, path)
   // Pages without a photo of their own share the title card (app/api/og).
-  const shareImage = image ?? `/api/og?locale=${encodeURIComponent(locale)}&title=${encodeURIComponent(title.replace(/\s*\|\s*B4K$/, ''))}`
+  // Place photos are full-size originals (up to ~15 MB, migration 065), over the size social
+  // crawlers fetch: hand them a 1200px copy from the image optimizer (JPEG/PNG for crawlers that
+  // do not ask for WebP/AVIF).
+  const shareImage = image
+    ? /^https?:\/\//.test(image) ? `/_next/image?url=${encodeURIComponent(image)}&w=1200&q=75` : image
+    : `/api/og?locale=${encodeURIComponent(locale)}&title=${encodeURIComponent(title.replace(/\s*\|\s*B4K$/, ''))}`
   return {
     title,
     ...(description ? { description } : {}),

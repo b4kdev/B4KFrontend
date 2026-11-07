@@ -1,5 +1,6 @@
 'use client'
 
+import NextImage from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
 import { track } from '@/lib/analytics'
@@ -506,14 +507,15 @@ function ListCover({ name, photos }: { name: string; photos: string[] }) {
     <span aria-hidden className={cn('relative block w-full overflow-hidden rounded-tile-inner bg-control-fill', photos.length >= 4 ? 'aspect-[2/1]' : 'aspect-[4/3]')}>
       {photos.length >= 4 ? (
         <span className="grid size-full grid-cols-2 grid-rows-2 gap-[var(--space-0-5)] bg-tile-surface">
+          {/* next/image, not <img>: place photos are the full-size originals (migration 065). */}
           {photos.slice(0, 4).map((src) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img key={src} src={src} alt="" className="size-full object-cover" />
+            <span key={src} className="relative block size-full">
+              <NextImage src={src} alt="" fill sizes="(min-width: 1024px) 160px, 50vw" className="object-cover" />
+            </span>
           ))}
         </span>
       ) : photos.length ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={photos[0]} alt="" className="absolute inset-0 size-full object-cover" />
+        <NextImage src={photos[0]} alt="" fill sizes="(min-width: 1024px) 320px, 100vw" className="object-cover" />
       ) : (
         <span className="absolute inset-0 flex items-end p-[var(--space-3)] type-display-h4 text-ui-fg-muted line-clamp-3">{name}</span>
       )}
