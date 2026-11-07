@@ -11,7 +11,7 @@
         "zh-CN": "卡纳艺术中心",
         "zh-TW": "加納藝術中心"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/102297/8ba48ceb/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/102297/8ba48ceb/orig.jpg",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -25,7 +25,7 @@
         "zh-CN": "经理团街",
         "zh-TW": "經理團路"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/103869/277ebb5f/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/103869/277ebb5f/orig.png",
       "display_region": "서울",
       "display_district": "용산구"
     },
@@ -39,7 +39,7 @@
         "zh-CN": "景福宫",
         "zh-TW": "景福宮"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/103876/4276ed65/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/103876/4276ed65/orig.webp",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -53,7 +53,7 @@
         "zh-CN": "庆熙宫崇政殿",
         "zh-TW": "慶熙宮崇政殿"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/104165/d9439766/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/104165/d9439766/orig.jpg",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -67,7 +67,7 @@
         "zh-CN": "高尺天空穹顶",
         "zh-TW": "高尺天空巨蛋"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/104688/a951c3b2/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/104688/a951c3b2/orig.png",
       "display_region": "서울",
       "display_district": "구로구"
     },
@@ -81,7 +81,7 @@
         "zh-CN": "广藏市场",
         "zh-TW": "廣藏市場"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/105362/e594bdd9/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/105362/e594bdd9/orig.webp",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -95,7 +95,7 @@
         "zh-CN": "桥台屋",
         "zh-TW": "橋台屋"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/105541/75034451/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/105541/75034451/orig.jpg",
       "display_region": "서울",
       "display_district": "마포구"
     },
@@ -109,7 +109,7 @@
         "zh-CN": "国立现代美术馆首尔馆",
         "zh-TW": "國立現代美術館首爾館"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/106135/aac8f664/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/106135/aac8f664/orig.jpg",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -123,7 +123,7 @@
         "zh-CN": "南大门市场",
         "zh-TW": "南大門市場"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/108167/3b5930cb/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/108167/3b5930cb/orig.jpg",
       "display_region": "서울",
       "display_district": "중구"
     },
@@ -137,7 +137,7 @@
         "zh-CN": "南山谷韩屋村",
         "zh-TW": "南山谷韓屋村"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/108239/9ce6fc1a/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/108239/9ce6fc1a/orig.webp",
       "display_region": "서울",
       "display_district": "중구"
     },
@@ -151,7 +151,7 @@
         "zh-CN": "南怡岛",
         "zh-TW": "南怡島"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/108363/f7311079/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/108363/f7311079/orig.png",
       "display_region": "강원",
       "display_district": "춘천시"
     },
@@ -165,7 +165,7 @@
         "zh-CN": "鹭得岛",
         "zh-TW": "鷺得島"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/108840/dbabc034/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/108840/dbabc034/orig.jpg",
       "display_region": "서울",
       "display_district": "용산구"
     },
@@ -193,7 +193,7 @@
         "zh-CN": "NONFICTION 汉南",
         "zh-TW": "NONFICTION 漢南"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/109200/4bfa7514/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/109200/4bfa7514/orig.png",
       "display_region": "서울",
       "display_district": "용산구"
     },
@@ -207,7 +207,7 @@
         "zh-CN": "大林美术馆",
         "zh-TW": "大林美術館"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/110635/420287c8/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/110635/420287c8/orig.webp",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -249,7 +249,7 @@
         "zh-CN": "乐天免税店明洞总店",
         "zh-TW": "樂天免税店明洞本店"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/113985/343cb07e/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/113985/343cb07e/orig.jpg",
       "display_region": "서울",
       "display_district": "중구"
     },
@@ -263,7 +263,7 @@
         "zh-CN": "Leeum美术馆",
         "zh-TW": "里美術館"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/114694/22990ffa/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/114694/22990ffa/orig.png",
       "display_region": "서울",
       "display_district": "용산구"
     },
@@ -277,7 +277,7 @@
         "zh-CN": "闻庆鸟岭开放摄影场",
         "zh-TW": "聞慶鳥嶺露天片場"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/116818/a8c32664/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/116818/a8c32664/orig.webp",
       "display_region": "경북",
       "display_district": "문경시"
     },
@@ -291,7 +291,7 @@
         "zh-CN": "凤皮养芳荑店",
         "zh-TW": "奉皮壤 芳荑店"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/119656/361be1c2/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/119656/361be1c2/orig.png",
       "display_region": "서울",
       "display_district": "송파구"
     },
@@ -305,7 +305,7 @@
         "zh-CN": "北村韩屋村",
         "zh-TW": "北村韓屋村"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/120161/3a0b5266/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/120161/3a0b5266/orig.png",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -319,7 +319,7 @@
         "zh-CN": "Blue Square",
         "zh-TW": "Blue Square"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/120499/22387938/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/120499/22387938/orig.png",
       "display_region": "서울",
       "display_district": "용산구"
     },
@@ -333,7 +333,7 @@
         "zh-CN": "三清洞面片汤",
         "zh-TW": "三清洞麵片湯"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/121964/5f8064ed/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/121964/5f8064ed/orig.jpg",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -347,7 +347,7 @@
         "zh-CN": "首尔工艺博物馆",
         "zh-TW": "首爾工藝博物館"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/122695/1104db55/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/122695/1104db55/orig.jpg",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -361,7 +361,7 @@
         "zh-CN": "首尔林",
         "zh-TW": "首爾森林"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/122759/ebde1feb/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/122759/ebde1feb/orig.jpg",
       "display_region": "서울",
       "display_district": "성동구"
     },
@@ -375,7 +375,7 @@
         "zh-CN": "首尔市立北首尔美术馆",
         "zh-TW": "首爾市立北首爾美術館"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/122769/a7da555f/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/122769/a7da555f/orig.jpg",
       "display_region": "서울",
       "display_district": "노원구"
     },
@@ -389,7 +389,7 @@
         "zh-CN": "石村湖",
         "zh-TW": "石村湖水"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/123082/965d4586/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/123082/965d4586/orig.jpg",
       "display_region": "서울",
       "display_district": "송파구"
     },
@@ -403,7 +403,7 @@
         "zh-CN": "雪花秀岛山旗舰店",
         "zh-TW": "雪花秀島山旗艦店"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/123338/b8c76be4/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/123338/b8c76be4/orig.png",
       "display_region": "서울",
       "display_district": "강남구"
     },
@@ -417,7 +417,7 @@
         "zh-CN": "城邑民俗村",
         "zh-TW": "城邑民俗村"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/123573/c77450e6/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/123573/c77450e6/orig.jpg",
       "display_region": "제주",
       "display_district": "서귀포시"
     },
@@ -431,7 +431,7 @@
         "zh-CN": "安东民俗村",
         "zh-TW": "安東民俗村"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/127917/684fb58a/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/127917/684fb58a/orig.jpg",
       "display_region": "경북",
       "display_district": "안동시"
     },
@@ -459,7 +459,7 @@
         "zh-CN": "温达旅游区",
         "zh-TW": "溫達觀光地"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/131526/fdb8d286/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/131526/fdb8d286/orig.jpg",
       "display_region": "충북",
       "display_district": "단양군"
     },
@@ -473,7 +473,7 @@
         "zh-CN": "奥林匹克公园奥林匹克厅",
         "zh-TW": "奧林匹克公園 奧林匹克廳"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/132938/6d746236/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/132938/6d746236/orig.jpg",
       "display_region": "서울",
       "display_district": "송파구"
     },
@@ -487,7 +487,7 @@
         "zh-CN": "又来屋",
         "zh-TW": "又來屋"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/133740/948d6b82/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/133740/948d6b82/orig.jpg",
       "display_region": "서울",
       "display_district": "중구"
     },
@@ -515,7 +515,7 @@
         "zh-CN": "Aesop圣水",
         "zh-TW": "伊索聖水"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/135878/856a7153/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/135878/856a7153/orig.png",
       "display_region": "서울",
       "display_district": "성동구"
     },
@@ -543,7 +543,7 @@
         "zh-CN": "益善洞韩屋街",
         "zh-TW": "益善洞韓屋街"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/136177/a6cb9593/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/136177/a6cb9593/orig.webp",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -557,7 +557,7 @@
         "zh-CN": "一山湖水公园",
         "zh-TW": "一山湖公園"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/136510/1b61eab5/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/136510/1b61eab5/orig.png",
       "display_region": "경기",
       "display_district": "고양시"
     },
@@ -571,7 +571,7 @@
         "zh-CN": "奖忠体育馆",
         "zh-TW": "獎忠體育館"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/137293/22761ddc/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/137293/22761ddc/orig.jpg",
       "display_region": "서울",
       "display_district": "중구"
     },
@@ -585,7 +585,7 @@
         "zh-CN": "济物浦俱乐部",
         "zh-TW": "濟物浦俱樂部"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138211/aeda5686/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138211/aeda5686/orig.png",
       "display_region": "인천",
       "display_district": "중구"
     },
@@ -599,7 +599,7 @@
         "zh-CN": "济州石头文化公园",
         "zh-TW": "濟州石文化公園"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138403/fc8afb6a/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138403/fc8afb6a/orig.jpg",
       "display_region": "제주",
       "display_district": "제주시"
     },
@@ -613,7 +613,7 @@
         "zh-CN": "济州牧官衙",
         "zh-TW": "濟州牧官衙"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138425/20df1fba/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138425/20df1fba/orig.jpg",
       "display_region": "제주",
       "display_district": "제주시"
     },
@@ -627,7 +627,7 @@
         "zh-CN": "济州海女博物馆",
         "zh-TW": "濟州海女博物館"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138521/2f0c2453/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138521/2f0c2453/orig.jpg",
       "display_region": "제주",
       "display_district": "제주시"
     },
@@ -641,7 +641,7 @@
         "zh-CN": "曹溪寺（首尔）",
         "zh-TW": "曹溪寺（首爾）"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138658/7c606c9c/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138658/7c606c9c/orig.png",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -655,7 +655,7 @@
         "zh-CN": "注文津防波堤",
         "zh-TW": "注文津防波堤"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138908/7a00e6fe/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/138908/7a00e6fe/orig.png",
       "display_region": "강원",
       "display_district": "강릉시"
     },
@@ -669,7 +669,7 @@
         "zh-CN": "Common Ground 共同空间",
         "zh-TW": "共同廣場"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/142466/627fd407/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/142466/627fd407/orig.webp",
       "display_region": "서울",
       "display_district": "광진구"
     },
@@ -683,7 +683,7 @@
         "zh-CN": "通仁市场",
         "zh-TW": "通仁市場"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/144008/670e3776/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/144008/670e3776/orig.jpg",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -697,7 +697,7 @@
         "zh-CN": "菲东面屋",
         "zh-TW": "筆洞麵屋"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/145624/3a81223e/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/145624/3a81223e/orig.jpg",
       "display_region": "서울",
       "display_district": "중구"
     },
@@ -711,7 +711,7 @@
         "zh-CN": "海布",
         "zh-TW": "HYBE"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/145981/e55035e4/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/145981/e55035e4/orig.jpg",
       "display_region": "대구",
       "display_district": "동구"
     },
@@ -725,7 +725,7 @@
         "zh-CN": "韩国民俗村",
         "zh-TW": "韓國民俗村"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/146227/4b2ac714/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/146227/4b2ac714/orig.png",
       "display_region": "경기",
       "display_district": "용인시"
     },
@@ -739,7 +739,7 @@
         "zh-CN": "湖岩美术馆",
         "zh-TW": "湖岩美術館"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/147851/af809b33/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/147851/af809b33/orig.jpg",
       "display_region": "경기",
       "display_district": "용인시"
     },
@@ -753,7 +753,7 @@
         "zh-CN": "华虹门",
         "zh-TW": "華虹門"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/148707/277c5b9d/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/148707/277c5b9d/orig.jpg",
       "display_region": "경기",
       "display_district": "수원시"
     },
@@ -781,7 +781,7 @@
         "zh-CN": "PKM画廊",
         "zh-TW": "PKM畫廊"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/150585/9824887e/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/150585/9824887e/orig.jpg",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -823,7 +823,7 @@
         "zh-CN": "Muse Clinic Myeongdong",
         "zh-TW": "Muse Clinic Myeongdong"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151805/05c8d9c1/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151805/05c8d9c1/orig.png",
       "display_region": "서울",
       "display_district": "중구"
     },
@@ -837,7 +837,7 @@
         "zh-CN": "Abijou Clinic Gangnam",
         "zh-TW": "Abijou Clinic Gangnam"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151806/eded3565/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151806/eded3565/orig.webp",
       "display_region": "서울",
       "display_district": "서초구"
     },
@@ -851,7 +851,7 @@
         "zh-CN": "Lienjang Clinic Myeongdong",
         "zh-TW": "Lienjang Clinic Myeongdong"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151810/d59dd27e/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151810/d59dd27e/orig.png",
       "display_region": "서울",
       "display_district": "중구"
     },
@@ -865,7 +865,7 @@
         "zh-CN": "JENNY HOUSE Cheongdam Hill",
         "zh-TW": "JENNY HOUSE Cheongdam Hill"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151875/143782d9/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151875/143782d9/orig.png",
       "display_region": "서울",
       "display_district": "강남구"
     },
@@ -879,7 +879,7 @@
         "zh-CN": "CHAHONG Room Gangnam",
         "zh-TW": "CHAHONG Room Gangnam"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151877/db07fe87/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151877/db07fe87/orig.png",
       "display_region": "서울",
       "display_district": "강남구"
     },
@@ -893,7 +893,7 @@
         "zh-CN": "JUNO Hair Myeongdong",
         "zh-TW": "JUNO Hair Myeongdong"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151881/336593a9/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151881/336593a9/orig.png",
       "display_region": "서울",
       "display_district": "중구"
     },
@@ -907,7 +907,7 @@
         "zh-CN": "Cocory Color Seoul",
         "zh-TW": "Cocory Color Seoul"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151908/242d676b/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151908/242d676b/orig.png",
       "display_region": "서울",
       "display_district": "중구"
     },
@@ -921,7 +921,7 @@
         "zh-CN": "Jung Saem Mool Inspiration West",
         "zh-TW": "Jung Saem Mool Inspiration West"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151911/0827b9e6/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151911/0827b9e6/orig.png",
       "display_region": "서울",
       "display_district": "강남구"
     },
@@ -935,7 +935,7 @@
         "zh-CN": "Makeup House Myeongdong",
         "zh-TW": "Makeup House Myeongdong"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151912/5000a6d7/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151912/5000a6d7/orig.png",
       "display_region": "서울",
       "display_district": "중구"
     },
@@ -949,7 +949,7 @@
         "zh-CN": "Tamburins Hannam Store",
         "zh-TW": "Tamburins Hannam Store"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151933/3371549f/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151933/3371549f/orig.webp",
       "display_region": "서울",
       "display_district": "용산구"
     },
@@ -977,7 +977,7 @@
         "zh-CN": "Amore Seongsu",
         "zh-TW": "愛茉莉聖水"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151937/8cfc6d2d/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151937/8cfc6d2d/orig.png",
       "display_region": "서울",
       "display_district": "성동구"
     },
@@ -991,7 +991,7 @@
         "zh-CN": "昌德宫",
         "zh-TW": "昌德宮"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151976/e2399074/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151976/e2399074/orig.webp",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -1005,7 +1005,7 @@
         "zh-CN": "宗庙",
         "zh-TW": "宗廟"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151997/cbaaba8e/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/151997/cbaaba8e/orig.png",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -1019,7 +1019,7 @@
         "zh-CN": "景福宫 - 体验预约点",
         "zh-TW": "景福宮 - 體驗預約點"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152013/30bd7dba/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152013/30bd7dba/orig.png",
       "display_region": "서울",
       "display_district": "광진구"
     },
@@ -1061,7 +1061,7 @@
         "zh-CN": "利川陶瓷艺术村Yes Park",
         "zh-TW": "利川陶瓷藝術村YES Park"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152080/8ef505ce/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152080/8ef505ce/orig.webp",
       "display_region": "경기",
       "display_district": "이천시"
     },
@@ -1089,7 +1089,7 @@
         "zh-CN": "安东 河回村",
         "zh-TW": "安東河回村"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152319/bc1a88b8/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152319/bc1a88b8/orig.jpg",
       "display_region": "경북",
       "display_district": "안동시"
     },
@@ -1103,7 +1103,7 @@
         "zh-CN": "瞻星台",
         "zh-TW": "瞻星臺"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152326/b1e7a4dc/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152326/b1e7a4dc/orig.jpg",
       "display_region": "경북",
       "display_district": "경주시"
     },
@@ -1117,7 +1117,7 @@
         "zh-CN": "庆州 佛国寺",
         "zh-TW": "慶州佛國寺"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152343/7c00ff5a/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152343/7c00ff5a/orig.jpg",
       "display_region": "경북",
       "display_district": "경주시"
     },
@@ -1145,7 +1145,7 @@
         "zh-CN": "屏山书院",
         "zh-TW": "屛山書院"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152347/aecc19ab/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152347/aecc19ab/orig.jpg",
       "display_region": "경북",
       "display_district": "안동시"
     },
@@ -1159,7 +1159,7 @@
         "zh-CN": "陶山书院",
         "zh-TW": "陶山書院"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152348/b03ce23b/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152348/b03ce23b/orig.jpg",
       "display_region": "경북",
       "display_district": "안동시"
     },
@@ -1173,7 +1173,7 @@
         "zh-CN": "荣州 浮石寺",
         "zh-TW": "榮州浮石寺"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152350/e2d4e742/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152350/e2d4e742/orig.jpg",
       "display_region": "경북",
       "display_district": "영주시"
     },
@@ -1187,7 +1187,7 @@
         "zh-CN": "绍修书院",
         "zh-TW": "紹修書院"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152351/2d6169e6/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152351/2d6169e6/orig.jpg",
       "display_region": "경북",
       "display_district": "영주시"
     },
@@ -1243,7 +1243,7 @@
         "zh-CN": "城山日出峰",
         "zh-TW": "城山日出峰"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152520/2fc764c1/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152520/2fc764c1/orig.jpg",
       "display_region": "제주",
       "display_district": "서귀포시"
     },
@@ -1257,7 +1257,7 @@
         "zh-CN": "寒碧隧道",
         "zh-TW": "寒碧隧道"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152644/c49af1fd/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152644/c49af1fd/orig.jpg",
       "display_region": "전북",
       "display_district": "전주시"
     },
@@ -1271,7 +1271,7 @@
         "zh-CN": "云岘宫",
         "zh-TW": "雲峴宮"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152682/a66d6dbb/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152682/a66d6dbb/orig.jpg",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -1285,7 +1285,7 @@
         "zh-CN": "Inspire Arena",
         "zh-TW": "Inspire Arena"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152693/abc9bf59/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152693/abc9bf59/orig.png",
       "display_region": "인천",
       "display_district": "중구"
     },
@@ -1299,7 +1299,7 @@
         "zh-CN": "WORLD K POP CENTER",
         "zh-TW": "WORLD K POP CENTER"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152695/cc0ea670/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152695/cc0ea670/orig.webp",
       "display_region": "서울",
       "display_district": "용산구"
     },
@@ -1313,7 +1313,7 @@
         "zh-CN": "江南舞蹈工作室",
         "zh-TW": "江南舞蹈工作室"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152714/6f32d06a/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152714/6f32d06a/orig.webp",
       "display_region": "서울",
       "display_district": "강남구"
     },
@@ -1327,7 +1327,7 @@
         "zh-CN": "Withmuu AK Plaza 弘大",
         "zh-TW": "Withmuu AK Plaza 弘大"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152716/e8401a55/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152716/e8401a55/orig.jpg",
       "display_region": "서울",
       "display_district": "마포구"
     },
@@ -1341,7 +1341,7 @@
         "zh-CN": "Ktown4u COEX",
         "zh-TW": "K-Town For You COEX"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152734/c18ca1c7/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152734/c18ca1c7/orig.png",
       "display_region": "서울",
       "display_district": "강남구"
     },
@@ -1355,7 +1355,7 @@
         "zh-CN": "Ktown4u 仁寺",
         "zh-TW": "K-Town For You 仁寺"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152735/28a6fe22/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152735/28a6fe22/orig.png",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -1369,7 +1369,7 @@
         "zh-CN": "AK Plaza弘大",
         "zh-TW": "AK Plaza 弘大"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152761/3127eaf7/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152761/3127eaf7/orig.webp",
       "display_region": "서울",
       "display_district": "마포구"
     },
@@ -1383,7 +1383,7 @@
         "zh-CN": "奥林匹克公园KSPO巨蛋",
         "zh-TW": "奧林匹克公園 KSPO Dome"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152779/bb2fb316/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152779/bb2fb316/orig.webp",
       "display_region": "서울",
       "display_district": "송파구"
     },
@@ -1397,7 +1397,7 @@
         "zh-CN": "比内岛",
         "zh-TW": "雨內島"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152810/76c041be/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152810/76c041be/orig.png",
       "display_region": "충북",
       "display_district": "충주시"
     },
@@ -1411,7 +1411,7 @@
         "zh-CN": "学林茶坊",
         "zh-TW": "學林茶房"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152833/4d39f7ab/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152833/4d39f7ab/orig.webp",
       "display_region": "서울",
       "display_district": "종로구"
     },
@@ -1425,7 +1425,7 @@
         "zh-CN": "龙仁大长今主题公园",
         "zh-TW": "龍仁大長今主題公園"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152847/38816ef5/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152847/38816ef5/orig.webp",
       "display_region": "경기",
       "display_district": "용인시"
     },
@@ -1439,7 +1439,7 @@
         "zh-CN": "青荷贡津市场",
         "zh-TW": "青河公津市場"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152848/6437df65/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152848/6437df65/orig.png",
       "display_region": "경북",
       "display_district": "포항시"
     },
@@ -1453,7 +1453,7 @@
         "zh-CN": "欧利芙洋明洞小镇",
         "zh-TW": "歐利芙洋明洞城"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152885/5e3faf2d/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152885/5e3faf2d/orig.webp",
       "display_region": "서울",
       "display_district": "중구"
     },
@@ -1509,7 +1509,7 @@
         "zh-CN": "Park Seung Cheol Hair Studio 狎鸥亭店",
         "zh-TW": "Park Seung Chul Hair Studio 狎鷗亭店"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152938/5d08a219/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152938/5d08a219/orig.png",
       "display_region": "서울",
       "display_district": "강남구"
     },
@@ -1523,7 +1523,7 @@
         "zh-CN": "Park Seung Cheol Hair Studio 清潭店",
         "zh-TW": "Park Seung Chul Hair Studio 清潭店"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152939/d8b0cf49/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152939/d8b0cf49/orig.webp",
       "display_region": "서울",
       "display_district": "강남구"
     },
@@ -1537,7 +1537,7 @@
         "zh-CN": "ID Hospital",
         "zh-TW": "ID 醫院"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152965/99d99da8/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/152965/99d99da8/orig.png",
       "display_region": "서울",
       "display_district": "강남구"
     },
@@ -1551,7 +1551,7 @@
         "zh-CN": "COEX购物中心",
         "zh-TW": "COEX Mall"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153207/b727cdb1/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153207/b727cdb1/orig.webp",
       "display_region": "서울",
       "display_district": "강남구"
     },
@@ -1560,7 +1560,7 @@
       "names": {
         "en": "YG Entertainment Headquarters"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153409/dd67f846/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153409/dd67f846/orig.jpg",
       "display_region": "서울",
       "display_district": "마포구"
     },
@@ -1569,7 +1569,7 @@
       "names": {
         "en": "Old Big Hit Entertainment Building (Cheonggu Building)"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153421/5e3e62c6/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153421/5e3e62c6/orig.png",
       "display_region": "서울",
       "display_district": "강남구"
     },
@@ -1578,7 +1578,7 @@
       "names": {
         "en": "National Museum of Korea"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153424/599c8b44/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153424/599c8b44/orig.jpg",
       "display_region": "서울",
       "display_district": "용산구"
     },
@@ -1587,7 +1587,7 @@
       "names": {
         "en": "The Hyundai Seoul"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153446/43f6eca8/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153446/43f6eca8/orig.png",
       "display_region": "서울",
       "display_district": null
     },
@@ -1596,7 +1596,7 @@
       "names": {
         "en": "SEOUL BAM"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153474/f5b69c8c/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153474/f5b69c8c/orig.png",
       "display_region": "서울",
       "display_district": null
     },
@@ -1605,7 +1605,7 @@
       "names": {
         "en": "Dongdaemun Design Plaza (DDP)"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153483/b4359962/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153483/b4359962/orig.webp",
       "display_region": "서울",
       "display_district": "중구"
     },
@@ -1614,7 +1614,7 @@
       "names": {
         "en": "Bongsan Pyeongyang Naengmyeon"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153945/c982dfca/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153945/c982dfca/orig.png",
       "display_region": "서울",
       "display_district": "강남구"
     },
@@ -1623,7 +1623,7 @@
       "names": {
         "en": "Eulmildae Mapo"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153946/cd810689/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153946/cd810689/orig.jpg",
       "display_region": "서울",
       "display_district": "마포구"
     },
@@ -1632,7 +1632,7 @@
       "names": {
         "en": "Jungin Myeonok Main Store"
       },
-      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153947/10762452/lg.webp",
+      "primary_image_url": "https://rojxjrsdscohupyxvbdd.supabase.co/storage/v1/object/public/poi-images/153947/10762452/orig.jpg",
       "display_region": "서울",
       "display_district": "영등포구"
     }
