@@ -22,7 +22,11 @@ export function buildWebsiteJsonLd(locale: string) {
 
 // Organization structured data for the Home page: ties the name B4K to this site, its logo and its
 // official profiles, so a search for the brand can show the site with its name and logo.
-const PROFILES: string[] = []
+const PROFILES: string[] = [
+  'https://www.instagram.com/b4k_global/',
+  'https://www.instagram.com/b4k_jp/',
+  'https://www.instagram.com/b4k_brasil/',
+]
 
 export function buildOrganizationJsonLd() {
   return {
