@@ -110,7 +110,10 @@ const AI_IMAGES = [
 ]
 const AI = new Set(AI_IMAGES.map((name) => `/images/explore/places/${name}.webp`))
 
-export const isAiPhoto = (src?: string | null) => !!src && AI.has(src)
+// The 'AI illustration' line is switched off for now (B4K's call); set to true to show it again.
+const SHOW_AI_LINE = false
+
+export const isAiPhoto = (src?: string | null) => SHOW_AI_LINE && !!src && AI.has(src)
 
 /** A Collection shows a Korea Tourism Organization photo (its cover or one of its places). */
 export const colHasKto = (c?: RideCollection) => !!c && (isKtoPhoto(c.hero) || c.places.some((p) => isKtoPhoto(p.img)))
