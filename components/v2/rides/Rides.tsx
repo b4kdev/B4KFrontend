@@ -6,7 +6,7 @@ import { track } from '@/lib/analytics'
 import { categoryStyle, CreditLine } from '@/components/library'
 import { cn } from '@/lib/cn'
 import type { Ride, RideKind, RidePage } from '@/lib/explore-rides-types'
-import { rideHasKto } from '@/lib/explore-rides-credits'
+import { rideHasAi, rideHasKto } from '@/lib/explore-rides-credits'
 import { useCd } from '../cd'
 import { PairRide, PanelRide } from './Panel'
 import { SwitchRide } from './Switch'
@@ -82,6 +82,7 @@ export function Rides({ page }: { page: RidePage }) {
               </header>
               <Body ride={ride} category={page.category} />
               {rideHasKto(ride, page.cols) ? <CreditLine className="mt-[var(--space-3)]">{t('CD1874')}</CreditLine> : null}
+              {rideHasAi(ride, page.cols) ? <CreditLine className={rideHasKto(ride, page.cols) ? 'mt-[var(--space-1)]' : 'mt-[var(--space-3)]'}>{t('CD1904')}</CreditLine> : null}
             </section>
           )
         })}
