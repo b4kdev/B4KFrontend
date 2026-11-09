@@ -3,9 +3,10 @@
 import { useRef } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Link as IntlLink } from '@/i18n/navigation'
-import { categoryStyle, Glyph, Image } from '@/components/library'
+import { categoryStyle, CreditLine, Glyph, Image } from '@/components/library'
 import { cn } from '@/lib/cn'
 import type { Ride, RidePage } from '@/lib/explore-rides-types'
+import { colHasKto } from '@/lib/explore-rides-credits'
 import { useCd } from '../cd'
 import { CATEGORIES } from '../categories'
 import { ColsContext, koName, placeHref, s, Swap, useColWords, usePick, useRideText } from './shared'
@@ -94,6 +95,8 @@ export function HomeRideBlock({ page, flip }: { page: RidePage; flip?: boolean }
             })}
           </Swap>
         </div>
+        {/* One credit line when any of the block's Collections shows a Korea Tourism Organization photo, so it stays put as rides change. */}
+        {rows.some((x) => colHasKto(x.c)) ? <CreditLine className="mt-[var(--space-3)]">{t('CD1874')}</CreditLine> : null}
       </section>
     </ColsContext.Provider>
   )

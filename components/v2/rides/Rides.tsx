@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react'
 import { useLocale } from 'next-intl'
 import { track } from '@/lib/analytics'
-import { categoryStyle } from '@/components/library'
+import { categoryStyle, CreditLine } from '@/components/library'
 import { cn } from '@/lib/cn'
 import type { Ride, RideKind, RidePage } from '@/lib/explore-rides-types'
+import { rideHasKto } from '@/lib/explore-rides-credits'
+import { useCd } from '../cd'
 import { PairRide, PanelRide } from './Panel'
 import { SwitchRide } from './Switch'
 import { TilesRide } from './Tiles'
@@ -56,6 +58,7 @@ const cardOpen = (locale: string) => (e: React.MouseEvent<HTMLElement>) => {
 }
 
 export function Rides({ page }: { page: RidePage }) {
+  const t = useCd()
   const r = useRideText()
   const locale = useLocale()
   const color = categoryStyle(page.category)?.color
@@ -78,6 +81,7 @@ export function Rides({ page }: { page: RidePage }) {
                 <p>{r(`${ride.id}.line`)}</p>
               </header>
               <Body ride={ride} category={page.category} />
+              {rideHasKto(ride, page.cols) ? <CreditLine className="mt-[var(--space-3)]">{t('CD1874')}</CreditLine> : null}
             </section>
           )
         })}
