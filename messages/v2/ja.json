@@ -1139,6 +1139,15 @@
     "CD1900": "{city}{district}",
     "CD1901": "保存した場所の近くのイベント",
     "CD1902": "全日程 · {count, plural, other {#か所}}",
-    "CD1903": "{label} · {count}"
+    "CD1903": "{label} · {count}",
+    "CD1683": "会社情報",
+    "CD1684": "{company} · 代表 {ceo} · 事業者登録番号 {registration} · 通信販売業届出番号 {mailorder} · {address} · 電話 {phone} · {email} · ホスティング {host}",
+    "CD1685": "事業者情報を確認",
+    "CD1688": "会社情報",
+    "CD1689": "会社名：{company}\n代表者：{ceo}\n事業者登録番号：{registration}\n通信販売業届出番号：{mailorder}\n所在地：{address}\n電話：{phone}\nお問い合わせ：{email}\nホスティング：{host}",
+    "CD1904": "AIイラスト",
+    "CD1905": "リストに追加",
+    "CD1906": "リストに移動",
+    "CD1907": "「{name}」に移動しました"
   }
 }

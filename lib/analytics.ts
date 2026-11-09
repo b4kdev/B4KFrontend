@@ -11,7 +11,8 @@ type PlanFlow = 'quick_plan' | 'from_saved' | 'manual'
 type AnalyticsEventMap = {
   sign_up: { method: string }
   sign_in: { method: string; is_new_user: boolean }
-  search: { result_count: number; category?: string }
+  // found: 'no' when nothing came back, so GA4 can count zero-result searches (result_count is a GA4 metric).
+  search: { result_count: number; found: 'yes' | 'no'; category?: string }
   poi_view: { category?: string; area?: string; source?: PlaceSource }
   poi_save: { action: 'save' | 'unsave'; category?: string }
   plan_create: { flow: PlanFlow; days: number; stops: number }

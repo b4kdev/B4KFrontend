@@ -290,7 +290,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
   // The day waiting on the delete confirm (a day with stops); an empty day goes at once.
   const [deleteDay, setDeleteDay] = useState<number | null>(null)
   const [folderId, setFolderId] = useState<string | null>(params?.get('folder'))
-  const [editing, setEditing] = useState<{ id: string; title: string } | null>(null)
+  const [editing, setEditing] = useState<{ id: string; title: string; isPublic: boolean } | null>(null)
   const [pendingEdit, setPendingEdit] = useState<ItineraryDetail | null>(null)
   // Save plan picked on the plan page's save-or-discard prompt: the name sheet opens once the plan in
   // progress has loaded, and the published plan opens for editing after the save.
@@ -389,7 +389,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     const { stops, days: dayMap, durations } = itineraryToDraft(it)
     // An unnamed plan opens with an empty name field.
     draft.replace(stops, dayMap, it.title ?? undefined, durations, { editing: true })
-    setEditing({ id: it.id, title: it.title ?? '' })
+    setEditing({ id: it.id, title: it.title ?? '', isPublic: it.is_published })
     // Every plan opens on All days; a place added there goes to the last day.
     setActiveDay('all')
     setPendingEdit(null)
@@ -614,7 +614,7 @@ export function MapScreen({ poiId }: { poiId?: string } = {}) {
     if (editing) {
       try {
         await send(`/api/plans/${editing.id}`, 'PUT', { title: planName.trim() || editing.title, stops })
-        track('plan_save', { days: draft.days, stops: stops.length, is_public: true, locale, screen_id: 'map' })
+        track('plan_save', { days: draft.days, stops: stops.length, is_public: editing.isPublic, locale, screen_id: 'map' })
         const id = editing.id
         draft.discard()
         setEditing(null)
