@@ -214,8 +214,8 @@ export function AuthCallbackScreen() {
         const lastSignIn = user.last_sign_in_at ? new Date(user.last_sign_in_at).getTime() : firstAt
         const isNew = Math.abs(lastSignIn - firstAt) < 10_000
         const method = user.app_metadata?.provider ?? 'email'
+        // sign_in itself is sent once by the auth listener (AuthContext), so it is not sent here too.
         if (isNew) track('sign_up', { method, locale, screen_id: 'sign_in' })
-        track('sign_in', { method, is_new_user: isNew, locale, screen_id: 'sign_in' })
       }
 
       // An account set to be deleted goes to the sign-in page's Pending deletion view first.
