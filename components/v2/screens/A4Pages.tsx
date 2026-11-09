@@ -97,7 +97,8 @@ export function SearchScreen() {
   useEffect(() => {
     if (!data || counted.current === qs.toString()) return
     counted.current = qs.toString()
-    track('search', { result_count: data.places.length + data.plans.length + data.explore.length, category: filters.theme?.join(',') || undefined, locale, screen_id: 'search' })
+    const resultCount = data.places.length + data.plans.length + data.explore.length
+    track('search', { result_count: resultCount, found: resultCount > 0 ? 'yes' : 'no', category: filters.theme?.join(',') || undefined, locale, screen_id: 'search' })
   }, [data]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const groups: FilterGroup[] = [
