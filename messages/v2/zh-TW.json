@@ -1139,6 +1139,15 @@
     "CD1900": "{city}{district}",
     "CD1901": "已儲存地點附近的活動",
     "CD1902": "全部天數 · {count, plural, other {# 個地點}}",
-    "CD1903": "{label} · {count}"
+    "CD1903": "{label} · {count}",
+    "CD1683": "公司資訊",
+    "CD1684": "{company} · 代表人 {ceo} · 營業登記號碼 {registration} · 通訊販賣業申報編號 {mailorder} · {address} · 電話 {phone} · {email} · 主機代管 {host}",
+    "CD1685": "查看商家資訊",
+    "CD1688": "公司資訊",
+    "CD1689": "公司名稱：{company}\n代表人：{ceo}\n營業登記號碼：{registration}\n通訊販賣業申報編號：{mailorder}\n地址：{address}\n電話：{phone}\n客服信箱：{email}\n主機代管：{host}",
+    "CD1904": "AI 插圖",
+    "CD1905": "加入清單",
+    "CD1906": "移到清單",
+    "CD1907": "已移到「{name}」"
   }
 }

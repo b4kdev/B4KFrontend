@@ -6,6 +6,8 @@ export const COMPANY = {
   name: '주식회사 비포케이코퍼레이션',
   ceo: 'MEDEIROS MARIANA',
   registration: '317-81-50692',
+  /** Mail-order sales registration (통신판매업 신고번호). */
+  mailOrder: '2026-서울서초-3689',
   address: {
     ko: '서울특별시 서초구 강남대로 53길 8 7-162호',
     en: '7-162, 8, Gangnam-daero 53-gil, Seocho-gu, Seoul, 06621, Republic of Korea',
@@ -22,6 +24,7 @@ export function companyValues(locale: string) {
     company: COMPANY.name,
     ceo: COMPANY.ceo,
     registration: COMPANY.registration,
+    mailorder: COMPANY.mailOrder,
     address: locale === 'ko' ? COMPANY.address.ko : COMPANY.address.en,
     email: COMPANY.email,
     host: COMPANY.host,

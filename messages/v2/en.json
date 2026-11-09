@@ -976,12 +976,12 @@
     "CD1681": "About B4K",
     "CD1682": "Location-Based Services Terms",
     "CD1683": "Company details",
-    "CD1684": "{company} · CEO {ceo} · Business registration no. {registration} · {address} · Phone {phone} · {email} · Hosting by {host}",
+    "CD1684": "{company} · CEO {ceo} · Business registration no. {registration} · Mail-order sales no. {mailorder} · {address} · Phone {phone} · {email} · Hosting by {host}",
     "CD1685": "Check business info",
     "CD1686": "Search this area",
     "CD1687": "B4K is your guide to K-culture in Korea: find the places behind the K-Pop, K-Drama, K-Beauty, K-Culture and K-Food you love, and plan your trip around them.",
     "CD1688": "Company details",
-    "CD1689": "Company name: {company}\nCEO: {ceo}\nBusiness registration no.: {registration}\nAddress: {address}\nPhone: {phone}\nSupport: {email}\nHosting: {host}",
+    "CD1689": "Company name: {company}\nCEO: {ceo}\nBusiness registration no.: {registration}\nMail-order sales no.: {mailorder}\nAddress: {address}\nPhone: {phone}\nSupport: {email}\nHosting: {host}",
     "CD1690": "Link expired",
     "CD1691": "More options",
     "CD1692": "Report {name}?",
@@ -1194,6 +1194,10 @@
     "CD1900": "{district}, {city}",
     "CD1901": "Event near your saved places",
     "CD1902": "All days · {count, plural, one {# stop} other {# stops}}",
-    "CD1903": "{label} · {count}"
+    "CD1903": "{label} · {count}",
+    "CD1904": "AI illustration",
+    "CD1905": "Add to list",
+    "CD1906": "Move to list",
+    "CD1907": "Moved to {name}"
   }
 }
