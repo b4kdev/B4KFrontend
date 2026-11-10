@@ -171,7 +171,10 @@ export const termsSections: LegalSection[] = [
           location, (4) a statement of good-faith belief the use is unauthorized, and (5) a statement, under penalty
           of perjury, that the notice is accurate and you are authorized to act.
         </p>
-        <p>Send notices to support@b4korea.com.</p>
+        <p>
+          To report content that you believe infringes your copyright, email copyright@b4korea.com with the page
+          address, the work and your contact details.
+        </p>
       </>
     ),
   },

@@ -1163,14 +1163,18 @@
     "CD1679": "Sugerir uma foto",
     "CD1682": "Termos de Serviços Baseados em Localização",
     "CD1683": "Dados da empresa",
-    "CD1684": "{company} · CEO {ceo} · Nº de registro empresarial {registration} · {address} · Telefone {phone} · {email} · Hospedagem: {host}",
+    "CD1684": "{company} · CEO {ceo} · Nº de registro empresarial {registration} · Nº de registro de vendas on-line {mailorder} · {address} · Telefone {phone} · {email} · Hospedagem: {host}",
     "CD1685": "Verificar dados da empresa",
     "CD1688": "Dados da empresa",
-    "CD1689": "Razão social: {company}\nCEO: {ceo}\nNº de registro empresarial: {registration}\nEndereço: {address}\nTelefone: {phone}\nSuporte: {email}\nHospedagem: {host}",
+    "CD1689": "Razão social: {company}\nCEO: {ceo}\nNº de registro empresarial: {registration}\nNº de registro de vendas on-line: {mailorder}\nEndereço: {address}\nTelefone: {phone}\nSuporte: {email}\nHospedagem: {host}",
     "CD1691": "Mais opções",
     "CD1692": "Denunciar {name}?",
     "CD1693": "Nossa equipe vai analisar o nome, a foto e os roteiros. A pessoa não vai saber quem fez a denúncia.",
     "CD1694": "Denunciar",
-    "CD1695": "Obrigado. Nossa equipe vai analisar este planejador."
+    "CD1695": "Obrigado. Nossa equipe vai analisar este planejador.",
+    "CD1904": "Ilustração feita por IA",
+    "CD1905": "Adicionar à lista",
+    "CD1906": "Mover para lista",
+    "CD1907": "Movido para {name}"
   }
 }

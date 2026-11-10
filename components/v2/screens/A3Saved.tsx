@@ -258,11 +258,12 @@ export function SavedScreen() {
                   <MenuItem icon={<Share2 />} onClick={() => { navigator.clipboard?.writeText(`${location.origin}/${locale}/plan/${p.id}`); toast({ type: 'success', message: k('profile.trips.card.shareCopiedToast') }) }}>{k('saved.myPlan.share')}</MenuItem>
                   {!p.is_draft ? (
                     // A published plan switches between public and private; a failed switch says so.
+                    // Making it public counts as a plan_save (saved or published); making it private does not.
                     <MenuItem
                       icon={p.is_public ? <Lock /> : <Globe />}
                       onClick={async () => {
                         await send(`/api/plans/${p.id}`, 'PATCH', { is_published: !p.is_public })
-                          .then(() => track('plan_save', { days: p.duration_days, stops: p.stop_count, is_public: !p.is_public, locale, screen_id: 'saved' }))
+                          .then(() => { if (!p.is_public) track('plan_save', { days: p.duration_days, stops: p.stop_count, is_public: true, locale, screen_id: 'saved' }) })
                           .catch(() => toast({ type: 'critical', message: t('CD0061') }))
                         mutate()
                       }}

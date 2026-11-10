@@ -1139,6 +1139,15 @@
     "CD1900": "{city} {district}",
     "CD1901": "저장한 장소 근처 이벤트",
     "CD1902": "전체 일차 · {count, plural, other {장소 #곳}}",
-    "CD1903": "{label} · {count}"
+    "CD1903": "{label} · {count}",
+    "CD1683": "사업자 정보",
+    "CD1684": "{company} · 대표 {ceo} · 사업자등록번호 {registration} · 통신판매업 신고번호 {mailorder} · {address} · 전화 {phone} · {email} · 호스팅 서비스 {host}",
+    "CD1685": "사업자정보 확인",
+    "CD1688": "사업자 정보",
+    "CD1689": "상호: {company}\n대표: {ceo}\n사업자등록번호: {registration}\n통신판매업 신고번호: {mailorder}\n주소: {address}\n전화: {phone}\n고객 문의: {email}\n호스팅 서비스: {host}",
+    "CD1904": "AI 일러스트",
+    "CD1905": "리스트에 추가",
+    "CD1906": "리스트로 옮기기",
+    "CD1907": "{name} 리스트로 옮겼어요"
   }
 }
