@@ -9,7 +9,7 @@ import useSWR from 'swr'
 import { cn } from '@/lib/cn'
 import { usePhone } from '@/components/library/hooks'
 import { ROW_DIVIDER } from '@/components/library/Lists'
-import { ArrowLeft, Bookmark, Ellipsis, Folder, Globe, Pencil, Share2, Trash2, Lock, X } from 'lucide-react'
+import { ArrowLeft, Bookmark, Ellipsis, Folder, FolderInput, Globe, Pencil, Share2, Trash2, Lock, X } from 'lucide-react'
 import { Link as IntlLink, useRouter } from '@/i18n/navigation'
 import {
   Button,
@@ -21,15 +21,14 @@ import {
   EmptyState,
   IconButton,
   Image,
+  ImageAction,
   Logo,
   ListItem,
   MenuGroup,
   MenuItem,
-  Modal,
   SectionHeader,
   Skeleton,
   Tabs,
-  TextInput,
   linkButtonVariants,
 } from '@/components/library'
 import { useAuth } from '@/contexts/AuthContext'
@@ -41,6 +40,7 @@ import { GAMIFICATION } from '@/lib/features'
 import { useCd, useCdKey } from '../cd'
 import { V2Page } from '../V2Page'
 import { useV2Shell } from '../V2Shell'
+import { FolderNameSheet } from '../ListPicker'
 import { usePlaceActions, usePlanActions } from '../usePlaceActions'
 import { jsonFetch } from './A2Home'
 import { LeaderboardTab } from './A3Account'
@@ -87,50 +87,13 @@ export function SignedOutPrompt({ title, text, icon, plain, className }: { title
   )
 }
 
-/** Name sheet for New folder and Rename folder (one sheet like Save plan). */
-function FolderNameSheet({ open, mode, initial, onClose, onSave }: { open: boolean; mode: 'new' | 'rename'; initial?: string; onClose: () => void; onSave: (name: string) => Promise<void> }) {
-  const t = useCd()
-  const k = useCdKey()
-  const [name, setName] = useState(initial ?? '')
-  const [busy, setBusy] = useState(false)
-  const [empty, setEmpty] = useState(false)
-  return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      size="md"
-      title={mode === 'new' ? t('CD1206') : t('CD1212')}
-      closeLabel={k('badges.detail.close')}
-      secondaryAction={<Button variant="secondary" onClick={onClose}>{k('saved.folder.cancel')}</Button>}
-      primaryAction={
-        <Button
-          loading={busy}
-          onClick={async () => {
-            // Save stays enabled; an empty name is said on the field.
-            if (!name.trim()) return setEmpty(true)
-            setBusy(true)
-            await onSave(name.trim()).finally(() => setBusy(false))
-          }}
-        >
-          {mode === 'new' ? t('CD1613') : k('saved.folder.save')}
-        </Button>
-      }
-    >
-      <div className="flex flex-col gap-[var(--space-4)]">
-        <p className="type-body-base text-ui-fg-muted">{mode === 'new' ? t('CD1611') : t('CD1614')}</p>
-        <TextInput label={t('CD1207')} showLabel required help={`${name.length}/40`} placeholder={t('CD1612')} value={name} maxLength={40} onChange={(e) => { setName(e.target.value); setEmpty(false) }} error={empty ? t('CD1798') : undefined} data-autofocus />
-      </div>
-    </Modal>
-  )
-}
-
 export function SavedScreen() {
   const t = useCd()
   const k = useCdKey()
   const locale = useLocale()
   const router = useRouter()
   const { user } = useAuth()
-  const { toast } = useV2Shell()
+  const { toast, pickList } = useV2Shell()
   const params = useSearchParams()
   const [tab, setTab] = useState(params?.get('tab') ?? 'places')
   // The /plan/auto shortcut lands here with select=1: open Plan from Saved.
@@ -210,7 +173,22 @@ export function SavedScreen() {
       </div>
       <ul className="grid grid-cols-2 gap-[var(--space-3)] lg:grid-cols-4 lg:gap-[var(--space-4)]">
         {folder.pois.map((p) => (
-          <li key={p.poi_id}><Card type="place" href={`/map?poi=${p.poi_id}`} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={regionName(p.display_region ?? '', locale)} {...placeActions(p.poi_id, poiName(p, locale))} /></li>
+          <li key={p.poi_id}>
+            <Card
+              type="place"
+              href={`/map?poi=${p.poi_id}`}
+              title={poiName(p, locale)}
+              imageSrc={p.primary_image_url}
+              meta={regionName(p.display_region ?? '', locale)}
+              {...placeActions(p.poi_id, poiName(p, locale))}
+              // Figma Folder open, place menu: Move to list opens the list picker.
+              menu={
+                <DropdownMenu fixed label={k('saved.folder.folderMenu', { name: poiName(p, locale) })} trigger={<ImageAction label={k('saved.folder.folderMenu', { name: poiName(p, locale) })} icon={<Ellipsis />} aria-pressed={undefined} />}>
+                  <MenuItem icon={<FolderInput />} onClick={() => pickList({ poiId: p.poi_id, mode: 'move' })}>{t('CD1906')}</MenuItem>
+                </DropdownMenu>
+              }
+            />
+          </li>
         ))}
       </ul>
     </div>

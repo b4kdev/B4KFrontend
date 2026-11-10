@@ -33,6 +33,7 @@ import V2QuickPlan from './V2QuickPlan'
 import { LanguageMenu, LanguageSheet } from './V2Settings'
 import { SignInGate, type GateRequest } from './V2SignInGate'
 import { V2HeaderSearch } from './V2Search'
+import { ListPicker, type ListPickRequest } from './ListPicker'
 import { rememberPath } from '@/lib/place-source'
 import { SESSION_EXPIRED_EVENT } from '@/lib/session-expired'
 
@@ -50,6 +51,8 @@ type ShellCtx = {
   toast: (t: { type?: 'info' | 'success' | 'warning' | 'critical'; message: string; action?: { label: string; onClick: () => void } }) => void
   /** Runs `run` now when signed in; a guest gets the sign-in gate and `run` after the sign-in. */
   requireSignIn: (r: GateRequest) => void
+  /** Opens the list picker (Add to list from the Save toast, Move to list from a saved place). */
+  pickList: (r: ListPickRequest) => void
   /** Phones: height of the open toast (0 when none), so map controls on its line move above it. */
   toastHeight: number
   /** While an account set to be deleted decides (Pending deletion), the chrome shows it signed out. */
@@ -139,6 +142,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
   const router = useRouter()
   const signOut = useV2SignOut()
   const [toastMsg, setToastMsg] = useState<{ type?: 'info' | 'success' | 'warning' | 'critical'; message: string; action?: { label: string; onClick: () => void } } | null>(null)
+  const [listPick, setListPick] = useState<ListPickRequest | null>(null)
 
   // A Page not found render can replace the document after the boot script ran: set the theme again.
   useEffect(() => {
@@ -270,6 +274,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
     labels,
     toast: setToastMsg,
     requireSignIn: (r) => (authUser ? r.run() : setGate(r)),
+    pickList: setListPick,
     toastHeight,
     holdAccount: setHeld,
     navOverlays: onMap && !inFlow && !fullFlow,
@@ -320,6 +325,7 @@ export default function V2Shell({ children }: { children: ReactNode }) {
       <V2DraftMigration />
       <SignInGate request={gate} onClose={() => setGate(null)} onConsent={(next) => router.push(`/consent?next=${encodeURIComponent(next)}`)} />
       <LanguageSheet open={language} onClose={() => setLanguage(false)} />
+      <ListPicker request={listPick} onClose={() => setListPick(null)} toast={setToastMsg} />
       {cookie === null ? (
         <CookieBanner
           label={t('CD0131')}

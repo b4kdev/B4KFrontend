@@ -64,7 +64,7 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
   const t = useCd()
   const k = useCdKey()
   const { user } = useAuth()
-  const { toast, requireSignIn } = useV2Shell()
+  const { toast, requireSignIn, pickList } = useV2Shell()
   const saved = useSWR<SavedData>(user ? '/api/saved' : null, jsonFetch)
   const unlock = useBadgeUnlock()
   // The tapped state shows at once; the old one comes back when the request fails.
@@ -83,10 +83,10 @@ export function usePlaceActions({ resume = false }: { resume?: boolean } = {}) {
       .then(() => {
         track('poi_save', { action: on ? 'unsave' : 'save', locale, screen_id: 'card' })
         if (undo) return
-        // Removed: the toast offers Undo (it then stays 8 s).
+        // Removed: the toast offers Undo; saved: Add to list. Either then stays 8 s.
         toast(on
           ? { type: 'success', message: t('CD0698'), action: { label: t('CD1428'), onClick: () => { setSave(id, false, false, { folder }) } } }
-          : { type: 'success', message: signedIn ? t('CD1608') : k('map.poiDetail.savedToast') })
+          : { type: 'success', message: signedIn ? t('CD1608') : k('map.poiDetail.savedToast'), action: { label: t('CD1905'), onClick: () => pickList({ poiId: id, mode: 'add' }) } })
         if (!on) unlock()
       })
       .catch(() => {
