@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(SITE_URL),
     title,
     description,
-    // Search results need an icon of 48 px or more (favicon.ico is 16 and 32): the 192 px PNG.
+    // Search results need an icon of 48 px or more: favicon.ico holds 16, 32 and 48; also the 192 px PNG.
     icons: {
       icon: [{ url: '/icon.svg' }, { url: '/icon-192.png', sizes: '192x192', type: 'image/png' }],
       apple: '/apple-touch-icon.png',
