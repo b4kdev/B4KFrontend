@@ -13,7 +13,7 @@ export default async function Page(props: { params: Promise<{ locale: string }> 
   return (
     <>
       <JsonLd data={await buildPerfumeFlagshipsJsonLd(params.locale)} />
-      <SpecialScreen category="k-beauty" api="/api/explore/k-beauty/perfume-flagships" />
+      <SpecialScreen category="k-beauty" api="/api/explore/k-beauty/perfume-flagships" titleKey="CD0272" />
     </>
   )
 }

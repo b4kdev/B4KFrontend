@@ -610,13 +610,14 @@ export function CollectionScreen({ slug }: { slug: string }) {
 
 // ── Category special pages ────────────────────────────────────────
 
-type SpecialItem = { poi_id: string; name_ko: string; name_en: string; primary_image_url: string | null; display_region: string; display_district?: string | null; relationship_en?: string; relationship_ko?: string }
+type SpecialItem = { poi_id: string; name_ko: string; name_en: string; primary_image_url: string | null; display_region: string; display_district?: string | null; poi_type?: string; relationship_en?: string; relationship_ko?: string }
 
-export function SpecialScreen({ api, category }: { api: string; category: string }) {
+// titleKey names the page's own heading text when the data carries no title of its own.
+export function SpecialScreen({ api, category, titleKey }: { api: string; category: string; titleKey?: string }) {
   const act = usePlaceActions({ resume: true })
   const t = useCd()
   const locale = useLocale()
-  const { data, error, isLoading } = useSWR<Record<string, unknown> & { items: SpecialItem[] }>(api, jsonFetch)
+  const { data, error, isLoading } = useSWR<Record<string, unknown> & { items: SpecialItem[] }>(`${api}${api.includes('?') ? '&' : '?'}locale=${locale}`, jsonFetch)
   // The Index panel lists the category's rows and selects the row this special page belongs to.
   const explore = useSWR<ExploreData>(`/api/explore/${category}`, jsonFetch)
   const pathname = usePathname() ?? ''
@@ -625,7 +626,8 @@ export function SpecialScreen({ api, category }: { api: string; category: string
   const rows = (explore.data?.sections ?? []).filter((x) => x.items.length || x.id === activeRow).map((x) => x.id)
   const categoryLabel = t(CATEGORIES.find((c) => c.slug === category)?.label ?? 'CD0804')
   const title =
-    (data && ((locale === 'ko' ? data.workNameKo ?? data.teamNameKo ?? data.regionNameKo : data.workNameEn ?? data.teamNameEn ?? data.regionNameEn) ?? data.titleEn ?? data.title)) as string | undefined
+    ((data && ((locale === 'ko' ? data.workNameKo ?? data.teamNameKo ?? data.regionNameKo : data.workNameEn ?? data.teamNameEn ?? data.regionNameEn) ?? data.titleEn ?? data.title)) as string | undefined) ??
+    (titleKey ? t(titleKey) : undefined)
   return (
     <ExploreFrame category={category} sections={rows} active={activeRow} pageTitle={title ?? ''}>
       <div className="flex flex-col gap-[var(--space-4)]">
@@ -657,7 +659,7 @@ export function SpecialScreen({ api, category }: { api: string; category: string
         <ul className="grid grid-cols-2 gap-x-[var(--space-3)] gap-y-[var(--space-6)] lg:gap-x-[var(--space-4)] lg:grid-cols-4">
           {data?.items.map((p) => (
             <li key={p.poi_id}>
-              <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={(locale === 'ko' ? p.relationship_ko : p.relationship_en) || placeArea(p, locale)} />
+              <Card type="place" href={`/map?poi=${p.poi_id}`} {...act(p.poi_id, poiName(p, locale))} title={poiName(p, locale)} imageSrc={p.primary_image_url} meta={(p.poi_type === 'collection_item' ? '' : locale === 'ko' ? p.relationship_ko : p.relationship_en) || placeArea(p, locale)} />
             </li>
           ))}
         </ul>
