@@ -42,6 +42,8 @@ export type CardProps = Common &
         save?: { saved: boolean; onSave: () => void; label: string }
         like?: { liked: boolean; onLike: () => void; label: string }
         addToPlan?: { onAdd: () => void; label: string }
+        /** A menu on the photo, top left (Saved: Move to list): a fixed DropdownMenu with an ImageAction trigger. */
+        menu?: ReactNode
         sponsored?: string
         dDay?: string
         trending?: string
@@ -124,6 +126,7 @@ export function Card(props: CardProps) {
             {/* The shell's label names Place: shown only while the type is Place (no label text per type yet). */}
             <Image ratio="4:3" src={props.imageSrc} alt={props.imageAlt ?? title} sizes="280px" placeType={props.placeType} missingLabel={(props.placeType ?? 'place') === 'place' ? missingLabel : undefined} />
             <div className="absolute left-[var(--space-2)] top-[var(--space-2)] z-10 flex gap-[var(--gap-xs)]">
+              {props.menu}
               {props.dDay ? <Badge variant="strong">{props.dDay}</Badge> : null}
               {props.sponsored ? <Badge variant="on-image">{props.sponsored}</Badge> : null}
             </div>

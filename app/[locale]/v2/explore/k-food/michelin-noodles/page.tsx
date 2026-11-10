@@ -13,7 +13,7 @@ export default async function Page(props: { params: Promise<{ locale: string }> 
   return (
     <>
       <JsonLd data={await buildMichelinNoodlesJsonLd(params.locale)} />
-      <SpecialScreen category="k-food" api="/api/explore/k-food/michelin-noodles" />
+      <SpecialScreen category="k-food" api="/api/explore/k-food/michelin-noodles" titleKey="CD0267" />
     </>
   )
 }
